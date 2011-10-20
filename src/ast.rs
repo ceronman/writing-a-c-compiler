@@ -266,3 +266,25 @@ impl<T> InnerRef<T> for Option<Node<T>> {
         self.as_ref().map(Node::as_ref)
     }
 }
+
+impl Type {
+    pub(crate) fn size(&self) -> u8 {
+        match self {
+            Type::Int => 4,
+            Type::UInt => 4,
+            Type::Long => 8,
+            Type::ULong => 8,
+            Type::Function(_) => panic!("Size of function type"),
+        }
+    }
+
+    pub(crate) fn singed(&self) -> bool {
+        match self {
+            Type::Int => true,
+            Type::UInt => false,
+            Type::Long => true,
+            Type::ULong => false,
+            Type::Function(_) => panic!("Size of function type"),
+        }
+    }
+}

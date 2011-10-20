@@ -121,8 +121,8 @@ impl SemanticData {
         match val {
             tacky::Val::Constant(Constant::Int(_)) => AsmType::I32,
             tacky::Val::Constant(Constant::Long(_)) => AsmType::I64,
-            _ => todo!(),
             tacky::Val::Var(name) => self.symbol_ty(name),
+            _ => todo!(),
         }
     }
 
@@ -131,8 +131,8 @@ impl SemanticData {
         match ty {
             Type::Int => AsmType::I32,
             Type::Long => AsmType::I64,
-            _ => todo!(),
             Type::Function(_) => unreachable!(),
+            _ => todo!(),
         }
     }
 }
@@ -310,6 +310,7 @@ fn generate_function(function: &tacky::Function, semantic: &SemanticData) -> Fun
             tacky::Instruction::Truncate { src, dst } => {
                 instructions.push(Instruction::Mov(AsmType::I32, src.to_asm(), dst.to_asm()));
             }
+            tacky::Instruction::ZeroExtend { src, dst } => todo!(),
         }
     }
 

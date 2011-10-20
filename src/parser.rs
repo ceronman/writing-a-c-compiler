@@ -15,7 +15,7 @@ struct Parser<'src> {
     current: Token,
     next: Token,
     lexer: Lexer<'src>,
-    node_id: u32,
+    node_id: u32
 }
 
 impl TokenKind {
