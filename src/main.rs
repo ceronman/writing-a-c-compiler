@@ -1,10 +1,13 @@
+mod lexer;
+
 use anyhow::{bail, Result};
 use clap::Parser;
+use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
 #[derive(Parser)]
-struct Args {
+struct Options {
     filename: PathBuf,
 
     #[arg(long)]
@@ -18,10 +21,18 @@ struct Args {
 }
 
 fn main() -> Result<()> {
-    let args = Args::parse();
-    let preprocessed = run_preprocessor(&args.filename)?;
-    let asm_path = compile(&preprocessed)?;
-    assemble_and_link(&asm_path, &args.filename)?;
+    let options = Options::parse();
+    let preprocessed = run_preprocessor(&options.filename)?;
+
+    let source = fs::read_to_string(&preprocessed)?;
+    let tokens = lexer::lex(&source)?;
+    if options.lex {
+        println!("{:#?}", tokens);
+        return Ok(());
+    }
+
+    let asm_path = compile(&options.filename)?;
+    assemble_and_link(&asm_path, &options.filename)?;
     Ok(())
 }
 
