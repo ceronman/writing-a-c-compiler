@@ -1,6 +1,7 @@
 mod asm;
 mod ast;
 mod codegen;
+mod emitter;
 mod lexer;
 mod parser;
 
@@ -25,13 +26,14 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let assembly = codegen::generate_assembly(ast);
+    let assembly = codegen::generate_assembly(ast)?;
     if let Flag::Codegen = options.flag {
         println!("{assembly:#?}");
         return Ok(());
     }
 
-    let asm_path = compile(&options.filename)?;
+    let asm_path = emitter::emit_code(&assembly)?;
+
     assemble_and_link(&asm_path, &options.filename)?;
     Ok(())
 }
@@ -57,7 +59,7 @@ fn parse_args() -> Options {
         [path] => (path, Flag::None),
         _ => {
             eprintln!("Error: incorrect number of arguments");
-            eprintln!("Usage: compiler [ --lex | --parse --codegen ] <FILENAME>");
+            eprintln!("Usage: compiler [ --lex | --parse | --codegen ] <FILENAME>");
             std::process::exit(1);
         }
     };
@@ -89,35 +91,11 @@ fn run_preprocessor(filename: &Path) -> Result<tempfile::TempPath> {
     Ok(output_path)
 }
 
-fn compile(path: &Path) -> Result<tempfile::TempPath> {
-    let output_path = tempfile::Builder::new()
-        .prefix("assembly")
-        .suffix(".s")
-        .tempfile()?
-        .into_temp_path();
-
-    let output = Command::new("gcc")
-        .arg("-S")
-        .arg("-O")
-        .arg("-fno-asynchronous-unwind-tables")
-        .arg("-fcf-protection=none")
-        .arg(path)
-        .arg("-o")
-        .arg(&output_path)
-        .output()?;
-
-    if !output.status.success() {
-        bail!("{}", String::from_utf8(output.stderr)?)
-    }
-
-    Ok(output_path)
-}
-
 fn assemble_and_link(path: &Path, source: &Path) -> Result<()> {
     let output = Command::new("gcc")
         .arg(path)
         .arg("-o")
-        .arg(source.file_stem().unwrap())
+        .arg(source.with_extension(""))
         .output()?;
 
     if !output.status.success() {
