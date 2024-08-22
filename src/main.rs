@@ -1,39 +1,62 @@
+mod ast;
 mod lexer;
+mod parser;
 
 use anyhow::{bail, Result};
-use clap::Parser;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-#[derive(Parser)]
-struct Options {
-    filename: PathBuf,
-
-    #[arg(long)]
-    lex: bool,
-
-    #[arg(long)]
-    parse: bool,
-
-    #[arg(long)]
-    codegen: bool,
-}
-
 fn main() -> Result<()> {
-    let options = Options::parse();
+    let options = parse_args();
     let preprocessed = run_preprocessor(&options.filename)?;
 
     let source = fs::read_to_string(&preprocessed)?;
-    let tokens = lexer::lex(&source)?;
-    if options.lex {
-        println!("{:#?}", tokens);
+    if let Flag::Lex = options.flag {
+        lexer::verify(&source);
+        return Ok(());
+    }
+
+    let ast = parser::parse(&source)?;
+    if let Flag::Parse = options.flag {
+        println!("{ast:#?}");
         return Ok(());
     }
 
     let asm_path = compile(&options.filename)?;
     assemble_and_link(&asm_path, &options.filename)?;
     Ok(())
+}
+
+struct Options {
+    filename: PathBuf,
+    flag: Flag,
+}
+enum Flag {
+    None,
+    Lex,
+    Parse,
+    Codegen,
+}
+
+fn parse_args() -> Options {
+    let args: Vec<_> = std::env::args().skip(1).collect();
+    let args: Vec<_> = args.iter().map(|s| s.as_str()).collect();
+    let (path, flag) = match args[..] {
+        ["--lex", path] => (path, Flag::Lex),
+        ["--parse", path] => (path, Flag::Parse),
+        ["--codegen", path] => (path, Flag::Codegen),
+        [path] => (path, Flag::None),
+        _ => {
+            eprintln!("Error: incorrect number of arguments");
+            eprintln!("Usage: compiler [ --lex | --parse --codegen ] <FILENAME>");
+            std::process::exit(1);
+        }
+    };
+    Options {
+        filename: PathBuf::from(path),
+        flag,
+    }
 }
 
 fn run_preprocessor(filename: &Path) -> Result<tempfile::TempPath> {
