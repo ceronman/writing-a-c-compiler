@@ -1,9 +1,17 @@
+use crate::ir::{Instruction, Operand, Program};
+use crate::tempfile::TempPath;
+use std::fs::OpenOptions;
 use std::io::{BufWriter, Result, Write};
+use std::path::Path;
 
-use crate::asm::{Instruction, Operand, Program};
-
-pub fn emit_code(program: &Program) -> Result<tempfile::TempPath> {
-    let file = tempfile::Builder::new().suffix(".s").tempfile()?;
+pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
+    let output_path = TempPath::new(filename.with_extension("s"));
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(output_path.as_path())?;
 
     let mut output = BufWriter::new(file);
 
@@ -26,8 +34,7 @@ pub fn emit_code(program: &Program) -> Result<tempfile::TempPath> {
         }
         writeln!(output)?;
     }
-
-    Ok(output.into_inner()?.into_temp_path())
+    Ok(output_path)
 }
 
 fn write_operand(output: &mut impl Write, operand: &Operand) -> Result<()> {

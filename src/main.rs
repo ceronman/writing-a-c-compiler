@@ -1,10 +1,12 @@
-mod asm;
 mod ast;
 mod codegen;
 mod emitter;
+mod ir;
 mod lexer;
 mod parser;
+mod tempfile;
 
+use crate::tempfile::TempPath;
 use anyhow::{bail, Result};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -12,9 +14,10 @@ use std::process::Command;
 
 fn main() -> Result<()> {
     let options = parse_args();
+
     let preprocessed = run_preprocessor(&options.filename)?;
 
-    let source = fs::read_to_string(&preprocessed)?;
+    let source = fs::read_to_string(preprocessed.as_path())?;
     if let Flag::Lex = options.flag {
         lexer::verify(&source);
         return Ok(());
@@ -26,15 +29,19 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let assembly = codegen::generate_assembly(ast)?;
+    let ir = codegen::generate_ir(ast)?;
     if let Flag::Codegen = options.flag {
-        println!("{assembly:#?}");
+        println!("{ir:#?}");
         return Ok(());
     }
 
-    let asm_path = emitter::emit_code(&assembly)?;
+    let asm = emitter::emit_code(&options.filename, &ir)?;
+    if let Flag::Asm = options.flag {
+        println!("{}", fs::read_to_string(asm.as_path())?);
+        return Ok(());
+    }
 
-    assemble_and_link(&asm_path, &options.filename)?;
+    assemble_and_link(asm.as_path())?;
     Ok(())
 }
 
@@ -47,6 +54,7 @@ enum Flag {
     Lex,
     Parse,
     Codegen,
+    Asm,
 }
 
 fn parse_args() -> Options {
@@ -56,10 +64,11 @@ fn parse_args() -> Options {
         ["--lex", path] => (path, Flag::Lex),
         ["--parse", path] => (path, Flag::Parse),
         ["--codegen", path] => (path, Flag::Codegen),
+        ["--asm", path] => (path, Flag::Asm),
         [path] => (path, Flag::None),
         _ => {
             eprintln!("Error: incorrect number of arguments");
-            eprintln!("Usage: compiler [ --lex | --parse | --codegen ] <FILENAME>");
+            eprintln!("Usage: compiler [ --lex | --parse | --codegen | --asm ] <FILENAME>");
             std::process::exit(1);
         }
     };
@@ -69,19 +78,14 @@ fn parse_args() -> Options {
     }
 }
 
-fn run_preprocessor(filename: &Path) -> Result<tempfile::TempPath> {
-    let output_path = tempfile::Builder::new()
-        .prefix("preprocessed")
-        .suffix(".i")
-        .tempfile()?
-        .into_temp_path();
-
+fn run_preprocessor(filename: &Path) -> Result<TempPath> {
+    let output_path = TempPath::new(filename.with_extension("i"));
     let output = Command::new("gcc")
         .arg("-E")
         .arg("-P")
         .arg(filename)
         .arg("-o")
-        .arg(&output_path)
+        .arg(output_path.as_path())
         .output()?;
 
     if !output.status.success() {
@@ -91,11 +95,11 @@ fn run_preprocessor(filename: &Path) -> Result<tempfile::TempPath> {
     Ok(output_path)
 }
 
-fn assemble_and_link(path: &Path, source: &Path) -> Result<()> {
+fn assemble_and_link(path: &Path) -> Result<()> {
     let output = Command::new("gcc")
         .arg(path)
         .arg("-o")
-        .arg(source.with_extension(""))
+        .arg(path.with_extension(""))
         .output()?;
 
     if !output.status.success() {
