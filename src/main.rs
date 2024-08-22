@@ -1,4 +1,6 @@
+mod asm;
 mod ast;
+mod codegen;
 mod lexer;
 mod parser;
 
@@ -20,6 +22,12 @@ fn main() -> Result<()> {
     let ast = parser::parse(&source)?;
     if let Flag::Parse = options.flag {
         println!("{ast:#?}");
+        return Ok(());
+    }
+
+    let assembly = codegen::generate_assembly(ast);
+    if let Flag::Codegen = options.flag {
+        println!("{assembly:#?}");
         return Ok(());
     }
 
