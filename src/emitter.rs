@@ -1,4 +1,4 @@
-use crate::ir::{Instruction, Operand, Program};
+use crate::asm::{Instruction, Operand, Program};
 use crate::tempfile::TempPath;
 use std::fs::OpenOptions;
 use std::io::{BufWriter, Result, Write};

@@ -1,10 +1,10 @@
-use crate::ir;
+use crate::asm;
 
+use crate::asm::{Instruction, Operand};
 use crate::ast::{Expression, Program, Statement};
-use crate::ir::{Instruction, Operand};
 use anyhow::Result;
 
-pub fn generate_ir(program: Program) -> Result<ir::Program> {
+pub fn generate_ir(program: Program) -> Result<asm::Program> {
     let mut instructions = Vec::new();
     let function = program.function_definition;
     match &function.body {
@@ -15,8 +15,8 @@ pub fn generate_ir(program: Program) -> Result<ir::Program> {
             }
         },
     }
-    Ok(ir::Program {
-        function_definition: ir::Function {
+    Ok(asm::Program {
+        function_definition: asm::Function {
             name: function.name,
             instructions,
         },

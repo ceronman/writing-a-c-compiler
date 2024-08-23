@@ -1,7 +1,7 @@
+mod asm;
 mod ast;
 mod codegen;
 mod emitter;
-mod ir;
 mod lexer;
 mod parser;
 mod tempfile;
