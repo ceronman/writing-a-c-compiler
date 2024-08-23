@@ -13,14 +13,21 @@ pub struct Token {
 pub enum TokenKind {
     Identifier,
     Constant,
+
     Int,
     Void,
     Return,
+
+    Tilde,
+    Minus,
+    MinusMinus,
+
     OpenParen,
     CloseParen,
     OpenBrace,
     CloseBrace,
     Semicolon,
+
     Eof,
     Error,
 }
@@ -45,7 +52,7 @@ impl<'src> Lexer<'src> {
     pub fn next(&mut self) -> Token {
         self.skip_whitespace();
         self.start = self.offset;
-        let c = self.eat();
+        let c = self.advance();
 
         Token {
             kind: self.token_kind(c),
@@ -61,6 +68,14 @@ impl<'src> Lexer<'src> {
             '{' => TokenKind::OpenBrace,
             '}' => TokenKind::CloseBrace,
             ';' => TokenKind::Semicolon,
+            '~' => TokenKind::Tilde,
+            '-' => {
+                if self.eat('-') {
+                    TokenKind::MinusMinus
+                } else {
+                    TokenKind::Minus
+                }
+            }
             '0'..='9' => self.constant(),
             c if c == '_' || c.is_alphabetic() => self.identifier(),
             _ => TokenKind::Error,
@@ -69,17 +84,18 @@ impl<'src> Lexer<'src> {
 
     fn skip_whitespace(&mut self) {
         while let Some(c) = self.peek() {
-            if c.is_whitespace() {
-                self.eat();
+            let x = if c.is_whitespace() {
+                self.advance();
             } else {
                 return;
-            }
+            };
+            x
         }
     }
 
     fn constant(&mut self) -> TokenKind {
         while let Some('0'..='9') = self.peek() {
-            self.eat();
+            self.advance();
         }
         if self.peek().unwrap().is_alphabetic() {
             TokenKind::Error
@@ -91,7 +107,7 @@ impl<'src> Lexer<'src> {
     fn identifier(&mut self) -> TokenKind {
         while let Some(c) = self.peek() {
             if c.is_alphanumeric() || c == '_' {
-                self.eat();
+                self.advance();
             } else {
                 break;
             }
@@ -104,12 +120,22 @@ impl<'src> Lexer<'src> {
         }
     }
 
-    fn eat(&mut self) -> Option<char> {
+    fn advance(&mut self) -> Option<char> {
         if let Some(c) = self.chars.next() {
             self.offset += c.len_utf8();
             Some(c)
         } else {
             None
+        }
+    }
+
+    fn eat(&mut self, expected: char) -> bool {
+        match self.peek() {
+            Some(c) if c == expected => {
+                self.advance();
+                true
+            }
+            _ => false,
         }
     }
 
