@@ -13,6 +13,7 @@ pub fn generate_ir(program: Program) -> Result<asm::Program> {
                 instructions.push(Instruction::Mov(Operand::Imm(*value), Operand::Reg));
                 instructions.push(Instruction::Ret);
             }
+            _ => todo!(),
         },
     }
     Ok(asm::Program {

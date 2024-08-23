@@ -84,12 +84,11 @@ impl<'src> Lexer<'src> {
 
     fn skip_whitespace(&mut self) {
         while let Some(c) = self.peek() {
-            let x = if c.is_whitespace() {
+            if c.is_whitespace() {
                 self.advance();
             } else {
                 return;
             };
-            x
         }
     }
 

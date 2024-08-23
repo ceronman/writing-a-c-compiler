@@ -1,4 +1,4 @@
-use crate::ast::{Expression, Function, Program, Statement, Symbol};
+use crate::ast::{Expression, Function, Program, Statement, Symbol, UnaryOp};
 use crate::lexer::{Lexer, Token, TokenKind};
 
 use anyhow::{anyhow, Result};
@@ -47,8 +47,43 @@ impl<'src> Parser<'src> {
     }
 
     fn expression(&mut self) -> Result<Expression> {
-        let value = self.int()?;
-        Ok(Expression::Constant(value))
+        let expr = match self.current.kind {
+            TokenKind::Constant => self.int()?,
+            TokenKind::Minus | TokenKind::Tilde => Expression::Unary {
+                op: self.unary_op()?,
+                expr: self.expression()?.into(),
+            },
+            TokenKind::OpenParen => {
+                self.advance();
+                let inner = self.expression()?;
+                self.expect(TokenKind::CloseParen)?;
+                inner
+            }
+            _ => {
+                return Err(anyhow!(
+                    "Expected expression, but found '{}' at {:?}",
+                    self.current.slice(self.source),
+                    self.current.span
+                ))
+            }
+        };
+        Ok(expr)
+    }
+
+    fn unary_op(&mut self) -> Result<UnaryOp> {
+        let op = match self.current.kind {
+            TokenKind::Minus => UnaryOp::Negate,
+            TokenKind::Tilde => UnaryOp::Complement,
+            _ => {
+                return Err(anyhow!(
+                    "Expected unary operator, but found '{}' at {:?}",
+                    self.current.slice(self.source),
+                    self.current.span
+                ))
+            }
+        };
+        self.advance();
+        Ok(op)
     }
 
     fn identifier(&mut self) -> Result<Symbol> {
@@ -56,23 +91,24 @@ impl<'src> Parser<'src> {
         Ok(Symbol::from(token.slice(self.source)))
     }
 
-    fn int(&mut self) -> Result<i64> {
+    fn int(&mut self) -> Result<Expression> {
         let token = self.expect(TokenKind::Constant)?;
-        Ok(token.slice(self.source).parse()?)
+        let value = token.slice(self.source).parse()?;
+        Ok(Expression::Constant(value))
     }
 
     fn advance(&mut self) {
         self.current = self.lexer.next();
     }
 
-    fn expect(&mut self, token_kind: TokenKind) -> Result<Token> {
+    fn expect(&mut self, expected: TokenKind) -> Result<Token> {
         let token = self.current;
-        if token.kind == token_kind {
+        if token.kind == expected {
             self.advance();
             Ok(token)
         } else {
             Err(anyhow!(
-                "Expected {token_kind:?}, but found '{}' at {:?}",
+                "Expected {expected:?}, but found '{}' at {:?}",
                 token.slice(self.source),
                 token.span
             ))
