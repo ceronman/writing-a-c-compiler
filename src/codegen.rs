@@ -2,11 +2,10 @@ use crate::asm;
 
 use crate::asm::{Instruction, Operand};
 use crate::ast::{Expression, Program, Statement};
-use anyhow::Result;
 
-pub fn generate_ir(program: Program) -> Result<asm::Program> {
+pub fn generate(program: &Program) -> asm::Program {
     let mut instructions = Vec::new();
-    let function = program.function_definition;
+    let function = &program.function_definition;
     match &function.body {
         Statement::Return { expr } => match expr {
             Expression::Constant(value) => {
@@ -16,10 +15,10 @@ pub fn generate_ir(program: Program) -> Result<asm::Program> {
             _ => todo!(),
         },
     }
-    Ok(asm::Program {
+    asm::Program {
         function_definition: asm::Function {
-            name: function.name,
+            name: function.name.clone(),
             instructions,
         },
-    })
+    }
 }

@@ -4,6 +4,7 @@ mod codegen;
 mod emitter;
 mod lexer;
 mod parser;
+mod tacky;
 mod tempfile;
 
 use crate::tempfile::TempPath;
@@ -29,19 +30,25 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let ir = codegen::generate_ir(ast)?;
+    let tacky = tacky::generate(&ast);
+    if let Flag::Tacky = options.flag {
+        println!("{tacky:#?}");
+        return Ok(());
+    }
+
+    let asm = codegen::generate(&ast);
     if let Flag::Codegen = options.flag {
-        println!("{ir:#?}");
+        println!("{asm:#?}");
         return Ok(());
     }
 
-    let asm = emitter::emit_code(&options.filename, &ir)?;
+    let asm_path = emitter::emit_code(&options.filename, &asm)?;
     if let Flag::Asm = options.flag {
-        println!("{}", fs::read_to_string(asm.as_path())?);
+        println!("{}", fs::read_to_string(asm_path.as_path())?);
         return Ok(());
     }
 
-    assemble_and_link(asm.as_path())?;
+    assemble_and_link(asm_path.as_path())?;
     Ok(())
 }
 
@@ -49,10 +56,12 @@ struct Options {
     filename: PathBuf,
     flag: Flag,
 }
+
 enum Flag {
     None,
     Lex,
     Parse,
+    Tacky,
     Codegen,
     Asm,
 }
@@ -63,6 +72,7 @@ fn parse_args() -> Options {
     let (path, flag) = match args[..] {
         ["--lex", path] => (path, Flag::Lex),
         ["--parse", path] => (path, Flag::Parse),
+        ["--tacky", path] => (path, Flag::Tacky),
         ["--codegen", path] => (path, Flag::Codegen),
         ["--asm", path] => (path, Flag::Asm),
         [path] => (path, Flag::None),
