@@ -31,6 +31,7 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
                 write_operand(&mut output, dst)?;
             }
             Instruction::Ret => write!(output, "ret")?,
+            _ => todo!(),
         }
         writeln!(output)?;
     }
@@ -40,6 +41,7 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
 fn write_operand(output: &mut impl Write, operand: &Operand) -> Result<()> {
     match operand {
         Operand::Imm(value) => write!(output, "${value}"),
-        Operand::Reg => write!(output, "%eax"),
+        Operand::Reg(_) => write!(output, "%eax"),
+        _ => todo!(),
     }
 }

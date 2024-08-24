@@ -1,9 +1,9 @@
 mod asm;
 mod ast;
-mod codegen;
 mod emitter;
 mod lexer;
 mod parser;
+mod symbol;
 mod tacky;
 mod tempfile;
 
@@ -36,7 +36,7 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let asm = codegen::generate(&ast);
+    let asm = asm::generate(&tacky);
     if let Flag::Codegen = options.flag {
         println!("{asm:#?}");
         return Ok(());

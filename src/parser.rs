@@ -1,6 +1,7 @@
-use crate::ast::{Expression, Function, Program, Statement, Symbol, UnaryOp};
+use crate::ast::{Expression, Function, Program, Statement, UnaryOp};
 use crate::lexer::{Lexer, Token, TokenKind};
 
+use crate::symbol::Symbol;
 use anyhow::{anyhow, Result};
 
 struct Parser<'src> {

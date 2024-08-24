@@ -1,5 +1,6 @@
 use crate::ast;
-use crate::ast::{Expression, Statement, Symbol};
+use crate::ast::{Expression, Statement};
+use crate::symbol::Symbol;
 
 #[derive(Debug)]
 pub struct Program {
@@ -35,18 +36,18 @@ pub fn generate(program: &ast::Program) -> Program {
     Program {
         function: Function {
             name: function.name.clone(),
-            body: FunctionGenerator::default().emit_body(&function.body),
+            body: Generator::default().emit_body(&function.body),
         },
     }
 }
 
 #[derive(Default)]
-struct FunctionGenerator {
+struct Generator {
     instructions: Vec<Instruction>,
     tmp_counter: u32,
 }
 
-impl FunctionGenerator {
+impl Generator {
     fn emit_body(mut self, body: &Statement) -> Vec<Instruction> {
         match body {
             Statement::Return { expr } => {

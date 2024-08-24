@@ -1,4 +1,4 @@
-pub type Symbol = String;
+use crate::symbol::Symbol;
 
 #[derive(Debug)]
 pub struct Program {
