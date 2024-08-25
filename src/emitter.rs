@@ -1,4 +1,4 @@
-use crate::asm::{Instruction, Operand, Program};
+use crate::asm::{Instruction, Operand, Program, Reg, UnaryOp};
 use crate::tempfile::TempPath;
 use std::fs::OpenOptions;
 use std::io::{BufWriter, Result, Write};
@@ -18,30 +18,51 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
     let function = &program.function_definition;
 
     writeln!(output, "\t.globl _{name}", name = function.name)?;
-    writeln!(output)?;
     writeln!(output, "_{name}:", name = function.name)?;
 
+    // Prologue
+    writeln!(output, "\tpushq %rbp")?;
+    writeln!(output, "\tmovq %rsp, %rbp")?;
+
     for ins in &function.instructions {
-        write!(output, "\t")?;
         match ins {
             Instruction::Mov(src, dst) => {
-                write!(output, "movl ")?;
-                write_operand(&mut output, src)?;
+                write!(output, "\tmovl ")?;
+                emit_operand(&mut output, src)?;
                 write!(output, ", ")?;
-                write_operand(&mut output, dst)?;
+                emit_operand(&mut output, dst)?;
+                writeln!(output)?;
             }
-            Instruction::Ret => write!(output, "ret")?,
-            _ => todo!(),
+            Instruction::Unary(op, src) => {
+                let op = match op {
+                    UnaryOp::Neg => "negl",
+                    UnaryOp::Not => "notl",
+                };
+                write!(output, "\t{op} ")?;
+                emit_operand(&mut output, src)?;
+                writeln!(output)?;
+            }
+            Instruction::AllocateStack(offset) => {
+                writeln!(output, "\tsubq ${offset}, %rsp")?;
+            }
+            Instruction::Ret => {
+                // epilogue
+                writeln!(output, "\tmovq %rbp, %rsp")?;
+                writeln!(output, "\tpopq %rbp")?;
+                writeln!(output, "\tret")?;
+            }
         }
-        writeln!(output)?;
     }
+
     Ok(output_path)
 }
 
-fn write_operand(output: &mut impl Write, operand: &Operand) -> Result<()> {
+fn emit_operand(output: &mut impl Write, operand: &Operand) -> Result<()> {
     match operand {
         Operand::Imm(value) => write!(output, "${value}"),
-        Operand::Reg(_) => write!(output, "%eax"),
-        _ => todo!(),
+        Operand::Reg(Reg::Ax) => write!(output, "%eax"),
+        Operand::Reg(Reg::R10) => write!(output, "%r10d"),
+        Operand::Stack(offset) => write!(output, "-{offset}(%rbp)"),
+        Operand::Pseudo(_) => unreachable!(),
     }
 }
