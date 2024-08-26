@@ -75,6 +75,8 @@ impl Generator {
                 });
                 dst
             }
+
+            _ => todo!(),
         }
     }
 

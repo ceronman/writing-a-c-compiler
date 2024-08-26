@@ -1,4 +1,4 @@
-use crate::ast::{Expression, Function, Program, Statement, UnaryOp};
+use crate::ast::{BinaryOp, Expression, Function, Program, Statement, UnaryOp};
 use crate::lexer::{Lexer, Token, TokenKind};
 
 use crate::symbol::Symbol;
@@ -48,7 +48,11 @@ impl<'src> Parser<'src> {
     }
 
     fn expression(&mut self) -> Result<Expression> {
-        let expr = match self.current.kind {
+        self.expression_precedence(0)
+    }
+
+    fn expression_precedence(&mut self, min_precedence: u8) -> Result<Expression> {
+        let mut expr = match self.current.kind {
             TokenKind::Constant => self.int()?,
             TokenKind::Minus | TokenKind::Tilde => Expression::Unary {
                 op: self.unary_op()?,
@@ -68,7 +72,58 @@ impl<'src> Parser<'src> {
                 ))
             }
         };
+
+        loop {
+            let precedence = match self.current.kind {
+                TokenKind::Pipe => 1,
+                TokenKind::Circumflex => 2,
+                TokenKind::Ampersand => 3,
+                TokenKind::LessLess | TokenKind::GreaterGreater => 4,
+                TokenKind::Plus | TokenKind::Minus => 5,
+                TokenKind::Star | TokenKind::Slash | TokenKind::Percent => 6,
+                _ => break,
+            };
+
+            if precedence < min_precedence {
+                break;
+            }
+            let left = expr;
+            let op = self.binary_op()?;
+            let right = self.expression_precedence(precedence)?;
+
+            expr = Expression::Binary {
+                op,
+                left: Box::new(left),
+                right: Box::new(right),
+            };
+        }
+
         Ok(expr)
+    }
+
+    fn binary_op(&mut self) -> Result<BinaryOp> {
+        let op = match self.current.kind {
+            TokenKind::Plus => BinaryOp::Add,
+            TokenKind::Minus => BinaryOp::Subtract,
+            TokenKind::Star => BinaryOp::Multiply,
+            TokenKind::Slash => BinaryOp::Divide,
+            TokenKind::Percent => BinaryOp::Reminder,
+            TokenKind::Ampersand => BinaryOp::BinAnd,
+            TokenKind::Pipe => BinaryOp::BinOr,
+            TokenKind::Circumflex => BinaryOp::BinXor,
+            TokenKind::LessLess => BinaryOp::ShiftLeft,
+            TokenKind::GreaterGreater => BinaryOp::ShiftRight,
+
+            _ => {
+                return Err(anyhow!(
+                    "Expected binary operator, but found '{}' at {:?}",
+                    self.current.slice(self.source),
+                    self.current.span
+                ))
+            }
+        };
+        self.advance();
+        Ok(op)
     }
 
     fn unary_op(&mut self) -> Result<UnaryOp> {

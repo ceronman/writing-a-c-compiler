@@ -34,9 +34,9 @@ pub enum TokenKind {
     Less,
     LessLess,
     LessEqual,
-    More,
-    MoreMore,
-    MoreEqual,
+    Greater,
+    GreaterGreater,
+    GreaterEqual,
 
     OpenParen,
     CloseParen,
@@ -109,13 +109,13 @@ impl<'src> Lexer<'src> {
             '>' => match self.peek() {
                 Some('>') => {
                     self.advance();
-                    TokenKind::MoreMore
+                    TokenKind::GreaterGreater
                 }
                 Some('=') => {
                     self.advance();
-                    TokenKind::MoreEqual
+                    TokenKind::GreaterEqual
                 }
-                _ => TokenKind::More,
+                _ => TokenKind::Greater,
             },
 
             '<' => match self.peek() {
