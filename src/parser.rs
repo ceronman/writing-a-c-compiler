@@ -56,7 +56,7 @@ impl<'src> Parser<'src> {
             TokenKind::Constant => self.int()?,
             TokenKind::Minus | TokenKind::Tilde => Expression::Unary {
                 op: self.unary_op()?,
-                expr: self.expression()?.into(),
+                expr: self.expression_precedence(7)?.into(),
             },
             TokenKind::OpenParen => {
                 self.advance();

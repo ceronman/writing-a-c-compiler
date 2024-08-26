@@ -1,4 +1,4 @@
-use crate::asm::{Instruction, Operand, Program, Reg, UnaryOp};
+use crate::asm::{BinaryOp, Instruction, Operand, Program, Reg, UnaryOp};
 use crate::tempfile::TempPath;
 use std::fs::OpenOptions;
 use std::io::{BufWriter, Result, Write};
@@ -42,16 +42,51 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
                 emit_operand(&mut output, src)?;
                 writeln!(output)?;
             }
+            Instruction::Binary(op, left, right) => {
+                let op = match op {
+                    BinaryOp::Add => "addl",
+                    BinaryOp::Sub => "subl",
+                    BinaryOp::Mul => "imull",
+                    BinaryOp::And => "andl",
+                    BinaryOp::Or => "orl",
+                    BinaryOp::Xor => "xorl",
+                };
+                write!(output, "\t{op} ")?;
+                emit_operand(&mut output, left)?;
+                write!(output, ", ")?;
+                emit_operand(&mut output, right)?;
+                writeln!(output)?;
+            }
             Instruction::AllocateStack(offset) => {
                 writeln!(output, "\tsubq ${offset}, %rsp")?;
             }
+
+            Instruction::Sal(dst) => {
+                write!(output, "\tsall %cl, ")?;
+                emit_operand(&mut output, dst)?;
+                writeln!(output)?;
+            }
+
+            Instruction::Sar(dst) => {
+                write!(output, "\tsarl %cl, ")?;
+                emit_operand(&mut output, dst)?;
+                writeln!(output)?;
+            }
+
+            Instruction::Idiv(src) => {
+                write!(output, "\tidivl ")?;
+                emit_operand(&mut output, src)?;
+                writeln!(output)?;
+            }
+
+            Instruction::Cdq => writeln!(output, "\tcdq")?,
+
             Instruction::Ret => {
                 // epilogue
                 writeln!(output, "\tmovq %rbp, %rsp")?;
                 writeln!(output, "\tpopq %rbp")?;
                 writeln!(output, "\tret")?;
             }
-            _ => todo!(),
         }
     }
 
@@ -62,6 +97,7 @@ fn emit_operand(output: &mut impl Write, operand: &Operand) -> Result<()> {
     match operand {
         Operand::Imm(value) => write!(output, "${value}"),
         Operand::Reg(Reg::Ax) => write!(output, "%eax"),
+        Operand::Reg(Reg::Cx) => write!(output, "%ecx"),
         Operand::Reg(Reg::Dx) => write!(output, "%edx"),
         Operand::Reg(Reg::R10) => write!(output, "%r10d"),
         Operand::Reg(Reg::R11) => write!(output, "%r11d"),

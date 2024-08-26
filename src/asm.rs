@@ -19,6 +19,8 @@ pub enum Instruction {
     Unary(UnaryOp, Operand),
     Binary(BinaryOp, Operand, Operand),
     Idiv(Operand),
+    Sal(Operand),
+    Sar(Operand),
     Cdq,
     AllocateStack(u64),
     Ret,
@@ -35,8 +37,6 @@ pub enum BinaryOp {
     Add,
     Sub,
     Mul,
-    Shl,
-    Shr,
     And,
     Or,
     Xor,
@@ -53,6 +53,7 @@ pub enum Operand {
 #[derive(Debug)]
 pub enum Reg {
     Ax,
+    Cx,
     Dx,
     R10,
     R11,
@@ -82,14 +83,24 @@ pub fn generate(program: &tacky::Program) -> Program {
                 tacky::BinaryOp::Divide => {
                     instructions.push(Instruction::Mov(src1.to_asm(), Operand::Reg(Reg::Ax)));
                     instructions.push(Instruction::Cdq);
-                    instructions.push(Instruction::Idiv(src1.to_asm()));
+                    instructions.push(Instruction::Idiv(src2.to_asm()));
                     instructions.push(Instruction::Mov(Operand::Reg(Reg::Ax), dst.to_asm()));
                 }
                 tacky::BinaryOp::Reminder => {
                     instructions.push(Instruction::Mov(src1.to_asm(), Operand::Reg(Reg::Ax)));
                     instructions.push(Instruction::Cdq);
-                    instructions.push(Instruction::Idiv(src1.to_asm()));
+                    instructions.push(Instruction::Idiv(src2.to_asm()));
                     instructions.push(Instruction::Mov(Operand::Reg(Reg::Dx), dst.to_asm()));
+                }
+                tacky::BinaryOp::ShiftLeft => {
+                    instructions.push(Instruction::Mov(src1.to_asm(), dst.to_asm()));
+                    instructions.push(Instruction::Mov(src2.to_asm(), Operand::Reg(Reg::Cx)));
+                    instructions.push(Instruction::Sal(dst.to_asm()));
+                }
+                tacky::BinaryOp::ShiftRight => {
+                    instructions.push(Instruction::Mov(src1.to_asm(), dst.to_asm()));
+                    instructions.push(Instruction::Mov(src2.to_asm(), Operand::Reg(Reg::Cx)));
+                    instructions.push(Instruction::Sar(dst.to_asm()));
                 }
                 _ => {
                     instructions.push(Instruction::Mov(src1.to_asm(), dst.to_asm()));
@@ -137,7 +148,10 @@ fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> u64 {
                 update_operand(src);
                 update_operand(dst);
             }
-            Instruction::Unary(_, src) | Instruction::Idiv(src) => update_operand(src),
+            Instruction::Unary(_, src)
+            | Instruction::Idiv(src)
+            | Instruction::Sal(src)
+            | Instruction::Sar(src) => update_operand(src),
             _ => continue,
         }
     }
@@ -162,7 +176,10 @@ fn fixup_instructions(instructions: Vec<Instruction>, stack_size: u64) -> Vec<In
                 ));
             }
             Instruction::Binary(op, Operand::Stack(left), Operand::Stack(right))
-                if matches!(op, BinaryOp::Add | BinaryOp::Sub) =>
+                if matches!(
+                    op,
+                    BinaryOp::Add | BinaryOp::Sub | BinaryOp::And | BinaryOp::Or | BinaryOp::Xor
+                ) =>
             {
                 fixed.push(Instruction::Mov(
                     Operand::Stack(left),
@@ -229,8 +246,6 @@ impl tacky::BinaryOp {
             tacky::BinaryOp::BinAnd => BinaryOp::And,
             tacky::BinaryOp::BinOr => BinaryOp::Or,
             tacky::BinaryOp::BinXor => BinaryOp::Xor,
-            tacky::BinaryOp::ShiftLeft => BinaryOp::Shl,
-            tacky::BinaryOp::ShiftRight => BinaryOp::Shr,
 
             _ => unreachable!(), // Divide and Reminder do not have equivalent
         }
