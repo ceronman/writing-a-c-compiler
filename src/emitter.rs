@@ -51,6 +51,7 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
                 writeln!(output, "\tpopq %rbp")?;
                 writeln!(output, "\tret")?;
             }
+            _ => todo!(),
         }
     }
 
@@ -61,7 +62,9 @@ fn emit_operand(output: &mut impl Write, operand: &Operand) -> Result<()> {
     match operand {
         Operand::Imm(value) => write!(output, "${value}"),
         Operand::Reg(Reg::Ax) => write!(output, "%eax"),
+        Operand::Reg(Reg::Dx) => write!(output, "%edx"),
         Operand::Reg(Reg::R10) => write!(output, "%r10d"),
+        Operand::Reg(Reg::R11) => write!(output, "%r11d"),
         Operand::Stack(offset) => write!(output, "-{offset}(%rbp)"),
         Operand::Pseudo(_) => unreachable!(),
     }

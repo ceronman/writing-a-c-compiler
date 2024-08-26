@@ -89,7 +89,7 @@ impl<'src> Parser<'src> {
             }
             let left = expr;
             let op = self.binary_op()?;
-            let right = self.expression_precedence(precedence)?;
+            let right = self.expression_precedence(precedence + 1)?;
 
             expr = Expression::Binary {
                 op,

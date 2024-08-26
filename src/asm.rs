@@ -17,6 +17,9 @@ pub struct Function {
 pub enum Instruction {
     Mov(Operand, Operand),
     Unary(UnaryOp, Operand),
+    Binary(BinaryOp, Operand, Operand),
+    Idiv(Operand),
+    Cdq,
     AllocateStack(u64),
     Ret,
 }
@@ -25,6 +28,18 @@ pub enum Instruction {
 pub enum UnaryOp {
     Neg,
     Not,
+}
+
+#[derive(Debug)]
+pub enum BinaryOp {
+    Add,
+    Sub,
+    Mul,
+    Shl,
+    Shr,
+    And,
+    Or,
+    Xor,
 }
 
 #[derive(Debug)]
@@ -38,7 +53,9 @@ pub enum Operand {
 #[derive(Debug)]
 pub enum Reg {
     Ax,
+    Dx,
     R10,
+    R11,
 }
 
 pub fn generate(program: &tacky::Program) -> Program {
@@ -56,7 +73,33 @@ pub fn generate(program: &tacky::Program) -> Program {
                 instructions.push(Instruction::Unary(op.to_asm(), dst.to_asm()));
             }
 
-            tacky::Instruction::Binary { .. } => todo!(),
+            tacky::Instruction::Binary {
+                op,
+                src1,
+                src2,
+                dst,
+            } => match op {
+                tacky::BinaryOp::Divide => {
+                    instructions.push(Instruction::Mov(src1.to_asm(), Operand::Reg(Reg::Ax)));
+                    instructions.push(Instruction::Cdq);
+                    instructions.push(Instruction::Idiv(src1.to_asm()));
+                    instructions.push(Instruction::Mov(Operand::Reg(Reg::Ax), dst.to_asm()));
+                }
+                tacky::BinaryOp::Reminder => {
+                    instructions.push(Instruction::Mov(src1.to_asm(), Operand::Reg(Reg::Ax)));
+                    instructions.push(Instruction::Cdq);
+                    instructions.push(Instruction::Idiv(src1.to_asm()));
+                    instructions.push(Instruction::Mov(Operand::Reg(Reg::Dx), dst.to_asm()));
+                }
+                _ => {
+                    instructions.push(Instruction::Mov(src1.to_asm(), dst.to_asm()));
+                    instructions.push(Instruction::Binary(
+                        op.to_asm(),
+                        src2.to_asm(),
+                        dst.to_asm(),
+                    ));
+                }
+            },
         }
     }
 
@@ -90,11 +133,11 @@ fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> u64 {
 
     for instruction in instructions {
         match instruction {
-            Instruction::Mov(src, dst) => {
+            Instruction::Mov(src, dst) | Instruction::Binary(_, src, dst) => {
                 update_operand(src);
                 update_operand(dst);
             }
-            Instruction::Unary(_, src) => update_operand(src),
+            Instruction::Unary(_, src) | Instruction::Idiv(src) => update_operand(src),
             _ => continue,
         }
     }
@@ -118,6 +161,41 @@ fn fixup_instructions(instructions: Vec<Instruction>, stack_size: u64) -> Vec<In
                     Operand::Stack(dst),
                 ));
             }
+            Instruction::Binary(op, Operand::Stack(left), Operand::Stack(right))
+                if matches!(op, BinaryOp::Add | BinaryOp::Sub) =>
+            {
+                fixed.push(Instruction::Mov(
+                    Operand::Stack(left),
+                    Operand::Reg(Reg::R10),
+                ));
+                fixed.push(Instruction::Binary(
+                    op,
+                    Operand::Reg(Reg::R10),
+                    Operand::Stack(right),
+                ));
+            }
+            Instruction::Binary(BinaryOp::Mul, left, Operand::Stack(right)) => {
+                fixed.push(Instruction::Mov(
+                    Operand::Stack(right),
+                    Operand::Reg(Reg::R11),
+                ));
+                fixed.push(Instruction::Binary(
+                    BinaryOp::Mul,
+                    left,
+                    Operand::Reg(Reg::R11),
+                ));
+                fixed.push(Instruction::Mov(
+                    Operand::Reg(Reg::R11),
+                    Operand::Stack(right),
+                ));
+            }
+            Instruction::Idiv(Operand::Imm(value)) => {
+                fixed.push(Instruction::Mov(
+                    Operand::Imm(value),
+                    Operand::Reg(Reg::R10),
+                ));
+                fixed.push(Instruction::Idiv(Operand::Reg(Reg::R10)));
+            }
             other => fixed.push(other),
         }
     }
@@ -138,6 +216,23 @@ impl tacky::UnaryOp {
         match self {
             tacky::UnaryOp::Complement => UnaryOp::Not,
             tacky::UnaryOp::Negate => UnaryOp::Neg,
+        }
+    }
+}
+
+impl tacky::BinaryOp {
+    fn to_asm(&self) -> BinaryOp {
+        match self {
+            tacky::BinaryOp::Add => BinaryOp::Add,
+            tacky::BinaryOp::Subtract => BinaryOp::Sub,
+            tacky::BinaryOp::Multiply => BinaryOp::Mul,
+            tacky::BinaryOp::BinAnd => BinaryOp::And,
+            tacky::BinaryOp::BinOr => BinaryOp::Or,
+            tacky::BinaryOp::BinXor => BinaryOp::Xor,
+            tacky::BinaryOp::ShiftLeft => BinaryOp::Shl,
+            tacky::BinaryOp::ShiftRight => BinaryOp::Shr,
+
+            _ => unreachable!(), // Divide and Reminder do not have equivalent
         }
     }
 }
