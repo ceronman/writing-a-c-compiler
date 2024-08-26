@@ -18,9 +18,25 @@ pub enum TokenKind {
     Void,
     Return,
 
-    Tilde,
+    Plus,
+    PlusPlus,
     Minus,
     MinusMinus,
+    Star,
+    Slash,
+    Percent,
+
+    Ampersand,
+    Pipe,
+    Tilde,
+    Circumflex,
+
+    Less,
+    LessLess,
+    LessEqual,
+    More,
+    MoreMore,
+    MoreEqual,
 
     OpenParen,
     CloseParen,
@@ -68,7 +84,13 @@ impl<'src> Lexer<'src> {
             '{' => TokenKind::OpenBrace,
             '}' => TokenKind::CloseBrace,
             ';' => TokenKind::Semicolon,
-            '~' => TokenKind::Tilde,
+            '+' => {
+                if self.eat('+') {
+                    TokenKind::PlusPlus
+                } else {
+                    TokenKind::Plus
+                }
+            }
             '-' => {
                 if self.eat('-') {
                     TokenKind::MinusMinus
@@ -76,6 +98,37 @@ impl<'src> Lexer<'src> {
                     TokenKind::Minus
                 }
             }
+            '*' => TokenKind::Star,
+            '/' => TokenKind::Slash,
+            '%' => TokenKind::Percent,
+            '~' => TokenKind::Tilde,
+            '&' => TokenKind::Ampersand,
+            '|' => TokenKind::Pipe,
+            '^' => TokenKind::Circumflex,
+
+            '>' => match self.peek() {
+                Some('>') => {
+                    self.advance();
+                    TokenKind::MoreMore
+                }
+                Some('=') => {
+                    self.advance();
+                    TokenKind::MoreEqual
+                }
+                _ => TokenKind::More,
+            },
+
+            '<' => match self.peek() {
+                Some('<') => {
+                    self.advance();
+                    TokenKind::LessLess
+                }
+                Some('=') => {
+                    self.advance();
+                    TokenKind::LessEqual
+                }
+                _ => TokenKind::Less,
+            },
             '0'..='9' => self.constant(),
             c if c == '_' || c.is_alphabetic() => self.identifier(),
             _ => TokenKind::Error,
