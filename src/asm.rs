@@ -55,6 +55,8 @@ pub fn generate(program: &tacky::Program) -> Program {
                 instructions.push(Instruction::Mov(src.to_asm(), dst.to_asm()));
                 instructions.push(Instruction::Unary(op.to_asm(), dst.to_asm()));
             }
+
+            tacky::Instruction::Binary { .. } => todo!(),
         }
     }
 
