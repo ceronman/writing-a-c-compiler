@@ -3,5 +3,9 @@ name = "writing-a-c-compiler"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = []
+test_gen = []
+
 [dependencies]
 anyhow = "1.0.86"

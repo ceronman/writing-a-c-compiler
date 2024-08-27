@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod test;
+
 use std::str::Chars;
 
 #[derive(Copy, Clone, Debug)]
@@ -202,7 +205,7 @@ impl Token {
     }
 }
 
-pub fn verify(source: &str) {
+pub fn tokenize(source: &str) -> Vec<TokenKind> {
     let mut result = Vec::new();
     let mut lexer = Lexer::new(source);
     loop {
@@ -217,5 +220,5 @@ pub fn verify(source: &str) {
             _ => result.push(token.kind),
         }
     }
-    println!("{result:#?}")
+    result
 }

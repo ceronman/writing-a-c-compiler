@@ -7,6 +7,9 @@ mod symbol;
 mod tacky;
 mod tempfile;
 
+#[cfg(feature = "test_gen")]
+mod testgen;
+
 use crate::tempfile::TempPath;
 use anyhow::{bail, Result};
 use std::fs;
@@ -20,7 +23,10 @@ fn main() -> Result<()> {
 
     let source = fs::read_to_string(preprocessed.as_path())?;
     if let Flag::Lex = options.flag {
-        lexer::verify(&source);
+        #[cfg(feature = "test_gen")]
+        testgen::generate_lexer_tests(&options.filename, &source)?;
+        let tokens = lexer::tokenize(&source);
+        println!("{tokens:#?}");
         return Ok(());
     }
 
