@@ -13,9 +13,16 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
         .unwrap()
         .parent()
         .unwrap()
-        .join("generated_lexer_tests.rs");
-    let name = path.file_stem().unwrap().to_str().unwrap();
-    let mut file = OpenOptions::new().create(true).append(true).open(output)?;
+        .join("src/lexer/test.rs");
+    if !output.exists() {
+        let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
+        writeln!(file, "use crate::lexer::tokenize;")?;
+        writeln!(file, "use crate::lexer::TokenKind::*;")?;
+    }
+    let components: Vec<_> = path.components().map(|c| c.as_os_str().to_str().unwrap().to_owned()).collect();
+    let components = &components[(components.len() - 3)..];
+    let name = components.join("_").strip_suffix(".c").unwrap().to_owned();
+    let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
     let indented = source
         .lines()
         .map(|l| format!("        {l}"))
@@ -37,7 +44,7 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
         Err(_) => {
             writeln!(file, "#[test]")?;
             writeln!(file, "#[should_panic]")?;
-            writeln!(file, "fn test_failure_{name}() {{")?;
+            writeln!(file, "fn test_{name}() {{")?;
             writeln!(file, "    tokenize(r#\"")?;
             writeln!(file, "{indented}")?;
             writeln!(file, "    \"#);")?;

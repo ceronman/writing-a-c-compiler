@@ -3,7 +3,7 @@ use crate::lexer::TokenKind::*;
 
 #[test]
 #[should_panic]
-fn test_failure_at_sign() {
+fn test_chapter_1_invalid_lex_at_sign() {
     tokenize(
         r#"
         int main(void) {
@@ -15,7 +15,7 @@ fn test_failure_at_sign() {
 
 #[test]
 #[should_panic]
-fn test_failure_backslash() {
+fn test_chapter_1_invalid_lex_backslash() {
     tokenize(
         r#"
         
@@ -26,7 +26,7 @@ fn test_failure_backslash() {
 
 #[test]
 #[should_panic]
-fn test_failure_backtick() {
+fn test_chapter_1_invalid_lex_backtick() {
     tokenize(
         r#"
         
@@ -37,7 +37,7 @@ fn test_failure_backtick() {
 
 #[test]
 #[should_panic]
-fn test_failure_invalid_identifier() {
+fn test_chapter_1_invalid_lex_invalid_identifier() {
     tokenize(
         r#"
         
@@ -50,7 +50,7 @@ fn test_failure_invalid_identifier() {
 
 #[test]
 #[should_panic]
-fn test_failure_invalid_identifier_2() {
+fn test_chapter_1_invalid_lex_invalid_identifier_2() {
     tokenize(
         r#"
         int main(void)
@@ -62,7 +62,7 @@ fn test_failure_invalid_identifier_2() {
 }
 
 #[test]
-fn test_end_before_expr() {
+fn test_chapter_1_invalid_parse_end_before_expr() {
     let src = r#"
         int main(void) {
             return
@@ -74,7 +74,7 @@ fn test_end_before_expr() {
 }
 
 #[test]
-fn test_extra_junk() {
+fn test_chapter_1_invalid_parse_extra_junk() {
     let src = r#"
         int main(void)
         {
@@ -90,7 +90,7 @@ fn test_extra_junk() {
 }
 
 #[test]
-fn test_invalid_function_name() {
+fn test_chapter_1_invalid_parse_invalid_function_name() {
     let src = r#"
         
         int 3 (void) {
@@ -105,7 +105,7 @@ fn test_invalid_function_name() {
 }
 
 #[test]
-fn test_keyword_wrong_case() {
+fn test_chapter_1_invalid_parse_keyword_wrong_case() {
     let src = r#"
         int main(void) {
             RETURN 0;
@@ -119,7 +119,7 @@ fn test_keyword_wrong_case() {
 }
 
 #[test]
-fn test_missing_type() {
+fn test_chapter_1_invalid_parse_missing_type() {
     let src = r#"
         main(void) {
             return 0;
@@ -132,7 +132,7 @@ fn test_missing_type() {
 }
 
 #[test]
-fn test_misspelled_keyword() {
+fn test_chapter_1_invalid_parse_misspelled_keyword() {
     let src = r#"
         int main(void) {
             returns 0;
@@ -146,7 +146,7 @@ fn test_misspelled_keyword() {
 }
 
 #[test]
-fn test_no_semicolon() {
+fn test_chapter_1_invalid_parse_no_semicolon() {
     let src = r#"
         int main (void) {
             return 0
@@ -159,7 +159,7 @@ fn test_no_semicolon() {
 }
 
 #[test]
-fn test_not_expression() {
+fn test_chapter_1_invalid_parse_not_expression() {
     let src = r#"
         int main(void) {
             return int;
@@ -172,7 +172,7 @@ fn test_not_expression() {
 }
 
 #[test]
-fn test_space_in_keyword() {
+fn test_chapter_1_invalid_parse_space_in_keyword() {
     let src = r#"
         int main(void){
             retur n 0;
@@ -186,7 +186,7 @@ fn test_space_in_keyword() {
 }
 
 #[test]
-fn test_switched_parens() {
+fn test_chapter_1_invalid_parse_switched_parens() {
     let src = r#"
         int main )( {
             return 0;
@@ -199,7 +199,7 @@ fn test_switched_parens() {
 }
 
 #[test]
-fn test_unclosed_brace() {
+fn test_chapter_1_invalid_parse_unclosed_brace() {
     let src = r#"
         int main(void) {
             return 0;
@@ -211,7 +211,7 @@ fn test_unclosed_brace() {
 }
 
 #[test]
-fn test_unclosed_paren() {
+fn test_chapter_1_invalid_parse_unclosed_paren() {
     let src = r#"
         int main( {
             return 0;
@@ -224,7 +224,7 @@ fn test_unclosed_paren() {
 }
 
 #[test]
-fn test_multi_digit() {
+fn test_chapter_1_valid_multi_digit() {
     let src = r#"
         int main(void) {
             return 100;
@@ -238,7 +238,7 @@ fn test_multi_digit() {
 }
 
 #[test]
-fn test_newlines() {
+fn test_chapter_1_valid_newlines() {
     let src = r#"
         int
         main
@@ -259,7 +259,7 @@ fn test_newlines() {
 }
 
 #[test]
-fn test_no_newlines() {
+fn test_chapter_1_valid_no_newlines() {
     let src = r#"
         int main(void){return 0;}
     "#;
@@ -271,7 +271,7 @@ fn test_no_newlines() {
 }
 
 #[test]
-fn test_return_0() {
+fn test_chapter_1_valid_return_0() {
     let src = r#"
         int main(void) {
             return 0;
@@ -285,7 +285,7 @@ fn test_return_0() {
 }
 
 #[test]
-fn test_return_2() {
+fn test_chapter_1_valid_return_2() {
     let src = r#"
         int main(void) {
             return 2;
@@ -299,7 +299,7 @@ fn test_return_2() {
 }
 
 #[test]
-fn test_spaces() {
+fn test_chapter_1_valid_spaces() {
     let src = r#"
            int main ( void) { return 0 ; }
     "#;
@@ -311,7 +311,7 @@ fn test_spaces() {
 }
 
 #[test]
-fn test_tabs() {
+fn test_chapter_1_valid_tabs() {
     let src = r#"
         int main ( void) { return 0 ; }
     "#;
@@ -323,7 +323,7 @@ fn test_tabs() {
 }
 
 #[test]
-fn test_extra_paren() {
+fn test_chapter_2_invalid_parse_extra_paren() {
     let src = r#"
         int main(void)
         {
@@ -338,7 +338,7 @@ fn test_extra_paren() {
 }
 
 #[test]
-fn test_missing_const() {
+fn test_chapter_2_invalid_parse_missing_const() {
     let src = r#"
         int main(void) {
             return ~;
@@ -352,7 +352,7 @@ fn test_missing_const() {
 }
 
 #[test]
-fn test_missing_semicolon() {
+fn test_chapter_2_invalid_parse_missing_semicolon() {
     let src = r#"
         int main(void) {
             return -5
@@ -366,7 +366,7 @@ fn test_missing_semicolon() {
 }
 
 #[test]
-fn test_nested_missing_const() {
+fn test_chapter_2_invalid_parse_nested_missing_const() {
     let src = r#"
         int main(void)
         {
@@ -381,7 +381,7 @@ fn test_nested_missing_const() {
 }
 
 #[test]
-fn test_parenthesize_operand() {
+fn test_chapter_2_invalid_parse_parenthesize_operand() {
     let src = r#"
         int main(void) {
             return (-)3;
@@ -395,7 +395,7 @@ fn test_parenthesize_operand() {
 }
 
 #[test]
-fn test_unclosed_paren_2() {
+fn test_chapter_2_invalid_parse_unclosed_paren() {
     let src = r#"
         int main(void)
         {
@@ -410,7 +410,7 @@ fn test_unclosed_paren_2() {
 }
 
 #[test]
-fn test_wrong_order() {
+fn test_chapter_2_invalid_parse_wrong_order() {
     let src = r#"
         int main(void) {
             return 4-;
@@ -424,7 +424,7 @@ fn test_wrong_order() {
 }
 
 #[test]
-fn test_bitwise() {
+fn test_chapter_2_valid_bitwise() {
     let src = r#"
         int main(void) {
             return ~12;
@@ -438,7 +438,7 @@ fn test_bitwise() {
 }
 
 #[test]
-fn test_bitwise_int_min() {
+fn test_chapter_2_valid_bitwise_int_min() {
     let src = r#"
         int main(void) {
             return ~-2147483647;
@@ -452,7 +452,7 @@ fn test_bitwise_int_min() {
 }
 
 #[test]
-fn test_bitwise_zero() {
+fn test_chapter_2_valid_bitwise_zero() {
     let src = r#"
         int main(void) {
             return ~0;
@@ -466,7 +466,7 @@ fn test_bitwise_zero() {
 }
 
 #[test]
-fn test_neg() {
+fn test_chapter_2_valid_neg() {
     let src = r#"
         int main(void) {
             return -5;
@@ -480,7 +480,7 @@ fn test_neg() {
 }
 
 #[test]
-fn test_neg_zero() {
+fn test_chapter_2_valid_neg_zero() {
     let src = r#"
         int main(void) {
             return -0;
@@ -494,7 +494,7 @@ fn test_neg_zero() {
 }
 
 #[test]
-fn test_negate_int_max() {
+fn test_chapter_2_valid_negate_int_max() {
     let src = r#"
         int main(void) {
             return -2147483647;
@@ -508,7 +508,7 @@ fn test_negate_int_max() {
 }
 
 #[test]
-fn test_nested_ops() {
+fn test_chapter_2_valid_nested_ops() {
     let src = r#"
         int main(void) {
             return ~-3;
@@ -522,7 +522,7 @@ fn test_nested_ops() {
 }
 
 #[test]
-fn test_nested_ops_2() {
+fn test_chapter_2_valid_nested_ops_2() {
     let src = r#"
         int main(void) {
             return -~0;
@@ -536,7 +536,7 @@ fn test_nested_ops_2() {
 }
 
 #[test]
-fn test_parens() {
+fn test_chapter_2_valid_parens() {
     let src = r#"
         int main(void) {
             return (-2);
@@ -550,7 +550,7 @@ fn test_parens() {
 }
 
 #[test]
-fn test_parens_2() {
+fn test_chapter_2_valid_parens_2() {
     let src = r#"
         int main(void) {
             return ~(2);
@@ -564,7 +564,7 @@ fn test_parens_2() {
 }
 
 #[test]
-fn test_parens_3() {
+fn test_chapter_2_valid_parens_3() {
     let src = r#"
         int main(void) {
             return -(-4);
@@ -578,7 +578,7 @@ fn test_parens_3() {
 }
 
 #[test]
-fn test_redundant_parens() {
+fn test_chapter_2_valid_redundant_parens() {
     let src = r#"
         int main(void)
         {
@@ -594,7 +594,7 @@ fn test_redundant_parens() {
 }
 
 #[test]
-fn test_double_operation() {
+fn test_chapter_3_invalid_parse_double_operation() {
     let src = r#"
         int main(void) {
             return 1 * / 2;
@@ -608,7 +608,7 @@ fn test_double_operation() {
 }
 
 #[test]
-fn test_imbalanced_paren() {
+fn test_chapter_3_invalid_parse_imbalanced_paren() {
     let src = r#"
         int main(void) {
             return 1 + (2;
@@ -622,7 +622,7 @@ fn test_imbalanced_paren() {
 }
 
 #[test]
-fn test_malformed_paren() {
+fn test_chapter_3_invalid_parse_malformed_paren() {
     let src = r#"
         int main(void) {
             return 2 (- 3);
@@ -636,7 +636,7 @@ fn test_malformed_paren() {
 }
 
 #[test]
-fn test_misplaced_semicolon() {
+fn test_chapter_3_invalid_parse_misplaced_semicolon() {
     let src = r#"
         int main(void) {
             return 1 + (2;)
@@ -650,7 +650,7 @@ fn test_misplaced_semicolon() {
 }
 
 #[test]
-fn test_missing_first_op() {
+fn test_chapter_3_invalid_parse_missing_first_op() {
     let src = r#"
         int main(void) {
             return /3;
@@ -664,7 +664,7 @@ fn test_missing_first_op() {
 }
 
 #[test]
-fn test_missing_open_paren() {
+fn test_chapter_3_invalid_parse_missing_open_paren() {
     let src = r#"
         int main(void) {
             return 1 + 2);
@@ -678,7 +678,7 @@ fn test_missing_open_paren() {
 }
 
 #[test]
-fn test_missing_second_op() {
+fn test_chapter_3_invalid_parse_missing_second_op() {
     let src = r#"
         int main(void) {
             return 1 + ;
@@ -692,7 +692,7 @@ fn test_missing_second_op() {
 }
 
 #[test]
-fn test_no_semicolon_2() {
+fn test_chapter_3_invalid_parse_no_semicolon() {
     let src = r#"
         int main(void) {
             return 2*2
@@ -706,7 +706,7 @@ fn test_no_semicolon_2() {
 }
 
 #[test]
-fn test_add() {
+fn test_chapter_3_valid_add() {
     let src = r#"
         int main(void) {
             return 1 + 2;
@@ -720,7 +720,7 @@ fn test_add() {
 }
 
 #[test]
-fn test_associativity() {
+fn test_chapter_3_valid_associativity() {
     let src = r#"
         int main(void) {
             return 1 - 2 - 3;
@@ -734,7 +734,7 @@ fn test_associativity() {
 }
 
 #[test]
-fn test_associativity_2() {
+fn test_chapter_3_valid_associativity_2() {
     let src = r#"
         int main(void) {
             return 6 / 3 / 2;
@@ -748,7 +748,7 @@ fn test_associativity_2() {
 }
 
 #[test]
-fn test_associativity_3() {
+fn test_chapter_3_valid_associativity_3() {
     let src = r#"
         int main(void) {
             return (3 / 2 * 4) + (5 - 4 + 3);
@@ -763,7 +763,7 @@ fn test_associativity_3() {
 }
 
 #[test]
-fn test_associativity_and_precedence() {
+fn test_chapter_3_valid_associativity_and_precedence() {
     let src = r#"
         int main(void) {
             return 5 * 4 / 2 -
@@ -779,7 +779,7 @@ fn test_associativity_and_precedence() {
 }
 
 #[test]
-fn test_div() {
+fn test_chapter_3_valid_div() {
     let src = r#"
         int main(void) {
             return 4 / 2;
@@ -793,7 +793,7 @@ fn test_div() {
 }
 
 #[test]
-fn test_div_neg() {
+fn test_chapter_3_valid_div_neg() {
     let src = r#"
         int main(void) {
             return (-12) / 5;
@@ -807,7 +807,7 @@ fn test_div_neg() {
 }
 
 #[test]
-fn test_mod() {
+fn test_chapter_3_valid_mod() {
     let src = r#"
         int main(void) {
             return 4 % 2;
@@ -821,7 +821,7 @@ fn test_mod() {
 }
 
 #[test]
-fn test_mult() {
+fn test_chapter_3_valid_mult() {
     let src = r#"
         int main(void) {
             return 2 * 3;
@@ -835,7 +835,7 @@ fn test_mult() {
 }
 
 #[test]
-fn test_parens_4() {
+fn test_chapter_3_valid_parens() {
     let src = r#"
         int main(void) {
             return 2 * (3 + 4);
@@ -849,7 +849,7 @@ fn test_parens_4() {
 }
 
 #[test]
-fn test_precedence() {
+fn test_chapter_3_valid_precedence() {
     let src = r#"
         int main(void) {
             return 2 + 3 * 4;
@@ -863,7 +863,7 @@ fn test_precedence() {
 }
 
 #[test]
-fn test_sub() {
+fn test_chapter_3_valid_sub() {
     let src = r#"
         int main(void) {
             return 1 - 2;
@@ -877,7 +877,7 @@ fn test_sub() {
 }
 
 #[test]
-fn test_sub_neg() {
+fn test_chapter_3_valid_sub_neg() {
     let src = r#"
         int main(void) {
             return 2- -1;
@@ -891,7 +891,7 @@ fn test_sub_neg() {
 }
 
 #[test]
-fn test_unop_add() {
+fn test_chapter_3_valid_unop_add() {
     let src = r#"
         int main(void) {
             return ~2 + 3;
@@ -905,7 +905,7 @@ fn test_unop_add() {
 }
 
 #[test]
-fn test_unop_parens() {
+fn test_chapter_3_valid_unop_parens() {
     let src = r#"
         int main(void) {
             return ~(1 + 1);
@@ -914,6 +914,754 @@ fn test_unop_parens() {
     let expected = vec![
         Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Tilde, OpenParen,
         Constant, Plus, Constant, CloseParen, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_invalid_parse_missing_const() {
+    let src = r#"
+        int main(void)
+        {
+            10 <= !;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Constant, LessEqual, Bang,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_invalid_parse_missing_first_op() {
+    let src = r#"
+        int main(void) {
+            return <= 2;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, LessEqual, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_invalid_parse_missing_operand() {
+    let src = r#"
+        int main(void) {
+            return 1 < > 3;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, Less, Greater,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_invalid_parse_missing_second_op() {
+    let src = r#"
+        int main(void) {
+            return 2 && ~;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        Constant,
+        AmpersandAmpersand,
+        Tilde,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_invalid_parse_missing_semicolon() {
+    let src = r#"
+        int main(void) {
+            return 1 || 2
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, PipePipe,
+        Constant, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_invalid_parse_unary_missing_semicolon() {
+    let src = r#"
+        int main(void)
+        {
+            return !10
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Bang, Constant, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_and_false() {
+    let src = r#"
+        int main(void) {
+            return (10 && 0) + (0 && 4) + (0 && 0);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        OpenParen,
+        Constant,
+        AmpersandAmpersand,
+        Constant,
+        CloseParen,
+        Plus,
+        OpenParen,
+        Constant,
+        AmpersandAmpersand,
+        Constant,
+        CloseParen,
+        Plus,
+        OpenParen,
+        Constant,
+        AmpersandAmpersand,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_and_short_circuit() {
+    let src = r#"
+        int main(void) {
+            return 0 && (1 / 0);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        Constant,
+        AmpersandAmpersand,
+        OpenParen,
+        Constant,
+        Slash,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_and_true() {
+    let src = r#"
+        int main(void) {
+            return 1 && -1;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        Constant,
+        AmpersandAmpersand,
+        Minus,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_associativity() {
+    let src = r#"
+        int main(void) {
+            return 5 >= 0 > 1 <= 0;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        Constant,
+        GreaterEqual,
+        Constant,
+        Greater,
+        Constant,
+        LessEqual,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_compare_arithmetic_results() {
+    let src = r#"
+        int main(void) {
+            return ~2 * -2 == 1 + 5;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Tilde, Constant, Star,
+        Minus, Constant, EqualEqual, Constant, Plus, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_eq_false() {
+    let src = r#"
+        int main(void) {
+            return 1 == 2;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, EqualEqual,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_eq_precedence() {
+    let src = r#"
+        int main(void) {
+            return 3 == 1 != 2;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, EqualEqual,
+        Constant, BangEqual, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_eq_true() {
+    let src = r#"
+        int main(void) {
+            return 1 == 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, EqualEqual,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_ge_false() {
+    let src = r#"
+        int main(void) {
+            return 1 >= 2;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        Constant,
+        GreaterEqual,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_ge_true() {
+    let src = r#"
+        int main(void) {
+            return (1 >= 1) + (1 >= -4);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        OpenParen,
+        Constant,
+        GreaterEqual,
+        Constant,
+        CloseParen,
+        Plus,
+        OpenParen,
+        Constant,
+        GreaterEqual,
+        Minus,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_gt_false() {
+    let src = r#"
+        int main(void) {
+            return (1 > 2) + (1 > 1);
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, OpenParen, Constant,
+        Greater, Constant, CloseParen, Plus, OpenParen, Constant, Greater, Constant, CloseParen,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_gt_true() {
+    let src = r#"
+        int main(void) {
+            return 15 > 10;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, Greater,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_le_false() {
+    let src = r#"
+        int main(void) {
+            return 1 <= -1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, LessEqual,
+        Minus, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_le_true() {
+    let src = r#"
+        int main(void) {
+            return (0 <= 2) + (0 <= 0);
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, OpenParen, Constant,
+        LessEqual, Constant, CloseParen, Plus, OpenParen, Constant, LessEqual, Constant,
+        CloseParen, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_lt_false() {
+    let src = r#"
+        int main(void) {
+            return 2 < 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, Less, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_lt_true() {
+    let src = r#"
+        int main(void) {
+            return 1 < 2;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, Less, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_multi_short_circuit() {
+    let src = r#"
+        int main(void) {
+            return 0 || 0 && (1 / 0);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        Constant,
+        PipePipe,
+        Constant,
+        AmpersandAmpersand,
+        OpenParen,
+        Constant,
+        Slash,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_ne_false() {
+    let src = r#"
+        int main(void) {
+            return 0 != 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, BangEqual,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_ne_true() {
+    let src = r#"
+        int main(void) {
+            return -1 != -2;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Minus, Constant,
+        BangEqual, Minus, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_nested_ops() {
+    let src = r#"
+        int main(void) {
+            return !-3;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Bang, Minus, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_not() {
+    let src = r#"
+        int main(void) {
+            return !5;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Bang, Constant, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_not_sum() {
+    let src = r#"
+        int main(void) {
+            return !(4-4);
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Bang, OpenParen, Constant,
+        Minus, Constant, CloseParen, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_not_sum_2() {
+    let src = r#"
+        int main(void) {
+            return !(3 - 44);
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Bang, OpenParen, Constant,
+        Minus, Constant, CloseParen, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_not_zero() {
+    let src = r#"
+        int main(void) {
+            return !0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Bang, Constant, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_operate_on_booleans() {
+    let src = r#"
+        int main(void) {
+            return ~(0 && 1) - -(4 || 3);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        Tilde,
+        OpenParen,
+        Constant,
+        AmpersandAmpersand,
+        Constant,
+        CloseParen,
+        Minus,
+        Minus,
+        OpenParen,
+        Constant,
+        PipePipe,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_or_false() {
+    let src = r#"
+        int main(void) {
+            return 0 || 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, PipePipe,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_or_short_circuit() {
+    let src = r#"
+        int main(void) {
+            return 1 || (1 / 0);
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, PipePipe,
+        OpenParen, Constant, Slash, Constant, CloseParen, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_or_true() {
+    let src = r#"
+        int main(void) {
+            return (4 || 0) + (0 || 3) + (5 || 5);
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, OpenParen, Constant,
+        PipePipe, Constant, CloseParen, Plus, OpenParen, Constant, PipePipe, Constant, CloseParen,
+        Plus, OpenParen, Constant, PipePipe, Constant, CloseParen, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_precedence() {
+    let src = r#"
+        int main(void) {
+            return 1 || 0 && 2;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        Constant,
+        PipePipe,
+        Constant,
+        AmpersandAmpersand,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_precedence_2() {
+    let src = r#"
+        int main(void) {
+            return (1 || 0) && 0;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        OpenParen,
+        Constant,
+        PipePipe,
+        Constant,
+        CloseParen,
+        AmpersandAmpersand,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_precedence_3() {
+    let src = r#"
+        int main(void) {
+            return 2 == 2 >= 0;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        Constant,
+        EqualEqual,
+        Constant,
+        GreaterEqual,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_precedence_4() {
+    let src = r#"
+        int main(void) {
+            return 2 == 2 || 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, EqualEqual,
+        Constant, PipePipe, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_4_valid_precedence_5() {
+    let src = r#"
+        int main(void) {
+            return (0 == 0 && 3 == 2 + 1 > 1) + 1;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Return,
+        OpenParen,
+        Constant,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Constant,
+        EqualEqual,
+        Constant,
+        Plus,
+        Constant,
+        Greater,
+        Constant,
+        CloseParen,
+        Plus,
+        Constant,
+        Semicolon,
+        CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);
 }
