@@ -28,7 +28,7 @@ pub enum TokenKind {
     Star,
     Slash,
     Percent,
-    
+
     Ampersand,
     AmpersandAmpersand,
     Pipe,
@@ -111,26 +111,34 @@ impl<'src> Lexer<'src> {
             '/' => TokenKind::Slash,
             '%' => TokenKind::Percent,
             '~' => TokenKind::Tilde,
-            '&' => if self.eat('&') {
-                TokenKind::AmpersandAmpersand
-            } else {
-                TokenKind::Ampersand
+            '&' => {
+                if self.eat('&') {
+                    TokenKind::AmpersandAmpersand
+                } else {
+                    TokenKind::Ampersand
+                }
             }
-            '|' => if self.eat('|') {
-                TokenKind::PipePipe
-            } else {
-                TokenKind::Pipe
+            '|' => {
+                if self.eat('|') {
+                    TokenKind::PipePipe
+                } else {
+                    TokenKind::Pipe
+                }
             }
             '^' => TokenKind::Circumflex,
-            '=' => if self.eat('=') {
-                TokenKind::EqualEqual
-            } else {
-                TokenKind::Equal
+            '=' => {
+                if self.eat('=') {
+                    TokenKind::EqualEqual
+                } else {
+                    TokenKind::Equal
+                }
             }
-            '!' => if self.eat('=') {
-                TokenKind::BangEqual
-            } else {
-                TokenKind::Bang
+            '!' => {
+                if self.eat('=') {
+                    TokenKind::BangEqual
+                } else {
+                    TokenKind::Bang
+                }
             }
             '>' => match self.peek() {
                 Some('>') => {

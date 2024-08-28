@@ -3,6 +3,7 @@ mod ast;
 mod emitter;
 mod lexer;
 mod parser;
+mod pretty;
 mod symbol;
 mod tacky;
 mod tempfile;
@@ -32,7 +33,7 @@ fn main() -> Result<()> {
 
     let ast = parser::parse(&source)?;
     if let Flag::Parse = options.flag {
-        println!("{ast:#?}");
+        pretty::print_program(&mut std::io::stdout(), &ast)?;
         return Ok(());
     }
 

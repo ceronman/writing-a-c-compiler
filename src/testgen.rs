@@ -19,7 +19,10 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
         writeln!(file, "use crate::lexer::tokenize;")?;
         writeln!(file, "use crate::lexer::TokenKind::*;")?;
     }
-    let components: Vec<_> = path.components().map(|c| c.as_os_str().to_str().unwrap().to_owned()).collect();
+    let components: Vec<_> = path
+        .components()
+        .map(|c| c.as_os_str().to_str().unwrap().to_owned())
+        .collect();
     let components = &components[(components.len() - 3)..];
     let name = components.join("_").strip_suffix(".c").unwrap().to_owned();
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
