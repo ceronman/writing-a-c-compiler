@@ -54,9 +54,9 @@ impl<'src> Parser<'src> {
     fn expression_precedence(&mut self, min_precedence: u8) -> Result<Expression> {
         let mut expr = match self.current.kind {
             TokenKind::Constant => self.int()?,
-            TokenKind::Minus | TokenKind::Tilde => Expression::Unary {
+            TokenKind::Minus | TokenKind::Tilde | TokenKind::Bang => Expression::Unary {
                 op: self.unary_op()?,
-                expr: self.expression_precedence(7)?.into(),
+                expr: self.expression_precedence(11)?.into(),
             },
             TokenKind::OpenParen => {
                 self.advance();
@@ -74,21 +74,29 @@ impl<'src> Parser<'src> {
         };
 
         loop {
-            let precedence = match self.current.kind {
-                TokenKind::Pipe => 1,
-                TokenKind::Circumflex => 2,
-                TokenKind::Ampersand => 3,
-                TokenKind::LessLess | TokenKind::GreaterGreater => 4,
-                TokenKind::Plus | TokenKind::Minus => 5,
-                TokenKind::Star | TokenKind::Slash | TokenKind::Percent => 6,
-                _ => break,
+            let Ok(op) = self.binary_op() else {
+                break;
+            };
+
+            use BinaryOp::*;
+            let precedence = match op {
+                Or => 1,
+                And => 2,
+                BinOr => 3,
+                BinXor => 4,
+                BinAnd => 5,
+                Equal | NotEqual => 6,
+                GreaterThan | GreaterOrEqualThan | LessThan | LessOrEqualThan => 7,
+                ShiftLeft | ShiftRight => 8,
+                Add | Subtract => 9,
+                Multiply | Divide | Reminder => 10,
             };
 
             if precedence < min_precedence {
                 break;
             }
             let left = expr;
-            let op = self.binary_op()?;
+            self.advance();
             let right = self.expression_precedence(precedence + 1)?;
 
             expr = Expression::Binary {
@@ -111,8 +119,16 @@ impl<'src> Parser<'src> {
             TokenKind::Ampersand => BinaryOp::BinAnd,
             TokenKind::Pipe => BinaryOp::BinOr,
             TokenKind::Circumflex => BinaryOp::BinXor,
+            TokenKind::Less => BinaryOp::LessThan,
+            TokenKind::LessEqual => BinaryOp::LessOrEqualThan,
             TokenKind::LessLess => BinaryOp::ShiftLeft,
+            TokenKind::Greater => BinaryOp::GreaterThan,
+            TokenKind::GreaterEqual => BinaryOp::GreaterOrEqualThan,
             TokenKind::GreaterGreater => BinaryOp::ShiftRight,
+            TokenKind::EqualEqual => BinaryOp::Equal,
+            TokenKind::BangEqual => BinaryOp::NotEqual,
+            TokenKind::AmpersandAmpersand => BinaryOp::And,
+            TokenKind::PipePipe => BinaryOp::Or,
 
             _ => {
                 return Err(anyhow!(
@@ -122,7 +138,6 @@ impl<'src> Parser<'src> {
                 ))
             }
         };
-        self.advance();
         Ok(op)
     }
 
@@ -130,6 +145,7 @@ impl<'src> Parser<'src> {
         let op = match self.current.kind {
             TokenKind::Minus => UnaryOp::Negate,
             TokenKind::Tilde => UnaryOp::Complement,
+            TokenKind::Bang => UnaryOp::Not,
             _ => {
                 return Err(anyhow!(
                     "Expected unary operator, but found '{}' at {:?}",

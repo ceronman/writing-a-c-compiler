@@ -92,6 +92,7 @@ impl Generator {
                 let op = match op {
                     ast::UnaryOp::Complement => UnaryOp::Complement,
                     ast::UnaryOp::Negate => UnaryOp::Negate,
+                    _ => todo!(),
                 };
                 self.instructions.push(Instruction::Unary {
                     op,
@@ -115,6 +116,7 @@ impl Generator {
                     ast::BinaryOp::BinXor => BinaryOp::BinXor,
                     ast::BinaryOp::ShiftLeft => BinaryOp::ShiftLeft,
                     ast::BinaryOp::ShiftRight => BinaryOp::ShiftRight,
+                    _ => todo!(),
                 };
                 self.instructions.push(Binary {
                     op,

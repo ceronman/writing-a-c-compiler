@@ -34,6 +34,7 @@ pub enum Expression {
 pub enum UnaryOp {
     Complement,
     Negate,
+    Not,
 }
 
 #[derive(Debug)]
@@ -48,4 +49,12 @@ pub enum BinaryOp {
     BinXor,
     ShiftLeft,
     ShiftRight,
+    And,
+    Or,
+    Equal,
+    NotEqual,
+    LessThan,
+    LessOrEqualThan,
+    GreaterThan,
+    GreaterOrEqualThan,
 }

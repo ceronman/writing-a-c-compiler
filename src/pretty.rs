@@ -19,7 +19,7 @@ fn print_statement(file: &mut impl Write, statement: &ast::Statement) -> Result<
     let ident = "    ".repeat(level);
     match statement {
         ast::Statement::Return { expr } => {
-            writeln!(file, "{ident}╰── return")?;
+            writeln!(file, "{ident}╰── Return")?;
             print_expression(file, expr, "╰──", level + 1, &[])?;
         }
     }
@@ -61,23 +61,34 @@ fn print_expression(
 }
 
 fn binary_op(op: &ast::BinaryOp) -> &str {
+    use ast::BinaryOp::*;
     match op {
-        ast::BinaryOp::Add => "+",
-        ast::BinaryOp::Subtract => "-",
-        ast::BinaryOp::Multiply => "*",
-        ast::BinaryOp::Divide => "/",
-        ast::BinaryOp::Reminder => "%",
-        ast::BinaryOp::BinAnd => "&",
-        ast::BinaryOp::BinOr => "|",
-        ast::BinaryOp::BinXor => "^",
-        ast::BinaryOp::ShiftLeft => "<<",
-        ast::BinaryOp::ShiftRight => ">>",
+        Add => "+",
+        Subtract => "-",
+        Multiply => "*",
+        Divide => "/",
+        Reminder => "%",
+        BinAnd => "&",
+        BinOr => "|",
+        BinXor => "^",
+        ShiftLeft => "<<",
+        ShiftRight => ">>",
+        And => "&&",
+        Or => "||",
+        Equal => "==",
+        NotEqual => "!=",
+        LessThan => "<",
+        LessOrEqualThan => "<=",
+        GreaterThan => ">",
+        GreaterOrEqualThan => ">=",
     }
 }
 
 fn unary_op(op: &ast::UnaryOp) -> &str {
+    use ast::UnaryOp::*;
     match op {
-        ast::UnaryOp::Complement => "~",
-        ast::UnaryOp::Negate => "-",
+        Complement => "~",
+        Negate => "-",
+        Not => "!",
     }
 }
