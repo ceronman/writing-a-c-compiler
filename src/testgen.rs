@@ -1,9 +1,10 @@
 use std::fs::OpenOptions;
 use std::io::Write;
-use std::panic;
 use std::path::{Path, PathBuf};
+use std::{fs, panic};
 
-use crate::lexer;
+use crate::parser::parse;
+use crate::{lexer, pretty};
 use anyhow::Result;
 
 pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
@@ -14,7 +15,7 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
         .parent()
         .unwrap()
         .join("src/lexer/test.rs");
-    if !output.exists() {
+    if fs::read_to_string(&output)?.is_empty() {
         let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
         writeln!(file, "use crate::lexer::tokenize;")?;
         writeln!(file, "use crate::lexer::TokenKind::*;")?;
@@ -56,4 +57,90 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
     }
 
     Ok(())
+}
+
+pub fn generate_parser_tests(path: &Path, source: &str) -> Result<()> {
+    let output = PathBuf::from(file!());
+    let output = output
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join("src/parser/test.rs");
+    if fs::read_to_string(&output)?.is_empty() {
+        let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
+        writeln!(
+            file,
+            r#"
+use crate::parser::parse;
+use crate::pretty;
+
+fn dump_ast(src: &str) -> String {{
+    let ast = parse(src).unwrap();
+    let mut result = Vec::new();
+    pretty::print_program(&mut result, &ast).unwrap();
+    String::from_utf8(result)
+        .unwrap()
+        .lines()
+        .map(|l| format!("        {{l}}") )
+        .collect::<Vec<_>>()
+        .join("\n")
+}}
+        "#
+        )?;
+    }
+    let components: Vec<_> = path
+        .components()
+        .map(|c| c.as_os_str().to_str().unwrap().to_owned())
+        .collect();
+    let components = &components[(components.len() - 3)..];
+    let name = components.join("_").strip_suffix(".c").unwrap().to_owned();
+    let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
+    let indented = source
+        .lines()
+        .map(|l| format!("        {l}"))
+        .collect::<Vec<_>>()
+        .join("\n");
+    writeln!(file)?;
+    let result = panic::catch_unwind(|| dump_ast(source));
+    match result {
+        Ok(program) => {
+            writeln!(file, "#[test]")?;
+            writeln!(file, "fn test_{name}() {{")?;
+            writeln!(file, "    let src = r#\"")?;
+            writeln!(file, "{indented}")?;
+            writeln!(file, "    \"#;")?;
+            writeln!(file, "    let expected = r#\"")?;
+            writeln!(file, "{program}")?;
+            writeln!(file, "    \"#;")?;
+            writeln!(
+                file,
+                "    assert_eq!(dump_ast(src).trim(), expected.trim());"
+            )?;
+            writeln!(file, "}}")?;
+        }
+        Err(_) => {
+            writeln!(file, "#[test]")?;
+            writeln!(file, "#[should_panic]")?;
+            writeln!(file, "fn test_{name}() {{")?;
+            writeln!(file, "    dump_ast(r#\"")?;
+            writeln!(file, "{indented}")?;
+            writeln!(file, "    \"#);")?;
+            writeln!(file, "}}")?;
+        }
+    }
+
+    Ok(())
+}
+
+fn dump_ast(src: &str) -> String {
+    let ast = parse(src).unwrap();
+    let mut result = Vec::new();
+    pretty::print_program(&mut result, &ast).unwrap();
+    String::from_utf8(result)
+        .unwrap()
+        .lines()
+        .map(|l| format!("        {l}"))
+        .collect::<Vec<_>>()
+        .join("\n")
 }

@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod test;
+
 use crate::ast::{BinaryOp, Expression, Function, Program, Statement, UnaryOp};
 use crate::lexer::{Lexer, Token, TokenKind};
 

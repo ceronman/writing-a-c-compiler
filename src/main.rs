@@ -31,6 +31,12 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
+    #[cfg(feature = "test_gen")]
+    if let Flag::Parse = options.flag {
+        lexer::tokenize(&source);
+        testgen::generate_parser_tests(&options.filename, &source)?;
+    }
+
     let ast = parser::parse(&source)?;
     if let Flag::Parse = options.flag {
         pretty::print_program(&mut std::io::stdout(), &ast)?;
