@@ -183,10 +183,9 @@ impl<'src> Lexer<'src> {
         while let Some('0'..='9') = self.peek() {
             self.advance();
         }
-        if self.peek().unwrap().is_alphabetic() {
-            TokenKind::Error
-        } else {
-            TokenKind::Constant
+        match self.peek() {
+            Some(c) if c.is_alphanumeric() => TokenKind::Error,
+            _ => TokenKind::Constant,
         }
     }
 
