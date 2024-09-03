@@ -79,12 +79,11 @@ fn dump_ast(src: &str) -> String {{
     let ast = parse(src).unwrap();
     let mut result = Vec::new();
     pretty::print_program(&mut result, &ast).unwrap();
-    String::from_utf8(result)
-        .unwrap()
-        .lines()
-        .map(|l| format!("        {{l}}") )
-        .collect::<Vec<_>>()
-        .join("\n")
+    String::from_utf8(result).unwrap().trim().into()q
+}}
+
+fn dedent(tree: &str) -> String {{
+    tree.trim().lines().map(|l| l.strip_prefix("        ").unwrap_or(l)).collect::<Vec<_>>().join("\n")
 }}
         "#
         )?;
@@ -96,11 +95,7 @@ fn dump_ast(src: &str) -> String {{
     let components = &components[(components.len() - 3)..];
     let name = components.join("_").strip_suffix(".c").unwrap().to_owned();
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
-    let indented = source
-        .lines()
-        .map(|l| format!("        {l}"))
-        .collect::<Vec<_>>()
-        .join("\n");
+    let indented = indent(source);
     writeln!(file)?;
     let result = panic::catch_unwind(|| dump_ast(source));
     match result {
@@ -115,7 +110,7 @@ fn dump_ast(src: &str) -> String {{
             writeln!(file, "    \"#;")?;
             writeln!(
                 file,
-                "    assert_eq!(dump_ast(src).trim(), expected.trim());"
+                "    assert_eq!(dump_ast(src), dedent(expected));"
             )?;
             writeln!(file, "}}")?;
         }
@@ -131,6 +126,14 @@ fn dump_ast(src: &str) -> String {{
     }
 
     Ok(())
+}
+
+fn indent(s: &str) -> String {
+    s
+        .lines()
+        .map(|l| format!("        {l}"))
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 fn dump_ast(src: &str) -> String {

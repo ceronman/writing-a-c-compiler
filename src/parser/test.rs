@@ -5,10 +5,13 @@ fn dump_ast(src: &str) -> String {
     let ast = parse(src).unwrap();
     let mut result = Vec::new();
     pretty::print_program(&mut result, &ast).unwrap();
-    String::from_utf8(result)
-        .unwrap()
+    String::from_utf8(result).unwrap().trim().into()
+}
+
+fn dedent(tree: &str) -> String {
+    tree.trim()
         .lines()
-        .map(|l| format!("        {l}"))
+        .map(|l| l.strip_prefix("        ").unwrap_or(l))
         .collect::<Vec<_>>()
         .join("\n")
 }
@@ -171,7 +174,7 @@ fn test_chapter_1_valid_multi_digit() {
             ╰── Return
                 ╰── Constant [100]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -194,7 +197,7 @@ fn test_chapter_1_valid_newlines() {
             ╰── Return
                 ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -208,7 +211,7 @@ fn test_chapter_1_valid_no_newlines() {
             ╰── Return
                 ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -224,7 +227,7 @@ fn test_chapter_1_valid_return_0() {
             ╰── Return
                 ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -240,7 +243,7 @@ fn test_chapter_1_valid_return_2() {
             ╰── Return
                 ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -254,7 +257,7 @@ fn test_chapter_1_valid_spaces() {
             ╰── Return
                 ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -268,7 +271,7 @@ fn test_chapter_1_valid_tabs() {
             ╰── Return
                 ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -372,7 +375,7 @@ fn test_chapter_2_valid_bitwise() {
                 ╰── Unary [~]
                     ╰── Constant [12]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -390,7 +393,7 @@ fn test_chapter_2_valid_bitwise_int_min() {
                     ╰── Unary [-]
                         ╰── Constant [2147483647]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -407,7 +410,7 @@ fn test_chapter_2_valid_bitwise_zero() {
                 ╰── Unary [~]
                     ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -424,7 +427,7 @@ fn test_chapter_2_valid_neg() {
                 ╰── Unary [-]
                     ╰── Constant [5]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -441,7 +444,7 @@ fn test_chapter_2_valid_neg_zero() {
                 ╰── Unary [-]
                     ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -458,7 +461,7 @@ fn test_chapter_2_valid_negate_int_max() {
                 ╰── Unary [-]
                     ╰── Constant [2147483647]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -476,7 +479,7 @@ fn test_chapter_2_valid_nested_ops() {
                     ╰── Unary [-]
                         ╰── Constant [3]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -494,7 +497,7 @@ fn test_chapter_2_valid_nested_ops_2() {
                     ╰── Unary [~]
                         ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -511,7 +514,7 @@ fn test_chapter_2_valid_parens() {
                 ╰── Unary [-]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -528,7 +531,7 @@ fn test_chapter_2_valid_parens_2() {
                 ╰── Unary [~]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -546,7 +549,7 @@ fn test_chapter_2_valid_parens_3() {
                     ╰── Unary [-]
                         ╰── Constant [4]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -564,7 +567,7 @@ fn test_chapter_2_valid_redundant_parens() {
                 ╰── Unary [-]
                     ╰── Constant [10]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -678,7 +681,7 @@ fn test_chapter_3_valid_add() {
                     ├── Constant [1]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -698,7 +701,7 @@ fn test_chapter_3_valid_associativity() {
                     │   ╰── Constant [2]
                     ╰── Constant [3]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -718,7 +721,7 @@ fn test_chapter_3_valid_associativity_2() {
                     │   ╰── Constant [3]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -744,7 +747,7 @@ fn test_chapter_3_valid_associativity_3() {
                         │   ╰── Constant [4]
                         ╰── Constant [3]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -771,7 +774,7 @@ fn test_chapter_3_valid_associativity_and_precedence() {
                             ├── Constant [2]
                             ╰── Constant [1]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -789,7 +792,7 @@ fn test_chapter_3_valid_div() {
                     ├── Constant [4]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -808,7 +811,7 @@ fn test_chapter_3_valid_div_neg() {
                     │   ╰── Constant [12]
                     ╰── Constant [5]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -826,7 +829,7 @@ fn test_chapter_3_valid_mod() {
                     ├── Constant [4]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -844,7 +847,7 @@ fn test_chapter_3_valid_mult() {
                     ├── Constant [2]
                     ╰── Constant [3]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -864,7 +867,7 @@ fn test_chapter_3_valid_parens() {
                         ├── Constant [3]
                         ╰── Constant [4]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -884,7 +887,7 @@ fn test_chapter_3_valid_precedence() {
                         ├── Constant [3]
                         ╰── Constant [4]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -902,7 +905,7 @@ fn test_chapter_3_valid_sub() {
                     ├── Constant [1]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -921,7 +924,7 @@ fn test_chapter_3_valid_sub_neg() {
                     ╰── Unary [-]
                         ╰── Constant [1]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -940,7 +943,7 @@ fn test_chapter_3_valid_unop_add() {
                     │   ╰── Constant [2]
                     ╰── Constant [3]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -959,7 +962,7 @@ fn test_chapter_3_valid_unop_parens() {
                         ├── Constant [1]
                         ╰── Constant [1]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1059,7 +1062,7 @@ fn test_chapter_4_valid_and_false() {
                         ├── Constant [0]
                         ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1079,7 +1082,7 @@ fn test_chapter_4_valid_and_short_circuit() {
                         ├── Constant [1]
                         ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1098,7 +1101,7 @@ fn test_chapter_4_valid_and_true() {
                     ╰── Unary [-]
                         ╰── Constant [1]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1120,7 +1123,7 @@ fn test_chapter_4_valid_associativity() {
                     │   ╰── Constant [1]
                     ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1144,7 +1147,7 @@ fn test_chapter_4_valid_compare_arithmetic_results() {
                         ├── Constant [1]
                         ╰── Constant [5]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1162,7 +1165,7 @@ fn test_chapter_4_valid_eq_false() {
                     ├── Constant [1]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1182,7 +1185,7 @@ fn test_chapter_4_valid_eq_precedence() {
                     │   ╰── Constant [1]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1200,7 +1203,7 @@ fn test_chapter_4_valid_eq_true() {
                     ├── Constant [1]
                     ╰── Constant [1]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1218,7 +1221,7 @@ fn test_chapter_4_valid_ge_false() {
                     ├── Constant [1]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1241,7 +1244,7 @@ fn test_chapter_4_valid_ge_true() {
                         ╰── Unary [-]
                             ╰── Constant [4]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1263,7 +1266,7 @@ fn test_chapter_4_valid_gt_false() {
                         ├── Constant [1]
                         ╰── Constant [1]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1281,7 +1284,7 @@ fn test_chapter_4_valid_gt_true() {
                     ├── Constant [15]
                     ╰── Constant [10]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1300,7 +1303,7 @@ fn test_chapter_4_valid_le_false() {
                     ╰── Unary [-]
                         ╰── Constant [1]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1322,7 +1325,7 @@ fn test_chapter_4_valid_le_true() {
                         ├── Constant [0]
                         ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1340,7 +1343,7 @@ fn test_chapter_4_valid_lt_false() {
                     ├── Constant [2]
                     ╰── Constant [1]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1358,7 +1361,7 @@ fn test_chapter_4_valid_lt_true() {
                     ├── Constant [1]
                     ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1380,7 +1383,7 @@ fn test_chapter_4_valid_multi_short_circuit() {
                             ├── Constant [1]
                             ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1398,7 +1401,7 @@ fn test_chapter_4_valid_ne_false() {
                     ├── Constant [0]
                     ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1418,7 +1421,7 @@ fn test_chapter_4_valid_ne_true() {
                     ╰── Unary [-]
                         ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1436,7 +1439,7 @@ fn test_chapter_4_valid_nested_ops() {
                     ╰── Unary [-]
                         ╰── Constant [3]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1453,7 +1456,7 @@ fn test_chapter_4_valid_not() {
                 ╰── Unary [!]
                     ╰── Constant [5]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1472,7 +1475,7 @@ fn test_chapter_4_valid_not_sum() {
                         ├── Constant [4]
                         ╰── Constant [4]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1491,7 +1494,7 @@ fn test_chapter_4_valid_not_sum_2() {
                         ├── Constant [3]
                         ╰── Constant [44]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1508,7 +1511,7 @@ fn test_chapter_4_valid_not_zero() {
                 ╰── Unary [!]
                     ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1532,7 +1535,7 @@ fn test_chapter_4_valid_operate_on_booleans() {
                             ├── Constant [4]
                             ╰── Constant [3]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1550,7 +1553,7 @@ fn test_chapter_4_valid_or_false() {
                     ├── Constant [0]
                     ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1570,7 +1573,7 @@ fn test_chapter_4_valid_or_short_circuit() {
                         ├── Constant [1]
                         ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1596,7 +1599,7 @@ fn test_chapter_4_valid_or_true() {
                         ├── Constant [5]
                         ╰── Constant [5]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1616,7 +1619,7 @@ fn test_chapter_4_valid_precedence() {
                         ├── Constant [0]
                         ╰── Constant [2]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1636,7 +1639,7 @@ fn test_chapter_4_valid_precedence_2() {
                     │   ╰── Constant [0]
                     ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1656,7 +1659,7 @@ fn test_chapter_4_valid_precedence_3() {
                         ├── Constant [2]
                         ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1676,7 +1679,7 @@ fn test_chapter_4_valid_precedence_4() {
                     │   ╰── Constant [2]
                     ╰── Constant [0]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -1704,5 +1707,5 @@ fn test_chapter_4_valid_precedence_5() {
                     │           ╰── Constant [1]
                     ╰── Constant [1]
     "#;
-    assert_eq!(dump_ast(src).trim(), expected.trim());
+    assert_eq!(dump_ast(src), dedent(expected));
 }
