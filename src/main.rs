@@ -11,6 +11,7 @@ mod tempfile;
 #[cfg(feature = "test_gen")]
 mod testgen;
 
+use crate::pretty::pretty_print_ast;
 use crate::tempfile::TempPath;
 use anyhow::{bail, Result};
 use std::fs;
@@ -39,7 +40,7 @@ fn main() -> Result<()> {
 
     let ast = parser::parse(&source)?;
     if let Flag::Parse = options.flag {
-        pretty::print_program(&mut std::io::stdout(), &ast)?;
+        print!("{}", pretty_print_ast(&ast)?);
         return Ok(());
     }
 

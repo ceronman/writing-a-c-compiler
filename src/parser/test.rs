@@ -1,53 +1,47 @@
 use crate::parser::parse;
-use crate::pretty;
+use crate::pretty::{annotate, dedent, dump_ast, remove_annotation};
 
-fn dump_ast(src: &str) -> String {
-    let ast = parse(src).unwrap();
-    let mut result = Vec::new();
-    pretty::print_program(&mut result, &ast).unwrap();
-    String::from_utf8(result).unwrap().trim().into()
-}
-
-fn dedent(tree: &str) -> String {
-    tree.trim()
-        .lines()
-        .map(|l| l.strip_prefix("        ").unwrap_or(l))
-        .collect::<Vec<_>>()
-        .join("\n")
+fn assert_error(expected_annotated: &str) {
+    let clean_source = remove_annotation(expected_annotated);
+    let Err(error) = parse(&clean_source) else {
+        panic!("No error produced!")
+    };
+    let actual_annotated = annotate(&clean_source, &error);
+    assert_eq!(actual_annotated, expected_annotated);
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_end_before_expr() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return
-    "#,
+    
+// Expected expression, but found ''"#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_extra_junk() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void)
         {
             return 2;
         }
         foo
+      //^^^ Expected Eof, but found 'foo'
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_invalid_function_name() {
-    dump_ast(
+    assert_error(
         r#"
         
         int 3 (void) {
+          //^ Expected Identifier, but found '3'
             return 0;
         }
     "#,
@@ -55,23 +49,23 @@ fn test_chapter_1_invalid_parse_invalid_function_name() {
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_keyword_wrong_case() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             RETURN 0;
+          //^^^^^^ Expected Return, but found 'RETURN'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_missing_type() {
-    dump_ast(
+    assert_error(
         r#"
         main(void) {
+      //^^^^ Expected Int, but found 'main'
             return 0;
         }
     "#,
@@ -79,59 +73,59 @@ fn test_chapter_1_invalid_parse_missing_type() {
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_misspelled_keyword() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             returns 0;
+          //^^^^^^^ Expected Return, but found 'returns'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_no_semicolon() {
-    dump_ast(
+    assert_error(
         r#"
         int main (void) {
             return 0
         }
+      //^ Expected Semicolon, but found '}'
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_not_expression() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return int;
+                 //^^^ Expected expression, but found 'int'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_space_in_keyword() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void){
             retur n 0;
+          //^^^^^ Expected Return, but found 'retur'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_switched_parens() {
-    dump_ast(
+    assert_error(
         r#"
         int main )( {
+               //^ Expected OpenParen, but found ')'
             return 0;
         }
     "#,
@@ -139,22 +133,22 @@ fn test_chapter_1_invalid_parse_switched_parens() {
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_unclosed_brace() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 0;
-    "#,
+    
+// Expected CloseBrace, but found ''"#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_1_invalid_parse_unclosed_paren() {
-    dump_ast(
+    assert_error(
         r#"
         int main( {
+                //^ Expected Void, but found '{'
             return 0;
         }
     "#,
@@ -275,87 +269,87 @@ fn test_chapter_1_valid_tabs() {
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_2_invalid_parse_extra_paren() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void)
         {
             return (3));
+                    //^ Expected Semicolon, but found ')'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_2_invalid_parse_missing_const() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return ~;
+                  //^ Expected expression, but found ';'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_2_invalid_parse_missing_semicolon() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return -5
         }
+      //^ Expected Semicolon, but found '}'
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_2_invalid_parse_nested_missing_const() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void)
         {
             return -~;
+                   //^ Expected expression, but found ';'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_2_invalid_parse_parenthesize_operand() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return (-)3;
+                   //^ Expected expression, but found ')'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_2_invalid_parse_unclosed_paren() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void)
         {
             return (1;
+                   //^ Expected CloseParen, but found ';'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_2_invalid_parse_wrong_order() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 4-;
+                   //^ Expected expression, but found ';'
         }
     "#,
     );
@@ -571,97 +565,97 @@ fn test_chapter_2_valid_redundant_parens() {
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_3_invalid_parse_double_operation() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 1 * / 2;
+                     //^ Expected expression, but found '/'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_3_invalid_parse_imbalanced_paren() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 1 + (2;
+                       //^ Expected CloseParen, but found ';'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_3_invalid_parse_malformed_paren() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 2 (- 3);
+                   //^ Expected Semicolon, but found '('
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_3_invalid_parse_misplaced_semicolon() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 1 + (2;)
+                       //^ Expected CloseParen, but found ';'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_3_invalid_parse_missing_first_op() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return /3;
+                 //^ Expected expression, but found '/'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_3_invalid_parse_missing_open_paren() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 1 + 2);
+                      //^ Expected Semicolon, but found ')'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_3_invalid_parse_missing_second_op() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 1 + ;
+                     //^ Expected expression, but found ';'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_3_invalid_parse_no_semicolon() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 2*2
         }
+      //^ Expected Semicolon, but found '}'
     "#,
     );
 }
@@ -966,75 +960,75 @@ fn test_chapter_3_valid_unop_parens() {
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_4_invalid_parse_missing_const() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void)
         {
             10 <= !;
+          //^^ Expected Return, but found '10'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_4_invalid_parse_missing_first_op() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return <= 2;
+                 //^^ Expected expression, but found '<='
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_4_invalid_parse_missing_operand() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 1 < > 3;
+                     //^ Expected expression, but found '>'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_4_invalid_parse_missing_second_op() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 2 && ~;
+                       //^ Expected expression, but found ';'
         }
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_4_invalid_parse_missing_semicolon() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void) {
             return 1 || 2
         }
+      //^ Expected Semicolon, but found '}'
     "#,
     );
 }
 
 #[test]
-#[should_panic]
 fn test_chapter_4_invalid_parse_unary_missing_semicolon() {
-    dump_ast(
+    assert_error(
         r#"
         int main(void)
         {
             return !10
         }
+      //^ Expected Semicolon, but found '}'
     "#,
     );
 }

@@ -3,8 +3,8 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::{fs, panic};
 
-use crate::parser::parse;
-use crate::{lexer, pretty};
+use crate::pretty::{annotate, pretty_print_ast};
+use crate::{lexer, parser, pretty};
 use anyhow::Result;
 
 pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
@@ -73,19 +73,17 @@ pub fn generate_parser_tests(path: &Path, source: &str) -> Result<()> {
             file,
             r#"
 use crate::parser::parse;
-use crate::pretty;
+use crate::pretty::{{annotate, dedent, dump_ast, remove_annotation}};
 
-fn dump_ast(src: &str) -> String {{
-    let ast = parse(src).unwrap();
-    let mut result = Vec::new();
-    pretty::print_program(&mut result, &ast).unwrap();
-    String::from_utf8(result).unwrap().trim().into()q
+fn assert_error(expected_annotated: &str) {{
+    let clean_source = remove_annotation(expected_annotated);
+    let Err(error) = parse(&clean_source) else {{
+        panic!("No error produced!")
+    }};
+    let actual_annotated = annotate(&clean_source, &error);
+    assert_eq!(actual_annotated, expected_annotated);
 }}
-
-fn dedent(tree: &str) -> String {{
-    tree.trim().lines().map(|l| l.strip_prefix("        ").unwrap_or(l)).collect::<Vec<_>>().join("\n")
-}}
-        "#
+"#
         )?;
     }
     let components: Vec<_> = path
@@ -97,30 +95,23 @@ fn dedent(tree: &str) -> String {{
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
     let indented = indent(source);
     writeln!(file)?;
-    let result = panic::catch_unwind(|| dump_ast(source));
+    let result = parser::parse(&indented);
     match result {
-        Ok(program) => {
+        Ok(ast) => {
+            let tree = pretty_print_ast(&ast)?;
+            let tree = indent(&tree);
             writeln!(file, "#[test]")?;
             writeln!(file, "fn test_{name}() {{")?;
-            writeln!(file, "    let src = r#\"")?;
-            writeln!(file, "{indented}")?;
-            writeln!(file, "    \"#;")?;
-            writeln!(file, "    let expected = r#\"")?;
-            writeln!(file, "{program}")?;
-            writeln!(file, "    \"#;")?;
-            writeln!(
-                file,
-                "    assert_eq!(dump_ast(src), dedent(expected));"
-            )?;
+            writeln!(file, "    let src = r#\"{indented}\"#;")?;
+            writeln!(file, "    let expected = r#\"{tree}\"#;")?;
+            writeln!(file, "    assert_eq!(dump_ast(src), dedent(expected));")?;
             writeln!(file, "}}")?;
         }
-        Err(_) => {
+        Err(error) => {
+            let annotated = annotate(&indented, &error);
             writeln!(file, "#[test]")?;
-            writeln!(file, "#[should_panic]")?;
             writeln!(file, "fn test_{name}() {{")?;
-            writeln!(file, "    dump_ast(r#\"")?;
-            writeln!(file, "{indented}")?;
-            writeln!(file, "    \"#);")?;
+            writeln!(file, "    assert_error(r#\"{annotated}\"#);")?;
             writeln!(file, "}}")?;
         }
     }
@@ -129,21 +120,10 @@ fn dedent(tree: &str) -> String {{
 }
 
 fn indent(s: &str) -> String {
-    s
+    let indented = s
         .lines()
         .map(|l| format!("        {l}"))
         .collect::<Vec<_>>()
-        .join("\n")
-}
-
-fn dump_ast(src: &str) -> String {
-    let ast = parse(src).unwrap();
-    let mut result = Vec::new();
-    pretty::print_program(&mut result, &ast).unwrap();
-    String::from_utf8(result)
-        .unwrap()
-        .lines()
-        .map(|l| format!("        {l}"))
-        .collect::<Vec<_>>()
-        .join("\n")
+        .join("\n");
+    format!("\n{indented}\n    ")
 }

@@ -2,10 +2,11 @@
 mod test;
 
 use crate::ast::{BinaryOp, Expression, Function, Program, Statement, UnaryOp};
-use crate::lexer::{Lexer, Token, TokenKind};
+use crate::lexer::{Lexer, Span, Token, TokenKind};
+use std::error::Error;
+use std::fmt::{Display, Formatter};
 
 use crate::symbol::Symbol;
-use anyhow::{anyhow, Result};
 
 struct Parser<'src> {
     source: &'src str,
@@ -68,11 +69,13 @@ impl<'src> Parser<'src> {
                 inner
             }
             _ => {
-                return Err(anyhow!(
-                    "Expected expression, but found '{}' at {:?}",
-                    self.current.slice(self.source),
-                    self.current.span
-                ))
+                return Err(ParserError {
+                    msg: format!(
+                        "Expected expression, but found '{}'",
+                        self.current.slice(self.source)
+                    ),
+                    span: self.current.span,
+                });
             }
         };
 
@@ -134,11 +137,13 @@ impl<'src> Parser<'src> {
             TokenKind::PipePipe => BinaryOp::Or,
 
             _ => {
-                return Err(anyhow!(
-                    "Expected binary operator, but found '{}' at {:?}",
-                    self.current.slice(self.source),
-                    self.current.span
-                ))
+                return Err(ParserError {
+                    msg: format!(
+                        "Expected binary operator, but found '{}'",
+                        self.current.slice(self.source)
+                    ),
+                    span: self.current.span,
+                });
             }
         };
         Ok(op)
@@ -150,11 +155,13 @@ impl<'src> Parser<'src> {
             TokenKind::Tilde => UnaryOp::Complement,
             TokenKind::Bang => UnaryOp::Not,
             _ => {
-                return Err(anyhow!(
-                    "Expected unary operator, but found '{}' at {:?}",
-                    self.current.slice(self.source),
-                    self.current.span
-                ))
+                return Err(ParserError {
+                    msg: format!(
+                        "Expected unary operator, but found '{}'",
+                        self.current.slice(self.source)
+                    ),
+                    span: self.current.span,
+                });
             }
         };
         self.advance();
@@ -167,8 +174,12 @@ impl<'src> Parser<'src> {
     }
 
     fn int(&mut self) -> Result<Expression> {
+        let span = self.current.span;
         let token = self.expect(TokenKind::Constant)?;
-        let value = token.slice(self.source).parse()?;
+        let value = token.slice(self.source).parse().map_err(|e| ParserError {
+            msg: format!("Constant parsing error: {e}"),
+            span,
+        })?;
         Ok(Expression::Constant(value))
     }
 
@@ -182,14 +193,32 @@ impl<'src> Parser<'src> {
             self.advance();
             Ok(token)
         } else {
-            Err(anyhow!(
-                "Expected {expected:?}, but found '{}' at {:?}",
-                token.slice(self.source),
-                token.span
-            ))
+            Err(ParserError {
+                msg: format!(
+                    "Expected {expected:?}, but found '{}'",
+                    token.slice(self.source)
+                ),
+                span: token.span,
+            })
         }
     }
 }
+
+#[derive(Debug)]
+pub struct ParserError {
+    pub msg: String,
+    pub span: Span,
+}
+
+impl Display for ParserError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{msg} at {span:?}", msg = self.msg, span = self.span)
+    }
+}
+
+impl Error for ParserError {}
+
+type Result<T> = std::result::Result<T, ParserError>;
 
 pub fn parse(source: &str) -> Result<Program> {
     Parser::new(source).program()
