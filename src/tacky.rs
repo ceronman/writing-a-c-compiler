@@ -116,7 +116,7 @@ impl Generator {
                 let op = match op {
                     ast::UnaryOp::Complement => UnaryOp::Complement,
                     ast::UnaryOp::Negate => UnaryOp::Negate,
-                    _ => todo!(),
+                    ast::UnaryOp::Not => UnaryOp::Not,
                 };
                 self.instructions.push(Instruction::Unary {
                     op,

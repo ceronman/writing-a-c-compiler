@@ -1,4 +1,4 @@
-use crate::asm::{BinaryOp, Instruction, Operand, Program, Reg, UnaryOp};
+use crate::asm::{BinaryOp, CondCode, Instruction, Operand, Program, Reg, UnaryOp};
 use crate::tempfile::TempPath;
 use std::fs::OpenOptions;
 use std::io::{BufWriter, Result, Write};
@@ -13,7 +13,7 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
         .truncate(true)
         .open(output_path.as_path())?;
 
-    let mut output = BufWriter::new(file);
+    let output = &mut BufWriter::new(file);
 
     let function = &program.function_definition;
 
@@ -21,26 +21,24 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
     writeln!(output, "_{name}:", name = function.name)?;
 
     // Prologue
-    writeln!(output, "\tpushq %rbp")?;
-    writeln!(output, "\tmovq %rsp, %rbp")?;
+    writeln!(output, "\tpushq    %rbp")?;
+    writeln!(output, "\tmovq     %rsp, %rbp")?;
 
     for ins in &function.instructions {
         match ins {
             Instruction::Mov(src, dst) => {
-                write!(output, "\tmovl ")?;
-                emit_operand(&mut output, src)?;
+                emit_ins(output, "movl")?;
+                emit_operand(output, src, 4)?;
                 write!(output, ", ")?;
-                emit_operand(&mut output, dst)?;
-                writeln!(output)?;
+                emit_operand(output, dst, 4)?;
             }
             Instruction::Unary(op, src) => {
                 let op = match op {
                     UnaryOp::Neg => "negl",
                     UnaryOp::Not => "notl",
                 };
-                write!(output, "\t{op} ")?;
-                emit_operand(&mut output, src)?;
-                writeln!(output)?;
+                emit_ins(output, op)?;
+                emit_operand(output, src, 4)?;
             }
             Instruction::Binary(op, left, right) => {
                 let op = match op {
@@ -51,58 +49,108 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
                     BinaryOp::Or => "orl",
                     BinaryOp::Xor => "xorl",
                 };
-                write!(output, "\t{op} ")?;
-                emit_operand(&mut output, left)?;
+                emit_ins(output, op)?;
+                emit_operand(output, left, 4)?;
                 write!(output, ", ")?;
-                emit_operand(&mut output, right)?;
-                writeln!(output)?;
+                emit_operand(output, right, 4)?;
             }
             Instruction::AllocateStack(offset) => {
-                writeln!(output, "\tsubq ${offset}, %rsp")?;
+                emit_ins(output, "subq")?;
+                write!(output, "${offset}, %rsp")?;
             }
 
             Instruction::Sal(dst) => {
-                write!(output, "\tsall %cl, ")?;
-                emit_operand(&mut output, dst)?;
+                emit_ins(output, "sall")?;
+                emit_operand(output, &Operand::Reg(Reg::Ax), 1)?;
+                emit_operand(output, dst, 4)?;
                 writeln!(output)?;
             }
 
             Instruction::Sar(dst) => {
-                write!(output, "\tsarl %cl, ")?;
-                emit_operand(&mut output, dst)?;
-                writeln!(output)?;
+                emit_ins(output, "sarl")?;
+                emit_operand(output, &Operand::Reg(Reg::Ax), 1)?;
+                emit_operand(output, dst, 4)?;
             }
 
             Instruction::Idiv(src) => {
-                write!(output, "\tidivl ")?;
-                emit_operand(&mut output, src)?;
-                writeln!(output)?;
+                emit_ins(output, "idivl")?;
+                emit_operand(output, src, 4)?;
             }
 
-            Instruction::Cdq => writeln!(output, "\tcdq")?,
+            Instruction::Cdq => write!(output, "\tcdq")?,
 
             Instruction::Ret => {
                 // epilogue
-                writeln!(output, "\tmovq %rbp, %rsp")?;
-                writeln!(output, "\tpopq %rbp")?;
-                writeln!(output, "\tret")?;
+                writeln!(output, "\tmovq    %rbp, %rsp")?;
+                writeln!(output, "\tpopq    %rbp")?;
+                write!(output, "\tret")?;
             }
-            _ => todo!(),
+
+            Instruction::Cmp(left, right) => {
+                emit_ins(output, "cmpl")?;
+                emit_operand(output, left, 4)?;
+                write!(output, ", ")?;
+                emit_operand(output, right, 4)?;
+            }
+            Instruction::Jmp(label) => {
+                emit_ins(output, "jmp")?;
+                emit_label(output, label)?;
+            }
+            Instruction::JmpCC(cond, target) => {
+                match cond {
+                    CondCode::E => emit_ins(output, "je")?,
+                    CondCode::NE => emit_ins(output, "jne")?,
+                    CondCode::G => emit_ins(output, "jg")?,
+                    CondCode::GE => emit_ins(output, "jge")?,
+                    CondCode::L => emit_ins(output, "jl")?,
+                    CondCode::LE => emit_ins(output, "jle")?,
+                }
+                emit_label(output, target)?;
+            }
+            Instruction::SetCC(cond, dst) => {
+                match cond {
+                    CondCode::E => emit_ins(output, "sete")?,
+                    CondCode::NE => emit_ins(output, "setne")?,
+                    CondCode::G => emit_ins(output, "setg")?,
+                    CondCode::GE => emit_ins(output, "setge")?,
+                    CondCode::L => emit_ins(output, "setl")?,
+                    CondCode::LE => emit_ins(output, "setle")?,
+                }
+                emit_operand(output, dst, 1)?;
+            }
+            Instruction::Label(label) => {
+                emit_label(output, label)?;
+                write!(output, ":")?;
+            }
         }
+        writeln!(output)?;
     }
 
     Ok(output_path)
 }
 
-fn emit_operand(output: &mut impl Write, operand: &Operand) -> Result<()> {
-    match operand {
-        Operand::Imm(value) => write!(output, "${value}"),
-        Operand::Reg(Reg::Ax) => write!(output, "%eax"),
-        Operand::Reg(Reg::Cx) => write!(output, "%ecx"),
-        Operand::Reg(Reg::Dx) => write!(output, "%edx"),
-        Operand::Reg(Reg::R10) => write!(output, "%r10d"),
-        Operand::Reg(Reg::R11) => write!(output, "%r11d"),
-        Operand::Stack(offset) => write!(output, "-{offset}(%rbp)"),
-        Operand::Pseudo(_) => unreachable!(),
+fn emit_ins(output: &mut impl Write, ins: &str) -> Result<()> {
+    write!(output, "\t{ins:8} ")
+}
+
+fn emit_operand(output: &mut impl Write, operand: &Operand, size: u8) -> Result<()> {
+    match (operand, size) {
+        (Operand::Imm(value), _) => write!(output, "${value}"),
+        (Operand::Reg(Reg::Ax), 1) => write!(output, "%al"),
+        (Operand::Reg(Reg::Ax), 4) => write!(output, "%eax"),
+        (Operand::Reg(Reg::Cx), 1) => write!(output, "%cl"),
+        (Operand::Reg(Reg::Cx), 4) => write!(output, "%ecx"),
+        (Operand::Reg(Reg::Dx), 1) => write!(output, "%dl"),
+        (Operand::Reg(Reg::Dx), 4) => write!(output, "%edx"),
+        (Operand::Reg(Reg::R10), 1) => write!(output, "%r10b"),
+        (Operand::Reg(Reg::R10), 4) => write!(output, "%r10d"),
+        (Operand::Reg(Reg::R11), 1) => write!(output, "%r11b"),
+        (Operand::Reg(Reg::R11), 4) => write!(output, "%r11d"),
+        (Operand::Stack(offset), _) => write!(output, "-{offset}(%rbp)"),
+        _ => unreachable!(),
     }
+}
+
+fn emit_label(output: &mut impl Write, label: &str) -> Result<()> {
+    write!(output, "L{label}")
 }
