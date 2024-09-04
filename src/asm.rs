@@ -111,6 +111,8 @@ pub fn generate(program: &tacky::Program) -> Program {
                     ));
                 }
             },
+
+            _ => todo!(),
         }
     }
 
@@ -233,6 +235,7 @@ impl tacky::UnaryOp {
         match self {
             tacky::UnaryOp::Complement => UnaryOp::Not,
             tacky::UnaryOp::Negate => UnaryOp::Neg,
+            _ => todo!(),
         }
     }
 }
