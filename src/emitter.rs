@@ -87,6 +87,7 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
                 writeln!(output, "\tpopq %rbp")?;
                 writeln!(output, "\tret")?;
             }
+            _ => todo!(),
         }
     }
 
