@@ -1,12 +1,13 @@
 #[cfg(test)]
 mod test;
 
-use crate::ast::{BinaryOp, Expression, Function, Program, Statement, UnaryOp};
+use crate::ast::{
+    BinaryOp, BlockItem, Declaration, Expression, Function, Program, Statement, UnaryOp,
+};
 use crate::lexer::{Lexer, Span, Token, TokenKind};
+use crate::symbol::Symbol;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
-
-use crate::symbol::Symbol;
 
 struct Parser<'src> {
     source: &'src str,
@@ -39,16 +40,54 @@ impl<'src> Parser<'src> {
         self.expect(TokenKind::Void)?;
         self.expect(TokenKind::CloseParen)?;
         self.expect(TokenKind::OpenBrace)?;
-        let body = self.statement()?;
-        self.expect(TokenKind::CloseBrace)?;
+        let mut body = Vec::new();
+        while self.current.kind != TokenKind::CloseBrace {
+            body.push(self.block_item()?)
+        }
+        self.advance();
         Ok(Function { name, body })
     }
 
+    fn block_item(&mut self) -> Result<BlockItem> {
+        let block = if self.current.kind == TokenKind::Int {
+            self.advance();
+            let name = self.expect(TokenKind::Identifier)?;
+            let name = name.slice(self.source).to_owned();
+            let init = if self.current.kind == TokenKind::Equal {
+                self.advance();
+                Some(self.expression()?)
+            } else {
+                None
+            };
+            self.expect(TokenKind::Semicolon)?;
+            BlockItem::Decl(Declaration { name, init })
+        } else {
+            BlockItem::Stmt(self.statement()?)
+        };
+
+        Ok(block)
+    }
+
     fn statement(&mut self) -> Result<Statement> {
-        self.expect(TokenKind::Return)?;
-        let expr = self.expression()?;
-        self.expect(TokenKind::Semicolon)?;
-        Ok(Statement::Return { expr })
+        let statement = match self.current.kind {
+            TokenKind::Return => {
+                self.advance();
+                let expr = self.expression()?;
+                self.expect(TokenKind::Semicolon)?;
+                Statement::Return { expr }
+            }
+            TokenKind::Semicolon => {
+                self.advance();
+                Statement::Null
+            }
+            _ => {
+                let expr = self.expression()?;
+                self.expect(TokenKind::Semicolon)?;
+                Statement::Expression(expr)
+            }
+        };
+
+        Ok(statement)
     }
 
     fn expression(&mut self) -> Result<Expression> {
@@ -58,9 +97,10 @@ impl<'src> Parser<'src> {
     fn expression_precedence(&mut self, min_precedence: u8) -> Result<Expression> {
         let mut expr = match self.current.kind {
             TokenKind::Constant => self.int()?,
+            TokenKind::Identifier => self.var()?,
             TokenKind::Minus | TokenKind::Tilde | TokenKind::Bang => Expression::Unary {
                 op: self.unary_op()?,
-                expr: self.expression_precedence(11)?.into(),
+                expr: self.expression_precedence(12)?.into(),
             },
             TokenKind::OpenParen => {
                 self.advance();
@@ -80,36 +120,47 @@ impl<'src> Parser<'src> {
         };
 
         loop {
-            let Ok(op) = self.binary_op() else {
-                break;
-            };
-
-            use BinaryOp::*;
-            let precedence = match op {
-                Or => 1,
-                And => 2,
-                BinOr => 3,
-                BinXor => 4,
-                BinAnd => 5,
-                Equal | NotEqual => 6,
-                GreaterThan | GreaterOrEqualThan | LessThan | LessOrEqualThan => 7,
-                ShiftLeft | ShiftRight => 8,
-                Add | Subtract => 9,
-                Multiply | Divide | Reminder => 10,
+            let precedence = match self.current.kind {
+                TokenKind::Equal => 1,
+                TokenKind::PipePipe => 2,
+                TokenKind::AmpersandAmpersand => 3,
+                TokenKind::Pipe => 4,
+                TokenKind::Circumflex => 5,
+                TokenKind::Ampersand => 6,
+                TokenKind::EqualEqual | TokenKind::BangEqual => 7,
+                TokenKind::Greater
+                | TokenKind::GreaterEqual
+                | TokenKind::Less
+                | TokenKind::LessEqual => 8,
+                TokenKind::LessLess | TokenKind::GreaterGreater => 9,
+                TokenKind::Plus | TokenKind::Minus => 10,
+                TokenKind::Star | TokenKind::Slash | TokenKind::Percent => 11,
+                _ => break,
             };
 
             if precedence < min_precedence {
                 break;
             }
-            let left = expr;
-            self.advance();
-            let right = self.expression_precedence(precedence + 1)?;
 
-            expr = Expression::Binary {
-                op,
-                left: Box::new(left),
-                right: Box::new(right),
-            };
+            expr = if let TokenKind::Equal = self.current.kind {
+                self.advance();
+                let left = expr;
+                let right = self.expression_precedence(precedence)?;
+                Expression::Assignment {
+                    left: Box::new(left),
+                    right: Box::new(right),
+                }
+            } else {
+                let op = self.binary_op()?;
+                let left = expr;
+                let right = self.expression_precedence(precedence + 1)?;
+
+                Expression::Binary {
+                    op,
+                    left: Box::new(left),
+                    right: Box::new(right),
+                }
+            }
         }
 
         Ok(expr)
@@ -146,6 +197,7 @@ impl<'src> Parser<'src> {
                 });
             }
         };
+        self.advance();
         Ok(op)
     }
 
@@ -173,6 +225,11 @@ impl<'src> Parser<'src> {
         Ok(Symbol::from(token.slice(self.source)))
     }
 
+    fn var(&mut self) -> Result<Expression> {
+        let name = self.identifier()?;
+        Ok(Expression::Var(name))
+    }
+
     fn int(&mut self) -> Result<Expression> {
         let span = self.current.span;
         let token = self.expect(TokenKind::Constant)?;
@@ -192,6 +249,11 @@ impl<'src> Parser<'src> {
         if token.kind == expected {
             self.advance();
             Ok(token)
+        } else if token.kind == TokenKind::Eof {
+            Err(ParserError {
+                msg: "Unexpected end of file".to_owned(),
+                span: token.span,
+            })
         } else {
             Err(ParserError {
                 msg: format!(

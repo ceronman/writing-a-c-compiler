@@ -61,17 +61,48 @@ fn print_program(file: &mut impl Write, program: &ast::Program) -> Result<()> {
 
 fn print_function(file: &mut impl Write, function: &ast::Function) -> Result<()> {
     writeln!(file, "╰── Function [{}]", function.name)?;
-    print_statement(file, &function.body)?;
+    let body = &function.body;
+    for (i, block_item) in body.iter().enumerate() {
+        if i == body.len() - 1 {
+            print_block_item(file, block_item, "╰──", 1, &[])?
+        } else {
+            print_block_item(file, block_item, "├──", 1, &[1])?
+        };
+    }
     Ok(())
 }
 
-fn print_statement(file: &mut impl Write, statement: &ast::Statement) -> Result<()> {
-    let level = 1;
-    let ident = "    ".repeat(level);
-    match statement {
-        ast::Statement::Return { expr } => {
-            writeln!(file, "{ident}╰── Return")?;
-            print_expression(file, expr, "╰──", level + 1, &[])?;
+fn print_block_item(
+    file: &mut impl Write,
+    item: &ast::BlockItem,
+    pipe: &str,
+    level: usize,
+    pipes: &[usize],
+) -> Result<()> {
+    let mut indent = String::new();
+    for l in 0..level {
+        if pipes.contains(&l) {
+            indent.push_str("│   ");
+        } else {
+            indent.push_str("    ");
+        }
+    }
+    match item {
+        ast::BlockItem::Stmt(s) => match s {
+            ast::Statement::Return { expr } => {
+                writeln!(file, "{indent}{pipe} Return")?;
+                print_expression(file, expr, "╰──", level + 1, pipes)?;
+            }
+            ast::Statement::Expression(expr) => {
+                print_expression(file, expr, pipe, level, pipes)?;
+            }
+            ast::Statement::Null => {}
+        },
+        ast::BlockItem::Decl(d) => {
+            writeln!(file, "{indent}{pipe} Declaration [{}]", d.name)?;
+            if let Some(init) = &d.init {
+                print_expression(file, init, "╰──", level + 1, pipes)?;
+            }
         }
     }
     Ok(())
@@ -96,12 +127,22 @@ fn print_expression(
         ast::Expression::Constant(value) => {
             writeln!(file, "{indent}{pipe} Constant [{value}]")?;
         }
+        ast::Expression::Var(value) => {
+            writeln!(file, "{indent}{pipe} Var [{value}]")?;
+        }
         ast::Expression::Unary { op, expr } => {
             writeln!(file, "{indent}{pipe} Unary [{}]", unary_op(op))?;
             print_expression(file, expr, "╰──", level + 1, pipes)?;
         }
         ast::Expression::Binary { op, left, right } => {
             writeln!(file, "{indent}{pipe} Binary [{}]", binary_op(op))?;
+            let mut added = pipes.to_vec();
+            added.push(level + 1);
+            print_expression(file, left, "├──", level + 1, &added)?;
+            print_expression(file, right, "╰──", level + 1, pipes)?;
+        }
+        ast::Expression::Assignment { left, right } => {
+            writeln!(file, "{indent}{pipe} Assign [=]")?;
             let mut added = pipes.to_vec();
             added.push(level + 1);
             print_expression(file, left, "├──", level + 1, &added)?;

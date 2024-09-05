@@ -84,7 +84,7 @@ pub fn generate(program: &ast::Program) -> Program {
     Program {
         function: Function {
             name: function.name.clone(),
-            body: Generator::default().emit_body(&function.body),
+            body: todo!(),
         },
     }
 }
@@ -103,6 +103,8 @@ impl Generator {
                 let val = self.emit_expr(expr);
                 self.instructions.push(Instruction::Return(val));
             }
+
+            _ => todo!(),
         }
         self.instructions
     }
@@ -211,6 +213,8 @@ impl Generator {
                 });
                 dst
             }
+
+            _ => todo!(),
         }
     }
 

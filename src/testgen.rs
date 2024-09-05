@@ -20,12 +20,7 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
         writeln!(file, "use crate::lexer::tokenize;")?;
         writeln!(file, "use crate::lexer::TokenKind::*;")?;
     }
-    let components: Vec<_> = path
-        .components()
-        .map(|c| c.as_os_str().to_str().unwrap().to_owned())
-        .collect();
-    let components = &components[(components.len() - 3)..];
-    let name = components.join("_").strip_suffix(".c").unwrap().to_owned();
+    let name = test_name(path);
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
     let indented = source
         .lines()
@@ -86,12 +81,7 @@ fn assert_error(expected_annotated: &str) {{
 "#
         )?;
     }
-    let components: Vec<_> = path
-        .components()
-        .map(|c| c.as_os_str().to_str().unwrap().to_owned())
-        .collect();
-    let components = &components[(components.len() - 3)..];
-    let name = components.join("_").strip_suffix(".c").unwrap().to_owned();
+    let name = test_name(path);
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
     let indented = indent(source);
     writeln!(file)?;
@@ -126,4 +116,25 @@ fn indent(s: &str) -> String {
         .collect::<Vec<_>>()
         .join("\n");
     format!("\n{indented}\n    ")
+}
+
+fn test_name(path: &Path) -> String {
+    let components: Vec<_> = path
+        .components()
+        .map(|c| c.as_os_str().to_str().unwrap().to_owned())
+        .collect();
+    let index = components
+        .iter()
+        .enumerate()
+        .filter_map(|(i, c)| {
+            if c.starts_with("chapter") {
+                Some(i)
+            } else {
+                None
+            }
+        })
+        .next()
+        .unwrap_or(3);
+    let components = &components[index..];
+    components.join("_").strip_suffix(".c").unwrap().to_owned()
 }
