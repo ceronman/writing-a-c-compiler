@@ -83,7 +83,7 @@ pub fn generate(program: &ast::Program) -> Program {
     let function = &program.function_definition;
     Program {
         function: Function {
-            name: function.name.clone(),
+            name: function.name.symbol.clone(),
             body: todo!(),
         },
     }
@@ -115,7 +115,7 @@ impl Generator {
             Expression::Unary { op, expr } => {
                 let src = self.emit_expr(expr);
                 let dst = self.make_temp();
-                let op = match op {
+                let op = match op.as_ref() {
                     ast::UnaryOp::Complement => UnaryOp::Complement,
                     ast::UnaryOp::Negate => UnaryOp::Negate,
                     ast::UnaryOp::Not => UnaryOp::Not,
@@ -130,7 +130,7 @@ impl Generator {
             Expression::Binary { op, left, right } => {
                 let src1 = self.emit_expr(left);
                 let dst = self.make_temp();
-                let op = match op {
+                let op = match op.as_ref() {
                     ast::BinaryOp::Add => BinaryOp::Add,
                     ast::BinaryOp::Subtract => BinaryOp::Subtract,
                     ast::BinaryOp::Multiply => BinaryOp::Multiply,

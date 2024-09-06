@@ -60,7 +60,7 @@ fn print_program(file: &mut impl Write, program: &ast::Program) -> Result<()> {
 }
 
 fn print_function(file: &mut impl Write, function: &ast::Function) -> Result<()> {
-    writeln!(file, "╰── Function [{}]", function.name)?;
+    writeln!(file, "╰── Function [{}]", function.name.symbol)?;
     let body = &function.body;
     for (i, block_item) in body.iter().enumerate() {
         if i == body.len() - 1 {
@@ -99,7 +99,7 @@ fn print_block_item(
             ast::Statement::Null => {}
         },
         ast::BlockItem::Decl(d) => {
-            writeln!(file, "{indent}{pipe} Declaration [{}]", d.name)?;
+            writeln!(file, "{indent}{pipe} Declaration [{}]", d.name.symbol)?;
             if let Some(init) = &d.init {
                 print_expression(file, init, "╰──", level + 1, pipes)?;
             }

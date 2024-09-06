@@ -1,10 +1,19 @@
 #[cfg(test)]
 mod test;
 
+use std::ops::Add;
 use std::str::Chars;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Span(pub usize, pub usize);
+
+impl Add for Span {
+    type Output = Span;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Span(std::cmp::min(self.0, rhs.0), std::cmp::max(self.1, rhs.1))
+    }
+}
 
 #[derive(Copy, Clone, Debug)]
 pub struct Token {

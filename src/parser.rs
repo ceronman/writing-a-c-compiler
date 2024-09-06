@@ -2,7 +2,8 @@
 mod test;
 
 use crate::ast::{
-    BinaryOp, BlockItem, Declaration, Expression, Function, Program, Statement, UnaryOp,
+    BinaryOp, BlockItem, Declaration, Expression, Function, Identifier, Node, Program, Statement,
+    UnaryOp,
 };
 use crate::lexer::{Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
@@ -25,15 +26,21 @@ impl<'src> Parser<'src> {
         }
     }
 
-    fn program(&mut self) -> Result<Program> {
+    fn program(&mut self) -> Result<Node<Program>> {
+        let start = self.current.span;
         let function_definition = self.function()?;
         self.expect(TokenKind::Eof)?;
-        Ok(Program {
-            function_definition,
-        })
+        let span = Span(start.0, self.source.len());
+        Ok(Node::from(
+            span,
+            Program {
+                function_definition,
+            },
+        ))
     }
 
-    fn function(&mut self) -> Result<Function> {
+    fn function(&mut self) -> Result<Node<Function>> {
+        let start = self.current.span;
         self.expect(TokenKind::Int)?;
         let name = self.identifier()?;
         self.expect(TokenKind::OpenParen)?;
@@ -45,14 +52,15 @@ impl<'src> Parser<'src> {
             body.push(self.block_item()?)
         }
         self.advance();
-        Ok(Function { name, body })
+        let end = self.current.span;
+        Ok(Node::from(start + end, Function { name, body }))
     }
 
-    fn block_item(&mut self) -> Result<BlockItem> {
+    fn block_item(&mut self) -> Result<Node<BlockItem>> {
+        let start = self.current.span;
         let block = if self.current.kind == TokenKind::Int {
             self.advance();
-            let name = self.expect(TokenKind::Identifier)?;
-            let name = name.slice(self.source).to_owned();
+            let name = self.identifier()?;
             let init = if self.current.kind == TokenKind::Equal {
                 self.advance();
                 Some(self.expression()?)
@@ -64,8 +72,8 @@ impl<'src> Parser<'src> {
         } else {
             BlockItem::Stmt(self.statement()?)
         };
-
-        Ok(block)
+        let end = self.current.span;
+        Ok(Node::from(start + end, block))
     }
 
     fn statement(&mut self) -> Result<Statement> {
@@ -90,23 +98,22 @@ impl<'src> Parser<'src> {
         Ok(statement)
     }
 
-    fn expression(&mut self) -> Result<Expression> {
+    fn expression(&mut self) -> Result<Node<Expression>> {
         self.expression_precedence(0)
     }
 
-    fn expression_precedence(&mut self, min_precedence: u8) -> Result<Expression> {
+    fn expression_precedence(&mut self, min_precedence: u8) -> Result<Node<Expression>> {
         let mut expr = match self.current.kind {
             TokenKind::Constant => self.int()?,
             TokenKind::Identifier => self.var()?,
-            TokenKind::Minus | TokenKind::Tilde | TokenKind::Bang => Expression::Unary {
-                op: self.unary_op()?,
-                expr: self.expression_precedence(12)?.into(),
-            },
+            TokenKind::Minus | TokenKind::Tilde | TokenKind::Bang => self.unary_expression()?,
             TokenKind::OpenParen => {
+                let start = self.current.span;
                 self.advance();
                 let inner = self.expression()?;
                 self.expect(TokenKind::CloseParen)?;
-                inner
+                let end = self.current.span;
+                Node::from(start + end, *inner.data)
             }
             _ => {
                 return Err(ParserError {
@@ -146,27 +153,34 @@ impl<'src> Parser<'src> {
                 self.advance();
                 let left = expr;
                 let right = self.expression_precedence(precedence)?;
-                Expression::Assignment {
-                    left: Box::new(left),
-                    right: Box::new(right),
-                }
+                Node::from(
+                    left.span + right.span,
+                    Expression::Assignment { left, right },
+                )
             } else {
                 let op = self.binary_op()?;
                 let left = expr;
                 let right = self.expression_precedence(precedence + 1)?;
 
-                Expression::Binary {
-                    op,
-                    left: Box::new(left),
-                    right: Box::new(right),
-                }
+                Node::from(
+                    left.span + right.span,
+                    Expression::Binary { op, left, right },
+                )
             }
         }
 
         Ok(expr)
     }
 
-    fn binary_op(&mut self) -> Result<BinaryOp> {
+    fn unary_expression(&mut self) -> Result<Node<Expression>> {
+        let start = self.current.span;
+        let op = self.unary_op()?;
+        let expr = self.expression_precedence(12)?;
+        let end = self.current.span;
+        Ok(Node::from(start + end, Expression::Unary { op, expr }))
+    }
+
+    fn binary_op(&mut self) -> Result<Node<BinaryOp>> {
         let op = match self.current.kind {
             TokenKind::Plus => BinaryOp::Add,
             TokenKind::Minus => BinaryOp::Subtract,
@@ -197,11 +211,12 @@ impl<'src> Parser<'src> {
                 });
             }
         };
+        let span = self.current.span;
         self.advance();
-        Ok(op)
+        Ok(Node::from(span, op))
     }
 
-    fn unary_op(&mut self) -> Result<UnaryOp> {
+    fn unary_op(&mut self) -> Result<Node<UnaryOp>> {
         let op = match self.current.kind {
             TokenKind::Minus => UnaryOp::Negate,
             TokenKind::Tilde => UnaryOp::Complement,
@@ -216,28 +231,30 @@ impl<'src> Parser<'src> {
                 });
             }
         };
+        let span = self.current.span;
         self.advance();
-        Ok(op)
+        Ok(Node::from(span, op))
     }
 
-    fn identifier(&mut self) -> Result<Symbol> {
+    fn identifier(&mut self) -> Result<Node<Identifier>> {
         let token = self.expect(TokenKind::Identifier)?;
-        Ok(Symbol::from(token.slice(self.source)))
+        let symbol = Symbol::from(token.slice(self.source));
+        Ok(Node::from(token.span, Identifier { symbol }))
     }
 
-    fn var(&mut self) -> Result<Expression> {
+    fn var(&mut self) -> Result<Node<Expression>> {
         let name = self.identifier()?;
-        Ok(Expression::Var(name))
+        Ok(Node::from(name.span, Expression::Var(name.data.symbol)))
     }
 
-    fn int(&mut self) -> Result<Expression> {
+    fn int(&mut self) -> Result<Node<Expression>> {
         let span = self.current.span;
         let token = self.expect(TokenKind::Constant)?;
         let value = token.slice(self.source).parse().map_err(|e| ParserError {
             msg: format!("Constant parsing error: {e}"),
             span,
         })?;
-        Ok(Expression::Constant(value))
+        Ok(Node::from(span, Expression::Constant(value)))
     }
 
     fn advance(&mut self) {
@@ -282,6 +299,6 @@ impl Error for ParserError {}
 
 type Result<T> = std::result::Result<T, ParserError>;
 
-pub fn parse(source: &str) -> Result<Program> {
+pub fn parse(source: &str) -> Result<Node<Program>> {
     Parser::new(source).program()
 }

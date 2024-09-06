@@ -1,14 +1,50 @@
+use crate::lexer::Span;
 use crate::symbol::Symbol;
+use std::ops::Deref;
+
+#[derive(Debug)]
+pub struct Node<T> {
+    pub span: Span,
+    pub data: Box<T>,
+}
+
+impl<T> Deref for Node<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
+}
+
+impl<T> AsRef<T> for Node<T> {
+    fn as_ref(&self) -> &T {
+        &self.data
+    }
+}
+
+impl<T> Node<T> {
+    pub fn from(span: Span, data: T) -> Self {
+        Node {
+            span,
+            data: Box::new(data),
+        }
+    }
+}
 
 #[derive(Debug)]
 pub struct Program {
-    pub function_definition: Function,
+    pub function_definition: Node<Function>,
 }
 
 #[derive(Debug)]
 pub struct Function {
-    pub name: Symbol,
-    pub body: Vec<BlockItem>,
+    pub name: Node<Identifier>,
+    pub body: Vec<Node<BlockItem>>,
+}
+
+#[derive(Debug)]
+pub struct Identifier {
+    pub symbol: Symbol,
 }
 
 #[derive(Debug)]
@@ -19,8 +55,8 @@ pub enum BlockItem {
 
 #[derive(Debug)]
 pub enum Statement {
-    Return { expr: Expression },
-    Expression(Expression),
+    Return { expr: Node<Expression> },
+    Expression(Node<Expression>),
     Null,
 }
 
@@ -29,24 +65,24 @@ pub enum Expression {
     Constant(i64),
     Var(Symbol),
     Unary {
-        op: UnaryOp,
-        expr: Box<Expression>,
+        op: Node<UnaryOp>,
+        expr: Node<Expression>,
     },
     Binary {
-        op: BinaryOp,
-        left: Box<Expression>,
-        right: Box<Expression>,
+        op: Node<BinaryOp>,
+        left: Node<Expression>,
+        right: Node<Expression>,
     },
     Assignment {
-        left: Box<Expression>,
-        right: Box<Expression>,
+        left: Node<Expression>,
+        right: Node<Expression>,
     },
 }
 
 #[derive(Debug)]
 pub struct Declaration {
-    pub name: Symbol,
-    pub init: Option<Expression>,
+    pub name: Node<Identifier>,
+    pub init: Option<Node<Expression>>,
 }
 
 #[derive(Debug)]
