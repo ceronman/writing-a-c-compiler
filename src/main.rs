@@ -8,6 +8,7 @@ mod symbol;
 mod tacky;
 mod tempfile;
 
+mod resolver;
 #[cfg(feature = "test_gen")]
 mod testgen;
 
@@ -44,7 +45,13 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let tacky = tacky::generate(&ast);
+    let validated_ast = resolver::resolve(ast)?;
+    if let Flag::Validate = options.flag {
+        print!("{}", pretty_print_ast(&validated_ast)?);
+        return Ok(());
+    }
+
+    let tacky = tacky::generate(&validated_ast);
     if let Flag::Tacky = options.flag {
         println!("{tacky:#?}");
         return Ok(());
@@ -75,6 +82,7 @@ enum Flag {
     None,
     Lex,
     Parse,
+    Validate,
     Tacky,
     Codegen,
     Asm,
@@ -86,6 +94,7 @@ fn parse_args() -> Options {
     let (path, flag) = match args[..] {
         ["--lex", path] => (path, Flag::Lex),
         ["--parse", path] => (path, Flag::Parse),
+        ["--validate", path] => (path, Flag::Validate),
         ["--tacky", path] => (path, Flag::Tacky),
         ["--codegen", path] => (path, Flag::Codegen),
         ["--asm", path] => (path, Flag::Asm),

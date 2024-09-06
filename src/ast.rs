@@ -1,34 +1,11 @@
 use crate::lexer::Span;
 use crate::symbol::Symbol;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 #[derive(Debug)]
 pub struct Node<T> {
     pub span: Span,
     pub data: Box<T>,
-}
-
-impl<T> Deref for Node<T> {
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        &self.data
-    }
-}
-
-impl<T> AsRef<T> for Node<T> {
-    fn as_ref(&self) -> &T {
-        &self.data
-    }
-}
-
-impl<T> Node<T> {
-    pub fn from(span: Span, data: T) -> Self {
-        Node {
-            span,
-            data: Box::new(data),
-        }
-    }
 }
 
 #[derive(Debug)]
@@ -112,4 +89,39 @@ pub enum BinaryOp {
     LessOrEqualThan,
     GreaterThan,
     GreaterOrEqualThan,
+}
+
+impl<T> Deref for Node<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
+}
+
+impl<T> DerefMut for Node<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.data
+    }
+}
+
+impl<T> AsRef<T> for Node<T> {
+    fn as_ref(&self) -> &T {
+        &self.data
+    }
+}
+
+impl<T> AsMut<T> for Node<T> {
+    fn as_mut(&mut self) -> &mut T {
+        &mut self.data
+    }
+}
+
+impl<T> Node<T> {
+    pub fn from(span: Span, data: T) -> Self {
+        Node {
+            span,
+            data: Box::new(data),
+        }
+    }
 }
