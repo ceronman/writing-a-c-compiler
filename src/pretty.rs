@@ -1,4 +1,5 @@
 use crate::ast;
+use crate::ast::UnaryOp::{Complement, Decrement, Increment, Negate, Not};
 use anyhow::Result;
 use std::io::Write;
 
@@ -134,6 +135,10 @@ fn print_expression(
             writeln!(file, "{indent}{pipe} Unary [{}]", unary_op(op))?;
             print_expression(file, expr, "╰──", level + 1, pipes)?;
         }
+        ast::Expression::Postfix { op, expr } => {
+            writeln!(file, "{indent}{pipe} Postfix [{}]", postfix_op(op))?;
+            print_expression(file, expr, "╰──", level + 1, pipes)?;
+        }
         ast::Expression::Binary { op, left, right } => {
             writeln!(file, "{indent}{pipe} Binary [{}]", binary_op(op))?;
             let mut added = pipes.to_vec();
@@ -199,5 +204,15 @@ fn unary_op(op: &ast::UnaryOp) -> &str {
         Complement => "~",
         Negate => "-",
         Not => "!",
+        Increment => "++",
+        Decrement => "--",
+    }
+}
+
+fn postfix_op(op: &ast::PostfixOp) -> &str {
+    use ast::PostfixOp::*;
+    match op {
+        Increment => "++",
+        Decrement => "--",
     }
 }

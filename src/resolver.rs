@@ -69,7 +69,7 @@ impl Resolver {
                 self.resolve_expression(left)?;
                 self.resolve_expression(right)?;
             }
-            Expression::Unary { expr, .. } => {
+            Expression::Unary { expr, .. } | Expression::Postfix { expr, .. } => {
                 self.resolve_expression(expr)?;
             }
             Expression::Binary { left, right, .. } => {

@@ -124,6 +124,7 @@ impl TackyGenerator {
                     ast::UnaryOp::Complement => UnaryOp::Complement,
                     ast::UnaryOp::Negate => UnaryOp::Negate,
                     ast::UnaryOp::Not => UnaryOp::Not,
+                    _ => todo!(),
                 };
                 self.instructions.push(Instruction::Unary {
                     op,
@@ -132,6 +133,7 @@ impl TackyGenerator {
                 });
                 dst
             }
+            ast::Expression::Postfix { op, expr } => todo!(),
             ast::Expression::Binary { op, left, right } => {
                 let src1 = self.emit_expr(left);
                 let dst = self.make_temp();

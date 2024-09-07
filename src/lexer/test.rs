@@ -2040,6 +2040,36 @@ fn test_chapter_5_invalid_parse_declare_keyword_as_var() {
 }
 
 #[test]
+fn test_chapter_5_invalid_parse_extra_credit_binary_decrement() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            return a -- 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Return, Identifier, MinusMinus, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_invalid_parse_extra_credit_binary_increment() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            return a ++ 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Return, Identifier, PlusPlus, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
 fn test_chapter_5_invalid_parse_extra_credit_compound_initializer() {
     let src = r#"
         int main(void) {
@@ -2050,6 +2080,21 @@ fn test_chapter_5_invalid_parse_extra_credit_compound_initializer() {
     let expected = vec![
         Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, PlusEqual,
         Constant, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_invalid_parse_extra_credit_increment_declaration() {
+    let src = r#"
+        int main(void) {
+            int a++;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, PlusPlus,
+        Semicolon, Return, Constant, Semicolon, CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);
 }
@@ -2261,6 +2306,68 @@ fn test_chapter_5_invalid_semantics_extra_credit_compound_invalid_lvalue_2() {
 }
 
 #[test]
+fn test_chapter_5_invalid_semantics_extra_credit_postfix_decr_non_lvalue() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            return a++--;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Return, Identifier, PlusPlus, MinusMinus, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_postfix_incr_non_lvalue() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            (a = 4)++;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, OpenParen, Identifier, Equal, Constant, CloseParen, PlusPlus, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_prefix_decr_non_lvalue() {
+    let src = r#"
+        int main(void) {
+            return --3;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, MinusMinus, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_prefix_incr_non_lvalue() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            ++(a+1);
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, PlusPlus, OpenParen, Identifier, Plus, Constant, CloseParen, Semicolon, Return,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
 fn test_chapter_5_invalid_semantics_extra_credit_undeclared_bitwise_op() {
     let src = r#"
         int main(void){
@@ -2312,6 +2419,36 @@ fn test_chapter_5_invalid_semantics_extra_credit_undeclared_compound_assignment_
         Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
         Semicolon, Identifier, StarEqual, Identifier, Semicolon, Return, Constant, Semicolon,
         CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_undeclared_postfix_decr() {
+    let src = r#"
+        int main(void) {
+            a--;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Identifier, MinusMinus, Semicolon,
+        Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_undeclared_prefix_incr() {
+    let src = r#"
+        int main(void) {
+            a++;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Identifier, PlusPlus, Semicolon,
+        Return, Constant, Semicolon, CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);
 }
@@ -3437,6 +3574,371 @@ fn test_chapter_5_valid_extra_credit_compound_plus() {
     let expected = vec![
         Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
         Semicolon, Identifier, PlusEqual, Constant, Semicolon, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_incr_expression_statement() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 0;
+            a++;
+            ++a;
+            ++a;
+            b--;
+            --b;
+            return (a == 3 && b == -2);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        PlusPlus,
+        Semicolon,
+        PlusPlus,
+        Identifier,
+        Semicolon,
+        PlusPlus,
+        Identifier,
+        Semicolon,
+        Identifier,
+        MinusMinus,
+        Semicolon,
+        MinusMinus,
+        Identifier,
+        Semicolon,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Minus,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_incr_in_binary_expr() {
+    let src = r#"
+        int main(void) {
+            int a = 2;
+            int b = 3 + a++;
+            int c = 4 + ++b;
+            return (a == 3 && b == 6 && c == 10);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Plus,
+        Identifier,
+        PlusPlus,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Plus,
+        PlusPlus,
+        Identifier,
+        Semicolon,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_incr_parenthesized() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 1;
+            int b = 2;
+            int c = -++(a);
+            int d = !(b)--;
+            return (a == 2 && b == 1 && c == -2 && d == 0);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Minus,
+        PlusPlus,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Bang,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        MinusMinus,
+        Semicolon,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Minus,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_postfix_incr_and_decr() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 2;
+            int c = a++;
+            int d = b--;
+            return (a == 2 && b == 1 && c == 1 && d == 2);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Identifier,
+        PlusPlus,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Identifier,
+        MinusMinus,
+        Semicolon,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_postfix_precedence() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = !a++;
+            return (a == 2 && b == 0);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Bang,
+        Identifier,
+        PlusPlus,
+        Semicolon,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_prefix_incr_and_decr() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 2;
+            int c = ++a;
+            int d = --b;
+            return (a == 2 && b == 1 && c == 2 && d == 1);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        PlusPlus,
+        Identifier,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        MinusMinus,
+        Identifier,
+        Semicolon,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
         CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);

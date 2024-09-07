@@ -2049,6 +2049,58 @@ fn test_chapter_5_invalid_parse_declare_keyword_as_var() {
 }
 
 #[test]
+fn test_chapter_5_invalid_parse_extra_credit_binary_decrement() {
+    assert_error(
+        r#"
+        int main(void) {
+            int a = 0;
+            return a -- 1;
+                      //^ Expected Semicolon, but found '1'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_5_invalid_parse_extra_credit_binary_increment() {
+    assert_error(
+        r#"
+        int main(void) {
+            int a = 0;
+            return a ++ 1;
+                      //^ Expected Semicolon, but found '1'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_5_invalid_parse_extra_credit_compound_initializer() {
+    assert_error(
+        r#"
+        int main(void) {
+            int a += 0;
+                //^^ Expected Semicolon, but found '+='
+            return a;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_5_invalid_parse_extra_credit_increment_declaration() {
+    assert_error(
+        r#"
+        int main(void) {
+            int a++;
+               //^^ Expected Semicolon, but found '++'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
 fn test_chapter_5_invalid_parse_invalid_specifier() {
     assert_error(
         r#"
@@ -2208,6 +2260,135 @@ fn test_chapter_5_invalid_semantics_declared_after_use() {
 }
 
 #[test]
+fn test_chapter_5_invalid_semantics_extra_credit_compound_invalid_lvalue() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            -a += 1;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Assign [+=]
+            │   ├── Unary [-]
+            │   │   ╰── Var [a]
+            │   ╰── Constant [1]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_compound_invalid_lvalue_2() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            (a += 1) -= 2;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ╰── Assign [-=]
+                ├── Assign [+=]
+                │   ├── Var [a]
+                │   ╰── Constant [1]
+                ╰── Constant [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_postfix_decr_non_lvalue() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            return a++--;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ╰── Return
+                ╰── Postfix [--]
+                    ╰── Postfix [++]
+                        ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_postfix_incr_non_lvalue() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            (a = 4)++;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ╰── Postfix [++]
+                ╰── Assign [=]
+                    ├── Var [a]
+                    ╰── Constant [4]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_prefix_decr_non_lvalue() {
+    let src = r#"
+        int main(void) {
+            return --3;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── Return
+                ╰── Unary [--]
+                    ╰── Constant [3]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_prefix_incr_non_lvalue() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            ++(a+1);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Unary [++]
+            │   ╰── Binary [+]
+            │       ├── Var [a]
+            │       ╰── Constant [1]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
 fn test_chapter_5_invalid_semantics_extra_credit_undeclared_bitwise_op() {
     let src = r#"
         int main(void){
@@ -2221,6 +2402,87 @@ fn test_chapter_5_invalid_semantics_extra_credit_undeclared_bitwise_op() {
                 ╰── Binary [>>]
                     ├── Var [a]
                     ╰── Constant [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_undeclared_compound_assignment() {
+    let src = r#"
+        int main(void) {
+            a += 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Assign [+=]
+            │   ├── Var [a]
+            │   ╰── Constant [1]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_undeclared_compound_assignment_use() {
+    let src = r#"
+        int main(void) {
+            int b = 10;
+            b *= a;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [b]
+            │   ╰── Constant [10]
+            ├── Assign [*=]
+            │   ├── Var [b]
+            │   ╰── Var [a]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_undeclared_postfix_decr() {
+    let src = r#"
+        int main(void) {
+            a--;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Postfix [--]
+            │   ╰── Var [a]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_invalid_semantics_extra_credit_undeclared_prefix_incr() {
+    let src = r#"
+        int main(void) {
+            a++;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Postfix [++]
+            │   ╰── Var [a]
+            ╰── Return
+                ╰── Constant [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2710,6 +2972,855 @@ fn test_chapter_5_valid_extra_credit_bitwise_shiftr_assign() {
             │       ╰── Constant [4]
             ╰── Return
                 ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_assignment_chained() {
+    let src = r#"
+        int main(void) {
+            int a = 250;
+            int b = 200;
+            int c = 100;
+            int d = 75;
+            int e = -25;
+            int f = 0;
+            int x = 0;
+            x = a += b -= c *= d /= e %= f = -7;
+            return a == 2250 && b == 2000 && c == -1800 && d == -18 && e == -4 &&
+                   f == -7 && x == 2250;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [250]
+            ├── Declaration [b]
+            │   ╰── Constant [200]
+            ├── Declaration [c]
+            │   ╰── Constant [100]
+            ├── Declaration [d]
+            │   ╰── Constant [75]
+            ├── Declaration [e]
+            │   ╰── Unary [-]
+            │       ╰── Constant [25]
+            ├── Declaration [f]
+            │   ╰── Constant [0]
+            ├── Declaration [x]
+            │   ╰── Constant [0]
+            ├── Assign [=]
+            │   ├── Var [x]
+            │   ╰── Assign [+=]
+            │       ├── Var [a]
+            │       ╰── Assign [-=]
+            │           ├── Var [b]
+            │           ╰── Assign [*=]
+            │               ├── Var [c]
+            │               ╰── Assign [/=]
+            │                   ├── Var [d]
+            │                   ╰── Assign [&=]
+            │                       ├── Var [e]
+            │                       ╰── Assign [=]
+            │                           ├── Var [f]
+            │                           ╰── Unary [-]
+            │                               ╰── Constant [7]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Binary [&&]
+                    │   │   ├── Binary [&&]
+                    │   │   │   ├── Binary [&&]
+                    │   │   │   │   ├── Binary [&&]
+                    │   │   │   │   │   ├── Binary [==]
+                    │   │   │   │   │   │   ├── Var [a]
+                    │   │   │   │   │   │   ╰── Constant [2250]
+                    │   │   │   │   │   ╰── Binary [==]
+                    │   │   │   │   │       ├── Var [b]
+                    │   │   │   │   │       ╰── Constant [2000]
+                    │   │   │   │   ╰── Binary [==]
+                    │   │   │   │       ├── Var [c]
+                    │   │   │   │       ╰── Unary [-]
+                    │   │   │   │           ╰── Constant [1800]
+                    │   │   │   ╰── Binary [==]
+                    │   │   │       ├── Var [d]
+                    │   │   │       ╰── Unary [-]
+                    │   │   │           ╰── Constant [18]
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [e]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [4]
+                    │   ╰── Binary [==]
+                    │       ├── Var [f]
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [7]
+                    ╰── Binary [==]
+                        ├── Var [x]
+                        ╰── Constant [2250]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_assignment_lowest_precedence() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            int b = 12;
+            a += 0 || b;
+            b *= a && 0;
+            int c = 14;
+            c -= a || b;
+            int d = 16;
+            d /= c || d;
+            return (a == 11 && b == 0 && c == 13 && d == 16);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ├── Declaration [b]
+            │   ╰── Constant [12]
+            ├── Assign [+=]
+            │   ├── Var [a]
+            │   ╰── Binary [||]
+            │       ├── Constant [0]
+            │       ╰── Var [b]
+            ├── Assign [*=]
+            │   ├── Var [b]
+            │   ╰── Binary [&&]
+            │       ├── Var [a]
+            │       ╰── Constant [0]
+            ├── Declaration [c]
+            │   ╰── Constant [14]
+            ├── Assign [-=]
+            │   ├── Var [c]
+            │   ╰── Binary [||]
+            │       ├── Var [a]
+            │       ╰── Var [b]
+            ├── Declaration [d]
+            │   ╰── Constant [16]
+            ├── Assign [/=]
+            │   ├── Var [d]
+            │   ╰── Binary [||]
+            │       ├── Var [c]
+            │       ╰── Var [d]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Binary [&&]
+                    │   │   ├── Binary [==]
+                    │   │   │   ├── Var [a]
+                    │   │   │   ╰── Constant [11]
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Constant [0]
+                    │   ╰── Binary [==]
+                    │       ├── Var [c]
+                    │       ╰── Constant [13]
+                    ╰── Binary [==]
+                        ├── Var [d]
+                        ╰── Constant [16]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_assignment_use_result() {
+    let src = r#"
+        int main(void) {
+            int x = 1;
+            int y = x += 3;
+            return (x == 4 && y == 4);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [1]
+            ├── Declaration [y]
+            │   ╰── Assign [+=]
+            │       ├── Var [x]
+            │       ╰── Constant [3]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [x]
+                    │   ╰── Constant [4]
+                    ╰── Binary [==]
+                        ├── Var [y]
+                        ╰── Constant [4]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_bitwise_and() {
+    let src = r#"
+        int main(void) {
+            int to_and = 3;
+            to_and &= 6;
+            return to_and;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [to_and]
+            │   ╰── Constant [3]
+            ├── Assign [&=]
+            │   ├── Var [to_and]
+            │   ╰── Constant [6]
+            ╰── Return
+                ╰── Var [to_and]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_precedence() {
+    let src = r#"
+        int main(void) {
+            int a = 11;
+            int b = 12;
+            a &= 0 || b;
+            b ^= a || 1;
+            int c = 14;
+            c |= a || b;
+            int d = 16;
+            d >>= c || d;
+            int e = 18;
+            e <<= c || d;
+            return (a == 1 && b == 13 && c == 15 && d == 8 && e == 36);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [11]
+            ├── Declaration [b]
+            │   ╰── Constant [12]
+            ├── Assign [&=]
+            │   ├── Var [a]
+            │   ╰── Binary [||]
+            │       ├── Constant [0]
+            │       ╰── Var [b]
+            ├── Assign [^=]
+            │   ├── Var [b]
+            │   ╰── Binary [||]
+            │       ├── Var [a]
+            │       ╰── Constant [1]
+            ├── Declaration [c]
+            │   ╰── Constant [14]
+            ├── Assign [|=]
+            │   ├── Var [c]
+            │   ╰── Binary [||]
+            │       ├── Var [a]
+            │       ╰── Var [b]
+            ├── Declaration [d]
+            │   ╰── Constant [16]
+            ├── Assign [>>=]
+            │   ├── Var [d]
+            │   ╰── Binary [||]
+            │       ├── Var [c]
+            │       ╰── Var [d]
+            ├── Declaration [e]
+            │   ╰── Constant [18]
+            ├── Assign [<<=]
+            │   ├── Var [e]
+            │   ╰── Binary [||]
+            │       ├── Var [c]
+            │       ╰── Var [d]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Binary [&&]
+                    │   │   ├── Binary [&&]
+                    │   │   │   ├── Binary [==]
+                    │   │   │   │   ├── Var [a]
+                    │   │   │   │   ╰── Constant [1]
+                    │   │   │   ╰── Binary [==]
+                    │   │   │       ├── Var [b]
+                    │   │   │       ╰── Constant [13]
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [c]
+                    │   │       ╰── Constant [15]
+                    │   ╰── Binary [==]
+                    │       ├── Var [d]
+                    │       ╰── Constant [8]
+                    ╰── Binary [==]
+                        ├── Var [e]
+                        ╰── Constant [36]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_bitwise_chained() {
+    let src = r#"
+        int main(void) {
+            int a = 250;
+            int b = 200;
+            int c = 100;
+            int d = 75;
+            int e = 50;
+            int f = 25;
+            int g = 10;
+            int h = 1;
+            int j = 0;
+            int x = 0;
+            x = a &= b *= c |= d = e ^= f += g >>= h <<= j = 1;
+            return (a == 40 && b == 21800 && c == 109 && d == 41 && e == 41 &&
+                    f == 27 && g == 2 && h == 2 && j == 1 && x == 40);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [250]
+            ├── Declaration [b]
+            │   ╰── Constant [200]
+            ├── Declaration [c]
+            │   ╰── Constant [100]
+            ├── Declaration [d]
+            │   ╰── Constant [75]
+            ├── Declaration [e]
+            │   ╰── Constant [50]
+            ├── Declaration [f]
+            │   ╰── Constant [25]
+            ├── Declaration [g]
+            │   ╰── Constant [10]
+            ├── Declaration [h]
+            │   ╰── Constant [1]
+            ├── Declaration [j]
+            │   ╰── Constant [0]
+            ├── Declaration [x]
+            │   ╰── Constant [0]
+            ├── Assign [=]
+            │   ├── Var [x]
+            │   ╰── Assign [&=]
+            │       ├── Var [a]
+            │       ╰── Assign [*=]
+            │           ├── Var [b]
+            │           ╰── Assign [|=]
+            │               ├── Var [c]
+            │               ╰── Assign [=]
+            │                   ├── Var [d]
+            │                   ╰── Assign [^=]
+            │                       ├── Var [e]
+            │                       ╰── Assign [+=]
+            │                           ├── Var [f]
+            │                           ╰── Assign [>>=]
+            │                               ├── Var [g]
+            │                               ╰── Assign [<<=]
+            │                                   ├── Var [h]
+            │                                   ╰── Assign [=]
+            │                                       ├── Var [j]
+            │                                       ╰── Constant [1]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Binary [&&]
+                    │   │   ├── Binary [&&]
+                    │   │   │   ├── Binary [&&]
+                    │   │   │   │   ├── Binary [&&]
+                    │   │   │   │   │   ├── Binary [&&]
+                    │   │   │   │   │   │   ├── Binary [&&]
+                    │   │   │   │   │   │   │   ├── Binary [&&]
+                    │   │   │   │   │   │   │   │   ├── Binary [==]
+                    │   │   │   │   │   │   │   │   │   ├── Var [a]
+                    │   │   │   │   │   │   │   │   │   ╰── Constant [40]
+                    │   │   │   │   │   │   │   │   ╰── Binary [==]
+                    │   │   │   │   │   │   │   │       ├── Var [b]
+                    │   │   │   │   │   │   │   │       ╰── Constant [21800]
+                    │   │   │   │   │   │   │   ╰── Binary [==]
+                    │   │   │   │   │   │   │       ├── Var [c]
+                    │   │   │   │   │   │   │       ╰── Constant [109]
+                    │   │   │   │   │   │   ╰── Binary [==]
+                    │   │   │   │   │   │       ├── Var [d]
+                    │   │   │   │   │   │       ╰── Constant [41]
+                    │   │   │   │   │   ╰── Binary [==]
+                    │   │   │   │   │       ├── Var [e]
+                    │   │   │   │   │       ╰── Constant [41]
+                    │   │   │   │   ╰── Binary [==]
+                    │   │   │   │       ├── Var [f]
+                    │   │   │   │       ╰── Constant [27]
+                    │   │   │   ╰── Binary [==]
+                    │   │   │       ├── Var [g]
+                    │   │   │       ╰── Constant [2]
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [h]
+                    │   │       ╰── Constant [2]
+                    │   ╰── Binary [==]
+                    │       ├── Var [j]
+                    │       ╰── Constant [1]
+                    ╰── Binary [==]
+                        ├── Var [x]
+                        ╰── Constant [40]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_bitwise_or() {
+    let src = r#"
+        int main(void) {
+            int to_or = 1;
+            to_or |= 30;
+            return to_or;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [to_or]
+            │   ╰── Constant [1]
+            ├── Assign [|=]
+            │   ├── Var [to_or]
+            │   ╰── Constant [30]
+            ╰── Return
+                ╰── Var [to_or]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_bitwise_shiftl() {
+    let src = r#"
+        int main(void) {
+            int to_shiftl = 3;
+            to_shiftl <<= 4;
+            return to_shiftl;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [to_shiftl]
+            │   ╰── Constant [3]
+            ├── Assign [<<=]
+            │   ├── Var [to_shiftl]
+            │   ╰── Constant [4]
+            ╰── Return
+                ╰── Var [to_shiftl]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_bitwise_shiftr() {
+    let src = r#"
+        int main(void) {
+            int to_shiftr = 382574;
+            to_shiftr >>= 4;
+            return to_shiftr;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [to_shiftr]
+            │   ╰── Constant [382574]
+            ├── Assign [>>=]
+            │   ├── Var [to_shiftr]
+            │   ╰── Constant [4]
+            ╰── Return
+                ╰── Var [to_shiftr]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_bitwise_xor() {
+    let src = r#"
+        int main(void) {
+            int to_xor = 7;
+            to_xor ^= 5;
+            return to_xor;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [to_xor]
+            │   ╰── Constant [7]
+            ├── Assign [^=]
+            │   ├── Var [to_xor]
+            │   ╰── Constant [5]
+            ╰── Return
+                ╰── Var [to_xor]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_divide() {
+    let src = r#"
+        int main(void) {
+            int to_divide = 8;
+            to_divide /= 4;
+            return to_divide;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [to_divide]
+            │   ╰── Constant [8]
+            ├── Assign [/=]
+            │   ├── Var [to_divide]
+            │   ╰── Constant [4]
+            ╰── Return
+                ╰── Var [to_divide]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_minus() {
+    let src = r#"
+        int main(void) {
+            int to_subtract = 10;
+            to_subtract -= 8;
+            return to_subtract;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [to_subtract]
+            │   ╰── Constant [10]
+            ├── Assign [-=]
+            │   ├── Var [to_subtract]
+            │   ╰── Constant [8]
+            ╰── Return
+                ╰── Var [to_subtract]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_mod() {
+    let src = r#"
+        int main(void) {
+            int to_mod = 5;
+            to_mod %= 3;
+            return to_mod;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [to_mod]
+            │   ╰── Constant [5]
+            ├── Assign [&=]
+            │   ├── Var [to_mod]
+            │   ╰── Constant [3]
+            ╰── Return
+                ╰── Var [to_mod]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_multiply() {
+    let src = r#"
+        int main(void) {
+            int to_multiply = 4;
+            to_multiply *= 3;
+            return to_multiply;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [to_multiply]
+            │   ╰── Constant [4]
+            ├── Assign [*=]
+            │   ├── Var [to_multiply]
+            │   ╰── Constant [3]
+            ╰── Return
+                ╰── Var [to_multiply]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_compound_plus() {
+    let src = r#"
+        int main(void) {
+            int to_add = 0;
+            to_add += 4;
+            return to_add;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [to_add]
+            │   ╰── Constant [0]
+            ├── Assign [+=]
+            │   ├── Var [to_add]
+            │   ╰── Constant [4]
+            ╰── Return
+                ╰── Var [to_add]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_incr_expression_statement() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 0;
+            a++;
+            ++a;
+            ++a;
+            b--;
+            --b;
+            return (a == 3 && b == -2);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Declaration [b]
+            │   ╰── Constant [0]
+            ├── Postfix [++]
+            │   ╰── Var [a]
+            ├── Unary [++]
+            │   ╰── Var [a]
+            ├── Unary [++]
+            │   ╰── Var [a]
+            ├── Postfix [--]
+            │   ╰── Var [b]
+            ├── Unary [--]
+            │   ╰── Var [b]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [a]
+                    │   ╰── Constant [3]
+                    ╰── Binary [==]
+                        ├── Var [b]
+                        ╰── Unary [-]
+                            ╰── Constant [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_incr_in_binary_expr() {
+    let src = r#"
+        int main(void) {
+            int a = 2;
+            int b = 3 + a++;
+            int c = 4 + ++b;
+            return (a == 3 && b == 6 && c == 10);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [2]
+            ├── Declaration [b]
+            │   ╰── Binary [+]
+            │       ├── Constant [3]
+            │       ╰── Postfix [++]
+            │           ╰── Var [a]
+            ├── Declaration [c]
+            │   ╰── Binary [+]
+            │       ├── Constant [4]
+            │       ╰── Unary [++]
+            │           ╰── Var [b]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Binary [==]
+                    │   │   ├── Var [a]
+                    │   │   ╰── Constant [3]
+                    │   ╰── Binary [==]
+                    │       ├── Var [b]
+                    │       ╰── Constant [6]
+                    ╰── Binary [==]
+                        ├── Var [c]
+                        ╰── Constant [10]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_incr_parenthesized() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 1;
+            int b = 2;
+            int c = -++(a);
+            int d = !(b)--;
+            return (a == 2 && b == 1 && c == -2 && d == 0);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Declaration [b]
+            │   ╰── Constant [2]
+            ├── Declaration [c]
+            │   ╰── Unary [-]
+            │       ╰── Unary [++]
+            │           ╰── Var [a]
+            ├── Declaration [d]
+            │   ╰── Unary [!]
+            │       ╰── Postfix [--]
+            │           ╰── Var [b]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Binary [&&]
+                    │   │   ├── Binary [==]
+                    │   │   │   ├── Var [a]
+                    │   │   │   ╰── Constant [2]
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Constant [1]
+                    │   ╰── Binary [==]
+                    │       ├── Var [c]
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [2]
+                    ╰── Binary [==]
+                        ├── Var [d]
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_postfix_incr_and_decr() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 2;
+            int c = a++;
+            int d = b--;
+            return (a == 2 && b == 1 && c == 1 && d == 2);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Declaration [b]
+            │   ╰── Constant [2]
+            ├── Declaration [c]
+            │   ╰── Postfix [++]
+            │       ╰── Var [a]
+            ├── Declaration [d]
+            │   ╰── Postfix [--]
+            │       ╰── Var [b]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Binary [&&]
+                    │   │   ├── Binary [==]
+                    │   │   │   ├── Var [a]
+                    │   │   │   ╰── Constant [2]
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Constant [1]
+                    │   ╰── Binary [==]
+                    │       ├── Var [c]
+                    │       ╰── Constant [1]
+                    ╰── Binary [==]
+                        ├── Var [d]
+                        ╰── Constant [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_postfix_precedence() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = !a++;
+            return (a == 2 && b == 0);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Declaration [b]
+            │   ╰── Unary [!]
+            │       ╰── Postfix [++]
+            │           ╰── Var [a]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [a]
+                    │   ╰── Constant [2]
+                    ╰── Binary [==]
+                        ├── Var [b]
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_5_valid_extra_credit_prefix_incr_and_decr() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 2;
+            int c = ++a;
+            int d = --b;
+            return (a == 2 && b == 1 && c == 2 && d == 1);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Declaration [b]
+            │   ╰── Constant [2]
+            ├── Declaration [c]
+            │   ╰── Unary [++]
+            │       ╰── Var [a]
+            ├── Declaration [d]
+            │   ╰── Unary [--]
+            │       ╰── Var [b]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Binary [&&]
+                    │   │   ├── Binary [==]
+                    │   │   │   ├── Var [a]
+                    │   │   │   ╰── Constant [2]
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Constant [1]
+                    │   ╰── Binary [==]
+                    │       ├── Var [c]
+                    │       ╰── Constant [2]
+                    ╰── Binary [==]
+                        ├── Var [d]
+                        ╰── Constant [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }

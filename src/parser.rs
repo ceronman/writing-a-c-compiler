@@ -2,8 +2,8 @@
 mod test;
 
 use crate::ast::{
-    AssignOp, BinaryOp, BlockItem, Declaration, Expression, Function, Identifier, Node, Program,
-    Statement, UnaryOp,
+    AssignOp, BinaryOp, BlockItem, Declaration, Expression, Function, Identifier, Node, PostfixOp,
+    Program, Statement, UnaryOp,
 };
 use crate::lexer::{Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
@@ -106,7 +106,11 @@ impl<'src> Parser<'src> {
         let mut expr = match self.current.kind {
             TokenKind::Constant => self.int()?,
             TokenKind::Identifier => self.var()?,
-            TokenKind::Minus | TokenKind::Tilde | TokenKind::Bang => self.unary_expression()?,
+            TokenKind::Minus
+            | TokenKind::Tilde
+            | TokenKind::Bang
+            | TokenKind::PlusPlus
+            | TokenKind::MinusMinus => self.unary_expression()?,
             TokenKind::OpenParen => {
                 let start = self.current.span;
                 self.advance();
@@ -127,6 +131,17 @@ impl<'src> Parser<'src> {
         };
 
         loop {
+            // Postfix operator parsing
+            if let TokenKind::PlusPlus | TokenKind::MinusMinus = self.current.kind {
+                let precedence = 13;
+                if precedence < min_precedence {
+                    break;
+                }
+                let op = self.postfix_op()?;
+                expr = Node::from(expr.span + op.span, Expression::Postfix { op, expr });
+                continue;
+            }
+
             let precedence = match self.current.kind {
                 TokenKind::Equal
                 | TokenKind::PlusEqual
@@ -258,10 +273,31 @@ impl<'src> Parser<'src> {
             TokenKind::Minus => UnaryOp::Negate,
             TokenKind::Tilde => UnaryOp::Complement,
             TokenKind::Bang => UnaryOp::Not,
+            TokenKind::PlusPlus => UnaryOp::Increment,
+            TokenKind::MinusMinus => UnaryOp::Decrement,
             _ => {
                 return Err(ParserError {
                     msg: format!(
-                        "Expected unary operator, but found '{}'",
+                        "Expected prefix unary operator, but found '{}'",
+                        self.current.slice(self.source)
+                    ),
+                    span: self.current.span,
+                });
+            }
+        };
+        let span = self.current.span;
+        self.advance();
+        Ok(Node::from(span, op))
+    }
+
+    fn postfix_op(&mut self) -> Result<Node<PostfixOp>> {
+        let op = match self.current.kind {
+            TokenKind::PlusPlus => PostfixOp::Increment,
+            TokenKind::MinusMinus => PostfixOp::Decrement,
+            _ => {
+                return Err(ParserError {
+                    msg: format!(
+                        "Expected postfix unary operator, but found '{}'",
                         self.current.slice(self.source)
                     ),
                     span: self.current.span,

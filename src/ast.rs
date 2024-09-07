@@ -45,6 +45,10 @@ pub enum Expression {
         op: Node<UnaryOp>,
         expr: Node<Expression>,
     },
+    Postfix {
+        op: Node<PostfixOp>,
+        expr: Node<Expression>,
+    },
     Binary {
         op: Node<BinaryOp>,
         left: Node<Expression>,
@@ -68,6 +72,14 @@ pub enum UnaryOp {
     Complement,
     Negate,
     Not,
+    Increment,
+    Decrement,
+}
+
+#[derive(Debug)]
+pub enum PostfixOp {
+    Increment,
+    Decrement,
 }
 
 #[derive(Debug)]
