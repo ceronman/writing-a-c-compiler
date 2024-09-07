@@ -32,16 +32,23 @@ pub enum TokenKind {
 
     Plus,
     PlusPlus,
+    PlusEqual,
     Minus,
     MinusMinus,
+    MinusEqual,
     Star,
+    StarEqual,
     Slash,
+    SlashEqual,
     Percent,
+    PercentEqual,
 
     Ampersand,
     AmpersandAmpersand,
+    AmpersandEqual,
     Pipe,
     PipePipe,
+    PipeEqual,
     Tilde,
     Circumflex,
 
@@ -51,9 +58,11 @@ pub enum TokenKind {
     BangEqual,
     Less,
     LessLess,
+    LessLessEqual,
     LessEqual,
     Greater,
     GreaterGreater,
+    GreaterGreaterEqual,
     GreaterEqual,
 
     OpenParen,
@@ -102,38 +111,39 @@ impl<'src> Lexer<'src> {
             '{' => TokenKind::OpenBrace,
             '}' => TokenKind::CloseBrace,
             ';' => TokenKind::Semicolon,
-            '+' => {
-                if self.eat('+') {
-                    TokenKind::PlusPlus
-                } else {
-                    TokenKind::Plus
-                }
-            }
-            '-' => {
-                if self.eat('-') {
-                    TokenKind::MinusMinus
-                } else {
-                    TokenKind::Minus
-                }
-            }
-            '*' => TokenKind::Star,
-            '/' => TokenKind::Slash,
-            '%' => TokenKind::Percent,
+            '+' => match self.peek() {
+                Some('+') => self.eat_and(TokenKind::PlusPlus),
+                Some('=') => self.eat_and(TokenKind::PlusEqual),
+                _ => TokenKind::Plus,
+            },
+            '-' => match self.peek() {
+                Some('-') => self.eat_and(TokenKind::MinusMinus),
+                Some('=') => self.eat_and(TokenKind::MinusEqual),
+                _ => TokenKind::Minus,
+            },
+            '*' => match self.peek() {
+                Some('=') => self.eat_and(TokenKind::StarEqual),
+                _ => TokenKind::Star,
+            },
+            '/' => match self.peek() {
+                Some('=') => self.eat_and(TokenKind::SlashEqual),
+                _ => TokenKind::Slash,
+            },
+            '%' => match self.peek() {
+                Some('=') => self.eat_and(TokenKind::PercentEqual),
+                _ => TokenKind::Percent,
+            },
             '~' => TokenKind::Tilde,
-            '&' => {
-                if self.eat('&') {
-                    TokenKind::AmpersandAmpersand
-                } else {
-                    TokenKind::Ampersand
-                }
-            }
-            '|' => {
-                if self.eat('|') {
-                    TokenKind::PipePipe
-                } else {
-                    TokenKind::Pipe
-                }
-            }
+            '&' => match self.peek() {
+                Some('&') => self.eat_and(TokenKind::AmpersandAmpersand),
+                Some('=') => self.eat_and(TokenKind::AmpersandEqual),
+                _ => TokenKind::Ampersand,
+            },
+            '|' => match self.peek() {
+                Some('|') => self.eat_and(TokenKind::PipePipe),
+                Some('=') => self.eat_and(TokenKind::PipeEqual),
+                _ => TokenKind::Pipe,
+            },
             '^' => TokenKind::Circumflex,
             '=' => {
                 if self.eat('=') {
@@ -150,26 +160,20 @@ impl<'src> Lexer<'src> {
                 }
             }
             '>' => match self.peek() {
-                Some('>') => {
-                    self.advance();
-                    TokenKind::GreaterGreater
-                }
-                Some('=') => {
-                    self.advance();
-                    TokenKind::GreaterEqual
-                }
+                Some('>') => match self.peek_next() {
+                    Some('=') => self.eat_eat_and(TokenKind::GreaterGreaterEqual),
+                    _ => self.eat_and(TokenKind::GreaterGreater),
+                },
+                Some('=') => self.eat_and(TokenKind::GreaterEqual),
                 _ => TokenKind::Greater,
             },
 
             '<' => match self.peek() {
-                Some('<') => {
-                    self.advance();
-                    TokenKind::LessLess
-                }
-                Some('=') => {
-                    self.advance();
-                    TokenKind::LessEqual
-                }
+                Some('<') => match self.peek_next() {
+                    Some('=') => self.eat_eat_and(TokenKind::LessLessEqual),
+                    _ => self.eat_and(TokenKind::LessLess),
+                },
+                Some('=') => self.eat_and(TokenKind::LessEqual),
                 _ => TokenKind::Less,
             },
             '0'..='9' => self.constant(),
@@ -223,6 +227,17 @@ impl<'src> Lexer<'src> {
         }
     }
 
+    fn eat_and(&mut self, kind: TokenKind) -> TokenKind {
+        self.advance();
+        kind
+    }
+
+    fn eat_eat_and(&mut self, kind: TokenKind) -> TokenKind {
+        self.advance();
+        self.advance();
+        kind
+    }
+
     fn eat(&mut self, expected: char) -> bool {
         match self.peek() {
             Some(c) if c == expected => {
@@ -235,6 +250,10 @@ impl<'src> Lexer<'src> {
 
     fn peek(&self) -> Option<char> {
         self.chars.clone().next()
+    }
+
+    fn peek_next(&self) -> Option<char> {
+        self.chars.clone().nth(1)
     }
 }
 
