@@ -51,6 +51,7 @@ pub enum TokenKind {
     PipeEqual,
     Tilde,
     Circumflex,
+    CircumflexEqual,
 
     Bang,
     Equal,
@@ -144,7 +145,10 @@ impl<'src> Lexer<'src> {
                 Some('=') => self.eat_and(TokenKind::PipeEqual),
                 _ => TokenKind::Pipe,
             },
-            '^' => TokenKind::Circumflex,
+            '^' => match self.peek() {
+                Some('=') => self.eat_and(TokenKind::CircumflexEqual),
+                _ => TokenKind::Circumflex,
+            },
             '=' => {
                 if self.eat('=') {
                     TokenKind::EqualEqual

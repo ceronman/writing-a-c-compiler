@@ -3013,8 +3013,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_preceden
         Identifier,
         Semicolon,
         Identifier,
-        Circumflex,
-        Equal,
+        CircumflexEqual,
         Identifier,
         PipePipe,
         Constant,
@@ -3025,7 +3024,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_preceden
         Constant,
         Semicolon,
         Identifier,
-        PlusEqual,
+        PipeEqual,
         Identifier,
         PipePipe,
         Identifier,
@@ -3163,12 +3162,11 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_chained() {
         Identifier,
         StarEqual,
         Identifier,
-        PlusEqual,
+        PipeEqual,
         Identifier,
         Equal,
         Identifier,
-        Circumflex,
-        Equal,
+        CircumflexEqual,
         Identifier,
         PlusEqual,
         Identifier,
@@ -3238,7 +3236,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_or() {
     "#;
     let expected = vec![
         Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
-        Semicolon, Identifier, PlusEqual, Constant, Semicolon, Return, Identifier, Semicolon,
+        Semicolon, Identifier, PipeEqual, Constant, Semicolon, Return, Identifier, Semicolon,
         CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);
@@ -3320,9 +3318,25 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_xor() {
         }
     "#;
     let expected = vec![
-        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
-        Semicolon, Identifier, Circumflex, Equal, Constant, Semicolon, Return, Identifier,
-        Semicolon, CloseBrace,
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        CircumflexEqual,
+        Constant,
+        Semicolon,
+        Return,
+        Identifier,
+        Semicolon,
+        CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);
 }

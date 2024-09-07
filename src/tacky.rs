@@ -220,7 +220,7 @@ impl TackyGenerator {
             }
 
             ast::Expression::Var(name) => Val::Var(name.clone()),
-            ast::Expression::Assignment { left, right } => {
+            ast::Expression::Assignment { op, left, right } => {
                 let ast::Expression::Var(name) = left.as_ref() else {
                     unreachable!()
                 };

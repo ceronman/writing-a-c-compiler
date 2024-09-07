@@ -51,6 +51,7 @@ pub enum Expression {
         right: Node<Expression>,
     },
     Assignment {
+        op: Node<AssignOp>,
         left: Node<Expression>,
         right: Node<Expression>,
     },
@@ -89,6 +90,21 @@ pub enum BinaryOp {
     LessOrEqualThan,
     GreaterThan,
     GreaterOrEqualThan,
+}
+
+#[derive(Debug)]
+pub enum AssignOp {
+    Equal,
+    AddEqual,
+    SubEqual,
+    MulEqual,
+    DivEqual,
+    ModEqual,
+    BitAndEqual,
+    BitOrEqual,
+    BitXorEqual,
+    ShiftLeftEqual,
+    ShiftRightEqual,
 }
 
 impl<T> Deref for Node<T> {

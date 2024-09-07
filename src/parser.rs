@@ -1,10 +1,7 @@
 #[cfg(test)]
 mod test;
 
-use crate::ast::{
-    BinaryOp, BlockItem, Declaration, Expression, Function, Identifier, Node, Program, Statement,
-    UnaryOp,
-};
+use crate::ast::{AssignOp, BinaryOp, BlockItem, Declaration, Expression, Function, Identifier, Node, Program, Statement, UnaryOp};
 use crate::lexer::{Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
 use std::error::Error;
@@ -128,7 +125,17 @@ impl<'src> Parser<'src> {
 
         loop {
             let precedence = match self.current.kind {
-                TokenKind::Equal => 1,
+                TokenKind::Equal
+                | TokenKind::PlusEqual
+                | TokenKind::MinusEqual
+                | TokenKind::StarEqual
+                | TokenKind::SlashEqual
+                | TokenKind::PercentEqual
+                | TokenKind::AmpersandEqual
+                | TokenKind::PipeEqual
+                | TokenKind::CircumflexEqual
+                | TokenKind::LessLessEqual
+                | TokenKind::GreaterGreaterEqual => 1,
                 TokenKind::PipePipe => 2,
                 TokenKind::AmpersandAmpersand => 3,
                 TokenKind::Pipe => 4,
@@ -149,13 +156,12 @@ impl<'src> Parser<'src> {
                 break;
             }
 
-            expr = if let TokenKind::Equal = self.current.kind {
-                self.advance();
+            expr = if let Ok(op) = self.assignment_op() {
                 let left = expr;
                 let right = self.expression_precedence(precedence)?;
                 Node::from(
                     left.span + right.span,
-                    Expression::Assignment { left, right },
+                    Expression::Assignment { op, left, right },
                 )
             } else {
                 let op = self.binary_op()?;
@@ -178,6 +184,34 @@ impl<'src> Parser<'src> {
         let expr = self.expression_precedence(12)?;
         let end = self.current.span;
         Ok(Node::from(start + end, Expression::Unary { op, expr }))
+    }
+
+    fn assignment_op(&mut self) -> Result<Node<AssignOp>> {
+        let op = match self.current.kind {
+            TokenKind::Equal => AssignOp::Equal,
+            TokenKind::PlusEqual => AssignOp::AddEqual,
+            TokenKind::MinusEqual => AssignOp::SubEqual,
+            TokenKind::StarEqual => AssignOp::MulEqual,
+            TokenKind::SlashEqual => AssignOp::DivEqual,
+            TokenKind::PercentEqual => AssignOp::ModEqual,
+            TokenKind::AmpersandEqual => AssignOp::BitAndEqual,
+            TokenKind::PipeEqual => AssignOp::BitOrEqual,
+            TokenKind::CircumflexEqual => AssignOp::BitXorEqual,
+            TokenKind::LessLessEqual => AssignOp::ShiftLeftEqual,
+            TokenKind::GreaterGreaterEqual => AssignOp::ShiftRightEqual,
+            _ => {
+                return Err(ParserError {
+                    msg: format!(
+                        "Expected assignment operator, but found '{}'",
+                        self.current.slice(self.source)
+                    ),
+                    span: self.current.span,
+                });
+            }
+        };
+        let span = self.current.span;
+        self.advance();
+        Ok(Node::from(span, op))
     }
 
     fn binary_op(&mut self) -> Result<Node<BinaryOp>> {

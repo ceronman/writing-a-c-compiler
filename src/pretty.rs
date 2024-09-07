@@ -1,6 +1,8 @@
 use crate::ast;
 use anyhow::Result;
 use std::io::Write;
+use crate::ast::AssignOp;
+use crate::ast::BinaryOp::{Add, And, BinAnd, BinOr, BinXor, Divide, Equal, GreaterOrEqualThan, GreaterThan, LessOrEqualThan, LessThan, Multiply, NotEqual, Or, Reminder, ShiftLeft, ShiftRight, Subtract};
 
 #[allow(dead_code)]
 pub fn dump_ast(src: &str) -> String {
@@ -141,8 +143,8 @@ fn print_expression(
             print_expression(file, left, "├──", level + 1, &added)?;
             print_expression(file, right, "╰──", level + 1, pipes)?;
         }
-        ast::Expression::Assignment { left, right } => {
-            writeln!(file, "{indent}{pipe} Assign [=]")?;
+        ast::Expression::Assignment { op, left, right } => {
+            writeln!(file, "{indent}{pipe} Assign [{}]", assign_op(op))?;
             let mut added = pipes.to_vec();
             added.push(level + 1);
             print_expression(file, left, "├──", level + 1, &added)?;
@@ -173,6 +175,23 @@ fn binary_op(op: &ast::BinaryOp) -> &str {
         LessOrEqualThan => "<=",
         GreaterThan => ">",
         GreaterOrEqualThan => ">=",
+    }
+}
+
+fn assign_op(op: &ast::AssignOp) -> &str {
+    use ast::AssignOp::*;
+    match op {
+        Equal => "=",
+        AddEqual => "+=",
+        SubEqual => "-=",
+        MulEqual => "*=",
+        DivEqual => "/=",
+        ModEqual => "&=",
+        BitAndEqual => "&=",
+        BitOrEqual => "|=",
+        BitXorEqual => "^=",
+        ShiftLeftEqual => "<<=",
+        ShiftRightEqual => ">>=",
     }
 }
 
