@@ -224,7 +224,35 @@ impl TackyGenerator {
                 let ast::Expression::Var(name) = left.as_ref() else {
                     unreachable!()
                 };
-                let result = self.emit_expr(right);
+                let op = match op.as_ref() {
+                    ast::AssignOp::Equal => None,
+                    ast::AssignOp::AddEqual => Some(BinaryOp::Add),
+                    ast::AssignOp::SubEqual => Some(BinaryOp::Subtract),
+                    ast::AssignOp::MulEqual => Some(BinaryOp::Multiply),
+                    ast::AssignOp::DivEqual => Some(BinaryOp::Divide),
+                    ast::AssignOp::ModEqual => Some(BinaryOp::Reminder),
+                    ast::AssignOp::BitAndEqual => Some(BinaryOp::BinAnd),
+                    ast::AssignOp::BitOrEqual => Some(BinaryOp::BinOr),
+                    ast::AssignOp::BitXorEqual => Some(BinaryOp::BinXor),
+                    ast::AssignOp::ShiftLeftEqual => Some(BinaryOp::ShiftLeft),
+                    ast::AssignOp::ShiftRightEqual => Some(BinaryOp::ShiftRight),
+                };
+
+                let result = if let Some(op) = op {
+                    let src1 = self.emit_expr(left);
+                    let dst = self.make_temp();
+                    let src2 = self.emit_expr(right);
+                    self.instructions.push(Instruction::Binary {
+                        op,
+                        src1,
+                        src2,
+                        dst: dst.clone(),
+                    });
+                    dst
+                } else {
+                    self.emit_expr(right)
+                };
+
                 self.instructions.push(Instruction::Copy {
                     src: result,
                     dst: Val::Var(name.clone()),

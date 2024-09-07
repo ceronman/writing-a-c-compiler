@@ -61,14 +61,16 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
 
             Instruction::Sal(dst) => {
                 emit_ins(output, "sall")?;
-                emit_operand(output, &Operand::Reg(Reg::Ax), 1)?;
+                emit_operand(output, &Operand::Reg(Reg::Cx), 1)?;
+                write!(output, ", ")?;
                 emit_operand(output, dst, 4)?;
                 writeln!(output)?;
             }
 
             Instruction::Sar(dst) => {
                 emit_ins(output, "sarl")?;
-                emit_operand(output, &Operand::Reg(Reg::Ax), 1)?;
+                emit_operand(output, &Operand::Reg(Reg::Cx), 1)?;
+                write!(output, ", ")?;
                 emit_operand(output, dst, 4)?;
             }
 
@@ -81,8 +83,8 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
 
             Instruction::Ret => {
                 // epilogue
-                writeln!(output, "\tmovq    %rbp, %rsp")?;
-                writeln!(output, "\tpopq    %rbp")?;
+                writeln!(output, "\tmovq     %rbp, %rsp")?;
+                writeln!(output, "\tpopq     %rbp")?;
                 write!(output, "\tret")?;
             }
 

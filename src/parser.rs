@@ -1,7 +1,10 @@
 #[cfg(test)]
 mod test;
 
-use crate::ast::{AssignOp, BinaryOp, BlockItem, Declaration, Expression, Function, Identifier, Node, Program, Statement, UnaryOp};
+use crate::ast::{
+    AssignOp, BinaryOp, BlockItem, Declaration, Expression, Function, Identifier, Node, Program,
+    Statement, UnaryOp,
+};
 use crate::lexer::{Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
 use std::error::Error;

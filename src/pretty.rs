@@ -1,8 +1,6 @@
 use crate::ast;
 use anyhow::Result;
 use std::io::Write;
-use crate::ast::AssignOp;
-use crate::ast::BinaryOp::{Add, And, BinAnd, BinOr, BinXor, Divide, Equal, GreaterOrEqualThan, GreaterThan, LessOrEqualThan, LessThan, Multiply, NotEqual, Or, Reminder, ShiftLeft, ShiftRight, Subtract};
 
 #[allow(dead_code)]
 pub fn dump_ast(src: &str) -> String {

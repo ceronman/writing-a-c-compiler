@@ -59,7 +59,7 @@ impl Resolver {
                     });
                 }
             }
-            Expression::Assignment { op, left, right } => {
+            Expression::Assignment { left, right, .. } => {
                 if !matches!(left.as_ref(), Expression::Var(_)) {
                     return Err(NameError {
                         msg: "Invalid left side of the assignment".to_owned(),
