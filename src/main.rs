@@ -51,7 +51,7 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let tacky = tacky::generate(&validated_ast);
+    let tacky = tacky::emit(&validated_ast);
     if let Flag::Tacky = options.flag {
         println!("{tacky:#?}");
         return Ok(());

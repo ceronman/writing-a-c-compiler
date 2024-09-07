@@ -1,7 +1,5 @@
 use crate::ast;
-use crate::ast::{Expression, Statement};
 use crate::symbol::Symbol;
-use crate::tacky::Instruction::Binary;
 
 #[derive(Debug)]
 pub struct Program {
@@ -79,40 +77,47 @@ pub enum BinaryOp {
     GreaterOrEqual,
 }
 
-pub fn generate(program: &ast::Program) -> Program {
-    let function = &program.function_definition;
-    Program {
-        function: Function {
-            name: function.name.symbol.clone(),
-            body: todo!(),
-        },
-    }
-}
-
 #[derive(Default)]
-struct Generator {
+struct TackyGenerator {
     instructions: Vec<Instruction>,
     tmp_counter: u32,
     label_counter: u32,
 }
 
-impl Generator {
-    fn emit_body(mut self, body: &Statement) -> Vec<Instruction> {
-        match body {
-            Statement::Return { expr } => {
-                let val = self.emit_expr(expr);
-                self.instructions.push(Instruction::Return(val));
-            }
+impl TackyGenerator {
+    fn emit_body(mut self, body: &[ast::Node<ast::BlockItem>]) -> Vec<Instruction> {
+        for block_item in body {
+            match block_item.as_ref() {
+                ast::BlockItem::Stmt(ast::Statement::Return { expr }) => {
+                    let val = self.emit_expr(expr);
+                    self.instructions.push(Instruction::Return(val));
+                }
+                ast::BlockItem::Stmt(ast::Statement::Expression(expr)) => {
+                    self.emit_expr(expr);
+                }
+                ast::BlockItem::Decl(ast::Declaration {
+                    name,
+                    init: Some(init),
+                }) => {
+                    let result = self.emit_expr(init);
+                    self.instructions.push(Instruction::Copy {
+                        src: result,
+                        dst: Val::Var(name.symbol.clone()),
+                    });
+                }
 
-            _ => todo!(),
+                _ => {}
+            }
         }
+        self.instructions
+            .push(Instruction::Return(Val::Constant(0)));
         self.instructions
     }
 
-    fn emit_expr(&mut self, expr: &Expression) -> Val {
+    fn emit_expr(&mut self, expr: &ast::Expression) -> Val {
         match expr {
-            Expression::Constant(val) => Val::Constant(*val),
-            Expression::Unary { op, expr } => {
+            ast::Expression::Constant(val) => Val::Constant(*val),
+            ast::Expression::Unary { op, expr } => {
                 let src = self.emit_expr(expr);
                 let dst = self.make_temp();
                 let op = match op.as_ref() {
@@ -127,7 +132,7 @@ impl Generator {
                 });
                 dst
             }
-            Expression::Binary { op, left, right } => {
+            ast::Expression::Binary { op, left, right } => {
                 let src1 = self.emit_expr(left);
                 let dst = self.make_temp();
                 let op = match op.as_ref() {
@@ -205,7 +210,7 @@ impl Generator {
                     }
                 };
                 let src2 = self.emit_expr(right);
-                self.instructions.push(Binary {
+                self.instructions.push(Instruction::Binary {
                     op,
                     src1,
                     src2,
@@ -214,7 +219,18 @@ impl Generator {
                 dst
             }
 
-            _ => todo!(),
+            ast::Expression::Var(name) => Val::Var(name.clone()),
+            ast::Expression::Assignment { left, right } => {
+                let ast::Expression::Var(name) = left.as_ref() else {
+                    unreachable!()
+                };
+                let result = self.emit_expr(right);
+                self.instructions.push(Instruction::Copy {
+                    src: result,
+                    dst: Val::Var(name.clone()),
+                });
+                Val::Var(name.clone())
+            }
         }
     }
 
@@ -228,5 +244,15 @@ impl Generator {
         let result = format!("{prefix}{i}", i = self.label_counter);
         self.label_counter += 1;
         result
+    }
+}
+
+pub fn emit(program: &ast::Program) -> Program {
+    let function = &program.function_definition;
+    Program {
+        function: Function {
+            name: function.name.symbol.clone(),
+            body: TackyGenerator::default().emit_body(&function.body),
+        },
     }
 }
