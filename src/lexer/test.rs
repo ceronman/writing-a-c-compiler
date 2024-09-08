@@ -4170,3 +4170,839 @@ fn test_chapter_5_valid_use_val_in_own_initializer() {
     ];
     assert_eq!(tokenize(src), expected);
 }
+
+#[test]
+fn test_chapter_6_invalid_parse_declaration_as_statement() {
+    let src = r#"
+        int main(void) {
+            if (5)
+                int i = 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, If, OpenParen, Constant,
+        CloseParen, Int, Identifier, Equal, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_empty_if_body() {
+    let src = r#"
+        int main(void) {
+            if (0) else return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, If, OpenParen, Constant,
+        CloseParen, Else, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_if_assignment() {
+    let src = r#"
+        int main(void) {
+            int flag = 0;
+            int a = if (flag)
+                        2;
+                    else
+                        3;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, If, OpenParen, Identifier, CloseParen, Constant,
+        Semicolon, Else, Constant, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_if_no_parens() {
+    let src = r#"
+        int main(void) {
+            if 0 return 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, If, Constant, Return, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_incomplete_ternary() {
+    let src = r#"
+        int main(void) {
+            return 1 ? 2;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, Question,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_malformed_ternary() {
+    let src = r#"
+        int main(void) {
+            return 1 ? 2 : 3 : 4;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, Question,
+        Constant, Colon, Constant, Colon, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_malformed_ternary_2() {
+    let src = r#"
+        int main(void) {
+            return 1 ? 2 ? 3 : 4;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, Question,
+        Constant, Question, Constant, Colon, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_mismatched_nesting() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (1)
+                return 1;
+            else
+                return 2;
+            else
+                return 3;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, If, OpenParen, Constant, CloseParen, Return, Constant, Semicolon, Else, Return,
+        Constant, Semicolon, Else, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_wrong_ternary_delimiter() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            return x ? 1 = 2;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Return, Identifier, Question, Constant, Equal, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_invalid_var_in_if() {
+    let src = r#"
+        int main(void) {
+            if (1)
+                return c;
+            int c = 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, If, OpenParen, Constant,
+        CloseParen, Return, Identifier, Semicolon, Int, Identifier, Equal, Constant, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_ternary_assign() {
+    let src = r#"
+        int main(void) {
+            int a = 2;
+            int b = 1;
+            a > b ? a = 1 : a = 0;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, Identifier, Greater, Identifier,
+        Question, Identifier, Equal, Constant, Colon, Identifier, Equal, Constant, Semicolon,
+        Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_undeclared_var_in_ternary() {
+    let src = r#"
+        int main(void) {
+            return a > 0 ? 1 : 2;
+            int a = 5;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Identifier, Greater,
+        Constant, Question, Constant, Colon, Constant, Semicolon, Int, Identifier, Equal, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_assign_ternary() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            a = 1 ? 2 : 3;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Identifier, Equal, Constant, Question, Constant, Colon, Constant, Semicolon,
+        Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_binary_condition() {
+    let src = r#"
+        int main(void) {
+            if (1 + 2 == 3)
+                return 5;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, If, OpenParen, Constant, Plus,
+        Constant, EqualEqual, Constant, CloseParen, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_binary_false_condition() {
+    let src = r#"
+        int main(void) {
+            if (1 + 2 == 4)
+                return 5;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, If, OpenParen, Constant, Plus,
+        Constant, EqualEqual, Constant, CloseParen, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_else() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (a)
+                return 1;
+            else
+                return 2;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, If, OpenParen, Identifier, CloseParen, Return, Constant, Semicolon, Else,
+        Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_bitwise_ternary() {
+    let src = r#"
+        int main(void) {
+            int result;
+            1 ^ 1 ? result = 4 : (result = 5);
+            return result;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Semicolon,
+        Constant, Circumflex, Constant, Question, Identifier, Equal, Constant, Colon, OpenParen,
+        Identifier, Equal, Constant, CloseParen, Semicolon, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_compound_assign_ternary() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            a *= 1 ? 2 : 3;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Identifier, StarEqual, Constant, Question, Constant, Colon, Constant, Semicolon,
+        Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_compound_if_expression() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (a += 1)
+                return a;
+            return 10;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, If, OpenParen, Identifier, PlusEqual, Constant, CloseParen, Return, Identifier,
+        Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_lh_compound_assignment() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            (x -= 1) ? (x /= 2) : 0;
+            return x == 4;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, OpenParen, Identifier, MinusEqual, Constant, CloseParen, Question, OpenParen,
+        Identifier, SlashEqual, Constant, CloseParen, Colon, Constant, Semicolon, Return,
+        Identifier, EqualEqual, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_postfix_if() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (a--)
+                return 0;
+            else if (a--)
+                return 1;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, If, OpenParen, Identifier, MinusMinus, CloseParen, Return, Constant, Semicolon,
+        Else, If, OpenParen, Identifier, MinusMinus, CloseParen, Return, Constant, Semicolon,
+        Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_postfix_in_ternary() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            x - 10 ? 0 : x--;
+            return x;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Identifier, Minus, Constant, Question, Constant, Colon, Identifier, MinusMinus,
+        Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_prefix_if() {
+    let src = r#"
+        int main(void) {
+            int a = -1;
+            if (++a)
+                return 0;
+            else if (++a)
+                return 1;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Minus,
+        Constant, Semicolon, If, OpenParen, PlusPlus, Identifier, CloseParen, Return, Constant,
+        Semicolon, Else, If, OpenParen, PlusPlus, Identifier, CloseParen, Return, Constant,
+        Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_prefix_in_ternary() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            return (++a ? ++a : 0);
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Return, OpenParen, PlusPlus, Identifier, Question, PlusPlus, Identifier, Colon,
+        Constant, CloseParen, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_if_nested() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 0;
+            if (a)
+                b = 1;
+            else if (b)
+                b = 2;
+            return b;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, If, OpenParen, Identifier,
+        CloseParen, Identifier, Equal, Constant, Semicolon, Else, If, OpenParen, Identifier,
+        CloseParen, Identifier, Equal, Constant, Semicolon, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_if_nested_2() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 1;
+            if (a)
+                b = 1;
+            else if (~b)
+                b = 2;
+            return b;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, If, OpenParen, Identifier,
+        CloseParen, Identifier, Equal, Constant, Semicolon, Else, If, OpenParen, Tilde, Identifier,
+        CloseParen, Identifier, Equal, Constant, Semicolon, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_if_nested_3() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if ( (a = 1) )
+                if (a == 1)
+                    a = 3;
+                else
+                    a = 4;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, If, OpenParen, OpenParen, Identifier, Equal, Constant, CloseParen, CloseParen,
+        If, OpenParen, Identifier, EqualEqual, Constant, CloseParen, Identifier, Equal, Constant,
+        Semicolon, Else, Identifier, Equal, Constant, Semicolon, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_if_nested_4() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (!a)
+                if (3 / 4)
+                    a = 3;
+                else
+                    a = 8 / 2;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, If, OpenParen, Bang, Identifier, CloseParen, If, OpenParen, Constant, Slash,
+        Constant, CloseParen, Identifier, Equal, Constant, Semicolon, Else, Identifier, Equal,
+        Constant, Slash, Constant, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_if_nested_5() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (0)
+                if (0)
+                    a = 3;
+                else
+                    a = 4;
+            else
+                a = 1;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, If, OpenParen, Constant, CloseParen, If, OpenParen, Constant, CloseParen,
+        Identifier, Equal, Constant, Semicolon, Else, Identifier, Equal, Constant, Semicolon, Else,
+        Identifier, Equal, Constant, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_if_not_taken() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 0;
+            if (a)
+                b = 1;
+            return b;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, If, OpenParen, Identifier,
+        CloseParen, Identifier, Equal, Constant, Semicolon, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_if_null_body() {
+    let src = r#"
+        int main(void) {
+            int x = 0;
+            if (0)
+                ;
+            else
+                x = 1;
+            return x;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, If, OpenParen, Constant, CloseParen, Semicolon, Else, Identifier, Equal,
+        Constant, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_if_taken() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 0;
+            if (a)
+                b = 1;
+            return b;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, If, OpenParen, Identifier,
+        CloseParen, Identifier, Equal, Constant, Semicolon, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_lh_assignment() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            int y = 0;
+            y = (x = 5) ? x : 2;
+            return (x == 5 && y == 5);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        OpenParen,
+        Identifier,
+        Equal,
+        Constant,
+        CloseParen,
+        Question,
+        Identifier,
+        Colon,
+        Constant,
+        Semicolon,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_multiple_if() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 0;
+            if (a)
+                a = 2;
+            else
+                a = 3;
+            if (b)
+                b = 4;
+            else
+                b = 5;
+            return a + b;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, If, OpenParen, Identifier,
+        CloseParen, Identifier, Equal, Constant, Semicolon, Else, Identifier, Equal, Constant,
+        Semicolon, If, OpenParen, Identifier, CloseParen, Identifier, Equal, Constant, Semicolon,
+        Else, Identifier, Equal, Constant, Semicolon, Return, Identifier, Plus, Identifier,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_nested_ternary() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 2;
+            int flag = 0;
+            return a > b ? 5 : flag ? 6 : 7;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, Int, Identifier, Equal, Constant,
+        Semicolon, Return, Identifier, Greater, Identifier, Question, Constant, Colon, Identifier,
+        Question, Constant, Colon, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_nested_ternary_2() {
+    let src = r#"
+        int main(void) {
+            int a = 1 ? 2 ? 3 : 4 : 5;
+            int b = 0 ? 2 ? 3 : 4 : 5;
+            return a * b;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Question, Constant, Question, Constant, Colon, Constant, Colon, Constant, Semicolon, Int,
+        Identifier, Equal, Constant, Question, Constant, Question, Constant, Colon, Constant,
+        Colon, Constant, Semicolon, Return, Identifier, Star, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_rh_assignment() {
+    let src = r#"
+        int main(void) {
+            int flag = 1;
+            int a = 0;
+            flag ? a = 1 : (a = 0);
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, Identifier, Question, Identifier,
+        Equal, Constant, Colon, OpenParen, Identifier, Equal, Constant, CloseParen, Semicolon,
+        Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_ternary() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            return a > -1 ? 4 : 5;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Return, Identifier, Greater, Minus, Constant, Question, Constant, Colon,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_middle_assignment() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            a != 2 ? a = 2 : 0;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Identifier, BangEqual, Constant, Question, Identifier, Equal, Constant, Colon,
+        Constant, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_middle_binop() {
+    let src = r#"
+        int main(void) {
+            int a = 1 ? 3 % 2 : 4;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Question, Constant, Percent, Constant, Colon, Constant, Semicolon, Return, Identifier,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_precedence() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            return a || 0 ? 20 : 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Return, Identifier, PipePipe, Constant, Question, Constant, Colon, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_rh_binop() {
+    let src = r#"
+        int main(void) {
+            return 0 ? 1 : 0 || 2;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, Question,
+        Constant, Colon, Constant, PipePipe, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_short_circuit() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 0;
+            a ? (b = 1) : (b = 2);
+            return b;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, Identifier, Question, OpenParen,
+        Identifier, Equal, Constant, CloseParen, Colon, OpenParen, Identifier, Equal, Constant,
+        CloseParen, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_short_circuit_2() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 0;
+            a ? (b = 1) : (b = 2);
+            return b;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, Identifier, Question, OpenParen,
+        Identifier, Equal, Constant, CloseParen, Colon, OpenParen, Identifier, Equal, Constant,
+        CloseParen, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}

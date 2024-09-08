@@ -28,6 +28,9 @@ pub enum TokenKind {
 
     Int,
     Void,
+    If,
+    Else,
+
     Return,
 
     Plus,
@@ -65,11 +68,13 @@ pub enum TokenKind {
     GreaterGreater,
     GreaterGreaterEqual,
     GreaterEqual,
+    Question,
 
     OpenParen,
     CloseParen,
     OpenBrace,
     CloseBrace,
+    Colon,
     Semicolon,
 
     Eof,
@@ -111,7 +116,9 @@ impl<'src> Lexer<'src> {
             ')' => TokenKind::CloseParen,
             '{' => TokenKind::OpenBrace,
             '}' => TokenKind::CloseBrace,
+            ':' => TokenKind::Colon,
             ';' => TokenKind::Semicolon,
+            '?' => TokenKind::Question,
             '+' => match self.peek() {
                 Some('+') => self.eat_and(TokenKind::PlusPlus),
                 Some('=') => self.eat_and(TokenKind::PlusEqual),
@@ -218,6 +225,8 @@ impl<'src> Lexer<'src> {
             "int" => TokenKind::Int,
             "void" => TokenKind::Void,
             "return" => TokenKind::Return,
+            "if" => TokenKind::If,
+            "else" => TokenKind::Else,
             _ => TokenKind::Identifier,
         }
     }
