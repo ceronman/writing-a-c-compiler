@@ -35,6 +35,8 @@ pub enum Instruction {
 pub enum UnaryOp {
     Neg,
     Not,
+    Inc,
+    Dec,
 }
 
 #[derive(Debug)]
@@ -313,7 +315,10 @@ impl tacky::UnaryOp {
         match self {
             tacky::UnaryOp::Complement => UnaryOp::Not,
             tacky::UnaryOp::Negate => UnaryOp::Neg,
-            _ => todo!(),
+            tacky::UnaryOp::Increment => UnaryOp::Inc,
+            tacky::UnaryOp::Decrement => UnaryOp::Dec,
+
+            tacky::UnaryOp::Not => unreachable!(), // `Not` does not have equivalent
         }
     }
 }
@@ -328,7 +333,7 @@ impl tacky::BinaryOp {
             tacky::BinaryOp::BinOr => BinaryOp::Or,
             tacky::BinaryOp::BinXor => BinaryOp::Xor,
 
-            _ => unreachable!(), // Divide and Reminder do not have equivalent
+            _ => unreachable!(), // Other operators do not have equivalent
         }
     }
 }

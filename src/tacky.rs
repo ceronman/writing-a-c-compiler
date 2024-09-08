@@ -55,6 +55,8 @@ pub enum UnaryOp {
     Complement,
     Negate,
     Not,
+    Increment,
+    Decrement,
 }
 
 #[derive(Debug)]
@@ -118,22 +120,53 @@ impl TackyGenerator {
         match expr {
             ast::Expression::Constant(val) => Val::Constant(*val),
             ast::Expression::Unary { op, expr } => {
-                let src = self.emit_expr(expr);
+                let val = self.emit_expr(expr);
                 let dst = self.make_temp();
-                let op = match op.as_ref() {
+                let tacky_op = match op.as_ref() {
                     ast::UnaryOp::Complement => UnaryOp::Complement,
                     ast::UnaryOp::Negate => UnaryOp::Negate,
                     ast::UnaryOp::Not => UnaryOp::Not,
-                    _ => todo!(),
+                    ast::UnaryOp::Increment => UnaryOp::Increment,
+                    ast::UnaryOp::Decrement => UnaryOp::Decrement,
                 };
                 self.instructions.push(Instruction::Unary {
-                    op,
-                    src,
+                    op: tacky_op,
+                    src: val.clone(),
                     dst: dst.clone(),
+                });
+                if let ast::UnaryOp::Increment | ast::UnaryOp::Decrement = op.as_ref() {
+                    self.instructions.push(Instruction::Copy {
+                        src: dst.clone(),
+                        dst: val,
+                    })
+                }
+                dst
+            }
+            ast::Expression::Postfix { op, expr } => {
+                let val = self.emit_expr(expr);
+                let dst = self.make_temp();
+                self.instructions.push(Instruction::Copy {
+                    src: val.clone(),
+                    dst: dst.clone(),
+                });
+
+                let tacky_op = match op.as_ref() {
+                    ast::PostfixOp::Increment => UnaryOp::Increment,
+                    ast::PostfixOp::Decrement => UnaryOp::Decrement,
+                };
+
+                let decremented = self.make_temp();
+                self.instructions.push(Instruction::Unary {
+                    op: tacky_op,
+                    src: val.clone(),
+                    dst: decremented.clone(),
+                });
+                self.instructions.push(Instruction::Copy {
+                    src: decremented,
+                    dst: val,
                 });
                 dst
             }
-            ast::Expression::Postfix { op, expr } => todo!(),
             ast::Expression::Binary { op, left, right } => {
                 let src1 = self.emit_expr(left);
                 let dst = self.make_temp();

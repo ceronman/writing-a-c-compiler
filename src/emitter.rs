@@ -36,6 +36,8 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
                 let op = match op {
                     UnaryOp::Neg => "negl",
                     UnaryOp::Not => "notl",
+                    UnaryOp::Inc => "incl",
+                    UnaryOp::Dec => "decl",
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, 4)?;

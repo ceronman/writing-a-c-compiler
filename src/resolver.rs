@@ -1,4 +1,4 @@
-use crate::ast::{BlockItem, Declaration, Expression, Node, Program, Statement};
+use crate::ast::{BlockItem, Declaration, Expression, Node, Program, Statement, UnaryOp};
 use crate::lexer::Span;
 use crate::symbol::Symbol;
 use std::collections::HashMap;
@@ -69,7 +69,24 @@ impl Resolver {
                 self.resolve_expression(left)?;
                 self.resolve_expression(right)?;
             }
-            Expression::Unary { expr, .. } | Expression::Postfix { expr, .. } => {
+            Expression::Unary { expr, op } => {
+                if let UnaryOp::Increment | UnaryOp::Decrement = op.as_ref() {
+                    if !matches!(expr.as_ref(), Expression::Var(_)) {
+                        return Err(NameError {
+                            msg: "Invalid left side of the assignment".to_owned(),
+                            span: expr.span,
+                        });
+                    }
+                }
+                self.resolve_expression(expr)?;
+            }
+            Expression::Postfix { expr, .. } => {
+                if !matches!(expr.as_ref(), Expression::Var(_)) {
+                    return Err(NameError {
+                        msg: "Invalid left side of the assignment".to_owned(),
+                        span: expr.span,
+                    });
+                }
                 self.resolve_expression(expr)?;
             }
             Expression::Binary { left, right, .. } => {

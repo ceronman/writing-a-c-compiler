@@ -1,5 +1,4 @@
 use crate::ast;
-use crate::ast::UnaryOp::{Complement, Decrement, Increment, Negate, Not};
 use anyhow::Result;
 use std::io::Write;
 
