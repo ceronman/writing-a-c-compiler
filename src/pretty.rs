@@ -1,4 +1,5 @@
 use crate::ast;
+use crate::ast::Expression;
 use anyhow::Result;
 use std::io::Write;
 
@@ -88,22 +89,68 @@ fn print_block_item(
         }
     }
     match item {
-        ast::BlockItem::Stmt(s) => match s {
-            ast::Statement::Return { expr } => {
-                writeln!(file, "{indent}{pipe} Return")?;
-                print_expression(file, expr, "╰──", level + 1, pipes)?;
-            }
-            ast::Statement::Expression(expr) => {
-                print_expression(file, expr, pipe, level, pipes)?;
-            }
-            ast::Statement::Null => {}
-        },
+        ast::BlockItem::Stmt(s) => print_statement(file, s, pipe, level, pipes)?,
         ast::BlockItem::Decl(d) => {
             writeln!(file, "{indent}{pipe} Declaration [{}]", d.name.symbol)?;
             if let Some(init) = &d.init {
                 print_expression(file, init, "╰──", level + 1, pipes)?;
             }
         }
+    }
+    Ok(())
+}
+
+fn print_statement(
+    file: &mut impl Write,
+    statement: &ast::Statement,
+    pipe: &str,
+    level: usize,
+    pipes: &[usize],
+) -> Result<()> {
+    let mut indent = String::new();
+    for l in 0..level {
+        if pipes.contains(&l) {
+            indent.push_str("│   ");
+        } else {
+            indent.push_str("    ");
+        }
+    }
+    match statement {
+        ast::Statement::Return { expr } => {
+            writeln!(file, "{indent}{pipe} Return")?;
+            print_expression(file, expr, "╰──", level + 1, pipes)?;
+        }
+        ast::Statement::If {
+            cond,
+            then_stmt,
+            else_stmt,
+        } => {
+            writeln!(file, "{indent}{pipe} If")?;
+            print_expression(
+                file,
+                cond,
+                "├──",
+                level + 1,
+                &[pipes, &[level + 1]].concat(),
+            )?;
+            if let Some(else_stmt) = else_stmt {
+                print_statement(
+                    file,
+                    then_stmt,
+                    "├──",
+                    level + 1,
+                    &[pipes, &[level + 1]].concat(),
+                )?;
+                print_statement(file, else_stmt, "╰──", level + 1, pipes)?;
+            } else {
+                print_statement(file, then_stmt, "╰──", level + 1, pipes)?;
+            }
+            writeln!(file, "{indent}{pipe} If")?;
+        }
+        ast::Statement::Expression(expr) => {
+            print_expression(file, expr, pipe, level, pipes)?;
+        }
+        ast::Statement::Null => {}
     }
     Ok(())
 }
@@ -140,9 +187,13 @@ fn print_expression(
         }
         ast::Expression::Binary { op, left, right } => {
             writeln!(file, "{indent}{pipe} Binary [{}]", binary_op(op))?;
-            let mut added = pipes.to_vec();
-            added.push(level + 1);
-            print_expression(file, left, "├──", level + 1, &added)?;
+            print_expression(
+                file,
+                left,
+                "├──",
+                level + 1,
+                &[pipes, &[level + 1]].concat(),
+            )?;
             print_expression(file, right, "╰──", level + 1, pipes)?;
         }
         ast::Expression::Assignment { op, left, right } => {
@@ -151,6 +202,28 @@ fn print_expression(
             added.push(level + 1);
             print_expression(file, left, "├──", level + 1, &added)?;
             print_expression(file, right, "╰──", level + 1, pipes)?;
+        }
+        Expression::Conditional {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            writeln!(file, "{indent}{pipe} Cond [?]")?;
+            print_expression(
+                file,
+                cond,
+                "├──",
+                level + 1,
+                &[pipes, &[level + 1]].concat(),
+            )?;
+            print_expression(
+                file,
+                then_expr,
+                "├──",
+                level + 1,
+                &[pipes, &[level + 1]].concat(),
+            )?;
+            print_expression(file, else_expr, "╰──", level + 1, pipes)?;
         }
     }
     Ok(())

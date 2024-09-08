@@ -14,7 +14,7 @@ struct Resolver {
 impl Resolver {
     fn resolve(mut self, mut program: Node<Program>) -> Result<Node<Program>> {
         for block_item in &mut program.function_definition.body {
-            match block_item.as_mut() {
+            match block_item {
                 BlockItem::Stmt(stmt) => self.resolve_statement(stmt)?,
                 BlockItem::Decl(decl) => self.resolve_declaration(decl)?,
             }
@@ -44,6 +44,7 @@ impl Resolver {
             Statement::Return { expr } => self.resolve_expression(expr),
             Statement::Expression(expr) => self.resolve_expression(expr),
             Statement::Null => Ok(()),
+            _ => todo!(),
         }
     }
 
@@ -94,6 +95,7 @@ impl Resolver {
                 self.resolve_expression(right)?;
             }
             Expression::Constant(_) => {}
+            _ => todo!(),
         }
         Ok(())
     }

@@ -139,7 +139,7 @@ fn test_chapter_1_invalid_parse_unclosed_brace() {
         int main(void) {
             return 0;
     
-// Expected expression, but found ''"#,
+// Expected statement, but found ''"#,
     );
 }
 
@@ -4091,6 +4091,1202 @@ fn test_chapter_5_valid_use_val_in_own_initializer() {
             │       ╰── Var [a]
             ╰── Return
                 ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_declaration_as_statement() {
+    assert_error(
+        r#"
+        int main(void) {
+            if (5)
+                int i = 0;
+              //^^^ Expected statement, but found 'int'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_empty_if_body() {
+    assert_error(
+        r#"
+        int main(void) {
+            if (0) else return 0;
+                 //^^^^ Expected statement, but found 'else'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_if_assignment() {
+    assert_error(
+        r#"
+        int main(void) {
+            int flag = 0;
+            int a = if (flag)
+                  //^^ Expected expression, but found 'if'
+                        2;
+                    else
+                        3;
+            return a;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_if_no_parens() {
+    assert_error(
+        r#"
+        int main(void) {
+            if 0 return 1;
+             //^ Expected OpenParen, but found '0'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_incomplete_ternary() {
+    assert_error(
+        r#"
+        int main(void) {
+            return 1 ? 2;
+                      //^ Expected Colon, but found ';'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_malformed_ternary() {
+    assert_error(
+        r#"
+        int main(void) {
+            return 1 ? 2 : 3 : 4;
+                           //^ Expected Semicolon, but found ':'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_malformed_ternary_2() {
+    assert_error(
+        r#"
+        int main(void) {
+            return 1 ? 2 ? 3 : 4;
+                              //^ Expected Colon, but found ';'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_mismatched_nesting() {
+    assert_error(
+        r#"
+        int main(void) {
+            int a = 0;
+            if (1)
+                return 1;
+            else
+                return 2;
+            else
+          //^^^^ Expected statement, but found 'else'
+                return 3;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_wrong_ternary_delimiter() {
+    assert_error(
+        r#"
+        int main(void) {
+            int x = 10;
+            return x ? 1 = 2;
+                          //^ Expected Colon, but found ';'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_invalid_var_in_if() {
+    let src = r#"
+        int main(void) {
+            if (1)
+                return c;
+            int c = 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── If
+            │   ├── Constant [1]
+            │   ╰── Return
+            │       ╰── Var [c]
+            ├── If
+            ╰── Declaration [c]
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_ternary_assign() {
+    let src = r#"
+        int main(void) {
+            int a = 2;
+            int b = 1;
+            a > b ? a = 1 : a = 0;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [2]
+            ├── Declaration [b]
+            │   ╰── Constant [1]
+            ├── Cond [?]
+            │   ├── Binary [>]
+            │   │   ├── Var [a]
+            │   │   ╰── Var [b]
+            │   ├── Assign [=]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [1]
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Constant [0]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_undeclared_var_in_ternary() {
+    let src = r#"
+        int main(void) {
+            return a > 0 ? 1 : 2;
+            int a = 5;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Return
+            │   ╰── Cond [?]
+            │       ├── Binary [>]
+            │       │   ├── Var [a]
+            │       │   ╰── Constant [0]
+            │       ├── Constant [1]
+            │       ╰── Constant [2]
+            ╰── Declaration [a]
+                ╰── Constant [5]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_assign_ternary() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            a = 1 ? 2 : 3;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Assign [=]
+            │   ├── Var [a]
+            │   ╰── Cond [?]
+            │       ├── Constant [1]
+            │       ├── Constant [2]
+            │       ╰── Constant [3]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_binary_condition() {
+    let src = r#"
+        int main(void) {
+            if (1 + 2 == 3)
+                return 5;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── If
+                ├── Binary [==]
+                │   ├── Binary [+]
+                │   │   ├── Constant [1]
+                │   │   ╰── Constant [2]
+                │   ╰── Constant [3]
+                ╰── Return
+                    ╰── Constant [5]
+            ╰── If
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_binary_false_condition() {
+    let src = r#"
+        int main(void) {
+            if (1 + 2 == 4)
+                return 5;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── If
+                ├── Binary [==]
+                │   ├── Binary [+]
+                │   │   ├── Constant [1]
+                │   │   ╰── Constant [2]
+                │   ╰── Constant [4]
+                ╰── Return
+                    ╰── Constant [5]
+            ╰── If
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_else() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (a)
+                return 1;
+            else
+                return 2;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ╰── If
+                ├── Var [a]
+                ├── Return
+                │   ╰── Constant [1]
+                ╰── Return
+                    ╰── Constant [2]
+            ╰── If
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_bitwise_ternary() {
+    let src = r#"
+        int main(void) {
+            int result;
+            1 ^ 1 ? result = 4 : (result = 5);
+            return result;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [result]
+            ├── Cond [?]
+            │   ├── Binary [^]
+            │   │   ├── Constant [1]
+            │   │   ╰── Constant [1]
+            │   ├── Assign [=]
+            │   │   ├── Var [result]
+            │   │   ╰── Constant [4]
+            │   ╰── Assign [=]
+            │       ├── Var [result]
+            │       ╰── Constant [5]
+            ╰── Return
+                ╰── Var [result]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_compound_assign_ternary() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            a *= 1 ? 2 : 3;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [4]
+            ├── Assign [*=]
+            │   ├── Var [a]
+            │   ╰── Cond [?]
+            │       ├── Constant [1]
+            │       ├── Constant [2]
+            │       ╰── Constant [3]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_compound_if_expression() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (a += 1)
+                return a;
+            return 10;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Assign [+=]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [1]
+            │   ╰── Return
+            │       ╰── Var [a]
+            ├── If
+            ╰── Return
+                ╰── Constant [10]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_lh_compound_assignment() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            (x -= 1) ? (x /= 2) : 0;
+            return x == 4;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [10]
+            ├── Cond [?]
+            │   ├── Assign [-=]
+            │   │   ├── Var [x]
+            │   │   ╰── Constant [1]
+            │   ├── Assign [/=]
+            │   │   ├── Var [x]
+            │   │   ╰── Constant [2]
+            │   ╰── Constant [0]
+            ╰── Return
+                ╰── Binary [==]
+                    ├── Var [x]
+                    ╰── Constant [4]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_postfix_if() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (a--)
+                return 0;
+            else if (a--)
+                return 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Postfix [--]
+            │   │   ╰── Var [a]
+            │   ├── Return
+            │   │   ╰── Constant [0]
+            │   ╰── If
+            │       ├── Postfix [--]
+            │       │   ╰── Var [a]
+            │       ╰── Return
+            │           ╰── Constant [1]
+            │   ╰── If
+            ├── If
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_postfix_in_ternary() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            x - 10 ? 0 : x--;
+            return x;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [10]
+            ├── Cond [?]
+            │   ├── Binary [-]
+            │   │   ├── Var [x]
+            │   │   ╰── Constant [10]
+            │   ├── Constant [0]
+            │   ╰── Postfix [--]
+            │       ╰── Var [x]
+            ╰── Return
+                ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_prefix_if() {
+    let src = r#"
+        int main(void) {
+            int a = -1;
+            if (++a)
+                return 0;
+            else if (++a)
+                return 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Unary [-]
+            │       ╰── Constant [1]
+            ├── If
+            │   ├── Unary [++]
+            │   │   ╰── Var [a]
+            │   ├── Return
+            │   │   ╰── Constant [0]
+            │   ╰── If
+            │       ├── Unary [++]
+            │       │   ╰── Var [a]
+            │       ╰── Return
+            │           ╰── Constant [1]
+            │   ╰── If
+            ├── If
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_prefix_in_ternary() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            return (++a ? ++a : 0);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ╰── Return
+                ╰── Cond [?]
+                    ├── Unary [++]
+                    │   ╰── Var [a]
+                    ├── Unary [++]
+                    │   ╰── Var [a]
+                    ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_if_nested() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 0;
+            if (a)
+                b = 1;
+            else if (b)
+                b = 2;
+            return b;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Declaration [b]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Var [a]
+            │   ├── Assign [=]
+            │   │   ├── Var [b]
+            │   │   ╰── Constant [1]
+            │   ╰── If
+            │       ├── Var [b]
+            │       ╰── Assign [=]
+            │           ├── Var [b]
+            │           ╰── Constant [2]
+            │   ╰── If
+            ├── If
+            ╰── Return
+                ╰── Var [b]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_if_nested_2() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 1;
+            if (a)
+                b = 1;
+            else if (~b)
+                b = 2;
+            return b;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Declaration [b]
+            │   ╰── Constant [1]
+            ├── If
+            │   ├── Var [a]
+            │   ├── Assign [=]
+            │   │   ├── Var [b]
+            │   │   ╰── Constant [1]
+            │   ╰── If
+            │       ├── Unary [~]
+            │       │   ╰── Var [b]
+            │       ╰── Assign [=]
+            │           ├── Var [b]
+            │           ╰── Constant [2]
+            │   ╰── If
+            ├── If
+            ╰── Return
+                ╰── Var [b]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_if_nested_3() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if ( (a = 1) )
+                if (a == 1)
+                    a = 3;
+                else
+                    a = 4;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Assign [=]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [1]
+            │   ╰── If
+            │       ├── Binary [==]
+            │       │   ├── Var [a]
+            │       │   ╰── Constant [1]
+            │       ├── Assign [=]
+            │       │   ├── Var [a]
+            │       │   ╰── Constant [3]
+            │       ╰── Assign [=]
+            │           ├── Var [a]
+            │           ╰── Constant [4]
+            │   ╰── If
+            ├── If
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_if_nested_4() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (!a)
+                if (3 / 4)
+                    a = 3;
+                else
+                    a = 8 / 2;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Unary [!]
+            │   │   ╰── Var [a]
+            │   ╰── If
+            │       ├── Binary [/]
+            │       │   ├── Constant [3]
+            │       │   ╰── Constant [4]
+            │       ├── Assign [=]
+            │       │   ├── Var [a]
+            │       │   ╰── Constant [3]
+            │       ╰── Assign [=]
+            │           ├── Var [a]
+            │           ╰── Binary [/]
+            │               ├── Constant [8]
+            │               ╰── Constant [2]
+            │   ╰── If
+            ├── If
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_if_nested_5() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (0)
+                if (0)
+                    a = 3;
+                else
+                    a = 4;
+            else
+                a = 1;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Constant [0]
+            │   ├── If
+            │   │   ├── Constant [0]
+            │   │   ├── Assign [=]
+            │   │   │   ├── Var [a]
+            │   │   │   ╰── Constant [3]
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [4]
+            │   ├── If
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Constant [1]
+            ├── If
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_if_not_taken() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 0;
+            if (a)
+                b = 1;
+            return b;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Declaration [b]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Var [a]
+            │   ╰── Assign [=]
+            │       ├── Var [b]
+            │       ╰── Constant [1]
+            ├── If
+            ╰── Return
+                ╰── Var [b]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_if_null_body() {
+    let src = r#"
+        int main(void) {
+            int x = 0;
+            if (0)
+                ;
+            else
+                x = 1;
+            return x;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Constant [0]
+            │   ╰── Assign [=]
+            │       ├── Var [x]
+            │       ╰── Constant [1]
+            ├── If
+            ╰── Return
+                ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_if_taken() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 0;
+            if (a)
+                b = 1;
+            return b;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Declaration [b]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Var [a]
+            │   ╰── Assign [=]
+            │       ├── Var [b]
+            │       ╰── Constant [1]
+            ├── If
+            ╰── Return
+                ╰── Var [b]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_lh_assignment() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            int y = 0;
+            y = (x = 5) ? x : 2;
+            return (x == 5 && y == 5);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [10]
+            ├── Declaration [y]
+            │   ╰── Constant [0]
+            ├── Assign [=]
+            │   ├── Var [y]
+            │   ╰── Cond [?]
+            │       ├── Assign [=]
+            │       │   ├── Var [x]
+            │       │   ╰── Constant [5]
+            │       ├── Var [x]
+            │       ╰── Constant [2]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [x]
+                    │   ╰── Constant [5]
+                    ╰── Binary [==]
+                        ├── Var [y]
+                        ╰── Constant [5]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_multiple_if() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 0;
+            if (a)
+                a = 2;
+            else
+                a = 3;
+            if (b)
+                b = 4;
+            else
+                b = 5;
+            return a + b;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Declaration [b]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Var [a]
+            │   ├── Assign [=]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [2]
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Constant [3]
+            ├── If
+            ├── If
+            │   ├── Var [b]
+            │   ├── Assign [=]
+            │   │   ├── Var [b]
+            │   │   ╰── Constant [4]
+            │   ╰── Assign [=]
+            │       ├── Var [b]
+            │       ╰── Constant [5]
+            ├── If
+            ╰── Return
+                ╰── Binary [+]
+                    ├── Var [a]
+                    ╰── Var [b]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_nested_ternary() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 2;
+            int flag = 0;
+            return a > b ? 5 : flag ? 6 : 7;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Declaration [b]
+            │   ╰── Constant [2]
+            ├── Declaration [flag]
+            │   ╰── Constant [0]
+            ╰── Return
+                ╰── Cond [?]
+                    ├── Binary [>]
+                    │   ├── Var [a]
+                    │   ╰── Var [b]
+                    ├── Constant [5]
+                    ╰── Cond [?]
+                        ├── Var [flag]
+                        ├── Constant [6]
+                        ╰── Constant [7]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_nested_ternary_2() {
+    let src = r#"
+        int main(void) {
+            int a = 1 ? 2 ? 3 : 4 : 5;
+            int b = 0 ? 2 ? 3 : 4 : 5;
+            return a * b;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Cond [?]
+            │       ├── Constant [1]
+            │       ├── Cond [?]
+            │       │   ├── Constant [2]
+            │       │   ├── Constant [3]
+            │       │   ╰── Constant [4]
+            │       ╰── Constant [5]
+            ├── Declaration [b]
+            │   ╰── Cond [?]
+            │       ├── Constant [0]
+            │       ├── Cond [?]
+            │       │   ├── Constant [2]
+            │       │   ├── Constant [3]
+            │       │   ╰── Constant [4]
+            │       ╰── Constant [5]
+            ╰── Return
+                ╰── Binary [*]
+                    ├── Var [a]
+                    ╰── Var [b]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_rh_assignment() {
+    let src = r#"
+        int main(void) {
+            int flag = 1;
+            int a = 0;
+            flag ? a = 1 : (a = 0);
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [flag]
+            │   ╰── Constant [1]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Cond [?]
+            │   ├── Var [flag]
+            │   ├── Assign [=]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [1]
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Constant [0]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_ternary() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            return a > -1 ? 4 : 5;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ╰── Return
+                ╰── Cond [?]
+                    ├── Binary [>]
+                    │   ├── Var [a]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant [1]
+                    ├── Constant [4]
+                    ╰── Constant [5]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_middle_assignment() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            a != 2 ? a = 2 : 0;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Cond [?]
+            │   ├── Binary [!=]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [2]
+            │   ├── Assign [=]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [2]
+            │   ╰── Constant [0]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_middle_binop() {
+    let src = r#"
+        int main(void) {
+            int a = 1 ? 3 % 2 : 4;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Cond [?]
+            │       ├── Constant [1]
+            │       ├── Binary [%]
+            │       │   ├── Constant [3]
+            │       │   ╰── Constant [2]
+            │       ╰── Constant [4]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_precedence() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            return a || 0 ? 20 : 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ╰── Return
+                ╰── Cond [?]
+                    ├── Binary [||]
+                    │   ├── Var [a]
+                    │   ╰── Constant [0]
+                    ├── Constant [20]
+                    ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_rh_binop() {
+    let src = r#"
+        int main(void) {
+            return 0 ? 1 : 0 || 2;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── Return
+                ╰── Cond [?]
+                    ├── Constant [0]
+                    ├── Constant [1]
+                    ╰── Binary [||]
+                        ├── Constant [0]
+                        ╰── Constant [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_short_circuit() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            int b = 0;
+            a ? (b = 1) : (b = 2);
+            return b;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Declaration [b]
+            │   ╰── Constant [0]
+            ├── Cond [?]
+            │   ├── Var [a]
+            │   ├── Assign [=]
+            │   │   ├── Var [b]
+            │   │   ╰── Constant [1]
+            │   ╰── Assign [=]
+            │       ├── Var [b]
+            │       ╰── Constant [2]
+            ╰── Return
+                ╰── Var [b]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_ternary_short_circuit_2() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 0;
+            a ? (b = 1) : (b = 2);
+            return b;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Declaration [b]
+            │   ╰── Constant [0]
+            ├── Cond [?]
+            │   ├── Var [a]
+            │   ├── Assign [=]
+            │   │   ├── Var [b]
+            │   │   ╰── Constant [1]
+            │   ╰── Assign [=]
+            │       ├── Var [b]
+            │       ╰── Constant [2]
+            ╰── Return
+                ╰── Var [b]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }

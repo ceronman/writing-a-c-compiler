@@ -87,28 +87,29 @@ struct TackyGenerator {
 }
 
 impl TackyGenerator {
-    fn emit_body(mut self, body: &[ast::Node<ast::BlockItem>]) -> Vec<Instruction> {
+    fn emit_body(mut self, body: &[ast::BlockItem]) -> Vec<Instruction> {
         for block_item in body {
-            match block_item.as_ref() {
-                ast::BlockItem::Stmt(ast::Statement::Return { expr }) => {
-                    let val = self.emit_expr(expr);
-                    self.instructions.push(Instruction::Return(val));
+            match block_item {
+                ast::BlockItem::Stmt(stmt) => match stmt.as_ref() {
+                    ast::Statement::Return { expr } => {
+                        let val = self.emit_expr(expr);
+                        self.instructions.push(Instruction::Return(val));
+                    }
+                    ast::Statement::Expression(expr) => {
+                        let val = self.emit_expr(expr);
+                        self.instructions.push(Instruction::Return(val));
+                    }
+                    _ => todo!(),
+                },
+                ast::BlockItem::Decl(decl) => {
+                    if let Some(init) = &decl.init {
+                        let result = self.emit_expr(init);
+                        self.instructions.push(Instruction::Copy {
+                            src: result,
+                            dst: Val::Var(decl.name.symbol.clone()),
+                        });
+                    }
                 }
-                ast::BlockItem::Stmt(ast::Statement::Expression(expr)) => {
-                    self.emit_expr(expr);
-                }
-                ast::BlockItem::Decl(ast::Declaration {
-                    name,
-                    init: Some(init),
-                }) => {
-                    let result = self.emit_expr(init);
-                    self.instructions.push(Instruction::Copy {
-                        src: result,
-                        dst: Val::Var(name.symbol.clone()),
-                    });
-                }
-
-                _ => {}
             }
         }
         self.instructions
@@ -294,6 +295,7 @@ impl TackyGenerator {
                 });
                 Val::Var(name.clone())
             }
+            _ => todo!(),
         }
     }
 

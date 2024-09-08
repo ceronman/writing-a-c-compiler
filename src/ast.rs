@@ -16,7 +16,7 @@ pub struct Program {
 #[derive(Debug)]
 pub struct Function {
     pub name: Node<Identifier>,
-    pub body: Vec<Node<BlockItem>>,
+    pub body: Vec<BlockItem>,
 }
 
 #[derive(Debug)]
@@ -26,13 +26,20 @@ pub struct Identifier {
 
 #[derive(Debug)]
 pub enum BlockItem {
-    Stmt(Statement),
-    Decl(Declaration),
+    Stmt(Node<Statement>),
+    Decl(Node<Declaration>),
 }
 
 #[derive(Debug)]
 pub enum Statement {
-    Return { expr: Node<Expression> },
+    Return {
+        expr: Node<Expression>,
+    },
+    If {
+        cond: Node<Expression>,
+        then_stmt: Node<Statement>,
+        else_stmt: Option<Node<Statement>>,
+    },
     Expression(Node<Expression>),
     Null,
 }
@@ -58,6 +65,11 @@ pub enum Expression {
         op: Node<AssignOp>,
         left: Node<Expression>,
         right: Node<Expression>,
+    },
+    Conditional {
+        cond: Node<Expression>,
+        then_expr: Node<Expression>,
+        else_expr: Node<Expression>,
     },
 }
 

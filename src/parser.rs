@@ -7,12 +7,14 @@ use crate::ast::{
 };
 use crate::lexer::{Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
+use std::collections::VecDeque;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 
 struct Parser<'src> {
     source: &'src str,
     current: Token,
+    spans: VecDeque<Span>,
     lexer: Lexer<'src>,
 }
 
@@ -22,17 +24,17 @@ impl<'src> Parser<'src> {
         Parser {
             source,
             current: lexer.next(),
+            spans: VecDeque::with_capacity(5),
             lexer,
         }
     }
 
     fn program(&mut self) -> Result<Node<Program>> {
-        let start = self.current.span;
+        self.begin_span();
         let function_definition = self.function()?;
         self.expect(TokenKind::Eof)?;
-        let span = Span(start.0, self.source.len());
         Ok(Node::from(
-            span,
+            self.end_span(),
             Program {
                 function_definition,
             },
@@ -40,7 +42,7 @@ impl<'src> Parser<'src> {
     }
 
     fn function(&mut self) -> Result<Node<Function>> {
-        let start = self.current.span;
+        self.begin_span();
         self.expect(TokenKind::Int)?;
         let name = self.identifier()?;
         self.expect(TokenKind::OpenParen)?;
@@ -52,57 +54,95 @@ impl<'src> Parser<'src> {
             body.push(self.block_item()?)
         }
         self.advance();
-        let end = self.current.span;
-        Ok(Node::from(start + end, Function { name, body }))
+        Ok(Node::from(self.end_span(), Function { name, body }))
     }
 
-    fn block_item(&mut self) -> Result<Node<BlockItem>> {
-        let start = self.current.span;
+    fn block_item(&mut self) -> Result<BlockItem> {
+        self.begin_span();
         let block = if self.current.kind == TokenKind::Int {
-            self.advance();
-            let name = self.identifier()?;
-            let init = if self.current.kind == TokenKind::Equal {
-                self.advance();
-                Some(self.expression()?)
-            } else {
-                None
-            };
-            self.expect(TokenKind::Semicolon)?;
-            BlockItem::Decl(Declaration { name, init })
+            BlockItem::Decl(self.declaration()?)
         } else {
             BlockItem::Stmt(self.statement()?)
         };
-        let end = self.current.span;
-        Ok(Node::from(start + end, block))
+        Ok(block)
     }
 
-    fn statement(&mut self) -> Result<Statement> {
-        let statement = match self.current.kind {
-            TokenKind::Return => {
-                self.advance();
-                let expr = self.expression()?;
-                self.expect(TokenKind::Semicolon)?;
-                Statement::Return { expr }
-            }
-            TokenKind::Semicolon => {
-                self.advance();
-                Statement::Null
-            }
-            _ => {
-                let expr = self.expression()?;
-                self.expect(TokenKind::Semicolon)?;
-                Statement::Expression(expr)
-            }
+    fn declaration(&mut self) -> Result<Node<Declaration>> {
+        self.begin_span();
+        self.expect(TokenKind::Int)?;
+        let name = self.identifier()?;
+        let init = if self.current.kind == TokenKind::Equal {
+            self.advance();
+            Some(self.expression()?)
+        } else {
+            None
         };
+        self.expect(TokenKind::Semicolon)?;
+        Ok(Node::from(self.end_span(), Declaration { name, init }))
+    }
 
-        Ok(statement)
+    fn statement(&mut self) -> Result<Node<Statement>> {
+        match self.current.kind {
+            TokenKind::Return => self.return_stmt(),
+            TokenKind::If => self.if_stmt(),
+            TokenKind::Semicolon => self.null_stmt(),
+            _ => self.expression_stmt(),
+        }
+    }
+
+    fn expression_stmt(&mut self) -> Result<Node<Statement>> {
+        self.begin_span();
+        let expr = self.expression_precedence(0, "statement")?;
+        self.expect(TokenKind::Semicolon)?;
+        Ok(Node::from(self.end_span(), Statement::Expression(expr)))
+    }
+
+    fn null_stmt(&mut self) -> Result<Node<Statement>> {
+        self.begin_span();
+        self.expect(TokenKind::Semicolon)?;
+        Ok(Node::from(self.end_span(), Statement::Null))
+    }
+
+    fn if_stmt(&mut self) -> Result<Node<Statement>> {
+        self.begin_span();
+        self.expect(TokenKind::If)?;
+        self.expect(TokenKind::OpenParen)?;
+        let cond = self.expression()?;
+        self.expect(TokenKind::CloseParen)?;
+        let then_stmt = self.statement()?;
+        let else_stmt = if self.current.kind == TokenKind::Else {
+            self.advance();
+            Some(self.statement()?)
+        } else {
+            None
+        };
+        Ok(Node::from(
+            self.end_span(),
+            Statement::If {
+                cond,
+                then_stmt,
+                else_stmt,
+            },
+        ))
+    }
+
+    fn return_stmt(&mut self) -> Result<Node<Statement>> {
+        self.begin_span();
+        self.expect(TokenKind::Return)?;
+        let expr = self.expression()?;
+        self.expect(TokenKind::Semicolon)?;
+        Ok(Node::from(self.end_span(), Statement::Return { expr }))
     }
 
     fn expression(&mut self) -> Result<Node<Expression>> {
-        self.expression_precedence(0)
+        self.expression_precedence(0, "expression")
     }
 
-    fn expression_precedence(&mut self, min_precedence: u8) -> Result<Node<Expression>> {
+    fn expression_precedence(
+        &mut self,
+        min_precedence: u8,
+        error_kind: &str,
+    ) -> Result<Node<Expression>> {
         let mut expr = match self.current.kind {
             TokenKind::Constant => self.int()?,
             TokenKind::Identifier => self.var()?,
@@ -112,17 +152,16 @@ impl<'src> Parser<'src> {
             | TokenKind::PlusPlus
             | TokenKind::MinusMinus => self.unary_expression()?,
             TokenKind::OpenParen => {
-                let start = self.current.span;
+                self.begin_span();
                 self.advance();
                 let inner = self.expression()?;
                 self.expect(TokenKind::CloseParen)?;
-                let end = self.current.span;
-                Node::from(start + end, *inner.data)
+                Node::from(self.end_span(), *inner.data)
             }
             _ => {
                 return Err(ParserError {
                     msg: format!(
-                        "Expected expression, but found '{}'",
+                        "Expected {error_kind}, but found '{}'",
                         self.current.slice(self.source)
                     ),
                     span: self.current.span,
@@ -133,7 +172,7 @@ impl<'src> Parser<'src> {
         loop {
             // Postfix operator parsing
             if let TokenKind::PlusPlus | TokenKind::MinusMinus = self.current.kind {
-                let precedence = 13;
+                let precedence = 14;
                 if precedence < min_precedence {
                     break;
                 }
@@ -154,19 +193,20 @@ impl<'src> Parser<'src> {
                 | TokenKind::CircumflexEqual
                 | TokenKind::LessLessEqual
                 | TokenKind::GreaterGreaterEqual => 1,
-                TokenKind::PipePipe => 2,
-                TokenKind::AmpersandAmpersand => 3,
-                TokenKind::Pipe => 4,
-                TokenKind::Circumflex => 5,
-                TokenKind::Ampersand => 6,
-                TokenKind::EqualEqual | TokenKind::BangEqual => 7,
+                TokenKind::Question => 2,
+                TokenKind::PipePipe => 3,
+                TokenKind::AmpersandAmpersand => 4,
+                TokenKind::Pipe => 5,
+                TokenKind::Circumflex => 6,
+                TokenKind::Ampersand => 7,
+                TokenKind::EqualEqual | TokenKind::BangEqual => 8,
                 TokenKind::Greater
                 | TokenKind::GreaterEqual
                 | TokenKind::Less
-                | TokenKind::LessEqual => 8,
-                TokenKind::LessLess | TokenKind::GreaterGreater => 9,
-                TokenKind::Plus | TokenKind::Minus => 10,
-                TokenKind::Star | TokenKind::Slash | TokenKind::Percent => 11,
+                | TokenKind::LessEqual => 9,
+                TokenKind::LessLess | TokenKind::GreaterGreater => 10,
+                TokenKind::Plus | TokenKind::Minus => 11,
+                TokenKind::Star | TokenKind::Slash | TokenKind::Percent => 12,
                 _ => break,
             };
 
@@ -174,9 +214,23 @@ impl<'src> Parser<'src> {
                 break;
             }
 
-            expr = if let Ok(op) = self.assignment_op() {
+            expr = if let TokenKind::Question = self.current.kind {
+                self.advance();
+                let cond = expr;
+                let then_expr = self.expression()?;
+                self.expect(TokenKind::Colon)?;
+                let else_expr = self.expression()?;
+                Node::from(
+                    cond.span + else_expr.span,
+                    Expression::Conditional {
+                        cond,
+                        then_expr,
+                        else_expr,
+                    },
+                )
+            } else if let Ok(op) = self.assignment_op() {
                 let left = expr;
-                let right = self.expression_precedence(precedence)?;
+                let right = self.expression_precedence(precedence, "expression")?;
                 Node::from(
                     left.span + right.span,
                     Expression::Assignment { op, left, right },
@@ -184,7 +238,7 @@ impl<'src> Parser<'src> {
             } else {
                 let op = self.binary_op()?;
                 let left = expr;
-                let right = self.expression_precedence(precedence + 1)?;
+                let right = self.expression_precedence(precedence + 1, "expression")?;
 
                 Node::from(
                     left.span + right.span,
@@ -197,11 +251,10 @@ impl<'src> Parser<'src> {
     }
 
     fn unary_expression(&mut self) -> Result<Node<Expression>> {
-        let start = self.current.span;
+        self.begin_span();
         let op = self.unary_op()?;
-        let expr = self.expression_precedence(12)?;
-        let end = self.current.span;
-        Ok(Node::from(start + end, Expression::Unary { op, expr }))
+        let expr = self.expression_precedence(13, "expression")?;
+        Ok(Node::from(self.end_span(), Expression::Unary { op, expr }))
     }
 
     fn assignment_op(&mut self) -> Result<Node<AssignOp>> {
@@ -345,6 +398,7 @@ impl<'src> Parser<'src> {
                 span: token.span,
             })
         } else {
+            // TODO: Improve error message, don't use `:?`
             Err(ParserError {
                 msg: format!(
                     "Expected {expected:?}, but found '{}'",
@@ -353,6 +407,16 @@ impl<'src> Parser<'src> {
                 span: token.span,
             })
         }
+    }
+
+    fn begin_span(&mut self) {
+        self.spans.push_front(self.current.span);
+    }
+
+    fn end_span(&mut self) -> Span {
+        let mut span = self.spans.pop_front().expect("Span not found");
+        span.1 = self.current.span.1;
+        span
     }
 }
 
