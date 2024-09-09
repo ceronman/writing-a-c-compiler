@@ -4172,6 +4172,19 @@ fn test_chapter_5_valid_use_val_in_own_initializer() {
 }
 
 #[test]
+#[should_panic]
+fn test_chapter_6_invalid_lex_extra_credit_bad_label() {
+    tokenize(
+        r#"
+        int main(void) {
+            0invalid_label:
+                return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
 fn test_chapter_6_invalid_parse_declaration_as_statement() {
     let src = r#"
         int main(void) {
@@ -4196,6 +4209,121 @@ fn test_chapter_6_invalid_parse_empty_if_body() {
     let expected = vec![
         Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, If, OpenParen, Constant,
         CloseParen, Else, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_goto_without_label() {
+    let src = r#"
+        int main(void) {
+            goto;
+        lbl:
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Goto, Semicolon, Identifier,
+        Colon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_kw_label() {
+    let src = r#"
+        int main(void) {
+            return: return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Colon, Return, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_label_declaration() {
+    let src = r#"
+        int main(void) {
+        label:
+            int a = 0;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Identifier, Colon, Int,
+        Identifier, Equal, Constant, Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_label_expression_clause() {
+    let src = r#"
+        int main(void) {
+            1 && label: 2;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        Colon,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_label_outside_function() {
+    let src = r#"
+        label:
+        int main(void) {
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Identifier, Colon, Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_label_without_statement() {
+    let src = r#"
+        int main(void) {
+            foo:
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Identifier, Colon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_parenthesized_label() {
+    let src = r#"
+        int main(void) {
+            goto(a);
+        a:
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Goto, OpenParen, Identifier,
+        CloseParen, Semicolon, Identifier, Colon, Return, Constant, Semicolon, CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);
 }
@@ -4308,6 +4436,91 @@ fn test_chapter_6_invalid_parse_wrong_ternary_delimiter() {
     let expected = vec![
         Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
         Semicolon, Return, Identifier, Question, Constant, Equal, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_extra_credit_duplicate_labels() {
+    let src = r#"
+        
+        int main(void) {
+            int x = 0;
+        label:
+            x = 1;
+        label:
+            return 2;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Identifier, Colon, Identifier, Equal, Constant, Semicolon, Identifier, Colon,
+        Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_extra_credit_goto_missing_label() {
+    let src = r#"
+        int main(void) {
+            goto label;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Goto, Identifier, Semicolon,
+        Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_extra_credit_goto_variable() {
+    let src = r#"
+        int main(void) {
+            int a;
+            goto a;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Semicolon, Goto,
+        Identifier, Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_extra_credit_undeclared_var_in_labeled_statement() {
+    let src = r#"
+        int main(void) {
+        lbl:
+            return a;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Identifier, Colon, Return,
+        Identifier, Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_extra_credit_use_label_as_variable() {
+    let src = r#"
+        int main(void) {
+            int x = 0;
+            a:
+            x = a;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Identifier, Colon, Identifier, Equal, Identifier, Semicolon, Return, Constant,
+        Semicolon, CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);
 }
@@ -4484,6 +4697,224 @@ fn test_chapter_6_valid_extra_credit_compound_if_expression() {
 }
 
 #[test]
+fn test_chapter_6_valid_extra_credit_goto_after_declaration() {
+    let src = r#"
+        int main(void) {
+            int x = 1;
+            goto post_declaration;
+            int i = (x = 0);
+        post_declaration:
+            i = 5;
+            return (x == 1 && i == 5);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Goto,
+        Identifier,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        OpenParen,
+        Identifier,
+        Equal,
+        Constant,
+        CloseParen,
+        Semicolon,
+        Identifier,
+        Colon,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_backwards() {
+    let src = r#"
+        int main(void) {
+            if (0)
+            label:
+                return 5;
+            goto label;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, If, OpenParen, Constant,
+        CloseParen, Identifier, Colon, Return, Constant, Semicolon, Goto, Identifier, Semicolon,
+        Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_label() {
+    let src = r#"
+        int main(void) {
+            goto label;
+            return 0;
+        label:
+            return 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Goto, Identifier, Semicolon,
+        Return, Constant, Semicolon, Identifier, Colon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_label_and_var() {
+    let src = r#"
+        int main(void) {
+            int ident = 5;
+            goto ident;
+            return 0;
+        ident:
+            return ident;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Goto, Identifier, Semicolon, Return, Constant, Semicolon, Identifier, Colon,
+        Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_label_main() {
+    let src = r#"
+        int main(void) {
+            goto main;
+            return 5;
+        main:
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Goto, Identifier, Semicolon,
+        Return, Constant, Semicolon, Identifier, Colon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_label_main_2() {
+    let src = r#"
+        int main(void) {
+            goto _main;
+            return 0;
+            _main:
+                return 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Goto, Identifier, Semicolon,
+        Return, Constant, Semicolon, Identifier, Colon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_nested_label() {
+    let src = r#"
+        int main(void) {
+            goto labelB;
+            labelA:
+                labelB:
+                    return 5;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Goto, Identifier, Semicolon,
+        Identifier, Colon, Identifier, Colon, Return, Constant, Semicolon, Return, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_label_all_statements() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+        label_if:
+            if (a)
+                goto label_expression;
+            else
+                goto label_empty;
+        label_goto:
+            goto label_return;
+            if (0)
+            label_expression:
+                a = 0;
+            goto label_if;
+        label_return:
+            return a;
+        label_empty:;
+            a = 100;
+            goto label_goto;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Identifier, Colon, If, OpenParen, Identifier, CloseParen, Goto, Identifier,
+        Semicolon, Else, Goto, Identifier, Semicolon, Identifier, Colon, Goto, Identifier,
+        Semicolon, If, OpenParen, Constant, CloseParen, Identifier, Colon, Identifier, Equal,
+        Constant, Semicolon, Goto, Identifier, Semicolon, Identifier, Colon, Return, Identifier,
+        Semicolon, Identifier, Colon, Semicolon, Identifier, Equal, Constant, Semicolon, Goto,
+        Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_label_token() {
+    let src = r#"
+        int main(void) {
+            goto _foo_1_;
+            return 0;
+        _foo_1_:
+            return 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Goto, Identifier, Semicolon,
+        Return, Constant, Semicolon, Identifier, Colon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
 fn test_chapter_6_valid_extra_credit_lh_compound_assignment() {
     let src = r#"
         int main(void) {
@@ -4572,6 +5003,41 @@ fn test_chapter_6_valid_extra_credit_prefix_in_ternary() {
         Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
         Semicolon, Return, OpenParen, PlusPlus, Identifier, Question, PlusPlus, Identifier, Colon,
         Constant, CloseParen, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_unused_label() {
+    let src = r#"
+        int main(void) {
+        unused:
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Identifier, Colon, Return,
+        Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_whitespace_after_label() {
+    let src = r#"
+        int main(void) {
+            goto label2;
+            return 0;
+            label1 :
+            label2
+            :
+            return 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Goto, Identifier, Semicolon,
+        Return, Constant, Semicolon, Identifier, Colon, Identifier, Colon, Return, Constant,
+        Semicolon, CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);
 }

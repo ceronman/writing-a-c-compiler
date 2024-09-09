@@ -30,6 +30,7 @@ pub enum TokenKind {
     Void,
     If,
     Else,
+    Goto,
 
     Return,
 
@@ -227,6 +228,7 @@ impl<'src> Lexer<'src> {
             "return" => TokenKind::Return,
             "if" => TokenKind::If,
             "else" => TokenKind::Else,
+            "goto" => TokenKind::Goto,
             _ => TokenKind::Identifier,
         }
     }
