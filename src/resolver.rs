@@ -44,7 +44,18 @@ impl Resolver {
             Statement::Return { expr } => self.resolve_expression(expr),
             Statement::Expression(expr) => self.resolve_expression(expr),
             Statement::Null => Ok(()),
-            _ => todo!(),
+            Statement::If {
+                cond,
+                then_stmt,
+                else_stmt,
+            } => {
+                self.resolve_expression(cond)?;
+                self.resolve_statement(then_stmt)?;
+                if let Some(else_stmt) = else_stmt {
+                    self.resolve_statement(else_stmt)?;
+                }
+                Ok(())
+            }
         }
     }
 
@@ -94,8 +105,16 @@ impl Resolver {
                 self.resolve_expression(left)?;
                 self.resolve_expression(right)?;
             }
+            Expression::Conditional {
+                cond,
+                then_expr,
+                else_expr,
+            } => {
+                self.resolve_expression(cond)?;
+                self.resolve_expression(then_expr)?;
+                self.resolve_expression(else_expr)?;
+            }
             Expression::Constant(_) => {}
-            _ => todo!(),
         }
         Ok(())
     }

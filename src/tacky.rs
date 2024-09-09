@@ -1,4 +1,5 @@
 use crate::ast;
+use crate::ast::Expression;
 use crate::symbol::Symbol;
 
 #[derive(Debug)]
@@ -90,17 +91,7 @@ impl TackyGenerator {
     fn emit_body(mut self, body: &[ast::BlockItem]) -> Vec<Instruction> {
         for block_item in body {
             match block_item {
-                ast::BlockItem::Stmt(stmt) => match stmt.as_ref() {
-                    ast::Statement::Return { expr } => {
-                        let val = self.emit_expr(expr);
-                        self.instructions.push(Instruction::Return(val));
-                    }
-                    ast::Statement::Expression(expr) => {
-                        let val = self.emit_expr(expr);
-                        self.instructions.push(Instruction::Return(val));
-                    }
-                    _ => todo!(),
-                },
+                ast::BlockItem::Stmt(stmt) => self.emit_statement(stmt),
                 ast::BlockItem::Decl(decl) => {
                     if let Some(init) = &decl.init {
                         let result = self.emit_expr(init);
@@ -115,6 +106,51 @@ impl TackyGenerator {
         self.instructions
             .push(Instruction::Return(Val::Constant(0)));
         self.instructions
+    }
+
+    fn emit_statement(&mut self, stmt: &ast::Statement) {
+        match stmt {
+            ast::Statement::Return { expr } => {
+                let val = self.emit_expr(expr);
+                self.instructions.push(Instruction::Return(val));
+            }
+            ast::Statement::Expression(expr) => {
+                self.emit_expr(expr);
+            }
+            ast::Statement::If {
+                cond,
+                then_stmt,
+                else_stmt,
+            } => {
+                let cond_val = self.emit_expr(cond);
+                let end_label = self.make_label("end_if");
+                let else_label = self.make_label("else");
+
+                match else_stmt {
+                    Some(else_stmt) => {
+                        self.instructions.push(Instruction::JumpIfZero {
+                            cond: cond_val,
+                            target: else_label.clone(),
+                        });
+                        self.emit_statement(then_stmt);
+                        self.instructions.push(Instruction::Jump {
+                            target: end_label.clone(),
+                        });
+                        self.instructions.push(Instruction::Label(else_label));
+                        self.emit_statement(else_stmt);
+                    }
+                    None => {
+                        self.instructions.push(Instruction::JumpIfZero {
+                            cond: cond_val,
+                            target: end_label.clone(),
+                        });
+                        self.emit_statement(then_stmt);
+                    }
+                }
+                self.instructions.push(Instruction::Label(end_label));
+            }
+            ast::Statement::Null => {}
+        }
     }
 
     fn emit_expr(&mut self, expr: &ast::Expression) -> Val {
@@ -191,7 +227,7 @@ impl TackyGenerator {
                     ast::BinaryOp::And => {
                         let result = self.make_temp();
                         let false_label = self.make_label("and_false");
-                        let end_label = self.make_label("end");
+                        let end_label = self.make_label("and_end");
                         self.instructions.push(Instruction::JumpIfZero {
                             cond: src1,
                             target: false_label.clone(),
@@ -219,7 +255,7 @@ impl TackyGenerator {
                     ast::BinaryOp::Or => {
                         let result = self.make_temp();
                         let true_label = self.make_label("or_true");
-                        let end_label = self.make_label("end");
+                        let end_label = self.make_label("or_end");
                         self.instructions.push(Instruction::JumpIfNotZero {
                             cond: src1,
                             target: true_label.clone(),
@@ -295,7 +331,37 @@ impl TackyGenerator {
                 });
                 Val::Var(name.clone())
             }
-            _ => todo!(),
+
+            Expression::Conditional {
+                cond,
+                then_expr,
+                else_expr,
+            } => {
+                let cond_val = self.emit_expr(cond);
+                let end_label = self.make_label("end_if");
+                let else_label = self.make_label("else");
+                let result = self.make_temp();
+                self.instructions.push(Instruction::JumpIfZero {
+                    cond: cond_val,
+                    target: else_label.clone(),
+                });
+                let true_value = self.emit_expr(then_expr);
+                self.instructions.push(Instruction::Copy {
+                    src: true_value,
+                    dst: result.clone(),
+                });
+                self.instructions.push(Instruction::Jump {
+                    target: end_label.clone(),
+                });
+                self.instructions.push(Instruction::Label(else_label));
+                let false_value = self.emit_expr(else_expr);
+                self.instructions.push(Instruction::Copy {
+                    src: false_value,
+                    dst: result.clone(),
+                });
+                self.instructions.push(Instruction::Label(end_label));
+                result
+            }
         }
     }
 
