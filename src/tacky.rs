@@ -1,5 +1,4 @@
 use crate::ast;
-use crate::ast::Expression;
 use crate::symbol::Symbol;
 
 #[derive(Debug)]
@@ -149,8 +148,20 @@ impl TackyGenerator {
                 }
                 self.instructions.push(Instruction::Label(end_label));
             }
+
+            ast::Statement::Labeled { name, stmt } => {
+                self.instructions
+                    .push(Instruction::Label(name.symbol.clone()));
+                self.emit_statement(stmt);
+            }
+
+            ast::Statement::Goto(label) => {
+                self.instructions.push(Instruction::Jump {
+                    target: label.symbol.clone(),
+                });
+            }
+
             ast::Statement::Null => {}
-            _ => todo!(),
         }
     }
 
@@ -333,7 +344,7 @@ impl TackyGenerator {
                 Val::Var(name.clone())
             }
 
-            Expression::Conditional {
+            ast::Expression::Conditional {
                 cond,
                 then_expr,
                 else_expr,
