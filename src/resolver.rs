@@ -1,13 +1,14 @@
 use crate::ast::{BlockItem, Declaration, Expression, Node, Program, Statement, UnaryOp};
 use crate::lexer::Span;
 use crate::symbol::Symbol;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 
 #[derive(Default)]
 struct Resolver {
     locals: HashMap<Symbol, Symbol>,
+    labels: HashSet<Symbol>,
     counter: usize,
 }
 
@@ -19,13 +20,27 @@ impl Resolver {
                 BlockItem::Decl(decl) => self.resolve_declaration(decl)?,
             }
         }
+
+        // Second pass to check `goto` statements
+        for block_item in &mut program.function_definition.body {
+            if let BlockItem::Stmt(stmt) = block_item {
+                if let Statement::Goto(name) = stmt.as_ref() {
+                    if !self.labels.contains(&name.symbol) {
+                        return Err(ResolutionError {
+                            msg: format!("Undefined label '{}'", name.symbol),
+                            span: name.span,
+                        });
+                    }
+                }
+            }
+        }
         Ok(program)
     }
 
     fn resolve_declaration(&mut self, decl: &mut Declaration) -> Result<()> {
         let name = &decl.name.symbol;
         if self.locals.contains_key(name) {
-            return Err(NameError {
+            return Err(ResolutionError {
                 msg: format!("Variable '{name}' was already declared"),
                 span: decl.name.span,
             });
@@ -56,8 +71,20 @@ impl Resolver {
                 }
                 Ok(())
             }
-
-            _ => todo!(),
+            Statement::Labeled { name, stmt } => {
+                if self.labels.contains(&name.symbol) {
+                    return Err(ResolutionError {
+                        msg: format!("Label '{}' has been already defined", name.symbol),
+                        span: name.span,
+                    });
+                }
+                self.labels.insert(name.symbol.clone());
+                self.resolve_statement(stmt)
+            }
+            Statement::Goto(_) => {
+                // Note: checking if label exists is done in another pass
+                Ok(())
+            }
         }
     }
 
@@ -67,7 +94,7 @@ impl Resolver {
                 if let Some(declared) = self.locals.get(name) {
                     *name = declared.clone();
                 } else {
-                    return Err(NameError {
+                    return Err(ResolutionError {
                         msg: format!("Undeclared variable '{name}'"),
                         span: expr.span,
                     });
@@ -75,7 +102,7 @@ impl Resolver {
             }
             Expression::Assignment { left, right, .. } => {
                 if !matches!(left.as_ref(), Expression::Var(_)) {
-                    return Err(NameError {
+                    return Err(ResolutionError {
                         msg: "Invalid left side of the assignment".to_owned(),
                         span: left.span,
                     });
@@ -86,7 +113,7 @@ impl Resolver {
             Expression::Unary { expr, op } => {
                 if let UnaryOp::Increment | UnaryOp::Decrement = op.as_ref() {
                     if !matches!(expr.as_ref(), Expression::Var(_)) {
-                        return Err(NameError {
+                        return Err(ResolutionError {
                             msg: "Invalid left side of the assignment".to_owned(),
                             span: expr.span,
                         });
@@ -96,7 +123,7 @@ impl Resolver {
             }
             Expression::Postfix { expr, .. } => {
                 if !matches!(expr.as_ref(), Expression::Var(_)) {
-                    return Err(NameError {
+                    return Err(ResolutionError {
                         msg: "Invalid left side of the assignment".to_owned(),
                         span: expr.span,
                     });
@@ -129,20 +156,20 @@ impl Resolver {
 }
 
 #[derive(Debug)]
-pub struct NameError {
+pub struct ResolutionError {
     pub msg: String,
     pub span: Span,
 }
 
-impl Display for NameError {
+impl Display for ResolutionError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{msg} at {span:?}", msg = self.msg, span = self.span)
     }
 }
 
-impl Error for NameError {}
+impl Error for ResolutionError {}
 
-pub type Result<T> = std::result::Result<T, NameError>;
+pub type Result<T> = std::result::Result<T, ResolutionError>;
 
 pub fn resolve(program: Node<Program>) -> Result<Node<Program>> {
     Resolver::default().resolve(program)
