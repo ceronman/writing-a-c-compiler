@@ -1,14 +1,15 @@
 mod asm;
 mod ast;
 mod emitter;
+mod error;
 mod lexer;
 mod parser;
 mod pretty;
+mod resolver;
 mod symbol;
 mod tacky;
 mod tempfile;
 
-mod resolver;
 #[cfg(feature = "test_gen")]
 mod testgen;
 
@@ -23,20 +24,30 @@ fn main() -> Result<()> {
     let options = parse_args();
 
     let preprocessed = run_preprocessor(&options.filename)?;
-
     let source = fs::read_to_string(preprocessed.as_path())?;
+
+    #[cfg(feature = "test_gen")]
+    {
+        if let Flag::Lex = options.flag {
+            testgen::generate_lexer_tests(&options.filename, &source)?;
+        }
+
+        if let Flag::Parse = options.flag {
+            lexer::tokenize(&source); // Skip lexing errors
+            testgen::generate_parser_tests(&options.filename, &source)?;
+        }
+
+        if let Flag::Validate = options.flag {
+            lexer::tokenize(&source); // skip lexing errors
+            parser::parse(&source)?; // skip parsing errors
+            testgen::generate_resolver_tests(&options.filename, &source)?;
+        }
+    }
+
     if let Flag::Lex = options.flag {
-        #[cfg(feature = "test_gen")]
-        testgen::generate_lexer_tests(&options.filename, &source)?;
         let tokens = lexer::tokenize(&source);
         println!("{tokens:#?}");
         return Ok(());
-    }
-
-    #[cfg(feature = "test_gen")]
-    if let Flag::Parse = options.flag {
-        lexer::tokenize(&source);
-        testgen::generate_parser_tests(&options.filename, &source)?;
     }
 
     let ast = parser::parse(&source)?;

@@ -33,7 +33,7 @@ pub fn remove_annotation(src: &str) -> String {
 }
 
 #[allow(dead_code)]
-pub fn annotate(src: &str, error: &crate::parser::ParserError) -> String {
+pub fn annotate(src: &str, error: &crate::error::CompilerError) -> String {
     let mut result = String::new();
     let mut offset = 0;
     let mut annotated = false;

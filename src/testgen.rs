@@ -3,8 +3,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::{fs, panic};
 
-use crate::pretty::{annotate, pretty_print_ast};
-use crate::{lexer, parser, pretty};
+use crate::{lexer, parser, pretty, resolver};
 use anyhow::Result;
 
 pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
@@ -88,7 +87,7 @@ fn assert_error(expected_annotated: &str) {{
     let result = parser::parse(&indented);
     match result {
         Ok(ast) => {
-            let tree = pretty_print_ast(&ast)?;
+            let tree = pretty::pretty_print_ast(&ast)?;
             let tree = indent(&tree);
             writeln!(file, "#[test]")?;
             writeln!(file, "fn test_{name}() {{")?;
@@ -98,7 +97,55 @@ fn assert_error(expected_annotated: &str) {{
             writeln!(file, "}}")?;
         }
         Err(error) => {
-            let annotated = annotate(&indented, &error);
+            let annotated = pretty::annotate(&indented, &error);
+            writeln!(file, "#[test]")?;
+            writeln!(file, "fn test_{name}() {{")?;
+            writeln!(file, "    assert_error(r#\"{annotated}\"#);")?;
+            writeln!(file, "}}")?;
+        }
+    }
+
+    Ok(())
+}
+
+pub fn generate_resolver_tests(path: &Path, source: &str) -> Result<()> {
+    let output = PathBuf::from(file!());
+    let output = output
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join("src/resolver/test.rs");
+    if fs::read_to_string(&output)?.is_empty() {
+        let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
+        writeln!(
+            file,
+            r#"
+use crate::parser::parse;
+use crate::resolver::resolve;
+use crate::pretty::{{annotate, remove_annotation}};
+
+fn assert_error(expected_annotated: &str) {{
+    let clean_source = remove_annotation(expected_annotated);
+    let ast = parse(&clean_source).expect("Parse error");
+    let Err(error) = resolve(ast) else {{
+        panic!("No error produced!")
+    }};
+    let actual_annotated = annotate(&clean_source, &error);
+    assert_eq!(actual_annotated, expected_annotated);
+}}
+"#
+        )?;
+    }
+    let name = test_name(path);
+    let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
+    let indented = indent(source);
+    let result = resolver::resolve(parser::parse(&indented)?);
+    match result {
+        Ok(_) => {}
+        Err(error) => {
+            let annotated = pretty::annotate(&indented, &error);
+            writeln!(file)?;
             writeln!(file, "#[test]")?;
             writeln!(file, "fn test_{name}() {{")?;
             writeln!(file, "    assert_error(r#\"{annotated}\"#);")?;
