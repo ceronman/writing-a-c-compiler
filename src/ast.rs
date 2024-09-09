@@ -41,6 +41,11 @@ pub enum Statement {
         else_stmt: Option<Node<Statement>>,
     },
     Expression(Node<Expression>),
+    Labeled {
+        name: Node<Identifier>,
+        stmt: Node<Statement>,
+    },
+    Goto(Node<Identifier>),
     Null,
 }
 

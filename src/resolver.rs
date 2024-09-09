@@ -56,6 +56,8 @@ impl Resolver {
                 }
                 Ok(())
             }
+
+            _ => todo!(),
         }
     }
 

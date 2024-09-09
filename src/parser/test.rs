@@ -4121,6 +4121,97 @@ fn test_chapter_6_invalid_parse_empty_if_body() {
 }
 
 #[test]
+fn test_chapter_6_invalid_parse_extra_credit_goto_without_label() {
+    assert_error(
+        r#"
+        int main(void) {
+            goto;
+              //^ Expected Identifier, but found ';'
+        lbl:
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_kw_label() {
+    assert_error(
+        r#"
+        int main(void) {
+            return: return 0;
+                //^ Expected expression, but found ':'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_label_declaration() {
+    assert_error(
+        r#"
+        int main(void) {
+        label:
+            int a = 0;
+          //^^^ Expected statement, but found 'int'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_label_expression_clause() {
+    assert_error(
+        r#"
+        int main(void) {
+            1 && label: 2;
+                    //^ Expected Semicolon, but found ':'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_label_outside_function() {
+    assert_error(
+        r#"
+        label:
+      //^^^^^ Expected Int, but found 'label'
+        int main(void) {
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_label_without_statement() {
+    assert_error(
+        r#"
+        int main(void) {
+            foo:
+        }
+      //^ Expected statement, but found '}'
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_6_invalid_parse_extra_credit_parenthesized_label() {
+    assert_error(
+        r#"
+        int main(void) {
+            goto(a);
+              //^ Expected Identifier, but found '('
+        a:
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
 fn test_chapter_6_invalid_parse_if_assignment() {
     assert_error(
         r#"
@@ -4214,6 +4305,118 @@ fn test_chapter_6_invalid_parse_wrong_ternary_delimiter() {
         }
     "#,
     );
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_extra_credit_duplicate_labels() {
+    let src = r#"
+        
+        int main(void) {
+            int x = 0;
+        label:
+            x = 1;
+        label:
+            return 2;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [0]
+            ├── Label [label]
+            │   ╰── Assign [=]
+            │       ├── Var [x]
+            │       ╰── Constant [1]
+            ╰── Label [label]
+                ╰── Return
+                    ╰── Constant [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_extra_credit_goto_missing_label() {
+    let src = r#"
+        int main(void) {
+            goto label;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Goto [label]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_extra_credit_goto_variable() {
+    let src = r#"
+        int main(void) {
+            int a;
+            goto a;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            ├── Goto [a]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_extra_credit_undeclared_var_in_labeled_statement() {
+    let src = r#"
+        int main(void) {
+        lbl:
+            return a;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Label [lbl]
+            │   ╰── Return
+            │       ╰── Var [a]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_invalid_semantics_extra_credit_use_label_as_variable() {
+    let src = r#"
+        int main(void) {
+            int x = 0;
+            a:
+            x = a;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [0]
+            ├── Label [a]
+            │   ╰── Assign [=]
+            │       ├── Var [x]
+            │       ╰── Var [a]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
 }
 
 #[test]
@@ -4481,6 +4684,270 @@ fn test_chapter_6_valid_extra_credit_compound_if_expression() {
 }
 
 #[test]
+fn test_chapter_6_valid_extra_credit_goto_after_declaration() {
+    let src = r#"
+        int main(void) {
+            int x = 1;
+            goto post_declaration;
+            int i = (x = 0);
+        post_declaration:
+            i = 5;
+            return (x == 1 && i == 5);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [1]
+            ├── Goto [post_declaration]
+            ├── Declaration [i]
+            │   ╰── Assign [=]
+            │       ├── Var [x]
+            │       ╰── Constant [0]
+            ├── Label [post_declaration]
+            │   ╰── Assign [=]
+            │       ├── Var [i]
+            │       ╰── Constant [5]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [x]
+                    │   ╰── Constant [1]
+                    ╰── Binary [==]
+                        ├── Var [i]
+                        ╰── Constant [5]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_backwards() {
+    let src = r#"
+        int main(void) {
+            if (0)
+            label:
+                return 5;
+            goto label;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── If
+            │   ├── Constant [0]
+            │   ╰── Label [label]
+            │       ╰── Return
+            │           ╰── Constant [5]
+            ├── If
+            ├── Goto [label]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_label() {
+    let src = r#"
+        int main(void) {
+            goto label;
+            return 0;
+        label:
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Goto [label]
+            ├── Return
+            │   ╰── Constant [0]
+            ╰── Label [label]
+                ╰── Return
+                    ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_label_and_var() {
+    let src = r#"
+        int main(void) {
+            int ident = 5;
+            goto ident;
+            return 0;
+        ident:
+            return ident;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [ident]
+            │   ╰── Constant [5]
+            ├── Goto [ident]
+            ├── Return
+            │   ╰── Constant [0]
+            ╰── Label [ident]
+                ╰── Return
+                    ╰── Var [ident]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_label_main() {
+    let src = r#"
+        int main(void) {
+            goto main;
+            return 5;
+        main:
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Goto [main]
+            ├── Return
+            │   ╰── Constant [5]
+            ╰── Label [main]
+                ╰── Return
+                    ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_label_main_2() {
+    let src = r#"
+        int main(void) {
+            goto _main;
+            return 0;
+            _main:
+                return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Goto [_main]
+            ├── Return
+            │   ╰── Constant [0]
+            ╰── Label [_main]
+                ╰── Return
+                    ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_goto_nested_label() {
+    let src = r#"
+        int main(void) {
+            goto labelB;
+            labelA:
+                labelB:
+                    return 5;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Goto [labelB]
+            ├── Label [labelA]
+            │   ╰── Label [labelB]
+            │       ╰── Return
+            │           ╰── Constant [5]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_label_all_statements() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+        label_if:
+            if (a)
+                goto label_expression;
+            else
+                goto label_empty;
+        label_goto:
+            goto label_return;
+            if (0)
+            label_expression:
+                a = 0;
+            goto label_if;
+        label_return:
+            return a;
+        label_empty:;
+            a = 100;
+            goto label_goto;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Label [label_if]
+            │   ╰── If
+            │       ├── Var [a]
+            │       ├── Goto [label_expression]
+            │       ╰── Goto [label_empty]
+            │   ╰── If
+            ├── Label [label_goto]
+            │   ╰── Goto [label_return]
+            ├── If
+            │   ├── Constant [0]
+            │   ╰── Label [label_expression]
+            │       ╰── Assign [=]
+            │           ├── Var [a]
+            │           ╰── Constant [0]
+            ├── If
+            ├── Goto [label_if]
+            ├── Label [label_return]
+            │   ╰── Return
+            │       ╰── Var [a]
+            ├── Label [label_empty]
+            ├── Assign [=]
+            │   ├── Var [a]
+            │   ╰── Constant [100]
+            ╰── Goto [label_goto]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_label_token() {
+    let src = r#"
+        int main(void) {
+            goto _foo_1_;
+            return 0;
+        _foo_1_:
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Goto [_foo_1_]
+            ├── Return
+            │   ╰── Constant [0]
+            ╰── Label [_foo_1_]
+                ╰── Return
+                    ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
 fn test_chapter_6_valid_extra_credit_lh_compound_assignment() {
     let src = r#"
         int main(void) {
@@ -4628,6 +5095,50 @@ fn test_chapter_6_valid_extra_credit_prefix_in_ternary() {
                     ├── Unary [++]
                     │   ╰── Var [a]
                     ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_unused_label() {
+    let src = r#"
+        int main(void) {
+        unused:
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── Label [unused]
+                ╰── Return
+                    ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_6_valid_extra_credit_whitespace_after_label() {
+    let src = r#"
+        int main(void) {
+            goto label2;
+            return 0;
+            label1 :
+            label2
+            :
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Goto [label2]
+            ├── Return
+            │   ╰── Constant [0]
+            ╰── Label [label1]
+                ╰── Label [label2]
+                    ╰── Return
+                        ╰── Constant [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }

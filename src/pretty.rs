@@ -150,6 +150,13 @@ fn print_statement(
         ast::Statement::Expression(expr) => {
             print_expression(file, expr, pipe, level, pipes)?;
         }
+        ast::Statement::Goto(label) => {
+            writeln!(file, "{indent}{pipe} Goto [{}]", label.symbol)?;
+        }
+        ast::Statement::Labeled { name, stmt } => {
+            writeln!(file, "{indent}{pipe} Label [{}]", name.symbol)?;
+            print_statement(file, stmt, "╰──", level + 1, pipes)?;
+        }
         ast::Statement::Null => {}
     }
     Ok(())

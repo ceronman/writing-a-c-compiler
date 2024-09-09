@@ -7,6 +7,6 @@ set -euxo pipefail
   cp /dev/null src/parser/test.rs
   cargo build --features test_gen
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --chapter 6 --stage lex --bitwise --compound --increment --goto
-  arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --chapter 6 --stage parse --bitwise --compound --increment
+  arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --chapter 6 --stage parse --bitwise --compound --increment --goto
   rustfmt src/lexer/test.rs
   rustfmt src/parser/test.rs

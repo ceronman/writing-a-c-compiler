@@ -14,6 +14,7 @@ use std::fmt::{Display, Formatter};
 struct Parser<'src> {
     source: &'src str,
     current: Token,
+    next: Token,
     spans: VecDeque<Span>,
     lexer: Lexer<'src>,
 }
@@ -24,6 +25,7 @@ impl<'src> Parser<'src> {
         Parser {
             source,
             current: lexer.next(),
+            next: lexer.next(),
             spans: VecDeque::with_capacity(5),
             lexer,
         }
@@ -86,8 +88,35 @@ impl<'src> Parser<'src> {
             TokenKind::Return => self.return_stmt(),
             TokenKind::If => self.if_stmt(),
             TokenKind::Semicolon => self.null_stmt(),
+            TokenKind::Goto => self.goto_stmt(),
+            TokenKind::Identifier => {
+                if self.next.kind == TokenKind::Colon {
+                    self.labeled_stmt()
+                } else {
+                    self.expression_stmt()
+                }
+            }
             _ => self.expression_stmt(),
         }
+    }
+
+    fn goto_stmt(&mut self) -> Result<Node<Statement>> {
+        self.begin_span();
+        self.expect(TokenKind::Goto)?;
+        let label = self.identifier()?;
+        self.expect(TokenKind::Semicolon)?;
+        Ok(Node::from(self.end_span(), Statement::Goto(label)))
+    }
+
+    fn labeled_stmt(&mut self) -> Result<Node<Statement>> {
+        self.begin_span();
+        let name = self.identifier()?;
+        self.expect(TokenKind::Colon)?;
+        let stmt = self.statement()?;
+        Ok(Node::from(
+            self.end_span(),
+            Statement::Labeled { name, stmt },
+        ))
     }
 
     fn expression_stmt(&mut self) -> Result<Node<Statement>> {
@@ -384,7 +413,8 @@ impl<'src> Parser<'src> {
     }
 
     fn advance(&mut self) {
-        self.current = self.lexer.next();
+        self.current = self.next;
+        self.next = self.lexer.next();
     }
 
     fn expect(&mut self, expected: TokenKind) -> Result<Token> {

@@ -150,6 +150,7 @@ impl TackyGenerator {
                 self.instructions.push(Instruction::Label(end_label));
             }
             ast::Statement::Null => {}
+            _ => todo!(),
         }
     }
 
