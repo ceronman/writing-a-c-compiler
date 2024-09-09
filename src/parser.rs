@@ -219,7 +219,7 @@ impl<'src> Parser<'src> {
                 let cond = expr;
                 let then_expr = self.expression()?;
                 self.expect(TokenKind::Colon)?;
-                let else_expr = self.expression()?;
+                let else_expr = self.expression_precedence(precedence, "expression")?;
                 Node::from(
                     cond.span + else_expr.span,
                     Expression::Conditional {
