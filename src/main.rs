@@ -13,7 +13,7 @@ mod tempfile;
 #[cfg(feature = "test_gen")]
 mod testgen;
 
-use crate::pretty::pretty_print_ast;
+use crate::pretty::{pretty_print_ast, pretty_print_tacky};
 use crate::tempfile::TempPath;
 use anyhow::{bail, Result};
 use std::fs;
@@ -42,6 +42,13 @@ fn main() -> Result<()> {
             parser::parse(&source)?; // skip parsing errors
             testgen::generate_resolver_tests(&options.filename, &source)?;
         }
+
+        if let Flag::Tacky = options.flag {
+            lexer::tokenize(&source); // skip lexing errors
+            let ast = parser::parse(&source)?; // skip parsing errors
+            resolver::resolve(ast)?; // skip resolution errors
+            testgen::generate_tacky_tests(&options.filename, &source)?;
+        }
     }
 
     if let Flag::Lex = options.flag {
@@ -64,7 +71,7 @@ fn main() -> Result<()> {
 
     let tacky = tacky::emit(&validated_ast);
     if let Flag::Tacky = options.flag {
-        println!("{tacky:#?}");
+        println!("{}", pretty_print_tacky(tacky)?);
         return Ok(());
     }
 

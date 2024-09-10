@@ -157,7 +157,7 @@ impl Resolver {
     }
 
     fn make_name(&mut self, name: &Symbol) -> Symbol {
-        let unique_name = format!("${name}{i}", i = self.counter);
+        let unique_name = format!("{name}.{i}", i = self.counter);
         self.counter += 1;
         unique_name
     }

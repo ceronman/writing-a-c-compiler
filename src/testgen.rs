@@ -3,7 +3,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::{fs, panic};
 
-use crate::{lexer, parser, pretty, resolver};
+use crate::{lexer, parser, pretty, resolver, tacky};
 use anyhow::Result;
 
 pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
@@ -152,6 +152,41 @@ fn assert_error(expected_annotated: &str) {{
             writeln!(file, "}}")?;
         }
     }
+
+    Ok(())
+}
+
+pub fn generate_tacky_tests(path: &Path, source: &str) -> Result<()> {
+    let output = PathBuf::from(file!());
+    let output = output
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join("src/tacky/test.rs");
+    if fs::read_to_string(&output)?.is_empty() {
+        let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
+        writeln!(
+            file,
+            r#"
+use crate::pretty::{{dedent, dump_tacky}};
+"#
+        )?;
+    }
+    let name = test_name(path);
+    let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
+    let indented = indent(source);
+    let ast = parser::parse(&indented)?;
+    let ast = resolver::resolve(ast)?;
+    let tacky = tacky::emit(&ast);
+    let expected = indent(&pretty::pretty_print_tacky(tacky)?);
+    writeln!(file)?;
+    writeln!(file, "#[test]")?;
+    writeln!(file, "fn test_{name}() {{")?;
+    writeln!(file, "    let src = r#\"{indented}\"#;")?;
+    writeln!(file, "    let expected = r#\"{expected}\"#;")?;
+    writeln!(file, "    assert_eq!(dump_tacky(src), dedent(expected));")?;
+    writeln!(file, "}}")?;
 
     Ok(())
 }

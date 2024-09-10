@@ -1,5 +1,5 @@
 use crate::ast;
-use crate::ast::Expression;
+use crate::tacky;
 use anyhow::Result;
 use std::io::Write;
 
@@ -9,10 +9,116 @@ pub fn dump_ast(src: &str) -> String {
     pretty_print_ast(&ast).unwrap()
 }
 
+#[allow(dead_code)]
+pub fn dump_tacky(src: &str) -> String {
+    let ast = crate::parser::parse(src).unwrap();
+    let ast = crate::resolver::resolve(ast).unwrap();
+    let tacky = crate::tacky::emit(&ast);
+    pretty_print_tacky(tacky).unwrap()
+}
+
 pub fn pretty_print_ast(program: &ast::Program) -> Result<String> {
     let mut buffer = Vec::new();
     print_program(&mut buffer, program)?;
     Ok(String::from_utf8(buffer)?.trim().into())
+}
+
+pub fn pretty_print_tacky(program: tacky::Program) -> Result<String> {
+    let mut buffer = Vec::new();
+    writeln!(&mut buffer, "function {} {{ ", program.function.name)?;
+    let file = &mut buffer;
+    for item in &program.function.body {
+        match item {
+            tacky::Instruction::Return(val) => {
+                write!(file, "  return ")?;
+                print_val(file, val)?;
+            }
+            tacky::Instruction::Unary { op, src, dst } => {
+                write!(file, "  ")?;
+                print_val(file, dst)?;
+                write!(file, " = ")?;
+                write!(
+                    file,
+                    "{} ",
+                    match op {
+                        tacky::UnaryOp::Complement => "~",
+                        tacky::UnaryOp::Negate => "-",
+                        tacky::UnaryOp::Not => "!",
+                        tacky::UnaryOp::Increment => "inc",
+                        tacky::UnaryOp::Decrement => "dec",
+                    }
+                )?;
+                print_val(file, src)?;
+            }
+            tacky::Instruction::Binary {
+                op,
+                src1,
+                src2,
+                dst,
+            } => {
+                write!(file, "  ")?;
+                print_val(file, dst)?;
+                write!(file, " = ")?;
+                print_val(file, src1)?;
+                write!(
+                    file,
+                    " {} ",
+                    match op {
+                        tacky::BinaryOp::Add => "+",
+                        tacky::BinaryOp::Subtract => "-",
+                        tacky::BinaryOp::Multiply => "*",
+                        tacky::BinaryOp::Divide => "/",
+                        tacky::BinaryOp::Reminder => "%",
+                        tacky::BinaryOp::BinAnd => "&",
+                        tacky::BinaryOp::BinOr => "|",
+                        tacky::BinaryOp::BinXor => "^",
+                        tacky::BinaryOp::ShiftLeft => "<<",
+                        tacky::BinaryOp::ShiftRight => ">>",
+                        tacky::BinaryOp::Equal => "==",
+                        tacky::BinaryOp::NotEqual => "!=",
+                        tacky::BinaryOp::LessThan => "<",
+                        tacky::BinaryOp::LessOrEqual => "<=",
+                        tacky::BinaryOp::GreaterThan => ">",
+                        tacky::BinaryOp::GreaterOrEqual => ">=",
+                    }
+                )?;
+                print_val(file, src2)?;
+            }
+            tacky::Instruction::Copy { src, dst } => {
+                write!(file, "  ")?;
+                print_val(file, dst)?;
+                write!(file, " = ")?;
+                print_val(file, src)?;
+            }
+            tacky::Instruction::Jump { target } => {
+                write!(file, "  jump {target}")?;
+            }
+            tacky::Instruction::JumpIfZero { cond, target } => {
+                write!(file, "  jump {target}")?;
+                write!(file, " if !")?;
+                print_val(file, cond)?;
+            }
+            tacky::Instruction::JumpIfNotZero { cond, target } => {
+                write!(file, "  jump {target}")?;
+                write!(file, "if ")?;
+                print_val(file, cond)?;
+            }
+            tacky::Instruction::Label(name) => {
+                write!(file, "{name}:")?;
+            }
+        }
+        writeln!(file)?;
+    }
+    writeln!(&mut buffer, "}}")?;
+    Ok(String::from_utf8(buffer)?.trim().into())
+}
+
+pub fn print_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
+    match val {
+        tacky::Val::Constant(value) => write!(file, "{value}")?,
+        tacky::Val::Var(name) => write!(file, "{name}")?,
+    }
+    Ok(())
 }
 
 #[allow(dead_code)]
@@ -210,7 +316,7 @@ fn print_expression(
             print_expression(file, left, "├──", level + 1, &added)?;
             print_expression(file, right, "╰──", level + 1, pipes)?;
         }
-        Expression::Conditional {
+        ast::Expression::Conditional {
             cond,
             then_expr,
             else_expr,

@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod test;
+
 use crate::ast;
 use crate::symbol::Symbol;
 
@@ -384,7 +387,7 @@ impl TackyGenerator {
     }
 
     fn make_label(&mut self, prefix: &str) -> Symbol {
-        let result = format!("{prefix}{i}", i = self.label_counter);
+        let result = format!("{prefix}__{i}", i = self.label_counter);
         self.label_counter += 1;
         result
     }
