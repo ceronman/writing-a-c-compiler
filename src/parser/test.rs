@@ -30,7 +30,7 @@ fn test_chapter_1_invalid_parse_extra_junk() {
             return 2;
         }
         foo
-      //^^^ Expected Eof, but found 'foo'
+      //^^^ Expected end of file, but found 'foo'
     "#,
     );
 }
@@ -41,7 +41,7 @@ fn test_chapter_1_invalid_parse_invalid_function_name() {
         r#"
         
         int 3 (void) {
-          //^ Expected Identifier, but found '3'
+          //^ Expected identifier, but found '3'
             return 0;
         }
     "#,
@@ -54,7 +54,7 @@ fn test_chapter_1_invalid_parse_keyword_wrong_case() {
         r#"
         int main(void) {
             RETURN 0;
-                 //^ Expected Semicolon, but found '0'
+                 //^ Expected ';', but found '0'
         }
     "#,
     );
@@ -65,7 +65,7 @@ fn test_chapter_1_invalid_parse_missing_type() {
     assert_error(
         r#"
         main(void) {
-      //^^^^ Expected Int, but found 'main'
+      //^^^^ Expected 'int', but found 'main'
             return 0;
         }
     "#,
@@ -78,7 +78,7 @@ fn test_chapter_1_invalid_parse_misspelled_keyword() {
         r#"
         int main(void) {
             returns 0;
-                  //^ Expected Semicolon, but found '0'
+                  //^ Expected ';', but found '0'
         }
     "#,
     );
@@ -91,7 +91,7 @@ fn test_chapter_1_invalid_parse_no_semicolon() {
         int main (void) {
             return 0
         }
-      //^ Expected Semicolon, but found '}'
+      //^ Expected ';', but found '}'
     "#,
     );
 }
@@ -114,7 +114,7 @@ fn test_chapter_1_invalid_parse_space_in_keyword() {
         r#"
         int main(void){
             retur n 0;
-                //^ Expected Semicolon, but found 'n'
+                //^ Expected ';', but found 'n'
         }
     "#,
     );
@@ -125,7 +125,7 @@ fn test_chapter_1_invalid_parse_switched_parens() {
     assert_error(
         r#"
         int main )( {
-               //^ Expected OpenParen, but found ')'
+               //^ Expected '(', but found ')'
             return 0;
         }
     "#,
@@ -148,7 +148,7 @@ fn test_chapter_1_invalid_parse_unclosed_paren() {
     assert_error(
         r#"
         int main( {
-                //^ Expected Void, but found '{'
+                //^ Expected 'void', but found '{'
             return 0;
         }
     "#,
@@ -275,7 +275,7 @@ fn test_chapter_2_invalid_parse_extra_paren() {
         int main(void)
         {
             return (3));
-                    //^ Expected Semicolon, but found ')'
+                    //^ Expected ';', but found ')'
         }
     "#,
     );
@@ -300,7 +300,7 @@ fn test_chapter_2_invalid_parse_missing_semicolon() {
         int main(void) {
             return -5
         }
-      //^ Expected Semicolon, but found '}'
+      //^ Expected ';', but found '}'
     "#,
     );
 }
@@ -337,7 +337,7 @@ fn test_chapter_2_invalid_parse_unclosed_paren() {
         int main(void)
         {
             return (1;
-                   //^ Expected CloseParen, but found ';'
+                   //^ Expected ')', but found ';'
         }
     "#,
     );
@@ -594,7 +594,7 @@ fn test_chapter_3_invalid_parse_imbalanced_paren() {
         r#"
         int main(void) {
             return 1 + (2;
-                       //^ Expected CloseParen, but found ';'
+                       //^ Expected ')', but found ';'
         }
     "#,
     );
@@ -606,7 +606,7 @@ fn test_chapter_3_invalid_parse_malformed_paren() {
         r#"
         int main(void) {
             return 2 (- 3);
-                   //^ Expected Semicolon, but found '('
+                   //^ Expected ';', but found '('
         }
     "#,
     );
@@ -618,7 +618,7 @@ fn test_chapter_3_invalid_parse_misplaced_semicolon() {
         r#"
         int main(void) {
             return 1 + (2;)
-                       //^ Expected CloseParen, but found ';'
+                       //^ Expected ')', but found ';'
         }
     "#,
     );
@@ -642,7 +642,7 @@ fn test_chapter_3_invalid_parse_missing_open_paren() {
         r#"
         int main(void) {
             return 1 + 2);
-                      //^ Expected Semicolon, but found ')'
+                      //^ Expected ';', but found ')'
         }
     "#,
     );
@@ -667,7 +667,7 @@ fn test_chapter_3_invalid_parse_no_semicolon() {
         int main(void) {
             return 2*2
         }
-      //^ Expected Semicolon, but found '}'
+      //^ Expected ';', but found '}'
     "#,
     );
 }
@@ -1250,7 +1250,7 @@ fn test_chapter_4_invalid_parse_missing_semicolon() {
         int main(void) {
             return 1 || 2
         }
-      //^ Expected Semicolon, but found '}'
+      //^ Expected ';', but found '}'
     "#,
     );
 }
@@ -1263,7 +1263,7 @@ fn test_chapter_4_invalid_parse_unary_missing_semicolon() {
         {
             return !10
         }
-      //^ Expected Semicolon, but found '}'
+      //^ Expected ';', but found '}'
     "#,
     );
 }
@@ -2041,7 +2041,7 @@ fn test_chapter_5_invalid_parse_declare_keyword_as_var() {
         r#"
         int main(void) {
             int return = 4;
-              //^^^^^^ Expected Identifier, but found 'return'
+              //^^^^^^ Expected identifier, but found 'return'
             return return + 1;
         }
     "#,
@@ -2055,7 +2055,7 @@ fn test_chapter_5_invalid_parse_extra_credit_binary_decrement() {
         int main(void) {
             int a = 0;
             return a -- 1;
-                      //^ Expected Semicolon, but found '1'
+                      //^ Expected ';', but found '1'
         }
     "#,
     );
@@ -2068,7 +2068,7 @@ fn test_chapter_5_invalid_parse_extra_credit_binary_increment() {
         int main(void) {
             int a = 0;
             return a ++ 1;
-                      //^ Expected Semicolon, but found '1'
+                      //^ Expected ';', but found '1'
         }
     "#,
     );
@@ -2080,7 +2080,7 @@ fn test_chapter_5_invalid_parse_extra_credit_compound_initializer() {
         r#"
         int main(void) {
             int a += 0;
-                //^^ Expected Semicolon, but found '+='
+                //^^ Expected ';', but found '+='
             return a;
         }
     "#,
@@ -2093,7 +2093,7 @@ fn test_chapter_5_invalid_parse_extra_credit_increment_declaration() {
         r#"
         int main(void) {
             int a++;
-               //^^ Expected Semicolon, but found '++'
+               //^^ Expected ';', but found '++'
             return 0;
         }
     "#,
@@ -2106,7 +2106,7 @@ fn test_chapter_5_invalid_parse_invalid_specifier() {
         r#"
         int main(void) {
             int foo bar = 3;
-                  //^^^ Expected Semicolon, but found 'bar'
+                  //^^^ Expected ';', but found 'bar'
             return bar;
         }
     "#,
@@ -2119,7 +2119,7 @@ fn test_chapter_5_invalid_parse_invalid_type() {
         r#"
         int main(void) {
             ints a = 1;
-               //^ Expected Semicolon, but found 'a'
+               //^ Expected ';', but found 'a'
             return a;
         }
     "#,
@@ -2133,7 +2133,7 @@ fn test_chapter_5_invalid_parse_invalid_variable_name() {
         int main(void)
         {
             int 10 = 0;
-              //^^ Expected Identifier, but found '10'
+              //^^ Expected identifier, but found '10'
             return 10;
         }
     "#,
@@ -2202,7 +2202,7 @@ fn test_chapter_5_invalid_parse_malformed_not_equal() {
         int main(void)
         {
             return 1 ! = 0;
-                   //^ Expected Semicolon, but found '!'
+                   //^ Expected ';', but found '!'
         }
     "#,
     );
@@ -2215,7 +2215,7 @@ fn test_chapter_5_invalid_parse_missing_semicolon() {
         int main(void) {
             int a = 2
             a = a + 4;
-          //^ Expected Semicolon, but found 'a'
+          //^ Expected ';', but found 'a'
             return a;
         }
     "#,
@@ -2229,7 +2229,7 @@ fn test_chapter_5_invalid_parse_return_in_assignment() {
         int main(void)
         {
             int 10 = return 0;
-              //^^ Expected Identifier, but found '10'
+              //^^ Expected identifier, but found '10'
         }
     "#,
     );
@@ -4126,7 +4126,7 @@ fn test_chapter_6_invalid_parse_extra_credit_goto_without_label() {
         r#"
         int main(void) {
             goto;
-              //^ Expected Identifier, but found ';'
+              //^ Expected identifier, but found ';'
         lbl:
             return 0;
         }
@@ -4166,7 +4166,7 @@ fn test_chapter_6_invalid_parse_extra_credit_label_expression_clause() {
         r#"
         int main(void) {
             1 && label: 2;
-                    //^ Expected Semicolon, but found ':'
+                    //^ Expected ';', but found ':'
         }
     "#,
     );
@@ -4177,7 +4177,7 @@ fn test_chapter_6_invalid_parse_extra_credit_label_outside_function() {
     assert_error(
         r#"
         label:
-      //^^^^^ Expected Int, but found 'label'
+      //^^^^^ Expected 'int', but found 'label'
         int main(void) {
             return 0;
         }
@@ -4203,7 +4203,7 @@ fn test_chapter_6_invalid_parse_extra_credit_parenthesized_label() {
         r#"
         int main(void) {
             goto(a);
-              //^ Expected Identifier, but found '('
+              //^ Expected identifier, but found '('
         a:
             return 0;
         }
@@ -4234,7 +4234,7 @@ fn test_chapter_6_invalid_parse_if_no_parens() {
         r#"
         int main(void) {
             if 0 return 1;
-             //^ Expected OpenParen, but found '0'
+             //^ Expected '(', but found '0'
         }
     "#,
     );
@@ -4246,7 +4246,7 @@ fn test_chapter_6_invalid_parse_incomplete_ternary() {
         r#"
         int main(void) {
             return 1 ? 2;
-                      //^ Expected Colon, but found ';'
+                      //^ Expected ':', but found ';'
         }
     "#,
     );
@@ -4258,7 +4258,7 @@ fn test_chapter_6_invalid_parse_malformed_ternary() {
         r#"
         int main(void) {
             return 1 ? 2 : 3 : 4;
-                           //^ Expected Semicolon, but found ':'
+                           //^ Expected ';', but found ':'
         }
     "#,
     );
@@ -4270,7 +4270,7 @@ fn test_chapter_6_invalid_parse_malformed_ternary_2() {
         r#"
         int main(void) {
             return 1 ? 2 ? 3 : 4;
-                              //^ Expected Colon, but found ';'
+                              //^ Expected ':', but found ';'
         }
     "#,
     );
@@ -4301,7 +4301,7 @@ fn test_chapter_6_invalid_parse_wrong_ternary_delimiter() {
         int main(void) {
             int x = 10;
             return x ? 1 = 2;
-                          //^ Expected Colon, but found ';'
+                          //^ Expected ':', but found ';'
         }
     "#,
     );
