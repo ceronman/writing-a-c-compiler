@@ -169,8 +169,8 @@ fn print_program(file: &mut impl Write, program: &ast::Program) -> Result<()> {
 fn print_function(file: &mut impl Write, function: &ast::Function) -> Result<()> {
     writeln!(file, "╰── Function [{}]", function.name.symbol)?;
     let body = &function.body;
-    for (i, block_item) in body.iter().enumerate() {
-        if i == body.len() - 1 {
+    for (i, block_item) in body.items.iter().enumerate() {
+        if i == body.items.len() - 1 {
             print_block_item(file, block_item, "╰──", 1, &[])?
         } else {
             print_block_item(file, block_item, "├──", 1, &[1])?
@@ -262,6 +262,16 @@ fn print_statement(
         ast::Statement::Labeled { name, stmt } => {
             writeln!(file, "{indent}{pipe} Label [{}]", name.symbol)?;
             print_statement(file, stmt, "╰──", level + 1, pipes)?;
+        }
+        ast::Statement::Compound(block) => {
+            writeln!(file, "{indent}{pipe} Block")?;
+            for (i, block_item) in block.items.iter().enumerate() {
+                if i == block.items.len() - 1 {
+                    print_block_item(file, block_item, "╰──", level + 1, pipes)?
+                } else {
+                    print_block_item(file, block_item, "├──", level + 1, &[pipes, &[level + 1]].concat())?
+                };
+            }
         }
         ast::Statement::Null => {}
     }

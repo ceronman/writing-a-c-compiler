@@ -5801,3 +5801,932 @@ fn test_chapter_6_valid_ternary_short_circuit_2() {
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
+
+#[test]
+fn test_chapter_7_invalid_parse_extra_brace() {
+    assert_error(
+        r#"
+        int main(void) {
+            if(0){
+                return 1;
+            }}
+            return 2;
+          //^^^^^^ Expected end of file, but found 'return'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_7_invalid_parse_missing_brace() {
+    assert_error(
+        r#"
+        int main(void) {
+            if(0){
+                return 1;
+            return 2;
+        }
+    
+// Expected statement, but found ''"#,
+    );
+}
+
+#[test]
+fn test_chapter_7_invalid_parse_missing_semicolon() {
+    assert_error(
+        r#"
+        int main(void) {
+            int a = 4;
+            {
+                a = 5;
+                return a
+            }
+          //^ Expected ';', but found '}'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_7_invalid_parse_ternary_blocks() {
+    assert_error(
+        r#"
+        int main(void) {
+            int a;
+            return 1 ? { a = 2 } : a = 4;
+                     //^ Expected expression, but found '{'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_7_invalid_semantics_double_define() {
+    let src = r#"
+        int main(void) {
+            {
+                int a;
+                int a;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── Block
+                ├── Declaration [a]
+                ╰── Declaration [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_invalid_semantics_double_define_after_scope() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            {
+                a = 5;
+            }
+            int a = 2;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [3]
+            ├── Block
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Constant [5]
+            ├── Declaration [a]
+            │   ╰── Constant [2]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_invalid_semantics_extra_credit_different_labels_same_scope() {
+    let src = r#"
+        int main(void) {
+        label1:;
+            int a = 10;
+        label2:;
+            int a = 11;
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Label [label1]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ├── Label [label2]
+            ├── Declaration [a]
+            │   ╰── Constant [11]
+            ╰── Return
+                ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_invalid_semantics_extra_credit_duplicate_labels_different_scopes() {
+    let src = r#"
+        int main(void) {
+            int x = 0;
+            if (x) {
+                x = 5;
+                goto l;
+                return 0;
+                l:
+                    return x;
+            } else {
+                goto l;
+                return 0;
+                l:
+                    return x;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [0]
+            ╰── If
+                ├── Var [x]
+                ├── Block
+                │   ├── Assign [=]
+                │   │   ├── Var [x]
+                │   │   ╰── Constant [5]
+                │   ├── Goto [l]
+                │   ├── Return
+                │   │   ╰── Constant [0]
+                │   ╰── Label [l]
+                │       ╰── Return
+                │           ╰── Var [x]
+                ╰── Block
+                    ├── Goto [l]
+                    ├── Return
+                    │   ╰── Constant [0]
+                    ╰── Label [l]
+                        ╰── Return
+                            ╰── Var [x]
+            ╰── If
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_invalid_semantics_extra_credit_goto_use_before_declare() {
+    let src = r#"
+        int main(void) {
+            int x = 0;
+            if (x != 0) {
+                return_y:
+                return y;
+            }
+            int y = 4;
+            goto return_y;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Binary [!=]
+            │   │   ├── Var [x]
+            │   │   ╰── Constant [0]
+            │   ╰── Block
+            │       ╰── Label [return_y]
+            │           ╰── Return
+            │               ╰── Var [y]
+            ├── If
+            ├── Declaration [y]
+            │   ╰── Constant [4]
+            ╰── Goto [return_y]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_invalid_semantics_out_of_scope() {
+    let src = r#"
+        int main(void) {
+            {
+                int a = 2;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Block
+            │   ╰── Declaration [a]
+            │       ╰── Constant [2]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_invalid_semantics_use_before_declare() {
+    let src = r#"
+        int main(void) {
+            int a;
+            {
+                b = 10;
+            }
+            int b;
+            return b;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            ├── Block
+            │   ╰── Assign [=]
+            │       ├── Var [b]
+            │       ╰── Constant [10]
+            ├── Declaration [b]
+            ╰── Return
+                ╰── Var [b]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_assign_to_self() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            {
+                int a = a = 4;
+                return a;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [3]
+            ╰── Block
+                ├── Declaration [a]
+                │   ╰── Assign [=]
+                │       ├── Var [a]
+                │       ╰── Constant [4]
+                ╰── Return
+                    ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_assign_to_self_2() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            {
+                int a = a = 4;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [3]
+            ├── Block
+            │   ╰── Declaration [a]
+            │       ╰── Assign [=]
+            │           ├── Var [a]
+            │           ╰── Constant [4]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_declaration_only() {
+    let src = r#"
+        int main(void) {
+            int a;
+            {
+                int b = a = 1;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            ├── Block
+            │   ╰── Declaration [b]
+            │       ╰── Assign [=]
+            │           ├── Var [a]
+            │           ╰── Constant [1]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_empty_blocks() {
+    let src = r#"
+        int main(void) {
+            int ten = 10;
+            {}
+            int twenty = 10 * 2;
+            {{}}
+            return ten + twenty;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [ten]
+            │   ╰── Constant [10]
+            ├── Block
+            ├── Declaration [twenty]
+            │   ╰── Binary [*]
+            │       ├── Constant [10]
+            │       ╰── Constant [2]
+            ├── Block
+            │   ╰── Block
+            ╰── Return
+                ╰── Binary [+]
+                    ├── Var [ten]
+                    ╰── Var [twenty]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_extra_credit_compound_subtract_in_block() {
+    let src = r#"
+        int main(void) {
+            int a = 5;
+            if (a > 4) {
+                a -= 4;
+                int a = 5;
+                if (a > 4) {
+                    a -= 4;
+                }
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [5]
+            ├── If
+            │   ├── Binary [>]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [4]
+            │   ╰── Block
+            │       ├── Assign [-=]
+            │       │   ├── Var [a]
+            │       │   ╰── Constant [4]
+            │       ├── Declaration [a]
+            │       │   ╰── Constant [5]
+            │       ╰── If
+            │           ├── Binary [>]
+            │           │   ├── Var [a]
+            │           │   ╰── Constant [4]
+            │           ╰── Block
+            │               ╰── Assign [-=]
+            │                   ├── Var [a]
+            │                   ╰── Constant [4]
+            │       ╰── If
+            ├── If
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            {
+                if (a != 0)
+                    return_a:
+                        return a;
+                int a = 4;
+                goto return_a;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ╰── Block
+                ├── If
+                │   ├── Binary [!=]
+                │   │   ├── Var [a]
+                │   │   ╰── Constant [0]
+                │   ╰── Label [return_a]
+                │       ╰── Return
+                │           ╰── Var [a]
+                ├── If
+                ├── Declaration [a]
+                │   ╰── Constant [4]
+                ╰── Goto [return_a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_extra_credit_goto_inner_scope() {
+    let src = r#"
+        int main(void) {
+            int x = 5;
+            goto inner;
+            {
+                int x = 0;
+                inner:
+                x = 1;
+                return x;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [5]
+            ├── Goto [inner]
+            ╰── Block
+                ├── Declaration [x]
+                │   ╰── Constant [0]
+                ├── Label [inner]
+                │   ╰── Assign [=]
+                │       ├── Var [x]
+                │       ╰── Constant [1]
+                ╰── Return
+                    ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_extra_credit_goto_outer_scope() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            int b = 0;
+            if (a) {
+                int a = 1;
+                b = a;
+                goto end;
+            }
+            a = 9;
+        end:
+            return (a == 10 && b == 1);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ├── Declaration [b]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Declaration [a]
+            │       │   ╰── Constant [1]
+            │       ├── Assign [=]
+            │       │   ├── Var [b]
+            │       │   ╰── Var [a]
+            │       ╰── Goto [end]
+            ├── If
+            ├── Assign [=]
+            │   ├── Var [a]
+            │   ╰── Constant [9]
+            ╰── Label [end]
+                ╰── Return
+                    ╰── Binary [&&]
+                        ├── Binary [==]
+                        │   ├── Var [a]
+                        │   ╰── Constant [10]
+                        ╰── Binary [==]
+                            ├── Var [b]
+                            ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            if (1) {
+                int a = 5;
+                goto other_if;
+                sum = 0;
+            first_if:
+                a = 5;
+                sum = sum + a;
+            }
+            if (0) {
+            other_if:;
+                int a = 6;
+                sum = sum + a;
+                goto first_if;
+                sum = 0;
+            }
+            return sum;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [sum]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Constant [1]
+            │   ╰── Block
+            │       ├── Declaration [a]
+            │       │   ╰── Constant [5]
+            │       ├── Goto [other_if]
+            │       ├── Assign [=]
+            │       │   ├── Var [sum]
+            │       │   ╰── Constant [0]
+            │       ├── Label [first_if]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [5]
+            │       ╰── Assign [=]
+            │           ├── Var [sum]
+            │           ╰── Binary [+]
+            │               ├── Var [sum]
+            │               ╰── Var [a]
+            ├── If
+            ├── If
+            │   ├── Constant [0]
+            │   ╰── Block
+            │       ├── Label [other_if]
+            │       ├── Declaration [a]
+            │       │   ╰── Constant [6]
+            │       ├── Assign [=]
+            │       │   ├── Var [sum]
+            │       │   ╰── Binary [+]
+            │       │       ├── Var [sum]
+            │       │       ╰── Var [a]
+            │       ├── Goto [first_if]
+            │       ╰── Assign [=]
+            │           ├── Var [sum]
+            │           ╰── Constant [0]
+            ├── If
+            ╰── Return
+                ╰── Var [sum]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_hidden_then_visible() {
+    let src = r#"
+        int main(void) {
+            int a = 2;
+            int b;
+            {
+                a = -4;
+                int a = 7;
+                b = a + 1;
+            }
+            return b == 8 && a == -4;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [2]
+            ├── Declaration [b]
+            ├── Block
+            │   ├── Assign [=]
+            │   │   ├── Var [a]
+            │   │   ╰── Unary [-]
+            │   │       ╰── Constant [4]
+            │   ├── Declaration [a]
+            │   │   ╰── Constant [7]
+            │   ╰── Assign [=]
+            │       ├── Var [b]
+            │       ╰── Binary [+]
+            │           ├── Var [a]
+            │           ╰── Constant [1]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [b]
+                    │   ╰── Constant [8]
+                    ╰── Binary [==]
+                        ├── Var [a]
+                        ╰── Unary [-]
+                            ╰── Constant [4]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_hidden_variable() {
+    let src = r#"
+        int main(void) {
+            int a = 2;
+            {
+                int a = 1;
+                return a;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [2]
+            ╰── Block
+                ├── Declaration [a]
+                │   ╰── Constant [1]
+                ╰── Return
+                    ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_inner_uninitialized() {
+    let src = r#"
+        int main(void) {
+            int x = 4;
+            {
+                int x;
+            }
+            return x;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [4]
+            ├── Block
+            │   ╰── Declaration [x]
+            ╰── Return
+                ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_multiple_vars_same_name() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            {
+                int b = 4;
+                a = b;
+            }
+            {
+                int b = 2;
+                a = a - b;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Block
+            │   ├── Declaration [b]
+            │   │   ╰── Constant [4]
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Var [b]
+            ├── Block
+            │   ├── Declaration [b]
+            │   │   ╰── Constant [2]
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Binary [-]
+            │           ├── Var [a]
+            │           ╰── Var [b]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_nested_if() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            if (a) {
+                int b = 2;
+                return b;
+            } else {
+                int c = 3;
+                if (a < c) {
+                    return !a;
+                } else {
+                    return 5;
+                }
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── If
+            │   ├── Var [a]
+            │   ├── Block
+            │   │   ├── Declaration [b]
+            │   │   │   ╰── Constant [2]
+            │   │   ╰── Return
+            │   │       ╰── Var [b]
+            │   ╰── Block
+            │       ├── Declaration [c]
+            │       │   ╰── Constant [3]
+            │       ╰── If
+            │           ├── Binary [<]
+            │           │   ├── Var [a]
+            │           │   ╰── Var [c]
+            │           ├── Block
+            │           │   ╰── Return
+            │           │       ╰── Unary [!]
+            │           │           ╰── Var [a]
+            │           ╰── Block
+            │               ╰── Return
+            │                   ╰── Constant [5]
+            │       ╰── If
+            ├── If
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_similar_var_names() {
+    let src = r#"
+        int main(void) {
+            int a;
+            int result;
+            int a1 = 1;
+            {
+                int a = 2;
+                int a1 = 2;
+                {
+                    int a;
+                    {
+                        int a;
+                        {
+                            int a;
+                            {
+                                int a;
+                                {
+                                    int a;
+                                    {
+                                        int a;
+                                        {
+                                            int a;
+                                            {
+                                                int a;
+                                                {
+                                                    int a = 20;
+                                                    result = a;
+                                                    {
+                                                        int a;
+                                                        a = 5;
+                                                        result = result + a;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                result = result + a1;
+            }
+            return result + a1;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            ├── Declaration [result]
+            ├── Declaration [a1]
+            │   ╰── Constant [1]
+            ├── Block
+            │   ├── Declaration [a]
+            │   │   ╰── Constant [2]
+            │   ├── Declaration [a1]
+            │   │   ╰── Constant [2]
+            │   ├── Block
+            │   │   ├── Declaration [a]
+            │   │   ╰── Block
+            │   │       ├── Declaration [a]
+            │   │       ╰── Block
+            │   │           ├── Declaration [a]
+            │   │           ╰── Block
+            │   │               ├── Declaration [a]
+            │   │               ╰── Block
+            │   │                   ├── Declaration [a]
+            │   │                   ╰── Block
+            │   │                       ├── Declaration [a]
+            │   │                       ╰── Block
+            │   │                           ├── Declaration [a]
+            │   │                           ╰── Block
+            │   │                               ├── Declaration [a]
+            │   │                               ╰── Block
+            │   │                                   ├── Declaration [a]
+            │   │                                   │   ╰── Constant [20]
+            │   │                                   ├── Assign [=]
+            │   │                                   │   ├── Var [result]
+            │   │                                   │   ╰── Var [a]
+            │   │                                   ╰── Block
+            │   │                                       ├── Declaration [a]
+            │   │                                       ├── Assign [=]
+            │   │                                       │   ├── Var [a]
+            │   │                                       │   ╰── Constant [5]
+            │   │                                       ╰── Assign [=]
+            │   │                                           ├── Var [result]
+            │   │                                           ╰── Binary [+]
+            │   │                                               ├── Var [result]
+            │   │                                               ╰── Var [a]
+            │   ╰── Assign [=]
+            │       ├── Var [result]
+            │       ╰── Binary [+]
+            │           ├── Var [result]
+            │           ╰── Var [a1]
+            ╰── Return
+                ╰── Binary [+]
+                    ├── Var [result]
+                    ╰── Var [a1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_7_valid_use_in_inner_scope() {
+    let src = r#"
+        int main(void)
+        {
+            int x;
+            {
+                x = 3;
+            }
+            {
+                return x;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            ├── Block
+            │   ╰── Assign [=]
+            │       ├── Var [x]
+            │       ╰── Constant [3]
+            ╰── Block
+                ╰── Return
+                    ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}

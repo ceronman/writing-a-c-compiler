@@ -15,7 +15,7 @@ struct Resolver {
 
 impl Resolver {
     fn resolve(mut self, mut program: Node<Program>) -> Result<Node<Program>> {
-        for block_item in &mut program.function_definition.body {
+        for block_item in &mut program.function_definition.body.items {
             match block_item {
                 BlockItem::Stmt(stmt) => self.resolve_statement(stmt)?,
                 BlockItem::Decl(decl) => self.resolve_declaration(decl)?,
@@ -23,7 +23,7 @@ impl Resolver {
         }
 
         // Second pass to check `goto` statements
-        for block_item in &mut program.function_definition.body {
+        for block_item in &mut program.function_definition.body.items {
             if let BlockItem::Stmt(stmt) = block_item {
                 if let Statement::Goto(name) = stmt.as_ref() {
                     if !self.labels.contains(&name.symbol) {
@@ -89,6 +89,7 @@ impl Resolver {
                 // Note: checking if label exists is done in another pass
                 Ok(())
             }
+            Statement::Compound(_) => todo!()
         }
     }
 

@@ -1,10 +1,7 @@
 #[cfg(test)]
 mod test;
 
-use crate::ast::{
-    AssignOp, BinaryOp, BlockItem, Declaration, Expression, Function, Identifier, Node, PostfixOp,
-    Program, Statement, UnaryOp,
-};
+use crate::ast::{AssignOp, BinaryOp, Block, BlockItem, Declaration, Expression, Function, Identifier, Node, PostfixOp, Program, Statement, UnaryOp};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{Lexer, Token, TokenKind};
 use crate::symbol::Symbol;
@@ -46,14 +43,20 @@ impl<'src> Parser<'src> {
         self.expect(TokenKind::OpenParen, "'('")?;
         self.expect(TokenKind::Void, "'void'")?;
         self.expect(TokenKind::CloseParen, "')'")?;
+        let body = self.block()?;
+        Ok(Node::from(begin + body.span, Function { name, body }))
+    }
+    
+    fn block(&mut self) -> Result<Node<Block>> {
+        let begin = self.current.span;
         self.expect(TokenKind::OpenBrace, "'{'")?;
-        let mut body = Vec::new();
+        let mut items = Vec::new();
         while self.current.kind != TokenKind::CloseBrace {
-            body.push(self.block_item()?)
+            items.push(self.block_item()?)
         }
         let end = self.current.span;
         self.advance();
-        Ok(Node::from(begin + end, Function { name, body }))
+        Ok(Node::from(begin + end, Block { items }))
     }
 
     fn block_item(&mut self) -> Result<BlockItem> {
@@ -85,6 +88,7 @@ impl<'src> Parser<'src> {
             TokenKind::If => self.if_stmt(),
             TokenKind::Semicolon => self.null_stmt(),
             TokenKind::Goto => self.goto_stmt(),
+            TokenKind::OpenBrace => self.compound_stmt(),
             TokenKind::Identifier => {
                 if self.next.kind == TokenKind::Colon {
                     self.labeled_stmt()
@@ -94,6 +98,11 @@ impl<'src> Parser<'src> {
             }
             _ => self.expression_stmt(),
         }
+    }
+    
+    fn compound_stmt(&mut self) -> Result<Node<Statement>> {
+        let block = self.block()?;
+        Ok(Node::from(block.span, Statement::Compound(block)))
     }
 
     fn goto_stmt(&mut self) -> Result<Node<Statement>> {

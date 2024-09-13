@@ -164,6 +164,8 @@ impl TackyGenerator {
                 });
             }
 
+            ast::Statement::Compound(_) => todo!(),
+
             ast::Statement::Null => {}
         }
     }
@@ -398,7 +400,7 @@ pub fn emit(program: &ast::Program) -> Program {
     Program {
         function: Function {
             name: function.name.symbol.clone(),
-            body: TackyGenerator::default().emit_body(&function.body),
+            body: TackyGenerator::default().emit_body(&function.body.items),
         },
     }
 }

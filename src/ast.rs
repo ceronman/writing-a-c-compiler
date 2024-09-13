@@ -16,7 +16,7 @@ pub struct Program {
 #[derive(Debug)]
 pub struct Function {
     pub name: Node<Identifier>,
-    pub body: Vec<BlockItem>,
+    pub body: Node<Block>,
 }
 
 #[derive(Debug)]
@@ -46,6 +46,7 @@ pub enum Statement {
         stmt: Node<Statement>,
     },
     Goto(Node<Identifier>),
+    Compound(Node<Block>),
     Null,
 }
 
@@ -76,6 +77,11 @@ pub enum Expression {
         then_expr: Node<Expression>,
         else_expr: Node<Expression>,
     },
+}
+
+#[derive(Debug)]
+pub struct Block {
+    pub items: Vec<BlockItem>
 }
 
 #[derive(Debug)]
