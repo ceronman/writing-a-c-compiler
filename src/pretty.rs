@@ -269,7 +269,13 @@ fn print_statement(
                 if i == block.items.len() - 1 {
                     print_block_item(file, block_item, "╰──", level + 1, pipes)?
                 } else {
-                    print_block_item(file, block_item, "├──", level + 1, &[pipes, &[level + 1]].concat())?
+                    print_block_item(
+                        file,
+                        block_item,
+                        "├──",
+                        level + 1,
+                        &[pipes, &[level + 1]].concat(),
+                    )?
                 };
             }
         }

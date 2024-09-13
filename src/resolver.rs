@@ -89,7 +89,7 @@ impl Resolver {
                 // Note: checking if label exists is done in another pass
                 Ok(())
             }
-            Statement::Compound(_) => todo!()
+            Statement::Compound(_) => todo!(),
         }
     }
 

@@ -81,7 +81,7 @@ pub enum Expression {
 
 #[derive(Debug)]
 pub struct Block {
-    pub items: Vec<BlockItem>
+    pub items: Vec<BlockItem>,
 }
 
 #[derive(Debug)]

@@ -1,7 +1,10 @@
 #[cfg(test)]
 mod test;
 
-use crate::ast::{AssignOp, BinaryOp, Block, BlockItem, Declaration, Expression, Function, Identifier, Node, PostfixOp, Program, Statement, UnaryOp};
+use crate::ast::{
+    AssignOp, BinaryOp, Block, BlockItem, Declaration, Expression, Function, Identifier, Node,
+    PostfixOp, Program, Statement, UnaryOp,
+};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{Lexer, Token, TokenKind};
 use crate::symbol::Symbol;
@@ -46,7 +49,7 @@ impl<'src> Parser<'src> {
         let body = self.block()?;
         Ok(Node::from(begin + body.span, Function { name, body }))
     }
-    
+
     fn block(&mut self) -> Result<Node<Block>> {
         let begin = self.current.span;
         self.expect(TokenKind::OpenBrace, "'{'")?;
@@ -99,7 +102,7 @@ impl<'src> Parser<'src> {
             _ => self.expression_stmt(),
         }
     }
-    
+
     fn compound_stmt(&mut self) -> Result<Node<Statement>> {
         let block = self.block()?;
         Ok(Node::from(block.span, Statement::Compound(block)))
@@ -448,10 +451,7 @@ impl<'src> Parser<'src> {
         } else {
             Err(CompilerError {
                 kind: ErrorKind::Parse,
-                msg: format!(
-                    "Expected {name}, but found '{}'",
-                    token.slice(self.source)
-                ),
+                msg: format!("Expected {name}, but found '{}'", token.slice(self.source)),
                 span: token.span,
             })
         }
