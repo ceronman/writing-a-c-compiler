@@ -10,8 +10,8 @@ set -euxo pipefail
   cargo build --features test_gen
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 7 --stage lex --bitwise --compound --increment --goto
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 7 --stage parse --bitwise --compound --increment --goto
-  arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 6 --stage validate --bitwise --compound --increment --goto
-  arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 6 --stage tacky --bitwise --compound --increment --goto
+  arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 7 --stage validate --bitwise --compound --increment --goto
+  arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 7 --stage tacky --bitwise --compound --increment --goto
   rustfmt src/lexer/test.rs
   rustfmt src/parser/test.rs
   rustfmt src/resolver/test.rs

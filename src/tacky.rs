@@ -90,8 +90,15 @@ struct TackyGenerator {
 }
 
 impl TackyGenerator {
-    fn emit_body(mut self, body: &[ast::BlockItem]) -> Vec<Instruction> {
-        for block_item in body {
+    fn emit_function(mut self, function: &ast::Function) -> Vec<Instruction> {
+        self.emit_block(&function.body);
+        self.instructions
+            .push(Instruction::Return(Val::Constant(0)));
+        self.instructions
+    }
+
+    fn emit_block(&mut self, block: &ast::Block) {
+        for block_item in &block.items {
             match block_item {
                 ast::BlockItem::Stmt(stmt) => self.emit_statement(stmt),
                 ast::BlockItem::Decl(decl) => {
@@ -105,9 +112,6 @@ impl TackyGenerator {
                 }
             }
         }
-        self.instructions
-            .push(Instruction::Return(Val::Constant(0)));
-        self.instructions
     }
 
     fn emit_statement(&mut self, stmt: &ast::Statement) {
@@ -164,7 +168,7 @@ impl TackyGenerator {
                 });
             }
 
-            ast::Statement::Compound(_) => todo!(),
+            ast::Statement::Compound(block) => self.emit_block(block),
 
             ast::Statement::Null => {}
         }
@@ -400,7 +404,7 @@ pub fn emit(program: &ast::Program) -> Program {
     Program {
         function: Function {
             name: function.name.symbol.clone(),
-            body: TackyGenerator::default().emit_body(&function.body.items),
+            body: TackyGenerator::default().emit_function(function),
         },
     }
 }
