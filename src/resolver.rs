@@ -1,26 +1,21 @@
 #[cfg(test)]
 mod test;
 
-use crate::ast::{BlockItem, Declaration, Expression, Node, Program, Statement, UnaryOp};
+use crate::ast::{Block, BlockItem, Declaration, Expression, Node, Program, Statement, UnaryOp};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 #[derive(Default)]
 struct Resolver {
-    locals: HashMap<Symbol, Symbol>,
+    scopes: VecDeque<HashMap<Symbol, Symbol>>,
     labels: HashSet<Symbol>,
     counter: usize,
 }
 
 impl Resolver {
     fn resolve(mut self, mut program: Node<Program>) -> Result<Node<Program>> {
-        for block_item in &mut program.function_definition.body.items {
-            match block_item {
-                BlockItem::Stmt(stmt) => self.resolve_statement(stmt)?,
-                BlockItem::Decl(decl) => self.resolve_declaration(decl)?,
-            }
-        }
+        self.resolve_block(&mut program.function_definition.body)?;
 
         // Second pass to check `goto` statements
         for block_item in &mut program.function_definition.body.items {
@@ -41,15 +36,22 @@ impl Resolver {
 
     fn resolve_declaration(&mut self, decl: &mut Declaration) -> Result<()> {
         let name = &decl.name.symbol;
-        if self.locals.contains_key(name) {
+        let unique_name = self.make_name(name).clone();
+        let Some(scope) = self.scopes.front_mut() else {
+            return Err(CompilerError {
+                kind: ErrorKind::Resolve,
+                msg: format!("Variable '{name}' declared outside of a scope"),
+                span: decl.name.span,
+            });
+        };
+        if scope.contains_key(name) {
             return Err(CompilerError {
                 kind: ErrorKind::Resolve,
                 msg: format!("Variable '{name}' was already declared"),
                 span: decl.name.span,
             });
         }
-        let unique_name = self.make_name(name);
-        self.locals.insert(name.clone(), unique_name.clone());
+        scope.insert(name.clone(), unique_name.clone());
         decl.name.symbol = unique_name;
         if let Some(init) = &mut decl.init {
             self.resolve_expression(init)?;
@@ -89,22 +91,36 @@ impl Resolver {
                 // Note: checking if label exists is done in another pass
                 Ok(())
             }
-            Statement::Compound(_) => todo!(),
+            Statement::Compound(block) => self.resolve_block(block),
         }
+    }
+
+    fn resolve_block(&mut self, block: &mut Block) -> Result<()> {
+        self.begin_scope();
+        for block_item in &mut block.items {
+            match block_item {
+                BlockItem::Stmt(stmt) => self.resolve_statement(stmt)?,
+                BlockItem::Decl(decl) => self.resolve_declaration(decl)?,
+            }
+        }
+        self.end_scope();
+        Ok(())
     }
 
     fn resolve_expression(&mut self, expr: &mut Node<Expression>) -> Result<()> {
         match expr.as_mut() {
             Expression::Var(name) => {
-                if let Some(declared) = self.locals.get(name) {
-                    *name = declared.clone();
-                } else {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Resolve,
-                        msg: format!("Undeclared variable '{name}'"),
-                        span: expr.span,
-                    });
+                for scope in &self.scopes {
+                    if let Some(declared) = scope.get(name) {
+                        *name = declared.clone();
+                        return Ok(());
+                    }
                 }
+                return Err(CompilerError {
+                    kind: ErrorKind::Resolve,
+                    msg: format!("Undeclared variable '{name}'"),
+                    span: expr.span,
+                });
             }
             Expression::Assignment { left, right, .. } => {
                 if !matches!(left.as_ref(), Expression::Var(_)) {
@@ -161,6 +177,14 @@ impl Resolver {
         let unique_name = format!("{name}.{i}", i = self.counter);
         self.counter += 1;
         unique_name
+    }
+
+    fn begin_scope(&mut self) {
+        self.scopes.push_front(HashMap::new());
+    }
+
+    fn end_scope(&mut self) {
+        self.scopes.pop_front().expect("No scope to end!");
     }
 }
 
