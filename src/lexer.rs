@@ -31,6 +31,11 @@ pub enum TokenKind {
     If,
     Else,
     Goto,
+    Do,
+    While,
+    For,
+    Break,
+    Continue,
 
     Return,
 
@@ -229,6 +234,11 @@ impl<'src> Lexer<'src> {
             "if" => TokenKind::If,
             "else" => TokenKind::Else,
             "goto" => TokenKind::Goto,
+            "do" => TokenKind::Do,
+            "while" => TokenKind::While,
+            "for" => TokenKind::For,
+            "break" => TokenKind::Break,
+            "continue" => TokenKind::Continue,
             _ => TokenKind::Identifier,
         }
     }

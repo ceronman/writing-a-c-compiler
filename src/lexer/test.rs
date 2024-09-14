@@ -6189,3 +6189,1660 @@ fn test_chapter_7_valid_use_in_inner_scope() {
     ];
     assert_eq!(tokenize(src), expected);
 }
+
+#[test]
+fn test_chapter_8_invalid_parse_decl_as_loop_body() {
+    let src = r#"
+        int main(void) {
+            while (1)
+                int i = 0;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, While, OpenParen, Constant,
+        CloseParen, Int, Identifier, Equal, Constant, Semicolon, Return, Constant, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_do_extra_semicolon() {
+    let src = r#"
+        int main(void) {
+            do {
+                int a;
+            }; while(1);
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Do, OpenBrace, Int, Identifier,
+        Semicolon, CloseBrace, Semicolon, While, OpenParen, Constant, CloseParen, Semicolon,
+        Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_do_missing_semicolon() {
+    let src = r#"
+        int main(void) {
+            do {
+                4;
+            } while(1)
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Do, OpenBrace, Constant,
+        Semicolon, CloseBrace, While, OpenParen, Constant, CloseParen, Return, Constant, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_do_while_empty_parens() {
+    let src = r#"
+        int main(void) {
+            do
+                1;
+            while ();
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Do, Constant, Semicolon, While,
+        OpenParen, CloseParen, Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_compound_assignment_invalid_decl() {
+    let src = r#"
+        int main(void) {
+            for (int i += 1; i < 10; i += 1) {
+                return 0;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, For, OpenParen, Int, Identifier,
+        PlusEqual, Constant, Semicolon, Identifier, Less, Constant, Semicolon, Identifier,
+        PlusEqual, Constant, CloseParen, OpenBrace, Return, Constant, Semicolon, CloseBrace,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_label_in_loop_header() {
+    let src = r#"
+        int main(void) {
+            for (int i = 0; label: i < 10; i = i + 1) {
+                ;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, For, OpenParen, Int, Identifier,
+        Equal, Constant, Semicolon, Identifier, Colon, Identifier, Less, Constant, Semicolon,
+        Identifier, Equal, Identifier, Plus, Constant, CloseParen, OpenBrace, Semicolon,
+        CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_label_is_not_block() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b = 0;
+            do
+            do_body:
+                a = a + 1;
+                b = b - 1;
+            while (a < 10)
+                ;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, Do, Identifier, Colon, Identifier,
+        Equal, Identifier, Plus, Constant, Semicolon, Identifier, Equal, Identifier, Minus,
+        Constant, Semicolon, While, OpenParen, Identifier, Less, Constant, CloseParen, Semicolon,
+        Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_for_header_clause() {
+    let src = r#"
+        int main(void) {
+            for (int i = 0; i < 10; i = i + 1; )
+                ;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, For, OpenParen, Int, Identifier,
+        Equal, Constant, Semicolon, Identifier, Less, Constant, Semicolon, Identifier, Equal,
+        Identifier, Plus, Constant, Semicolon, CloseParen, Semicolon, Return, Constant, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_invalid_for_declaration() {
+    let src = r#"
+        int main(void) {
+            for (; int i = 0; i = i + 1)
+                ;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, For, OpenParen, Semicolon, Int,
+        Identifier, Equal, Constant, Semicolon, Identifier, Equal, Identifier, Plus, Constant,
+        CloseParen, Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_missing_for_header_clause() {
+    let src = r#"
+        int main(void) {
+            for (int i = 0;)
+                ;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, For, OpenParen, Int, Identifier,
+        Equal, Constant, Semicolon, CloseParen, Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_paren_mismatch() {
+    let src = r#"
+        int main(void) {
+            for (int i = 2; ))
+                int a = 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, For, OpenParen, Int, Identifier,
+        Equal, Constant, Semicolon, CloseParen, CloseParen, Int, Identifier, Equal, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_statement_in_condition() {
+    let src = r#"
+        int main(void) {
+            while(int a) {
+                2;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, While, OpenParen, Int, Identifier,
+        CloseParen, OpenBrace, Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_while_missing_paren() {
+    let src = r#"
+        int main(void) {
+            while 1 {
+                return 0;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, While, Constant, OpenBrace,
+        Return, Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_break_not_in_loop() {
+    let src = r#"
+        int main(void) {
+            if (1)
+                break;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, If, OpenParen, Constant,
+        CloseParen, Break, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_continue_not_in_loop() {
+    let src = r#"
+        int main(void) {
+            {
+                int a;
+                continue;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, OpenBrace, Int, Identifier,
+        Semicolon, Continue, Semicolon, CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_loop() {
+    let src = r#"
+        int main(void) {
+            do {
+            lbl:
+                return 1;
+            lbl:
+                return 2;
+            } while (1);
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Do, OpenBrace, Identifier, Colon,
+        Return, Constant, Semicolon, Identifier, Colon, Return, Constant, Semicolon, CloseBrace,
+        While, OpenParen, Constant, CloseParen, Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_labeled_break_outside_loop() {
+    let src = r#"
+        int main(void) {
+            label: break;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Identifier, Colon, Break,
+        Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_out_of_scope_do_loop() {
+    let src = r#"
+        int main(void) {
+            do {
+                int a = a + 1;
+            } while (a < 100);
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Do, OpenBrace, Int, Identifier,
+        Equal, Identifier, Plus, Constant, Semicolon, CloseBrace, While, OpenParen, Identifier,
+        Less, Constant, CloseParen, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_out_of_scope_loop_variable() {
+    let src = r#"
+        int main(void)
+        {
+            for (i = 0; i < 1; i = i + 1)
+            {
+                return 0;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, For, OpenParen, Identifier, Equal,
+        Constant, Semicolon, Identifier, Less, Constant, Semicolon, Identifier, Equal, Identifier,
+        Plus, Constant, CloseParen, OpenBrace, Return, Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_break() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            int b = 20;
+            for (b = -20; b < 0; b = b + 1) {
+                a = a - 1;
+                if (a <= 0)
+                    break;
+            }
+            return a == 0 && b == -11;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        For,
+        OpenParen,
+        Identifier,
+        Equal,
+        Minus,
+        Constant,
+        Semicolon,
+        Identifier,
+        Less,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        LessEqual,
+        Constant,
+        CloseParen,
+        Break,
+        Semicolon,
+        CloseBrace,
+        Return,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Minus,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_break_immediate() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            while ((a = 1))
+                break;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, While, OpenParen, OpenParen, Identifier, Equal, Constant, CloseParen,
+        CloseParen, Break, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_continue() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            int counter;
+            for (int i = 0; i <= 10; i = i + 1) {
+                counter = i;
+                if (i % 2 == 0)
+                    continue;
+                sum = sum + 1;
+            }
+            return sum == 5 && counter == 10;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Semicolon,
+        For,
+        OpenParen,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        LessEqual,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        Percent,
+        Constant,
+        EqualEqual,
+        Constant,
+        CloseParen,
+        Continue,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        Return,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_continue_empty_post() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            for (int i = 0; i < 10;) {
+                i = i + 1;
+                if (i % 2)
+                    continue;
+                sum = sum + i;
+            }
+            return sum;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, For, OpenParen, Int, Identifier, Equal, Constant, Semicolon, Identifier, Less,
+        Constant, Semicolon, CloseParen, OpenBrace, Identifier, Equal, Identifier, Plus, Constant,
+        Semicolon, If, OpenParen, Identifier, Percent, Constant, CloseParen, Continue, Semicolon,
+        Identifier, Equal, Identifier, Plus, Identifier, Semicolon, CloseBrace, Return, Identifier,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_do_while() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            do {
+                a = a * 2;
+            } while(a < 11);
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Do, OpenBrace, Identifier, Equal, Identifier, Star, Constant, Semicolon,
+        CloseBrace, While, OpenParen, Identifier, Less, Constant, CloseParen, Semicolon, Return,
+        Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_do_while_break_immediate() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            do
+                break;
+            while ((a = 1));
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Do, Break, Semicolon, While, OpenParen, OpenParen, Identifier, Equal, Constant,
+        CloseParen, CloseParen, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_empty_expression() {
+    let src = r#"
+        int main(void) {
+            return 0;;;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Return, Constant, Semicolon,
+        Semicolon, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_empty_loop_body() {
+    let src = r#"
+        int main(void) {
+            int i = 2147483642;
+            do ; while ((i = i - 5) >= 256);
+            return i;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Do,
+        Semicolon,
+        While,
+        OpenParen,
+        OpenParen,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        CloseParen,
+        GreaterEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        Return,
+        Identifier,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression() {
+    let src = r#"
+        int main(void) {
+            int i = 100;
+            int sum = 0;
+            do sum += 2;
+            while (i -= 1);
+            return (i == 0 && sum == 200);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Do,
+        Identifier,
+        PlusEqual,
+        Constant,
+        Semicolon,
+        While,
+        OpenParen,
+        Identifier,
+        MinusEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
+    let src = r#"
+        int main(void) {
+            int i = 1;
+            for (i *= -1; i >= -100; i -=3)
+                ;
+            return (i == -103);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        For,
+        OpenParen,
+        Identifier,
+        StarEqual,
+        Minus,
+        Constant,
+        Semicolon,
+        Identifier,
+        GreaterEqual,
+        Minus,
+        Constant,
+        Semicolon,
+        Identifier,
+        MinusEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Minus,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_goto_bypass_condition() {
+    let src = r#"
+        int main(void) {
+            int i = 1;
+            do {
+            while_start:
+                i = i + 1;
+                if (i < 10)
+                    goto while_start;
+            } while (0);
+            return i;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Do, OpenBrace, Identifier, Colon, Identifier, Equal, Identifier, Plus, Constant,
+        Semicolon, If, OpenParen, Identifier, Less, Constant, CloseParen, Goto, Identifier,
+        Semicolon, CloseBrace, While, OpenParen, Constant, CloseParen, Semicolon, Return,
+        Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_goto_bypass_init_exp() {
+    let src = r#"
+        int main(void) {
+            int i = 0;
+            goto target;
+            for (i = 5; i < 10; i = i + 1)
+            target:
+                if (i == 0)
+                    return 1;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Goto, Identifier, Semicolon, For, OpenParen, Identifier, Equal, Constant,
+        Semicolon, Identifier, Less, Constant, Semicolon, Identifier, Equal, Identifier, Plus,
+        Constant, CloseParen, Identifier, Colon, If, OpenParen, Identifier, EqualEqual, Constant,
+        CloseParen, Return, Constant, Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_goto_bypass_post_exp() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            for (int i = 0;; i = 0) {
+            lbl:
+                sum = sum + 1;
+                i = i + 1;
+                if (i > 10)
+                    break;
+                goto lbl;
+            }
+            return sum;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, For, OpenParen, Int, Identifier, Equal, Constant, Semicolon, Semicolon,
+        Identifier, Equal, Constant, CloseParen, OpenBrace, Identifier, Colon, Identifier, Equal,
+        Identifier, Plus, Constant, Semicolon, Identifier, Equal, Identifier, Plus, Constant,
+        Semicolon, If, OpenParen, Identifier, Greater, Constant, CloseParen, Break, Semicolon,
+        Goto, Identifier, Semicolon, CloseBrace, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_label_loop_body() {
+    let src = r#"
+        
+        int main(void) {
+            int result = 0;
+            goto label;
+            while (0)
+            label: { result = 1; }
+            return result;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Goto, Identifier, Semicolon, While, OpenParen, Constant, CloseParen, Identifier,
+        Colon, OpenBrace, Identifier, Equal, Constant, Semicolon, CloseBrace, Return, Identifier,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            goto do_label;
+            return 0;
+        do_label:
+            do {
+                sum = 1;
+                goto while_label;
+            } while (1);
+        while_label:
+            while (1) {
+                sum = sum + 1;
+                goto break_label;
+                return 0;
+            break_label:
+                break;
+            };
+            goto for_label;
+            return 0;
+        for_label:
+            for (int i = 0; i < 10; i = i + 1) {
+                sum = sum + 1;
+                goto continue_label;
+                return 0;
+            continue_label:
+                continue;
+                return 0;
+            }
+            return sum;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Goto, Identifier, Semicolon, Return, Constant, Semicolon, Identifier, Colon, Do,
+        OpenBrace, Identifier, Equal, Constant, Semicolon, Goto, Identifier, Semicolon, CloseBrace,
+        While, OpenParen, Constant, CloseParen, Semicolon, Identifier, Colon, While, OpenParen,
+        Constant, CloseParen, OpenBrace, Identifier, Equal, Identifier, Plus, Constant, Semicolon,
+        Goto, Identifier, Semicolon, Return, Constant, Semicolon, Identifier, Colon, Break,
+        Semicolon, CloseBrace, Semicolon, Goto, Identifier, Semicolon, Return, Constant, Semicolon,
+        Identifier, Colon, For, OpenParen, Int, Identifier, Equal, Constant, Semicolon, Identifier,
+        Less, Constant, Semicolon, Identifier, Equal, Identifier, Plus, Constant, CloseParen,
+        OpenBrace, Identifier, Equal, Identifier, Plus, Constant, Semicolon, Goto, Identifier,
+        Semicolon, Return, Constant, Semicolon, Identifier, Colon, Continue, Semicolon, Return,
+        Constant, Semicolon, CloseBrace, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
+    let src = r#"
+        int main(void) {
+            int i = 100;
+            int count = 0;
+            while (i--) count++;
+            if (count != 100)
+                return 0;
+            i = 100;
+            count = 0;
+            while (--i) count++;
+            if (count != 99)
+                return 0;
+            return 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, While, OpenParen, Identifier,
+        MinusMinus, CloseParen, Identifier, PlusPlus, Semicolon, If, OpenParen, Identifier,
+        BangEqual, Constant, CloseParen, Return, Constant, Semicolon, Identifier, Equal, Constant,
+        Semicolon, Identifier, Equal, Constant, Semicolon, While, OpenParen, MinusMinus,
+        Identifier, CloseParen, Identifier, PlusPlus, Semicolon, If, OpenParen, Identifier,
+        BangEqual, Constant, CloseParen, Return, Constant, Semicolon, Return, Constant, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_post_exp_incr() {
+    let src = r#"
+        int main(void) {
+            int product = 1;
+            for (int i = 0; i < 10; i++) {
+                product = product + 2;
+            }
+            return product;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, For, OpenParen, Int, Identifier, Equal, Constant, Semicolon, Identifier, Less,
+        Constant, Semicolon, Identifier, PlusPlus, CloseParen, OpenBrace, Identifier, Equal,
+        Identifier, Plus, Constant, Semicolon, CloseBrace, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_for() {
+    let src = r#"
+        int main(void) {
+            int a = 12345;
+            int i;
+            for (i = 5; i >= 0; i = i - 1)
+                a = a / 3;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Semicolon,
+        For,
+        OpenParen,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        GreaterEqual,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        CloseParen,
+        Identifier,
+        Equal,
+        Identifier,
+        Slash,
+        Constant,
+        Semicolon,
+        Return,
+        Identifier,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_for_absent_condition() {
+    let src = r#"
+        int main(void) {
+            for (int i = 400; ; i = i - 100)
+                if (i == 100)
+                    return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, For, OpenParen, Int, Identifier,
+        Equal, Constant, Semicolon, Semicolon, Identifier, Equal, Identifier, Minus, Constant,
+        CloseParen, If, OpenParen, Identifier, EqualEqual, Constant, CloseParen, Return, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_for_absent_post() {
+    let src = r#"
+        int main(void) {
+            int a = -2147483647;
+            for (; a % 5 != 0;) {
+                a = a + 1;
+            }
+            return a % 5 || a > 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Minus,
+        Constant, Semicolon, For, OpenParen, Semicolon, Identifier, Percent, Constant, BangEqual,
+        Constant, Semicolon, CloseParen, OpenBrace, Identifier, Equal, Identifier, Plus, Constant,
+        Semicolon, CloseBrace, Return, Identifier, Percent, Constant, PipePipe, Identifier,
+        Greater, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_for_decl() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            for (int i = -100; i <= 0; i = i + 1)
+                a = a + 1;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, For, OpenParen, Int, Identifier, Equal, Minus, Constant, Semicolon, Identifier,
+        LessEqual, Constant, Semicolon, Identifier, Equal, Identifier, Plus, Constant, CloseParen,
+        Identifier, Equal, Identifier, Plus, Constant, Semicolon, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_for_nested_shadow() {
+    let src = r#"
+        int main(void) {
+            int i = 0;
+            int j = 0;
+            int k = 1;
+            for (int i = 100; i > 0; i = i - 1) {
+                int i = 1;
+                int j = i + k;
+                k = j;
+            }
+            return k == 101 && i == 0 && j == 0;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        For,
+        OpenParen,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        Greater,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Identifier,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Semicolon,
+        CloseBrace,
+        Return,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_for_shadow() {
+    let src = r#"
+        int main(void) {
+            int shadow = 1;
+            int acc = 0;
+            for (int shadow = 0; shadow < 10; shadow = shadow + 1) {
+                acc = acc + shadow;
+            }
+            return acc == 45 && shadow == 1;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        For,
+        OpenParen,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        Less,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Identifier,
+        Semicolon,
+        CloseBrace,
+        Return,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_multi_break() {
+    let src = r#"
+        int main(void) {
+            int i = 0;
+            while (1) {
+                i = i + 1;
+                if (i > 10)
+                    break;
+            }
+            int j = 10;
+            while (1) {
+                j = j - 1;
+                if (j < 0)
+                    break;
+            }
+            int result = j == -1 && i == 11;
+            return result;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        While,
+        OpenParen,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        Greater,
+        Constant,
+        CloseParen,
+        Break,
+        Semicolon,
+        CloseBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        While,
+        OpenParen,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        Less,
+        Constant,
+        CloseParen,
+        Break,
+        Semicolon,
+        CloseBrace,
+        Int,
+        Identifier,
+        Equal,
+        Identifier,
+        EqualEqual,
+        Minus,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        Semicolon,
+        Return,
+        Identifier,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_multi_continue_same_loop() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            int y = 0;
+            int z = 0;
+            do {
+                z = z + 1;
+                if (x <= 0)
+                    continue;
+                x = x - 1;
+                if (y >= 10)
+                    continue;
+                y = y + 1;
+            } while (z != 50);
+            return z == 50 && x == 0 && y == 10;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Do,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        LessEqual,
+        Constant,
+        CloseParen,
+        Continue,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        GreaterEqual,
+        Constant,
+        CloseParen,
+        Continue,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        While,
+        OpenParen,
+        Identifier,
+        BangEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        Return,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_nested_break() {
+    let src = r#"
+        int main(void) {
+            int ans = 0;
+            for (int i = 0; i < 10; i = i + 1)
+                for (int j = 0; j < 10; j = j + 1)
+                    if ((i / 2)*2 == i)
+                        break;
+                    else
+                        ans = ans + i;
+            return ans;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, For, OpenParen, Int, Identifier, Equal, Constant, Semicolon, Identifier, Less,
+        Constant, Semicolon, Identifier, Equal, Identifier, Plus, Constant, CloseParen, For,
+        OpenParen, Int, Identifier, Equal, Constant, Semicolon, Identifier, Less, Constant,
+        Semicolon, Identifier, Equal, Identifier, Plus, Constant, CloseParen, If, OpenParen,
+        OpenParen, Identifier, Slash, Constant, CloseParen, Star, Constant, EqualEqual, Identifier,
+        CloseParen, Break, Semicolon, Else, Identifier, Equal, Identifier, Plus, Identifier,
+        Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_nested_continue() {
+    let src = r#"
+        int main(void) {
+            int x = 5;
+            int acc = 0;
+            while (x >= 0) {
+                int i = x;
+                while (i <= 10) {
+                    i = i + 1;
+                    if (i % 2)
+                        continue;
+                    acc = acc + 1;
+                }
+                x = x - 1;
+            }
+            return acc;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        While,
+        OpenParen,
+        Identifier,
+        GreaterEqual,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Identifier,
+        Semicolon,
+        While,
+        OpenParen,
+        Identifier,
+        LessEqual,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        Percent,
+        Constant,
+        CloseParen,
+        Continue,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        Return,
+        Identifier,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_nested_loop() {
+    let src = r#"
+        int main(void) {
+            int acc = 0;
+            int x = 100;
+            while (x) {
+                int y = 10;
+                x = x - y;
+                while (y) {
+                    acc = acc + 1;
+                    y = y - 1;
+                }
+            }
+            return acc == 100 && x == 0;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        While,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Identifier,
+        Semicolon,
+        While,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        CloseBrace,
+        Return,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_null_for_header() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            for (; ; ) {
+                a = a + 1;
+                if (a > 3)
+                    break;
+            }
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, For, OpenParen, Semicolon, Semicolon, CloseParen, OpenBrace, Identifier, Equal,
+        Identifier, Plus, Constant, Semicolon, If, OpenParen, Identifier, Greater, Constant,
+        CloseParen, Break, Semicolon, CloseBrace, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_while() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            while (a < 5)
+                a = a + 2;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, While, OpenParen, Identifier, Less, Constant, CloseParen, Identifier, Equal,
+        Identifier, Plus, Constant, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
