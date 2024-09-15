@@ -3261,7 +3261,7 @@ fn test_chapter_6_valid_extra_credit_goto_after_declaration() {
     let expected = r#"
         function main { 
           x.0 = 1
-          jump post_declaration
+          jump post_declaration_2
           x.0 = 0
           i.1 = x.0
         post_declaration:
@@ -3299,7 +3299,7 @@ fn test_chapter_6_valid_extra_credit_goto_backwards() {
         label:
           return 5
         end_if__0:
-          jump label
+          jump label_0
           return 0
           return 0
         }
@@ -3319,7 +3319,7 @@ fn test_chapter_6_valid_extra_credit_goto_label() {
     "#;
     let expected = r#"
         function main { 
-          jump label
+          jump label_0
           return 0
         label:
           return 1
@@ -3343,7 +3343,7 @@ fn test_chapter_6_valid_extra_credit_goto_label_and_var() {
     let expected = r#"
         function main { 
           ident.0 = 5
-          jump ident
+          jump ident_1
           return 0
         ident:
           return ident.0
@@ -3365,7 +3365,7 @@ fn test_chapter_6_valid_extra_credit_goto_label_main() {
     "#;
     let expected = r#"
         function main { 
-          jump main
+          jump main_0
           return 5
         main:
           return 0
@@ -3387,7 +3387,7 @@ fn test_chapter_6_valid_extra_credit_goto_label_main_2() {
     "#;
     let expected = r#"
         function main { 
-          jump _main
+          jump _main_0
           return 0
         _main:
           return 1
@@ -3410,7 +3410,7 @@ fn test_chapter_6_valid_extra_credit_goto_nested_label() {
     "#;
     let expected = r#"
         function main { 
-          jump labelB
+          jump labelB_1
         labelA:
         labelB:
           return 5
@@ -3460,12 +3460,12 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
         label_expression:
           a.0 = 0
         end_if__2:
-          jump label_if
+          jump label_if_1
         label_return:
           return a.0
         label_empty:
           a.0 = 100
-          jump label_goto
+          jump label_goto_2
           return 0
         }
     "#;
@@ -3484,7 +3484,7 @@ fn test_chapter_6_valid_extra_credit_label_token() {
     "#;
     let expected = r#"
         function main { 
-          jump _foo_1_
+          jump _foo_1__0
           return 0
         _foo_1_:
           return 1
@@ -3684,7 +3684,7 @@ fn test_chapter_6_valid_extra_credit_whitespace_after_label() {
     "#;
     let expected = r#"
         function main { 
-          jump label2
+          jump label2_1
           return 0
         label1:
         label2:
@@ -4474,8 +4474,8 @@ fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
         return_a:
           return a.0
         end_if__0:
-          a.1 = 4
-          jump return_a
+          a.2 = 4
+          jump return_a_1
           return 0
         }
     "#;
@@ -4499,7 +4499,7 @@ fn test_chapter_7_valid_extra_credit_goto_inner_scope() {
     let expected = r#"
         function main { 
           x.0 = 5
-          jump inner
+          jump inner_2
           x.1 = 0
         inner:
           x.1 = 1
@@ -4533,7 +4533,7 @@ fn test_chapter_7_valid_extra_credit_goto_outer_scope() {
           jump end_if__0 if !a.0
           a.2 = 1
           b.1 = a.2
-          jump end
+          jump end_3
         end_if__0:
           a.0 = 9
         end:
@@ -4581,7 +4581,7 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
           sum.0 = 0
           jump end_if__0 if !1
           a.1 = 5
-          jump other_if
+          jump other_if_3
           sum.0 = 0
         first_if:
           a.1 = 5
@@ -4590,10 +4590,10 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
         end_if__0:
           jump end_if__2 if !0
         other_if:
-          a.2 = 6
-          tmp.1 = sum.0 + a.2
+          a.4 = 6
+          tmp.1 = sum.0 + a.4
           sum.0 = tmp.1
-          jump first_if
+          jump first_if_2
           sum.0 = 0
         end_if__2:
           return sum.0

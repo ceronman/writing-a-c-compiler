@@ -525,3 +525,93 @@ fn test_chapter_7_invalid_semantics_use_before_declare() {
     "#,
     );
 }
+
+#[test]
+fn test_chapter_8_invalid_semantics_break_not_in_loop() {
+    assert_error(
+        r#"
+        int main(void) {
+            if (1)
+                break;
+              //^^^^^^ 'break' statement not in loop or switch statement
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_continue_not_in_loop() {
+    assert_error(
+        r#"
+        int main(void) {
+            {
+                int a;
+                continue;
+              //^^^^^^^^^ 'continue' statement not in loop statement
+            }
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_loop() {
+    assert_error(
+        r#"
+        int main(void) {
+            do {
+            lbl:
+                return 1;
+            lbl:
+          //^^^ Label 'lbl' was already defined
+                return 2;
+            } while (1);
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_labeled_break_outside_loop() {
+    assert_error(
+        r#"
+        int main(void) {
+            label: break;
+                 //^^^^^^ 'break' statement not in loop or switch statement
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_out_of_scope_do_loop() {
+    assert_error(
+        r#"
+        int main(void) {
+            do {
+                int a = a + 1;
+            } while (a < 100);
+                   //^ Undeclared variable 'a'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_out_of_scope_loop_variable() {
+    assert_error(
+        r#"
+        int main(void)
+        {
+            for (i = 0; i < 1; i = i + 1)
+               //^ Undeclared variable 'i'
+            {
+                return 0;
+            }
+        }
+    "#,
+    );
+}
