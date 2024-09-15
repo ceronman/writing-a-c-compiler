@@ -2,8 +2,8 @@
 mod test;
 
 use crate::ast::{
-    AssignOp, BinaryOp, Block, BlockItem, Declaration, Expression, Function, Identifier, Node,
-    PostfixOp, Program, Statement, UnaryOp,
+    AssignOp, BinaryOp, Block, BlockItem, Declaration, Expression, ForInit, Function, Identifier,
+    Node, PostfixOp, Program, Statement, UnaryOp,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{Lexer, Token, TokenKind};
@@ -91,6 +91,11 @@ impl<'src> Parser<'src> {
             TokenKind::If => self.if_stmt(),
             TokenKind::Semicolon => self.null_stmt(),
             TokenKind::Goto => self.goto_stmt(),
+            TokenKind::While => self.while_stmt(),
+            TokenKind::Do => self.do_while_stmt(),
+            TokenKind::For => self.for_stmt(),
+            TokenKind::Continue => self.continue_stmt(),
+            TokenKind::Break => self.break_stmt(),
             TokenKind::OpenBrace => self.compound_stmt(),
             TokenKind::Identifier => {
                 if self.next.kind == TokenKind::Colon {
@@ -101,6 +106,97 @@ impl<'src> Parser<'src> {
             }
             _ => self.expression_stmt(),
         }
+    }
+
+    fn while_stmt(&mut self) -> Result<Node<Statement>> {
+        let begin = self.current.span;
+        self.expect(TokenKind::While, "'while'")?;
+        self.expect(TokenKind::OpenParen, "'('")?;
+        let cond = self.expression()?;
+        self.expect(TokenKind::CloseParen, "')'")?;
+        let body = self.statement()?;
+        Ok(Node::from(
+            begin + body.span,
+            Statement::While {
+                cond,
+                body,
+                label: "dummy".into(),
+            },
+        ))
+    }
+
+    fn do_while_stmt(&mut self) -> Result<Node<Statement>> {
+        let begin = self.current.span;
+        self.expect(TokenKind::Do, "'do'")?;
+        let body = self.statement()?;
+        self.expect(TokenKind::While, "'while'")?;
+        self.expect(TokenKind::OpenParen, "'('")?;
+        let cond = self.expression()?;
+        self.expect(TokenKind::CloseParen, "')'")?;
+        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        Ok(Node::from(
+            begin + end,
+            Statement::DoWhile {
+                cond,
+                body,
+                label: "dummy".into(),
+            },
+        ))
+    }
+
+    fn for_stmt(&mut self) -> Result<Node<Statement>> {
+        let begin = self.current.span;
+        self.expect(TokenKind::For, "'for'")?;
+        self.expect(TokenKind::OpenParen, "'('")?;
+        let init = match self.current.kind {
+            TokenKind::Semicolon => {
+                self.advance();
+                ForInit::None
+            }
+            TokenKind::Int => ForInit::Decl(self.declaration()?),
+            _ => {
+                let expr = self.expression()?;
+                self.expect(TokenKind::Semicolon, "';'")?;
+                ForInit::Expr(expr)
+            }
+        };
+
+        let cond = if self.current.kind == TokenKind::Semicolon {
+            None
+        } else {
+            Some(self.expression()?)
+        };
+        self.expect(TokenKind::Semicolon, "';'")?;
+
+        let post = if self.current.kind == TokenKind::CloseParen {
+            None
+        } else {
+            Some(self.expression()?)
+        };
+        self.expect(TokenKind::CloseParen, "')'")?;
+        let body = self.statement()?;
+        Ok(Node::from(
+            begin + body.span,
+            Statement::For {
+                init,
+                cond,
+                post,
+                body,
+                label: "dummy".into(),
+            },
+        ))
+    }
+
+    fn continue_stmt(&mut self) -> Result<Node<Statement>> {
+        let begin = self.expect(TokenKind::Continue, "'continue'")?.span;
+        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        Ok(Node::from(begin + end, Statement::Continue("dummy".into())))
+    }
+
+    fn break_stmt(&mut self) -> Result<Node<Statement>> {
+        let begin = self.expect(TokenKind::Break, "'break'")?.span;
+        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        Ok(Node::from(begin + end, Statement::Break("dummy".into())))
     }
 
     fn compound_stmt(&mut self) -> Result<Node<Statement>> {

@@ -3938,6 +3938,7 @@ fn test_chapter_5_valid_null_statement() {
     let expected = r#"
         Program
         ╰── Function [main]
+            ╰── Empty
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -3953,6 +3954,7 @@ fn test_chapter_5_valid_null_then_return() {
     let expected = r#"
         Program
         ╰── Function [main]
+            ├── Empty
             ╰── Return
                 ╰── Constant [0]
     "#;
@@ -4435,7 +4437,6 @@ fn test_chapter_6_invalid_semantics_invalid_var_in_if() {
             │   ├── Constant [1]
             │   ╰── Return
             │       ╰── Var [c]
-            ├── If
             ╰── Declaration [c]
                 ╰── Constant [0]
     "#;
@@ -4544,7 +4545,6 @@ fn test_chapter_6_valid_binary_condition() {
                 │   ╰── Constant [3]
                 ╰── Return
                     ╰── Constant [5]
-            ╰── If
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4568,7 +4568,6 @@ fn test_chapter_6_valid_binary_false_condition() {
                 │   ╰── Constant [4]
                 ╰── Return
                     ╰── Constant [5]
-            ╰── If
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4595,7 +4594,6 @@ fn test_chapter_6_valid_else() {
                 │   ╰── Constant [1]
                 ╰── Return
                     ╰── Constant [2]
-            ╰── If
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4676,7 +4674,6 @@ fn test_chapter_6_valid_extra_credit_compound_if_expression() {
             │   │   ╰── Constant [1]
             │   ╰── Return
             │       ╰── Var [a]
-            ├── If
             ╰── Return
                 ╰── Constant [10]
     "#;
@@ -4740,7 +4737,6 @@ fn test_chapter_6_valid_extra_credit_goto_backwards() {
             │   ╰── Label [label]
             │       ╰── Return
             │           ╰── Constant [5]
-            ├── If
             ├── Goto [label]
             ╰── Return
                 ╰── Constant [0]
@@ -4901,7 +4897,6 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
             │       ├── Var [a]
             │       ├── Goto [label_expression]
             │       ╰── Goto [label_empty]
-            │   ╰── If
             ├── Label [label_goto]
             │   ╰── Goto [label_return]
             ├── If
@@ -4910,12 +4905,12 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
             │       ╰── Assign [=]
             │           ├── Var [a]
             │           ╰── Constant [0]
-            ├── If
             ├── Goto [label_if]
             ├── Label [label_return]
             │   ╰── Return
             │       ╰── Var [a]
             ├── Label [label_empty]
+            │   ╰── Empty
             ├── Assign [=]
             │   ├── Var [a]
             │   ╰── Constant [100]
@@ -5004,8 +4999,6 @@ fn test_chapter_6_valid_extra_credit_postfix_if() {
             │       │   ╰── Var [a]
             │       ╰── Return
             │           ╰── Constant [1]
-            │   ╰── If
-            ├── If
             ╰── Return
                 ╰── Constant [0]
     "#;
@@ -5067,8 +5060,6 @@ fn test_chapter_6_valid_extra_credit_prefix_if() {
             │       │   ╰── Var [a]
             │       ╰── Return
             │           ╰── Constant [1]
-            │   ╰── If
-            ├── If
             ╰── Return
                 ╰── Constant [0]
     "#;
@@ -5173,8 +5164,6 @@ fn test_chapter_6_valid_if_nested() {
             │       ╰── Assign [=]
             │           ├── Var [b]
             │           ╰── Constant [2]
-            │   ╰── If
-            ├── If
             ╰── Return
                 ╰── Var [b]
     "#;
@@ -5212,8 +5201,6 @@ fn test_chapter_6_valid_if_nested_2() {
             │       ╰── Assign [=]
             │           ├── Var [b]
             │           ╰── Constant [2]
-            │   ╰── If
-            ├── If
             ╰── Return
                 ╰── Var [b]
     "#;
@@ -5252,8 +5239,6 @@ fn test_chapter_6_valid_if_nested_3() {
             │       ╰── Assign [=]
             │           ├── Var [a]
             │           ╰── Constant [4]
-            │   ╰── If
-            ├── If
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -5293,8 +5278,6 @@ fn test_chapter_6_valid_if_nested_4() {
             │           ╰── Binary [/]
             │               ├── Constant [8]
             │               ╰── Constant [2]
-            │   ╰── If
-            ├── If
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -5331,11 +5314,9 @@ fn test_chapter_6_valid_if_nested_5() {
             │   │   ╰── Assign [=]
             │   │       ├── Var [a]
             │   │       ╰── Constant [4]
-            │   ├── If
             │   ╰── Assign [=]
             │       ├── Var [a]
             │       ╰── Constant [1]
-            ├── If
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -5365,7 +5346,6 @@ fn test_chapter_6_valid_if_not_taken() {
             │   ╰── Assign [=]
             │       ├── Var [b]
             │       ╰── Constant [1]
-            ├── If
             ╰── Return
                 ╰── Var [b]
     "#;
@@ -5391,10 +5371,10 @@ fn test_chapter_6_valid_if_null_body() {
             │   ╰── Constant [0]
             ├── If
             │   ├── Constant [0]
+            │   ├── Empty
             │   ╰── Assign [=]
             │       ├── Var [x]
             │       ╰── Constant [1]
-            ├── If
             ╰── Return
                 ╰── Var [x]
     "#;
@@ -5424,7 +5404,6 @@ fn test_chapter_6_valid_if_taken() {
             │   ╰── Assign [=]
             │       ├── Var [b]
             │       ╰── Constant [1]
-            ├── If
             ╰── Return
                 ╰── Var [b]
     "#;
@@ -5501,7 +5480,6 @@ fn test_chapter_6_valid_multiple_if() {
             │       ├── Var [a]
             │       ╰── Constant [3]
             ├── If
-            ├── If
             │   ├── Var [b]
             │   ├── Assign [=]
             │   │   ├── Var [b]
@@ -5509,7 +5487,6 @@ fn test_chapter_6_valid_multiple_if() {
             │   ╰── Assign [=]
             │       ├── Var [b]
             │       ╰── Constant [5]
-            ├── If
             ╰── Return
                 ╰── Binary [+]
                     ├── Var [a]
@@ -5924,9 +5901,11 @@ fn test_chapter_7_invalid_semantics_extra_credit_different_labels_same_scope() {
         Program
         ╰── Function [main]
             ├── Label [label1]
+            │   ╰── Empty
             ├── Declaration [a]
             │   ╰── Constant [10]
             ├── Label [label2]
+            │   ╰── Empty
             ├── Declaration [a]
             │   ╰── Constant [11]
             ╰── Return
@@ -5978,7 +5957,6 @@ fn test_chapter_7_invalid_semantics_extra_credit_duplicate_labels_different_scop
                     ╰── Label [l]
                         ╰── Return
                             ╰── Var [x]
-            ╰── If
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -6009,7 +5987,6 @@ fn test_chapter_7_invalid_semantics_extra_credit_goto_use_before_declare() {
             │       ╰── Label [return_y]
             │           ╰── Return
             │               ╰── Var [y]
-            ├── If
             ├── Declaration [y]
             │   ╰── Constant [4]
             ╰── Goto [return_y]
@@ -6215,8 +6192,6 @@ fn test_chapter_7_valid_extra_credit_compound_subtract_in_block() {
             │               ╰── Assign [-=]
             │                   ├── Var [a]
             │                   ╰── Constant [4]
-            │       ╰── If
-            ├── If
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -6250,7 +6225,6 @@ fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
                 │   ╰── Label [return_a]
                 │       ╰── Return
                 │           ╰── Var [a]
-                ├── If
                 ├── Declaration [a]
                 │   ╰── Constant [4]
                 ╰── Goto [return_a]
@@ -6323,7 +6297,6 @@ fn test_chapter_7_valid_extra_credit_goto_outer_scope() {
             │       │   ├── Var [b]
             │       │   ╰── Var [a]
             │       ╰── Goto [end]
-            ├── If
             ├── Assign [=]
             │   ├── Var [a]
             │   ╰── Constant [9]
@@ -6387,10 +6360,10 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
             │               ├── Var [sum]
             │               ╰── Var [a]
             ├── If
-            ├── If
             │   ├── Constant [0]
             │   ╰── Block
             │       ├── Label [other_if]
+            │       │   ╰── Empty
             │       ├── Declaration [a]
             │       │   ╰── Constant [6]
             │       ├── Assign [=]
@@ -6402,7 +6375,6 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
             │       ╰── Assign [=]
             │           ├── Var [sum]
             │           ╰── Constant [0]
-            ├── If
             ╰── Return
                 ╰── Var [sum]
     "#;
@@ -6589,8 +6561,6 @@ fn test_chapter_7_valid_nested_if() {
             │           ╰── Block
             │               ╰── Return
             │                   ╰── Constant [5]
-            │       ╰── If
-            ├── If
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -6727,6 +6697,1733 @@ fn test_chapter_7_valid_use_in_inner_scope() {
             ╰── Block
                 ╰── Return
                     ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_decl_as_loop_body() {
+    assert_error(
+        r#"
+        int main(void) {
+            while (1)
+                int i = 0;
+              //^^^ Expected statement, but found 'int'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_do_extra_semicolon() {
+    assert_error(
+        r#"
+        int main(void) {
+            do {
+                int a;
+            }; while(1);
+           //^ Expected 'while', but found ';'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_do_missing_semicolon() {
+    assert_error(
+        r#"
+        int main(void) {
+            do {
+                4;
+            } while(1)
+            return 0;
+          //^^^^^^ Expected ';', but found 'return'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_do_while_empty_parens() {
+    assert_error(
+        r#"
+        int main(void) {
+            do
+                1;
+            while ();
+                 //^ Expected expression, but found ')'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_compound_assignment_invalid_decl() {
+    assert_error(
+        r#"
+        int main(void) {
+            for (int i += 1; i < 10; i += 1) {
+                     //^^ Expected ';', but found '+='
+                return 0;
+            }
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_label_in_loop_header() {
+    assert_error(
+        r#"
+        int main(void) {
+            for (int i = 0; label: i < 10; i = i + 1) {
+                               //^ Expected ';', but found ':'
+                ;
+            }
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_label_is_not_block() {
+    assert_error(
+        r#"
+        int main(void) {
+            int a = 0;
+            int b = 0;
+            do
+            do_body:
+                a = a + 1;
+                b = b - 1;
+              //^ Expected 'while', but found 'b'
+            while (a < 10)
+                ;
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_for_header_clause() {
+    assert_error(
+        r#"
+        int main(void) {
+            for (int i = 0; i < 10; i = i + 1; )
+                                           //^ Expected ')', but found ';'
+                ;
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_invalid_for_declaration() {
+    assert_error(
+        r#"
+        int main(void) {
+            for (; int i = 0; i = i + 1)
+                 //^^^ Expected expression, but found 'int'
+                ;
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_missing_for_header_clause() {
+    assert_error(
+        r#"
+        int main(void) {
+            for (int i = 0;)
+                         //^ Expected expression, but found ')'
+                ;
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_paren_mismatch() {
+    assert_error(
+        r#"
+        int main(void) {
+            for (int i = 2; ))
+                          //^ Expected expression, but found ')'
+                int a = 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_statement_in_condition() {
+    assert_error(
+        r#"
+        int main(void) {
+            while(int a) {
+                //^^^ Expected expression, but found 'int'
+                2;
+            }
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_while_missing_paren() {
+    assert_error(
+        r#"
+        int main(void) {
+            while 1 {
+                //^ Expected '(', but found '1'
+                return 0;
+            }
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_break_not_in_loop() {
+    let src = r#"
+        int main(void) {
+            if (1)
+                break;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── If
+                ├── Constant [1]
+                ╰── Break
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_continue_not_in_loop() {
+    let src = r#"
+        int main(void) {
+            {
+                int a;
+                continue;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Block
+            │   ├── Declaration [a]
+            │   ╰── Continue
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_loop() {
+    let src = r#"
+        int main(void) {
+            do {
+            lbl:
+                return 1;
+            lbl:
+                return 2;
+            } while (1);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── DoWhile
+            │   ├── Block
+            │   │   ├── Label [lbl]
+            │   │   │   ╰── Return
+            │   │   │       ╰── Constant [1]
+            │   │   ╰── Label [lbl]
+            │   │       ╰── Return
+            │   │           ╰── Constant [2]
+            │   ╰── Constant [1]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_labeled_break_outside_loop() {
+    let src = r#"
+        int main(void) {
+            label: break;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Label [label]
+            │   ╰── Break
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_out_of_scope_do_loop() {
+    let src = r#"
+        int main(void) {
+            do {
+                int a = a + 1;
+            } while (a < 100);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── DoWhile
+                ├── Block
+                │   ╰── Declaration [a]
+                │       ╰── Binary [+]
+                │           ├── Var [a]
+                │           ╰── Constant [1]
+                ╰── Binary [<]
+                    ├── Var [a]
+                    ╰── Constant [100]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_out_of_scope_loop_variable() {
+    let src = r#"
+        int main(void)
+        {
+            for (i = 0; i < 1; i = i + 1)
+            {
+                return 0;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── For
+                ├── Assign [=]
+                │   ├── Var [i]
+                │   ╰── Constant [0]
+                ├── Binary [<]
+                │   ├── Var [i]
+                │   ╰── Constant [1]
+                ├── Assign [=]
+                │   ├── Var [i]
+                │   ╰── Binary [+]
+                │       ├── Var [i]
+                │       ╰── Constant [1]
+                ├── Block
+                │   ╰── Return
+                │       ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_break() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            int b = 20;
+            for (b = -20; b < 0; b = b + 1) {
+                a = a - 1;
+                if (a <= 0)
+                    break;
+            }
+            return a == 0 && b == -11;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ├── Declaration [b]
+            │   ╰── Constant [20]
+            ├── For
+            │   ├── Assign [=]
+            │   │   ├── Var [b]
+            │   │   ╰── Unary [-]
+            │   │       ╰── Constant [20]
+            │   ├── Binary [<]
+            │   │   ├── Var [b]
+            │   │   ╰── Constant [0]
+            │   ├── Assign [=]
+            │   │   ├── Var [b]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [b]
+            │   │       ╰── Constant [1]
+            │   ├── Block
+            │   │   ├── Assign [=]
+            │   │   │   ├── Var [a]
+            │   │   │   ╰── Binary [-]
+            │   │   │       ├── Var [a]
+            │   │   │       ╰── Constant [1]
+            │   │   ╰── If
+            │   │       ├── Binary [<=]
+            │   │       │   ├── Var [a]
+            │   │       │   ╰── Constant [0]
+            │   │       ╰── Break
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [a]
+                    │   ╰── Constant [0]
+                    ╰── Binary [==]
+                        ├── Var [b]
+                        ╰── Unary [-]
+                            ╰── Constant [11]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_break_immediate() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            while ((a = 1))
+                break;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ├── While
+            │   ├── Assign [=]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [1]
+            │   ╰── Break
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_continue() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            int counter;
+            for (int i = 0; i <= 10; i = i + 1) {
+                counter = i;
+                if (i % 2 == 0)
+                    continue;
+                sum = sum + 1;
+            }
+            return sum == 5 && counter == 10;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [sum]
+            │   ╰── Constant [0]
+            ├── Declaration [counter]
+            ├── For
+            │   ├── Declaration [i]
+            │   │   ╰── Constant [0]
+            │   ├── Binary [<=]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [10]
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [1]
+            │   ├── Block
+            │   │   ├── Assign [=]
+            │   │   │   ├── Var [counter]
+            │   │   │   ╰── Var [i]
+            │   │   ├── If
+            │   │   │   ├── Binary [==]
+            │   │   │   │   ├── Binary [%]
+            │   │   │   │   │   ├── Var [i]
+            │   │   │   │   │   ╰── Constant [2]
+            │   │   │   │   ╰── Constant [0]
+            │   │   │   ╰── Continue
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [sum]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [sum]
+            │   │           ╰── Constant [1]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [sum]
+                    │   ╰── Constant [5]
+                    ╰── Binary [==]
+                        ├── Var [counter]
+                        ╰── Constant [10]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_continue_empty_post() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            for (int i = 0; i < 10;) {
+                i = i + 1;
+                if (i % 2)
+                    continue;
+                sum = sum + i;
+            }
+            return sum;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [sum]
+            │   ╰── Constant [0]
+            ├── For
+            │   ├── Declaration [i]
+            │   │   ╰── Constant [0]
+            │   ├── Binary [<]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [10]
+            ├── ├── Empty
+            │   ├── Block
+            │   │   ├── Assign [=]
+            │   │   │   ├── Var [i]
+            │   │   │   ╰── Binary [+]
+            │   │   │       ├── Var [i]
+            │   │   │       ╰── Constant [1]
+            │   │   ├── If
+            │   │   │   ├── Binary [%]
+            │   │   │   │   ├── Var [i]
+            │   │   │   │   ╰── Constant [2]
+            │   │   │   ╰── Continue
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [sum]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [sum]
+            │   │           ╰── Var [i]
+            ╰── Return
+                ╰── Var [sum]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_do_while() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            do {
+                a = a * 2;
+            } while(a < 11);
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── DoWhile
+            │   ├── Block
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [a]
+            │   │       ╰── Binary [*]
+            │   │           ├── Var [a]
+            │   │           ╰── Constant [2]
+            │   ╰── Binary [<]
+            │       ├── Var [a]
+            │       ╰── Constant [11]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_do_while_break_immediate() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            do
+                break;
+            while ((a = 1));
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ├── DoWhile
+            │   ├── Break
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Constant [1]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_empty_expression() {
+    let src = r#"
+        int main(void) {
+            return 0;;;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Return
+            │   ╰── Constant [0]
+            ├── Empty
+            ╰── Empty
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_empty_loop_body() {
+    let src = r#"
+        int main(void) {
+            int i = 2147483642;
+            do ; while ((i = i - 5) >= 256);
+            return i;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [i]
+            │   ╰── Constant [2147483642]
+            ├── DoWhile
+            │   ├── Empty
+            │   ╰── Binary [>=]
+            │       ├── Assign [=]
+            │       │   ├── Var [i]
+            │       │   ╰── Binary [-]
+            │       │       ├── Var [i]
+            │       │       ╰── Constant [5]
+            │       ╰── Constant [256]
+            ╰── Return
+                ╰── Var [i]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression() {
+    let src = r#"
+        int main(void) {
+            int i = 100;
+            int sum = 0;
+            do sum += 2;
+            while (i -= 1);
+            return (i == 0 && sum == 200);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [i]
+            │   ╰── Constant [100]
+            ├── Declaration [sum]
+            │   ╰── Constant [0]
+            ├── DoWhile
+            │   ├── Assign [+=]
+            │   │   ├── Var [sum]
+            │   │   ╰── Constant [2]
+            │   ╰── Assign [-=]
+            │       ├── Var [i]
+            │       ╰── Constant [1]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [i]
+                    │   ╰── Constant [0]
+                    ╰── Binary [==]
+                        ├── Var [sum]
+                        ╰── Constant [200]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
+    let src = r#"
+        int main(void) {
+            int i = 1;
+            for (i *= -1; i >= -100; i -=3)
+                ;
+            return (i == -103);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [i]
+            │   ╰── Constant [1]
+            ├── For
+            │   ├── Assign [*=]
+            │   │   ├── Var [i]
+            │   │   ╰── Unary [-]
+            │   │       ╰── Constant [1]
+            │   ├── Binary [>=]
+            │   │   ├── Var [i]
+            │   │   ╰── Unary [-]
+            │   │       ╰── Constant [100]
+            │   ├── Assign [-=]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [3]
+            │   ├── Empty
+            ╰── Return
+                ╰── Binary [==]
+                    ├── Var [i]
+                    ╰── Unary [-]
+                        ╰── Constant [103]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_goto_bypass_condition() {
+    let src = r#"
+        int main(void) {
+            int i = 1;
+            do {
+            while_start:
+                i = i + 1;
+                if (i < 10)
+                    goto while_start;
+            } while (0);
+            return i;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [i]
+            │   ╰── Constant [1]
+            ├── DoWhile
+            │   ├── Block
+            │   │   ├── Label [while_start]
+            │   │   │   ╰── Assign [=]
+            │   │   │       ├── Var [i]
+            │   │   │       ╰── Binary [+]
+            │   │   │           ├── Var [i]
+            │   │   │           ╰── Constant [1]
+            │   │   ╰── If
+            │   │       ├── Binary [<]
+            │   │       │   ├── Var [i]
+            │   │       │   ╰── Constant [10]
+            │   │       ╰── Goto [while_start]
+            │   ╰── Constant [0]
+            ╰── Return
+                ╰── Var [i]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_goto_bypass_init_exp() {
+    let src = r#"
+        int main(void) {
+            int i = 0;
+            goto target;
+            for (i = 5; i < 10; i = i + 1)
+            target:
+                if (i == 0)
+                    return 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [i]
+            │   ╰── Constant [0]
+            ├── Goto [target]
+            ├── For
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [5]
+            │   ├── Binary [<]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [10]
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [1]
+            │   ├── Label [target]
+            │   │   ╰── If
+            │   │       ├── Binary [==]
+            │   │       │   ├── Var [i]
+            │   │       │   ╰── Constant [0]
+            │   │       ╰── Return
+            │   │           ╰── Constant [1]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_goto_bypass_post_exp() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            for (int i = 0;; i = 0) {
+            lbl:
+                sum = sum + 1;
+                i = i + 1;
+                if (i > 10)
+                    break;
+                goto lbl;
+            }
+            return sum;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [sum]
+            │   ╰── Constant [0]
+            ├── For
+            │   ├── Declaration [i]
+            │   │   ╰── Constant [0]
+            ├── ├── Empty
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [0]
+            │   ├── Block
+            │   │   ├── Label [lbl]
+            │   │   │   ╰── Assign [=]
+            │   │   │       ├── Var [sum]
+            │   │   │       ╰── Binary [+]
+            │   │   │           ├── Var [sum]
+            │   │   │           ╰── Constant [1]
+            │   │   ├── Assign [=]
+            │   │   │   ├── Var [i]
+            │   │   │   ╰── Binary [+]
+            │   │   │       ├── Var [i]
+            │   │   │       ╰── Constant [1]
+            │   │   ├── If
+            │   │   │   ├── Binary [>]
+            │   │   │   │   ├── Var [i]
+            │   │   │   │   ╰── Constant [10]
+            │   │   │   ╰── Break
+            │   │   ╰── Goto [lbl]
+            ╰── Return
+                ╰── Var [sum]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_label_loop_body() {
+    let src = r#"
+        
+        int main(void) {
+            int result = 0;
+            goto label;
+            while (0)
+            label: { result = 1; }
+            return result;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [result]
+            │   ╰── Constant [0]
+            ├── Goto [label]
+            ├── While
+            │   ├── Constant [0]
+            │   ╰── Label [label]
+            │       ╰── Block
+            │           ╰── Assign [=]
+            │               ├── Var [result]
+            │               ╰── Constant [1]
+            ╰── Return
+                ╰── Var [result]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            goto do_label;
+            return 0;
+        do_label:
+            do {
+                sum = 1;
+                goto while_label;
+            } while (1);
+        while_label:
+            while (1) {
+                sum = sum + 1;
+                goto break_label;
+                return 0;
+            break_label:
+                break;
+            };
+            goto for_label;
+            return 0;
+        for_label:
+            for (int i = 0; i < 10; i = i + 1) {
+                sum = sum + 1;
+                goto continue_label;
+                return 0;
+            continue_label:
+                continue;
+                return 0;
+            }
+            return sum;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [sum]
+            │   ╰── Constant [0]
+            ├── Goto [do_label]
+            ├── Return
+            │   ╰── Constant [0]
+            ├── Label [do_label]
+            │   ╰── DoWhile
+            │       ├── Block
+            │       │   ├── Assign [=]
+            │       │   │   ├── Var [sum]
+            │       │   │   ╰── Constant [1]
+            │       │   ╰── Goto [while_label]
+            │       ╰── Constant [1]
+            ├── Label [while_label]
+            │   ╰── While
+            │       ├── Constant [1]
+            │       ╰── Block
+            │           ├── Assign [=]
+            │           │   ├── Var [sum]
+            │           │   ╰── Binary [+]
+            │           │       ├── Var [sum]
+            │           │       ╰── Constant [1]
+            │           ├── Goto [break_label]
+            │           ├── Return
+            │           │   ╰── Constant [0]
+            │           ╰── Label [break_label]
+            │               ╰── Break
+            ├── Empty
+            ├── Goto [for_label]
+            ├── Return
+            │   ╰── Constant [0]
+            ├── Label [for_label]
+            │   ╰── For
+            │       ├── Declaration [i]
+            │       │   ╰── Constant [0]
+            │       ├── Binary [<]
+            │       │   ├── Var [i]
+            │       │   ╰── Constant [10]
+            │       ├── Assign [=]
+            │       │   ├── Var [i]
+            │       │   ╰── Binary [+]
+            │       │       ├── Var [i]
+            │       │       ╰── Constant [1]
+            │       ├── Block
+            │       │   ├── Assign [=]
+            │       │   │   ├── Var [sum]
+            │       │   │   ╰── Binary [+]
+            │       │   │       ├── Var [sum]
+            │       │   │       ╰── Constant [1]
+            │       │   ├── Goto [continue_label]
+            │       │   ├── Return
+            │       │   │   ╰── Constant [0]
+            │       │   ├── Label [continue_label]
+            │       │   │   ╰── Continue
+            │       │   ╰── Return
+            │       │       ╰── Constant [0]
+            ╰── Return
+                ╰── Var [sum]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
+    let src = r#"
+        int main(void) {
+            int i = 100;
+            int count = 0;
+            while (i--) count++;
+            if (count != 100)
+                return 0;
+            i = 100;
+            count = 0;
+            while (--i) count++;
+            if (count != 99)
+                return 0;
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [i]
+            │   ╰── Constant [100]
+            ├── Declaration [count]
+            │   ╰── Constant [0]
+            ├── While
+            │   ├── Postfix [--]
+            │   │   ╰── Var [i]
+            │   ╰── Postfix [++]
+            │       ╰── Var [count]
+            ├── If
+            │   ├── Binary [!=]
+            │   │   ├── Var [count]
+            │   │   ╰── Constant [100]
+            │   ╰── Return
+            │       ╰── Constant [0]
+            ├── Assign [=]
+            │   ├── Var [i]
+            │   ╰── Constant [100]
+            ├── Assign [=]
+            │   ├── Var [count]
+            │   ╰── Constant [0]
+            ├── While
+            │   ├── Unary [--]
+            │   │   ╰── Var [i]
+            │   ╰── Postfix [++]
+            │       ╰── Var [count]
+            ├── If
+            │   ├── Binary [!=]
+            │   │   ├── Var [count]
+            │   │   ╰── Constant [99]
+            │   ╰── Return
+            │       ╰── Constant [0]
+            ╰── Return
+                ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_post_exp_incr() {
+    let src = r#"
+        int main(void) {
+            int product = 1;
+            for (int i = 0; i < 10; i++) {
+                product = product + 2;
+            }
+            return product;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [product]
+            │   ╰── Constant [1]
+            ├── For
+            │   ├── Declaration [i]
+            │   │   ╰── Constant [0]
+            │   ├── Binary [<]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [10]
+            │   ├── Postfix [++]
+            │   │   ╰── Var [i]
+            │   ├── Block
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [product]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [product]
+            │   │           ╰── Constant [2]
+            ╰── Return
+                ╰── Var [product]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for() {
+    let src = r#"
+        int main(void) {
+            int a = 12345;
+            int i;
+            for (i = 5; i >= 0; i = i - 1)
+                a = a / 3;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [12345]
+            ├── Declaration [i]
+            ├── For
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [5]
+            │   ├── Binary [>=]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [0]
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Binary [-]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [1]
+            │   ├── Assign [=]
+            │   │   ├── Var [a]
+            │   │   ╰── Binary [/]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [3]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for_absent_condition() {
+    let src = r#"
+        int main(void) {
+            for (int i = 400; ; i = i - 100)
+                if (i == 100)
+                    return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── For
+                ├── Declaration [i]
+                │   ╰── Constant [400]
+            ╰── ├── Empty
+                ├── Assign [=]
+                │   ├── Var [i]
+                │   ╰── Binary [-]
+                │       ├── Var [i]
+                │       ╰── Constant [100]
+                ├── If
+                │   ├── Binary [==]
+                │   │   ├── Var [i]
+                │   │   ╰── Constant [100]
+                │   ╰── Return
+                │       ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for_absent_post() {
+    let src = r#"
+        int main(void) {
+            int a = -2147483647;
+            for (; a % 5 != 0;) {
+                a = a + 1;
+            }
+            return a % 5 || a > 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Unary [-]
+            │       ╰── Constant [2147483647]
+            ├── For
+            ├── ├── Empty
+            │   ├── Binary [!=]
+            │   │   ├── Binary [%]
+            │   │   │   ├── Var [a]
+            │   │   │   ╰── Constant [5]
+            │   │   ╰── Constant [0]
+            ├── ├── Empty
+            │   ├── Block
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [a]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [a]
+            │   │           ╰── Constant [1]
+            ╰── Return
+                ╰── Binary [||]
+                    ├── Binary [%]
+                    │   ├── Var [a]
+                    │   ╰── Constant [5]
+                    ╰── Binary [>]
+                        ├── Var [a]
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for_decl() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            for (int i = -100; i <= 0; i = i + 1)
+                a = a + 1;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── For
+            │   ├── Declaration [i]
+            │   │   ╰── Unary [-]
+            │   │       ╰── Constant [100]
+            │   ├── Binary [<=]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [0]
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [1]
+            │   ├── Assign [=]
+            │   │   ├── Var [a]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [1]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for_nested_shadow() {
+    let src = r#"
+        int main(void) {
+            int i = 0;
+            int j = 0;
+            int k = 1;
+            for (int i = 100; i > 0; i = i - 1) {
+                int i = 1;
+                int j = i + k;
+                k = j;
+            }
+            return k == 101 && i == 0 && j == 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [i]
+            │   ╰── Constant [0]
+            ├── Declaration [j]
+            │   ╰── Constant [0]
+            ├── Declaration [k]
+            │   ╰── Constant [1]
+            ├── For
+            │   ├── Declaration [i]
+            │   │   ╰── Constant [100]
+            │   ├── Binary [>]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [0]
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Binary [-]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [1]
+            │   ├── Block
+            │   │   ├── Declaration [i]
+            │   │   │   ╰── Constant [1]
+            │   │   ├── Declaration [j]
+            │   │   │   ╰── Binary [+]
+            │   │   │       ├── Var [i]
+            │   │   │       ╰── Var [k]
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [k]
+            │   │       ╰── Var [j]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Binary [==]
+                    │   │   ├── Var [k]
+                    │   │   ╰── Constant [101]
+                    │   ╰── Binary [==]
+                    │       ├── Var [i]
+                    │       ╰── Constant [0]
+                    ╰── Binary [==]
+                        ├── Var [j]
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for_shadow() {
+    let src = r#"
+        int main(void) {
+            int shadow = 1;
+            int acc = 0;
+            for (int shadow = 0; shadow < 10; shadow = shadow + 1) {
+                acc = acc + shadow;
+            }
+            return acc == 45 && shadow == 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [shadow]
+            │   ╰── Constant [1]
+            ├── Declaration [acc]
+            │   ╰── Constant [0]
+            ├── For
+            │   ├── Declaration [shadow]
+            │   │   ╰── Constant [0]
+            │   ├── Binary [<]
+            │   │   ├── Var [shadow]
+            │   │   ╰── Constant [10]
+            │   ├── Assign [=]
+            │   │   ├── Var [shadow]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [shadow]
+            │   │       ╰── Constant [1]
+            │   ├── Block
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [acc]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [acc]
+            │   │           ╰── Var [shadow]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [acc]
+                    │   ╰── Constant [45]
+                    ╰── Binary [==]
+                        ├── Var [shadow]
+                        ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_multi_break() {
+    let src = r#"
+        int main(void) {
+            int i = 0;
+            while (1) {
+                i = i + 1;
+                if (i > 10)
+                    break;
+            }
+            int j = 10;
+            while (1) {
+                j = j - 1;
+                if (j < 0)
+                    break;
+            }
+            int result = j == -1 && i == 11;
+            return result;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [i]
+            │   ╰── Constant [0]
+            ├── While
+            │   ├── Constant [1]
+            │   ╰── Block
+            │       ├── Assign [=]
+            │       │   ├── Var [i]
+            │       │   ╰── Binary [+]
+            │       │       ├── Var [i]
+            │       │       ╰── Constant [1]
+            │       ╰── If
+            │           ├── Binary [>]
+            │           │   ├── Var [i]
+            │           │   ╰── Constant [10]
+            │           ╰── Break
+            ├── Declaration [j]
+            │   ╰── Constant [10]
+            ├── While
+            │   ├── Constant [1]
+            │   ╰── Block
+            │       ├── Assign [=]
+            │       │   ├── Var [j]
+            │       │   ╰── Binary [-]
+            │       │       ├── Var [j]
+            │       │       ╰── Constant [1]
+            │       ╰── If
+            │           ├── Binary [<]
+            │           │   ├── Var [j]
+            │           │   ╰── Constant [0]
+            │           ╰── Break
+            ├── Declaration [result]
+            │   ╰── Binary [&&]
+            │       ├── Binary [==]
+            │       │   ├── Var [j]
+            │       │   ╰── Unary [-]
+            │       │       ╰── Constant [1]
+            │       ╰── Binary [==]
+            │           ├── Var [i]
+            │           ╰── Constant [11]
+            ╰── Return
+                ╰── Var [result]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_multi_continue_same_loop() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            int y = 0;
+            int z = 0;
+            do {
+                z = z + 1;
+                if (x <= 0)
+                    continue;
+                x = x - 1;
+                if (y >= 10)
+                    continue;
+                y = y + 1;
+            } while (z != 50);
+            return z == 50 && x == 0 && y == 10;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [10]
+            ├── Declaration [y]
+            │   ╰── Constant [0]
+            ├── Declaration [z]
+            │   ╰── Constant [0]
+            ├── DoWhile
+            │   ├── Block
+            │   │   ├── Assign [=]
+            │   │   │   ├── Var [z]
+            │   │   │   ╰── Binary [+]
+            │   │   │       ├── Var [z]
+            │   │   │       ╰── Constant [1]
+            │   │   ├── If
+            │   │   │   ├── Binary [<=]
+            │   │   │   │   ├── Var [x]
+            │   │   │   │   ╰── Constant [0]
+            │   │   │   ╰── Continue
+            │   │   ├── Assign [=]
+            │   │   │   ├── Var [x]
+            │   │   │   ╰── Binary [-]
+            │   │   │       ├── Var [x]
+            │   │   │       ╰── Constant [1]
+            │   │   ├── If
+            │   │   │   ├── Binary [>=]
+            │   │   │   │   ├── Var [y]
+            │   │   │   │   ╰── Constant [10]
+            │   │   │   ╰── Continue
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [y]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [y]
+            │   │           ╰── Constant [1]
+            │   ╰── Binary [!=]
+            │       ├── Var [z]
+            │       ╰── Constant [50]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Binary [==]
+                    │   │   ├── Var [z]
+                    │   │   ╰── Constant [50]
+                    │   ╰── Binary [==]
+                    │       ├── Var [x]
+                    │       ╰── Constant [0]
+                    ╰── Binary [==]
+                        ├── Var [y]
+                        ╰── Constant [10]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_nested_break() {
+    let src = r#"
+        int main(void) {
+            int ans = 0;
+            for (int i = 0; i < 10; i = i + 1)
+                for (int j = 0; j < 10; j = j + 1)
+                    if ((i / 2)*2 == i)
+                        break;
+                    else
+                        ans = ans + i;
+            return ans;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [ans]
+            │   ╰── Constant [0]
+            ├── For
+            │   ├── Declaration [i]
+            │   │   ╰── Constant [0]
+            │   ├── Binary [<]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [10]
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [1]
+            │   ├── For
+            │   │   ├── Declaration [j]
+            │   │   │   ╰── Constant [0]
+            │   │   ├── Binary [<]
+            │   │   │   ├── Var [j]
+            │   │   │   ╰── Constant [10]
+            │   │   ├── Assign [=]
+            │   │   │   ├── Var [j]
+            │   │   │   ╰── Binary [+]
+            │   │   │       ├── Var [j]
+            │   │   │       ╰── Constant [1]
+            │   │   ├── If
+            │   │   │   ├── Binary [==]
+            │   │   │   │   ├── Binary [*]
+            │   │   │   │   │   ├── Binary [/]
+            │   │   │   │   │   │   ├── Var [i]
+            │   │   │   │   │   │   ╰── Constant [2]
+            │   │   │   │   │   ╰── Constant [2]
+            │   │   │   │   ╰── Var [i]
+            │   │   │   ├── Break
+            │   │   │   ╰── Assign [=]
+            │   │   │       ├── Var [ans]
+            │   │   │       ╰── Binary [+]
+            │   │   │           ├── Var [ans]
+            │   │   │           ╰── Var [i]
+            ╰── Return
+                ╰── Var [ans]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_nested_continue() {
+    let src = r#"
+        int main(void) {
+            int x = 5;
+            int acc = 0;
+            while (x >= 0) {
+                int i = x;
+                while (i <= 10) {
+                    i = i + 1;
+                    if (i % 2)
+                        continue;
+                    acc = acc + 1;
+                }
+                x = x - 1;
+            }
+            return acc;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [5]
+            ├── Declaration [acc]
+            │   ╰── Constant [0]
+            ├── While
+            │   ├── Binary [>=]
+            │   │   ├── Var [x]
+            │   │   ╰── Constant [0]
+            │   ╰── Block
+            │       ├── Declaration [i]
+            │       │   ╰── Var [x]
+            │       ├── While
+            │       │   ├── Binary [<=]
+            │       │   │   ├── Var [i]
+            │       │   │   ╰── Constant [10]
+            │       │   ╰── Block
+            │       │       ├── Assign [=]
+            │       │       │   ├── Var [i]
+            │       │       │   ╰── Binary [+]
+            │       │       │       ├── Var [i]
+            │       │       │       ╰── Constant [1]
+            │       │       ├── If
+            │       │       │   ├── Binary [%]
+            │       │       │   │   ├── Var [i]
+            │       │       │   │   ╰── Constant [2]
+            │       │       │   ╰── Continue
+            │       │       ╰── Assign [=]
+            │       │           ├── Var [acc]
+            │       │           ╰── Binary [+]
+            │       │               ├── Var [acc]
+            │       │               ╰── Constant [1]
+            │       ╰── Assign [=]
+            │           ├── Var [x]
+            │           ╰── Binary [-]
+            │               ├── Var [x]
+            │               ╰── Constant [1]
+            ╰── Return
+                ╰── Var [acc]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_nested_loop() {
+    let src = r#"
+        int main(void) {
+            int acc = 0;
+            int x = 100;
+            while (x) {
+                int y = 10;
+                x = x - y;
+                while (y) {
+                    acc = acc + 1;
+                    y = y - 1;
+                }
+            }
+            return acc == 100 && x == 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [acc]
+            │   ╰── Constant [0]
+            ├── Declaration [x]
+            │   ╰── Constant [100]
+            ├── While
+            │   ├── Var [x]
+            │   ╰── Block
+            │       ├── Declaration [y]
+            │       │   ╰── Constant [10]
+            │       ├── Assign [=]
+            │       │   ├── Var [x]
+            │       │   ╰── Binary [-]
+            │       │       ├── Var [x]
+            │       │       ╰── Var [y]
+            │       ╰── While
+            │           ├── Var [y]
+            │           ╰── Block
+            │               ├── Assign [=]
+            │               │   ├── Var [acc]
+            │               │   ╰── Binary [+]
+            │               │       ├── Var [acc]
+            │               │       ╰── Constant [1]
+            │               ╰── Assign [=]
+            │                   ├── Var [y]
+            │                   ╰── Binary [-]
+            │                       ├── Var [y]
+            │                       ╰── Constant [1]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [acc]
+                    │   ╰── Constant [100]
+                    ╰── Binary [==]
+                        ├── Var [x]
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_null_for_header() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            for (; ; ) {
+                a = a + 1;
+                if (a > 3)
+                    break;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── For
+            ├── ├── Empty
+            ├── ├── Empty
+            ├── ├── Empty
+            │   ├── Block
+            │   │   ├── Assign [=]
+            │   │   │   ├── Var [a]
+            │   │   │   ╰── Binary [+]
+            │   │   │       ├── Var [a]
+            │   │   │       ╰── Constant [1]
+            │   │   ╰── If
+            │   │       ├── Binary [>]
+            │   │       │   ├── Var [a]
+            │   │       │   ╰── Constant [3]
+            │   │       ╰── Break
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_while() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            while (a < 5)
+                a = a + 2;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── While
+            │   ├── Binary [<]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [5]
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Binary [+]
+            │           ├── Var [a]
+            │           ╰── Constant [2]
+            ╰── Return
+                ╰── Var [a]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }

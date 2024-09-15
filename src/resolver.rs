@@ -92,6 +92,7 @@ impl Resolver {
                 Ok(())
             }
             Statement::Compound(block) => self.resolve_block(block),
+            _ => todo!(),
         }
     }
 

@@ -171,6 +171,8 @@ impl TackyGenerator {
             ast::Statement::Compound(block) => self.emit_block(block),
 
             ast::Statement::Null => {}
+
+            _ => todo!(),
         }
     }
 

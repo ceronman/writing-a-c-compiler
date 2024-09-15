@@ -1,4 +1,5 @@
 use crate::ast;
+use crate::ast::ForInit;
 use crate::tacky;
 use anyhow::Result;
 use std::io::Write;
@@ -195,13 +196,33 @@ fn print_block_item(
         }
     }
     match item {
-        ast::BlockItem::Stmt(s) => print_statement(file, s, pipe, level, pipes)?,
-        ast::BlockItem::Decl(d) => {
-            writeln!(file, "{indent}{pipe} Declaration [{}]", d.name.symbol)?;
-            if let Some(init) = &d.init {
-                print_expression(file, init, "╰──", level + 1, pipes)?;
-            }
+        ast::BlockItem::Stmt(s) => print_statement(file, s, pipe, level, pipes),
+        ast::BlockItem::Decl(d) => print_declaration(file, d, pipe, level, pipes),
+    }
+}
+
+fn print_declaration(
+    file: &mut impl Write,
+    declaration: &ast::Declaration,
+    pipe: &str,
+    level: usize,
+    pipes: &[usize],
+) -> Result<()> {
+    let mut indent = String::new();
+    for l in 0..level {
+        if pipes.contains(&l) {
+            indent.push_str("│   ");
+        } else {
+            indent.push_str("    ");
         }
+    }
+    writeln!(
+        file,
+        "{indent}{pipe} Declaration [{}]",
+        declaration.name.symbol
+    )?;
+    if let Some(init) = &declaration.init {
+        print_expression(file, init, "╰──", level + 1, pipes)?;
     }
     Ok(())
 }
@@ -251,7 +272,6 @@ fn print_statement(
             } else {
                 print_statement(file, then_stmt, "╰──", level + 1, pipes)?;
             }
-            writeln!(file, "{indent}{pipe} If")?;
         }
         ast::Statement::Expression(expr) => {
             print_expression(file, expr, pipe, level, pipes)?;
@@ -279,7 +299,87 @@ fn print_statement(
                 };
             }
         }
-        ast::Statement::Null => {}
+        ast::Statement::While { cond, body, .. } => {
+            writeln!(file, "{indent}{pipe} While")?;
+            print_expression(
+                file,
+                cond,
+                "├──",
+                level + 1,
+                &[pipes, &[level + 1]].concat(),
+            )?;
+            print_statement(file, body, "╰──", level + 1, pipes)?;
+        }
+        ast::Statement::DoWhile { cond, body, .. } => {
+            writeln!(file, "{indent}{pipe} DoWhile")?;
+            print_statement(
+                file,
+                body,
+                "├──",
+                level + 1,
+                &[pipes, &[level + 1]].concat(),
+            )?;
+            print_expression(file, cond, "╰──", level + 1, pipes)?;
+        }
+        // TODO: Add proper names for branches.
+        ast::Statement::For {
+            init,
+            cond,
+            post,
+            body,
+            ..
+        } => {
+            writeln!(file, "{indent}{pipe} For")?;
+            match init {
+                ForInit::Decl(d) => {
+                    print_declaration(file, d, "├──", level + 1, &[pipes, &[level + 1]].concat())?;
+                }
+                ForInit::Expr(e) => {
+                    print_expression(file, e, "├──", level + 1, &[pipes, &[level + 1]].concat())?;
+                }
+                ForInit::None => {
+                    writeln!(file, "{indent}{pipe} ├── Empty")?;
+                }
+            }
+            if let Some(cond) = cond {
+                print_expression(
+                    file,
+                    cond,
+                    "├──",
+                    level + 1,
+                    &[pipes, &[level + 1]].concat(),
+                )?;
+            } else {
+                writeln!(file, "{indent}{pipe} ├── Empty")?;
+            }
+            if let Some(post) = post {
+                print_expression(
+                    file,
+                    post,
+                    "├──",
+                    level + 1,
+                    &[pipes, &[level + 1]].concat(),
+                )?;
+            } else {
+                writeln!(file, "{indent}{pipe} ├── Empty")?;
+            }
+            print_statement(
+                file,
+                body,
+                "├──",
+                level + 1,
+                &[pipes, &[level + 1]].concat(),
+            )?;
+        }
+        ast::Statement::Break(..) => {
+            writeln!(file, "{indent}{pipe} Break")?;
+        }
+        ast::Statement::Continue(..) => {
+            writeln!(file, "{indent}{pipe} Continue")?;
+        }
+        ast::Statement::Null => {
+            writeln!(file, "{indent}{pipe} Empty")?;
+        }
     }
     Ok(())
 }

@@ -47,7 +47,33 @@ pub enum Statement {
     },
     Goto(Node<Identifier>),
     Compound(Node<Block>),
+    While {
+        cond: Node<Expression>,
+        body: Node<Statement>,
+        label: Symbol,
+    },
+    DoWhile {
+        cond: Node<Expression>,
+        body: Node<Statement>,
+        label: Symbol,
+    },
+    For {
+        init: ForInit,
+        cond: Option<Node<Expression>>,
+        post: Option<Node<Expression>>,
+        body: Node<Statement>,
+        label: Symbol,
+    },
+    Break(Symbol),
+    Continue(Symbol),
     Null,
+}
+
+#[derive(Debug)]
+pub enum ForInit {
+    None,
+    Decl(Node<Declaration>),
+    Expr(Node<Expression>),
 }
 
 #[derive(Debug)]
