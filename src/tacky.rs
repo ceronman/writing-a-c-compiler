@@ -2,6 +2,7 @@
 mod test;
 
 use crate::ast;
+use crate::ast::ForInit;
 use crate::symbol::Symbol;
 
 #[derive(Debug)]
@@ -101,16 +102,18 @@ impl TackyGenerator {
         for block_item in &block.items {
             match block_item {
                 ast::BlockItem::Stmt(stmt) => self.emit_statement(stmt),
-                ast::BlockItem::Decl(decl) => {
-                    if let Some(init) = &decl.init {
-                        let result = self.emit_expr(init);
-                        self.instructions.push(Instruction::Copy {
-                            src: result,
-                            dst: Val::Var(decl.name.symbol.clone()),
-                        });
-                    }
-                }
+                ast::BlockItem::Decl(decl) => self.emit_declaration(decl),
             }
+        }
+    }
+
+    fn emit_declaration(&mut self, decl: &ast::Declaration) {
+        if let Some(init) = &decl.init {
+            let result = self.emit_expr(init);
+            self.instructions.push(Instruction::Copy {
+                src: result,
+                dst: Val::Var(decl.name.symbol.clone()),
+            });
         }
     }
 
@@ -172,7 +175,83 @@ impl TackyGenerator {
 
             ast::Statement::Null => {}
 
-            _ => todo!(),
+            ast::Statement::DoWhile { cond, body, label } => {
+                let start_label = format!("start_{label}");
+                self.instructions
+                    .push(Instruction::Label(start_label.clone()));
+                self.emit_statement(body);
+                self.instructions
+                    .push(Instruction::Label(format!("continue_{label}")));
+                let cond = self.emit_expr(cond);
+                self.instructions.push(Instruction::JumpIfNotZero {
+                    cond,
+                    target: start_label,
+                });
+                self.instructions
+                    .push(Instruction::Label(format!("break_{label}")));
+            }
+            ast::Statement::While { cond, body, label } => {
+                let continue_label = format!("continue_{label}");
+                let break_label = format!("break_{label}");
+                self.instructions
+                    .push(Instruction::Label(continue_label.clone()));
+                let cond = self.emit_expr(cond);
+                self.instructions.push(Instruction::JumpIfZero {
+                    cond,
+                    target: break_label.clone(),
+                });
+                self.emit_statement(body);
+                self.instructions.push(Instruction::Jump {
+                    target: continue_label,
+                });
+                self.instructions.push(Instruction::Label(break_label));
+            }
+            ast::Statement::For {
+                init,
+                cond,
+                post,
+                body,
+                label,
+            } => {
+                match init {
+                    ForInit::Decl(decl) => self.emit_declaration(decl),
+                    ForInit::Expr(expr) => {
+                        self.emit_expr(expr);
+                    }
+                    ForInit::None => {}
+                }
+                let start_label = format!("start_{label}");
+                self.instructions
+                    .push(Instruction::Label(start_label.clone()));
+                let cond = if let Some(cond) = cond {
+                    self.emit_expr(cond)
+                } else {
+                    Val::Constant(1)
+                };
+                let break_label = format!("break_{label}");
+                self.instructions.push(Instruction::JumpIfZero {
+                    cond,
+                    target: break_label.clone(),
+                });
+                self.emit_statement(body);
+                self.instructions
+                    .push(Instruction::Label(format!("continue_{label}")));
+                if let Some(post) = post {
+                    self.emit_expr(post);
+                }
+                self.instructions.push(Instruction::Jump {
+                    target: start_label,
+                });
+                self.instructions.push(Instruction::Label(break_label));
+            }
+            ast::Statement::Break(label) => {
+                let target = format!("break_{label}");
+                self.instructions.push(Instruction::Jump { target });
+            }
+            ast::Statement::Continue(label) => {
+                let target = format!("continue_{label}");
+                self.instructions.push(Instruction::Jump { target });
+            }
         }
     }
 
@@ -395,7 +474,7 @@ impl TackyGenerator {
     }
 
     fn make_label(&mut self, prefix: &str) -> Symbol {
-        let result = format!("{prefix}__{i}", i = self.label_counter);
+        let result = format!("{prefix}_{i}", i = self.label_counter);
         self.label_counter += 1;
         result
     }

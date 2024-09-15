@@ -9,8 +9,8 @@ fn test_chapter_1_valid_multi_digit() {
     "#;
     let expected = r#"
         function main { 
-          return 100
-          return 0
+            return 100
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -32,8 +32,8 @@ fn test_chapter_1_valid_newlines() {
     "#;
     let expected = r#"
         function main { 
-          return 0
-          return 0
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -46,8 +46,8 @@ fn test_chapter_1_valid_no_newlines() {
     "#;
     let expected = r#"
         function main { 
-          return 0
-          return 0
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -62,8 +62,8 @@ fn test_chapter_1_valid_return_0() {
     "#;
     let expected = r#"
         function main { 
-          return 0
-          return 0
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -78,8 +78,8 @@ fn test_chapter_1_valid_return_2() {
     "#;
     let expected = r#"
         function main { 
-          return 2
-          return 0
+            return 2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -92,8 +92,8 @@ fn test_chapter_1_valid_spaces() {
     "#;
     let expected = r#"
         function main { 
-          return 0
-          return 0
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -106,8 +106,8 @@ fn test_chapter_1_valid_tabs() {
     "#;
     let expected = r#"
         function main { 
-          return 0
-          return 0
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -122,9 +122,9 @@ fn test_chapter_2_valid_bitwise() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = ~ 12
-          return tmp.0
-          return 0
+            tmp.0 = ~ 12
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -139,10 +139,10 @@ fn test_chapter_2_valid_bitwise_int_min() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 2147483647
-          tmp.1 = ~ tmp.0
-          return tmp.1
-          return 0
+            tmp.0 = - 2147483647
+            tmp.1 = ~ tmp.0
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -157,9 +157,9 @@ fn test_chapter_2_valid_bitwise_zero() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = ~ 0
-          return tmp.0
-          return 0
+            tmp.0 = ~ 0
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -174,9 +174,9 @@ fn test_chapter_2_valid_neg() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 5
-          return tmp.0
-          return 0
+            tmp.0 = - 5
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -191,9 +191,9 @@ fn test_chapter_2_valid_neg_zero() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 0
-          return tmp.0
-          return 0
+            tmp.0 = - 0
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -208,9 +208,9 @@ fn test_chapter_2_valid_negate_int_max() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 2147483647
-          return tmp.0
-          return 0
+            tmp.0 = - 2147483647
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -225,10 +225,10 @@ fn test_chapter_2_valid_nested_ops() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 3
-          tmp.1 = ~ tmp.0
-          return tmp.1
-          return 0
+            tmp.0 = - 3
+            tmp.1 = ~ tmp.0
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -243,10 +243,10 @@ fn test_chapter_2_valid_nested_ops_2() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = ~ 0
-          tmp.1 = - tmp.0
-          return tmp.1
-          return 0
+            tmp.0 = ~ 0
+            tmp.1 = - tmp.0
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -261,9 +261,9 @@ fn test_chapter_2_valid_parens() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 2
-          return tmp.0
-          return 0
+            tmp.0 = - 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -278,9 +278,9 @@ fn test_chapter_2_valid_parens_2() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = ~ 2
-          return tmp.0
-          return 0
+            tmp.0 = ~ 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -295,10 +295,10 @@ fn test_chapter_2_valid_parens_3() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 4
-          tmp.1 = - tmp.0
-          return tmp.1
-          return 0
+            tmp.0 = - 4
+            tmp.1 = - tmp.0
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -314,9 +314,9 @@ fn test_chapter_2_valid_redundant_parens() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 10
-          return tmp.0
-          return 0
+            tmp.0 = - 10
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -331,9 +331,9 @@ fn test_chapter_3_valid_add() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 + 2
-          return tmp.0
-          return 0
+            tmp.0 = 1 + 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -348,10 +348,10 @@ fn test_chapter_3_valid_associativity() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 - 2
-          tmp.1 = tmp.0 - 3
-          return tmp.1
-          return 0
+            tmp.0 = 1 - 2
+            tmp.1 = tmp.0 - 3
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -366,10 +366,10 @@ fn test_chapter_3_valid_associativity_2() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 6 / 3
-          tmp.1 = tmp.0 / 2
-          return tmp.1
-          return 0
+            tmp.0 = 6 / 3
+            tmp.1 = tmp.0 / 2
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -384,13 +384,13 @@ fn test_chapter_3_valid_associativity_3() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 3 / 2
-          tmp.1 = tmp.0 * 4
-          tmp.3 = 5 - 4
-          tmp.4 = tmp.3 + 3
-          tmp.2 = tmp.1 + tmp.4
-          return tmp.2
-          return 0
+            tmp.0 = 3 / 2
+            tmp.1 = tmp.0 * 4
+            tmp.3 = 5 - 4
+            tmp.4 = tmp.3 + 3
+            tmp.2 = tmp.1 + tmp.4
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -406,13 +406,13 @@ fn test_chapter_3_valid_associativity_and_precedence() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 5 * 4
-          tmp.1 = tmp.0 / 2
-          tmp.4 = 2 + 1
-          tmp.3 = 3 % tmp.4
-          tmp.2 = tmp.1 - tmp.3
-          return tmp.2
-          return 0
+            tmp.0 = 5 * 4
+            tmp.1 = tmp.0 / 2
+            tmp.4 = 2 + 1
+            tmp.3 = 3 % tmp.4
+            tmp.2 = tmp.1 - tmp.3
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -427,9 +427,9 @@ fn test_chapter_3_valid_div() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 4 / 2
-          return tmp.0
-          return 0
+            tmp.0 = 4 / 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -444,10 +444,10 @@ fn test_chapter_3_valid_div_neg() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 12
-          tmp.1 = tmp.0 / 5
-          return tmp.1
-          return 0
+            tmp.0 = - 12
+            tmp.1 = tmp.0 / 5
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -462,9 +462,9 @@ fn test_chapter_3_valid_extra_credit_bitwise_and() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 3 & 5
-          return tmp.0
-          return 0
+            tmp.0 = 3 & 5
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -479,9 +479,9 @@ fn test_chapter_3_valid_extra_credit_bitwise_or() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 | 2
-          return tmp.0
-          return 0
+            tmp.0 = 1 | 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -496,13 +496,13 @@ fn test_chapter_3_valid_extra_credit_bitwise_precedence() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 80 >> 2
-          tmp.4 = 7 << 1
-          tmp.3 = 5 & tmp.4
-          tmp.2 = 1 ^ tmp.3
-          tmp.1 = tmp.0 | tmp.2
-          return tmp.1
-          return 0
+            tmp.0 = 80 >> 2
+            tmp.4 = 7 << 1
+            tmp.3 = 5 & tmp.4
+            tmp.2 = 1 ^ tmp.3
+            tmp.1 = tmp.0 | tmp.2
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -517,10 +517,10 @@ fn test_chapter_3_valid_extra_credit_bitwise_shift_associativity() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 33 << 4
-          tmp.1 = tmp.0 >> 2
-          return tmp.1
-          return 0
+            tmp.0 = 33 << 4
+            tmp.1 = tmp.0 >> 2
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -535,10 +535,10 @@ fn test_chapter_3_valid_extra_credit_bitwise_shift_associativity_2() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 33 >> 2
-          tmp.1 = tmp.0 << 1
-          return tmp.1
-          return 0
+            tmp.0 = 33 >> 2
+            tmp.1 = tmp.0 << 1
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -553,11 +553,11 @@ fn test_chapter_3_valid_extra_credit_bitwise_shift_precedence() {
     "#;
     let expected = r#"
         function main { 
-          tmp.1 = 4 + 12
-          tmp.0 = 40 << tmp.1
-          tmp.2 = tmp.0 >> 1
-          return tmp.2
-          return 0
+            tmp.1 = 4 + 12
+            tmp.0 = 40 << tmp.1
+            tmp.2 = tmp.0 >> 1
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -572,9 +572,9 @@ fn test_chapter_3_valid_extra_credit_bitwise_shiftl() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 35 << 2
-          return tmp.0
-          return 0
+            tmp.0 = 35 << 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -589,9 +589,9 @@ fn test_chapter_3_valid_extra_credit_bitwise_shiftr() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1000 >> 4
-          return tmp.0
-          return 0
+            tmp.0 = 1000 >> 4
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -606,10 +606,10 @@ fn test_chapter_3_valid_extra_credit_bitwise_shiftr_negative() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 5
-          tmp.1 = tmp.0 >> 30
-          return tmp.1
-          return 0
+            tmp.0 = - 5
+            tmp.1 = tmp.0 >> 30
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -624,13 +624,13 @@ fn test_chapter_3_valid_extra_credit_bitwise_variable_shift_count() {
     "#;
     let expected = r#"
         function main { 
-          tmp.1 = 2 * 2
-          tmp.0 = 4 << tmp.1
-          tmp.4 = 1 + 2
-          tmp.3 = 100 >> tmp.4
-          tmp.2 = tmp.0 + tmp.3
-          return tmp.2
-          return 0
+            tmp.1 = 2 * 2
+            tmp.0 = 4 << tmp.1
+            tmp.4 = 1 + 2
+            tmp.3 = 100 >> tmp.4
+            tmp.2 = tmp.0 + tmp.3
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -645,9 +645,9 @@ fn test_chapter_3_valid_extra_credit_bitwise_xor() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 7 ^ 1
-          return tmp.0
-          return 0
+            tmp.0 = 7 ^ 1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -662,9 +662,9 @@ fn test_chapter_3_valid_mod() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 4 % 2
-          return tmp.0
-          return 0
+            tmp.0 = 4 % 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -679,9 +679,9 @@ fn test_chapter_3_valid_mult() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 2 * 3
-          return tmp.0
-          return 0
+            tmp.0 = 2 * 3
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -696,10 +696,10 @@ fn test_chapter_3_valid_parens() {
     "#;
     let expected = r#"
         function main { 
-          tmp.1 = 3 + 4
-          tmp.0 = 2 * tmp.1
-          return tmp.0
-          return 0
+            tmp.1 = 3 + 4
+            tmp.0 = 2 * tmp.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -714,10 +714,10 @@ fn test_chapter_3_valid_precedence() {
     "#;
     let expected = r#"
         function main { 
-          tmp.1 = 3 * 4
-          tmp.0 = 2 + tmp.1
-          return tmp.0
-          return 0
+            tmp.1 = 3 * 4
+            tmp.0 = 2 + tmp.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -732,9 +732,9 @@ fn test_chapter_3_valid_sub() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 - 2
-          return tmp.0
-          return 0
+            tmp.0 = 1 - 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -749,10 +749,10 @@ fn test_chapter_3_valid_sub_neg() {
     "#;
     let expected = r#"
         function main { 
-          tmp.1 = - 1
-          tmp.0 = 2 - tmp.1
-          return tmp.0
-          return 0
+            tmp.1 = - 1
+            tmp.0 = 2 - tmp.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -767,10 +767,10 @@ fn test_chapter_3_valid_unop_add() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = ~ 2
-          tmp.1 = tmp.0 + 3
-          return tmp.1
-          return 0
+            tmp.0 = ~ 2
+            tmp.1 = tmp.0 + 3
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -785,10 +785,10 @@ fn test_chapter_3_valid_unop_parens() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 + 1
-          tmp.1 = ~ tmp.0
-          return tmp.1
-          return 0
+            tmp.0 = 1 + 1
+            tmp.1 = ~ tmp.0
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -803,31 +803,37 @@ fn test_chapter_4_valid_and_false() {
     "#;
     let expected = r#"
         function main { 
-          jump and_false__0 if !10
-          jump and_false__0 if !0
-          tmp.1 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.1 = 0
-        and_end__1:
-          jump and_false__2 if !0
-          jump and_false__2 if !4
-          tmp.4 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.4 = 0
-        and_end__3:
-          tmp.2 = tmp.1 + tmp.4
-          jump and_false__4 if !0
-          jump and_false__4 if !0
-          tmp.7 = 1
-          jump and_end__5
-        and_false__4:
-          tmp.7 = 0
-        and_end__5:
-          tmp.5 = tmp.2 + tmp.7
-          return tmp.5
-          return 0
+            if !10 jump and_false_0
+            if !0 jump and_false_0
+            tmp.1 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.1 = 0
+        
+          and_end_1:
+            if !0 jump and_false_2
+            if !4 jump and_false_2
+            tmp.4 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.4 = 0
+        
+          and_end_3:
+            tmp.2 = tmp.1 + tmp.4
+            if !0 jump and_false_4
+            if !0 jump and_false_4
+            tmp.7 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.7 = 0
+        
+          and_end_5:
+            tmp.5 = tmp.2 + tmp.7
+            return tmp.5
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -842,16 +848,18 @@ fn test_chapter_4_valid_and_short_circuit() {
     "#;
     let expected = r#"
         function main { 
-          jump and_false__0 if !0
-          tmp.2 = 1 / 0
-          jump and_false__0 if !tmp.2
-          tmp.1 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.1 = 0
-        and_end__1:
-          return tmp.1
-          return 0
+            if !0 jump and_false_0
+            tmp.2 = 1 / 0
+            if !tmp.2 jump and_false_0
+            tmp.1 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.1 = 0
+        
+          and_end_1:
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -866,16 +874,18 @@ fn test_chapter_4_valid_and_true() {
     "#;
     let expected = r#"
         function main { 
-          jump and_false__0 if !1
-          tmp.2 = - 1
-          jump and_false__0 if !tmp.2
-          tmp.1 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.1 = 0
-        and_end__1:
-          return tmp.1
-          return 0
+            if !1 jump and_false_0
+            tmp.2 = - 1
+            if !tmp.2 jump and_false_0
+            tmp.1 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.1 = 0
+        
+          and_end_1:
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -890,11 +900,11 @@ fn test_chapter_4_valid_associativity() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 5 >= 0
-          tmp.1 = tmp.0 > 1
-          tmp.2 = tmp.1 <= 0
-          return tmp.2
-          return 0
+            tmp.0 = 5 >= 0
+            tmp.1 = tmp.0 > 1
+            tmp.2 = tmp.1 <= 0
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -909,13 +919,13 @@ fn test_chapter_4_valid_compare_arithmetic_results() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = ~ 2
-          tmp.2 = - 2
-          tmp.1 = tmp.0 * tmp.2
-          tmp.4 = 1 + 5
-          tmp.3 = tmp.1 == tmp.4
-          return tmp.3
-          return 0
+            tmp.0 = ~ 2
+            tmp.2 = - 2
+            tmp.1 = tmp.0 * tmp.2
+            tmp.4 = 1 + 5
+            tmp.3 = tmp.1 == tmp.4
+            return tmp.3
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -930,9 +940,9 @@ fn test_chapter_4_valid_eq_false() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 == 2
-          return tmp.0
-          return 0
+            tmp.0 = 1 == 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -947,10 +957,10 @@ fn test_chapter_4_valid_eq_precedence() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 3 == 1
-          tmp.1 = tmp.0 != 2
-          return tmp.1
-          return 0
+            tmp.0 = 3 == 1
+            tmp.1 = tmp.0 != 2
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -965,9 +975,9 @@ fn test_chapter_4_valid_eq_true() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 == 1
-          return tmp.0
-          return 0
+            tmp.0 = 1 == 1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -982,10 +992,10 @@ fn test_chapter_4_valid_extra_credit_bitwise_and_precedence() {
     "#;
     let expected = r#"
         function main { 
-          tmp.1 = 7 == 5
-          tmp.0 = 5 & tmp.1
-          return tmp.0
-          return 0
+            tmp.1 = 7 == 5
+            tmp.0 = 5 & tmp.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1000,10 +1010,10 @@ fn test_chapter_4_valid_extra_credit_bitwise_or_precedence() {
     "#;
     let expected = r#"
         function main { 
-          tmp.1 = 7 != 5
-          tmp.0 = 5 | tmp.1
-          return tmp.0
-          return 0
+            tmp.1 = 7 != 5
+            tmp.0 = 5 | tmp.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1018,11 +1028,11 @@ fn test_chapter_4_valid_extra_credit_bitwise_shift_precedence() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 20 >> 4
-          tmp.2 = 3 << 1
-          tmp.1 = tmp.0 <= tmp.2
-          return tmp.1
-          return 0
+            tmp.0 = 20 >> 4
+            tmp.2 = 3 << 1
+            tmp.1 = tmp.0 <= tmp.2
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1037,10 +1047,10 @@ fn test_chapter_4_valid_extra_credit_bitwise_xor_precedence() {
     "#;
     let expected = r#"
         function main { 
-          tmp.1 = 7 < 5
-          tmp.0 = 5 ^ tmp.1
-          return tmp.0
-          return 0
+            tmp.1 = 7 < 5
+            tmp.0 = 5 ^ tmp.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1055,9 +1065,9 @@ fn test_chapter_4_valid_ge_false() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 >= 2
-          return tmp.0
-          return 0
+            tmp.0 = 1 >= 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1072,12 +1082,12 @@ fn test_chapter_4_valid_ge_true() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 >= 1
-          tmp.3 = - 4
-          tmp.2 = 1 >= tmp.3
-          tmp.1 = tmp.0 + tmp.2
-          return tmp.1
-          return 0
+            tmp.0 = 1 >= 1
+            tmp.3 = - 4
+            tmp.2 = 1 >= tmp.3
+            tmp.1 = tmp.0 + tmp.2
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1092,11 +1102,11 @@ fn test_chapter_4_valid_gt_false() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 > 2
-          tmp.2 = 1 > 1
-          tmp.1 = tmp.0 + tmp.2
-          return tmp.1
-          return 0
+            tmp.0 = 1 > 2
+            tmp.2 = 1 > 1
+            tmp.1 = tmp.0 + tmp.2
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1111,9 +1121,9 @@ fn test_chapter_4_valid_gt_true() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 15 > 10
-          return tmp.0
-          return 0
+            tmp.0 = 15 > 10
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1128,10 +1138,10 @@ fn test_chapter_4_valid_le_false() {
     "#;
     let expected = r#"
         function main { 
-          tmp.1 = - 1
-          tmp.0 = 1 <= tmp.1
-          return tmp.0
-          return 0
+            tmp.1 = - 1
+            tmp.0 = 1 <= tmp.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1146,11 +1156,11 @@ fn test_chapter_4_valid_le_true() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 0 <= 2
-          tmp.2 = 0 <= 0
-          tmp.1 = tmp.0 + tmp.2
-          return tmp.1
-          return 0
+            tmp.0 = 0 <= 2
+            tmp.2 = 0 <= 0
+            tmp.1 = tmp.0 + tmp.2
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1165,9 +1175,9 @@ fn test_chapter_4_valid_lt_false() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 2 < 1
-          return tmp.0
-          return 0
+            tmp.0 = 2 < 1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1182,9 +1192,9 @@ fn test_chapter_4_valid_lt_true() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 < 2
-          return tmp.0
-          return 0
+            tmp.0 = 1 < 2
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1199,23 +1209,27 @@ fn test_chapter_4_valid_multi_short_circuit() {
     "#;
     let expected = r#"
         function main { 
-          jump or_true__0if 0
-          jump and_false__2 if !0
-          tmp.4 = 1 / 0
-          jump and_false__2 if !tmp.4
-          tmp.3 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.3 = 0
-        and_end__3:
-          jump or_true__0if tmp.3
-          tmp.1 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.1 = 1
-        or_end__1:
-          return tmp.1
-          return 0
+            if 0 jump or_true_0
+            if !0 jump and_false_2
+            tmp.4 = 1 / 0
+            if !tmp.4 jump and_false_2
+            tmp.3 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.3 = 0
+        
+          and_end_3:
+            if tmp.3 jump or_true_0
+            tmp.1 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.1 = 1
+        
+          or_end_1:
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1230,9 +1244,9 @@ fn test_chapter_4_valid_ne_false() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 0 != 0
-          return tmp.0
-          return 0
+            tmp.0 = 0 != 0
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1247,11 +1261,11 @@ fn test_chapter_4_valid_ne_true() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 1
-          tmp.2 = - 2
-          tmp.1 = tmp.0 != tmp.2
-          return tmp.1
-          return 0
+            tmp.0 = - 1
+            tmp.2 = - 2
+            tmp.1 = tmp.0 != tmp.2
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1266,10 +1280,10 @@ fn test_chapter_4_valid_nested_ops() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 3
-          tmp.1 = ! tmp.0
-          return tmp.1
-          return 0
+            tmp.0 = - 3
+            tmp.1 = ! tmp.0
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1284,9 +1298,9 @@ fn test_chapter_4_valid_not() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = ! 5
-          return tmp.0
-          return 0
+            tmp.0 = ! 5
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1301,10 +1315,10 @@ fn test_chapter_4_valid_not_sum() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 4 - 4
-          tmp.1 = ! tmp.0
-          return tmp.1
-          return 0
+            tmp.0 = 4 - 4
+            tmp.1 = ! tmp.0
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1319,10 +1333,10 @@ fn test_chapter_4_valid_not_sum_2() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 3 - 44
-          tmp.1 = ! tmp.0
-          return tmp.1
-          return 0
+            tmp.0 = 3 - 44
+            tmp.1 = ! tmp.0
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1337,9 +1351,9 @@ fn test_chapter_4_valid_not_zero() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = ! 0
-          return tmp.0
-          return 0
+            tmp.0 = ! 0
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1354,25 +1368,29 @@ fn test_chapter_4_valid_operate_on_booleans() {
     "#;
     let expected = r#"
         function main { 
-          jump and_false__0 if !0
-          jump and_false__0 if !1
-          tmp.1 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.1 = 0
-        and_end__1:
-          tmp.2 = ~ tmp.1
-          jump or_true__2if 4
-          jump or_true__2if 3
-          tmp.5 = 0
-          jump or_end__3
-        or_true__2:
-          tmp.5 = 1
-        or_end__3:
-          tmp.6 = - tmp.5
-          tmp.3 = tmp.2 - tmp.6
-          return tmp.3
-          return 0
+            if !0 jump and_false_0
+            if !1 jump and_false_0
+            tmp.1 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.1 = 0
+        
+          and_end_1:
+            tmp.2 = ~ tmp.1
+            if 4 jump or_true_2
+            if 3 jump or_true_2
+            tmp.5 = 0
+            jump or_end_3
+        
+          or_true_2:
+            tmp.5 = 1
+        
+          or_end_3:
+            tmp.6 = - tmp.5
+            tmp.3 = tmp.2 - tmp.6
+            return tmp.3
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1387,15 +1405,17 @@ fn test_chapter_4_valid_or_false() {
     "#;
     let expected = r#"
         function main { 
-          jump or_true__0if 0
-          jump or_true__0if 0
-          tmp.1 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.1 = 1
-        or_end__1:
-          return tmp.1
-          return 0
+            if 0 jump or_true_0
+            if 0 jump or_true_0
+            tmp.1 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.1 = 1
+        
+          or_end_1:
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1410,16 +1430,18 @@ fn test_chapter_4_valid_or_short_circuit() {
     "#;
     let expected = r#"
         function main { 
-          jump or_true__0if 1
-          tmp.2 = 1 / 0
-          jump or_true__0if tmp.2
-          tmp.1 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.1 = 1
-        or_end__1:
-          return tmp.1
-          return 0
+            if 1 jump or_true_0
+            tmp.2 = 1 / 0
+            if tmp.2 jump or_true_0
+            tmp.1 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.1 = 1
+        
+          or_end_1:
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1434,31 +1456,37 @@ fn test_chapter_4_valid_or_true() {
     "#;
     let expected = r#"
         function main { 
-          jump or_true__0if 4
-          jump or_true__0if 0
-          tmp.1 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.1 = 1
-        or_end__1:
-          jump or_true__2if 0
-          jump or_true__2if 3
-          tmp.4 = 0
-          jump or_end__3
-        or_true__2:
-          tmp.4 = 1
-        or_end__3:
-          tmp.2 = tmp.1 + tmp.4
-          jump or_true__4if 5
-          jump or_true__4if 5
-          tmp.7 = 0
-          jump or_end__5
-        or_true__4:
-          tmp.7 = 1
-        or_end__5:
-          tmp.5 = tmp.2 + tmp.7
-          return tmp.5
-          return 0
+            if 4 jump or_true_0
+            if 0 jump or_true_0
+            tmp.1 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.1 = 1
+        
+          or_end_1:
+            if 0 jump or_true_2
+            if 3 jump or_true_2
+            tmp.4 = 0
+            jump or_end_3
+        
+          or_true_2:
+            tmp.4 = 1
+        
+          or_end_3:
+            tmp.2 = tmp.1 + tmp.4
+            if 5 jump or_true_4
+            if 5 jump or_true_4
+            tmp.7 = 0
+            jump or_end_5
+        
+          or_true_4:
+            tmp.7 = 1
+        
+          or_end_5:
+            tmp.5 = tmp.2 + tmp.7
+            return tmp.5
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1473,22 +1501,26 @@ fn test_chapter_4_valid_precedence() {
     "#;
     let expected = r#"
         function main { 
-          jump or_true__0if 1
-          jump and_false__2 if !0
-          jump and_false__2 if !2
-          tmp.3 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.3 = 0
-        and_end__3:
-          jump or_true__0if tmp.3
-          tmp.1 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.1 = 1
-        or_end__1:
-          return tmp.1
-          return 0
+            if 1 jump or_true_0
+            if !0 jump and_false_2
+            if !2 jump and_false_2
+            tmp.3 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.3 = 0
+        
+          and_end_3:
+            if tmp.3 jump or_true_0
+            tmp.1 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.1 = 1
+        
+          or_end_1:
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1503,22 +1535,26 @@ fn test_chapter_4_valid_precedence_2() {
     "#;
     let expected = r#"
         function main { 
-          jump or_true__0if 1
-          jump or_true__0if 0
-          tmp.1 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.1 = 1
-        or_end__1:
-          jump and_false__2 if !tmp.1
-          jump and_false__2 if !0
-          tmp.3 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.3 = 0
-        and_end__3:
-          return tmp.3
-          return 0
+            if 1 jump or_true_0
+            if 0 jump or_true_0
+            tmp.1 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.1 = 1
+        
+          or_end_1:
+            if !tmp.1 jump and_false_2
+            if !0 jump and_false_2
+            tmp.3 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.3 = 0
+        
+          and_end_3:
+            return tmp.3
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1533,10 +1569,10 @@ fn test_chapter_4_valid_precedence_3() {
     "#;
     let expected = r#"
         function main { 
-          tmp.1 = 2 >= 0
-          tmp.0 = 2 == tmp.1
-          return tmp.0
-          return 0
+            tmp.1 = 2 >= 0
+            tmp.0 = 2 == tmp.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1551,16 +1587,18 @@ fn test_chapter_4_valid_precedence_4() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 2 == 2
-          jump or_true__0if tmp.0
-          jump or_true__0if 0
-          tmp.2 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.2 = 1
-        or_end__1:
-          return tmp.2
-          return 0
+            tmp.0 = 2 == 2
+            if tmp.0 jump or_true_0
+            if 0 jump or_true_0
+            tmp.2 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.2 = 1
+        
+          or_end_1:
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1575,20 +1613,22 @@ fn test_chapter_4_valid_precedence_5() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 0 == 0
-          jump and_false__0 if !tmp.0
-          tmp.4 = 2 + 1
-          tmp.5 = tmp.4 > 1
-          tmp.3 = 3 == tmp.5
-          jump and_false__0 if !tmp.3
-          tmp.2 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.2 = 0
-        and_end__1:
-          tmp.6 = tmp.2 + 1
-          return tmp.6
-          return 0
+            tmp.0 = 0 == 0
+            if !tmp.0 jump and_false_0
+            tmp.4 = 2 + 1
+            tmp.5 = tmp.4 > 1
+            tmp.3 = 3 == tmp.5
+            if !tmp.3 jump and_false_0
+            tmp.2 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.2 = 0
+        
+          and_end_1:
+            tmp.6 = tmp.2 + 1
+            return tmp.6
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1605,11 +1645,11 @@ fn test_chapter_5_valid_add_variables() {
     "#;
     let expected = r#"
         function main { 
-          first_variable.0 = 1
-          second_variable.1 = 2
-          tmp.0 = first_variable.0 + second_variable.1
-          return tmp.0
-          return 0
+            first_variable.0 = 1
+            second_variable.1 = 2
+            tmp.0 = first_variable.0 + second_variable.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1627,17 +1667,17 @@ fn test_chapter_5_valid_allocate_temps_and_vars() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 2147483646
-          b.1 = 0
-          tmp.0 = a.0 / 6
-          tmp.2 = ! b.1
-          tmp.1 = tmp.0 + tmp.2
-          c.2 = tmp.1
-          tmp.3 = c.2 * 2
-          tmp.5 = a.0 - 1431655762
-          tmp.4 = tmp.3 == tmp.5
-          return tmp.4
-          return 0
+            a.0 = 2147483646
+            b.1 = 0
+            tmp.0 = a.0 / 6
+            tmp.2 = ! b.1
+            tmp.1 = tmp.0 + tmp.2
+            c.2 = tmp.1
+            tmp.3 = c.2 * 2
+            tmp.5 = a.0 - 1431655762
+            tmp.4 = tmp.3 == tmp.5
+            return tmp.4
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1654,9 +1694,9 @@ fn test_chapter_5_valid_assign() {
     "#;
     let expected = r#"
         function main { 
-          var0.0 = 2
-          return var0.0
-          return 0
+            var0.0 = 2
+            return var0.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1672,10 +1712,10 @@ fn test_chapter_5_valid_assign_val_in_initializer() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 5
-          a.0 = a.0
-          return a.0
-          return 0
+            a.0 = 5
+            a.0 = a.0
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1692,10 +1732,10 @@ fn test_chapter_5_valid_assignment_in_initializer() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          b.1 = a.0
-          return b.1
-          return 0
+            a.0 = 0
+            b.1 = a.0
+            return b.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1712,16 +1752,18 @@ fn test_chapter_5_valid_assignment_lowest_precedence() {
     "#;
     let expected = r#"
         function main { 
-          jump or_true__0if 0
-          jump or_true__0if 5
-          tmp.1 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.1 = 1
-        or_end__1:
-          a.0 = tmp.1
-          return a.0
-          return 0
+            if 0 jump or_true_0
+            if 5 jump or_true_0
+            tmp.1 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.1 = 1
+        
+          or_end_1:
+            a.0 = tmp.1
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1735,7 +1777,7 @@ fn test_chapter_5_valid_empty_function_body() {
     "#;
     let expected = r#"
         function main { 
-          return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1753,14 +1795,14 @@ fn test_chapter_5_valid_exp_then_declaration() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 2593
-          a.0 = tmp.0
-          tmp.1 = a.0 % 3
-          a.0 = tmp.1
-          tmp.2 = - a.0
-          b.1 = tmp.2
-          return b.1
-          return 0
+            tmp.0 = - 2593
+            a.0 = tmp.0
+            tmp.1 = a.0 % 3
+            a.0 = tmp.1
+            tmp.2 = - a.0
+            b.1 = tmp.2
+            return b.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1777,12 +1819,12 @@ fn test_chapter_5_valid_extra_credit_bitwise_in_initializer() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 15
-          tmp.0 = a.0 ^ 5
-          b.1 = tmp.0
-          tmp.1 = 1 | b.1
-          return tmp.1
-          return 0
+            a.0 = 15
+            tmp.0 = a.0 ^ 5
+            b.1 = tmp.0
+            tmp.1 = 1 | b.1
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1800,13 +1842,13 @@ fn test_chapter_5_valid_extra_credit_bitwise_ops_vars() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 3
-          b.1 = 5
-          c.2 = 8
-          tmp.0 = a.0 & b.1
-          tmp.1 = tmp.0 | c.2
-          return tmp.1
-          return 0
+            a.0 = 3
+            b.1 = 5
+            c.2 = 8
+            tmp.0 = a.0 & b.1
+            tmp.1 = tmp.0 | c.2
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1822,10 +1864,10 @@ fn test_chapter_5_valid_extra_credit_bitwise_shiftl_variable() {
     "#;
     let expected = r#"
         function main { 
-          x.0 = 3
-          tmp.0 = x.0 << 3
-          return tmp.0
-          return 0
+            x.0 = 3
+            tmp.0 = x.0 << 3
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1843,12 +1885,12 @@ fn test_chapter_5_valid_extra_credit_bitwise_shiftr_assign() {
     "#;
     let expected = r#"
         function main { 
-          var_to_shift.0 = 1234
-          x.1 = 0
-          tmp.0 = var_to_shift.0 >> 4
-          x.1 = tmp.0
-          return x.1
-          return 0
+            var_to_shift.0 = 1234
+            x.1 = 0
+            tmp.0 = var_to_shift.0 >> 4
+            x.1 = tmp.0
+            return x.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1872,82 +1914,94 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_chained() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 250
-          b.1 = 200
-          c.2 = 100
-          d.3 = 75
-          tmp.0 = - 25
-          e.4 = tmp.0
-          f.5 = 0
-          x.6 = 0
-          tmp.6 = - 7
-          f.5 = tmp.6
-          tmp.5 = e.4 % f.5
-          e.4 = tmp.5
-          tmp.4 = d.3 / e.4
-          d.3 = tmp.4
-          tmp.3 = c.2 * d.3
-          c.2 = tmp.3
-          tmp.2 = b.1 - c.2
-          b.1 = tmp.2
-          tmp.1 = a.0 + b.1
-          a.0 = tmp.1
-          x.6 = a.0
-          tmp.7 = a.0 == 2250
-          jump and_false__0 if !tmp.7
-          tmp.10 = b.1 == 2000
-          jump and_false__0 if !tmp.10
-          tmp.9 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.9 = 0
-        and_end__1:
-          jump and_false__2 if !tmp.9
-          tmp.14 = - 1800
-          tmp.13 = c.2 == tmp.14
-          jump and_false__2 if !tmp.13
-          tmp.12 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.12 = 0
-        and_end__3:
-          jump and_false__4 if !tmp.12
-          tmp.18 = - 18
-          tmp.17 = d.3 == tmp.18
-          jump and_false__4 if !tmp.17
-          tmp.16 = 1
-          jump and_end__5
-        and_false__4:
-          tmp.16 = 0
-        and_end__5:
-          jump and_false__6 if !tmp.16
-          tmp.22 = - 4
-          tmp.21 = e.4 == tmp.22
-          jump and_false__6 if !tmp.21
-          tmp.20 = 1
-          jump and_end__7
-        and_false__6:
-          tmp.20 = 0
-        and_end__7:
-          jump and_false__8 if !tmp.20
-          tmp.26 = - 7
-          tmp.25 = f.5 == tmp.26
-          jump and_false__8 if !tmp.25
-          tmp.24 = 1
-          jump and_end__9
-        and_false__8:
-          tmp.24 = 0
-        and_end__9:
-          jump and_false__10 if !tmp.24
-          tmp.29 = x.6 == 2250
-          jump and_false__10 if !tmp.29
-          tmp.28 = 1
-          jump and_end__11
-        and_false__10:
-          tmp.28 = 0
-        and_end__11:
-          return tmp.28
-          return 0
+            a.0 = 250
+            b.1 = 200
+            c.2 = 100
+            d.3 = 75
+            tmp.0 = - 25
+            e.4 = tmp.0
+            f.5 = 0
+            x.6 = 0
+            tmp.6 = - 7
+            f.5 = tmp.6
+            tmp.5 = e.4 % f.5
+            e.4 = tmp.5
+            tmp.4 = d.3 / e.4
+            d.3 = tmp.4
+            tmp.3 = c.2 * d.3
+            c.2 = tmp.3
+            tmp.2 = b.1 - c.2
+            b.1 = tmp.2
+            tmp.1 = a.0 + b.1
+            a.0 = tmp.1
+            x.6 = a.0
+            tmp.7 = a.0 == 2250
+            if !tmp.7 jump and_false_0
+            tmp.10 = b.1 == 2000
+            if !tmp.10 jump and_false_0
+            tmp.9 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.9 = 0
+        
+          and_end_1:
+            if !tmp.9 jump and_false_2
+            tmp.14 = - 1800
+            tmp.13 = c.2 == tmp.14
+            if !tmp.13 jump and_false_2
+            tmp.12 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.12 = 0
+        
+          and_end_3:
+            if !tmp.12 jump and_false_4
+            tmp.18 = - 18
+            tmp.17 = d.3 == tmp.18
+            if !tmp.17 jump and_false_4
+            tmp.16 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.16 = 0
+        
+          and_end_5:
+            if !tmp.16 jump and_false_6
+            tmp.22 = - 4
+            tmp.21 = e.4 == tmp.22
+            if !tmp.21 jump and_false_6
+            tmp.20 = 1
+            jump and_end_7
+        
+          and_false_6:
+            tmp.20 = 0
+        
+          and_end_7:
+            if !tmp.20 jump and_false_8
+            tmp.26 = - 7
+            tmp.25 = f.5 == tmp.26
+            if !tmp.25 jump and_false_8
+            tmp.24 = 1
+            jump and_end_9
+        
+          and_false_8:
+            tmp.24 = 0
+        
+          and_end_9:
+            if !tmp.24 jump and_false_10
+            tmp.29 = x.6 == 2250
+            if !tmp.29 jump and_false_10
+            tmp.28 = 1
+            jump and_end_11
+        
+          and_false_10:
+            tmp.28 = 0
+        
+          and_end_11:
+            return tmp.28
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -1970,73 +2024,87 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_lowest_precedence() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 10
-          b.1 = 12
-          jump or_true__0if 0
-          jump or_true__0if b.1
-          tmp.2 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.2 = 1
-        or_end__1:
-          tmp.0 = a.0 + tmp.2
-          a.0 = tmp.0
-          jump and_false__2 if !a.0
-          jump and_false__2 if !0
-          tmp.5 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.5 = 0
-        and_end__3:
-          tmp.3 = b.1 * tmp.5
-          b.1 = tmp.3
-          c.2 = 14
-          jump or_true__4if a.0
-          jump or_true__4if b.1
-          tmp.8 = 0
-          jump or_end__5
-        or_true__4:
-          tmp.8 = 1
-        or_end__5:
-          tmp.6 = c.2 - tmp.8
-          c.2 = tmp.6
-          d.3 = 16
-          jump or_true__6if c.2
-          jump or_true__6if d.3
-          tmp.11 = 0
-          jump or_end__7
-        or_true__6:
-          tmp.11 = 1
-        or_end__7:
-          tmp.9 = d.3 / tmp.11
-          d.3 = tmp.9
-          tmp.12 = a.0 == 11
-          jump and_false__8 if !tmp.12
-          tmp.15 = b.1 == 0
-          jump and_false__8 if !tmp.15
-          tmp.14 = 1
-          jump and_end__9
-        and_false__8:
-          tmp.14 = 0
-        and_end__9:
-          jump and_false__10 if !tmp.14
-          tmp.18 = c.2 == 13
-          jump and_false__10 if !tmp.18
-          tmp.17 = 1
-          jump and_end__11
-        and_false__10:
-          tmp.17 = 0
-        and_end__11:
-          jump and_false__12 if !tmp.17
-          tmp.21 = d.3 == 16
-          jump and_false__12 if !tmp.21
-          tmp.20 = 1
-          jump and_end__13
-        and_false__12:
-          tmp.20 = 0
-        and_end__13:
-          return tmp.20
-          return 0
+            a.0 = 10
+            b.1 = 12
+            if 0 jump or_true_0
+            if b.1 jump or_true_0
+            tmp.2 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.2 = 1
+        
+          or_end_1:
+            tmp.0 = a.0 + tmp.2
+            a.0 = tmp.0
+            if !a.0 jump and_false_2
+            if !0 jump and_false_2
+            tmp.5 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.5 = 0
+        
+          and_end_3:
+            tmp.3 = b.1 * tmp.5
+            b.1 = tmp.3
+            c.2 = 14
+            if a.0 jump or_true_4
+            if b.1 jump or_true_4
+            tmp.8 = 0
+            jump or_end_5
+        
+          or_true_4:
+            tmp.8 = 1
+        
+          or_end_5:
+            tmp.6 = c.2 - tmp.8
+            c.2 = tmp.6
+            d.3 = 16
+            if c.2 jump or_true_6
+            if d.3 jump or_true_6
+            tmp.11 = 0
+            jump or_end_7
+        
+          or_true_6:
+            tmp.11 = 1
+        
+          or_end_7:
+            tmp.9 = d.3 / tmp.11
+            d.3 = tmp.9
+            tmp.12 = a.0 == 11
+            if !tmp.12 jump and_false_8
+            tmp.15 = b.1 == 0
+            if !tmp.15 jump and_false_8
+            tmp.14 = 1
+            jump and_end_9
+        
+          and_false_8:
+            tmp.14 = 0
+        
+          and_end_9:
+            if !tmp.14 jump and_false_10
+            tmp.18 = c.2 == 13
+            if !tmp.18 jump and_false_10
+            tmp.17 = 1
+            jump and_end_11
+        
+          and_false_10:
+            tmp.17 = 0
+        
+          and_end_11:
+            if !tmp.17 jump and_false_12
+            tmp.21 = d.3 == 16
+            if !tmp.21 jump and_false_12
+            tmp.20 = 1
+            jump and_end_13
+        
+          and_false_12:
+            tmp.20 = 0
+        
+          and_end_13:
+            return tmp.20
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2053,21 +2121,23 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_use_result() {
     "#;
     let expected = r#"
         function main { 
-          x.0 = 1
-          tmp.0 = x.0 + 3
-          x.0 = tmp.0
-          y.1 = x.0
-          tmp.1 = x.0 == 4
-          jump and_false__0 if !tmp.1
-          tmp.4 = y.1 == 4
-          jump and_false__0 if !tmp.4
-          tmp.3 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.3 = 0
-        and_end__1:
-          return tmp.3
-          return 0
+            x.0 = 1
+            tmp.0 = x.0 + 3
+            x.0 = tmp.0
+            y.1 = x.0
+            tmp.1 = x.0 == 4
+            if !tmp.1 jump and_false_0
+            tmp.4 = y.1 == 4
+            if !tmp.4 jump and_false_0
+            tmp.3 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.3 = 0
+        
+          and_end_1:
+            return tmp.3
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2084,11 +2154,11 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_and() {
     "#;
     let expected = r#"
         function main { 
-          to_and.0 = 3
-          tmp.0 = to_and.0 & 6
-          to_and.0 = tmp.0
-          return to_and.0
-          return 0
+            to_and.0 = 3
+            tmp.0 = to_and.0 & 6
+            to_and.0 = tmp.0
+            return to_and.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2113,91 +2183,109 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_preceden
     "#;
     let expected = r#"
         function main { 
-          a.0 = 11
-          b.1 = 12
-          jump or_true__0if 0
-          jump or_true__0if b.1
-          tmp.2 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.2 = 1
-        or_end__1:
-          tmp.0 = a.0 & tmp.2
-          a.0 = tmp.0
-          jump or_true__2if a.0
-          jump or_true__2if 1
-          tmp.5 = 0
-          jump or_end__3
-        or_true__2:
-          tmp.5 = 1
-        or_end__3:
-          tmp.3 = b.1 ^ tmp.5
-          b.1 = tmp.3
-          c.2 = 14
-          jump or_true__4if a.0
-          jump or_true__4if b.1
-          tmp.8 = 0
-          jump or_end__5
-        or_true__4:
-          tmp.8 = 1
-        or_end__5:
-          tmp.6 = c.2 | tmp.8
-          c.2 = tmp.6
-          d.3 = 16
-          jump or_true__6if c.2
-          jump or_true__6if d.3
-          tmp.11 = 0
-          jump or_end__7
-        or_true__6:
-          tmp.11 = 1
-        or_end__7:
-          tmp.9 = d.3 >> tmp.11
-          d.3 = tmp.9
-          e.4 = 18
-          jump or_true__8if c.2
-          jump or_true__8if d.3
-          tmp.14 = 0
-          jump or_end__9
-        or_true__8:
-          tmp.14 = 1
-        or_end__9:
-          tmp.12 = e.4 << tmp.14
-          e.4 = tmp.12
-          tmp.15 = a.0 == 1
-          jump and_false__10 if !tmp.15
-          tmp.18 = b.1 == 13
-          jump and_false__10 if !tmp.18
-          tmp.17 = 1
-          jump and_end__11
-        and_false__10:
-          tmp.17 = 0
-        and_end__11:
-          jump and_false__12 if !tmp.17
-          tmp.21 = c.2 == 15
-          jump and_false__12 if !tmp.21
-          tmp.20 = 1
-          jump and_end__13
-        and_false__12:
-          tmp.20 = 0
-        and_end__13:
-          jump and_false__14 if !tmp.20
-          tmp.24 = d.3 == 8
-          jump and_false__14 if !tmp.24
-          tmp.23 = 1
-          jump and_end__15
-        and_false__14:
-          tmp.23 = 0
-        and_end__15:
-          jump and_false__16 if !tmp.23
-          tmp.27 = e.4 == 36
-          jump and_false__16 if !tmp.27
-          tmp.26 = 1
-          jump and_end__17
-        and_false__16:
-          tmp.26 = 0
-        and_end__17:
-          return tmp.26
-          return 0
+            a.0 = 11
+            b.1 = 12
+            if 0 jump or_true_0
+            if b.1 jump or_true_0
+            tmp.2 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.2 = 1
+        
+          or_end_1:
+            tmp.0 = a.0 & tmp.2
+            a.0 = tmp.0
+            if a.0 jump or_true_2
+            if 1 jump or_true_2
+            tmp.5 = 0
+            jump or_end_3
+        
+          or_true_2:
+            tmp.5 = 1
+        
+          or_end_3:
+            tmp.3 = b.1 ^ tmp.5
+            b.1 = tmp.3
+            c.2 = 14
+            if a.0 jump or_true_4
+            if b.1 jump or_true_4
+            tmp.8 = 0
+            jump or_end_5
+        
+          or_true_4:
+            tmp.8 = 1
+        
+          or_end_5:
+            tmp.6 = c.2 | tmp.8
+            c.2 = tmp.6
+            d.3 = 16
+            if c.2 jump or_true_6
+            if d.3 jump or_true_6
+            tmp.11 = 0
+            jump or_end_7
+        
+          or_true_6:
+            tmp.11 = 1
+        
+          or_end_7:
+            tmp.9 = d.3 >> tmp.11
+            d.3 = tmp.9
+            e.4 = 18
+            if c.2 jump or_true_8
+            if d.3 jump or_true_8
+            tmp.14 = 0
+            jump or_end_9
+        
+          or_true_8:
+            tmp.14 = 1
+        
+          or_end_9:
+            tmp.12 = e.4 << tmp.14
+            e.4 = tmp.12
+            tmp.15 = a.0 == 1
+            if !tmp.15 jump and_false_10
+            tmp.18 = b.1 == 13
+            if !tmp.18 jump and_false_10
+            tmp.17 = 1
+            jump and_end_11
+        
+          and_false_10:
+            tmp.17 = 0
+        
+          and_end_11:
+            if !tmp.17 jump and_false_12
+            tmp.21 = c.2 == 15
+            if !tmp.21 jump and_false_12
+            tmp.20 = 1
+            jump and_end_13
+        
+          and_false_12:
+            tmp.20 = 0
+        
+          and_end_13:
+            if !tmp.20 jump and_false_14
+            tmp.24 = d.3 == 8
+            if !tmp.24 jump and_false_14
+            tmp.23 = 1
+            jump and_end_15
+        
+          and_false_14:
+            tmp.23 = 0
+        
+          and_end_15:
+            if !tmp.23 jump and_false_16
+            tmp.27 = e.4 == 36
+            if !tmp.27 jump and_false_16
+            tmp.26 = 1
+            jump and_end_17
+        
+          and_false_16:
+            tmp.26 = 0
+        
+          and_end_17:
+            return tmp.26
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2224,108 +2312,126 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_chained() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 250
-          b.1 = 200
-          c.2 = 100
-          d.3 = 75
-          e.4 = 50
-          f.5 = 25
-          g.6 = 10
-          h.7 = 1
-          j.8 = 0
-          x.9 = 0
-          j.8 = 1
-          tmp.6 = h.7 << j.8
-          h.7 = tmp.6
-          tmp.5 = g.6 >> h.7
-          g.6 = tmp.5
-          tmp.4 = f.5 + g.6
-          f.5 = tmp.4
-          tmp.3 = e.4 ^ f.5
-          e.4 = tmp.3
-          d.3 = e.4
-          tmp.2 = c.2 | d.3
-          c.2 = tmp.2
-          tmp.1 = b.1 * c.2
-          b.1 = tmp.1
-          tmp.0 = a.0 & b.1
-          a.0 = tmp.0
-          x.9 = a.0
-          tmp.7 = a.0 == 40
-          jump and_false__0 if !tmp.7
-          tmp.10 = b.1 == 21800
-          jump and_false__0 if !tmp.10
-          tmp.9 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.9 = 0
-        and_end__1:
-          jump and_false__2 if !tmp.9
-          tmp.13 = c.2 == 109
-          jump and_false__2 if !tmp.13
-          tmp.12 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.12 = 0
-        and_end__3:
-          jump and_false__4 if !tmp.12
-          tmp.16 = d.3 == 41
-          jump and_false__4 if !tmp.16
-          tmp.15 = 1
-          jump and_end__5
-        and_false__4:
-          tmp.15 = 0
-        and_end__5:
-          jump and_false__6 if !tmp.15
-          tmp.19 = e.4 == 41
-          jump and_false__6 if !tmp.19
-          tmp.18 = 1
-          jump and_end__7
-        and_false__6:
-          tmp.18 = 0
-        and_end__7:
-          jump and_false__8 if !tmp.18
-          tmp.22 = f.5 == 27
-          jump and_false__8 if !tmp.22
-          tmp.21 = 1
-          jump and_end__9
-        and_false__8:
-          tmp.21 = 0
-        and_end__9:
-          jump and_false__10 if !tmp.21
-          tmp.25 = g.6 == 2
-          jump and_false__10 if !tmp.25
-          tmp.24 = 1
-          jump and_end__11
-        and_false__10:
-          tmp.24 = 0
-        and_end__11:
-          jump and_false__12 if !tmp.24
-          tmp.28 = h.7 == 2
-          jump and_false__12 if !tmp.28
-          tmp.27 = 1
-          jump and_end__13
-        and_false__12:
-          tmp.27 = 0
-        and_end__13:
-          jump and_false__14 if !tmp.27
-          tmp.31 = j.8 == 1
-          jump and_false__14 if !tmp.31
-          tmp.30 = 1
-          jump and_end__15
-        and_false__14:
-          tmp.30 = 0
-        and_end__15:
-          jump and_false__16 if !tmp.30
-          tmp.34 = x.9 == 40
-          jump and_false__16 if !tmp.34
-          tmp.33 = 1
-          jump and_end__17
-        and_false__16:
-          tmp.33 = 0
-        and_end__17:
-          return tmp.33
-          return 0
+            a.0 = 250
+            b.1 = 200
+            c.2 = 100
+            d.3 = 75
+            e.4 = 50
+            f.5 = 25
+            g.6 = 10
+            h.7 = 1
+            j.8 = 0
+            x.9 = 0
+            j.8 = 1
+            tmp.6 = h.7 << j.8
+            h.7 = tmp.6
+            tmp.5 = g.6 >> h.7
+            g.6 = tmp.5
+            tmp.4 = f.5 + g.6
+            f.5 = tmp.4
+            tmp.3 = e.4 ^ f.5
+            e.4 = tmp.3
+            d.3 = e.4
+            tmp.2 = c.2 | d.3
+            c.2 = tmp.2
+            tmp.1 = b.1 * c.2
+            b.1 = tmp.1
+            tmp.0 = a.0 & b.1
+            a.0 = tmp.0
+            x.9 = a.0
+            tmp.7 = a.0 == 40
+            if !tmp.7 jump and_false_0
+            tmp.10 = b.1 == 21800
+            if !tmp.10 jump and_false_0
+            tmp.9 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.9 = 0
+        
+          and_end_1:
+            if !tmp.9 jump and_false_2
+            tmp.13 = c.2 == 109
+            if !tmp.13 jump and_false_2
+            tmp.12 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.12 = 0
+        
+          and_end_3:
+            if !tmp.12 jump and_false_4
+            tmp.16 = d.3 == 41
+            if !tmp.16 jump and_false_4
+            tmp.15 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.15 = 0
+        
+          and_end_5:
+            if !tmp.15 jump and_false_6
+            tmp.19 = e.4 == 41
+            if !tmp.19 jump and_false_6
+            tmp.18 = 1
+            jump and_end_7
+        
+          and_false_6:
+            tmp.18 = 0
+        
+          and_end_7:
+            if !tmp.18 jump and_false_8
+            tmp.22 = f.5 == 27
+            if !tmp.22 jump and_false_8
+            tmp.21 = 1
+            jump and_end_9
+        
+          and_false_8:
+            tmp.21 = 0
+        
+          and_end_9:
+            if !tmp.21 jump and_false_10
+            tmp.25 = g.6 == 2
+            if !tmp.25 jump and_false_10
+            tmp.24 = 1
+            jump and_end_11
+        
+          and_false_10:
+            tmp.24 = 0
+        
+          and_end_11:
+            if !tmp.24 jump and_false_12
+            tmp.28 = h.7 == 2
+            if !tmp.28 jump and_false_12
+            tmp.27 = 1
+            jump and_end_13
+        
+          and_false_12:
+            tmp.27 = 0
+        
+          and_end_13:
+            if !tmp.27 jump and_false_14
+            tmp.31 = j.8 == 1
+            if !tmp.31 jump and_false_14
+            tmp.30 = 1
+            jump and_end_15
+        
+          and_false_14:
+            tmp.30 = 0
+        
+          and_end_15:
+            if !tmp.30 jump and_false_16
+            tmp.34 = x.9 == 40
+            if !tmp.34 jump and_false_16
+            tmp.33 = 1
+            jump and_end_17
+        
+          and_false_16:
+            tmp.33 = 0
+        
+          and_end_17:
+            return tmp.33
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2342,11 +2448,11 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_or() {
     "#;
     let expected = r#"
         function main { 
-          to_or.0 = 1
-          tmp.0 = to_or.0 | 30
-          to_or.0 = tmp.0
-          return to_or.0
-          return 0
+            to_or.0 = 1
+            tmp.0 = to_or.0 | 30
+            to_or.0 = tmp.0
+            return to_or.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2363,11 +2469,11 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_shiftl() {
     "#;
     let expected = r#"
         function main { 
-          to_shiftl.0 = 3
-          tmp.0 = to_shiftl.0 << 4
-          to_shiftl.0 = tmp.0
-          return to_shiftl.0
-          return 0
+            to_shiftl.0 = 3
+            tmp.0 = to_shiftl.0 << 4
+            to_shiftl.0 = tmp.0
+            return to_shiftl.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2384,11 +2490,11 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_shiftr() {
     "#;
     let expected = r#"
         function main { 
-          to_shiftr.0 = 382574
-          tmp.0 = to_shiftr.0 >> 4
-          to_shiftr.0 = tmp.0
-          return to_shiftr.0
-          return 0
+            to_shiftr.0 = 382574
+            tmp.0 = to_shiftr.0 >> 4
+            to_shiftr.0 = tmp.0
+            return to_shiftr.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2405,11 +2511,11 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_xor() {
     "#;
     let expected = r#"
         function main { 
-          to_xor.0 = 7
-          tmp.0 = to_xor.0 ^ 5
-          to_xor.0 = tmp.0
-          return to_xor.0
-          return 0
+            to_xor.0 = 7
+            tmp.0 = to_xor.0 ^ 5
+            to_xor.0 = tmp.0
+            return to_xor.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2426,11 +2532,11 @@ fn test_chapter_5_valid_extra_credit_compound_divide() {
     "#;
     let expected = r#"
         function main { 
-          to_divide.0 = 8
-          tmp.0 = to_divide.0 / 4
-          to_divide.0 = tmp.0
-          return to_divide.0
-          return 0
+            to_divide.0 = 8
+            tmp.0 = to_divide.0 / 4
+            to_divide.0 = tmp.0
+            return to_divide.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2447,11 +2553,11 @@ fn test_chapter_5_valid_extra_credit_compound_minus() {
     "#;
     let expected = r#"
         function main { 
-          to_subtract.0 = 10
-          tmp.0 = to_subtract.0 - 8
-          to_subtract.0 = tmp.0
-          return to_subtract.0
-          return 0
+            to_subtract.0 = 10
+            tmp.0 = to_subtract.0 - 8
+            to_subtract.0 = tmp.0
+            return to_subtract.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2468,11 +2574,11 @@ fn test_chapter_5_valid_extra_credit_compound_mod() {
     "#;
     let expected = r#"
         function main { 
-          to_mod.0 = 5
-          tmp.0 = to_mod.0 % 3
-          to_mod.0 = tmp.0
-          return to_mod.0
-          return 0
+            to_mod.0 = 5
+            tmp.0 = to_mod.0 % 3
+            to_mod.0 = tmp.0
+            return to_mod.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2489,11 +2595,11 @@ fn test_chapter_5_valid_extra_credit_compound_multiply() {
     "#;
     let expected = r#"
         function main { 
-          to_multiply.0 = 4
-          tmp.0 = to_multiply.0 * 3
-          to_multiply.0 = tmp.0
-          return to_multiply.0
-          return 0
+            to_multiply.0 = 4
+            tmp.0 = to_multiply.0 * 3
+            to_multiply.0 = tmp.0
+            return to_multiply.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2510,11 +2616,11 @@ fn test_chapter_5_valid_extra_credit_compound_plus() {
     "#;
     let expected = r#"
         function main { 
-          to_add.0 = 0
-          tmp.0 = to_add.0 + 4
-          to_add.0 = tmp.0
-          return to_add.0
-          return 0
+            to_add.0 = 0
+            tmp.0 = to_add.0 + 4
+            to_add.0 = tmp.0
+            return to_add.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2536,32 +2642,34 @@ fn test_chapter_5_valid_extra_credit_incr_expression_statement() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          b.1 = 0
-          tmp.0 = a.0
-          tmp.1 = inc a.0
-          a.0 = tmp.1
-          tmp.2 = inc a.0
-          a.0 = tmp.2
-          tmp.3 = inc a.0
-          a.0 = tmp.3
-          tmp.4 = b.1
-          tmp.5 = dec b.1
-          b.1 = tmp.5
-          tmp.6 = dec b.1
-          b.1 = tmp.6
-          tmp.7 = a.0 == 3
-          jump and_false__0 if !tmp.7
-          tmp.11 = - 2
-          tmp.10 = b.1 == tmp.11
-          jump and_false__0 if !tmp.10
-          tmp.9 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.9 = 0
-        and_end__1:
-          return tmp.9
-          return 0
+            a.0 = 0
+            b.1 = 0
+            tmp.0 = a.0
+            tmp.1 = inc a.0
+            a.0 = tmp.1
+            tmp.2 = inc a.0
+            a.0 = tmp.2
+            tmp.3 = inc a.0
+            a.0 = tmp.3
+            tmp.4 = b.1
+            tmp.5 = dec b.1
+            b.1 = tmp.5
+            tmp.6 = dec b.1
+            b.1 = tmp.6
+            tmp.7 = a.0 == 3
+            if !tmp.7 jump and_false_0
+            tmp.11 = - 2
+            tmp.10 = b.1 == tmp.11
+            if !tmp.10 jump and_false_0
+            tmp.9 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.9 = 0
+        
+          and_end_1:
+            return tmp.9
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2579,35 +2687,39 @@ fn test_chapter_5_valid_extra_credit_incr_in_binary_expr() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 2
-          tmp.1 = a.0
-          tmp.2 = inc a.0
-          a.0 = tmp.2
-          tmp.0 = 3 + tmp.1
-          b.1 = tmp.0
-          tmp.4 = inc b.1
-          b.1 = tmp.4
-          tmp.3 = 4 + tmp.4
-          c.2 = tmp.3
-          tmp.5 = a.0 == 3
-          jump and_false__0 if !tmp.5
-          tmp.8 = b.1 == 6
-          jump and_false__0 if !tmp.8
-          tmp.7 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.7 = 0
-        and_end__1:
-          jump and_false__2 if !tmp.7
-          tmp.11 = c.2 == 10
-          jump and_false__2 if !tmp.11
-          tmp.10 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.10 = 0
-        and_end__3:
-          return tmp.10
-          return 0
+            a.0 = 2
+            tmp.1 = a.0
+            tmp.2 = inc a.0
+            a.0 = tmp.2
+            tmp.0 = 3 + tmp.1
+            b.1 = tmp.0
+            tmp.4 = inc b.1
+            b.1 = tmp.4
+            tmp.3 = 4 + tmp.4
+            c.2 = tmp.3
+            tmp.5 = a.0 == 3
+            if !tmp.5 jump and_false_0
+            tmp.8 = b.1 == 6
+            if !tmp.8 jump and_false_0
+            tmp.7 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.7 = 0
+        
+          and_end_1:
+            if !tmp.7 jump and_false_2
+            tmp.11 = c.2 == 10
+            if !tmp.11 jump and_false_2
+            tmp.10 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.10 = 0
+        
+          and_end_3:
+            return tmp.10
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2627,45 +2739,51 @@ fn test_chapter_5_valid_extra_credit_incr_parenthesized() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          b.1 = 2
-          tmp.0 = inc a.0
-          a.0 = tmp.0
-          tmp.1 = - tmp.0
-          c.2 = tmp.1
-          tmp.2 = b.1
-          tmp.3 = dec b.1
-          b.1 = tmp.3
-          tmp.4 = ! tmp.2
-          d.3 = tmp.4
-          tmp.5 = a.0 == 2
-          jump and_false__0 if !tmp.5
-          tmp.8 = b.1 == 1
-          jump and_false__0 if !tmp.8
-          tmp.7 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.7 = 0
-        and_end__1:
-          jump and_false__2 if !tmp.7
-          tmp.12 = - 2
-          tmp.11 = c.2 == tmp.12
-          jump and_false__2 if !tmp.11
-          tmp.10 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.10 = 0
-        and_end__3:
-          jump and_false__4 if !tmp.10
-          tmp.15 = d.3 == 0
-          jump and_false__4 if !tmp.15
-          tmp.14 = 1
-          jump and_end__5
-        and_false__4:
-          tmp.14 = 0
-        and_end__5:
-          return tmp.14
-          return 0
+            a.0 = 1
+            b.1 = 2
+            tmp.0 = inc a.0
+            a.0 = tmp.0
+            tmp.1 = - tmp.0
+            c.2 = tmp.1
+            tmp.2 = b.1
+            tmp.3 = dec b.1
+            b.1 = tmp.3
+            tmp.4 = ! tmp.2
+            d.3 = tmp.4
+            tmp.5 = a.0 == 2
+            if !tmp.5 jump and_false_0
+            tmp.8 = b.1 == 1
+            if !tmp.8 jump and_false_0
+            tmp.7 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.7 = 0
+        
+          and_end_1:
+            if !tmp.7 jump and_false_2
+            tmp.12 = - 2
+            tmp.11 = c.2 == tmp.12
+            if !tmp.11 jump and_false_2
+            tmp.10 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.10 = 0
+        
+          and_end_3:
+            if !tmp.10 jump and_false_4
+            tmp.15 = d.3 == 0
+            if !tmp.15 jump and_false_4
+            tmp.14 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.14 = 0
+        
+          and_end_5:
+            return tmp.14
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2684,43 +2802,49 @@ fn test_chapter_5_valid_extra_credit_postfix_incr_and_decr() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          b.1 = 2
-          tmp.0 = a.0
-          tmp.1 = inc a.0
-          a.0 = tmp.1
-          c.2 = tmp.0
-          tmp.2 = b.1
-          tmp.3 = dec b.1
-          b.1 = tmp.3
-          d.3 = tmp.2
-          tmp.4 = a.0 == 2
-          jump and_false__0 if !tmp.4
-          tmp.7 = b.1 == 1
-          jump and_false__0 if !tmp.7
-          tmp.6 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.6 = 0
-        and_end__1:
-          jump and_false__2 if !tmp.6
-          tmp.10 = c.2 == 1
-          jump and_false__2 if !tmp.10
-          tmp.9 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.9 = 0
-        and_end__3:
-          jump and_false__4 if !tmp.9
-          tmp.13 = d.3 == 2
-          jump and_false__4 if !tmp.13
-          tmp.12 = 1
-          jump and_end__5
-        and_false__4:
-          tmp.12 = 0
-        and_end__5:
-          return tmp.12
-          return 0
+            a.0 = 1
+            b.1 = 2
+            tmp.0 = a.0
+            tmp.1 = inc a.0
+            a.0 = tmp.1
+            c.2 = tmp.0
+            tmp.2 = b.1
+            tmp.3 = dec b.1
+            b.1 = tmp.3
+            d.3 = tmp.2
+            tmp.4 = a.0 == 2
+            if !tmp.4 jump and_false_0
+            tmp.7 = b.1 == 1
+            if !tmp.7 jump and_false_0
+            tmp.6 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.6 = 0
+        
+          and_end_1:
+            if !tmp.6 jump and_false_2
+            tmp.10 = c.2 == 1
+            if !tmp.10 jump and_false_2
+            tmp.9 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.9 = 0
+        
+          and_end_3:
+            if !tmp.9 jump and_false_4
+            tmp.13 = d.3 == 2
+            if !tmp.13 jump and_false_4
+            tmp.12 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.12 = 0
+        
+          and_end_5:
+            return tmp.12
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2737,23 +2861,25 @@ fn test_chapter_5_valid_extra_credit_postfix_precedence() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          tmp.0 = a.0
-          tmp.1 = inc a.0
-          a.0 = tmp.1
-          tmp.2 = ! tmp.0
-          b.1 = tmp.2
-          tmp.3 = a.0 == 2
-          jump and_false__0 if !tmp.3
-          tmp.6 = b.1 == 0
-          jump and_false__0 if !tmp.6
-          tmp.5 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.5 = 0
-        and_end__1:
-          return tmp.5
-          return 0
+            a.0 = 1
+            tmp.0 = a.0
+            tmp.1 = inc a.0
+            a.0 = tmp.1
+            tmp.2 = ! tmp.0
+            b.1 = tmp.2
+            tmp.3 = a.0 == 2
+            if !tmp.3 jump and_false_0
+            tmp.6 = b.1 == 0
+            if !tmp.6 jump and_false_0
+            tmp.5 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.5 = 0
+        
+          and_end_1:
+            return tmp.5
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2772,41 +2898,47 @@ fn test_chapter_5_valid_extra_credit_prefix_incr_and_decr() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          b.1 = 2
-          tmp.0 = inc a.0
-          a.0 = tmp.0
-          c.2 = tmp.0
-          tmp.1 = dec b.1
-          b.1 = tmp.1
-          d.3 = tmp.1
-          tmp.2 = a.0 == 2
-          jump and_false__0 if !tmp.2
-          tmp.5 = b.1 == 1
-          jump and_false__0 if !tmp.5
-          tmp.4 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.4 = 0
-        and_end__1:
-          jump and_false__2 if !tmp.4
-          tmp.8 = c.2 == 2
-          jump and_false__2 if !tmp.8
-          tmp.7 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.7 = 0
-        and_end__3:
-          jump and_false__4 if !tmp.7
-          tmp.11 = d.3 == 1
-          jump and_false__4 if !tmp.11
-          tmp.10 = 1
-          jump and_end__5
-        and_false__4:
-          tmp.10 = 0
-        and_end__5:
-          return tmp.10
-          return 0
+            a.0 = 1
+            b.1 = 2
+            tmp.0 = inc a.0
+            a.0 = tmp.0
+            c.2 = tmp.0
+            tmp.1 = dec b.1
+            b.1 = tmp.1
+            d.3 = tmp.1
+            tmp.2 = a.0 == 2
+            if !tmp.2 jump and_false_0
+            tmp.5 = b.1 == 1
+            if !tmp.5 jump and_false_0
+            tmp.4 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.4 = 0
+        
+          and_end_1:
+            if !tmp.4 jump and_false_2
+            tmp.8 = c.2 == 2
+            if !tmp.8 jump and_false_2
+            tmp.7 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.7 = 0
+        
+          and_end_3:
+            if !tmp.7 jump and_false_4
+            tmp.11 = d.3 == 1
+            if !tmp.11 jump and_false_4
+            tmp.10 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.10 = 0
+        
+          and_end_5:
+            return tmp.10
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2823,11 +2955,11 @@ fn test_chapter_5_valid_kw_var_names() {
     "#;
     let expected = r#"
         function main { 
-          return_val.0 = 3
-          void2.1 = 2
-          tmp.0 = return_val.0 + void2.1
-          return tmp.0
-          return 0
+            return_val.0 = 3
+            void2.1 = 2
+            tmp.0 = return_val.0 + void2.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2843,10 +2975,10 @@ fn test_chapter_5_valid_local_var_missing_return() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 3
-          tmp.0 = a.0 + 5
-          a.0 = tmp.0
-          return 0
+            a.0 = 3
+            tmp.0 = a.0 + 5
+            a.0 = tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2864,14 +2996,14 @@ fn test_chapter_5_valid_mixed_precedence_assignment() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          b.1 = 0
-          b.1 = a.0
-          tmp.0 = 3 * b.1
-          a.0 = tmp.0
-          tmp.1 = a.0 + b.1
-          return tmp.1
-          return 0
+            a.0 = 1
+            b.1 = 0
+            b.1 = a.0
+            tmp.0 = 3 * b.1
+            a.0 = tmp.0
+            tmp.1 = a.0 + b.1
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2888,17 +3020,19 @@ fn test_chapter_5_valid_non_short_circuit_or() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          jump or_true__0if 0
-          a.0 = 1
-          jump or_true__0if a.0
-          tmp.1 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.1 = 1
-        or_end__1:
-          return a.0
-          return 0
+            a.0 = 0
+            if 0 jump or_true_0
+            a.0 = 1
+            if a.0 jump or_true_0
+            tmp.1 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.1 = 1
+        
+          or_end_1:
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2913,7 +3047,7 @@ fn test_chapter_5_valid_null_statement() {
     "#;
     let expected = r#"
         function main { 
-          return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2929,8 +3063,8 @@ fn test_chapter_5_valid_null_then_return() {
     "#;
     let expected = r#"
         function main { 
-          return 0
-          return 0
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2946,9 +3080,9 @@ fn test_chapter_5_valid_return_var() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 2
-          return a.0
-          return 0
+            a.0 = 2
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2965,17 +3099,19 @@ fn test_chapter_5_valid_short_circuit_and_fail() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          jump and_false__0 if !0
-          a.0 = 5
-          jump and_false__0 if !a.0
-          tmp.1 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.1 = 0
-        and_end__1:
-          return a.0
-          return 0
+            a.0 = 0
+            if !0 jump and_false_0
+            a.0 = 5
+            if !a.0 jump and_false_0
+            tmp.1 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.1 = 0
+        
+          and_end_1:
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -2992,17 +3128,19 @@ fn test_chapter_5_valid_short_circuit_or() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          jump or_true__0if 1
-          a.0 = 1
-          jump or_true__0if a.0
-          tmp.1 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.1 = 1
-        or_end__1:
-          return a.0
-          return 0
+            a.0 = 0
+            if 1 jump or_true_0
+            a.0 = 1
+            if a.0 jump or_true_0
+            tmp.1 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.1 = 1
+        
+          or_end_1:
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3018,9 +3156,9 @@ fn test_chapter_5_valid_unused_exp() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 2 + 2
-          return 0
-          return 0
+            tmp.0 = 2 + 2
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3037,12 +3175,12 @@ fn test_chapter_5_valid_use_assignment_result() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          b.1 = 2
-          b.1 = 4
-          a.0 = b.1
-          return a.0
-          return 0
+            a.0 = 1
+            b.1 = 2
+            b.1 = 4
+            a.0 = b.1
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3058,16 +3196,18 @@ fn test_chapter_5_valid_use_val_in_own_initializer() {
     "#;
     let expected = r#"
         function main { 
-          jump and_false__0 if !0
-          jump and_false__0 if !a.0
-          tmp.1 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.1 = 0
-        and_end__1:
-          a.0 = tmp.1
-          return a.0
-          return 0
+            if !0 jump and_false_0
+            if !a.0 jump and_false_0
+            tmp.1 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.1 = 0
+        
+          and_end_1:
+            a.0 = tmp.1
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3084,16 +3224,18 @@ fn test_chapter_6_valid_assign_ternary() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          jump else__1 if !1
-          tmp.0 = 2
-          jump end_if__0
-        else__1:
-          tmp.0 = 3
-        end_if__0:
-          a.0 = tmp.0
-          return a.0
-          return 0
+            a.0 = 0
+            if !1 jump else_1
+            tmp.0 = 2
+            jump end_if_0
+        
+          else_1:
+            tmp.0 = 3
+        
+          end_if_0:
+            a.0 = tmp.0
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3109,12 +3251,13 @@ fn test_chapter_6_valid_binary_condition() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 + 2
-          tmp.1 = tmp.0 == 3
-          jump end_if__0 if !tmp.1
-          return 5
-        end_if__0:
-          return 0
+            tmp.0 = 1 + 2
+            tmp.1 = tmp.0 == 3
+            if !tmp.1 jump end_if_0
+            return 5
+        
+          end_if_0:
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3130,12 +3273,13 @@ fn test_chapter_6_valid_binary_false_condition() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 + 2
-          tmp.1 = tmp.0 == 4
-          jump end_if__0 if !tmp.1
-          return 5
-        end_if__0:
-          return 0
+            tmp.0 = 1 + 2
+            tmp.1 = tmp.0 == 4
+            if !tmp.1 jump end_if_0
+            return 5
+        
+          end_if_0:
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3154,14 +3298,16 @@ fn test_chapter_6_valid_else() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          jump else__1 if !a.0
-          return 1
-          jump end_if__0
-        else__1:
-          return 2
-        end_if__0:
-          return 0
+            a.0 = 0
+            if !a.0 jump else_1
+            return 1
+            jump end_if_0
+        
+          else_1:
+            return 2
+        
+          end_if_0:
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3178,17 +3324,19 @@ fn test_chapter_6_valid_extra_credit_bitwise_ternary() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = 1 ^ 1
-          jump else__1 if !tmp.0
-          result.0 = 4
-          tmp.1 = result.0
-          jump end_if__0
-        else__1:
-          result.0 = 5
-          tmp.1 = result.0
-        end_if__0:
-          return result.0
-          return 0
+            tmp.0 = 1 ^ 1
+            if !tmp.0 jump else_1
+            result.0 = 4
+            tmp.1 = result.0
+            jump end_if_0
+        
+          else_1:
+            result.0 = 5
+            tmp.1 = result.0
+        
+          end_if_0:
+            return result.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3205,17 +3353,19 @@ fn test_chapter_6_valid_extra_credit_compound_assign_ternary() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 4
-          jump else__1 if !1
-          tmp.1 = 2
-          jump end_if__0
-        else__1:
-          tmp.1 = 3
-        end_if__0:
-          tmp.0 = a.0 * tmp.1
-          a.0 = tmp.0
-          return a.0
-          return 0
+            a.0 = 4
+            if !1 jump else_1
+            tmp.1 = 2
+            jump end_if_0
+        
+          else_1:
+            tmp.1 = 3
+        
+          end_if_0:
+            tmp.0 = a.0 * tmp.1
+            a.0 = tmp.0
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3233,14 +3383,15 @@ fn test_chapter_6_valid_extra_credit_compound_if_expression() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          tmp.0 = a.0 + 1
-          a.0 = tmp.0
-          jump end_if__0 if !a.0
-          return a.0
-        end_if__0:
-          return 10
-          return 0
+            a.0 = 0
+            tmp.0 = a.0 + 1
+            a.0 = tmp.0
+            if !a.0 jump end_if_0
+            return a.0
+        
+          end_if_0:
+            return 10
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3260,23 +3411,26 @@ fn test_chapter_6_valid_extra_credit_goto_after_declaration() {
     "#;
     let expected = r#"
         function main { 
-          x.0 = 1
-          jump post_declaration_2
-          x.0 = 0
-          i.1 = x.0
-        post_declaration:
-          i.1 = 5
-          tmp.0 = x.0 == 1
-          jump and_false__0 if !tmp.0
-          tmp.3 = i.1 == 5
-          jump and_false__0 if !tmp.3
-          tmp.2 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.2 = 0
-        and_end__1:
-          return tmp.2
-          return 0
+            x.0 = 1
+            jump post_declaration_2
+            x.0 = 0
+            i.1 = x.0
+        
+          post_declaration_2:
+            i.1 = 5
+            tmp.0 = x.0 == 1
+            if !tmp.0 jump and_false_0
+            tmp.3 = i.1 == 5
+            if !tmp.3 jump and_false_0
+            tmp.2 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.2 = 0
+        
+          and_end_1:
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3295,13 +3449,15 @@ fn test_chapter_6_valid_extra_credit_goto_backwards() {
     "#;
     let expected = r#"
         function main { 
-          jump end_if__0 if !0
-        label:
-          return 5
-        end_if__0:
-          jump label_0
-          return 0
-          return 0
+            if !0 jump end_if_0
+        
+          label_0:
+            return 5
+        
+          end_if_0:
+            jump label_0
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3319,11 +3475,12 @@ fn test_chapter_6_valid_extra_credit_goto_label() {
     "#;
     let expected = r#"
         function main { 
-          jump label_0
-          return 0
-        label:
-          return 1
-          return 0
+            jump label_0
+            return 0
+        
+          label_0:
+            return 1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3342,12 +3499,13 @@ fn test_chapter_6_valid_extra_credit_goto_label_and_var() {
     "#;
     let expected = r#"
         function main { 
-          ident.0 = 5
-          jump ident_1
-          return 0
-        ident:
-          return ident.0
-          return 0
+            ident.0 = 5
+            jump ident_1
+            return 0
+        
+          ident_1:
+            return ident.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3365,11 +3523,12 @@ fn test_chapter_6_valid_extra_credit_goto_label_main() {
     "#;
     let expected = r#"
         function main { 
-          jump main_0
-          return 5
-        main:
-          return 0
-          return 0
+            jump main_0
+            return 5
+        
+          main_0:
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3387,11 +3546,12 @@ fn test_chapter_6_valid_extra_credit_goto_label_main_2() {
     "#;
     let expected = r#"
         function main { 
-          jump _main_0
-          return 0
-        _main:
-          return 1
-          return 0
+            jump _main_0
+            return 0
+        
+          _main_0:
+            return 1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3410,12 +3570,14 @@ fn test_chapter_6_valid_extra_credit_goto_nested_label() {
     "#;
     let expected = r#"
         function main { 
-          jump labelB_1
-        labelA:
-        labelB:
-          return 5
-          return 0
-          return 0
+            jump labelB_1
+        
+          labelA_0:
+        
+          labelB_1:
+            return 5
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3446,27 +3608,35 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-        label_if:
-          jump else__1 if !a.0
-          jump label_expression
-          jump end_if__0
-        else__1:
-          jump label_empty
-        end_if__0:
-        label_goto:
-          jump label_return
-          jump end_if__2 if !0
-        label_expression:
-          a.0 = 0
-        end_if__2:
-          jump label_if_1
-        label_return:
-          return a.0
-        label_empty:
-          a.0 = 100
-          jump label_goto_2
-          return 0
+            a.0 = 1
+        
+          label_if_1:
+            if !a.0 jump else_1
+            jump label_expression_3
+            jump end_if_0
+        
+          else_1:
+            jump label_empty_5
+        
+          end_if_0:
+        
+          label_goto_2:
+            jump label_return_4
+            if !0 jump end_if_2
+        
+          label_expression_3:
+            a.0 = 0
+        
+          end_if_2:
+            jump label_if_1
+        
+          label_return_4:
+            return a.0
+        
+          label_empty_5:
+            a.0 = 100
+            jump label_goto_2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3484,11 +3654,12 @@ fn test_chapter_6_valid_extra_credit_label_token() {
     "#;
     let expected = r#"
         function main { 
-          jump _foo_1__0
-          return 0
-        _foo_1_:
-          return 1
-          return 0
+            jump _foo_1__0
+            return 0
+        
+          _foo_1__0:
+            return 1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3505,20 +3676,22 @@ fn test_chapter_6_valid_extra_credit_lh_compound_assignment() {
     "#;
     let expected = r#"
         function main { 
-          x.0 = 10
-          tmp.0 = x.0 - 1
-          x.0 = tmp.0
-          jump else__1 if !x.0
-          tmp.2 = x.0 / 2
-          x.0 = tmp.2
-          tmp.1 = x.0
-          jump end_if__0
-        else__1:
-          tmp.1 = 0
-        end_if__0:
-          tmp.3 = x.0 == 4
-          return tmp.3
-          return 0
+            x.0 = 10
+            tmp.0 = x.0 - 1
+            x.0 = tmp.0
+            if !x.0 jump else_1
+            tmp.2 = x.0 / 2
+            x.0 = tmp.2
+            tmp.1 = x.0
+            jump end_if_0
+        
+          else_1:
+            tmp.1 = 0
+        
+          end_if_0:
+            tmp.3 = x.0 == 4
+            return tmp.3
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3538,23 +3711,26 @@ fn test_chapter_6_valid_extra_credit_postfix_if() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          tmp.0 = a.0
-          tmp.1 = dec a.0
-          a.0 = tmp.1
-          jump else__1 if !tmp.0
-          return 0
-          jump end_if__0
-        else__1:
-          tmp.2 = a.0
-          tmp.3 = dec a.0
-          a.0 = tmp.3
-          jump end_if__2 if !tmp.2
-          return 1
-        end_if__2:
-        end_if__0:
-          return 0
-          return 0
+            a.0 = 0
+            tmp.0 = a.0
+            tmp.1 = dec a.0
+            a.0 = tmp.1
+            if !tmp.0 jump else_1
+            return 0
+            jump end_if_0
+        
+          else_1:
+            tmp.2 = a.0
+            tmp.3 = dec a.0
+            a.0 = tmp.3
+            if !tmp.2 jump end_if_2
+            return 1
+        
+          end_if_2:
+        
+          end_if_0:
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3571,19 +3747,21 @@ fn test_chapter_6_valid_extra_credit_postfix_in_ternary() {
     "#;
     let expected = r#"
         function main { 
-          x.0 = 10
-          tmp.0 = x.0 - 10
-          jump else__1 if !tmp.0
-          tmp.1 = 0
-          jump end_if__0
-        else__1:
-          tmp.2 = x.0
-          tmp.3 = dec x.0
-          x.0 = tmp.3
-          tmp.1 = tmp.2
-        end_if__0:
-          return x.0
-          return 0
+            x.0 = 10
+            tmp.0 = x.0 - 10
+            if !tmp.0 jump else_1
+            tmp.1 = 0
+            jump end_if_0
+        
+          else_1:
+            tmp.2 = x.0
+            tmp.3 = dec x.0
+            x.0 = tmp.3
+            tmp.1 = tmp.2
+        
+          end_if_0:
+            return x.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3603,22 +3781,25 @@ fn test_chapter_6_valid_extra_credit_prefix_if() {
     "#;
     let expected = r#"
         function main { 
-          tmp.0 = - 1
-          a.0 = tmp.0
-          tmp.1 = inc a.0
-          a.0 = tmp.1
-          jump else__1 if !tmp.1
-          return 0
-          jump end_if__0
-        else__1:
-          tmp.2 = inc a.0
-          a.0 = tmp.2
-          jump end_if__2 if !tmp.2
-          return 1
-        end_if__2:
-        end_if__0:
-          return 0
-          return 0
+            tmp.0 = - 1
+            a.0 = tmp.0
+            tmp.1 = inc a.0
+            a.0 = tmp.1
+            if !tmp.1 jump else_1
+            return 0
+            jump end_if_0
+        
+          else_1:
+            tmp.2 = inc a.0
+            a.0 = tmp.2
+            if !tmp.2 jump end_if_2
+            return 1
+        
+          end_if_2:
+        
+          end_if_0:
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3634,19 +3815,21 @@ fn test_chapter_6_valid_extra_credit_prefix_in_ternary() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          tmp.0 = inc a.0
-          a.0 = tmp.0
-          jump else__1 if !tmp.0
-          tmp.2 = inc a.0
-          a.0 = tmp.2
-          tmp.1 = tmp.2
-          jump end_if__0
-        else__1:
-          tmp.1 = 0
-        end_if__0:
-          return tmp.1
-          return 0
+            a.0 = 0
+            tmp.0 = inc a.0
+            a.0 = tmp.0
+            if !tmp.0 jump else_1
+            tmp.2 = inc a.0
+            a.0 = tmp.2
+            tmp.1 = tmp.2
+            jump end_if_0
+        
+          else_1:
+            tmp.1 = 0
+        
+          end_if_0:
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3662,9 +3845,10 @@ fn test_chapter_6_valid_extra_credit_unused_label() {
     "#;
     let expected = r#"
         function main { 
-        unused:
-          return 0
-          return 0
+        
+          unused_0:
+            return 0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3684,12 +3868,14 @@ fn test_chapter_6_valid_extra_credit_whitespace_after_label() {
     "#;
     let expected = r#"
         function main { 
-          jump label2_1
-          return 0
-        label1:
-        label2:
-          return 1
-          return 0
+            jump label2_1
+            return 0
+        
+          label1_0:
+        
+          label2_1:
+            return 1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3710,18 +3896,21 @@ fn test_chapter_6_valid_if_nested() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          b.1 = 0
-          jump else__1 if !a.0
-          b.1 = 1
-          jump end_if__0
-        else__1:
-          jump end_if__2 if !b.1
-          b.1 = 2
-        end_if__2:
-        end_if__0:
-          return b.1
-          return 0
+            a.0 = 1
+            b.1 = 0
+            if !a.0 jump else_1
+            b.1 = 1
+            jump end_if_0
+        
+          else_1:
+            if !b.1 jump end_if_2
+            b.1 = 2
+        
+          end_if_2:
+        
+          end_if_0:
+            return b.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3742,19 +3931,22 @@ fn test_chapter_6_valid_if_nested_2() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          b.1 = 1
-          jump else__1 if !a.0
-          b.1 = 1
-          jump end_if__0
-        else__1:
-          tmp.0 = ~ b.1
-          jump end_if__2 if !tmp.0
-          b.1 = 2
-        end_if__2:
-        end_if__0:
-          return b.1
-          return 0
+            a.0 = 0
+            b.1 = 1
+            if !a.0 jump else_1
+            b.1 = 1
+            jump end_if_0
+        
+          else_1:
+            tmp.0 = ~ b.1
+            if !tmp.0 jump end_if_2
+            b.1 = 2
+        
+          end_if_2:
+        
+          end_if_0:
+            return b.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3775,19 +3967,22 @@ fn test_chapter_6_valid_if_nested_3() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          a.0 = 1
-          jump end_if__0 if !a.0
-          tmp.0 = a.0 == 1
-          jump else__3 if !tmp.0
-          a.0 = 3
-          jump end_if__2
-        else__3:
-          a.0 = 4
-        end_if__2:
-        end_if__0:
-          return a.0
-          return 0
+            a.0 = 0
+            a.0 = 1
+            if !a.0 jump end_if_0
+            tmp.0 = a.0 == 1
+            if !tmp.0 jump else_3
+            a.0 = 3
+            jump end_if_2
+        
+          else_3:
+            a.0 = 4
+        
+          end_if_2:
+        
+          end_if_0:
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3808,20 +4003,23 @@ fn test_chapter_6_valid_if_nested_4() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          tmp.0 = ! a.0
-          jump end_if__0 if !tmp.0
-          tmp.1 = 3 / 4
-          jump else__3 if !tmp.1
-          a.0 = 3
-          jump end_if__2
-        else__3:
-          tmp.2 = 8 / 2
-          a.0 = tmp.2
-        end_if__2:
-        end_if__0:
-          return a.0
-          return 0
+            a.0 = 0
+            tmp.0 = ! a.0
+            if !tmp.0 jump end_if_0
+            tmp.1 = 3 / 4
+            if !tmp.1 jump else_3
+            a.0 = 3
+            jump end_if_2
+        
+          else_3:
+            tmp.2 = 8 / 2
+            a.0 = tmp.2
+        
+          end_if_2:
+        
+          end_if_0:
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3844,20 +4042,24 @@ fn test_chapter_6_valid_if_nested_5() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          jump else__1 if !0
-          jump else__3 if !0
-          a.0 = 3
-          jump end_if__2
-        else__3:
-          a.0 = 4
-        end_if__2:
-          jump end_if__0
-        else__1:
-          a.0 = 1
-        end_if__0:
-          return a.0
-          return 0
+            a.0 = 0
+            if !0 jump else_1
+            if !0 jump else_3
+            a.0 = 3
+            jump end_if_2
+        
+          else_3:
+            a.0 = 4
+        
+          end_if_2:
+            jump end_if_0
+        
+          else_1:
+            a.0 = 1
+        
+          end_if_0:
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3876,13 +4078,14 @@ fn test_chapter_6_valid_if_not_taken() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          b.1 = 0
-          jump end_if__0 if !a.0
-          b.1 = 1
-        end_if__0:
-          return b.1
-          return 0
+            a.0 = 0
+            b.1 = 0
+            if !a.0 jump end_if_0
+            b.1 = 1
+        
+          end_if_0:
+            return b.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3902,14 +4105,16 @@ fn test_chapter_6_valid_if_null_body() {
     "#;
     let expected = r#"
         function main { 
-          x.0 = 0
-          jump else__1 if !0
-          jump end_if__0
-        else__1:
-          x.0 = 1
-        end_if__0:
-          return x.0
-          return 0
+            x.0 = 0
+            if !0 jump else_1
+            jump end_if_0
+        
+          else_1:
+            x.0 = 1
+        
+          end_if_0:
+            return x.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3928,13 +4133,14 @@ fn test_chapter_6_valid_if_taken() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          b.1 = 0
-          jump end_if__0 if !a.0
-          b.1 = 1
-        end_if__0:
-          return b.1
-          return 0
+            a.0 = 1
+            b.1 = 0
+            if !a.0 jump end_if_0
+            b.1 = 1
+        
+          end_if_0:
+            return b.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3952,27 +4158,31 @@ fn test_chapter_6_valid_lh_assignment() {
     "#;
     let expected = r#"
         function main { 
-          x.0 = 10
-          y.1 = 0
-          x.0 = 5
-          jump else__1 if !x.0
-          tmp.0 = x.0
-          jump end_if__0
-        else__1:
-          tmp.0 = 2
-        end_if__0:
-          y.1 = tmp.0
-          tmp.1 = x.0 == 5
-          jump and_false__2 if !tmp.1
-          tmp.4 = y.1 == 5
-          jump and_false__2 if !tmp.4
-          tmp.3 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.3 = 0
-        and_end__3:
-          return tmp.3
-          return 0
+            x.0 = 10
+            y.1 = 0
+            x.0 = 5
+            if !x.0 jump else_1
+            tmp.0 = x.0
+            jump end_if_0
+        
+          else_1:
+            tmp.0 = 2
+        
+          end_if_0:
+            y.1 = tmp.0
+            tmp.1 = x.0 == 5
+            if !tmp.1 jump and_false_2
+            tmp.4 = y.1 == 5
+            if !tmp.4 jump and_false_2
+            tmp.3 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.3 = 0
+        
+          and_end_3:
+            return tmp.3
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -3997,23 +4207,27 @@ fn test_chapter_6_valid_multiple_if() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          b.1 = 0
-          jump else__1 if !a.0
-          a.0 = 2
-          jump end_if__0
-        else__1:
-          a.0 = 3
-        end_if__0:
-          jump else__3 if !b.1
-          b.1 = 4
-          jump end_if__2
-        else__3:
-          b.1 = 5
-        end_if__2:
-          tmp.0 = a.0 + b.1
-          return tmp.0
-          return 0
+            a.0 = 0
+            b.1 = 0
+            if !a.0 jump else_1
+            a.0 = 2
+            jump end_if_0
+        
+          else_1:
+            a.0 = 3
+        
+          end_if_0:
+            if !b.1 jump else_3
+            b.1 = 4
+            jump end_if_2
+        
+          else_3:
+            b.1 = 5
+        
+          end_if_2:
+            tmp.0 = a.0 + b.1
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4031,24 +4245,28 @@ fn test_chapter_6_valid_nested_ternary() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          b.1 = 2
-          flag.2 = 0
-          tmp.0 = a.0 > b.1
-          jump else__1 if !tmp.0
-          tmp.1 = 5
-          jump end_if__0
-        else__1:
-          jump else__3 if !flag.2
-          tmp.2 = 6
-          jump end_if__2
-        else__3:
-          tmp.2 = 7
-        end_if__2:
-          tmp.1 = tmp.2
-        end_if__0:
-          return tmp.1
-          return 0
+            a.0 = 1
+            b.1 = 2
+            flag.2 = 0
+            tmp.0 = a.0 > b.1
+            if !tmp.0 jump else_1
+            tmp.1 = 5
+            jump end_if_0
+        
+          else_1:
+            if !flag.2 jump else_3
+            tmp.2 = 6
+            jump end_if_2
+        
+          else_3:
+            tmp.2 = 7
+        
+          end_if_2:
+            tmp.1 = tmp.2
+        
+          end_if_0:
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4065,35 +4283,43 @@ fn test_chapter_6_valid_nested_ternary_2() {
     "#;
     let expected = r#"
         function main { 
-          jump else__1 if !1
-          jump else__3 if !2
-          tmp.1 = 3
-          jump end_if__2
-        else__3:
-          tmp.1 = 4
-        end_if__2:
-          tmp.0 = tmp.1
-          jump end_if__0
-        else__1:
-          tmp.0 = 5
-        end_if__0:
-          a.0 = tmp.0
-          jump else__5 if !0
-          jump else__7 if !2
-          tmp.3 = 3
-          jump end_if__6
-        else__7:
-          tmp.3 = 4
-        end_if__6:
-          tmp.2 = tmp.3
-          jump end_if__4
-        else__5:
-          tmp.2 = 5
-        end_if__4:
-          b.1 = tmp.2
-          tmp.4 = a.0 * b.1
-          return tmp.4
-          return 0
+            if !1 jump else_1
+            if !2 jump else_3
+            tmp.1 = 3
+            jump end_if_2
+        
+          else_3:
+            tmp.1 = 4
+        
+          end_if_2:
+            tmp.0 = tmp.1
+            jump end_if_0
+        
+          else_1:
+            tmp.0 = 5
+        
+          end_if_0:
+            a.0 = tmp.0
+            if !0 jump else_5
+            if !2 jump else_7
+            tmp.3 = 3
+            jump end_if_6
+        
+          else_7:
+            tmp.3 = 4
+        
+          end_if_6:
+            tmp.2 = tmp.3
+            jump end_if_4
+        
+          else_5:
+            tmp.2 = 5
+        
+          end_if_4:
+            b.1 = tmp.2
+            tmp.4 = a.0 * b.1
+            return tmp.4
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4111,18 +4337,20 @@ fn test_chapter_6_valid_rh_assignment() {
     "#;
     let expected = r#"
         function main { 
-          flag.0 = 1
-          a.1 = 0
-          jump else__1 if !flag.0
-          a.1 = 1
-          tmp.0 = a.1
-          jump end_if__0
-        else__1:
-          a.1 = 0
-          tmp.0 = a.1
-        end_if__0:
-          return a.1
-          return 0
+            flag.0 = 1
+            a.1 = 0
+            if !flag.0 jump else_1
+            a.1 = 1
+            tmp.0 = a.1
+            jump end_if_0
+        
+          else_1:
+            a.1 = 0
+            tmp.0 = a.1
+        
+          end_if_0:
+            return a.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4138,17 +4366,19 @@ fn test_chapter_6_valid_ternary() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          tmp.1 = - 1
-          tmp.0 = a.0 > tmp.1
-          jump else__1 if !tmp.0
-          tmp.2 = 4
-          jump end_if__0
-        else__1:
-          tmp.2 = 5
-        end_if__0:
-          return tmp.2
-          return 0
+            a.0 = 0
+            tmp.1 = - 1
+            tmp.0 = a.0 > tmp.1
+            if !tmp.0 jump else_1
+            tmp.2 = 4
+            jump end_if_0
+        
+          else_1:
+            tmp.2 = 5
+        
+          end_if_0:
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4165,17 +4395,19 @@ fn test_chapter_6_valid_ternary_middle_assignment() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          tmp.0 = a.0 != 2
-          jump else__1 if !tmp.0
-          a.0 = 2
-          tmp.1 = a.0
-          jump end_if__0
-        else__1:
-          tmp.1 = 0
-        end_if__0:
-          return a.0
-          return 0
+            a.0 = 1
+            tmp.0 = a.0 != 2
+            if !tmp.0 jump else_1
+            a.0 = 2
+            tmp.1 = a.0
+            jump end_if_0
+        
+          else_1:
+            tmp.1 = 0
+        
+          end_if_0:
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4191,16 +4423,18 @@ fn test_chapter_6_valid_ternary_middle_binop() {
     "#;
     let expected = r#"
         function main { 
-          jump else__1 if !1
-          tmp.1 = 3 % 2
-          tmp.0 = tmp.1
-          jump end_if__0
-        else__1:
-          tmp.0 = 4
-        end_if__0:
-          a.0 = tmp.0
-          return a.0
-          return 0
+            if !1 jump else_1
+            tmp.1 = 3 % 2
+            tmp.0 = tmp.1
+            jump end_if_0
+        
+          else_1:
+            tmp.0 = 4
+        
+          end_if_0:
+            a.0 = tmp.0
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4216,22 +4450,26 @@ fn test_chapter_6_valid_ternary_precedence() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 10
-          jump or_true__0if a.0
-          jump or_true__0if 0
-          tmp.1 = 0
-          jump or_end__1
-        or_true__0:
-          tmp.1 = 1
-        or_end__1:
-          jump else__3 if !tmp.1
-          tmp.2 = 20
-          jump end_if__2
-        else__3:
-          tmp.2 = 0
-        end_if__2:
-          return tmp.2
-          return 0
+            a.0 = 10
+            if a.0 jump or_true_0
+            if 0 jump or_true_0
+            tmp.1 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.1 = 1
+        
+          or_end_1:
+            if !tmp.1 jump else_3
+            tmp.2 = 20
+            jump end_if_2
+        
+          else_3:
+            tmp.2 = 0
+        
+          end_if_2:
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4246,21 +4484,25 @@ fn test_chapter_6_valid_ternary_rh_binop() {
     "#;
     let expected = r#"
         function main { 
-          jump else__1 if !0
-          tmp.0 = 1
-          jump end_if__0
-        else__1:
-          jump or_true__2if 0
-          jump or_true__2if 2
-          tmp.2 = 0
-          jump or_end__3
-        or_true__2:
-          tmp.2 = 1
-        or_end__3:
-          tmp.0 = tmp.2
-        end_if__0:
-          return tmp.0
-          return 0
+            if !0 jump else_1
+            tmp.0 = 1
+            jump end_if_0
+        
+          else_1:
+            if 0 jump or_true_2
+            if 2 jump or_true_2
+            tmp.2 = 0
+            jump or_end_3
+        
+          or_true_2:
+            tmp.2 = 1
+        
+          or_end_3:
+            tmp.0 = tmp.2
+        
+          end_if_0:
+            return tmp.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4278,18 +4520,20 @@ fn test_chapter_6_valid_ternary_short_circuit() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          b.1 = 0
-          jump else__1 if !a.0
-          b.1 = 1
-          tmp.0 = b.1
-          jump end_if__0
-        else__1:
-          b.1 = 2
-          tmp.0 = b.1
-        end_if__0:
-          return b.1
-          return 0
+            a.0 = 1
+            b.1 = 0
+            if !a.0 jump else_1
+            b.1 = 1
+            tmp.0 = b.1
+            jump end_if_0
+        
+          else_1:
+            b.1 = 2
+            tmp.0 = b.1
+        
+          end_if_0:
+            return b.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4307,18 +4551,20 @@ fn test_chapter_6_valid_ternary_short_circuit_2() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          b.1 = 0
-          jump else__1 if !a.0
-          b.1 = 1
-          tmp.0 = b.1
-          jump end_if__0
-        else__1:
-          b.1 = 2
-          tmp.0 = b.1
-        end_if__0:
-          return b.1
-          return 0
+            a.0 = 0
+            b.1 = 0
+            if !a.0 jump else_1
+            b.1 = 1
+            tmp.0 = b.1
+            jump end_if_0
+        
+          else_1:
+            b.1 = 2
+            tmp.0 = b.1
+        
+          end_if_0:
+            return b.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4337,11 +4583,11 @@ fn test_chapter_7_valid_assign_to_self() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 3
-          a.1 = 4
-          a.1 = a.1
-          return a.1
-          return 0
+            a.0 = 3
+            a.1 = 4
+            a.1 = a.1
+            return a.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4360,11 +4606,11 @@ fn test_chapter_7_valid_assign_to_self_2() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 3
-          a.1 = 4
-          a.1 = a.1
-          return a.0
-          return 0
+            a.0 = 3
+            a.1 = 4
+            a.1 = a.1
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4383,10 +4629,10 @@ fn test_chapter_7_valid_declaration_only() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 1
-          b.1 = a.0
-          return a.0
-          return 0
+            a.0 = 1
+            b.1 = a.0
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4405,12 +4651,12 @@ fn test_chapter_7_valid_empty_blocks() {
     "#;
     let expected = r#"
         function main { 
-          ten.0 = 10
-          tmp.0 = 10 * 2
-          twenty.1 = tmp.0
-          tmp.1 = ten.0 + twenty.1
-          return tmp.1
-          return 0
+            ten.0 = 10
+            tmp.0 = 10 * 2
+            twenty.1 = tmp.0
+            tmp.1 = ten.0 + twenty.1
+            return tmp.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4433,20 +4679,22 @@ fn test_chapter_7_valid_extra_credit_compound_subtract_in_block() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 5
-          tmp.0 = a.0 > 4
-          jump end_if__0 if !tmp.0
-          tmp.1 = a.0 - 4
-          a.0 = tmp.1
-          a.1 = 5
-          tmp.2 = a.1 > 4
-          jump end_if__2 if !tmp.2
-          tmp.3 = a.1 - 4
-          a.1 = tmp.3
-        end_if__2:
-        end_if__0:
-          return a.0
-          return 0
+            a.0 = 5
+            tmp.0 = a.0 > 4
+            if !tmp.0 jump end_if_0
+            tmp.1 = a.0 - 4
+            a.0 = tmp.1
+            a.1 = 5
+            tmp.2 = a.1 > 4
+            if !tmp.2 jump end_if_2
+            tmp.3 = a.1 - 4
+            a.1 = tmp.3
+        
+          end_if_2:
+        
+          end_if_0:
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4468,15 +4716,17 @@ fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          tmp.0 = a.0 != 0
-          jump end_if__0 if !tmp.0
-        return_a:
-          return a.0
-        end_if__0:
-          a.2 = 4
-          jump return_a_1
-          return 0
+            a.0 = 0
+            tmp.0 = a.0 != 0
+            if !tmp.0 jump end_if_0
+        
+          return_a_1:
+            return a.0
+        
+          end_if_0:
+            a.2 = 4
+            jump return_a_1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4498,13 +4748,14 @@ fn test_chapter_7_valid_extra_credit_goto_inner_scope() {
     "#;
     let expected = r#"
         function main { 
-          x.0 = 5
-          jump inner_2
-          x.1 = 0
-        inner:
-          x.1 = 1
-          return x.1
-          return 0
+            x.0 = 5
+            jump inner_2
+            x.1 = 0
+        
+          inner_2:
+            x.1 = 1
+            return x.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4528,26 +4779,30 @@ fn test_chapter_7_valid_extra_credit_goto_outer_scope() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 10
-          b.1 = 0
-          jump end_if__0 if !a.0
-          a.2 = 1
-          b.1 = a.2
-          jump end_3
-        end_if__0:
-          a.0 = 9
-        end:
-          tmp.0 = a.0 == 10
-          jump and_false__2 if !tmp.0
-          tmp.3 = b.1 == 1
-          jump and_false__2 if !tmp.3
-          tmp.2 = 1
-          jump and_end__3
-        and_false__2:
-          tmp.2 = 0
-        and_end__3:
-          return tmp.2
-          return 0
+            a.0 = 10
+            b.1 = 0
+            if !a.0 jump end_if_0
+            a.2 = 1
+            b.1 = a.2
+            jump end_3
+        
+          end_if_0:
+            a.0 = 9
+        
+          end_3:
+            tmp.0 = a.0 == 10
+            if !tmp.0 jump and_false_2
+            tmp.3 = b.1 == 1
+            if !tmp.3 jump and_false_2
+            tmp.2 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.2 = 0
+        
+          and_end_3:
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4578,26 +4833,30 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
     "#;
     let expected = r#"
         function main { 
-          sum.0 = 0
-          jump end_if__0 if !1
-          a.1 = 5
-          jump other_if_3
-          sum.0 = 0
-        first_if:
-          a.1 = 5
-          tmp.0 = sum.0 + a.1
-          sum.0 = tmp.0
-        end_if__0:
-          jump end_if__2 if !0
-        other_if:
-          a.4 = 6
-          tmp.1 = sum.0 + a.4
-          sum.0 = tmp.1
-          jump first_if_2
-          sum.0 = 0
-        end_if__2:
-          return sum.0
-          return 0
+            sum.0 = 0
+            if !1 jump end_if_0
+            a.1 = 5
+            jump other_if_3
+            sum.0 = 0
+        
+          first_if_2:
+            a.1 = 5
+            tmp.0 = sum.0 + a.1
+            sum.0 = tmp.0
+        
+          end_if_0:
+            if !0 jump end_if_2
+        
+          other_if_3:
+            a.4 = 6
+            tmp.1 = sum.0 + a.4
+            sum.0 = tmp.1
+            jump first_if_2
+            sum.0 = 0
+        
+          end_if_2:
+            return sum.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4619,24 +4878,26 @@ fn test_chapter_7_valid_hidden_then_visible() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 2
-          tmp.0 = - 4
-          a.0 = tmp.0
-          a.2 = 7
-          tmp.1 = a.2 + 1
-          b.1 = tmp.1
-          tmp.2 = b.1 == 8
-          jump and_false__0 if !tmp.2
-          tmp.6 = - 4
-          tmp.5 = a.0 == tmp.6
-          jump and_false__0 if !tmp.5
-          tmp.4 = 1
-          jump and_end__1
-        and_false__0:
-          tmp.4 = 0
-        and_end__1:
-          return tmp.4
-          return 0
+            a.0 = 2
+            tmp.0 = - 4
+            a.0 = tmp.0
+            a.2 = 7
+            tmp.1 = a.2 + 1
+            b.1 = tmp.1
+            tmp.2 = b.1 == 8
+            if !tmp.2 jump and_false_0
+            tmp.6 = - 4
+            tmp.5 = a.0 == tmp.6
+            if !tmp.5 jump and_false_0
+            tmp.4 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.4 = 0
+        
+          and_end_1:
+            return tmp.4
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4655,10 +4916,10 @@ fn test_chapter_7_valid_hidden_variable() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 2
-          a.1 = 1
-          return a.1
-          return 0
+            a.0 = 2
+            a.1 = 1
+            return a.1
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4677,9 +4938,9 @@ fn test_chapter_7_valid_inner_uninitialized() {
     "#;
     let expected = r#"
         function main { 
-          x.0 = 4
-          return x.0
-          return 0
+            x.0 = 4
+            return x.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4703,14 +4964,14 @@ fn test_chapter_7_valid_multiple_vars_same_name() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          b.1 = 4
-          a.0 = b.1
-          b.2 = 2
-          tmp.0 = a.0 - b.2
-          a.0 = tmp.0
-          return a.0
-          return 0
+            a.0 = 0
+            b.1 = 4
+            a.0 = b.1
+            b.2 = 2
+            tmp.0 = a.0 - b.2
+            a.0 = tmp.0
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4737,24 +4998,28 @@ fn test_chapter_7_valid_nested_if() {
     "#;
     let expected = r#"
         function main { 
-          a.0 = 0
-          jump else__1 if !a.0
-          b.1 = 2
-          return b.1
-          jump end_if__0
-        else__1:
-          c.2 = 3
-          tmp.0 = a.0 < c.2
-          jump else__3 if !tmp.0
-          tmp.1 = ! a.0
-          return tmp.1
-          jump end_if__2
-        else__3:
-          return 5
-        end_if__2:
-        end_if__0:
-          return a.0
-          return 0
+            a.0 = 0
+            if !a.0 jump else_1
+            b.1 = 2
+            return b.1
+            jump end_if_0
+        
+          else_1:
+            c.2 = 3
+            tmp.0 = a.0 < c.2
+            if !tmp.0 jump else_3
+            tmp.1 = ! a.0
+            return tmp.1
+            jump end_if_2
+        
+          else_3:
+            return 5
+        
+          end_if_2:
+        
+          end_if_0:
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4810,19 +5075,19 @@ fn test_chapter_7_valid_similar_var_names() {
     "#;
     let expected = r#"
         function main { 
-          a1.2 = 1
-          a.3 = 2
-          a1.4 = 2
-          a.13 = 20
-          result.1 = a.13
-          a.14 = 5
-          tmp.0 = result.1 + a.14
-          result.1 = tmp.0
-          tmp.1 = result.1 + a1.4
-          result.1 = tmp.1
-          tmp.2 = result.1 + a1.2
-          return tmp.2
-          return 0
+            a1.2 = 1
+            a.3 = 2
+            a1.4 = 2
+            a.13 = 20
+            result.1 = a.13
+            a.14 = 5
+            tmp.0 = result.1 + a.14
+            result.1 = tmp.0
+            tmp.1 = result.1 + a1.4
+            result.1 = tmp.1
+            tmp.2 = result.1 + a1.2
+            return tmp.2
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
@@ -4844,9 +5109,1386 @@ fn test_chapter_7_valid_use_in_inner_scope() {
     "#;
     let expected = r#"
         function main { 
-          x.0 = 3
-          return x.0
-          return 0
+            x.0 = 3
+            return x.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_break() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            int b = 20;
+            for (b = -20; b < 0; b = b + 1) {
+                a = a - 1;
+                if (a <= 0)
+                    break;
+            }
+            return a == 0 && b == -11;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 10
+            b.1 = 20
+            tmp.0 = - 20
+            b.1 = tmp.0
+        
+          start_loop_2:
+            tmp.1 = b.1 < 0
+            if !tmp.1 jump break_loop_2
+            tmp.2 = a.0 - 1
+            a.0 = tmp.2
+            tmp.3 = a.0 <= 0
+            if !tmp.3 jump end_if_0
+            jump break_loop_2
+        
+          end_if_0:
+        
+          continue_loop_2:
+            tmp.4 = b.1 + 1
+            b.1 = tmp.4
+            jump start_loop_2
+        
+          break_loop_2:
+            tmp.5 = a.0 == 0
+            if !tmp.5 jump and_false_2
+            tmp.9 = - 11
+            tmp.8 = b.1 == tmp.9
+            if !tmp.8 jump and_false_2
+            tmp.7 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.7 = 0
+        
+          and_end_3:
+            return tmp.7
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_break_immediate() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            while ((a = 1))
+                break;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 10
+        
+          continue_loop_1:
+            a.0 = 1
+            if !a.0 jump break_loop_1
+            jump break_loop_1
+            jump continue_loop_1
+        
+          break_loop_1:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_continue() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            int counter;
+            for (int i = 0; i <= 10; i = i + 1) {
+                counter = i;
+                if (i % 2 == 0)
+                    continue;
+                sum = sum + 1;
+            }
+            return sum == 5 && counter == 10;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            sum.0 = 0
+            i.3 = 0
+        
+          start_loop_2:
+            tmp.0 = i.3 <= 10
+            if !tmp.0 jump break_loop_2
+            counter.1 = i.3
+            tmp.1 = i.3 % 2
+            tmp.2 = tmp.1 == 0
+            if !tmp.2 jump end_if_0
+            jump continue_loop_2
+        
+          end_if_0:
+            tmp.3 = sum.0 + 1
+            sum.0 = tmp.3
+        
+          continue_loop_2:
+            tmp.4 = i.3 + 1
+            i.3 = tmp.4
+            jump start_loop_2
+        
+          break_loop_2:
+            tmp.5 = sum.0 == 5
+            if !tmp.5 jump and_false_2
+            tmp.8 = counter.1 == 10
+            if !tmp.8 jump and_false_2
+            tmp.7 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.7 = 0
+        
+          and_end_3:
+            return tmp.7
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_continue_empty_post() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            for (int i = 0; i < 10;) {
+                i = i + 1;
+                if (i % 2)
+                    continue;
+                sum = sum + i;
+            }
+            return sum;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            sum.0 = 0
+            i.2 = 0
+        
+          start_loop_1:
+            tmp.0 = i.2 < 10
+            if !tmp.0 jump break_loop_1
+            tmp.1 = i.2 + 1
+            i.2 = tmp.1
+            tmp.2 = i.2 % 2
+            if !tmp.2 jump end_if_0
+            jump continue_loop_1
+        
+          end_if_0:
+            tmp.3 = sum.0 + i.2
+            sum.0 = tmp.3
+        
+          continue_loop_1:
+            jump start_loop_1
+        
+          break_loop_1:
+            return sum.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_do_while() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            do {
+                a = a * 2;
+            } while(a < 11);
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 1
+        
+          start_loop_1:
+            tmp.0 = a.0 * 2
+            a.0 = tmp.0
+        
+          continue_loop_1:
+            tmp.1 = a.0 < 11
+            if tmp.1 jump start_loop_1
+        
+          break_loop_1:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_do_while_break_immediate() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            do
+                break;
+            while ((a = 1));
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 10
+        
+          start_loop_1:
+            jump break_loop_1
+        
+          continue_loop_1:
+            a.0 = 1
+            if a.0 jump start_loop_1
+        
+          break_loop_1:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_empty_expression() {
+    let src = r#"
+        int main(void) {
+            return 0;;;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_empty_loop_body() {
+    let src = r#"
+        int main(void) {
+            int i = 2147483642;
+            do ; while ((i = i - 5) >= 256);
+            return i;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            i.0 = 2147483642
+        
+          start_loop_1:
+        
+          continue_loop_1:
+            tmp.0 = i.0 - 5
+            i.0 = tmp.0
+            tmp.1 = i.0 >= 256
+            if tmp.1 jump start_loop_1
+        
+          break_loop_1:
+            return i.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression() {
+    let src = r#"
+        int main(void) {
+            int i = 100;
+            int sum = 0;
+            do sum += 2;
+            while (i -= 1);
+            return (i == 0 && sum == 200);
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            i.0 = 100
+            sum.1 = 0
+        
+          start_loop_2:
+            tmp.0 = sum.1 + 2
+            sum.1 = tmp.0
+        
+          continue_loop_2:
+            tmp.1 = i.0 - 1
+            i.0 = tmp.1
+            if i.0 jump start_loop_2
+        
+          break_loop_2:
+            tmp.2 = i.0 == 0
+            if !tmp.2 jump and_false_0
+            tmp.5 = sum.1 == 200
+            if !tmp.5 jump and_false_0
+            tmp.4 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.4 = 0
+        
+          and_end_1:
+            return tmp.4
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
+    let src = r#"
+        int main(void) {
+            int i = 1;
+            for (i *= -1; i >= -100; i -=3)
+                ;
+            return (i == -103);
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            i.0 = 1
+            tmp.1 = - 1
+            tmp.0 = i.0 * tmp.1
+            i.0 = tmp.0
+        
+          start_loop_1:
+            tmp.3 = - 100
+            tmp.2 = i.0 >= tmp.3
+            if !tmp.2 jump break_loop_1
+        
+          continue_loop_1:
+            tmp.4 = i.0 - 3
+            i.0 = tmp.4
+            jump start_loop_1
+        
+          break_loop_1:
+            tmp.6 = - 103
+            tmp.5 = i.0 == tmp.6
+            return tmp.5
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_goto_bypass_condition() {
+    let src = r#"
+        int main(void) {
+            int i = 1;
+            do {
+            while_start:
+                i = i + 1;
+                if (i < 10)
+                    goto while_start;
+            } while (0);
+            return i;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            i.0 = 1
+        
+          start_loop_1:
+        
+          while_start_2:
+            tmp.0 = i.0 + 1
+            i.0 = tmp.0
+            tmp.1 = i.0 < 10
+            if !tmp.1 jump end_if_0
+            jump while_start_2
+        
+          end_if_0:
+        
+          continue_loop_1:
+            if 0 jump start_loop_1
+        
+          break_loop_1:
+            return i.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_goto_bypass_init_exp() {
+    let src = r#"
+        int main(void) {
+            int i = 0;
+            goto target;
+            for (i = 5; i < 10; i = i + 1)
+            target:
+                if (i == 0)
+                    return 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            i.0 = 0
+            jump target_2
+            i.0 = 5
+        
+          start_loop_1:
+            tmp.0 = i.0 < 10
+            if !tmp.0 jump break_loop_1
+        
+          target_2:
+            tmp.1 = i.0 == 0
+            if !tmp.1 jump end_if_0
+            return 1
+        
+          end_if_0:
+        
+          continue_loop_1:
+            tmp.2 = i.0 + 1
+            i.0 = tmp.2
+            jump start_loop_1
+        
+          break_loop_1:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_goto_bypass_post_exp() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            for (int i = 0;; i = 0) {
+            lbl:
+                sum = sum + 1;
+                i = i + 1;
+                if (i > 10)
+                    break;
+                goto lbl;
+            }
+            return sum;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            sum.0 = 0
+            i.2 = 0
+        
+          start_loop_1:
+            if !1 jump break_loop_1
+        
+          lbl_3:
+            tmp.0 = sum.0 + 1
+            sum.0 = tmp.0
+            tmp.1 = i.2 + 1
+            i.2 = tmp.1
+            tmp.2 = i.2 > 10
+            if !tmp.2 jump end_if_0
+            jump break_loop_1
+        
+          end_if_0:
+            jump lbl_3
+        
+          continue_loop_1:
+            i.2 = 0
+            jump start_loop_1
+        
+          break_loop_1:
+            return sum.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_label_loop_body() {
+    let src = r#"
+        
+        int main(void) {
+            int result = 0;
+            goto label;
+            while (0)
+            label: { result = 1; }
+            return result;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            result.0 = 0
+            jump label_2
+        
+          continue_loop_1:
+            if !0 jump break_loop_1
+        
+          label_2:
+            result.0 = 1
+            jump continue_loop_1
+        
+          break_loop_1:
+            return result.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            goto do_label;
+            return 0;
+        do_label:
+            do {
+                sum = 1;
+                goto while_label;
+            } while (1);
+        while_label:
+            while (1) {
+                sum = sum + 1;
+                goto break_label;
+                return 0;
+            break_label:
+                break;
+            };
+            goto for_label;
+            return 0;
+        for_label:
+            for (int i = 0; i < 10; i = i + 1) {
+                sum = sum + 1;
+                goto continue_label;
+                return 0;
+            continue_label:
+                continue;
+                return 0;
+            }
+            return sum;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            sum.0 = 0
+            jump do_label_1
+            return 0
+        
+          do_label_1:
+        
+          start_loop_2:
+            sum.0 = 1
+            jump while_label_3
+        
+          continue_loop_2:
+            if 1 jump start_loop_2
+        
+          break_loop_2:
+        
+          while_label_3:
+        
+          continue_loop_4:
+            if !1 jump break_loop_4
+            tmp.0 = sum.0 + 1
+            sum.0 = tmp.0
+            jump break_label_5
+            return 0
+        
+          break_label_5:
+            jump break_loop_4
+            jump continue_loop_4
+        
+          break_loop_4:
+            jump for_label_6
+            return 0
+        
+          for_label_6:
+            i.8 = 0
+        
+          start_loop_7:
+            tmp.1 = i.8 < 10
+            if !tmp.1 jump break_loop_7
+            tmp.2 = sum.0 + 1
+            sum.0 = tmp.2
+            jump continue_label_9
+            return 0
+        
+          continue_label_9:
+            jump continue_loop_7
+            return 0
+        
+          continue_loop_7:
+            tmp.3 = i.8 + 1
+            i.8 = tmp.3
+            jump start_loop_7
+        
+          break_loop_7:
+            return sum.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
+    let src = r#"
+        int main(void) {
+            int i = 100;
+            int count = 0;
+            while (i--) count++;
+            if (count != 100)
+                return 0;
+            i = 100;
+            count = 0;
+            while (--i) count++;
+            if (count != 99)
+                return 0;
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            i.0 = 100
+            count.1 = 0
+        
+          continue_loop_2:
+            tmp.0 = i.0
+            tmp.1 = dec i.0
+            i.0 = tmp.1
+            if !tmp.0 jump break_loop_2
+            tmp.2 = count.1
+            tmp.3 = inc count.1
+            count.1 = tmp.3
+            jump continue_loop_2
+        
+          break_loop_2:
+            tmp.4 = count.1 != 100
+            if !tmp.4 jump end_if_0
+            return 0
+        
+          end_if_0:
+            i.0 = 100
+            count.1 = 0
+        
+          continue_loop_3:
+            tmp.5 = dec i.0
+            i.0 = tmp.5
+            if !tmp.5 jump break_loop_3
+            tmp.6 = count.1
+            tmp.7 = inc count.1
+            count.1 = tmp.7
+            jump continue_loop_3
+        
+          break_loop_3:
+            tmp.8 = count.1 != 99
+            if !tmp.8 jump end_if_2
+            return 0
+        
+          end_if_2:
+            return 1
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_post_exp_incr() {
+    let src = r#"
+        int main(void) {
+            int product = 1;
+            for (int i = 0; i < 10; i++) {
+                product = product + 2;
+            }
+            return product;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            product.0 = 1
+            i.2 = 0
+        
+          start_loop_1:
+            tmp.0 = i.2 < 10
+            if !tmp.0 jump break_loop_1
+            tmp.1 = product.0 + 2
+            product.0 = tmp.1
+        
+          continue_loop_1:
+            tmp.2 = i.2
+            tmp.3 = inc i.2
+            i.2 = tmp.3
+            jump start_loop_1
+        
+          break_loop_1:
+            return product.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for() {
+    let src = r#"
+        int main(void) {
+            int a = 12345;
+            int i;
+            for (i = 5; i >= 0; i = i - 1)
+                a = a / 3;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 12345
+            i.1 = 5
+        
+          start_loop_2:
+            tmp.0 = i.1 >= 0
+            if !tmp.0 jump break_loop_2
+            tmp.1 = a.0 / 3
+            a.0 = tmp.1
+        
+          continue_loop_2:
+            tmp.2 = i.1 - 1
+            i.1 = tmp.2
+            jump start_loop_2
+        
+          break_loop_2:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for_absent_condition() {
+    let src = r#"
+        int main(void) {
+            for (int i = 400; ; i = i - 100)
+                if (i == 100)
+                    return 0;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            i.1 = 400
+        
+          start_loop_0:
+            if !1 jump break_loop_0
+            tmp.0 = i.1 == 100
+            if !tmp.0 jump end_if_0
+            return 0
+        
+          end_if_0:
+        
+          continue_loop_0:
+            tmp.1 = i.1 - 100
+            i.1 = tmp.1
+            jump start_loop_0
+        
+          break_loop_0:
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for_absent_post() {
+    let src = r#"
+        int main(void) {
+            int a = -2147483647;
+            for (; a % 5 != 0;) {
+                a = a + 1;
+            }
+            return a % 5 || a > 0;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            tmp.0 = - 2147483647
+            a.0 = tmp.0
+        
+          start_loop_1:
+            tmp.1 = a.0 % 5
+            tmp.2 = tmp.1 != 0
+            if !tmp.2 jump break_loop_1
+            tmp.3 = a.0 + 1
+            a.0 = tmp.3
+        
+          continue_loop_1:
+            jump start_loop_1
+        
+          break_loop_1:
+            tmp.4 = a.0 % 5
+            if tmp.4 jump or_true_0
+            tmp.7 = a.0 > 0
+            if tmp.7 jump or_true_0
+            tmp.6 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.6 = 1
+        
+          or_end_1:
+            return tmp.6
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for_decl() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            for (int i = -100; i <= 0; i = i + 1)
+                a = a + 1;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 0
+            tmp.0 = - 100
+            i.2 = tmp.0
+        
+          start_loop_1:
+            tmp.1 = i.2 <= 0
+            if !tmp.1 jump break_loop_1
+            tmp.2 = a.0 + 1
+            a.0 = tmp.2
+        
+          continue_loop_1:
+            tmp.3 = i.2 + 1
+            i.2 = tmp.3
+            jump start_loop_1
+        
+          break_loop_1:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for_nested_shadow() {
+    let src = r#"
+        int main(void) {
+            int i = 0;
+            int j = 0;
+            int k = 1;
+            for (int i = 100; i > 0; i = i - 1) {
+                int i = 1;
+                int j = i + k;
+                k = j;
+            }
+            return k == 101 && i == 0 && j == 0;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            i.0 = 0
+            j.1 = 0
+            k.2 = 1
+            i.4 = 100
+        
+          start_loop_3:
+            tmp.0 = i.4 > 0
+            if !tmp.0 jump break_loop_3
+            i.5 = 1
+            tmp.1 = i.5 + k.2
+            j.6 = tmp.1
+            k.2 = j.6
+        
+          continue_loop_3:
+            tmp.2 = i.4 - 1
+            i.4 = tmp.2
+            jump start_loop_3
+        
+          break_loop_3:
+            tmp.3 = k.2 == 101
+            if !tmp.3 jump and_false_0
+            tmp.6 = i.0 == 0
+            if !tmp.6 jump and_false_0
+            tmp.5 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.5 = 0
+        
+          and_end_1:
+            if !tmp.5 jump and_false_2
+            tmp.9 = j.1 == 0
+            if !tmp.9 jump and_false_2
+            tmp.8 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.8 = 0
+        
+          and_end_3:
+            return tmp.8
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_for_shadow() {
+    let src = r#"
+        int main(void) {
+            int shadow = 1;
+            int acc = 0;
+            for (int shadow = 0; shadow < 10; shadow = shadow + 1) {
+                acc = acc + shadow;
+            }
+            return acc == 45 && shadow == 1;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            shadow.0 = 1
+            acc.1 = 0
+            shadow.3 = 0
+        
+          start_loop_2:
+            tmp.0 = shadow.3 < 10
+            if !tmp.0 jump break_loop_2
+            tmp.1 = acc.1 + shadow.3
+            acc.1 = tmp.1
+        
+          continue_loop_2:
+            tmp.2 = shadow.3 + 1
+            shadow.3 = tmp.2
+            jump start_loop_2
+        
+          break_loop_2:
+            tmp.3 = acc.1 == 45
+            if !tmp.3 jump and_false_0
+            tmp.6 = shadow.0 == 1
+            if !tmp.6 jump and_false_0
+            tmp.5 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.5 = 0
+        
+          and_end_1:
+            return tmp.5
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_multi_break() {
+    let src = r#"
+        int main(void) {
+            int i = 0;
+            while (1) {
+                i = i + 1;
+                if (i > 10)
+                    break;
+            }
+            int j = 10;
+            while (1) {
+                j = j - 1;
+                if (j < 0)
+                    break;
+            }
+            int result = j == -1 && i == 11;
+            return result;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            i.0 = 0
+        
+          continue_loop_1:
+            if !1 jump break_loop_1
+            tmp.0 = i.0 + 1
+            i.0 = tmp.0
+            tmp.1 = i.0 > 10
+            if !tmp.1 jump end_if_0
+            jump break_loop_1
+        
+          end_if_0:
+            jump continue_loop_1
+        
+          break_loop_1:
+            j.2 = 10
+        
+          continue_loop_3:
+            if !1 jump break_loop_3
+            tmp.2 = j.2 - 1
+            j.2 = tmp.2
+            tmp.3 = j.2 < 0
+            if !tmp.3 jump end_if_2
+            jump break_loop_3
+        
+          end_if_2:
+            jump continue_loop_3
+        
+          break_loop_3:
+            tmp.5 = - 1
+            tmp.4 = j.2 == tmp.5
+            if !tmp.4 jump and_false_4
+            tmp.8 = i.0 == 11
+            if !tmp.8 jump and_false_4
+            tmp.7 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.7 = 0
+        
+          and_end_5:
+            result.4 = tmp.7
+            return result.4
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_multi_continue_same_loop() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            int y = 0;
+            int z = 0;
+            do {
+                z = z + 1;
+                if (x <= 0)
+                    continue;
+                x = x - 1;
+                if (y >= 10)
+                    continue;
+                y = y + 1;
+            } while (z != 50);
+            return z == 50 && x == 0 && y == 10;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            x.0 = 10
+            y.1 = 0
+            z.2 = 0
+        
+          start_loop_3:
+            tmp.0 = z.2 + 1
+            z.2 = tmp.0
+            tmp.1 = x.0 <= 0
+            if !tmp.1 jump end_if_0
+            jump continue_loop_3
+        
+          end_if_0:
+            tmp.2 = x.0 - 1
+            x.0 = tmp.2
+            tmp.3 = y.1 >= 10
+            if !tmp.3 jump end_if_2
+            jump continue_loop_3
+        
+          end_if_2:
+            tmp.4 = y.1 + 1
+            y.1 = tmp.4
+        
+          continue_loop_3:
+            tmp.5 = z.2 != 50
+            if tmp.5 jump start_loop_3
+        
+          break_loop_3:
+            tmp.6 = z.2 == 50
+            if !tmp.6 jump and_false_4
+            tmp.9 = x.0 == 0
+            if !tmp.9 jump and_false_4
+            tmp.8 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.8 = 0
+        
+          and_end_5:
+            if !tmp.8 jump and_false_6
+            tmp.12 = y.1 == 10
+            if !tmp.12 jump and_false_6
+            tmp.11 = 1
+            jump and_end_7
+        
+          and_false_6:
+            tmp.11 = 0
+        
+          and_end_7:
+            return tmp.11
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_nested_break() {
+    let src = r#"
+        int main(void) {
+            int ans = 0;
+            for (int i = 0; i < 10; i = i + 1)
+                for (int j = 0; j < 10; j = j + 1)
+                    if ((i / 2)*2 == i)
+                        break;
+                    else
+                        ans = ans + i;
+            return ans;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            ans.0 = 0
+            i.2 = 0
+        
+          start_loop_1:
+            tmp.0 = i.2 < 10
+            if !tmp.0 jump break_loop_1
+            j.4 = 0
+        
+          start_loop_3:
+            tmp.1 = j.4 < 10
+            if !tmp.1 jump break_loop_3
+            tmp.2 = i.2 / 2
+            tmp.3 = tmp.2 * 2
+            tmp.4 = tmp.3 == i.2
+            if !tmp.4 jump else_1
+            jump break_loop_3
+            jump end_if_0
+        
+          else_1:
+            tmp.5 = ans.0 + i.2
+            ans.0 = tmp.5
+        
+          end_if_0:
+        
+          continue_loop_3:
+            tmp.6 = j.4 + 1
+            j.4 = tmp.6
+            jump start_loop_3
+        
+          break_loop_3:
+        
+          continue_loop_1:
+            tmp.7 = i.2 + 1
+            i.2 = tmp.7
+            jump start_loop_1
+        
+          break_loop_1:
+            return ans.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_nested_continue() {
+    let src = r#"
+        int main(void) {
+            int x = 5;
+            int acc = 0;
+            while (x >= 0) {
+                int i = x;
+                while (i <= 10) {
+                    i = i + 1;
+                    if (i % 2)
+                        continue;
+                    acc = acc + 1;
+                }
+                x = x - 1;
+            }
+            return acc;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            x.0 = 5
+            acc.1 = 0
+        
+          continue_loop_2:
+            tmp.0 = x.0 >= 0
+            if !tmp.0 jump break_loop_2
+            i.3 = x.0
+        
+          continue_loop_4:
+            tmp.1 = i.3 <= 10
+            if !tmp.1 jump break_loop_4
+            tmp.2 = i.3 + 1
+            i.3 = tmp.2
+            tmp.3 = i.3 % 2
+            if !tmp.3 jump end_if_0
+            jump continue_loop_4
+        
+          end_if_0:
+            tmp.4 = acc.1 + 1
+            acc.1 = tmp.4
+            jump continue_loop_4
+        
+          break_loop_4:
+            tmp.5 = x.0 - 1
+            x.0 = tmp.5
+            jump continue_loop_2
+        
+          break_loop_2:
+            return acc.1
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_nested_loop() {
+    let src = r#"
+        int main(void) {
+            int acc = 0;
+            int x = 100;
+            while (x) {
+                int y = 10;
+                x = x - y;
+                while (y) {
+                    acc = acc + 1;
+                    y = y - 1;
+                }
+            }
+            return acc == 100 && x == 0;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            acc.0 = 0
+            x.1 = 100
+        
+          continue_loop_2:
+            if !x.1 jump break_loop_2
+            y.3 = 10
+            tmp.0 = x.1 - y.3
+            x.1 = tmp.0
+        
+          continue_loop_4:
+            if !y.3 jump break_loop_4
+            tmp.1 = acc.0 + 1
+            acc.0 = tmp.1
+            tmp.2 = y.3 - 1
+            y.3 = tmp.2
+            jump continue_loop_4
+        
+          break_loop_4:
+            jump continue_loop_2
+        
+          break_loop_2:
+            tmp.3 = acc.0 == 100
+            if !tmp.3 jump and_false_0
+            tmp.6 = x.1 == 0
+            if !tmp.6 jump and_false_0
+            tmp.5 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.5 = 0
+        
+          and_end_1:
+            return tmp.5
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_null_for_header() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            for (; ; ) {
+                a = a + 1;
+                if (a > 3)
+                    break;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 0
+        
+          start_loop_1:
+            if !1 jump break_loop_1
+            tmp.0 = a.0 + 1
+            a.0 = tmp.0
+            tmp.1 = a.0 > 3
+            if !tmp.1 jump end_if_0
+            jump break_loop_1
+        
+          end_if_0:
+        
+          continue_loop_1:
+            jump start_loop_1
+        
+          break_loop_1:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_while() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            while (a < 5)
+                a = a + 2;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 0
+        
+          continue_loop_1:
+            tmp.0 = a.0 < 5
+            if !tmp.0 jump break_loop_1
+            tmp.1 = a.0 + 2
+            a.0 = tmp.1
+            jump continue_loop_1
+        
+          break_loop_1:
+            return a.0
+            return 0
         }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));

@@ -48,6 +48,8 @@ impl Resolver {
     fn check_gotos_stmt(&self, stmt: &mut Node<Statement>) -> Result<()> {
         match stmt.as_mut() {
             Statement::Goto(name) => {
+                let x = name.symbol.as_str();
+                println!("{x}");
                 if let Some(new_name) = self.labels.get(&name.symbol) {
                     name.symbol = new_name.clone();
                 } else {
@@ -80,7 +82,16 @@ impl Resolver {
             Statement::For { body, .. } => {
                 self.check_gotos_stmt(body)?;
             }
-            _ => {}
+
+            Statement::Labeled { stmt, .. } => {
+                self.check_gotos_stmt(stmt)?;
+            }
+
+            Statement::Return { .. }
+            | Statement::Expression(_)
+            | Statement::Break(_)
+            | Statement::Continue(_)
+            | Statement::Null => {}
         }
         Ok(())
     }
@@ -138,7 +149,8 @@ impl Resolver {
                     });
                 }
                 let new_label = self.make_label(&name.symbol);
-                self.labels.insert(name.symbol.clone(), new_label);
+                self.labels.insert(name.symbol.clone(), new_label.clone());
+                name.symbol = new_label;
                 self.resolve_statement(stmt)?;
             }
             Statement::Compound(block) => {

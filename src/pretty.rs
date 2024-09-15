@@ -1,20 +1,22 @@
 use crate::ast;
-use crate::ast::ForInit;
+use crate::parser;
+use crate::resolver;
 use crate::tacky;
+
 use anyhow::Result;
 use std::io::Write;
 
 #[allow(dead_code)]
 pub fn dump_ast(src: &str) -> String {
-    let ast = crate::parser::parse(src).unwrap();
+    let ast = parser::parse(src).unwrap();
     pretty_print_ast(&ast).unwrap()
 }
 
 #[allow(dead_code)]
 pub fn dump_tacky(src: &str) -> String {
-    let ast = crate::parser::parse(src).unwrap();
-    let ast = crate::resolver::resolve(ast).unwrap();
-    let tacky = crate::tacky::emit(&ast);
+    let ast = parser::parse(src).unwrap();
+    let ast = resolver::resolve(ast).unwrap();
+    let tacky = tacky::emit(&ast);
     pretty_print_tacky(tacky).unwrap()
 }
 
@@ -25,17 +27,18 @@ pub fn pretty_print_ast(program: &ast::Program) -> Result<String> {
 }
 
 pub fn pretty_print_tacky(program: tacky::Program) -> Result<String> {
+    let indent = "    ";
     let mut buffer = Vec::new();
     writeln!(&mut buffer, "function {} {{ ", program.function.name)?;
     let file = &mut buffer;
     for item in &program.function.body {
         match item {
             tacky::Instruction::Return(val) => {
-                write!(file, "  return ")?;
+                write!(file, "{indent}return ")?;
                 print_val(file, val)?;
             }
             tacky::Instruction::Unary { op, src, dst } => {
-                write!(file, "  ")?;
+                write!(file, "{indent}")?;
                 print_val(file, dst)?;
                 write!(file, " = ")?;
                 write!(
@@ -57,7 +60,7 @@ pub fn pretty_print_tacky(program: tacky::Program) -> Result<String> {
                 src2,
                 dst,
             } => {
-                write!(file, "  ")?;
+                write!(file, "{indent}")?;
                 print_val(file, dst)?;
                 write!(file, " = ")?;
                 print_val(file, src1)?;
@@ -86,26 +89,27 @@ pub fn pretty_print_tacky(program: tacky::Program) -> Result<String> {
                 print_val(file, src2)?;
             }
             tacky::Instruction::Copy { src, dst } => {
-                write!(file, "  ")?;
+                write!(file, "{indent}")?;
                 print_val(file, dst)?;
                 write!(file, " = ")?;
                 print_val(file, src)?;
             }
             tacky::Instruction::Jump { target } => {
-                write!(file, "  jump {target}")?;
+                write!(file, "{indent}jump {target}")?;
             }
             tacky::Instruction::JumpIfZero { cond, target } => {
-                write!(file, "  jump {target}")?;
-                write!(file, " if !")?;
+                write!(file, "{indent}if !")?;
                 print_val(file, cond)?;
+                write!(file, " jump {target}")?;
             }
             tacky::Instruction::JumpIfNotZero { cond, target } => {
-                write!(file, "  jump {target}")?;
-                write!(file, "if ")?;
+                write!(file, "{indent}if ")?;
                 print_val(file, cond)?;
+                write!(file, " jump {target}")?;
             }
             tacky::Instruction::Label(name) => {
-                write!(file, "{name}:")?;
+                writeln!(file)?;
+                write!(file, "  {name}:")?;
             }
         }
         writeln!(file)?;
@@ -331,13 +335,13 @@ fn print_statement(
         } => {
             writeln!(file, "{indent}{pipe} For")?;
             match init {
-                ForInit::Decl(d) => {
+                ast::ForInit::Decl(d) => {
                     print_declaration(file, d, "├──", level + 1, &[pipes, &[level + 1]].concat())?;
                 }
-                ForInit::Expr(e) => {
+                ast::ForInit::Expr(e) => {
                     print_expression(file, e, "├──", level + 1, &[pipes, &[level + 1]].concat())?;
                 }
-                ForInit::None => {
+                ast::ForInit::None => {
                     writeln!(file, "{indent}{pipe} ├── Empty")?;
                 }
             }
