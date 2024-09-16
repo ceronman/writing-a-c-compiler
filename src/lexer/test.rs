@@ -6323,6 +6323,92 @@ fn test_chapter_8_invalid_parse_extra_credit_label_is_not_block() {
 }
 
 #[test]
+fn test_chapter_8_invalid_parse_extra_credit_switch_case_declaration() {
+    let src = r#"
+        int main(void) {
+            switch(3) {
+                case 3:
+                    int i = 0;
+                    return i;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Switch, OpenParen, Constant,
+        CloseParen, OpenBrace, Case, Constant, Colon, Int, Identifier, Equal, Constant, Semicolon,
+        Return, Identifier, Semicolon, CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_switch_goto_case() {
+    let src = r#"
+        int main(void) {
+            goto 3;
+            switch (3) {
+                case 3: return 0;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Goto, Constant, Semicolon, Switch,
+        OpenParen, Constant, CloseParen, OpenBrace, Case, Constant, Colon, Return, Constant,
+        Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_switch_missing_case_value() {
+    let src = r#"
+        int main(void) {
+            switch(0) {
+                case: return 0;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Switch, OpenParen, Constant,
+        CloseParen, OpenBrace, Case, Colon, Return, Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_switch_missing_paren() {
+    let src = r#"
+        int main(void) {
+            switch 3 {
+                case 3: return 0;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Switch, Constant, OpenBrace, Case,
+        Constant, Colon, Return, Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_switch_no_condition() {
+    let src = r#"
+        int main(void) {
+            switch {
+                return 0;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Switch, OpenBrace, Return,
+        Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
 fn test_chapter_8_invalid_parse_extra_for_header_clause() {
     let src = r#"
         int main(void) {
@@ -6455,6 +6541,264 @@ fn test_chapter_8_invalid_semantics_continue_not_in_loop() {
 }
 
 #[test]
+fn test_chapter_8_invalid_semantics_extra_credit_case_continue() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            switch(a + 1) {
+                case 0:
+                    continue;
+                default: a = 1;
+            }
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, Plus, Constant, CloseParen, OpenBrace, Case,
+        Constant, Colon, Continue, Semicolon, Default, Colon, Identifier, Equal, Constant,
+        Semicolon, CloseBrace, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_case_outside_switch() {
+    let src = r#"
+        int main(void) {
+            for (int i = 0; i < 10; i = i + 1) {
+                case 0: return 1;
+            }
+            return 9;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, For, OpenParen, Int, Identifier,
+        Equal, Constant, Semicolon, Identifier, Less, Constant, Semicolon, Identifier, Equal,
+        Identifier, Plus, Constant, CloseParen, OpenBrace, Case, Constant, Colon, Return, Constant,
+        Semicolon, CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_default_continue() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            switch(a + 1) {
+                case 0:
+                    a = 1;
+                default: continue;
+            }
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, Plus, Constant, CloseParen, OpenBrace, Case,
+        Constant, Colon, Identifier, Equal, Constant, Semicolon, Default, Colon, Continue,
+        Semicolon, CloseBrace, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_default_outside_switch() {
+    let src = r#"
+        int main(void) {
+            {
+                default: return 0;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, OpenBrace, Default, Colon, Return,
+        Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_different_cases_same_scope() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch (a) {
+                case 1:;
+                    int b = 10;
+                    break;
+                case 2:;
+                    int b = 11;
+                    break;
+                default:
+                    break;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, Break, Semicolon, Case, Constant,
+        Colon, Semicolon, Int, Identifier, Equal, Constant, Semicolon, Break, Semicolon, Default,
+        Colon, Break, Semicolon, CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case() {
+    let src = r#"
+        int main(void) {
+            switch(4) {
+                case 5: return 0;
+                case 4: return 1;
+                case 5: return 0;
+                default: return 2;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Switch, OpenParen, Constant,
+        CloseParen, OpenBrace, Case, Constant, Colon, Return, Constant, Semicolon, Case, Constant,
+        Colon, Return, Constant, Semicolon, Case, Constant, Colon, Return, Constant, Semicolon,
+        Default, Colon, Return, Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_labeled_switch() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+        label:
+            switch (a) {
+                case 1:
+                case 1:
+                    break;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Identifier, Colon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case,
+        Constant, Colon, Case, Constant, Colon, Break, Semicolon, CloseBrace, Return, Constant,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_nested_statement() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 10;
+            switch (a) {
+                case 1: {
+                    if(1) {
+                        case 1:
+                        return 0;
+                    }
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        OpenBrace, If, OpenParen, Constant, CloseParen, OpenBrace, Case, Constant, Colon, Return,
+        Constant, Semicolon, CloseBrace, CloseBrace, CloseBrace, Return, Constant, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            switch(a) {
+                case 0: return 0;
+                default: return 1;
+                case 2: return 2;
+                default: return 2;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        Return, Constant, Semicolon, Default, Colon, Return, Constant, Semicolon, Case, Constant,
+        Colon, Return, Constant, Semicolon, Default, Colon, Return, Constant, Semicolon,
+        CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default_in_nested_statement() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 10;
+            switch (a) {
+                case 1:
+                for (int i = 0; i < 10; i = i + 1) {
+                    continue;
+                    while(1)
+                    default:;
+                }
+                case 2:
+                return 0;
+                default:;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        For, OpenParen, Int, Identifier, Equal, Constant, Semicolon, Identifier, Less, Constant,
+        Semicolon, Identifier, Equal, Identifier, Plus, Constant, CloseParen, OpenBrace, Continue,
+        Semicolon, While, OpenParen, Constant, CloseParen, Default, Colon, Semicolon, CloseBrace,
+        Case, Constant, Colon, Return, Constant, Semicolon, Default, Colon, Semicolon, CloseBrace,
+        Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_default() {
+    let src = r#"
+        int main(void) {
+                int a = 1;
+        label:
+            switch (a) {
+                case 1:
+                    return 0;
+                default:
+                label:
+                    return 1;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Identifier, Colon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case,
+        Constant, Colon, Return, Constant, Semicolon, Default, Colon, Identifier, Colon, Return,
+        Constant, Semicolon, CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
 fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_loop() {
     let src = r#"
         int main(void) {
@@ -6476,6 +6820,30 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_loop() {
 }
 
 #[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_variable_in_switch() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch (a) {
+                int b = 2;
+                case 0:
+                    a = 3;
+                    int b = 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Int, Identifier, Equal,
+        Constant, Semicolon, Case, Constant, Colon, Identifier, Equal, Constant, Semicolon, Int,
+        Identifier, Equal, Constant, Semicolon, CloseBrace, Return, Constant, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
 fn test_chapter_8_invalid_semantics_extra_credit_labeled_break_outside_loop() {
     let src = r#"
         int main(void) {
@@ -6486,6 +6854,140 @@ fn test_chapter_8_invalid_semantics_extra_credit_labeled_break_outside_loop() {
     let expected = vec![
         Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Identifier, Colon, Break,
         Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_non_constant_case() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            switch(a + 1) {
+                case 0: return 0;
+                case a: return 1;
+                case 1: return 2;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, Plus, Constant, CloseParen, OpenBrace, Case,
+        Constant, Colon, Return, Constant, Semicolon, Case, Identifier, Colon, Return, Constant,
+        Semicolon, Case, Constant, Colon, Return, Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_switch_continue() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            switch(a + 1) {
+                case 0:
+                    a = 4;
+                    continue;
+                default: a = 1;
+            }
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, Plus, Constant, CloseParen, OpenBrace, Case,
+        Constant, Colon, Identifier, Equal, Constant, Semicolon, Continue, Semicolon, Default,
+        Colon, Identifier, Equal, Constant, Semicolon, CloseBrace, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_undeclared_var_switch_expression() {
+    let src = r#"
+        int main(void) {
+            switch(a) {
+                case 1: return 0;
+                case 2: return 1;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Switch, OpenParen, Identifier,
+        CloseParen, OpenBrace, Case, Constant, Colon, Return, Constant, Semicolon, Case, Constant,
+        Colon, Return, Constant, Semicolon, CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_case() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            switch (a) {
+                case 1:
+                    return b;
+                    break;
+                default:
+                    break;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        Return, Identifier, Semicolon, Break, Semicolon, Default, Colon, Break, Semicolon,
+        CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_default() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            switch (a) {
+                case 1:
+                    break;
+                default:
+                    return b;
+                    break;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        Break, Semicolon, Default, Colon, Return, Identifier, Semicolon, Break, Semicolon,
+        CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_undefined_label_in_case() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 3;
+            switch (a) {
+                case 1: goto foo;
+                default: return 0;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        Goto, Identifier, Semicolon, Default, Colon, Return, Constant, Semicolon, CloseBrace,
+        Return, Constant, Semicolon, CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);
 }
@@ -6829,6 +7331,74 @@ fn test_chapter_8_valid_empty_loop_body() {
 }
 
 #[test]
+fn test_chapter_8_valid_extra_credit_case_block() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            int b = 0;
+            switch(2) {
+                case 2: {
+                    int a = 8;
+                    b = a;
+                }
+            }
+            return (a == 4 && b == 8);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Switch,
+        OpenParen,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Case,
+        Constant,
+        Colon,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Semicolon,
+        CloseBrace,
+        CloseBrace,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
 fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression() {
     let src = r#"
         int main(void) {
@@ -6928,6 +7498,138 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
         Identifier,
         EqualEqual,
         Minus,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_duffs_device() {
+    let src = r#"
+        
+        int main(void) {
+            int count = 37;
+            int iterations = (count + 4) / 5;
+            switch (count % 5) {
+                case 0:
+                    do {
+                        count = count - 1;
+                        case 4:
+                            count = count - 1;
+                        case 3:
+                            count = count - 1;
+                        case 2:
+                            count = count - 1;
+                        case 1:
+                            count = count - 1;
+                    } while ((iterations = iterations - 1) > 0);
+            }
+            return (count == 0 && iterations == 0);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        OpenParen,
+        Identifier,
+        Plus,
+        Constant,
+        CloseParen,
+        Slash,
+        Constant,
+        Semicolon,
+        Switch,
+        OpenParen,
+        Identifier,
+        Percent,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Case,
+        Constant,
+        Colon,
+        Do,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        Semicolon,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        Semicolon,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        Semicolon,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        Semicolon,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        While,
+        OpenParen,
+        OpenParen,
+        Identifier,
+        Equal,
+        Identifier,
+        Minus,
+        Constant,
+        CloseParen,
+        Greater,
+        Constant,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+        Return,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
         Constant,
         CloseParen,
         Semicolon,
@@ -7113,6 +7815,40 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
 }
 
 #[test]
+fn test_chapter_8_valid_extra_credit_loop_in_switch() {
+    let src = r#"
+        int main(void) {
+            int cond = 10;
+            switch (cond) {
+                case 1:
+                    return 0;
+                case 10:
+                    for (int i = 0; i < 5; i = i + 1) {
+                        cond = cond - 1;
+                        if (cond == 8)
+                            break;
+                    }
+                    return 123;
+                default:
+                    return 2;
+            }
+            return 3;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        Return, Constant, Semicolon, Case, Constant, Colon, For, OpenParen, Int, Identifier, Equal,
+        Constant, Semicolon, Identifier, Less, Constant, Semicolon, Identifier, Equal, Identifier,
+        Plus, Constant, CloseParen, OpenBrace, Identifier, Equal, Identifier, Minus, Constant,
+        Semicolon, If, OpenParen, Identifier, EqualEqual, Constant, CloseParen, Break, Semicolon,
+        CloseBrace, Return, Constant, Semicolon, Default, Colon, Return, Constant, Semicolon,
+        CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
 fn test_chapter_8_valid_extra_credit_post_exp_incr() {
     let src = r#"
         int main(void) {
@@ -7129,6 +7865,811 @@ fn test_chapter_8_valid_extra_credit_post_exp_incr() {
         Constant, Semicolon, Identifier, PlusPlus, CloseParen, OpenBrace, Identifier, Equal,
         Identifier, Plus, Constant, Semicolon, CloseBrace, Return, Identifier, Semicolon,
         CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch() {
+    let src = r#"
+        
+        int main(void) {
+            switch(3) {
+                case 0: return 0;
+                case 1: return 1;
+                case 3: return 3;
+                case 5: return 5;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Switch, OpenParen, Constant,
+        CloseParen, OpenBrace, Case, Constant, Colon, Return, Constant, Semicolon, Case, Constant,
+        Colon, Return, Constant, Semicolon, Case, Constant, Colon, Return, Constant, Semicolon,
+        Case, Constant, Colon, Return, Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_assign_in_condition() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            switch (a = 1) {
+                case 0:
+                    return 10;
+                case 1:
+                    a = a * 2;
+                    break;
+                default:
+                    a = 99;
+            }
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, Equal, Constant, CloseParen, OpenBrace, Case,
+        Constant, Colon, Return, Constant, Semicolon, Case, Constant, Colon, Identifier, Equal,
+        Identifier, Star, Constant, Semicolon, Break, Semicolon, Default, Colon, Identifier, Equal,
+        Constant, Semicolon, CloseBrace, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_break() {
+    let src = r#"
+        int main(void) {
+            int a = 5;
+            switch (a) {
+                case 5:
+                    a = 10;
+                    break;
+                case 6:
+                    a = 0;
+                    break;
+            }
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        Identifier, Equal, Constant, Semicolon, Break, Semicolon, Case, Constant, Colon,
+        Identifier, Equal, Constant, Semicolon, Break, Semicolon, CloseBrace, Return, Identifier,
+        Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_decl() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            int b = 0;
+            switch(a) {
+                int a = (b = 5);
+            case 3:
+                a = 4;
+                b = b + a;
+            }
+            return a == 3 && b == 4;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Switch,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        OpenParen,
+        Identifier,
+        Equal,
+        Constant,
+        CloseParen,
+        Semicolon,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Identifier,
+        Semicolon,
+        CloseBrace,
+        Return,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            switch(a) {
+                case 1:
+                    return 1;
+                case 2:
+                    return 9;
+                case 4:
+                    a = 11;
+                    break;
+                default:
+                    a = 22;
+            }
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        Return, Constant, Semicolon, Case, Constant, Colon, Return, Constant, Semicolon, Case,
+        Constant, Colon, Identifier, Equal, Constant, Semicolon, Break, Semicolon, Default, Colon,
+        Identifier, Equal, Constant, Semicolon, CloseBrace, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default_fallthrough() {
+    let src = r#"
+        int main(void) {
+            int a = 5;
+            switch(0) {
+                default:
+                    a = 0;
+                case 1:
+                    return a;
+            }
+            return a + 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Constant, CloseParen, OpenBrace, Default, Colon, Identifier,
+        Equal, Constant, Semicolon, Case, Constant, Colon, Return, Identifier, Semicolon,
+        CloseBrace, Return, Identifier, Plus, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
+    let src = r#"
+        int main(void) {
+            int a;
+            int b = a = 7;
+            switch (a + b) {
+                default: return 0;
+                case 2: return 1;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Semicolon, Int,
+        Identifier, Equal, Identifier, Equal, Constant, Semicolon, Switch, OpenParen, Identifier,
+        Plus, Identifier, CloseParen, OpenBrace, Default, Colon, Return, Constant, Semicolon, Case,
+        Constant, Colon, Return, Constant, Semicolon, CloseBrace, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default_only() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch(a) default: return 1;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, Default, Colon, Return, Constant,
+        Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_empty() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            switch(x = x + 1) {
+            }
+            switch(x = x + 1)
+            ;
+            return x;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, Equal, Identifier, Plus, Constant, CloseParen,
+        OpenBrace, CloseBrace, Switch, OpenParen, Identifier, Equal, Identifier, Plus, Constant,
+        CloseParen, Semicolon, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_fallthrough() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            int b = 9;
+            int c = 0;
+            switch (a ? b : 7) {
+                case 0:
+                    return 5;
+                case 7:
+                    c = 1;
+                case 9:
+                    c = 2;
+                case 1:
+                    c = c + 4;
+            }
+            return c;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Int, Identifier, Equal, Constant, Semicolon, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, Question, Identifier, Colon, Constant,
+        CloseParen, OpenBrace, Case, Constant, Colon, Return, Constant, Semicolon, Case, Constant,
+        Colon, Identifier, Equal, Constant, Semicolon, Case, Constant, Colon, Identifier, Equal,
+        Constant, Semicolon, Case, Constant, Colon, Identifier, Equal, Identifier, Plus, Constant,
+        Semicolon, CloseBrace, Return, Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_goto_mid_case() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            goto mid_case;
+            switch (4) {
+                case 4:
+                    a = 5;
+                mid_case:
+                    a = a + 1;
+                    return a;
+            }
+            return 100;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Goto, Identifier, Semicolon, Switch, OpenParen, Constant, CloseParen, OpenBrace,
+        Case, Constant, Colon, Identifier, Equal, Constant, Semicolon, Identifier, Colon,
+        Identifier, Equal, Identifier, Plus, Constant, Semicolon, Return, Identifier, Semicolon,
+        CloseBrace, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_in_loop() {
+    let src = r#"
+        int main(void) {
+            int acc = 0;
+            int ctr = 0;
+            for (int i = 0; i < 10; i = i + 1) {
+                switch(i) {
+                    case 0:
+                        acc = 2;
+                        break;
+                    case 1:
+                        acc = acc * 3;
+                        break;
+                    case 2:
+                        acc = acc * 4;
+                        break;
+                    default:
+                        acc = acc + 1;
+                }
+                ctr = ctr + 1;
+            }
+            return ctr == 10 && acc == 31;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        For,
+        OpenParen,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        Less,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Switch,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Break,
+        Semicolon,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Identifier,
+        Star,
+        Constant,
+        Semicolon,
+        Break,
+        Semicolon,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Identifier,
+        Star,
+        Constant,
+        Semicolon,
+        Break,
+        Semicolon,
+        Default,
+        Colon,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        Return,
+        Identifier,
+        EqualEqual,
+        Constant,
+        AmpersandAmpersand,
+        Identifier,
+        EqualEqual,
+        Constant,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
+    let src = r#"
+        int main(void) {
+            int switch1 = 0;
+            int switch2 = 0;
+            int switch3 = 0;
+            switch(3) {
+                case 0: return 0;
+                case 1: if (0) {
+                    case 3: switch1 = 1; break;
+                }
+                default: return 0;
+            }
+            switch(4) {
+                case 0: return 0;
+                if (1) {
+                    return 0;
+                } else {
+                    case 4: switch2 = 1; break;
+                }
+                default: return 0;
+            }
+            switch (5) {
+                for (int i = 0; i < 10; i = i + 1) {
+                    switch1 = 0;
+                    case 5: switch3 = 1; break;
+                    default: return 0;
+                }
+            }
+            return (switch1 && switch2 && switch3);
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Switch,
+        OpenParen,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Case,
+        Constant,
+        Colon,
+        Return,
+        Constant,
+        Semicolon,
+        Case,
+        Constant,
+        Colon,
+        If,
+        OpenParen,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Break,
+        Semicolon,
+        CloseBrace,
+        Default,
+        Colon,
+        Return,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        Switch,
+        OpenParen,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Case,
+        Constant,
+        Colon,
+        Return,
+        Constant,
+        Semicolon,
+        If,
+        OpenParen,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Return,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        Else,
+        OpenBrace,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Break,
+        Semicolon,
+        CloseBrace,
+        Default,
+        Colon,
+        Return,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        Switch,
+        OpenParen,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        For,
+        OpenParen,
+        Int,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Identifier,
+        Less,
+        Constant,
+        Semicolon,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        Constant,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Case,
+        Constant,
+        Colon,
+        Identifier,
+        Equal,
+        Constant,
+        Semicolon,
+        Break,
+        Semicolon,
+        Default,
+        Colon,
+        Return,
+        Constant,
+        Semicolon,
+        CloseBrace,
+        CloseBrace,
+        Return,
+        OpenParen,
+        Identifier,
+        AmpersandAmpersand,
+        Identifier,
+        AmpersandAmpersand,
+        Identifier,
+        CloseParen,
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_nested_not_taken() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 0;
+            switch(a) {
+                case 1:
+                    switch(a) {
+                        case 0: return 0;
+                        default: return 0;
+                    }
+                default: a = 2;
+            }
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon, Return,
+        Constant, Semicolon, Default, Colon, Return, Constant, Semicolon, CloseBrace, Default,
+        Colon, Identifier, Equal, Constant, Semicolon, CloseBrace, Return, Identifier, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_nested_switch() {
+    let src = r#"
+        int main(void){
+            switch(3) {
+                case 0:
+                    return 0;
+                case 3: {
+                    switch(4) {
+                        case 3: return 0;
+                        case 4: return 1;
+                        default: return 0;
+                    }
+                }
+                case 4: return 0;
+                default: return 0;
+            }
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Switch, OpenParen, Constant,
+        CloseParen, OpenBrace, Case, Constant, Colon, Return, Constant, Semicolon, Case, Constant,
+        Colon, OpenBrace, Switch, OpenParen, Constant, CloseParen, OpenBrace, Case, Constant,
+        Colon, Return, Constant, Semicolon, Case, Constant, Colon, Return, Constant, Semicolon,
+        Default, Colon, Return, Constant, Semicolon, CloseBrace, CloseBrace, Case, Constant, Colon,
+        Return, Constant, Semicolon, Default, Colon, Return, Constant, Semicolon, CloseBrace,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_no_case() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            switch(a)
+                return 0;
+            return a;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, Return, Constant, Semicolon, Return,
+        Identifier, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_not_taken() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch(a) {
+                case 0: return 0;
+                case 2: return 0;
+                case 3: return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, OpenBrace, Case, Constant, Colon,
+        Return, Constant, Semicolon, Case, Constant, Colon, Return, Constant, Semicolon, Case,
+        Constant, Colon, Return, Constant, Semicolon, CloseBrace, Return, Constant, Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_single_case() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch(a) case 1: return 1;
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, Switch, OpenParen, Identifier, CloseParen, Case, Constant, Colon, Return,
+        Constant, Semicolon, Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_with_continue() {
+    let src = r#"
+        int main(void) {
+            switch(4) {
+                case 0:
+                    return 0;
+                case 4: {
+                    int acc = 0;
+                    for (int i = 0; i < 10; i = i + 1) {
+                        if (i % 2)
+                            continue;
+                        acc = acc + 1;
+                    }
+                    return acc;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Switch, OpenParen, Constant,
+        CloseParen, OpenBrace, Case, Constant, Colon, Return, Constant, Semicolon, Case, Constant,
+        Colon, OpenBrace, Int, Identifier, Equal, Constant, Semicolon, For, OpenParen, Int,
+        Identifier, Equal, Constant, Semicolon, Identifier, Less, Constant, Semicolon, Identifier,
+        Equal, Identifier, Plus, Constant, CloseParen, OpenBrace, If, OpenParen, Identifier,
+        Percent, Constant, CloseParen, Continue, Semicolon, Identifier, Equal, Identifier, Plus,
+        Constant, Semicolon, CloseBrace, Return, Identifier, Semicolon, CloseBrace, CloseBrace,
+        Return, Constant, Semicolon, CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            for (int i = 0; i < 10; i = i + 1) {
+                switch(i % 2) {
+                    case 0: continue;
+                    default: sum = sum + 1;
+                }
+            }
+            return sum;
+        }
+    "#;
+    let expected = vec![
+        Int, Identifier, OpenParen, Void, CloseParen, OpenBrace, Int, Identifier, Equal, Constant,
+        Semicolon, For, OpenParen, Int, Identifier, Equal, Constant, Semicolon, Identifier, Less,
+        Constant, Semicolon, Identifier, Equal, Identifier, Plus, Constant, CloseParen, OpenBrace,
+        Switch, OpenParen, Identifier, Percent, Constant, CloseParen, OpenBrace, Case, Constant,
+        Colon, Continue, Semicolon, Default, Colon, Identifier, Equal, Identifier, Plus, Constant,
+        Semicolon, CloseBrace, CloseBrace, Return, Identifier, Semicolon, CloseBrace,
     ];
     assert_eq!(tokenize(src), expected);
 }

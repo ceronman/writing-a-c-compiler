@@ -92,6 +92,8 @@ impl Resolver {
             | Statement::Break(_)
             | Statement::Continue(_)
             | Statement::Null => {}
+
+            _ => todo!(),
         }
         Ok(())
     }
@@ -221,6 +223,7 @@ impl Resolver {
                 // Note: checking if label exists is done in another pass
             }
             Statement::Null => {}
+            _ => todo!(),
         }
         Ok(())
     }

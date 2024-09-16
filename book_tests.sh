@@ -8,7 +8,9 @@ set -euxo pipefail
     --verbose \
     --failfast \
     --chapter 8 \
+    --stage parse \
     --bitwise \
     --compound \
     --increment \
-    --goto
+    --goto \
+    --switch

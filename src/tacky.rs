@@ -252,6 +252,7 @@ impl TackyGenerator {
                 let target = format!("continue_{label}");
                 self.instructions.push(Instruction::Jump { target });
             }
+            _ => todo!(),
         }
     }
 

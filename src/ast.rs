@@ -40,9 +40,22 @@ pub enum Statement {
         then_stmt: Node<Statement>,
         else_stmt: Option<Node<Statement>>,
     },
+    Switch {
+        cond: Node<Expression>,
+        body: Node<Statement>,
+    },
     Expression(Node<Expression>),
     Labeled {
         name: Node<Identifier>,
+        stmt: Node<Statement>,
+    },
+    Default {
+        label: Symbol,
+        stmt: Node<Statement>,
+    },
+    Case {
+        label: Symbol,
+        value: Node<Expression>,
         stmt: Node<Statement>,
     },
     Goto(Node<Identifier>),

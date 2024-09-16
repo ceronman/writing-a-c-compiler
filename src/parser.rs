@@ -89,6 +89,7 @@ impl<'src> Parser<'src> {
         match self.current.kind {
             TokenKind::Return => self.return_stmt(),
             TokenKind::If => self.if_stmt(),
+            TokenKind::Switch => self.switch_stmt(),
             TokenKind::Semicolon => self.null_stmt(),
             TokenKind::Goto => self.goto_stmt(),
             TokenKind::While => self.while_stmt(),
@@ -97,6 +98,8 @@ impl<'src> Parser<'src> {
             TokenKind::Continue => self.continue_stmt(),
             TokenKind::Break => self.break_stmt(),
             TokenKind::OpenBrace => self.compound_stmt(),
+            TokenKind::Case => self.case_stmt(),
+            TokenKind::Default => self.default_stmt(),
             TokenKind::Identifier => {
                 if self.next.kind == TokenKind::Colon {
                     self.labeled_stmt()
@@ -223,6 +226,36 @@ impl<'src> Parser<'src> {
         ))
     }
 
+    fn case_stmt(&mut self) -> Result<Node<Statement>> {
+        let begin = self.current.span;
+        self.expect(TokenKind::Case, "'case'")?;
+        let value = self.expression()?;
+        self.expect(TokenKind::Colon, "':'")?;
+        let stmt = self.statement()?;
+        Ok(Node::from(
+            begin + stmt.span,
+            Statement::Case {
+                value,
+                stmt,
+                label: "dummy".into(),
+            },
+        ))
+    }
+
+    fn default_stmt(&mut self) -> Result<Node<Statement>> {
+        let begin = self.current.span;
+        self.expect(TokenKind::Default, "'default'")?; // TODO: simplify with expect_as function
+        self.expect(TokenKind::Colon, "':'")?;
+        let stmt = self.statement()?;
+        Ok(Node::from(
+            begin + stmt.span,
+            Statement::Default {
+                stmt,
+                label: "dummy".into(),
+            },
+        ))
+    }
+
     fn expression_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
         let expr = self.expression_precedence(0, "statement")?;
@@ -257,6 +290,19 @@ impl<'src> Parser<'src> {
                 then_stmt,
                 else_stmt,
             },
+        ))
+    }
+
+    fn switch_stmt(&mut self) -> Result<Node<Statement>> {
+        let begin = self.current.span;
+        self.expect(TokenKind::Switch, "'switch'")?;
+        self.expect(TokenKind::OpenParen, "'('")?;
+        let cond = self.expression()?;
+        self.expect(TokenKind::CloseParen, "')'")?;
+        let body = self.statement()?;
+        Ok(Node::from(
+            begin + body.span,
+            Statement::Switch { cond, body },
         ))
     }
 

@@ -3,6 +3,7 @@ use crate::parser;
 use crate::resolver;
 use crate::tacky;
 
+use crate::ast::Expression;
 use anyhow::Result;
 use std::io::Write;
 
@@ -277,6 +278,17 @@ fn print_statement(
                 print_statement(file, then_stmt, "╰──", level + 1, pipes)?;
             }
         }
+        ast::Statement::Switch { cond, body } => {
+            writeln!(file, "{indent}{pipe} Switch")?;
+            print_expression(
+                file,
+                cond,
+                "├──",
+                level + 1,
+                &[pipes, &[level + 1]].concat(),
+            )?;
+            print_statement(file, body, "╰──", level + 1, pipes)?;
+        }
         ast::Statement::Expression(expr) => {
             print_expression(file, expr, pipe, level, pipes)?;
         }
@@ -285,6 +297,21 @@ fn print_statement(
         }
         ast::Statement::Labeled { name, stmt } => {
             writeln!(file, "{indent}{pipe} Label [{}]", name.symbol)?;
+            print_statement(file, stmt, "╰──", level + 1, pipes)?;
+        }
+        ast::Statement::Case { value, stmt, .. } => {
+            writeln!(file, "{indent}{pipe} Case")?;
+            print_expression(
+                file,
+                value,
+                "├──",
+                level + 1,
+                &[pipes, &[level + 1]].concat(),
+            )?;
+            print_statement(file, stmt, "╰──", level + 1, pipes)?;
+        }
+        ast::Statement::Default { stmt, .. } => {
+            writeln!(file, "{indent}{pipe} Default")?;
             print_statement(file, stmt, "╰──", level + 1, pipes)?;
         }
         ast::Statement::Compound(block) => {

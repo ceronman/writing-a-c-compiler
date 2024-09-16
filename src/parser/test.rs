@@ -6810,6 +6810,80 @@ fn test_chapter_8_invalid_parse_extra_credit_label_is_not_block() {
 }
 
 #[test]
+fn test_chapter_8_invalid_parse_extra_credit_switch_case_declaration() {
+    assert_error(
+        r#"
+        int main(void) {
+            switch(3) {
+                case 3:
+                    int i = 0;
+                  //^^^ Expected statement, but found 'int'
+                    return i;
+            }
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_switch_goto_case() {
+    assert_error(
+        r#"
+        int main(void) {
+            goto 3;
+               //^ Expected identifier, but found '3'
+            switch (3) {
+                case 3: return 0;
+            }
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_switch_missing_case_value() {
+    assert_error(
+        r#"
+        int main(void) {
+            switch(0) {
+                case: return 0;
+                  //^ Expected expression, but found ':'
+            }
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_switch_missing_paren() {
+    assert_error(
+        r#"
+        int main(void) {
+            switch 3 {
+                 //^ Expected '(', but found '3'
+                case 3: return 0;
+            }
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_8_invalid_parse_extra_credit_switch_no_condition() {
+    assert_error(
+        r#"
+        int main(void) {
+            switch {
+                 //^ Expected '(', but found '{'
+                return 0;
+            }
+        }
+    "#,
+    );
+}
+
+#[test]
 fn test_chapter_8_invalid_parse_extra_for_header_clause() {
     assert_error(
         r#"
@@ -6934,6 +7008,428 @@ fn test_chapter_8_invalid_semantics_continue_not_in_loop() {
 }
 
 #[test]
+fn test_chapter_8_invalid_semantics_extra_credit_case_continue() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            switch(a + 1) {
+                case 0:
+                    continue;
+                default: a = 1;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [3]
+            ├── Switch
+            │   ├── Binary [+]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [1]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [0]
+            │       │   ╰── Continue
+            │       ╰── Default
+            │           ╰── Assign [=]
+            │               ├── Var [a]
+            │               ╰── Constant [1]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_case_outside_switch() {
+    let src = r#"
+        int main(void) {
+            for (int i = 0; i < 10; i = i + 1) {
+                case 0: return 1;
+            }
+            return 9;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── For
+            │   ├── Declaration [i]
+            │   │   ╰── Constant [0]
+            │   ├── Binary [<]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [10]
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [1]
+            │   ├── Block
+            │   │   ╰── Case
+            │   │       ├── Constant [0]
+            │   │       ╰── Return
+            │   │           ╰── Constant [1]
+            ╰── Return
+                ╰── Constant [9]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_default_continue() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            switch(a + 1) {
+                case 0:
+                    a = 1;
+                default: continue;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [3]
+            ├── Switch
+            │   ├── Binary [+]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [1]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [0]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [1]
+            │       ╰── Default
+            │           ╰── Continue
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_default_outside_switch() {
+    let src = r#"
+        int main(void) {
+            {
+                default: return 0;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── Block
+                ╰── Default
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_different_cases_same_scope() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch (a) {
+                case 1:;
+                    int b = 10;
+                    break;
+                case 2:;
+                    int b = 11;
+                    break;
+                default:
+                    break;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── Empty
+            │       ├── Declaration [b]
+            │       │   ╰── Constant [10]
+            │       ├── Break
+            │       ├── Case
+            │       │   ├── Constant [2]
+            │       │   ╰── Empty
+            │       ├── Declaration [b]
+            │       │   ╰── Constant [11]
+            │       ├── Break
+            │       ╰── Default
+            │           ╰── Break
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case() {
+    let src = r#"
+        int main(void) {
+            switch(4) {
+                case 5: return 0;
+                case 4: return 1;
+                case 5: return 0;
+                default: return 2;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── Switch
+                ├── Constant [4]
+                ╰── Block
+                    ├── Case
+                    │   ├── Constant [5]
+                    │   ╰── Return
+                    │       ╰── Constant [0]
+                    ├── Case
+                    │   ├── Constant [4]
+                    │   ╰── Return
+                    │       ╰── Constant [1]
+                    ├── Case
+                    │   ├── Constant [5]
+                    │   ╰── Return
+                    │       ╰── Constant [0]
+                    ╰── Default
+                        ╰── Return
+                            ╰── Constant [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_labeled_switch() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+        label:
+            switch (a) {
+                case 1:
+                case 1:
+                    break;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Label [label]
+            │   ╰── Switch
+            │       ├── Var [a]
+            │       ╰── Block
+            │           ╰── Case
+            │               ├── Constant [1]
+            │               ╰── Case
+            │                   ├── Constant [1]
+            │                   ╰── Break
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_nested_statement() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 10;
+            switch (a) {
+                case 1: {
+                    if(1) {
+                        case 1:
+                        return 0;
+                    }
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ╰── Case
+            │           ├── Constant [1]
+            │           ╰── Block
+            │               ╰── If
+            │                   ├── Constant [1]
+            │                   ╰── Block
+            │                       ╰── Case
+            │                           ├── Constant [1]
+            │                           ╰── Return
+            │                               ╰── Constant [0]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            switch(a) {
+                case 0: return 0;
+                default: return 1;
+                case 2: return 2;
+                default: return 2;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ╰── Switch
+                ├── Var [a]
+                ╰── Block
+                    ├── Case
+                    │   ├── Constant [0]
+                    │   ╰── Return
+                    │       ╰── Constant [0]
+                    ├── Default
+                    │   ╰── Return
+                    │       ╰── Constant [1]
+                    ├── Case
+                    │   ├── Constant [2]
+                    │   ╰── Return
+                    │       ╰── Constant [2]
+                    ╰── Default
+                        ╰── Return
+                            ╰── Constant [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default_in_nested_statement() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 10;
+            switch (a) {
+                case 1:
+                for (int i = 0; i < 10; i = i + 1) {
+                    continue;
+                    while(1)
+                    default:;
+                }
+                case 2:
+                return 0;
+                default:;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── For
+            │       │       ├── Declaration [i]
+            │       │       │   ╰── Constant [0]
+            │       │       ├── Binary [<]
+            │       │       │   ├── Var [i]
+            │       │       │   ╰── Constant [10]
+            │       │       ├── Assign [=]
+            │       │       │   ├── Var [i]
+            │       │       │   ╰── Binary [+]
+            │       │       │       ├── Var [i]
+            │       │       │       ╰── Constant [1]
+            │       │       ├── Block
+            │       │       │   ├── Continue
+            │       │       │   ╰── While
+            │       │       │       ├── Constant [1]
+            │       │       │       ╰── Default
+            │       │       │           ╰── Empty
+            │       ├── Case
+            │       │   ├── Constant [2]
+            │       │   ╰── Return
+            │       │       ╰── Constant [0]
+            │       ╰── Default
+            │           ╰── Empty
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_default() {
+    let src = r#"
+        int main(void) {
+                int a = 1;
+        label:
+            switch (a) {
+                case 1:
+                    return 0;
+                default:
+                label:
+                    return 1;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Label [label]
+            │   ╰── Switch
+            │       ├── Var [a]
+            │       ╰── Block
+            │           ├── Case
+            │           │   ├── Constant [1]
+            │           │   ╰── Return
+            │           │       ╰── Constant [0]
+            │           ╰── Default
+            │               ╰── Label [label]
+            │                   ╰── Return
+            │                       ╰── Constant [1]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
 fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_loop() {
     let src = r#"
         int main(void) {
@@ -6965,6 +7461,43 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_loop() {
 }
 
 #[test]
+fn test_chapter_8_invalid_semantics_extra_credit_duplicate_variable_in_switch() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch (a) {
+                int b = 2;
+                case 0:
+                    a = 3;
+                    int b = 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Declaration [b]
+            │       │   ╰── Constant [2]
+            │       ├── Case
+            │       │   ├── Constant [0]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [3]
+            │       ╰── Declaration [b]
+            │           ╰── Constant [2]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
 fn test_chapter_8_invalid_semantics_extra_credit_labeled_break_outside_loop() {
     let src = r#"
         int main(void) {
@@ -6977,6 +7510,220 @@ fn test_chapter_8_invalid_semantics_extra_credit_labeled_break_outside_loop() {
         ╰── Function [main]
             ├── Label [label]
             │   ╰── Break
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_non_constant_case() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            switch(a + 1) {
+                case 0: return 0;
+                case a: return 1;
+                case 1: return 2;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [3]
+            ╰── Switch
+                ├── Binary [+]
+                │   ├── Var [a]
+                │   ╰── Constant [1]
+                ╰── Block
+                    ├── Case
+                    │   ├── Constant [0]
+                    │   ╰── Return
+                    │       ╰── Constant [0]
+                    ├── Case
+                    │   ├── Var [a]
+                    │   ╰── Return
+                    │       ╰── Constant [1]
+                    ╰── Case
+                        ├── Constant [1]
+                        ╰── Return
+                            ╰── Constant [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_switch_continue() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            switch(a + 1) {
+                case 0:
+                    a = 4;
+                    continue;
+                default: a = 1;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [3]
+            ├── Switch
+            │   ├── Binary [+]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [1]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [0]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [4]
+            │       ├── Continue
+            │       ╰── Default
+            │           ╰── Assign [=]
+            │               ├── Var [a]
+            │               ╰── Constant [1]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_undeclared_var_switch_expression() {
+    let src = r#"
+        int main(void) {
+            switch(a) {
+                case 1: return 0;
+                case 2: return 1;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── Return
+            │       │       ╰── Constant [0]
+            │       ╰── Case
+            │           ├── Constant [2]
+            │           ╰── Return
+            │               ╰── Constant [1]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_case() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            switch (a) {
+                case 1:
+                    return b;
+                    break;
+                default:
+                    break;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── Return
+            │       │       ╰── Var [b]
+            │       ├── Break
+            │       ╰── Default
+            │           ╰── Break
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_default() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            switch (a) {
+                case 1:
+                    break;
+                default:
+                    return b;
+                    break;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [10]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── Break
+            │       ├── Default
+            │       │   ╰── Return
+            │       │       ╰── Var [b]
+            │       ╰── Break
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_invalid_semantics_extra_credit_undefined_label_in_case() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 3;
+            switch (a) {
+                case 1: goto foo;
+                default: return 0;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [3]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── Goto [foo]
+            │       ╰── Default
+            │           ╰── Return
+            │               ╰── Constant [0]
             ╰── Return
                 ╰── Constant [0]
     "#;
@@ -7340,6 +8087,51 @@ fn test_chapter_8_valid_empty_loop_body() {
 }
 
 #[test]
+fn test_chapter_8_valid_extra_credit_case_block() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            int b = 0;
+            switch(2) {
+                case 2: {
+                    int a = 8;
+                    b = a;
+                }
+            }
+            return (a == 4 && b == 8);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [4]
+            ├── Declaration [b]
+            │   ╰── Constant [0]
+            ├── Switch
+            │   ├── Constant [2]
+            │   ╰── Block
+            │       ╰── Case
+            │           ├── Constant [2]
+            │           ╰── Block
+            │               ├── Declaration [a]
+            │               │   ╰── Constant [8]
+            │               ╰── Assign [=]
+            │                   ├── Var [b]
+            │                   ╰── Var [a]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [a]
+                    │   ╰── Constant [4]
+                    ╰── Binary [==]
+                        ├── Var [b]
+                        ╰── Constant [8]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
 fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression() {
     let src = r#"
         int main(void) {
@@ -7409,6 +8201,102 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
                     ├── Var [i]
                     ╰── Unary [-]
                         ╰── Constant [103]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_duffs_device() {
+    let src = r#"
+        
+        int main(void) {
+            int count = 37;
+            int iterations = (count + 4) / 5;
+            switch (count % 5) {
+                case 0:
+                    do {
+                        count = count - 1;
+                        case 4:
+                            count = count - 1;
+                        case 3:
+                            count = count - 1;
+                        case 2:
+                            count = count - 1;
+                        case 1:
+                            count = count - 1;
+                    } while ((iterations = iterations - 1) > 0);
+            }
+            return (count == 0 && iterations == 0);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [count]
+            │   ╰── Constant [37]
+            ├── Declaration [iterations]
+            │   ╰── Binary [/]
+            │       ├── Binary [+]
+            │       │   ├── Var [count]
+            │       │   ╰── Constant [4]
+            │       ╰── Constant [5]
+            ├── Switch
+            │   ├── Binary [%]
+            │   │   ├── Var [count]
+            │   │   ╰── Constant [5]
+            │   ╰── Block
+            │       ╰── Case
+            │           ├── Constant [0]
+            │           ╰── DoWhile
+            │               ├── Block
+            │               │   ├── Assign [=]
+            │               │   │   ├── Var [count]
+            │               │   │   ╰── Binary [-]
+            │               │   │       ├── Var [count]
+            │               │   │       ╰── Constant [1]
+            │               │   ├── Case
+            │               │   │   ├── Constant [4]
+            │               │   │   ╰── Assign [=]
+            │               │   │       ├── Var [count]
+            │               │   │       ╰── Binary [-]
+            │               │   │           ├── Var [count]
+            │               │   │           ╰── Constant [1]
+            │               │   ├── Case
+            │               │   │   ├── Constant [3]
+            │               │   │   ╰── Assign [=]
+            │               │   │       ├── Var [count]
+            │               │   │       ╰── Binary [-]
+            │               │   │           ├── Var [count]
+            │               │   │           ╰── Constant [1]
+            │               │   ├── Case
+            │               │   │   ├── Constant [2]
+            │               │   │   ╰── Assign [=]
+            │               │   │       ├── Var [count]
+            │               │   │       ╰── Binary [-]
+            │               │   │           ├── Var [count]
+            │               │   │           ╰── Constant [1]
+            │               │   ╰── Case
+            │               │       ├── Constant [1]
+            │               │       ╰── Assign [=]
+            │               │           ├── Var [count]
+            │               │           ╰── Binary [-]
+            │               │               ├── Var [count]
+            │               │               ╰── Constant [1]
+            │               ╰── Binary [>]
+            │                   ├── Assign [=]
+            │                   │   ├── Var [iterations]
+            │                   │   ╰── Binary [-]
+            │                   │       ├── Var [iterations]
+            │                   │       ╰── Constant [1]
+            │                   ╰── Constant [0]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [count]
+                    │   ╰── Constant [0]
+                    ╰── Binary [==]
+                        ├── Var [iterations]
+                        ╰── Constant [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -7737,6 +8625,74 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
 }
 
 #[test]
+fn test_chapter_8_valid_extra_credit_loop_in_switch() {
+    let src = r#"
+        int main(void) {
+            int cond = 10;
+            switch (cond) {
+                case 1:
+                    return 0;
+                case 10:
+                    for (int i = 0; i < 5; i = i + 1) {
+                        cond = cond - 1;
+                        if (cond == 8)
+                            break;
+                    }
+                    return 123;
+                default:
+                    return 2;
+            }
+            return 3;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [cond]
+            │   ╰── Constant [10]
+            ├── Switch
+            │   ├── Var [cond]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── Return
+            │       │       ╰── Constant [0]
+            │       ├── Case
+            │       │   ├── Constant [10]
+            │       │   ╰── For
+            │       │       ├── Declaration [i]
+            │       │       │   ╰── Constant [0]
+            │       │       ├── Binary [<]
+            │       │       │   ├── Var [i]
+            │       │       │   ╰── Constant [5]
+            │       │       ├── Assign [=]
+            │       │       │   ├── Var [i]
+            │       │       │   ╰── Binary [+]
+            │       │       │       ├── Var [i]
+            │       │       │       ╰── Constant [1]
+            │       │       ├── Block
+            │       │       │   ├── Assign [=]
+            │       │       │   │   ├── Var [cond]
+            │       │       │   │   ╰── Binary [-]
+            │       │       │   │       ├── Var [cond]
+            │       │       │   │       ╰── Constant [1]
+            │       │       │   ╰── If
+            │       │       │       ├── Binary [==]
+            │       │       │       │   ├── Var [cond]
+            │       │       │       │   ╰── Constant [8]
+            │       │       │       ╰── Break
+            │       ├── Return
+            │       │   ╰── Constant [123]
+            │       ╰── Default
+            │           ╰── Return
+            │               ╰── Constant [2]
+            ╰── Return
+                ╰── Constant [3]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
 fn test_chapter_8_valid_extra_credit_post_exp_incr() {
     let src = r#"
         int main(void) {
@@ -7768,6 +8724,1004 @@ fn test_chapter_8_valid_extra_credit_post_exp_incr() {
             │   │           ╰── Constant [2]
             ╰── Return
                 ╰── Var [product]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch() {
+    let src = r#"
+        
+        int main(void) {
+            switch(3) {
+                case 0: return 0;
+                case 1: return 1;
+                case 3: return 3;
+                case 5: return 5;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── Switch
+                ├── Constant [3]
+                ╰── Block
+                    ├── Case
+                    │   ├── Constant [0]
+                    │   ╰── Return
+                    │       ╰── Constant [0]
+                    ├── Case
+                    │   ├── Constant [1]
+                    │   ╰── Return
+                    │       ╰── Constant [1]
+                    ├── Case
+                    │   ├── Constant [3]
+                    │   ╰── Return
+                    │       ╰── Constant [3]
+                    ╰── Case
+                        ├── Constant [5]
+                        ╰── Return
+                            ╰── Constant [5]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_assign_in_condition() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            switch (a = 1) {
+                case 0:
+                    return 10;
+                case 1:
+                    a = a * 2;
+                    break;
+                default:
+                    a = 99;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Switch
+            │   ├── Assign [=]
+            │   │   ├── Var [a]
+            │   │   ╰── Constant [1]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [0]
+            │       │   ╰── Return
+            │       │       ╰── Constant [10]
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [a]
+            │       │           ╰── Constant [2]
+            │       ├── Break
+            │       ╰── Default
+            │           ╰── Assign [=]
+            │               ├── Var [a]
+            │               ╰── Constant [99]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_break() {
+    let src = r#"
+        int main(void) {
+            int a = 5;
+            switch (a) {
+                case 5:
+                    a = 10;
+                    break;
+                case 6:
+                    a = 0;
+                    break;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [5]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [5]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [10]
+            │       ├── Break
+            │       ├── Case
+            │       │   ├── Constant [6]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [0]
+            │       ╰── Break
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_decl() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            int b = 0;
+            switch(a) {
+                int a = (b = 5);
+            case 3:
+                a = 4;
+                b = b + a;
+            }
+            return a == 3 && b == 4;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [3]
+            ├── Declaration [b]
+            │   ╰── Constant [0]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Declaration [a]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [b]
+            │       │       ╰── Constant [5]
+            │       ├── Case
+            │       │   ├── Constant [3]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [4]
+            │       ╰── Assign [=]
+            │           ├── Var [b]
+            │           ╰── Binary [+]
+            │               ├── Var [b]
+            │               ╰── Var [a]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [a]
+                    │   ╰── Constant [3]
+                    ╰── Binary [==]
+                        ├── Var [b]
+                        ╰── Constant [4]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            switch(a) {
+                case 1:
+                    return 1;
+                case 2:
+                    return 9;
+                case 4:
+                    a = 11;
+                    break;
+                default:
+                    a = 22;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── Return
+            │       │       ╰── Constant [1]
+            │       ├── Case
+            │       │   ├── Constant [2]
+            │       │   ╰── Return
+            │       │       ╰── Constant [9]
+            │       ├── Case
+            │       │   ├── Constant [4]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [11]
+            │       ├── Break
+            │       ╰── Default
+            │           ╰── Assign [=]
+            │               ├── Var [a]
+            │               ╰── Constant [22]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default_fallthrough() {
+    let src = r#"
+        int main(void) {
+            int a = 5;
+            switch(0) {
+                default:
+                    a = 0;
+                case 1:
+                    return a;
+            }
+            return a + 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [5]
+            ├── Switch
+            │   ├── Constant [0]
+            │   ╰── Block
+            │       ├── Default
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [0]
+            │       ╰── Case
+            │           ├── Constant [1]
+            │           ╰── Return
+            │               ╰── Var [a]
+            ╰── Return
+                ╰── Binary [+]
+                    ├── Var [a]
+                    ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
+    let src = r#"
+        int main(void) {
+            int a;
+            int b = a = 7;
+            switch (a + b) {
+                default: return 0;
+                case 2: return 1;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            ├── Declaration [b]
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Constant [7]
+            ╰── Switch
+                ├── Binary [+]
+                │   ├── Var [a]
+                │   ╰── Var [b]
+                ╰── Block
+                    ├── Default
+                    │   ╰── Return
+                    │       ╰── Constant [0]
+                    ╰── Case
+                        ├── Constant [2]
+                        ╰── Return
+                            ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default_only() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch(a) default: return 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Default
+            │       ╰── Return
+            │           ╰── Constant [1]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_empty() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            switch(x = x + 1) {
+            }
+            switch(x = x + 1)
+            ;
+            return x;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [x]
+            │   ╰── Constant [10]
+            ├── Switch
+            │   ├── Assign [=]
+            │   │   ├── Var [x]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [x]
+            │   │       ╰── Constant [1]
+            │   ╰── Block
+            ├── Switch
+            │   ├── Assign [=]
+            │   │   ├── Var [x]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [x]
+            │   │       ╰── Constant [1]
+            │   ╰── Empty
+            ╰── Return
+                ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_fallthrough() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            int b = 9;
+            int c = 0;
+            switch (a ? b : 7) {
+                case 0:
+                    return 5;
+                case 7:
+                    c = 1;
+                case 9:
+                    c = 2;
+                case 1:
+                    c = c + 4;
+            }
+            return c;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [4]
+            ├── Declaration [b]
+            │   ╰── Constant [9]
+            ├── Declaration [c]
+            │   ╰── Constant [0]
+            ├── Switch
+            │   ├── Cond [?]
+            │   │   ├── Var [a]
+            │   │   ├── Var [b]
+            │   │   ╰── Constant [7]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [0]
+            │       │   ╰── Return
+            │       │       ╰── Constant [5]
+            │       ├── Case
+            │       │   ├── Constant [7]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [c]
+            │       │       ╰── Constant [1]
+            │       ├── Case
+            │       │   ├── Constant [9]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [c]
+            │       │       ╰── Constant [2]
+            │       ╰── Case
+            │           ├── Constant [1]
+            │           ╰── Assign [=]
+            │               ├── Var [c]
+            │               ╰── Binary [+]
+            │                   ├── Var [c]
+            │                   ╰── Constant [4]
+            ╰── Return
+                ╰── Var [c]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_goto_mid_case() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            goto mid_case;
+            switch (4) {
+                case 4:
+                    a = 5;
+                mid_case:
+                    a = a + 1;
+                    return a;
+            }
+            return 100;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Goto [mid_case]
+            ├── Switch
+            │   ├── Constant [4]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [4]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [5]
+            │       ├── Label [mid_case]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [a]
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [a]
+            │       │           ╰── Constant [1]
+            │       ╰── Return
+            │           ╰── Var [a]
+            ╰── Return
+                ╰── Constant [100]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_in_loop() {
+    let src = r#"
+        int main(void) {
+            int acc = 0;
+            int ctr = 0;
+            for (int i = 0; i < 10; i = i + 1) {
+                switch(i) {
+                    case 0:
+                        acc = 2;
+                        break;
+                    case 1:
+                        acc = acc * 3;
+                        break;
+                    case 2:
+                        acc = acc * 4;
+                        break;
+                    default:
+                        acc = acc + 1;
+                }
+                ctr = ctr + 1;
+            }
+            return ctr == 10 && acc == 31;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [acc]
+            │   ╰── Constant [0]
+            ├── Declaration [ctr]
+            │   ╰── Constant [0]
+            ├── For
+            │   ├── Declaration [i]
+            │   │   ╰── Constant [0]
+            │   ├── Binary [<]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [10]
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [1]
+            │   ├── Block
+            │   │   ├── Switch
+            │   │   │   ├── Var [i]
+            │   │   │   ╰── Block
+            │   │   │       ├── Case
+            │   │   │       │   ├── Constant [0]
+            │   │   │       │   ╰── Assign [=]
+            │   │   │       │       ├── Var [acc]
+            │   │   │       │       ╰── Constant [2]
+            │   │   │       ├── Break
+            │   │   │       ├── Case
+            │   │   │       │   ├── Constant [1]
+            │   │   │       │   ╰── Assign [=]
+            │   │   │       │       ├── Var [acc]
+            │   │   │       │       ╰── Binary [*]
+            │   │   │       │           ├── Var [acc]
+            │   │   │       │           ╰── Constant [3]
+            │   │   │       ├── Break
+            │   │   │       ├── Case
+            │   │   │       │   ├── Constant [2]
+            │   │   │       │   ╰── Assign [=]
+            │   │   │       │       ├── Var [acc]
+            │   │   │       │       ╰── Binary [*]
+            │   │   │       │           ├── Var [acc]
+            │   │   │       │           ╰── Constant [4]
+            │   │   │       ├── Break
+            │   │   │       ╰── Default
+            │   │   │           ╰── Assign [=]
+            │   │   │               ├── Var [acc]
+            │   │   │               ╰── Binary [+]
+            │   │   │                   ├── Var [acc]
+            │   │   │                   ╰── Constant [1]
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [ctr]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [ctr]
+            │   │           ╰── Constant [1]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [==]
+                    │   ├── Var [ctr]
+                    │   ╰── Constant [10]
+                    ╰── Binary [==]
+                        ├── Var [acc]
+                        ╰── Constant [31]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
+    let src = r#"
+        int main(void) {
+            int switch1 = 0;
+            int switch2 = 0;
+            int switch3 = 0;
+            switch(3) {
+                case 0: return 0;
+                case 1: if (0) {
+                    case 3: switch1 = 1; break;
+                }
+                default: return 0;
+            }
+            switch(4) {
+                case 0: return 0;
+                if (1) {
+                    return 0;
+                } else {
+                    case 4: switch2 = 1; break;
+                }
+                default: return 0;
+            }
+            switch (5) {
+                for (int i = 0; i < 10; i = i + 1) {
+                    switch1 = 0;
+                    case 5: switch3 = 1; break;
+                    default: return 0;
+                }
+            }
+            return (switch1 && switch2 && switch3);
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [switch1]
+            │   ╰── Constant [0]
+            ├── Declaration [switch2]
+            │   ╰── Constant [0]
+            ├── Declaration [switch3]
+            │   ╰── Constant [0]
+            ├── Switch
+            │   ├── Constant [3]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [0]
+            │       │   ╰── Return
+            │       │       ╰── Constant [0]
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── If
+            │       │       ├── Constant [0]
+            │       │       ╰── Block
+            │       │           ├── Case
+            │       │           │   ├── Constant [3]
+            │       │           │   ╰── Assign [=]
+            │       │           │       ├── Var [switch1]
+            │       │           │       ╰── Constant [1]
+            │       │           ╰── Break
+            │       ╰── Default
+            │           ╰── Return
+            │               ╰── Constant [0]
+            ├── Switch
+            │   ├── Constant [4]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [0]
+            │       │   ╰── Return
+            │       │       ╰── Constant [0]
+            │       ├── If
+            │       │   ├── Constant [1]
+            │       │   ├── Block
+            │       │   │   ╰── Return
+            │       │   │       ╰── Constant [0]
+            │       │   ╰── Block
+            │       │       ├── Case
+            │       │       │   ├── Constant [4]
+            │       │       │   ╰── Assign [=]
+            │       │       │       ├── Var [switch2]
+            │       │       │       ╰── Constant [1]
+            │       │       ╰── Break
+            │       ╰── Default
+            │           ╰── Return
+            │               ╰── Constant [0]
+            ├── Switch
+            │   ├── Constant [5]
+            │   ╰── Block
+            │       ╰── For
+            │           ├── Declaration [i]
+            │           │   ╰── Constant [0]
+            │           ├── Binary [<]
+            │           │   ├── Var [i]
+            │           │   ╰── Constant [10]
+            │           ├── Assign [=]
+            │           │   ├── Var [i]
+            │           │   ╰── Binary [+]
+            │           │       ├── Var [i]
+            │           │       ╰── Constant [1]
+            │           ├── Block
+            │           │   ├── Assign [=]
+            │           │   │   ├── Var [switch1]
+            │           │   │   ╰── Constant [0]
+            │           │   ├── Case
+            │           │   │   ├── Constant [5]
+            │           │   │   ╰── Assign [=]
+            │           │   │       ├── Var [switch3]
+            │           │   │       ╰── Constant [1]
+            │           │   ├── Break
+            │           │   ╰── Default
+            │           │       ╰── Return
+            │           │           ╰── Constant [0]
+            ╰── Return
+                ╰── Binary [&&]
+                    ├── Binary [&&]
+                    │   ├── Var [switch1]
+                    │   ╰── Var [switch2]
+                    ╰── Var [switch3]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_nested_not_taken() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 0;
+            switch(a) {
+                case 1:
+                    switch(a) {
+                        case 0: return 0;
+                        default: return 0;
+                    }
+                default: a = 2;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [0]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [1]
+            │       │   ╰── Switch
+            │       │       ├── Var [a]
+            │       │       ╰── Block
+            │       │           ├── Case
+            │       │           │   ├── Constant [0]
+            │       │           │   ╰── Return
+            │       │           │       ╰── Constant [0]
+            │       │           ╰── Default
+            │       │               ╰── Return
+            │       │                   ╰── Constant [0]
+            │       ╰── Default
+            │           ╰── Assign [=]
+            │               ├── Var [a]
+            │               ╰── Constant [2]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_nested_switch() {
+    let src = r#"
+        int main(void){
+            switch(3) {
+                case 0:
+                    return 0;
+                case 3: {
+                    switch(4) {
+                        case 3: return 0;
+                        case 4: return 1;
+                        default: return 0;
+                    }
+                }
+                case 4: return 0;
+                default: return 0;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ╰── Switch
+                ├── Constant [3]
+                ╰── Block
+                    ├── Case
+                    │   ├── Constant [0]
+                    │   ╰── Return
+                    │       ╰── Constant [0]
+                    ├── Case
+                    │   ├── Constant [3]
+                    │   ╰── Block
+                    │       ╰── Switch
+                    │           ├── Constant [4]
+                    │           ╰── Block
+                    │               ├── Case
+                    │               │   ├── Constant [3]
+                    │               │   ╰── Return
+                    │               │       ╰── Constant [0]
+                    │               ├── Case
+                    │               │   ├── Constant [4]
+                    │               │   ╰── Return
+                    │               │       ╰── Constant [1]
+                    │               ╰── Default
+                    │                   ╰── Return
+                    │                       ╰── Constant [0]
+                    ├── Case
+                    │   ├── Constant [4]
+                    │   ╰── Return
+                    │       ╰── Constant [0]
+                    ╰── Default
+                        ╰── Return
+                            ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_no_case() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            switch(a)
+                return 0;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [4]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Return
+            │       ╰── Constant [0]
+            ╰── Return
+                ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_not_taken() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch(a) {
+                case 0: return 0;
+                case 2: return 0;
+                case 3: return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [0]
+            │       │   ╰── Return
+            │       │       ╰── Constant [0]
+            │       ├── Case
+            │       │   ├── Constant [2]
+            │       │   ╰── Return
+            │       │       ╰── Constant [0]
+            │       ╰── Case
+            │           ├── Constant [3]
+            │           ╰── Return
+            │               ╰── Constant [0]
+            ╰── Return
+                ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_single_case() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch(a) case 1: return 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [a]
+            │   ╰── Constant [1]
+            ├── Switch
+            │   ├── Var [a]
+            │   ╰── Case
+            │       ├── Constant [1]
+            │       ╰── Return
+            │           ╰── Constant [1]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_with_continue() {
+    let src = r#"
+        int main(void) {
+            switch(4) {
+                case 0:
+                    return 0;
+                case 4: {
+                    int acc = 0;
+                    for (int i = 0; i < 10; i = i + 1) {
+                        if (i % 2)
+                            continue;
+                        acc = acc + 1;
+                    }
+                    return acc;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Switch
+            │   ├── Constant [4]
+            │   ╰── Block
+            │       ├── Case
+            │       │   ├── Constant [0]
+            │       │   ╰── Return
+            │       │       ╰── Constant [0]
+            │       ╰── Case
+            │           ├── Constant [4]
+            │           ╰── Block
+            │               ├── Declaration [acc]
+            │               │   ╰── Constant [0]
+            │               ├── For
+            │               │   ├── Declaration [i]
+            │               │   │   ╰── Constant [0]
+            │               │   ├── Binary [<]
+            │               │   │   ├── Var [i]
+            │               │   │   ╰── Constant [10]
+            │               │   ├── Assign [=]
+            │               │   │   ├── Var [i]
+            │               │   │   ╰── Binary [+]
+            │               │   │       ├── Var [i]
+            │               │   │       ╰── Constant [1]
+            │               │   ├── Block
+            │               │   │   ├── If
+            │               │   │   │   ├── Binary [%]
+            │               │   │   │   │   ├── Var [i]
+            │               │   │   │   │   ╰── Constant [2]
+            │               │   │   │   ╰── Continue
+            │               │   │   ╰── Assign [=]
+            │               │   │       ├── Var [acc]
+            │               │   │       ╰── Binary [+]
+            │               │   │           ├── Var [acc]
+            │               │   │           ╰── Constant [1]
+            │               ╰── Return
+            │                   ╰── Var [acc]
+            ╰── Return
+                ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            for (int i = 0; i < 10; i = i + 1) {
+                switch(i % 2) {
+                    case 0: continue;
+                    default: sum = sum + 1;
+                }
+            }
+            return sum;
+        }
+    "#;
+    let expected = r#"
+        Program
+        ╰── Function [main]
+            ├── Declaration [sum]
+            │   ╰── Constant [0]
+            ├── For
+            │   ├── Declaration [i]
+            │   │   ╰── Constant [0]
+            │   ├── Binary [<]
+            │   │   ├── Var [i]
+            │   │   ╰── Constant [10]
+            │   ├── Assign [=]
+            │   │   ├── Var [i]
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [1]
+            │   ├── Block
+            │   │   ╰── Switch
+            │   │       ├── Binary [%]
+            │   │       │   ├── Var [i]
+            │   │       │   ╰── Constant [2]
+            │   │       ╰── Block
+            │   │           ├── Case
+            │   │           │   ├── Constant [0]
+            │   │           │   ╰── Continue
+            │   │           ╰── Default
+            │   │               ╰── Assign [=]
+            │   │                   ├── Var [sum]
+            │   │                   ╰── Binary [+]
+            │   │                       ├── Var [sum]
+            │   │                       ╰── Constant [1]
+            ╰── Return
+                ╰── Var [sum]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
