@@ -63,7 +63,14 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let validated_ast = resolver::resolve(ast)?;
+    let validated_ast = match resolver::resolve(ast) {
+        Ok(ast) => ast,
+        Err(error) => {
+            let annotated = pretty::annotate(&source, &error);
+            panic!("{annotated}")
+        }
+    };
+
     if let Flag::Validate = options.flag {
         print!("{}", pretty_print_ast(&validated_ast)?);
         return Ok(());

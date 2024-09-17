@@ -43,20 +43,21 @@ pub enum Statement {
     Switch {
         cond: Node<Expression>,
         body: Node<Statement>,
+        labels: SwitchLabels,
     },
     Expression(Node<Expression>),
     Labeled {
         name: Node<Identifier>,
-        stmt: Node<Statement>,
+        body: Node<Statement>,
     },
     Default {
         label: Symbol,
-        stmt: Node<Statement>,
+        body: Node<Statement>,
     },
     Case {
         label: Symbol,
         value: Node<Expression>,
-        stmt: Node<Statement>,
+        body: Node<Statement>,
     },
     Goto(Node<Identifier>),
     Compound(Node<Block>),
@@ -80,6 +81,13 @@ pub enum Statement {
     Break(Symbol),
     Continue(Symbol),
     Null,
+}
+
+#[derive(Debug, Default)]
+pub struct SwitchLabels {
+    pub label: Symbol,
+    pub valued: Vec<(i64, Symbol)>,
+    pub default: Option<Symbol>,
 }
 
 #[derive(Debug)]

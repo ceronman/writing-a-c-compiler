@@ -3,7 +3,7 @@ mod test;
 
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Declaration, Expression, ForInit, Function, Identifier,
-    Node, PostfixOp, Program, Statement, UnaryOp,
+    Node, PostfixOp, Program, Statement, SwitchLabels, UnaryOp,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{Lexer, Token, TokenKind};
@@ -222,7 +222,7 @@ impl<'src> Parser<'src> {
         let stmt = self.statement()?;
         Ok(Node::from(
             begin + stmt.span,
-            Statement::Labeled { name, stmt },
+            Statement::Labeled { name, body: stmt },
         ))
     }
 
@@ -236,7 +236,7 @@ impl<'src> Parser<'src> {
             begin + stmt.span,
             Statement::Case {
                 value,
-                stmt,
+                body: stmt,
                 label: "dummy".into(),
             },
         ))
@@ -250,7 +250,7 @@ impl<'src> Parser<'src> {
         Ok(Node::from(
             begin + stmt.span,
             Statement::Default {
-                stmt,
+                body: stmt,
                 label: "dummy".into(),
             },
         ))
@@ -302,7 +302,11 @@ impl<'src> Parser<'src> {
         let body = self.statement()?;
         Ok(Node::from(
             begin + body.span,
-            Statement::Switch { cond, body },
+            Statement::Switch {
+                cond,
+                body,
+                labels: SwitchLabels::default(),
+            },
         ))
     }
 

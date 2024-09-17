@@ -3,7 +3,6 @@ use crate::parser;
 use crate::resolver;
 use crate::tacky;
 
-use crate::ast::Expression;
 use anyhow::Result;
 use std::io::Write;
 
@@ -278,7 +277,7 @@ fn print_statement(
                 print_statement(file, then_stmt, "╰──", level + 1, pipes)?;
             }
         }
-        ast::Statement::Switch { cond, body } => {
+        ast::Statement::Switch { cond, body, .. } => {
             writeln!(file, "{indent}{pipe} Switch")?;
             print_expression(
                 file,
@@ -295,11 +294,13 @@ fn print_statement(
         ast::Statement::Goto(label) => {
             writeln!(file, "{indent}{pipe} Goto [{}]", label.symbol)?;
         }
-        ast::Statement::Labeled { name, stmt } => {
+        ast::Statement::Labeled { name, body: stmt } => {
             writeln!(file, "{indent}{pipe} Label [{}]", name.symbol)?;
             print_statement(file, stmt, "╰──", level + 1, pipes)?;
         }
-        ast::Statement::Case { value, stmt, .. } => {
+        ast::Statement::Case {
+            value, body: stmt, ..
+        } => {
             writeln!(file, "{indent}{pipe} Case")?;
             print_expression(
                 file,
@@ -310,7 +311,7 @@ fn print_statement(
             )?;
             print_statement(file, stmt, "╰──", level + 1, pipes)?;
         }
-        ast::Statement::Default { stmt, .. } => {
+        ast::Statement::Default { body: stmt, .. } => {
             writeln!(file, "{indent}{pipe} Default")?;
             print_statement(file, stmt, "╰──", level + 1, pipes)?;
         }

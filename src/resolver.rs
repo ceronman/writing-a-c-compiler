@@ -2,7 +2,8 @@
 mod test;
 
 use crate::ast::{
-    Block, BlockItem, Declaration, Expression, ForInit, Node, Program, Statement, UnaryOp,
+    Block, BlockItem, Declaration, Expression, ForInit, Node, Program, Statement, SwitchLabels,
+    UnaryOp,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
@@ -12,8 +13,14 @@ use std::collections::{HashMap, VecDeque};
 struct Resolver {
     scopes: VecDeque<HashMap<Symbol, Symbol>>,
     labels: HashMap<Symbol, Symbol>,
-    loops: VecDeque<Symbol>,
+    label_stack: VecDeque<LabelKind>,
+    switch_labels: VecDeque<SwitchLabels>,
     counter: usize,
+}
+
+enum LabelKind {
+    Loop(Symbol),
+    Switch(Symbol),
 }
 
 impl Resolver {
@@ -70,21 +77,17 @@ impl Resolver {
                     self.check_gotos_stmt(else_stmt)?;
                 }
             }
+            Statement::Switch { body, .. }
+            | Statement::While { body, .. }
+            | Statement::DoWhile { body, .. }
+            | Statement::For { body, .. }
+            | Statement::Labeled { body, .. }
+            | Statement::Case { body, .. }
+            | Statement::Default { body, .. } => {
+                self.check_gotos_stmt(body)?;
+            }
             Statement::Compound(block) => {
                 self.check_gotos_block(block)?;
-            }
-            Statement::While { body, .. } => {
-                self.check_gotos_stmt(body)?;
-            }
-            Statement::DoWhile { body, .. } => {
-                self.check_gotos_stmt(body)?;
-            }
-            Statement::For { body, .. } => {
-                self.check_gotos_stmt(body)?;
-            }
-
-            Statement::Labeled { stmt, .. } => {
-                self.check_gotos_stmt(stmt)?;
             }
 
             Statement::Return { .. }
@@ -92,8 +95,6 @@ impl Resolver {
             | Statement::Break(_)
             | Statement::Continue(_)
             | Statement::Null => {}
-
-            _ => todo!(),
         }
         Ok(())
     }
@@ -142,7 +143,7 @@ impl Resolver {
                     self.resolve_statement(else_stmt)?;
                 }
             }
-            Statement::Labeled { name, stmt } => {
+            Statement::Labeled { name, body: stmt } => {
                 if self.labels.contains_key(&name.symbol) {
                     return Err(CompilerError {
                         kind: ErrorKind::Resolve,
@@ -161,10 +162,10 @@ impl Resolver {
 
             Statement::While { cond, body, label } | Statement::DoWhile { cond, body, label } => {
                 *label = self.make_label("loop");
-                self.loops.push_front(label.clone());
+                self.label_stack.push_front(LabelKind::Loop(label.clone()));
                 self.resolve_expression(cond)?;
                 self.resolve_statement(body)?;
-                self.loops.pop_front();
+                self.label_stack.pop_front();
             }
             Statement::For {
                 init,
@@ -174,7 +175,7 @@ impl Resolver {
                 label,
             } => {
                 *label = self.make_label("loop");
-                self.loops.push_front(label.clone());
+                self.label_stack.push_front(LabelKind::Loop(label.clone()));
                 let mut scoped_init = false;
                 match init {
                     ForInit::Decl(d) => {
@@ -195,11 +196,29 @@ impl Resolver {
                 if scoped_init {
                     self.end_scope();
                 }
-                self.loops.pop_front();
+                self.label_stack.pop_front();
+            }
+            Statement::Switch { cond, body, labels } => {
+                let new_labels = SwitchLabels {
+                    label: self.make_label("switch"),
+                    valued: vec![],
+                    default: None,
+                };
+                self.label_stack
+                    .push_front(LabelKind::Switch(new_labels.label.clone()));
+                self.switch_labels.push_front(new_labels);
+                self.resolve_expression(cond)?;
+                self.resolve_statement(body)?;
+                *labels = self
+                    .switch_labels
+                    .pop_front()
+                    .expect("Unreachable: switch statement without cases");
             }
             Statement::Break(label) => {
-                if let Some(current_loop) = self.loops.front_mut() {
-                    *label = current_loop.clone();
+                if let Some(LabelKind::Loop(enclosing_label) | LabelKind::Switch(enclosing_label)) =
+                    self.label_stack.front_mut()
+                {
+                    *label = enclosing_label.clone();
                 } else {
                     return Err(CompilerError {
                         kind: ErrorKind::Resolve,
@@ -209,21 +228,82 @@ impl Resolver {
                 }
             }
             Statement::Continue(label) => {
-                if let Some(current_loop) = self.loops.front_mut() {
-                    *label = current_loop.clone();
-                } else {
+                let Some(enclosing_label) = self.label_stack.iter().find_map(|kind| match kind {
+                    LabelKind::Loop(label) => Some(label),
+                    LabelKind::Switch(_) => None,
+                }) else {
                     return Err(CompilerError {
                         kind: ErrorKind::Resolve,
                         msg: "'continue' statement not in loop statement".to_owned(),
                         span: stmt.span,
                     });
-                }
+                };
+                *label = enclosing_label.clone();
             }
+            Statement::Case { label, value, body } => {
+                let Expression::Constant(int_value) = *value.as_ref() else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Resolve,
+                        msg: "case label does not reduce to an integer constant".to_owned(),
+                        span: value.span,
+                    });
+                };
+                let Some(enclosing_label) = self.label_stack.iter().find_map(|kind| match kind {
+                    LabelKind::Loop(_) => None,
+                    LabelKind::Switch(label) => Some(label),
+                }) else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Resolve,
+                        msg: "case label not within a switch statement".to_owned(),
+                        span: stmt.span,
+                    });
+                };
+                *label = format!("case_{int_value}_{enclosing_label}");
+                let cases = self
+                    .switch_labels
+                    .front_mut()
+                    .expect("Unreachable: case without a switch");
+                if cases.valued.iter().any(|&(value, _)| value == int_value) {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Resolve,
+                        msg: "duplicate case value".to_owned(),
+                        span: value.span,
+                    });
+                }
+                cases.valued.push((int_value, label.clone()));
+                self.resolve_statement(body)?;
+            }
+            Statement::Default { label, body } => {
+                let Some(enclosing_label) = self.label_stack.iter().find_map(|kind| match kind {
+                    LabelKind::Loop(_) => None,
+                    LabelKind::Switch(label) => Some(label),
+                }) else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Resolve,
+                        msg: "default label not within a switch statement".to_owned(),
+                        span: stmt.span,
+                    });
+                };
+                *label = format!("default_{enclosing_label}");
+                let cases = self
+                    .switch_labels
+                    .front_mut()
+                    .expect("Unreachable: default without a switch");
+                if cases.default.is_some() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Resolve,
+                        msg: "multiple default labels in one switch".to_owned(),
+                        span: stmt.span,
+                    });
+                }
+                cases.default = Some(label.clone());
+                self.resolve_statement(body)?;
+            }
+
             Statement::Goto(_) => {
                 // Note: checking if label exists is done in another pass
             }
             Statement::Null => {}
-            _ => todo!(),
         }
         Ok(())
     }

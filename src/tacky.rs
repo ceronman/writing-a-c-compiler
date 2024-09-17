@@ -159,7 +159,7 @@ impl TackyGenerator {
                 self.instructions.push(Instruction::Label(end_label));
             }
 
-            ast::Statement::Labeled { name, stmt } => {
+            ast::Statement::Labeled { name, body: stmt } => {
                 self.instructions
                     .push(Instruction::Label(name.symbol.clone()));
                 self.emit_statement(stmt);
