@@ -303,7 +303,7 @@ impl<'src> Parser<'src> {
         Ok(Node::from(
             begin + body.span,
             Statement::Switch {
-                cond,
+                expr: cond,
                 body,
                 labels: SwitchLabels::default(),
             },

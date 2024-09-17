@@ -198,7 +198,11 @@ impl Resolver {
                 }
                 self.label_stack.pop_front();
             }
-            Statement::Switch { cond, body, labels } => {
+            Statement::Switch {
+                expr: cond,
+                body,
+                labels,
+            } => {
                 let new_labels = SwitchLabels {
                     label: self.make_label("switch"),
                     valued: vec![],
@@ -213,6 +217,7 @@ impl Resolver {
                     .switch_labels
                     .pop_front()
                     .expect("Unreachable: switch statement without cases");
+                self.label_stack.pop_front();
             }
             Statement::Break(label) => {
                 if let Some(LabelKind::Loop(enclosing_label) | LabelKind::Switch(enclosing_label)) =

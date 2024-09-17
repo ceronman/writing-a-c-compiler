@@ -5409,6 +5409,52 @@ fn test_chapter_8_valid_empty_loop_body() {
 }
 
 #[test]
+fn test_chapter_8_valid_extra_credit_case_block() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            int b = 0;
+            switch(2) {
+                case 2: {
+                    int a = 8;
+                    b = a;
+                }
+            }
+            return (a == 4 && b == 8);
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 4
+            b.1 = 0
+            tmp.0 = 2 == 2
+            if tmp.0 jump case_2_switch_2
+            jump break_switch_2
+        
+          case_2_switch_2:
+            a.3 = 8
+            b.1 = a.3
+        
+          break_switch_2:
+            tmp.1 = a.0 == 4
+            if !tmp.1 jump and_false_0
+            tmp.4 = b.1 == 8
+            if !tmp.4 jump and_false_0
+            tmp.3 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.3 = 0
+        
+          and_end_1:
+            return tmp.3
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
 fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression() {
     let src = r#"
         int main(void) {
@@ -5483,6 +5529,98 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
             tmp.6 = - 103
             tmp.5 = i.0 == tmp.6
             return tmp.5
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_duffs_device() {
+    let src = r#"
+        
+        int main(void) {
+            int count = 37;
+            int iterations = (count + 4) / 5;
+            switch (count % 5) {
+                case 0:
+                    do {
+                        count = count - 1;
+                        case 4:
+                            count = count - 1;
+                        case 3:
+                            count = count - 1;
+                        case 2:
+                            count = count - 1;
+                        case 1:
+                            count = count - 1;
+                    } while ((iterations = iterations - 1) > 0);
+            }
+            return (count == 0 && iterations == 0);
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            count.0 = 37
+            tmp.0 = count.0 + 4
+            tmp.1 = tmp.0 / 5
+            iterations.1 = tmp.1
+            tmp.2 = count.0 % 5
+            tmp.3 = tmp.2 == 0
+            if tmp.3 jump case_0_switch_2
+            tmp.4 = tmp.2 == 4
+            if tmp.4 jump case_4_switch_2
+            tmp.5 = tmp.2 == 3
+            if tmp.5 jump case_3_switch_2
+            tmp.6 = tmp.2 == 2
+            if tmp.6 jump case_2_switch_2
+            tmp.7 = tmp.2 == 1
+            if tmp.7 jump case_1_switch_2
+            jump break_switch_2
+        
+          case_0_switch_2:
+        
+          start_loop_3:
+            tmp.8 = count.0 - 1
+            count.0 = tmp.8
+        
+          case_4_switch_2:
+            tmp.9 = count.0 - 1
+            count.0 = tmp.9
+        
+          case_3_switch_2:
+            tmp.10 = count.0 - 1
+            count.0 = tmp.10
+        
+          case_2_switch_2:
+            tmp.11 = count.0 - 1
+            count.0 = tmp.11
+        
+          case_1_switch_2:
+            tmp.12 = count.0 - 1
+            count.0 = tmp.12
+        
+          continue_loop_3:
+            tmp.13 = iterations.1 - 1
+            iterations.1 = tmp.13
+            tmp.14 = iterations.1 > 0
+            if tmp.14 jump start_loop_3
+        
+          break_loop_3:
+        
+          break_switch_2:
+            tmp.15 = count.0 == 0
+            if !tmp.15 jump and_false_0
+            tmp.18 = iterations.1 == 0
+            if !tmp.18 jump and_false_0
+            tmp.17 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.17 = 0
+        
+          and_end_1:
+            return tmp.17
             return 0
         }
     "#;
@@ -5812,6 +5950,73 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
 }
 
 #[test]
+fn test_chapter_8_valid_extra_credit_loop_in_switch() {
+    let src = r#"
+        int main(void) {
+            int cond = 10;
+            switch (cond) {
+                case 1:
+                    return 0;
+                case 10:
+                    for (int i = 0; i < 5; i = i + 1) {
+                        cond = cond - 1;
+                        if (cond == 8)
+                            break;
+                    }
+                    return 123;
+                default:
+                    return 2;
+            }
+            return 3;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            cond.0 = 10
+            tmp.0 = cond.0 == 1
+            if tmp.0 jump case_1_switch_1
+            tmp.1 = cond.0 == 10
+            if tmp.1 jump case_10_switch_1
+            jump default_switch_1
+            jump break_switch_1
+        
+          case_1_switch_1:
+            return 0
+        
+          case_10_switch_1:
+            i.3 = 0
+        
+          start_loop_2:
+            tmp.2 = i.3 < 5
+            if !tmp.2 jump break_loop_2
+            tmp.3 = cond.0 - 1
+            cond.0 = tmp.3
+            tmp.4 = cond.0 == 8
+            if !tmp.4 jump end_if_0
+            jump break_loop_2
+        
+          end_if_0:
+        
+          continue_loop_2:
+            tmp.5 = i.3 + 1
+            i.3 = tmp.5
+            jump start_loop_2
+        
+          break_loop_2:
+            return 123
+        
+          default_switch_1:
+            return 2
+        
+          break_switch_1:
+            return 3
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
 fn test_chapter_8_valid_extra_credit_post_exp_incr() {
     let src = r#"
         int main(void) {
@@ -5841,6 +6046,1020 @@ fn test_chapter_8_valid_extra_credit_post_exp_incr() {
         
           break_loop_1:
             return product.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch() {
+    let src = r#"
+        
+        int main(void) {
+            switch(3) {
+                case 0: return 0;
+                case 1: return 1;
+                case 3: return 3;
+                case 5: return 5;
+            }
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            tmp.0 = 3 == 0
+            if tmp.0 jump case_0_switch_0
+            tmp.1 = 3 == 1
+            if tmp.1 jump case_1_switch_0
+            tmp.2 = 3 == 3
+            if tmp.2 jump case_3_switch_0
+            tmp.3 = 3 == 5
+            if tmp.3 jump case_5_switch_0
+            jump break_switch_0
+        
+          case_0_switch_0:
+            return 0
+        
+          case_1_switch_0:
+            return 1
+        
+          case_3_switch_0:
+            return 3
+        
+          case_5_switch_0:
+            return 5
+        
+          break_switch_0:
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_assign_in_condition() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            switch (a = 1) {
+                case 0:
+                    return 10;
+                case 1:
+                    a = a * 2;
+                    break;
+                default:
+                    a = 99;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 0
+            a.0 = 1
+            tmp.0 = a.0 == 0
+            if tmp.0 jump case_0_switch_1
+            tmp.1 = a.0 == 1
+            if tmp.1 jump case_1_switch_1
+            jump default_switch_1
+            jump break_switch_1
+        
+          case_0_switch_1:
+            return 10
+        
+          case_1_switch_1:
+            tmp.2 = a.0 * 2
+            a.0 = tmp.2
+            jump break_switch_1
+        
+          default_switch_1:
+            a.0 = 99
+        
+          break_switch_1:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_break() {
+    let src = r#"
+        int main(void) {
+            int a = 5;
+            switch (a) {
+                case 5:
+                    a = 10;
+                    break;
+                case 6:
+                    a = 0;
+                    break;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 5
+            tmp.0 = a.0 == 5
+            if tmp.0 jump case_5_switch_1
+            tmp.1 = a.0 == 6
+            if tmp.1 jump case_6_switch_1
+            jump break_switch_1
+        
+          case_5_switch_1:
+            a.0 = 10
+            jump break_switch_1
+        
+          case_6_switch_1:
+            a.0 = 0
+            jump break_switch_1
+        
+          break_switch_1:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_decl() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            int b = 0;
+            switch(a) {
+                int a = (b = 5);
+            case 3:
+                a = 4;
+                b = b + a;
+            }
+            return a == 3 && b == 4;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 3
+            b.1 = 0
+            tmp.0 = a.0 == 3
+            if tmp.0 jump case_3_switch_2
+            jump break_switch_2
+            b.1 = 5
+            a.3 = b.1
+        
+          case_3_switch_2:
+            a.3 = 4
+            tmp.1 = b.1 + a.3
+            b.1 = tmp.1
+        
+          break_switch_2:
+            tmp.2 = a.0 == 3
+            if !tmp.2 jump and_false_0
+            tmp.5 = b.1 == 4
+            if !tmp.5 jump and_false_0
+            tmp.4 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.4 = 0
+        
+          and_end_1:
+            return tmp.4
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            switch(a) {
+                case 1:
+                    return 1;
+                case 2:
+                    return 9;
+                case 4:
+                    a = 11;
+                    break;
+                default:
+                    a = 22;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 0
+            tmp.0 = a.0 == 1
+            if tmp.0 jump case_1_switch_1
+            tmp.1 = a.0 == 2
+            if tmp.1 jump case_2_switch_1
+            tmp.2 = a.0 == 4
+            if tmp.2 jump case_4_switch_1
+            jump default_switch_1
+            jump break_switch_1
+        
+          case_1_switch_1:
+            return 1
+        
+          case_2_switch_1:
+            return 9
+        
+          case_4_switch_1:
+            a.0 = 11
+            jump break_switch_1
+        
+          default_switch_1:
+            a.0 = 22
+        
+          break_switch_1:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default_fallthrough() {
+    let src = r#"
+        int main(void) {
+            int a = 5;
+            switch(0) {
+                default:
+                    a = 0;
+                case 1:
+                    return a;
+            }
+            return a + 1;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 5
+            tmp.0 = 0 == 1
+            if tmp.0 jump case_1_switch_1
+            jump default_switch_1
+            jump break_switch_1
+        
+          default_switch_1:
+            a.0 = 0
+        
+          case_1_switch_1:
+            return a.0
+        
+          break_switch_1:
+            tmp.1 = a.0 + 1
+            return tmp.1
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
+    let src = r#"
+        int main(void) {
+            int a;
+            int b = a = 7;
+            switch (a + b) {
+                default: return 0;
+                case 2: return 1;
+            }
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 7
+            b.1 = a.0
+            tmp.0 = a.0 + b.1
+            tmp.1 = tmp.0 == 2
+            if tmp.1 jump case_2_switch_2
+            jump default_switch_2
+            jump break_switch_2
+        
+          default_switch_2:
+            return 0
+        
+          case_2_switch_2:
+            return 1
+        
+          break_switch_2:
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_default_only() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch(a) default: return 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 1
+            jump default_switch_1
+            jump break_switch_1
+        
+          default_switch_1:
+            return 1
+        
+          break_switch_1:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_empty() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            switch(x = x + 1) {
+            }
+            switch(x = x + 1)
+            ;
+            return x;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            x.0 = 10
+            tmp.0 = x.0 + 1
+            x.0 = tmp.0
+            jump break_switch_1
+        
+          break_switch_1:
+            tmp.1 = x.0 + 1
+            x.0 = tmp.1
+            jump break_switch_2
+        
+          break_switch_2:
+            return x.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_fallthrough() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            int b = 9;
+            int c = 0;
+            switch (a ? b : 7) {
+                case 0:
+                    return 5;
+                case 7:
+                    c = 1;
+                case 9:
+                    c = 2;
+                case 1:
+                    c = c + 4;
+            }
+            return c;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 4
+            b.1 = 9
+            c.2 = 0
+            if !a.0 jump else_1
+            tmp.0 = b.1
+            jump end_if_0
+        
+          else_1:
+            tmp.0 = 7
+        
+          end_if_0:
+            tmp.1 = tmp.0 == 0
+            if tmp.1 jump case_0_switch_3
+            tmp.2 = tmp.0 == 7
+            if tmp.2 jump case_7_switch_3
+            tmp.3 = tmp.0 == 9
+            if tmp.3 jump case_9_switch_3
+            tmp.4 = tmp.0 == 1
+            if tmp.4 jump case_1_switch_3
+            jump break_switch_3
+        
+          case_0_switch_3:
+            return 5
+        
+          case_7_switch_3:
+            c.2 = 1
+        
+          case_9_switch_3:
+            c.2 = 2
+        
+          case_1_switch_3:
+            tmp.5 = c.2 + 4
+            c.2 = tmp.5
+        
+          break_switch_3:
+            return c.2
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_goto_mid_case() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            goto mid_case;
+            switch (4) {
+                case 4:
+                    a = 5;
+                mid_case:
+                    a = a + 1;
+                    return a;
+            }
+            return 100;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 0
+            jump mid_case_2
+            tmp.0 = 4 == 4
+            if tmp.0 jump case_4_switch_1
+            jump break_switch_1
+        
+          case_4_switch_1:
+            a.0 = 5
+        
+          mid_case_2:
+            tmp.1 = a.0 + 1
+            a.0 = tmp.1
+            return a.0
+        
+          break_switch_1:
+            return 100
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_in_loop() {
+    let src = r#"
+        int main(void) {
+            int acc = 0;
+            int ctr = 0;
+            for (int i = 0; i < 10; i = i + 1) {
+                switch(i) {
+                    case 0:
+                        acc = 2;
+                        break;
+                    case 1:
+                        acc = acc * 3;
+                        break;
+                    case 2:
+                        acc = acc * 4;
+                        break;
+                    default:
+                        acc = acc + 1;
+                }
+                ctr = ctr + 1;
+            }
+            return ctr == 10 && acc == 31;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            acc.0 = 0
+            ctr.1 = 0
+            i.3 = 0
+        
+          start_loop_2:
+            tmp.0 = i.3 < 10
+            if !tmp.0 jump break_loop_2
+            tmp.1 = i.3 == 0
+            if tmp.1 jump case_0_switch_4
+            tmp.2 = i.3 == 1
+            if tmp.2 jump case_1_switch_4
+            tmp.3 = i.3 == 2
+            if tmp.3 jump case_2_switch_4
+            jump default_switch_4
+            jump break_switch_4
+        
+          case_0_switch_4:
+            acc.0 = 2
+            jump break_switch_4
+        
+          case_1_switch_4:
+            tmp.4 = acc.0 * 3
+            acc.0 = tmp.4
+            jump break_switch_4
+        
+          case_2_switch_4:
+            tmp.5 = acc.0 * 4
+            acc.0 = tmp.5
+            jump break_switch_4
+        
+          default_switch_4:
+            tmp.6 = acc.0 + 1
+            acc.0 = tmp.6
+        
+          break_switch_4:
+            tmp.7 = ctr.1 + 1
+            ctr.1 = tmp.7
+        
+          continue_loop_2:
+            tmp.8 = i.3 + 1
+            i.3 = tmp.8
+            jump start_loop_2
+        
+          break_loop_2:
+            tmp.9 = ctr.1 == 10
+            if !tmp.9 jump and_false_0
+            tmp.12 = acc.0 == 31
+            if !tmp.12 jump and_false_0
+            tmp.11 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.11 = 0
+        
+          and_end_1:
+            return tmp.11
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
+    let src = r#"
+        int main(void) {
+            int switch1 = 0;
+            int switch2 = 0;
+            int switch3 = 0;
+            switch(3) {
+                case 0: return 0;
+                case 1: if (0) {
+                    case 3: switch1 = 1; break;
+                }
+                default: return 0;
+            }
+            switch(4) {
+                case 0: return 0;
+                if (1) {
+                    return 0;
+                } else {
+                    case 4: switch2 = 1; break;
+                }
+                default: return 0;
+            }
+            switch (5) {
+                for (int i = 0; i < 10; i = i + 1) {
+                    switch1 = 0;
+                    case 5: switch3 = 1; break;
+                    default: return 0;
+                }
+            }
+            return (switch1 && switch2 && switch3);
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            switch1.0 = 0
+            switch2.1 = 0
+            switch3.2 = 0
+            tmp.0 = 3 == 0
+            if tmp.0 jump case_0_switch_3
+            tmp.1 = 3 == 1
+            if tmp.1 jump case_1_switch_3
+            tmp.2 = 3 == 3
+            if tmp.2 jump case_3_switch_3
+            jump default_switch_3
+            jump break_switch_3
+        
+          case_0_switch_3:
+            return 0
+        
+          case_1_switch_3:
+            if !0 jump end_if_0
+        
+          case_3_switch_3:
+            switch1.0 = 1
+            jump break_switch_3
+        
+          end_if_0:
+        
+          default_switch_3:
+            return 0
+        
+          break_switch_3:
+            tmp.3 = 4 == 0
+            if tmp.3 jump case_0_switch_4
+            tmp.4 = 4 == 4
+            if tmp.4 jump case_4_switch_4
+            jump default_switch_4
+            jump break_switch_4
+        
+          case_0_switch_4:
+            return 0
+            if !1 jump else_3
+            return 0
+            jump end_if_2
+        
+          else_3:
+        
+          case_4_switch_4:
+            switch2.1 = 1
+            jump break_switch_4
+        
+          end_if_2:
+        
+          default_switch_4:
+            return 0
+        
+          break_switch_4:
+            tmp.5 = 5 == 5
+            if tmp.5 jump case_5_switch_5
+            jump default_switch_5
+            jump break_switch_5
+            i.7 = 0
+        
+          start_loop_6:
+            tmp.6 = i.7 < 10
+            if !tmp.6 jump break_loop_6
+            switch1.0 = 0
+        
+          case_5_switch_5:
+            switch3.2 = 1
+            jump break_loop_6
+        
+          default_switch_5:
+            return 0
+        
+          continue_loop_6:
+            tmp.7 = i.7 + 1
+            i.7 = tmp.7
+            jump start_loop_6
+        
+          break_loop_6:
+        
+          break_switch_5:
+            if !switch1.0 jump and_false_4
+            if !switch2.1 jump and_false_4
+            tmp.9 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.9 = 0
+        
+          and_end_5:
+            if !tmp.9 jump and_false_6
+            if !switch3.2 jump and_false_6
+            tmp.11 = 1
+            jump and_end_7
+        
+          and_false_6:
+            tmp.11 = 0
+        
+          and_end_7:
+            return tmp.11
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_nested_not_taken() {
+    let src = r#"
+        
+        int main(void) {
+            int a = 0;
+            switch(a) {
+                case 1:
+                    switch(a) {
+                        case 0: return 0;
+                        default: return 0;
+                    }
+                default: a = 2;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 0
+            tmp.0 = a.0 == 1
+            if tmp.0 jump case_1_switch_1
+            jump default_switch_1
+            jump break_switch_1
+        
+          case_1_switch_1:
+            tmp.1 = a.0 == 0
+            if tmp.1 jump case_0_switch_2
+            jump default_switch_2
+            jump break_switch_2
+        
+          case_0_switch_2:
+            return 0
+        
+          default_switch_2:
+            return 0
+        
+          break_switch_2:
+        
+          default_switch_1:
+            a.0 = 2
+        
+          break_switch_1:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_nested_switch() {
+    let src = r#"
+        int main(void){
+            switch(3) {
+                case 0:
+                    return 0;
+                case 3: {
+                    switch(4) {
+                        case 3: return 0;
+                        case 4: return 1;
+                        default: return 0;
+                    }
+                }
+                case 4: return 0;
+                default: return 0;
+            }
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            tmp.0 = 3 == 0
+            if tmp.0 jump case_0_switch_0
+            tmp.1 = 3 == 3
+            if tmp.1 jump case_3_switch_0
+            tmp.2 = 3 == 4
+            if tmp.2 jump case_4_switch_0
+            jump default_switch_0
+            jump break_switch_0
+        
+          case_0_switch_0:
+            return 0
+        
+          case_3_switch_0:
+            tmp.3 = 4 == 3
+            if tmp.3 jump case_3_switch_1
+            tmp.4 = 4 == 4
+            if tmp.4 jump case_4_switch_1
+            jump default_switch_1
+            jump break_switch_1
+        
+          case_3_switch_1:
+            return 0
+        
+          case_4_switch_1:
+            return 1
+        
+          default_switch_1:
+            return 0
+        
+          break_switch_1:
+        
+          case_4_switch_0:
+            return 0
+        
+          default_switch_0:
+            return 0
+        
+          break_switch_0:
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_no_case() {
+    let src = r#"
+        int main(void) {
+            int a = 4;
+            switch(a)
+                return 0;
+            return a;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 4
+            jump break_switch_1
+            return 0
+        
+          break_switch_1:
+            return a.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_not_taken() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch(a) {
+                case 0: return 0;
+                case 2: return 0;
+                case 3: return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 1
+            tmp.0 = a.0 == 0
+            if tmp.0 jump case_0_switch_1
+            tmp.1 = a.0 == 2
+            if tmp.1 jump case_2_switch_1
+            tmp.2 = a.0 == 3
+            if tmp.2 jump case_3_switch_1
+            jump break_switch_1
+        
+          case_0_switch_1:
+            return 0
+        
+          case_2_switch_1:
+            return 0
+        
+          case_3_switch_1:
+            return 0
+        
+          break_switch_1:
+            return 1
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_single_case() {
+    let src = r#"
+        int main(void) {
+            int a = 1;
+            switch(a) case 1: return 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            a.0 = 1
+            tmp.0 = a.0 == 1
+            if tmp.0 jump case_1_switch_1
+            jump break_switch_1
+        
+          case_1_switch_1:
+            return 1
+        
+          break_switch_1:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_with_continue() {
+    let src = r#"
+        int main(void) {
+            switch(4) {
+                case 0:
+                    return 0;
+                case 4: {
+                    int acc = 0;
+                    for (int i = 0; i < 10; i = i + 1) {
+                        if (i % 2)
+                            continue;
+                        acc = acc + 1;
+                    }
+                    return acc;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            tmp.0 = 4 == 0
+            if tmp.0 jump case_0_switch_0
+            tmp.1 = 4 == 4
+            if tmp.1 jump case_4_switch_0
+            jump break_switch_0
+        
+          case_0_switch_0:
+            return 0
+        
+          case_4_switch_0:
+            acc.1 = 0
+            i.3 = 0
+        
+          start_loop_2:
+            tmp.2 = i.3 < 10
+            if !tmp.2 jump break_loop_2
+            tmp.3 = i.3 % 2
+            if !tmp.3 jump end_if_0
+            jump continue_loop_2
+        
+          end_if_0:
+            tmp.4 = acc.1 + 1
+            acc.1 = tmp.4
+        
+          continue_loop_2:
+            tmp.5 = i.3 + 1
+            i.3 = tmp.5
+            jump start_loop_2
+        
+          break_loop_2:
+            return acc.1
+        
+          break_switch_0:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
+    let src = r#"
+        int main(void) {
+            int sum = 0;
+            for (int i = 0; i < 10; i = i + 1) {
+                switch(i % 2) {
+                    case 0: continue;
+                    default: sum = sum + 1;
+                }
+            }
+            return sum;
+        }
+    "#;
+    let expected = r#"
+        function main { 
+            sum.0 = 0
+            i.2 = 0
+        
+          start_loop_1:
+            tmp.0 = i.2 < 10
+            if !tmp.0 jump break_loop_1
+            tmp.1 = i.2 % 2
+            tmp.2 = tmp.1 == 0
+            if tmp.2 jump case_0_switch_3
+            jump default_switch_3
+            jump break_switch_3
+        
+          case_0_switch_3:
+            jump continue_loop_1
+        
+          default_switch_3:
+            tmp.3 = sum.0 + 1
+            sum.0 = tmp.3
+        
+          break_switch_3:
+        
+          continue_loop_1:
+            tmp.4 = i.2 + 1
+            i.2 = tmp.4
+            jump start_loop_1
+        
+          break_loop_1:
+            return sum.0
             return 0
         }
     "#;

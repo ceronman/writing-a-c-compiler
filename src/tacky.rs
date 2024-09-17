@@ -244,6 +244,34 @@ impl TackyGenerator {
                 });
                 self.instructions.push(Instruction::Label(break_label));
             }
+            ast::Statement::Switch { expr, body, labels } => {
+                let cond = self.emit_expr(expr);
+                for (value, label) in &labels.valued {
+                    let case_value = Val::Constant(*value);
+                    let result = self.make_temp();
+                    self.instructions.push(Instruction::Binary {
+                        op: BinaryOp::Equal,
+                        src1: cond.clone(),
+                        src2: case_value,
+                        dst: result.clone(),
+                    });
+                    self.instructions.push(Instruction::JumpIfNotZero {
+                        cond: result,
+                        target: label.clone(),
+                    })
+                }
+                if let Some(label) = &labels.default {
+                    self.instructions.push(Instruction::Jump {
+                        target: label.clone(),
+                    })
+                }
+                let break_label = format!("break_{}", labels.label);
+                self.instructions.push(Instruction::Jump {
+                    target: break_label.clone(),
+                });
+                self.emit_statement(body);
+                self.instructions.push(Instruction::Label(break_label))
+            }
             ast::Statement::Break(label) => {
                 let target = format!("break_{label}");
                 self.instructions.push(Instruction::Jump { target });
@@ -252,7 +280,10 @@ impl TackyGenerator {
                 let target = format!("continue_{label}");
                 self.instructions.push(Instruction::Jump { target });
             }
-            _ => todo!(),
+            ast::Statement::Case { label, body, .. } | ast::Statement::Default { label, body } => {
+                self.instructions.push(Instruction::Label(label.clone()));
+                self.emit_statement(body);
+            }
         }
     }
 

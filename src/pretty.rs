@@ -277,7 +277,9 @@ fn print_statement(
                 print_statement(file, then_stmt, "╰──", level + 1, pipes)?;
             }
         }
-        ast::Statement::Switch { cond, body, .. } => {
+        ast::Statement::Switch {
+            expr: cond, body, ..
+        } => {
             writeln!(file, "{indent}{pipe} Switch")?;
             print_expression(
                 file,

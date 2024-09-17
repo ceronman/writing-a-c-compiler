@@ -11,7 +11,7 @@ set -euxo pipefail
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 8 --stage lex --bitwise --compound --increment --goto --switch
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 8 --stage parse --bitwise --compound --increment --goto --switch
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 8 --stage validate --bitwise --compound --increment --goto --switch
-  arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 8 --stage tacky --bitwise --compound --increment --goto
+  arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 8 --stage tacky --bitwise --compound --increment --goto --switch
   cargo clean
   rustfmt src/lexer/test.rs
   rustfmt src/parser/test.rs

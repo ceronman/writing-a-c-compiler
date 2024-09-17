@@ -41,7 +41,7 @@ pub enum Statement {
         else_stmt: Option<Node<Statement>>,
     },
     Switch {
-        cond: Node<Expression>,
+        expr: Node<Expression>,
         body: Node<Statement>,
         labels: SwitchLabels,
     },
