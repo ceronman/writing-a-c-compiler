@@ -191,6 +191,47 @@ use crate::pretty::{{dedent, dump_tacky}};
     Ok(())
 }
 
+pub fn generate_interpreter_tests(path: &Path, source: &str) -> Result<()> {
+    let output = PathBuf::from(file!());
+    let output = output
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join("src/tacky/interpreter/test.rs");
+    if fs::read_to_string(&output)?.is_empty() {
+        let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
+        writeln!(
+            file,
+            r#"
+use crate::{{parser, resolver, tacky}};
+
+fn run(src: &str) -> i64 {{
+    let ast = parser::parse(src).unwrap();
+    let ast = resolver::resolve(ast).unwrap();
+    let tacky = tacky::emit(&ast);
+    tacky::interpreter::run(&tacky)
+}}
+"#
+        )?;
+    }
+    let name = test_name(path);
+    let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
+    let indented = indent(source);
+    let ast = parser::parse(&indented)?;
+    let ast = resolver::resolve(ast)?;
+    let tacky = tacky::emit(&ast);
+    let expected = tacky::interpreter::run(&tacky);
+    writeln!(file)?;
+    writeln!(file, "#[test]")?;
+    writeln!(file, "fn test_{name}() {{")?;
+    writeln!(file, "    let src = r#\"{indented}\"#;")?;
+    writeln!(file, "    assert_eq!(run(src), {expected});")?;
+    writeln!(file, "}}")?;
+
+    Ok(())
+}
+
 fn indent(s: &str) -> String {
     let indented = s
         .lines()

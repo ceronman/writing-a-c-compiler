@@ -49,6 +49,14 @@ fn main() -> Result<()> {
             resolver::resolve(ast)?; // skip resolution errors
             testgen::generate_tacky_tests(&options.filename, &source)?;
         }
+
+        if let Flag::Interpret = options.flag {
+            lexer::tokenize(&source); // skip lexing errors
+            let ast = parser::parse(&source)?; // skip parsing errors
+            resolver::resolve(ast)?; // skip resolution errors
+            testgen::generate_interpreter_tests(&options.filename, &source)?;
+            return Ok(());
+        }
     }
 
     if let Flag::Lex = options.flag {
@@ -82,6 +90,11 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
+    if let Flag::Interpret = options.flag {
+        let result = tacky::interpreter::run(&tacky);
+        std::process::exit(result as i32);
+    }
+
     let asm = asm::generate(&tacky);
     if let Flag::Codegen = options.flag {
         println!("{asm:#?}");
@@ -109,6 +122,7 @@ enum Flag {
     Parse,
     Validate,
     Tacky,
+    Interpret,
     Codegen,
     Asm,
 }
@@ -123,9 +137,11 @@ fn parse_args() -> Options {
         ["--tacky", path] => (path, Flag::Tacky),
         ["--codegen", path] => (path, Flag::Codegen),
         ["--asm", path] => (path, Flag::Asm),
+        ["--interpret", "--tacky", path] => (path, Flag::Interpret),
         [path] => (path, Flag::None),
         _ => {
             eprintln!("Error: incorrect number of arguments");
+            eprintln!("{}", args.join(" "));
             eprintln!("Usage: compiler [ --lex | --parse | --codegen | --asm ] <FILENAME>");
             std::process::exit(1);
         }

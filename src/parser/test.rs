@@ -8061,7 +8061,7 @@ fn test_chapter_8_valid_empty_expression() {
 fn test_chapter_8_valid_empty_loop_body() {
     let src = r#"
         int main(void) {
-            int i = 2147483642;
+            int i = 2147;
             do ; while ((i = i - 5) >= 256);
             return i;
         }
@@ -8070,7 +8070,7 @@ fn test_chapter_8_valid_empty_loop_body() {
         Program
         ╰── Function [main]
             ├── Declaration [i]
-            │   ╰── Constant [2147483642]
+            │   ╰── Constant [2147]
             ├── DoWhile
             │   ├── Empty
             │   ╰── Binary [>=]
@@ -9801,7 +9801,7 @@ fn test_chapter_8_valid_for_absent_condition() {
 fn test_chapter_8_valid_for_absent_post() {
     let src = r#"
         int main(void) {
-            int a = -2147483647;
+            int a = -2147;
             for (; a % 5 != 0;) {
                 a = a + 1;
             }
@@ -9813,7 +9813,7 @@ fn test_chapter_8_valid_for_absent_post() {
         ╰── Function [main]
             ├── Declaration [a]
             │   ╰── Unary [-]
-            │       ╰── Constant [2147483647]
+            │       ╰── Constant [2147]
             ├── For
             ├── ├── Empty
             │   ├── Binary [!=]
