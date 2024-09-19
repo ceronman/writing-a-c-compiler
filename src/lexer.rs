@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod test;
 
+use std::fmt::{Display, Formatter};
 use std::ops::Add;
 use std::str::Chars;
 
@@ -88,6 +89,72 @@ pub enum TokenKind {
 
     Eof,
     Error,
+}
+
+impl Display for TokenKind {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            TokenKind::Identifier => "identifier",
+            TokenKind::Constant => "constant",
+            TokenKind::Int => "'int'",
+            TokenKind::Void => "'void'",
+            TokenKind::If => "'if'",
+            TokenKind::Else => "'else'",
+            TokenKind::Switch => "'switch'",
+            TokenKind::Case => "'case'",
+            TokenKind::Default => "'default'",
+            TokenKind::Goto => "'goto'",
+            TokenKind::Do => "'do'",
+            TokenKind::While => "'while'",
+            TokenKind::For => "'for'",
+            TokenKind::Break => "'break'",
+            TokenKind::Continue => "'continue'",
+            TokenKind::Return => "'return'",
+            TokenKind::Plus => "'+'",
+            TokenKind::PlusPlus => "'++'",
+            TokenKind::PlusEqual => "'+='",
+            TokenKind::Minus => "'-'",
+            TokenKind::MinusMinus => "'--'",
+            TokenKind::MinusEqual => "'-='",
+            TokenKind::Star => "'*'",
+            TokenKind::StarEqual => "'*='",
+            TokenKind::Slash => "'/'",
+            TokenKind::SlashEqual => "'/='",
+            TokenKind::Percent => "'%'",
+            TokenKind::PercentEqual => "'%='",
+            TokenKind::Ampersand => "'&'",
+            TokenKind::AmpersandAmpersand => "'&&'",
+            TokenKind::AmpersandEqual => "'&='",
+            TokenKind::Pipe => "'|'",
+            TokenKind::PipePipe => "'||'",
+            TokenKind::PipeEqual => "'|='",
+            TokenKind::Tilde => "'~'",
+            TokenKind::Circumflex => "'^'",
+            TokenKind::CircumflexEqual => "'^='",
+            TokenKind::Bang => "'!'",
+            TokenKind::Equal => "'='",
+            TokenKind::EqualEqual => "'=='",
+            TokenKind::BangEqual => "'!='",
+            TokenKind::Less => "'<'",
+            TokenKind::LessLess => "'<<'",
+            TokenKind::LessLessEqual => "'<<='",
+            TokenKind::LessEqual => "'<='",
+            TokenKind::Greater => "'>'",
+            TokenKind::GreaterGreater => "'>>'",
+            TokenKind::GreaterGreaterEqual => "'>>='",
+            TokenKind::GreaterEqual => "'>='",
+            TokenKind::Question => "'?'",
+            TokenKind::OpenParen => "'('",
+            TokenKind::CloseParen => "')'",
+            TokenKind::OpenBrace => "'{'",
+            TokenKind::CloseBrace => "'}'",
+            TokenKind::Colon => "':'",
+            TokenKind::Semicolon => "';'",
+            TokenKind::Eof => "end of file",
+            TokenKind::Error => "error token",
+        };
+        write!(f, "{}", s)
+    }
 }
 
 pub struct Lexer<'src> {

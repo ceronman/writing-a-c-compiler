@@ -30,7 +30,7 @@ impl<'src> Parser<'src> {
     fn program(&mut self) -> Result<Node<Program>> {
         let begin = self.current.span;
         let function_definition = self.function()?;
-        let end = self.expect(TokenKind::Eof, "end of file")?.span;
+        let end = self.expect(TokenKind::Eof)?.span;
         Ok(Node::from(
             begin + end,
             Program {
@@ -41,18 +41,18 @@ impl<'src> Parser<'src> {
 
     fn function(&mut self) -> Result<Node<Function>> {
         let begin = self.current.span;
-        self.expect(TokenKind::Int, "'int'")?;
+        self.expect(TokenKind::Int)?;
         let name = self.identifier()?;
-        self.expect(TokenKind::OpenParen, "'('")?;
-        self.expect(TokenKind::Void, "'void'")?;
-        self.expect(TokenKind::CloseParen, "')'")?;
+        self.expect(TokenKind::OpenParen)?;
+        self.expect(TokenKind::Void)?;
+        self.expect(TokenKind::CloseParen)?;
         let body = self.block()?;
         Ok(Node::from(begin + body.span, Function { name, body }))
     }
 
     fn block(&mut self) -> Result<Node<Block>> {
         let begin = self.current.span;
-        self.expect(TokenKind::OpenBrace, "'{'")?;
+        self.expect(TokenKind::OpenBrace)?;
         let mut items = Vec::new();
         while self.current.kind != TokenKind::CloseBrace {
             items.push(self.block_item()?)
@@ -73,7 +73,7 @@ impl<'src> Parser<'src> {
 
     fn declaration(&mut self) -> Result<Node<Declaration>> {
         let begin = self.current.span;
-        self.expect(TokenKind::Int, "type")?;
+        self.expect(TokenKind::Int)?;
         let name = self.identifier()?;
         let init = if self.current.kind == TokenKind::Equal {
             self.advance();
@@ -81,7 +81,7 @@ impl<'src> Parser<'src> {
         } else {
             None
         };
-        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        let end = self.expect(TokenKind::Semicolon)?.span;
         Ok(Node::from(begin + end, Declaration { name, init }))
     }
 
@@ -113,10 +113,10 @@ impl<'src> Parser<'src> {
 
     fn while_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
-        self.expect(TokenKind::While, "'while'")?;
-        self.expect(TokenKind::OpenParen, "'('")?;
+        self.expect(TokenKind::While)?;
+        self.expect(TokenKind::OpenParen)?;
         let cond = self.expression()?;
-        self.expect(TokenKind::CloseParen, "')'")?;
+        self.expect(TokenKind::CloseParen)?;
         let body = self.statement()?;
         Ok(Node::from(
             begin + body.span,
@@ -130,13 +130,13 @@ impl<'src> Parser<'src> {
 
     fn do_while_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
-        self.expect(TokenKind::Do, "'do'")?;
+        self.expect(TokenKind::Do)?;
         let body = self.statement()?;
-        self.expect(TokenKind::While, "'while'")?;
-        self.expect(TokenKind::OpenParen, "'('")?;
+        self.expect(TokenKind::While)?;
+        self.expect(TokenKind::OpenParen)?;
         let cond = self.expression()?;
-        self.expect(TokenKind::CloseParen, "')'")?;
-        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        self.expect(TokenKind::CloseParen)?;
+        let end = self.expect(TokenKind::Semicolon)?.span;
         Ok(Node::from(
             begin + end,
             Statement::DoWhile {
@@ -149,8 +149,8 @@ impl<'src> Parser<'src> {
 
     fn for_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
-        self.expect(TokenKind::For, "'for'")?;
-        self.expect(TokenKind::OpenParen, "'('")?;
+        self.expect(TokenKind::For)?;
+        self.expect(TokenKind::OpenParen)?;
         let init = match self.current.kind {
             TokenKind::Semicolon => {
                 self.advance();
@@ -159,7 +159,7 @@ impl<'src> Parser<'src> {
             TokenKind::Int => ForInit::Decl(self.declaration()?),
             _ => {
                 let expr = self.expression()?;
-                self.expect(TokenKind::Semicolon, "';'")?;
+                self.expect(TokenKind::Semicolon)?;
                 ForInit::Expr(expr)
             }
         };
@@ -169,14 +169,14 @@ impl<'src> Parser<'src> {
         } else {
             Some(self.expression()?)
         };
-        self.expect(TokenKind::Semicolon, "';'")?;
+        self.expect(TokenKind::Semicolon)?;
 
         let post = if self.current.kind == TokenKind::CloseParen {
             None
         } else {
             Some(self.expression()?)
         };
-        self.expect(TokenKind::CloseParen, "')'")?;
+        self.expect(TokenKind::CloseParen)?;
         let body = self.statement()?;
         Ok(Node::from(
             begin + body.span,
@@ -191,14 +191,14 @@ impl<'src> Parser<'src> {
     }
 
     fn continue_stmt(&mut self) -> Result<Node<Statement>> {
-        let begin = self.expect(TokenKind::Continue, "'continue'")?.span;
-        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        let begin = self.expect(TokenKind::Continue)?.span;
+        let end = self.expect(TokenKind::Semicolon)?.span;
         Ok(Node::from(begin + end, Statement::Continue("dummy".into())))
     }
 
     fn break_stmt(&mut self) -> Result<Node<Statement>> {
-        let begin = self.expect(TokenKind::Break, "'break'")?.span;
-        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        let begin = self.expect(TokenKind::Break)?.span;
+        let end = self.expect(TokenKind::Semicolon)?.span;
         Ok(Node::from(begin + end, Statement::Break("dummy".into())))
     }
 
@@ -209,16 +209,16 @@ impl<'src> Parser<'src> {
 
     fn goto_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
-        self.expect(TokenKind::Goto, "'goto'")?;
+        self.expect(TokenKind::Goto)?;
         let label = self.identifier()?;
-        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        let end = self.expect(TokenKind::Semicolon)?.span;
         Ok(Node::from(begin + end, Statement::Goto(label)))
     }
 
     fn labeled_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
         let name = self.identifier()?;
-        self.expect(TokenKind::Colon, "':'")?;
+        self.expect(TokenKind::Colon)?;
         let stmt = self.statement()?;
         Ok(Node::from(
             begin + stmt.span,
@@ -228,9 +228,9 @@ impl<'src> Parser<'src> {
 
     fn case_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
-        self.expect(TokenKind::Case, "'case'")?;
+        self.expect(TokenKind::Case)?;
         let value = self.expression()?;
-        self.expect(TokenKind::Colon, "':'")?;
+        self.expect(TokenKind::Colon)?;
         let stmt = self.statement()?;
         Ok(Node::from(
             begin + stmt.span,
@@ -244,8 +244,8 @@ impl<'src> Parser<'src> {
 
     fn default_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
-        self.expect(TokenKind::Default, "'default'")?; // TODO: simplify with expect_as function
-        self.expect(TokenKind::Colon, "':'")?;
+        self.expect(TokenKind::Default)?;
+        self.expect(TokenKind::Colon)?;
         let stmt = self.statement()?;
         Ok(Node::from(
             begin + stmt.span,
@@ -259,22 +259,22 @@ impl<'src> Parser<'src> {
     fn expression_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
         let expr = self.expression_precedence(0, "statement")?;
-        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        let end = self.expect(TokenKind::Semicolon)?.span;
         Ok(Node::from(begin + end, Statement::Expression(expr)))
     }
 
     fn null_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
-        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        let end = self.expect(TokenKind::Semicolon)?.span;
         Ok(Node::from(begin + end, Statement::Null))
     }
 
     fn if_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
-        self.expect(TokenKind::If, "'if'")?;
-        self.expect(TokenKind::OpenParen, "'('")?;
+        self.expect(TokenKind::If)?;
+        self.expect(TokenKind::OpenParen)?;
         let cond = self.expression()?;
-        self.expect(TokenKind::CloseParen, "')'")?;
+        self.expect(TokenKind::CloseParen)?;
         let then_stmt = self.statement()?;
         let else_stmt = if self.current.kind == TokenKind::Else {
             self.advance();
@@ -295,10 +295,10 @@ impl<'src> Parser<'src> {
 
     fn switch_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
-        self.expect(TokenKind::Switch, "'switch'")?;
-        self.expect(TokenKind::OpenParen, "'('")?;
+        self.expect(TokenKind::Switch)?;
+        self.expect(TokenKind::OpenParen)?;
         let cond = self.expression()?;
-        self.expect(TokenKind::CloseParen, "')'")?;
+        self.expect(TokenKind::CloseParen)?;
         let body = self.statement()?;
         Ok(Node::from(
             begin + body.span,
@@ -312,9 +312,9 @@ impl<'src> Parser<'src> {
 
     fn return_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
-        self.expect(TokenKind::Return, "'return'")?;
+        self.expect(TokenKind::Return)?;
         let expr = self.expression()?;
-        let end = self.expect(TokenKind::Semicolon, "';'")?.span;
+        let end = self.expect(TokenKind::Semicolon)?.span;
         Ok(Node::from(begin + end, Statement::Return { expr }))
     }
 
@@ -339,7 +339,7 @@ impl<'src> Parser<'src> {
                 let begin = self.current.span;
                 self.advance();
                 let inner = self.expression()?;
-                let end = self.expect(TokenKind::CloseParen, "')'")?.span;
+                let end = self.expect(TokenKind::CloseParen)?.span;
                 Node::from(begin + end, *inner.data)
             }
             _ => {
@@ -403,7 +403,7 @@ impl<'src> Parser<'src> {
                 self.advance();
                 let cond = expr;
                 let then_expr = self.expression()?;
-                self.expect(TokenKind::Colon, "':'")?;
+                self.expect(TokenKind::Colon)?;
                 let else_expr = self.expression_precedence(precedence, "expression")?;
                 Node::from(
                     cond.span + else_expr.span,
@@ -554,7 +554,7 @@ impl<'src> Parser<'src> {
     }
 
     fn identifier(&mut self) -> Result<Node<Identifier>> {
-        let token = self.expect(TokenKind::Identifier, "identifier")?;
+        let token = self.expect(TokenKind::Identifier)?;
         let symbol = Symbol::from(token.slice(self.source));
         Ok(Node::from(token.span, Identifier { symbol }))
     }
@@ -566,7 +566,7 @@ impl<'src> Parser<'src> {
 
     fn int(&mut self) -> Result<Node<Expression>> {
         let span = self.current.span;
-        let token = self.expect(TokenKind::Constant, "constant")?;
+        let token = self.expect(TokenKind::Constant)?;
         let value = token
             .slice(self.source)
             .parse()
@@ -583,21 +583,21 @@ impl<'src> Parser<'src> {
         self.next = self.lexer.next();
     }
 
-    fn expect(&mut self, expected: TokenKind, name: &str) -> Result<Token> {
+    fn expect(&mut self, expected: TokenKind) -> Result<Token> {
         let token = self.current;
         if token.kind == expected {
             self.advance();
             Ok(token)
-        } else if token.kind == TokenKind::Eof {
-            Err(CompilerError {
-                kind: ErrorKind::Parse,
-                msg: "Unexpected end of file".to_owned(),
-                span: token.span,
-            })
         } else {
+            let found = if token.kind == TokenKind::Eof {
+                "end of file"
+            } else {
+                &format!("'{}'", token.slice(self.source))
+            };
+
             Err(CompilerError {
                 kind: ErrorKind::Parse,
-                msg: format!("Expected {name}, but found '{}'", token.slice(self.source)),
+                msg: format!("Expected {expected}, but found {found}",),
                 span: token.span,
             })
         }
