@@ -55,8 +55,6 @@ impl Resolver {
     fn check_gotos_stmt(&self, stmt: &mut Node<Statement>) -> Result<()> {
         match stmt.as_mut() {
             Statement::Goto(name) => {
-                let x = name.symbol.as_str();
-                println!("{x}");
                 if let Some(new_name) = self.labels.get(&name.symbol) {
                     name.symbol = new_name.clone();
                 } else {

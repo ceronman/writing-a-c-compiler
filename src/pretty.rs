@@ -191,6 +191,13 @@ fn print_block_item(
     level: usize,
     pipes: &[usize],
 ) -> Result<()> {
+    match item {
+        ast::BlockItem::Stmt(s) => print_statement(file, s, pipe, level, pipes),
+        ast::BlockItem::Decl(d) => print_declaration(file, d, pipe, level, pipes),
+    }
+}
+
+fn make_indent(level: usize, pipes: &[usize]) -> String {
     let mut indent = String::new();
     for l in 0..level {
         if pipes.contains(&l) {
@@ -199,10 +206,7 @@ fn print_block_item(
             indent.push_str("    ");
         }
     }
-    match item {
-        ast::BlockItem::Stmt(s) => print_statement(file, s, pipe, level, pipes),
-        ast::BlockItem::Decl(d) => print_declaration(file, d, pipe, level, pipes),
-    }
+    indent
 }
 
 fn print_declaration(
@@ -212,14 +216,7 @@ fn print_declaration(
     level: usize,
     pipes: &[usize],
 ) -> Result<()> {
-    let mut indent = String::new();
-    for l in 0..level {
-        if pipes.contains(&l) {
-            indent.push_str("│   ");
-        } else {
-            indent.push_str("    ");
-        }
-    }
+    let indent = make_indent(level, pipes);
     writeln!(
         file,
         "{indent}{pipe} Declaration [{}]",
@@ -231,6 +228,45 @@ fn print_declaration(
     Ok(())
 }
 
+fn print_named_statement(
+    file: &mut impl Write,
+    name: &str,
+    stmt: &ast::Statement,
+    pipe: &str,
+    level: usize,
+    pipes: &[usize],
+) -> Result<()> {
+    let indent = make_indent(level, pipes);
+    writeln!(file, "{indent}{pipe} {name}")?;
+    print_statement(file, stmt, "╰──", level + 1, pipes)
+}
+
+fn print_named_expression(
+    file: &mut impl Write,
+    name: &str,
+    expr: &ast::Expression,
+    pipe: &str,
+    level: usize,
+    pipes: &[usize],
+) -> Result<()> {
+    let indent = make_indent(level, pipes);
+    writeln!(file, "{indent}{pipe} {name}")?;
+    print_expression(file, expr, "╰──", level + 1, pipes)
+}
+
+fn print_named_declaration(
+    file: &mut impl Write,
+    name: &str,
+    decl: &ast::Declaration,
+    pipe: &str,
+    level: usize,
+    pipes: &[usize],
+) -> Result<()> {
+    let indent = make_indent(level, pipes);
+    writeln!(file, "{indent}{pipe} {name}")?;
+    print_declaration(file, decl, "╰──", level + 1, pipes)
+}
+
 fn print_statement(
     file: &mut impl Write,
     statement: &ast::Statement,
@@ -238,18 +274,10 @@ fn print_statement(
     level: usize,
     pipes: &[usize],
 ) -> Result<()> {
-    let mut indent = String::new();
-    for l in 0..level {
-        if pipes.contains(&l) {
-            indent.push_str("│   ");
-        } else {
-            indent.push_str("    ");
-        }
-    }
+    let indent = make_indent(level, pipes);
     match statement {
         ast::Statement::Return { expr } => {
-            writeln!(file, "{indent}{pipe} Return")?;
-            print_expression(file, expr, "╰──", level + 1, pipes)?;
+            print_named_expression(file, "Return", expr, "╰──", level, pipes)?;
         }
         ast::Statement::If {
             cond,
@@ -257,32 +285,35 @@ fn print_statement(
             else_stmt,
         } => {
             writeln!(file, "{indent}{pipe} If")?;
-            print_expression(
+            print_named_expression(
                 file,
+                "Condition",
                 cond,
                 "├──",
                 level + 1,
                 &[pipes, &[level + 1]].concat(),
             )?;
             if let Some(else_stmt) = else_stmt {
-                print_statement(
+                print_named_statement(
                     file,
+                    "Then",
                     then_stmt,
                     "├──",
                     level + 1,
                     &[pipes, &[level + 1]].concat(),
                 )?;
-                print_statement(file, else_stmt, "╰──", level + 1, pipes)?;
+                print_named_statement(file, "Else", else_stmt, "╰──", level + 1, pipes)?;
             } else {
-                print_statement(file, then_stmt, "╰──", level + 1, pipes)?;
+                print_named_statement(file, "Then", then_stmt, "╰──", level + 1, pipes)?;
             }
         }
         ast::Statement::Switch {
             expr: cond, body, ..
         } => {
             writeln!(file, "{indent}{pipe} Switch")?;
-            print_expression(
+            print_named_expression(
                 file,
+                "Condition",
                 cond,
                 "├──",
                 level + 1,
@@ -314,15 +345,12 @@ fn print_statement(
             print_statement(file, stmt, "╰──", level + 1, pipes)?;
         }
         ast::Statement::Default { body: stmt, .. } => {
-            writeln!(file, "{indent}{pipe} Default")?;
-            print_statement(file, stmt, "╰──", level + 1, pipes)?;
+            print_named_statement(file, "Default", stmt, "╰──", level, pipes)?;
         }
         ast::Statement::Compound(block) => {
             writeln!(file, "{indent}{pipe} Block")?;
             for (i, block_item) in block.items.iter().enumerate() {
-                if i == block.items.len() - 1 {
-                    print_block_item(file, block_item, "╰──", level + 1, pipes)?
-                } else {
+                if i < block.items.len() - 1 {
                     print_block_item(
                         file,
                         block_item,
@@ -330,13 +358,16 @@ fn print_statement(
                         level + 1,
                         &[pipes, &[level + 1]].concat(),
                     )?
+                } else {
+                    print_block_item(file, block_item, "╰──", level + 1, pipes)?
                 };
             }
         }
         ast::Statement::While { cond, body, .. } => {
             writeln!(file, "{indent}{pipe} While")?;
-            print_expression(
+            print_named_expression(
                 file,
+                "Condition",
                 cond,
                 "├──",
                 level + 1,
@@ -353,9 +384,8 @@ fn print_statement(
                 level + 1,
                 &[pipes, &[level + 1]].concat(),
             )?;
-            print_expression(file, cond, "╰──", level + 1, pipes)?;
+            print_named_expression(file, "Condition", cond, "╰──", level + 1, pipes)?;
         }
-        // TODO: Add proper names for branches.
         ast::Statement::For {
             init,
             cond,
@@ -366,44 +396,48 @@ fn print_statement(
             writeln!(file, "{indent}{pipe} For")?;
             match init {
                 ast::ForInit::Decl(d) => {
-                    print_declaration(file, d, "├──", level + 1, &[pipes, &[level + 1]].concat())?;
+                    print_named_declaration(
+                        file,
+                        "Initial",
+                        d,
+                        "├──",
+                        level + 1,
+                        &[pipes, &[level + 1]].concat(),
+                    )?;
                 }
                 ast::ForInit::Expr(e) => {
-                    print_expression(file, e, "├──", level + 1, &[pipes, &[level + 1]].concat())?;
+                    print_named_expression(
+                        file,
+                        "Initial",
+                        e,
+                        "├──",
+                        level + 1,
+                        &[pipes, &[level + 1]].concat(),
+                    )?;
                 }
-                ast::ForInit::None => {
-                    writeln!(file, "{indent}{pipe} ├── Empty")?;
-                }
+                ast::ForInit::None => {}
             }
             if let Some(cond) = cond {
-                print_expression(
+                print_named_expression(
                     file,
+                    "Condition",
                     cond,
                     "├──",
                     level + 1,
                     &[pipes, &[level + 1]].concat(),
                 )?;
-            } else {
-                writeln!(file, "{indent}{pipe} ├── Empty")?;
             }
             if let Some(post) = post {
-                print_expression(
+                print_named_expression(
                     file,
+                    "Post",
                     post,
                     "├──",
                     level + 1,
                     &[pipes, &[level + 1]].concat(),
                 )?;
-            } else {
-                writeln!(file, "{indent}{pipe} ├── Empty")?;
             }
-            print_statement(
-                file,
-                body,
-                "├──",
-                level + 1,
-                &[pipes, &[level + 1]].concat(),
-            )?;
+            print_statement(file, body, "╰──", level + 1, pipes)?;
         }
         ast::Statement::Break(..) => {
             writeln!(file, "{indent}{pipe} Break")?;
@@ -425,14 +459,7 @@ fn print_expression(
     level: usize,
     pipes: &[usize],
 ) -> Result<()> {
-    let mut indent = String::new();
-    for l in 0..level {
-        if pipes.contains(&l) {
-            indent.push_str("│   ");
-        } else {
-            indent.push_str("    ");
-        }
-    }
+    let indent = make_indent(level, pipes);
     match expression {
         ast::Expression::Constant(value) => {
             writeln!(file, "{indent}{pipe} Constant [{value}]")?;
@@ -461,9 +488,13 @@ fn print_expression(
         }
         ast::Expression::Assignment { op, left, right } => {
             writeln!(file, "{indent}{pipe} Assign [{}]", assign_op(op))?;
-            let mut added = pipes.to_vec();
-            added.push(level + 1);
-            print_expression(file, left, "├──", level + 1, &added)?;
+            print_expression(
+                file,
+                left,
+                "├──",
+                level + 1,
+                &[pipes, &[level + 1]].concat(),
+            )?;
             print_expression(file, right, "╰──", level + 1, pipes)?;
         }
         ast::Expression::Conditional {

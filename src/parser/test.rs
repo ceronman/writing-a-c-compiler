@@ -2669,7 +2669,7 @@ fn test_chapter_5_invalid_semantics_use_then_redefine() {
         ╰── Function [main]
             ├── Declaration [a]
             │   ╰── Constant [0]
-            ├── Return
+            ╰── Return
             │   ╰── Var [a]
             ├── Declaration [a]
             │   ╰── Constant [1]
@@ -4434,9 +4434,11 @@ fn test_chapter_6_invalid_semantics_invalid_var_in_if() {
         Program
         ╰── Function [main]
             ├── If
-            │   ├── Constant [1]
-            │   ╰── Return
-            │       ╰── Var [c]
+            │   ├── Condition
+            │   │   ╰── Constant [1]
+            │   ╰── Then
+            │       ╰── Return
+            │           ╰── Var [c]
             ╰── Declaration [c]
                 ╰── Constant [0]
     "#;
@@ -4487,7 +4489,7 @@ fn test_chapter_6_invalid_semantics_undeclared_var_in_ternary() {
     let expected = r#"
         Program
         ╰── Function [main]
-            ├── Return
+            ╰── Return
             │   ╰── Cond [?]
             │       ├── Binary [>]
             │       │   ├── Var [a]
@@ -4538,13 +4540,15 @@ fn test_chapter_6_valid_binary_condition() {
         Program
         ╰── Function [main]
             ╰── If
-                ├── Binary [==]
-                │   ├── Binary [+]
-                │   │   ├── Constant [1]
-                │   │   ╰── Constant [2]
-                │   ╰── Constant [3]
-                ╰── Return
-                    ╰── Constant [5]
+                ├── Condition
+                │   ╰── Binary [==]
+                │       ├── Binary [+]
+                │       │   ├── Constant [1]
+                │       │   ╰── Constant [2]
+                │       ╰── Constant [3]
+                ╰── Then
+                    ╰── Return
+                        ╰── Constant [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4561,13 +4565,15 @@ fn test_chapter_6_valid_binary_false_condition() {
         Program
         ╰── Function [main]
             ╰── If
-                ├── Binary [==]
-                │   ├── Binary [+]
-                │   │   ├── Constant [1]
-                │   │   ╰── Constant [2]
-                │   ╰── Constant [4]
-                ╰── Return
-                    ╰── Constant [5]
+                ├── Condition
+                │   ╰── Binary [==]
+                │       ├── Binary [+]
+                │       │   ├── Constant [1]
+                │       │   ╰── Constant [2]
+                │       ╰── Constant [4]
+                ╰── Then
+                    ╰── Return
+                        ╰── Constant [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4589,11 +4595,14 @@ fn test_chapter_6_valid_else() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ╰── If
-                ├── Var [a]
-                ├── Return
-                │   ╰── Constant [1]
-                ╰── Return
-                    ╰── Constant [2]
+                ├── Condition
+                │   ╰── Var [a]
+                ├── Then
+                │   ╰── Return
+                │       ╰── Constant [1]
+                ╰── Else
+                    ╰── Return
+                        ╰── Constant [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4669,11 +4678,13 @@ fn test_chapter_6_valid_extra_credit_compound_if_expression() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Assign [+=]
-            │   │   ├── Var [a]
-            │   │   ╰── Constant [1]
-            │   ╰── Return
-            │       ╰── Var [a]
+            │   ├── Condition
+            │   │   ╰── Assign [+=]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [1]
+            │   ╰── Then
+            │       ╰── Return
+            │           ╰── Var [a]
             ╰── Return
                 ╰── Constant [10]
     "#;
@@ -4733,10 +4744,12 @@ fn test_chapter_6_valid_extra_credit_goto_backwards() {
         Program
         ╰── Function [main]
             ├── If
-            │   ├── Constant [0]
-            │   ╰── Label [label]
-            │       ╰── Return
-            │           ╰── Constant [5]
+            │   ├── Condition
+            │   │   ╰── Constant [0]
+            │   ╰── Then
+            │       ╰── Label [label]
+            │           ╰── Return
+            │               ╰── Constant [5]
             ├── Goto [label]
             ╰── Return
                 ╰── Constant [0]
@@ -4758,7 +4771,7 @@ fn test_chapter_6_valid_extra_credit_goto_label() {
         Program
         ╰── Function [main]
             ├── Goto [label]
-            ├── Return
+            ╰── Return
             │   ╰── Constant [0]
             ╰── Label [label]
                 ╰── Return
@@ -4784,7 +4797,7 @@ fn test_chapter_6_valid_extra_credit_goto_label_and_var() {
             ├── Declaration [ident]
             │   ╰── Constant [5]
             ├── Goto [ident]
-            ├── Return
+            ╰── Return
             │   ╰── Constant [0]
             ╰── Label [ident]
                 ╰── Return
@@ -4807,7 +4820,7 @@ fn test_chapter_6_valid_extra_credit_goto_label_main() {
         Program
         ╰── Function [main]
             ├── Goto [main]
-            ├── Return
+            ╰── Return
             │   ╰── Constant [5]
             ╰── Label [main]
                 ╰── Return
@@ -4830,7 +4843,7 @@ fn test_chapter_6_valid_extra_credit_goto_label_main_2() {
         Program
         ╰── Function [main]
             ├── Goto [_main]
-            ├── Return
+            ╰── Return
             │   ╰── Constant [0]
             ╰── Label [_main]
                 ╰── Return
@@ -4894,17 +4907,22 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
             │   ╰── Constant [1]
             ├── Label [label_if]
             │   ╰── If
-            │       ├── Var [a]
-            │       ├── Goto [label_expression]
-            │       ╰── Goto [label_empty]
+            │       ├── Condition
+            │       │   ╰── Var [a]
+            │       ├── Then
+            │       │   ╰── Goto [label_expression]
+            │       ╰── Else
+            │           ╰── Goto [label_empty]
             ├── Label [label_goto]
             │   ╰── Goto [label_return]
             ├── If
-            │   ├── Constant [0]
-            │   ╰── Label [label_expression]
-            │       ╰── Assign [=]
-            │           ├── Var [a]
-            │           ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Constant [0]
+            │   ╰── Then
+            │       ╰── Label [label_expression]
+            │           ╰── Assign [=]
+            │               ├── Var [a]
+            │               ╰── Constant [0]
             ├── Goto [label_if]
             ├── Label [label_return]
             │   ╰── Return
@@ -4933,7 +4951,7 @@ fn test_chapter_6_valid_extra_credit_label_token() {
         Program
         ╰── Function [main]
             ├── Goto [_foo_1_]
-            ├── Return
+            ╰── Return
             │   ╰── Constant [0]
             ╰── Label [_foo_1_]
                 ╰── Return
@@ -4990,15 +5008,20 @@ fn test_chapter_6_valid_extra_credit_postfix_if() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Postfix [--]
-            │   │   ╰── Var [a]
-            │   ├── Return
-            │   │   ╰── Constant [0]
-            │   ╰── If
-            │       ├── Postfix [--]
-            │       │   ╰── Var [a]
-            │       ╰── Return
-            │           ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Postfix [--]
+            │   │       ╰── Var [a]
+            │   ├── Then
+            │   │   ╰── Return
+            │   │       ╰── Constant [0]
+            │   ╰── Else
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Postfix [--]
+            │           │       ╰── Var [a]
+            │           ╰── Then
+            │               ╰── Return
+            │                   ╰── Constant [1]
             ╰── Return
                 ╰── Constant [0]
     "#;
@@ -5051,15 +5074,20 @@ fn test_chapter_6_valid_extra_credit_prefix_if() {
             │   ╰── Unary [-]
             │       ╰── Constant [1]
             ├── If
-            │   ├── Unary [++]
-            │   │   ╰── Var [a]
-            │   ├── Return
-            │   │   ╰── Constant [0]
-            │   ╰── If
-            │       ├── Unary [++]
-            │       │   ╰── Var [a]
-            │       ╰── Return
-            │           ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Unary [++]
+            │   │       ╰── Var [a]
+            │   ├── Then
+            │   │   ╰── Return
+            │   │       ╰── Constant [0]
+            │   ╰── Else
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Unary [++]
+            │           │       ╰── Var [a]
+            │           ╰── Then
+            │               ╰── Return
+            │                   ╰── Constant [1]
             ╰── Return
                 ╰── Constant [0]
     "#;
@@ -5124,7 +5152,7 @@ fn test_chapter_6_valid_extra_credit_whitespace_after_label() {
         Program
         ╰── Function [main]
             ├── Goto [label2]
-            ├── Return
+            ╰── Return
             │   ╰── Constant [0]
             ╰── Label [label1]
                 ╰── Label [label2]
@@ -5155,15 +5183,20 @@ fn test_chapter_6_valid_if_nested() {
             ├── Declaration [b]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Var [a]
-            │   ├── Assign [=]
-            │   │   ├── Var [b]
-            │   │   ╰── Constant [1]
-            │   ╰── If
-            │       ├── Var [b]
-            │       ╰── Assign [=]
-            │           ├── Var [b]
-            │           ╰── Constant [2]
+            │   ├── Condition
+            │   │   ╰── Var [a]
+            │   ├── Then
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [b]
+            │   │       ╰── Constant [1]
+            │   ╰── Else
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Var [b]
+            │           ╰── Then
+            │               ╰── Assign [=]
+            │                   ├── Var [b]
+            │                   ╰── Constant [2]
             ╰── Return
                 ╰── Var [b]
     "#;
@@ -5191,16 +5224,21 @@ fn test_chapter_6_valid_if_nested_2() {
             ├── Declaration [b]
             │   ╰── Constant [1]
             ├── If
-            │   ├── Var [a]
-            │   ├── Assign [=]
-            │   │   ├── Var [b]
-            │   │   ╰── Constant [1]
-            │   ╰── If
-            │       ├── Unary [~]
-            │       │   ╰── Var [b]
-            │       ╰── Assign [=]
-            │           ├── Var [b]
-            │           ╰── Constant [2]
+            │   ├── Condition
+            │   │   ╰── Var [a]
+            │   ├── Then
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [b]
+            │   │       ╰── Constant [1]
+            │   ╰── Else
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Unary [~]
+            │           │       ╰── Var [b]
+            │           ╰── Then
+            │               ╰── Assign [=]
+            │                   ├── Var [b]
+            │                   ╰── Constant [2]
             ╰── Return
                 ╰── Var [b]
     "#;
@@ -5226,19 +5264,24 @@ fn test_chapter_6_valid_if_nested_3() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Assign [=]
-            │   │   ├── Var [a]
-            │   │   ╰── Constant [1]
-            │   ╰── If
-            │       ├── Binary [==]
-            │       │   ├── Var [a]
-            │       │   ╰── Constant [1]
-            │       ├── Assign [=]
-            │       │   ├── Var [a]
-            │       │   ╰── Constant [3]
-            │       ╰── Assign [=]
-            │           ├── Var [a]
-            │           ╰── Constant [4]
+            │   ├── Condition
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [1]
+            │   ╰── Then
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Binary [==]
+            │           │       ├── Var [a]
+            │           │       ╰── Constant [1]
+            │           ├── Then
+            │           │   ╰── Assign [=]
+            │           │       ├── Var [a]
+            │           │       ╰── Constant [3]
+            │           ╰── Else
+            │               ╰── Assign [=]
+            │                   ├── Var [a]
+            │                   ╰── Constant [4]
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -5264,20 +5307,25 @@ fn test_chapter_6_valid_if_nested_4() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Unary [!]
-            │   │   ╰── Var [a]
-            │   ╰── If
-            │       ├── Binary [/]
-            │       │   ├── Constant [3]
-            │       │   ╰── Constant [4]
-            │       ├── Assign [=]
-            │       │   ├── Var [a]
-            │       │   ╰── Constant [3]
-            │       ╰── Assign [=]
-            │           ├── Var [a]
-            │           ╰── Binary [/]
-            │               ├── Constant [8]
-            │               ╰── Constant [2]
+            │   ├── Condition
+            │   │   ╰── Unary [!]
+            │   │       ╰── Var [a]
+            │   ╰── Then
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Binary [/]
+            │           │       ├── Constant [3]
+            │           │       ╰── Constant [4]
+            │           ├── Then
+            │           │   ╰── Assign [=]
+            │           │       ├── Var [a]
+            │           │       ╰── Constant [3]
+            │           ╰── Else
+            │               ╰── Assign [=]
+            │                   ├── Var [a]
+            │                   ╰── Binary [/]
+            │                       ├── Constant [8]
+            │                       ╰── Constant [2]
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -5305,18 +5353,24 @@ fn test_chapter_6_valid_if_nested_5() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Constant [0]
-            │   ├── If
-            │   │   ├── Constant [0]
-            │   │   ├── Assign [=]
-            │   │   │   ├── Var [a]
-            │   │   │   ╰── Constant [3]
-            │   │   ╰── Assign [=]
-            │   │       ├── Var [a]
-            │   │       ╰── Constant [4]
-            │   ╰── Assign [=]
-            │       ├── Var [a]
-            │       ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Constant [0]
+            │   ├── Then
+            │   │   ╰── If
+            │   │       ├── Condition
+            │   │       │   ╰── Constant [0]
+            │   │       ├── Then
+            │   │       │   ╰── Assign [=]
+            │   │       │       ├── Var [a]
+            │   │       │       ╰── Constant [3]
+            │   │       ╰── Else
+            │   │           ╰── Assign [=]
+            │   │               ├── Var [a]
+            │   │               ╰── Constant [4]
+            │   ╰── Else
+            │       ╰── Assign [=]
+            │           ├── Var [a]
+            │           ╰── Constant [1]
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -5342,10 +5396,12 @@ fn test_chapter_6_valid_if_not_taken() {
             ├── Declaration [b]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Var [a]
-            │   ╰── Assign [=]
-            │       ├── Var [b]
-            │       ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Var [a]
+            │   ╰── Then
+            │       ╰── Assign [=]
+            │           ├── Var [b]
+            │           ╰── Constant [1]
             ╰── Return
                 ╰── Var [b]
     "#;
@@ -5370,11 +5426,14 @@ fn test_chapter_6_valid_if_null_body() {
             ├── Declaration [x]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Constant [0]
-            │   ├── Empty
-            │   ╰── Assign [=]
-            │       ├── Var [x]
-            │       ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Constant [0]
+            │   ├── Then
+            │   │   ╰── Empty
+            │   ╰── Else
+            │       ╰── Assign [=]
+            │           ├── Var [x]
+            │           ╰── Constant [1]
             ╰── Return
                 ╰── Var [x]
     "#;
@@ -5400,10 +5459,12 @@ fn test_chapter_6_valid_if_taken() {
             ├── Declaration [b]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Var [a]
-            │   ╰── Assign [=]
-            │       ├── Var [b]
-            │       ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Var [a]
+            │   ╰── Then
+            │       ╰── Assign [=]
+            │           ├── Var [b]
+            │           ╰── Constant [1]
             ╰── Return
                 ╰── Var [b]
     "#;
@@ -5472,21 +5533,27 @@ fn test_chapter_6_valid_multiple_if() {
             ├── Declaration [b]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Var [a]
-            │   ├── Assign [=]
-            │   │   ├── Var [a]
-            │   │   ╰── Constant [2]
-            │   ╰── Assign [=]
-            │       ├── Var [a]
-            │       ╰── Constant [3]
+            │   ├── Condition
+            │   │   ╰── Var [a]
+            │   ├── Then
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [2]
+            │   ╰── Else
+            │       ╰── Assign [=]
+            │           ├── Var [a]
+            │           ╰── Constant [3]
             ├── If
-            │   ├── Var [b]
-            │   ├── Assign [=]
-            │   │   ├── Var [b]
-            │   │   ╰── Constant [4]
-            │   ╰── Assign [=]
-            │       ├── Var [b]
-            │       ╰── Constant [5]
+            │   ├── Condition
+            │   │   ╰── Var [b]
+            │   ├── Then
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [b]
+            │   │       ╰── Constant [4]
+            │   ╰── Else
+            │       ╰── Assign [=]
+            │           ├── Var [b]
+            │           ╰── Constant [5]
             ╰── Return
                 ╰── Binary [+]
                     ├── Var [a]
@@ -5939,24 +6006,27 @@ fn test_chapter_7_invalid_semantics_extra_credit_duplicate_labels_different_scop
             ├── Declaration [x]
             │   ╰── Constant [0]
             ╰── If
-                ├── Var [x]
-                ├── Block
-                │   ├── Assign [=]
-                │   │   ├── Var [x]
-                │   │   ╰── Constant [5]
-                │   ├── Goto [l]
-                │   ├── Return
-                │   │   ╰── Constant [0]
-                │   ╰── Label [l]
+                ├── Condition
+                │   ╰── Var [x]
+                ├── Then
+                │   ╰── Block
+                │       ├── Assign [=]
+                │       │   ├── Var [x]
+                │       │   ╰── Constant [5]
+                │       ├── Goto [l]
                 │       ╰── Return
-                │           ╰── Var [x]
-                ╰── Block
-                    ├── Goto [l]
-                    ├── Return
-                    │   ╰── Constant [0]
-                    ╰── Label [l]
+                │       │   ╰── Constant [0]
+                │       ╰── Label [l]
+                │           ╰── Return
+                │               ╰── Var [x]
+                ╰── Else
+                    ╰── Block
+                        ├── Goto [l]
                         ╰── Return
-                            ╰── Var [x]
+                        │   ╰── Constant [0]
+                        ╰── Label [l]
+                            ╰── Return
+                                ╰── Var [x]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5980,13 +6050,15 @@ fn test_chapter_7_invalid_semantics_extra_credit_goto_use_before_declare() {
             ├── Declaration [x]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Binary [!=]
-            │   │   ├── Var [x]
-            │   │   ╰── Constant [0]
-            │   ╰── Block
-            │       ╰── Label [return_y]
-            │           ╰── Return
-            │               ╰── Var [y]
+            │   ├── Condition
+            │   │   ╰── Binary [!=]
+            │   │       ├── Var [x]
+            │   │       ╰── Constant [0]
+            │   ╰── Then
+            │       ╰── Block
+            │           ╰── Label [return_y]
+            │               ╰── Return
+            │                   ╰── Var [y]
             ├── Declaration [y]
             │   ╰── Constant [4]
             ╰── Goto [return_y]
@@ -6175,23 +6247,27 @@ fn test_chapter_7_valid_extra_credit_compound_subtract_in_block() {
             ├── Declaration [a]
             │   ╰── Constant [5]
             ├── If
-            │   ├── Binary [>]
-            │   │   ├── Var [a]
-            │   │   ╰── Constant [4]
-            │   ╰── Block
-            │       ├── Assign [-=]
-            │       │   ├── Var [a]
-            │       │   ╰── Constant [4]
-            │       ├── Declaration [a]
-            │       │   ╰── Constant [5]
-            │       ╰── If
-            │           ├── Binary [>]
+            │   ├── Condition
+            │   │   ╰── Binary [>]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [4]
+            │   ╰── Then
+            │       ╰── Block
+            │           ├── Assign [-=]
             │           │   ├── Var [a]
             │           │   ╰── Constant [4]
-            │           ╰── Block
-            │               ╰── Assign [-=]
-            │                   ├── Var [a]
-            │                   ╰── Constant [4]
+            │           ├── Declaration [a]
+            │           │   ╰── Constant [5]
+            │           ╰── If
+            │               ├── Condition
+            │               │   ╰── Binary [>]
+            │               │       ├── Var [a]
+            │               │       ╰── Constant [4]
+            │               ╰── Then
+            │                   ╰── Block
+            │                       ╰── Assign [-=]
+            │                           ├── Var [a]
+            │                           ╰── Constant [4]
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -6219,12 +6295,14 @@ fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
             │   ╰── Constant [0]
             ╰── Block
                 ├── If
-                │   ├── Binary [!=]
-                │   │   ├── Var [a]
-                │   │   ╰── Constant [0]
-                │   ╰── Label [return_a]
-                │       ╰── Return
-                │           ╰── Var [a]
+                │   ├── Condition
+                │   │   ╰── Binary [!=]
+                │   │       ├── Var [a]
+                │   │       ╰── Constant [0]
+                │   ╰── Then
+                │       ╰── Label [return_a]
+                │           ╰── Return
+                │               ╰── Var [a]
                 ├── Declaration [a]
                 │   ╰── Constant [4]
                 ╰── Goto [return_a]
@@ -6289,14 +6367,16 @@ fn test_chapter_7_valid_extra_credit_goto_outer_scope() {
             ├── Declaration [b]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Var [a]
-            │   ╰── Block
-            │       ├── Declaration [a]
-            │       │   ╰── Constant [1]
-            │       ├── Assign [=]
-            │       │   ├── Var [b]
-            │       │   ╰── Var [a]
-            │       ╰── Goto [end]
+            │   ├── Condition
+            │   │   ╰── Var [a]
+            │   ╰── Then
+            │       ╰── Block
+            │           ├── Declaration [a]
+            │           │   ╰── Constant [1]
+            │           ├── Assign [=]
+            │           │   ├── Var [b]
+            │           │   ╰── Var [a]
+            │           ╰── Goto [end]
             ├── Assign [=]
             │   ├── Var [a]
             │   ╰── Constant [9]
@@ -6342,39 +6422,43 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
             ├── Declaration [sum]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Constant [1]
-            │   ╰── Block
-            │       ├── Declaration [a]
-            │       │   ╰── Constant [5]
-            │       ├── Goto [other_if]
-            │       ├── Assign [=]
-            │       │   ├── Var [sum]
-            │       │   ╰── Constant [0]
-            │       ├── Label [first_if]
-            │       │   ╰── Assign [=]
-            │       │       ├── Var [a]
-            │       │       ╰── Constant [5]
-            │       ╰── Assign [=]
-            │           ├── Var [sum]
-            │           ╰── Binary [+]
+            │   ├── Condition
+            │   │   ╰── Constant [1]
+            │   ╰── Then
+            │       ╰── Block
+            │           ├── Declaration [a]
+            │           │   ╰── Constant [5]
+            │           ├── Goto [other_if]
+            │           ├── Assign [=]
+            │           │   ├── Var [sum]
+            │           │   ╰── Constant [0]
+            │           ├── Label [first_if]
+            │           │   ╰── Assign [=]
+            │           │       ├── Var [a]
+            │           │       ╰── Constant [5]
+            │           ╰── Assign [=]
             │               ├── Var [sum]
-            │               ╰── Var [a]
+            │               ╰── Binary [+]
+            │                   ├── Var [sum]
+            │                   ╰── Var [a]
             ├── If
-            │   ├── Constant [0]
-            │   ╰── Block
-            │       ├── Label [other_if]
-            │       │   ╰── Empty
-            │       ├── Declaration [a]
-            │       │   ╰── Constant [6]
-            │       ├── Assign [=]
-            │       │   ├── Var [sum]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [sum]
-            │       │       ╰── Var [a]
-            │       ├── Goto [first_if]
-            │       ╰── Assign [=]
-            │           ├── Var [sum]
-            │           ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Constant [0]
+            │   ╰── Then
+            │       ╰── Block
+            │           ├── Label [other_if]
+            │           │   ╰── Empty
+            │           ├── Declaration [a]
+            │           │   ╰── Constant [6]
+            │           ├── Assign [=]
+            │           │   ├── Var [sum]
+            │           │   ╰── Binary [+]
+            │           │       ├── Var [sum]
+            │           │       ╰── Var [a]
+            │           ├── Goto [first_if]
+            │           ╰── Assign [=]
+            │               ├── Var [sum]
+            │               ╰── Constant [0]
             ╰── Return
                 ╰── Var [sum]
     "#;
@@ -6541,26 +6625,32 @@ fn test_chapter_7_valid_nested_if() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── If
-            │   ├── Var [a]
-            │   ├── Block
-            │   │   ├── Declaration [b]
-            │   │   │   ╰── Constant [2]
-            │   │   ╰── Return
-            │   │       ╰── Var [b]
-            │   ╰── Block
-            │       ├── Declaration [c]
-            │       │   ╰── Constant [3]
-            │       ╰── If
-            │           ├── Binary [<]
-            │           │   ├── Var [a]
-            │           │   ╰── Var [c]
-            │           ├── Block
-            │           │   ╰── Return
-            │           │       ╰── Unary [!]
-            │           │           ╰── Var [a]
-            │           ╰── Block
-            │               ╰── Return
-            │                   ╰── Constant [5]
+            │   ├── Condition
+            │   │   ╰── Var [a]
+            │   ├── Then
+            │   │   ╰── Block
+            │   │       ├── Declaration [b]
+            │   │       │   ╰── Constant [2]
+            │   │       ╰── Return
+            │   │           ╰── Var [b]
+            │   ╰── Else
+            │       ╰── Block
+            │           ├── Declaration [c]
+            │           │   ╰── Constant [3]
+            │           ╰── If
+            │               ├── Condition
+            │               │   ╰── Binary [<]
+            │               │       ├── Var [a]
+            │               │       ╰── Var [c]
+            │               ├── Then
+            │               │   ╰── Block
+            │               │       ╰── Return
+            │               │           ╰── Unary [!]
+            │               │               ╰── Var [a]
+            │               ╰── Else
+            │                   ╰── Block
+            │                       ╰── Return
+            │                           ╰── Constant [5]
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -6978,8 +7068,10 @@ fn test_chapter_8_invalid_semantics_break_not_in_loop() {
         Program
         ╰── Function [main]
             ╰── If
-                ├── Constant [1]
-                ╰── Break
+                ├── Condition
+                │   ╰── Constant [1]
+                ╰── Then
+                    ╰── Break
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -7026,9 +7118,10 @@ fn test_chapter_8_invalid_semantics_extra_credit_case_continue() {
             ├── Declaration [a]
             │   ╰── Constant [3]
             ├── Switch
-            │   ├── Binary [+]
-            │   │   ├── Var [a]
-            │   │   ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [1]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [0]
@@ -7057,21 +7150,24 @@ fn test_chapter_8_invalid_semantics_extra_credit_case_outside_switch() {
         Program
         ╰── Function [main]
             ├── For
-            │   ├── Declaration [i]
-            │   │   ╰── Constant [0]
-            │   ├── Binary [<]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [10]
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Binary [+]
+            │   ├── Initial
+            │   │   ╰── Declaration [i]
+            │   │       ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [<]
             │   │       ├── Var [i]
-            │   │       ╰── Constant [1]
-            │   ├── Block
-            │   │   ╰── Case
-            │   │       ├── Constant [0]
-            │   │       ╰── Return
+            │   │       ╰── Constant [10]
+            │   ├── Post
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [i]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [i]
             │   │           ╰── Constant [1]
+            │   ╰── Block
+            │       ╰── Case
+            │           ├── Constant [0]
+            │           ╰── Return
+            │               ╰── Constant [1]
             ╰── Return
                 ╰── Constant [9]
     "#;
@@ -7097,9 +7193,10 @@ fn test_chapter_8_invalid_semantics_extra_credit_default_continue() {
             ├── Declaration [a]
             │   ╰── Constant [3]
             ├── Switch
-            │   ├── Binary [+]
-            │   │   ├── Var [a]
-            │   │   ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [1]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [0]
@@ -7158,7 +7255,8 @@ fn test_chapter_8_invalid_semantics_extra_credit_different_cases_same_scope() {
             ├── Declaration [a]
             │   ╰── Constant [1]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [1]
@@ -7196,7 +7294,8 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case() {
         Program
         ╰── Function [main]
             ╰── Switch
-                ├── Constant [4]
+                ├── Condition
+                │   ╰── Constant [4]
                 ╰── Block
                     ├── Case
                     │   ├── Constant [5]
@@ -7238,7 +7337,8 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_labeled_switc
             │   ╰── Constant [0]
             ├── Label [label]
             │   ╰── Switch
-            │       ├── Var [a]
+            │       ├── Condition
+            │       │   ╰── Var [a]
             │       ╰── Block
             │           ╰── Case
             │               ├── Constant [1]
@@ -7274,18 +7374,21 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_nested_statem
             ├── Declaration [a]
             │   ╰── Constant [10]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ╰── Case
             │           ├── Constant [1]
             │           ╰── Block
             │               ╰── If
-            │                   ├── Constant [1]
-            │                   ╰── Block
-            │                       ╰── Case
-            │                           ├── Constant [1]
-            │                           ╰── Return
-            │                               ╰── Constant [0]
+            │                   ├── Condition
+            │                   │   ╰── Constant [1]
+            │                   ╰── Then
+            │                       ╰── Block
+            │                           ╰── Case
+            │                               ├── Constant [1]
+            │                               ╰── Return
+            │                                   ╰── Constant [0]
             ╰── Return
                 ╰── Constant [0]
     "#;
@@ -7311,13 +7414,14 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ╰── Switch
-                ├── Var [a]
+                ├── Condition
+                │   ╰── Var [a]
                 ╰── Block
                     ├── Case
                     │   ├── Constant [0]
                     │   ╰── Return
                     │       ╰── Constant [0]
-                    ├── Default
+                    ╰── Default
                     │   ╰── Return
                     │       ╰── Constant [1]
                     ├── Case
@@ -7357,27 +7461,32 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default_in_nested_sta
             ├── Declaration [a]
             │   ╰── Constant [10]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [1]
             │       │   ╰── For
-            │       │       ├── Declaration [i]
-            │       │       │   ╰── Constant [0]
-            │       │       ├── Binary [<]
-            │       │       │   ├── Var [i]
-            │       │       │   ╰── Constant [10]
-            │       │       ├── Assign [=]
-            │       │       │   ├── Var [i]
-            │       │       │   ╰── Binary [+]
+            │       │       ├── Initial
+            │       │       │   ╰── Declaration [i]
+            │       │       │       ╰── Constant [0]
+            │       │       ├── Condition
+            │       │       │   ╰── Binary [<]
             │       │       │       ├── Var [i]
-            │       │       │       ╰── Constant [1]
-            │       │       ├── Block
-            │       │       │   ├── Continue
-            │       │       │   ╰── While
-            │       │       │       ├── Constant [1]
-            │       │       │       ╰── Default
-            │       │       │           ╰── Empty
+            │       │       │       ╰── Constant [10]
+            │       │       ├── Post
+            │       │       │   ╰── Assign [=]
+            │       │       │       ├── Var [i]
+            │       │       │       ╰── Binary [+]
+            │       │       │           ├── Var [i]
+            │       │       │           ╰── Constant [1]
+            │       │       ╰── Block
+            │       │           ├── Continue
+            │       │           ╰── While
+            │       │               ├── Condition
+            │       │               │   ╰── Constant [1]
+            │       │               ╰── Default
+            │       │                   ╰── Empty
             │       ├── Case
             │       │   ├── Constant [2]
             │       │   ╰── Return
@@ -7413,7 +7522,8 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_default() {
             │   ╰── Constant [1]
             ├── Label [label]
             │   ╰── Switch
-            │       ├── Var [a]
+            │       ├── Condition
+            │       │   ╰── Var [a]
             │       ╰── Block
             │           ├── Case
             │           │   ├── Constant [1]
@@ -7453,7 +7563,8 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_loop() {
             │   │   ╰── Label [lbl]
             │   │       ╰── Return
             │   │           ╰── Constant [2]
-            │   ╰── Constant [1]
+            │   ╰── Condition
+            │       ╰── Constant [1]
             ╰── Return
                 ╰── Constant [0]
     "#;
@@ -7480,7 +7591,8 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_variable_in_switch() 
             ├── Declaration [a]
             │   ╰── Constant [1]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Declaration [b]
             │       │   ╰── Constant [2]
@@ -7534,9 +7646,10 @@ fn test_chapter_8_invalid_semantics_extra_credit_non_constant_case() {
             ├── Declaration [a]
             │   ╰── Constant [3]
             ╰── Switch
-                ├── Binary [+]
-                │   ├── Var [a]
-                │   ╰── Constant [1]
+                ├── Condition
+                │   ╰── Binary [+]
+                │       ├── Var [a]
+                │       ╰── Constant [1]
                 ╰── Block
                     ├── Case
                     │   ├── Constant [0]
@@ -7574,9 +7687,10 @@ fn test_chapter_8_invalid_semantics_extra_credit_switch_continue() {
             ├── Declaration [a]
             │   ╰── Constant [3]
             ├── Switch
-            │   ├── Binary [+]
-            │   │   ├── Var [a]
-            │   │   ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Binary [+]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [1]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [0]
@@ -7609,7 +7723,8 @@ fn test_chapter_8_invalid_semantics_extra_credit_undeclared_var_switch_expressio
         Program
         ╰── Function [main]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [1]
@@ -7646,7 +7761,8 @@ fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_case() {
             ├── Declaration [a]
             │   ╰── Constant [10]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [1]
@@ -7682,12 +7798,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_default(
             ├── Declaration [a]
             │   ╰── Constant [10]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [1]
             │       │   ╰── Break
-            │       ├── Default
+            │       ╰── Default
             │       │   ╰── Return
             │       │       ╰── Var [b]
             │       ╰── Break
@@ -7716,7 +7833,8 @@ fn test_chapter_8_invalid_semantics_extra_credit_undefined_label_in_case() {
             ├── Declaration [a]
             │   ╰── Constant [3]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [1]
@@ -7748,9 +7866,10 @@ fn test_chapter_8_invalid_semantics_out_of_scope_do_loop() {
                 │       ╰── Binary [+]
                 │           ├── Var [a]
                 │           ╰── Constant [1]
-                ╰── Binary [<]
-                    ├── Var [a]
-                    ╰── Constant [100]
+                ╰── Condition
+                    ╰── Binary [<]
+                        ├── Var [a]
+                        ╰── Constant [100]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -7770,20 +7889,23 @@ fn test_chapter_8_invalid_semantics_out_of_scope_loop_variable() {
         Program
         ╰── Function [main]
             ╰── For
-                ├── Assign [=]
-                │   ├── Var [i]
-                │   ╰── Constant [0]
-                ├── Binary [<]
-                │   ├── Var [i]
-                │   ╰── Constant [1]
-                ├── Assign [=]
-                │   ├── Var [i]
-                │   ╰── Binary [+]
+                ├── Initial
+                │   ╰── Assign [=]
+                │       ├── Var [i]
+                │       ╰── Constant [0]
+                ├── Condition
+                │   ╰── Binary [<]
                 │       ├── Var [i]
                 │       ╰── Constant [1]
-                ├── Block
-                │   ╰── Return
-                │       ╰── Constant [0]
+                ├── Post
+                │   ╰── Assign [=]
+                │       ├── Var [i]
+                │       ╰── Binary [+]
+                │           ├── Var [i]
+                │           ╰── Constant [1]
+                ╰── Block
+                    ╰── Return
+                        ╰── Constant [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -7810,29 +7932,34 @@ fn test_chapter_8_valid_break() {
             ├── Declaration [b]
             │   ╰── Constant [20]
             ├── For
-            │   ├── Assign [=]
-            │   │   ├── Var [b]
-            │   │   ╰── Unary [-]
-            │   │       ╰── Constant [20]
-            │   ├── Binary [<]
-            │   │   ├── Var [b]
-            │   │   ╰── Constant [0]
-            │   ├── Assign [=]
-            │   │   ├── Var [b]
-            │   │   ╰── Binary [+]
+            │   ├── Initial
+            │   │   ╰── Assign [=]
             │   │       ├── Var [b]
-            │   │       ╰── Constant [1]
-            │   ├── Block
-            │   │   ├── Assign [=]
-            │   │   │   ├── Var [a]
-            │   │   │   ╰── Binary [-]
-            │   │   │       ├── Var [a]
-            │   │   │       ╰── Constant [1]
-            │   │   ╰── If
-            │   │       ├── Binary [<=]
-            │   │       │   ├── Var [a]
-            │   │       │   ╰── Constant [0]
-            │   │       ╰── Break
+            │   │       ╰── Unary [-]
+            │   │           ╰── Constant [20]
+            │   ├── Condition
+            │   │   ╰── Binary [<]
+            │   │       ├── Var [b]
+            │   │       ╰── Constant [0]
+            │   ├── Post
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [b]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [b]
+            │   │           ╰── Constant [1]
+            │   ╰── Block
+            │       ├── Assign [=]
+            │       │   ├── Var [a]
+            │       │   ╰── Binary [-]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [1]
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Binary [<=]
+            │           │       ├── Var [a]
+            │           │       ╰── Constant [0]
+            │           ╰── Then
+            │               ╰── Break
             ╰── Return
                 ╰── Binary [&&]
                     ├── Binary [==]
@@ -7862,9 +7989,10 @@ fn test_chapter_8_valid_break_immediate() {
             ├── Declaration [a]
             │   ╰── Constant [10]
             ├── While
-            │   ├── Assign [=]
-            │   │   ├── Var [a]
-            │   │   ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [1]
             │   ╰── Break
             ╰── Return
                 ╰── Var [a]
@@ -7894,32 +8022,37 @@ fn test_chapter_8_valid_continue() {
             │   ╰── Constant [0]
             ├── Declaration [counter]
             ├── For
-            │   ├── Declaration [i]
-            │   │   ╰── Constant [0]
-            │   ├── Binary [<=]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [10]
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Binary [+]
+            │   ├── Initial
+            │   │   ╰── Declaration [i]
+            │   │       ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [<=]
             │   │       ├── Var [i]
-            │   │       ╰── Constant [1]
-            │   ├── Block
-            │   │   ├── Assign [=]
-            │   │   │   ├── Var [counter]
-            │   │   │   ╰── Var [i]
-            │   │   ├── If
-            │   │   │   ├── Binary [==]
-            │   │   │   │   ├── Binary [%]
-            │   │   │   │   │   ├── Var [i]
-            │   │   │   │   │   ╰── Constant [2]
-            │   │   │   │   ╰── Constant [0]
-            │   │   │   ╰── Continue
+            │   │       ╰── Constant [10]
+            │   ├── Post
             │   │   ╰── Assign [=]
-            │   │       ├── Var [sum]
+            │   │       ├── Var [i]
             │   │       ╰── Binary [+]
-            │   │           ├── Var [sum]
+            │   │           ├── Var [i]
             │   │           ╰── Constant [1]
+            │   ╰── Block
+            │       ├── Assign [=]
+            │       │   ├── Var [counter]
+            │       │   ╰── Var [i]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [==]
+            │       │   │       ├── Binary [%]
+            │       │   │       │   ├── Var [i]
+            │       │   │       │   ╰── Constant [2]
+            │       │   │       ╰── Constant [0]
+            │       │   ╰── Then
+            │       │       ╰── Continue
+            │       ╰── Assign [=]
+            │           ├── Var [sum]
+            │           ╰── Binary [+]
+            │               ├── Var [sum]
+            │               ╰── Constant [1]
             ╰── Return
                 ╰── Binary [&&]
                     ├── Binary [==]
@@ -7952,28 +8085,31 @@ fn test_chapter_8_valid_continue_empty_post() {
             ├── Declaration [sum]
             │   ╰── Constant [0]
             ├── For
-            │   ├── Declaration [i]
-            │   │   ╰── Constant [0]
-            │   ├── Binary [<]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [10]
-            ├── ├── Empty
-            │   ├── Block
-            │   │   ├── Assign [=]
-            │   │   │   ├── Var [i]
-            │   │   │   ╰── Binary [+]
-            │   │   │       ├── Var [i]
-            │   │   │       ╰── Constant [1]
-            │   │   ├── If
-            │   │   │   ├── Binary [%]
-            │   │   │   │   ├── Var [i]
-            │   │   │   │   ╰── Constant [2]
-            │   │   │   ╰── Continue
-            │   │   ╰── Assign [=]
-            │   │       ├── Var [sum]
-            │   │       ╰── Binary [+]
-            │   │           ├── Var [sum]
-            │   │           ╰── Var [i]
+            │   ├── Initial
+            │   │   ╰── Declaration [i]
+            │   │       ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [<]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [10]
+            │   ╰── Block
+            │       ├── Assign [=]
+            │       │   ├── Var [i]
+            │       │   ╰── Binary [+]
+            │       │       ├── Var [i]
+            │       │       ╰── Constant [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [%]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant [2]
+            │       │   ╰── Then
+            │       │       ╰── Continue
+            │       ╰── Assign [=]
+            │           ├── Var [sum]
+            │           ╰── Binary [+]
+            │               ├── Var [sum]
+            │               ╰── Var [i]
             ╰── Return
                 ╰── Var [sum]
     "#;
@@ -8003,9 +8139,10 @@ fn test_chapter_8_valid_do_while() {
             │   │       ╰── Binary [*]
             │   │           ├── Var [a]
             │   │           ╰── Constant [2]
-            │   ╰── Binary [<]
-            │       ├── Var [a]
-            │       ╰── Constant [11]
+            │   ╰── Condition
+            │       ╰── Binary [<]
+            │           ├── Var [a]
+            │           ╰── Constant [11]
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -8030,9 +8167,10 @@ fn test_chapter_8_valid_do_while_break_immediate() {
             │   ╰── Constant [10]
             ├── DoWhile
             │   ├── Break
-            │   ╰── Assign [=]
-            │       ├── Var [a]
-            │       ╰── Constant [1]
+            │   ╰── Condition
+            │       ╰── Assign [=]
+            │           ├── Var [a]
+            │           ╰── Constant [1]
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -8049,7 +8187,7 @@ fn test_chapter_8_valid_empty_expression() {
     let expected = r#"
         Program
         ╰── Function [main]
-            ├── Return
+            ╰── Return
             │   ╰── Constant [0]
             ├── Empty
             ╰── Empty
@@ -8073,13 +8211,14 @@ fn test_chapter_8_valid_empty_loop_body() {
             │   ╰── Constant [2147]
             ├── DoWhile
             │   ├── Empty
-            │   ╰── Binary [>=]
-            │       ├── Assign [=]
-            │       │   ├── Var [i]
-            │       │   ╰── Binary [-]
-            │       │       ├── Var [i]
-            │       │       ╰── Constant [5]
-            │       ╰── Constant [256]
+            │   ╰── Condition
+            │       ╰── Binary [>=]
+            │           ├── Assign [=]
+            │           │   ├── Var [i]
+            │           │   ╰── Binary [-]
+            │           │       ├── Var [i]
+            │           │       ╰── Constant [5]
+            │           ╰── Constant [256]
             ╰── Return
                 ╰── Var [i]
     "#;
@@ -8109,7 +8248,8 @@ fn test_chapter_8_valid_extra_credit_case_block() {
             ├── Declaration [b]
             │   ╰── Constant [0]
             ├── Switch
-            │   ├── Constant [2]
+            │   ├── Condition
+            │   │   ╰── Constant [2]
             │   ╰── Block
             │       ╰── Case
             │           ├── Constant [2]
@@ -8153,9 +8293,10 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression(
             │   ├── Assign [+=]
             │   │   ├── Var [sum]
             │   │   ╰── Constant [2]
-            │   ╰── Assign [-=]
-            │       ├── Var [i]
-            │       ╰── Constant [1]
+            │   ╰── Condition
+            │       ╰── Assign [-=]
+            │           ├── Var [i]
+            │           ╰── Constant [1]
             ╰── Return
                 ╰── Binary [&&]
                     ├── Binary [==]
@@ -8184,18 +8325,21 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
             ├── Declaration [i]
             │   ╰── Constant [1]
             ├── For
-            │   ├── Assign [*=]
-            │   │   ├── Var [i]
-            │   │   ╰── Unary [-]
-            │   │       ╰── Constant [1]
-            │   ├── Binary [>=]
-            │   │   ├── Var [i]
-            │   │   ╰── Unary [-]
-            │   │       ╰── Constant [100]
-            │   ├── Assign [-=]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [3]
-            │   ├── Empty
+            │   ├── Initial
+            │   │   ╰── Assign [*=]
+            │   │       ├── Var [i]
+            │   │       ╰── Unary [-]
+            │   │           ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Binary [>=]
+            │   │       ├── Var [i]
+            │   │       ╰── Unary [-]
+            │   │           ╰── Constant [100]
+            │   ├── Post
+            │   │   ╰── Assign [-=]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [3]
+            │   ╰── Empty
             ╰── Return
                 ╰── Binary [==]
                     ├── Var [i]
@@ -8241,9 +8385,10 @@ fn test_chapter_8_valid_extra_credit_duffs_device() {
             │       │   ╰── Constant [4]
             │       ╰── Constant [5]
             ├── Switch
-            │   ├── Binary [%]
-            │   │   ├── Var [count]
-            │   │   ╰── Constant [5]
+            │   ├── Condition
+            │   │   ╰── Binary [%]
+            │   │       ├── Var [count]
+            │   │       ╰── Constant [5]
             │   ╰── Block
             │       ╰── Case
             │           ├── Constant [0]
@@ -8282,13 +8427,14 @@ fn test_chapter_8_valid_extra_credit_duffs_device() {
             │               │           ╰── Binary [-]
             │               │               ├── Var [count]
             │               │               ╰── Constant [1]
-            │               ╰── Binary [>]
-            │                   ├── Assign [=]
-            │                   │   ├── Var [iterations]
-            │                   │   ╰── Binary [-]
-            │                   │       ├── Var [iterations]
-            │                   │       ╰── Constant [1]
-            │                   ╰── Constant [0]
+            │               ╰── Condition
+            │                   ╰── Binary [>]
+            │                       ├── Assign [=]
+            │                       │   ├── Var [iterations]
+            │                       │   ╰── Binary [-]
+            │                       │       ├── Var [iterations]
+            │                       │       ╰── Constant [1]
+            │                       ╰── Constant [0]
             ╰── Return
                 ╰── Binary [&&]
                     ├── Binary [==]
@@ -8329,11 +8475,14 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_condition() {
             │   │   │           ├── Var [i]
             │   │   │           ╰── Constant [1]
             │   │   ╰── If
-            │   │       ├── Binary [<]
-            │   │       │   ├── Var [i]
-            │   │       │   ╰── Constant [10]
-            │   │       ╰── Goto [while_start]
-            │   ╰── Constant [0]
+            │   │       ├── Condition
+            │   │       │   ╰── Binary [<]
+            │   │       │       ├── Var [i]
+            │   │       │       ╰── Constant [10]
+            │   │       ╰── Then
+            │   │           ╰── Goto [while_start]
+            │   ╰── Condition
+            │       ╰── Constant [0]
             ╰── Return
                 ╰── Var [i]
     "#;
@@ -8360,24 +8509,29 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_init_exp() {
             │   ╰── Constant [0]
             ├── Goto [target]
             ├── For
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [5]
-            │   ├── Binary [<]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [10]
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Binary [+]
+            │   ├── Initial
+            │   │   ╰── Assign [=]
             │   │       ├── Var [i]
-            │   │       ╰── Constant [1]
-            │   ├── Label [target]
-            │   │   ╰── If
-            │   │       ├── Binary [==]
-            │   │       │   ├── Var [i]
-            │   │       │   ╰── Constant [0]
-            │   │       ╰── Return
+            │   │       ╰── Constant [5]
+            │   ├── Condition
+            │   │   ╰── Binary [<]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [10]
+            │   ├── Post
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [i]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [i]
             │   │           ╰── Constant [1]
+            │   ╰── Label [target]
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Binary [==]
+            │           │       ├── Var [i]
+            │           │       ╰── Constant [0]
+            │           ╰── Then
+            │               ╰── Return
+            │                   ╰── Constant [1]
             ╰── Return
                 ╰── Constant [0]
     "#;
@@ -8406,30 +8560,33 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_post_exp() {
             ├── Declaration [sum]
             │   ╰── Constant [0]
             ├── For
-            │   ├── Declaration [i]
-            │   │   ╰── Constant [0]
-            ├── ├── Empty
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [0]
-            │   ├── Block
-            │   │   ├── Label [lbl]
-            │   │   │   ╰── Assign [=]
-            │   │   │       ├── Var [sum]
-            │   │   │       ╰── Binary [+]
-            │   │   │           ├── Var [sum]
-            │   │   │           ╰── Constant [1]
-            │   │   ├── Assign [=]
-            │   │   │   ├── Var [i]
-            │   │   │   ╰── Binary [+]
-            │   │   │       ├── Var [i]
-            │   │   │       ╰── Constant [1]
-            │   │   ├── If
-            │   │   │   ├── Binary [>]
-            │   │   │   │   ├── Var [i]
-            │   │   │   │   ╰── Constant [10]
-            │   │   │   ╰── Break
-            │   │   ╰── Goto [lbl]
+            │   ├── Initial
+            │   │   ╰── Declaration [i]
+            │   │       ╰── Constant [0]
+            │   ├── Post
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [0]
+            │   ╰── Block
+            │       ├── Label [lbl]
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [sum]
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [sum]
+            │       │           ╰── Constant [1]
+            │       ├── Assign [=]
+            │       │   ├── Var [i]
+            │       │   ╰── Binary [+]
+            │       │       ├── Var [i]
+            │       │       ╰── Constant [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [>]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant [10]
+            │       │   ╰── Then
+            │       │       ╰── Break
+            │       ╰── Goto [lbl]
             ╰── Return
                 ╰── Var [sum]
     "#;
@@ -8455,7 +8612,8 @@ fn test_chapter_8_valid_extra_credit_label_loop_body() {
             │   ╰── Constant [0]
             ├── Goto [label]
             ├── While
-            │   ├── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Constant [0]
             │   ╰── Label [label]
             │       ╰── Block
             │           ╰── Assign [=]
@@ -8507,7 +8665,7 @@ fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
             ├── Declaration [sum]
             │   ╰── Constant [0]
             ├── Goto [do_label]
-            ├── Return
+            ╰── Return
             │   ╰── Constant [0]
             ├── Label [do_label]
             │   ╰── DoWhile
@@ -8516,10 +8674,12 @@ fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
             │       │   │   ├── Var [sum]
             │       │   │   ╰── Constant [1]
             │       │   ╰── Goto [while_label]
-            │       ╰── Constant [1]
+            │       ╰── Condition
+            │           ╰── Constant [1]
             ├── Label [while_label]
             │   ╰── While
-            │       ├── Constant [1]
+            │       ├── Condition
+            │       │   ╰── Constant [1]
             │       ╰── Block
             │           ├── Assign [=]
             │           │   ├── Var [sum]
@@ -8527,39 +8687,42 @@ fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
             │           │       ├── Var [sum]
             │           │       ╰── Constant [1]
             │           ├── Goto [break_label]
-            │           ├── Return
+            │           ╰── Return
             │           │   ╰── Constant [0]
             │           ╰── Label [break_label]
             │               ╰── Break
             ├── Empty
             ├── Goto [for_label]
-            ├── Return
+            ╰── Return
             │   ╰── Constant [0]
             ├── Label [for_label]
             │   ╰── For
-            │       ├── Declaration [i]
-            │       │   ╰── Constant [0]
-            │       ├── Binary [<]
-            │       │   ├── Var [i]
-            │       │   ╰── Constant [10]
-            │       ├── Assign [=]
-            │       │   ├── Var [i]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [i]
-            │       │       ╰── Constant [1]
-            │       ├── Block
-            │       │   ├── Assign [=]
-            │       │   │   ├── Var [sum]
-            │       │   │   ╰── Binary [+]
-            │       │   │       ├── Var [sum]
-            │       │   │       ╰── Constant [1]
-            │       │   ├── Goto [continue_label]
-            │       │   ├── Return
-            │       │   │   ╰── Constant [0]
-            │       │   ├── Label [continue_label]
-            │       │   │   ╰── Continue
-            │       │   ╰── Return
+            │       ├── Initial
+            │       │   ╰── Declaration [i]
             │       │       ╰── Constant [0]
+            │       ├── Condition
+            │       │   ╰── Binary [<]
+            │       │       ├── Var [i]
+            │       │       ╰── Constant [10]
+            │       ├── Post
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [i]
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [i]
+            │       │           ╰── Constant [1]
+            │       ╰── Block
+            │           ├── Assign [=]
+            │           │   ├── Var [sum]
+            │           │   ╰── Binary [+]
+            │           │       ├── Var [sum]
+            │           │       ╰── Constant [1]
+            │           ├── Goto [continue_label]
+            │           ╰── Return
+            │           │   ╰── Constant [0]
+            │           ├── Label [continue_label]
+            │           │   ╰── Continue
+            │           ╰── Return
+            │               ╰── Constant [0]
             ╰── Return
                 ╰── Var [sum]
     "#;
@@ -8591,16 +8754,19 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
             ├── Declaration [count]
             │   ╰── Constant [0]
             ├── While
-            │   ├── Postfix [--]
-            │   │   ╰── Var [i]
+            │   ├── Condition
+            │   │   ╰── Postfix [--]
+            │   │       ╰── Var [i]
             │   ╰── Postfix [++]
             │       ╰── Var [count]
             ├── If
-            │   ├── Binary [!=]
-            │   │   ├── Var [count]
-            │   │   ╰── Constant [100]
-            │   ╰── Return
-            │       ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [!=]
+            │   │       ├── Var [count]
+            │   │       ╰── Constant [100]
+            │   ╰── Then
+            │       ╰── Return
+            │           ╰── Constant [0]
             ├── Assign [=]
             │   ├── Var [i]
             │   ╰── Constant [100]
@@ -8608,16 +8774,19 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
             │   ├── Var [count]
             │   ╰── Constant [0]
             ├── While
-            │   ├── Unary [--]
-            │   │   ╰── Var [i]
+            │   ├── Condition
+            │   │   ╰── Unary [--]
+            │   │       ╰── Var [i]
             │   ╰── Postfix [++]
             │       ╰── Var [count]
             ├── If
-            │   ├── Binary [!=]
-            │   │   ├── Var [count]
-            │   │   ╰── Constant [99]
-            │   ╰── Return
-            │       ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [!=]
+            │   │       ├── Var [count]
+            │   │       ╰── Constant [99]
+            │   ╰── Then
+            │       ╰── Return
+            │           ╰── Constant [0]
             ╰── Return
                 ╰── Constant [1]
     "#;
@@ -8651,7 +8820,8 @@ fn test_chapter_8_valid_extra_credit_loop_in_switch() {
             ├── Declaration [cond]
             │   ╰── Constant [10]
             ├── Switch
-            │   ├── Var [cond]
+            │   ├── Condition
+            │   │   ╰── Var [cond]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [1]
@@ -8660,28 +8830,33 @@ fn test_chapter_8_valid_extra_credit_loop_in_switch() {
             │       ├── Case
             │       │   ├── Constant [10]
             │       │   ╰── For
-            │       │       ├── Declaration [i]
-            │       │       │   ╰── Constant [0]
-            │       │       ├── Binary [<]
-            │       │       │   ├── Var [i]
-            │       │       │   ╰── Constant [5]
-            │       │       ├── Assign [=]
-            │       │       │   ├── Var [i]
-            │       │       │   ╰── Binary [+]
+            │       │       ├── Initial
+            │       │       │   ╰── Declaration [i]
+            │       │       │       ╰── Constant [0]
+            │       │       ├── Condition
+            │       │       │   ╰── Binary [<]
             │       │       │       ├── Var [i]
-            │       │       │       ╰── Constant [1]
-            │       │       ├── Block
-            │       │       │   ├── Assign [=]
-            │       │       │   │   ├── Var [cond]
-            │       │       │   │   ╰── Binary [-]
-            │       │       │   │       ├── Var [cond]
-            │       │       │   │       ╰── Constant [1]
-            │       │       │   ╰── If
-            │       │       │       ├── Binary [==]
-            │       │       │       │   ├── Var [cond]
-            │       │       │       │   ╰── Constant [8]
-            │       │       │       ╰── Break
-            │       ├── Return
+            │       │       │       ╰── Constant [5]
+            │       │       ├── Post
+            │       │       │   ╰── Assign [=]
+            │       │       │       ├── Var [i]
+            │       │       │       ╰── Binary [+]
+            │       │       │           ├── Var [i]
+            │       │       │           ╰── Constant [1]
+            │       │       ╰── Block
+            │       │           ├── Assign [=]
+            │       │           │   ├── Var [cond]
+            │       │           │   ╰── Binary [-]
+            │       │           │       ├── Var [cond]
+            │       │           │       ╰── Constant [1]
+            │       │           ╰── If
+            │       │               ├── Condition
+            │       │               │   ╰── Binary [==]
+            │       │               │       ├── Var [cond]
+            │       │               │       ╰── Constant [8]
+            │       │               ╰── Then
+            │       │                   ╰── Break
+            │       ╰── Return
             │       │   ╰── Constant [123]
             │       ╰── Default
             │           ╰── Return
@@ -8709,19 +8884,22 @@ fn test_chapter_8_valid_extra_credit_post_exp_incr() {
             ├── Declaration [product]
             │   ╰── Constant [1]
             ├── For
-            │   ├── Declaration [i]
-            │   │   ╰── Constant [0]
-            │   ├── Binary [<]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [10]
-            │   ├── Postfix [++]
-            │   │   ╰── Var [i]
-            │   ├── Block
-            │   │   ╰── Assign [=]
-            │   │       ├── Var [product]
-            │   │       ╰── Binary [+]
-            │   │           ├── Var [product]
-            │   │           ╰── Constant [2]
+            │   ├── Initial
+            │   │   ╰── Declaration [i]
+            │   │       ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [<]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [10]
+            │   ├── Post
+            │   │   ╰── Postfix [++]
+            │   │       ╰── Var [i]
+            │   ╰── Block
+            │       ╰── Assign [=]
+            │           ├── Var [product]
+            │           ╰── Binary [+]
+            │               ├── Var [product]
+            │               ╰── Constant [2]
             ╰── Return
                 ╰── Var [product]
     "#;
@@ -8745,7 +8923,8 @@ fn test_chapter_8_valid_extra_credit_switch() {
         Program
         ╰── Function [main]
             ╰── Switch
-                ├── Constant [3]
+                ├── Condition
+                │   ╰── Constant [3]
                 ╰── Block
                     ├── Case
                     │   ├── Constant [0]
@@ -8790,9 +8969,10 @@ fn test_chapter_8_valid_extra_credit_switch_assign_in_condition() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── Switch
-            │   ├── Assign [=]
-            │   │   ├── Var [a]
-            │   │   ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [1]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [0]
@@ -8838,7 +9018,8 @@ fn test_chapter_8_valid_extra_credit_switch_break() {
             ├── Declaration [a]
             │   ╰── Constant [5]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [5]
@@ -8881,7 +9062,8 @@ fn test_chapter_8_valid_extra_credit_switch_decl() {
             ├── Declaration [b]
             │   ╰── Constant [0]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Declaration [a]
             │       │   ╰── Assign [=]
@@ -8934,7 +9116,8 @@ fn test_chapter_8_valid_extra_credit_switch_default() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [1]
@@ -8980,9 +9163,10 @@ fn test_chapter_8_valid_extra_credit_switch_default_fallthrough() {
             ├── Declaration [a]
             │   ╰── Constant [5]
             ├── Switch
-            │   ├── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Constant [0]
             │   ╰── Block
-            │       ├── Default
+            │       ╰── Default
             │       │   ╰── Assign [=]
             │       │       ├── Var [a]
             │       │       ╰── Constant [0]
@@ -9019,11 +9203,12 @@ fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
             │       ├── Var [a]
             │       ╰── Constant [7]
             ╰── Switch
-                ├── Binary [+]
-                │   ├── Var [a]
-                │   ╰── Var [b]
+                ├── Condition
+                │   ╰── Binary [+]
+                │       ├── Var [a]
+                │       ╰── Var [b]
                 ╰── Block
-                    ├── Default
+                    ╰── Default
                     │   ╰── Return
                     │       ╰── Constant [0]
                     ╰── Case
@@ -9049,7 +9234,8 @@ fn test_chapter_8_valid_extra_credit_switch_default_only() {
             ├── Declaration [a]
             │   ╰── Constant [1]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Default
             │       ╰── Return
             │           ╰── Constant [1]
@@ -9077,18 +9263,20 @@ fn test_chapter_8_valid_extra_credit_switch_empty() {
             ├── Declaration [x]
             │   ╰── Constant [10]
             ├── Switch
-            │   ├── Assign [=]
-            │   │   ├── Var [x]
-            │   │   ╰── Binary [+]
+            │   ├── Condition
+            │   │   ╰── Assign [=]
             │   │       ├── Var [x]
-            │   │       ╰── Constant [1]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [x]
+            │   │           ╰── Constant [1]
             │   ╰── Block
             ├── Switch
-            │   ├── Assign [=]
-            │   │   ├── Var [x]
-            │   │   ╰── Binary [+]
+            │   ├── Condition
+            │   │   ╰── Assign [=]
             │   │       ├── Var [x]
-            │   │       ╰── Constant [1]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [x]
+            │   │           ╰── Constant [1]
             │   ╰── Empty
             ╰── Return
                 ╰── Var [x]
@@ -9126,10 +9314,11 @@ fn test_chapter_8_valid_extra_credit_switch_fallthrough() {
             ├── Declaration [c]
             │   ╰── Constant [0]
             ├── Switch
-            │   ├── Cond [?]
-            │   │   ├── Var [a]
-            │   │   ├── Var [b]
-            │   │   ╰── Constant [7]
+            │   ├── Condition
+            │   │   ╰── Cond [?]
+            │   │       ├── Var [a]
+            │   │       ├── Var [b]
+            │   │       ╰── Constant [7]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [0]
@@ -9181,7 +9370,8 @@ fn test_chapter_8_valid_extra_credit_switch_goto_mid_case() {
             │   ╰── Constant [0]
             ├── Goto [mid_case]
             ├── Switch
-            │   ├── Constant [4]
+            │   ├── Condition
+            │   │   ╰── Constant [4]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [4]
@@ -9235,53 +9425,57 @@ fn test_chapter_8_valid_extra_credit_switch_in_loop() {
             ├── Declaration [ctr]
             │   ╰── Constant [0]
             ├── For
-            │   ├── Declaration [i]
-            │   │   ╰── Constant [0]
-            │   ├── Binary [<]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [10]
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Binary [+]
+            │   ├── Initial
+            │   │   ╰── Declaration [i]
+            │   │       ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [<]
             │   │       ├── Var [i]
-            │   │       ╰── Constant [1]
-            │   ├── Block
-            │   │   ├── Switch
-            │   │   │   ├── Var [i]
-            │   │   │   ╰── Block
-            │   │   │       ├── Case
-            │   │   │       │   ├── Constant [0]
-            │   │   │       │   ╰── Assign [=]
-            │   │   │       │       ├── Var [acc]
-            │   │   │       │       ╰── Constant [2]
-            │   │   │       ├── Break
-            │   │   │       ├── Case
-            │   │   │       │   ├── Constant [1]
-            │   │   │       │   ╰── Assign [=]
-            │   │   │       │       ├── Var [acc]
-            │   │   │       │       ╰── Binary [*]
-            │   │   │       │           ├── Var [acc]
-            │   │   │       │           ╰── Constant [3]
-            │   │   │       ├── Break
-            │   │   │       ├── Case
-            │   │   │       │   ├── Constant [2]
-            │   │   │       │   ╰── Assign [=]
-            │   │   │       │       ├── Var [acc]
-            │   │   │       │       ╰── Binary [*]
-            │   │   │       │           ├── Var [acc]
-            │   │   │       │           ╰── Constant [4]
-            │   │   │       ├── Break
-            │   │   │       ╰── Default
-            │   │   │           ╰── Assign [=]
-            │   │   │               ├── Var [acc]
-            │   │   │               ╰── Binary [+]
-            │   │   │                   ├── Var [acc]
-            │   │   │                   ╰── Constant [1]
+            │   │       ╰── Constant [10]
+            │   ├── Post
             │   │   ╰── Assign [=]
-            │   │       ├── Var [ctr]
+            │   │       ├── Var [i]
             │   │       ╰── Binary [+]
-            │   │           ├── Var [ctr]
+            │   │           ├── Var [i]
             │   │           ╰── Constant [1]
+            │   ╰── Block
+            │       ├── Switch
+            │       │   ├── Condition
+            │       │   │   ╰── Var [i]
+            │       │   ╰── Block
+            │       │       ├── Case
+            │       │       │   ├── Constant [0]
+            │       │       │   ╰── Assign [=]
+            │       │       │       ├── Var [acc]
+            │       │       │       ╰── Constant [2]
+            │       │       ├── Break
+            │       │       ├── Case
+            │       │       │   ├── Constant [1]
+            │       │       │   ╰── Assign [=]
+            │       │       │       ├── Var [acc]
+            │       │       │       ╰── Binary [*]
+            │       │       │           ├── Var [acc]
+            │       │       │           ╰── Constant [3]
+            │       │       ├── Break
+            │       │       ├── Case
+            │       │       │   ├── Constant [2]
+            │       │       │   ╰── Assign [=]
+            │       │       │       ├── Var [acc]
+            │       │       │       ╰── Binary [*]
+            │       │       │           ├── Var [acc]
+            │       │       │           ╰── Constant [4]
+            │       │       ├── Break
+            │       │       ╰── Default
+            │       │           ╰── Assign [=]
+            │       │               ├── Var [acc]
+            │       │               ╰── Binary [+]
+            │       │                   ├── Var [acc]
+            │       │                   ╰── Constant [1]
+            │       ╰── Assign [=]
+            │           ├── Var [ctr]
+            │           ╰── Binary [+]
+            │               ├── Var [ctr]
+            │               ╰── Constant [1]
             ╰── Return
                 ╰── Binary [&&]
                     ├── Binary [==]
@@ -9337,7 +9531,8 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
             ├── Declaration [switch3]
             │   ╰── Constant [0]
             ├── Switch
-            │   ├── Constant [3]
+            │   ├── Condition
+            │   │   ╰── Constant [3]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [0]
@@ -9346,66 +9541,76 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
             │       ├── Case
             │       │   ├── Constant [1]
             │       │   ╰── If
-            │       │       ├── Constant [0]
-            │       │       ╰── Block
-            │       │           ├── Case
-            │       │           │   ├── Constant [3]
-            │       │           │   ╰── Assign [=]
-            │       │           │       ├── Var [switch1]
-            │       │           │       ╰── Constant [1]
-            │       │           ╰── Break
+            │       │       ├── Condition
+            │       │       │   ╰── Constant [0]
+            │       │       ╰── Then
+            │       │           ╰── Block
+            │       │               ├── Case
+            │       │               │   ├── Constant [3]
+            │       │               │   ╰── Assign [=]
+            │       │               │       ├── Var [switch1]
+            │       │               │       ╰── Constant [1]
+            │       │               ╰── Break
             │       ╰── Default
             │           ╰── Return
             │               ╰── Constant [0]
             ├── Switch
-            │   ├── Constant [4]
+            │   ├── Condition
+            │   │   ╰── Constant [4]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [0]
             │       │   ╰── Return
             │       │       ╰── Constant [0]
             │       ├── If
-            │       │   ├── Constant [1]
-            │       │   ├── Block
-            │       │   │   ╰── Return
-            │       │   │       ╰── Constant [0]
-            │       │   ╰── Block
-            │       │       ├── Case
-            │       │       │   ├── Constant [4]
-            │       │       │   ╰── Assign [=]
-            │       │       │       ├── Var [switch2]
-            │       │       │       ╰── Constant [1]
-            │       │       ╰── Break
+            │       │   ├── Condition
+            │       │   │   ╰── Constant [1]
+            │       │   ├── Then
+            │       │   │   ╰── Block
+            │       │   │       ╰── Return
+            │       │   │           ╰── Constant [0]
+            │       │   ╰── Else
+            │       │       ╰── Block
+            │       │           ├── Case
+            │       │           │   ├── Constant [4]
+            │       │           │   ╰── Assign [=]
+            │       │           │       ├── Var [switch2]
+            │       │           │       ╰── Constant [1]
+            │       │           ╰── Break
             │       ╰── Default
             │           ╰── Return
             │               ╰── Constant [0]
             ├── Switch
-            │   ├── Constant [5]
+            │   ├── Condition
+            │   │   ╰── Constant [5]
             │   ╰── Block
             │       ╰── For
-            │           ├── Declaration [i]
-            │           │   ╰── Constant [0]
-            │           ├── Binary [<]
-            │           │   ├── Var [i]
-            │           │   ╰── Constant [10]
-            │           ├── Assign [=]
-            │           │   ├── Var [i]
-            │           │   ╰── Binary [+]
+            │           ├── Initial
+            │           │   ╰── Declaration [i]
+            │           │       ╰── Constant [0]
+            │           ├── Condition
+            │           │   ╰── Binary [<]
             │           │       ├── Var [i]
-            │           │       ╰── Constant [1]
-            │           ├── Block
-            │           │   ├── Assign [=]
-            │           │   │   ├── Var [switch1]
-            │           │   │   ╰── Constant [0]
-            │           │   ├── Case
-            │           │   │   ├── Constant [5]
-            │           │   │   ╰── Assign [=]
-            │           │   │       ├── Var [switch3]
-            │           │   │       ╰── Constant [1]
-            │           │   ├── Break
-            │           │   ╰── Default
-            │           │       ╰── Return
-            │           │           ╰── Constant [0]
+            │           │       ╰── Constant [10]
+            │           ├── Post
+            │           │   ╰── Assign [=]
+            │           │       ├── Var [i]
+            │           │       ╰── Binary [+]
+            │           │           ├── Var [i]
+            │           │           ╰── Constant [1]
+            │           ╰── Block
+            │               ├── Assign [=]
+            │               │   ├── Var [switch1]
+            │               │   ╰── Constant [0]
+            │               ├── Case
+            │               │   ├── Constant [5]
+            │               │   ╰── Assign [=]
+            │               │       ├── Var [switch3]
+            │               │       ╰── Constant [1]
+            │               ├── Break
+            │               ╰── Default
+            │                   ╰── Return
+            │                       ╰── Constant [0]
             ╰── Return
                 ╰── Binary [&&]
                     ├── Binary [&&]
@@ -9439,12 +9644,14 @@ fn test_chapter_8_valid_extra_credit_switch_nested_not_taken() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [1]
             │       │   ╰── Switch
-            │       │       ├── Var [a]
+            │       │       ├── Condition
+            │       │       │   ╰── Var [a]
             │       │       ╰── Block
             │       │           ├── Case
             │       │           │   ├── Constant [0]
@@ -9486,7 +9693,8 @@ fn test_chapter_8_valid_extra_credit_switch_nested_switch() {
         Program
         ╰── Function [main]
             ╰── Switch
-                ├── Constant [3]
+                ├── Condition
+                │   ╰── Constant [3]
                 ╰── Block
                     ├── Case
                     │   ├── Constant [0]
@@ -9496,7 +9704,8 @@ fn test_chapter_8_valid_extra_credit_switch_nested_switch() {
                     │   ├── Constant [3]
                     │   ╰── Block
                     │       ╰── Switch
-                    │           ├── Constant [4]
+                    │           ├── Condition
+                    │           │   ╰── Constant [4]
                     │           ╰── Block
                     │               ├── Case
                     │               │   ├── Constant [3]
@@ -9536,7 +9745,8 @@ fn test_chapter_8_valid_extra_credit_switch_no_case() {
             ├── Declaration [a]
             │   ╰── Constant [4]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Return
             │       ╰── Constant [0]
             ╰── Return
@@ -9564,7 +9774,8 @@ fn test_chapter_8_valid_extra_credit_switch_not_taken() {
             ├── Declaration [a]
             │   ╰── Constant [1]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [0]
@@ -9599,7 +9810,8 @@ fn test_chapter_8_valid_extra_credit_switch_single_case() {
             ├── Declaration [a]
             │   ╰── Constant [1]
             ├── Switch
-            │   ├── Var [a]
+            │   ├── Condition
+            │   │   ╰── Var [a]
             │   ╰── Case
             │       ├── Constant [1]
             │       ╰── Return
@@ -9634,7 +9846,8 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue() {
         Program
         ╰── Function [main]
             ├── Switch
-            │   ├── Constant [4]
+            │   ├── Condition
+            │   │   ╰── Constant [4]
             │   ╰── Block
             │       ├── Case
             │       │   ├── Constant [0]
@@ -9646,27 +9859,32 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue() {
             │               ├── Declaration [acc]
             │               │   ╰── Constant [0]
             │               ├── For
-            │               │   ├── Declaration [i]
-            │               │   │   ╰── Constant [0]
-            │               │   ├── Binary [<]
-            │               │   │   ├── Var [i]
-            │               │   │   ╰── Constant [10]
-            │               │   ├── Assign [=]
-            │               │   │   ├── Var [i]
-            │               │   │   ╰── Binary [+]
+            │               │   ├── Initial
+            │               │   │   ╰── Declaration [i]
+            │               │   │       ╰── Constant [0]
+            │               │   ├── Condition
+            │               │   │   ╰── Binary [<]
             │               │   │       ├── Var [i]
-            │               │   │       ╰── Constant [1]
-            │               │   ├── Block
-            │               │   │   ├── If
-            │               │   │   │   ├── Binary [%]
-            │               │   │   │   │   ├── Var [i]
-            │               │   │   │   │   ╰── Constant [2]
-            │               │   │   │   ╰── Continue
+            │               │   │       ╰── Constant [10]
+            │               │   ├── Post
             │               │   │   ╰── Assign [=]
-            │               │   │       ├── Var [acc]
+            │               │   │       ├── Var [i]
             │               │   │       ╰── Binary [+]
-            │               │   │           ├── Var [acc]
+            │               │   │           ├── Var [i]
             │               │   │           ╰── Constant [1]
+            │               │   ╰── Block
+            │               │       ├── If
+            │               │       │   ├── Condition
+            │               │       │   │   ╰── Binary [%]
+            │               │       │   │       ├── Var [i]
+            │               │       │   │       ╰── Constant [2]
+            │               │       │   ╰── Then
+            │               │       │       ╰── Continue
+            │               │       ╰── Assign [=]
+            │               │           ├── Var [acc]
+            │               │           ╰── Binary [+]
+            │               │               ├── Var [acc]
+            │               │               ╰── Constant [1]
             │               ╰── Return
             │                   ╰── Var [acc]
             ╰── Return
@@ -9695,31 +9913,35 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
             ├── Declaration [sum]
             │   ╰── Constant [0]
             ├── For
-            │   ├── Declaration [i]
-            │   │   ╰── Constant [0]
-            │   ├── Binary [<]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [10]
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Binary [+]
+            │   ├── Initial
+            │   │   ╰── Declaration [i]
+            │   │       ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [<]
             │   │       ├── Var [i]
-            │   │       ╰── Constant [1]
-            │   ├── Block
-            │   │   ╰── Switch
-            │   │       ├── Binary [%]
-            │   │       │   ├── Var [i]
-            │   │       │   ╰── Constant [2]
-            │   │       ╰── Block
-            │   │           ├── Case
-            │   │           │   ├── Constant [0]
-            │   │           │   ╰── Continue
-            │   │           ╰── Default
-            │   │               ╰── Assign [=]
-            │   │                   ├── Var [sum]
-            │   │                   ╰── Binary [+]
-            │   │                       ├── Var [sum]
-            │   │                       ╰── Constant [1]
+            │   │       ╰── Constant [10]
+            │   ├── Post
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [i]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [i]
+            │   │           ╰── Constant [1]
+            │   ╰── Block
+            │       ╰── Switch
+            │           ├── Condition
+            │           │   ╰── Binary [%]
+            │           │       ├── Var [i]
+            │           │       ╰── Constant [2]
+            │           ╰── Block
+            │               ├── Case
+            │               │   ├── Constant [0]
+            │               │   ╰── Continue
+            │               ╰── Default
+            │                   ╰── Assign [=]
+            │                       ├── Var [sum]
+            │                       ╰── Binary [+]
+            │                           ├── Var [sum]
+            │                           ╰── Constant [1]
             ╰── Return
                 ╰── Var [sum]
     "#;
@@ -9744,22 +9966,25 @@ fn test_chapter_8_valid_for() {
             │   ╰── Constant [12345]
             ├── Declaration [i]
             ├── For
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [5]
-            │   ├── Binary [>=]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [0]
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Binary [-]
+            │   ├── Initial
+            │   │   ╰── Assign [=]
             │   │       ├── Var [i]
-            │   │       ╰── Constant [1]
-            │   ├── Assign [=]
-            │   │   ├── Var [a]
-            │   │   ╰── Binary [/]
-            │   │       ├── Var [a]
-            │   │       ╰── Constant [3]
+            │   │       ╰── Constant [5]
+            │   ├── Condition
+            │   │   ╰── Binary [>=]
+            │   │       ├── Var [i]
+            │   │       ╰── Constant [0]
+            │   ├── Post
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [i]
+            │   │       ╰── Binary [-]
+            │   │           ├── Var [i]
+            │   │           ╰── Constant [1]
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Binary [/]
+            │           ├── Var [a]
+            │           ╰── Constant [3]
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -9779,20 +10004,23 @@ fn test_chapter_8_valid_for_absent_condition() {
         Program
         ╰── Function [main]
             ╰── For
-                ├── Declaration [i]
-                │   ╰── Constant [400]
-            ╰── ├── Empty
-                ├── Assign [=]
-                │   ├── Var [i]
-                │   ╰── Binary [-]
+                ├── Initial
+                │   ╰── Declaration [i]
+                │       ╰── Constant [400]
+                ├── Post
+                │   ╰── Assign [=]
                 │       ├── Var [i]
-                │       ╰── Constant [100]
-                ├── If
-                │   ├── Binary [==]
-                │   │   ├── Var [i]
-                │   │   ╰── Constant [100]
-                │   ╰── Return
-                │       ╰── Constant [0]
+                │       ╰── Binary [-]
+                │           ├── Var [i]
+                │           ╰── Constant [100]
+                ╰── If
+                    ├── Condition
+                    │   ╰── Binary [==]
+                    │       ├── Var [i]
+                    │       ╰── Constant [100]
+                    ╰── Then
+                        ╰── Return
+                            ╰── Constant [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9815,19 +10043,18 @@ fn test_chapter_8_valid_for_absent_post() {
             │   ╰── Unary [-]
             │       ╰── Constant [2147]
             ├── For
-            ├── ├── Empty
-            │   ├── Binary [!=]
-            │   │   ├── Binary [%]
-            │   │   │   ├── Var [a]
-            │   │   │   ╰── Constant [5]
-            │   │   ╰── Constant [0]
-            ├── ├── Empty
-            │   ├── Block
-            │   │   ╰── Assign [=]
-            │   │       ├── Var [a]
-            │   │       ╰── Binary [+]
-            │   │           ├── Var [a]
-            │   │           ╰── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Binary [!=]
+            │   │       ├── Binary [%]
+            │   │       │   ├── Var [a]
+            │   │       │   ╰── Constant [5]
+            │   │       ╰── Constant [0]
+            │   ╰── Block
+            │       ╰── Assign [=]
+            │           ├── Var [a]
+            │           ╰── Binary [+]
+            │               ├── Var [a]
+            │               ╰── Constant [1]
             ╰── Return
                 ╰── Binary [||]
                     ├── Binary [%]
@@ -9856,22 +10083,25 @@ fn test_chapter_8_valid_for_decl() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── For
-            │   ├── Declaration [i]
-            │   │   ╰── Unary [-]
-            │   │       ╰── Constant [100]
-            │   ├── Binary [<=]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [0]
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Binary [+]
+            │   ├── Initial
+            │   │   ╰── Declaration [i]
+            │   │       ╰── Unary [-]
+            │   │           ╰── Constant [100]
+            │   ├── Condition
+            │   │   ╰── Binary [<=]
             │   │       ├── Var [i]
-            │   │       ╰── Constant [1]
-            │   ├── Assign [=]
-            │   │   ├── Var [a]
-            │   │   ╰── Binary [+]
-            │   │       ├── Var [a]
-            │   │       ╰── Constant [1]
+            │   │       ╰── Constant [0]
+            │   ├── Post
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [i]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [i]
+            │   │           ╰── Constant [1]
+            │   ╰── Assign [=]
+            │       ├── Var [a]
+            │       ╰── Binary [+]
+            │           ├── Var [a]
+            │           ╰── Constant [1]
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -9903,26 +10133,29 @@ fn test_chapter_8_valid_for_nested_shadow() {
             ├── Declaration [k]
             │   ╰── Constant [1]
             ├── For
-            │   ├── Declaration [i]
-            │   │   ╰── Constant [100]
-            │   ├── Binary [>]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [0]
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Binary [-]
+            │   ├── Initial
+            │   │   ╰── Declaration [i]
+            │   │       ╰── Constant [100]
+            │   ├── Condition
+            │   │   ╰── Binary [>]
             │   │       ├── Var [i]
-            │   │       ╰── Constant [1]
-            │   ├── Block
-            │   │   ├── Declaration [i]
-            │   │   │   ╰── Constant [1]
-            │   │   ├── Declaration [j]
-            │   │   │   ╰── Binary [+]
-            │   │   │       ├── Var [i]
-            │   │   │       ╰── Var [k]
+            │   │       ╰── Constant [0]
+            │   ├── Post
             │   │   ╰── Assign [=]
-            │   │       ├── Var [k]
-            │   │       ╰── Var [j]
+            │   │       ├── Var [i]
+            │   │       ╰── Binary [-]
+            │   │           ├── Var [i]
+            │   │           ╰── Constant [1]
+            │   ╰── Block
+            │       ├── Declaration [i]
+            │       │   ╰── Constant [1]
+            │       ├── Declaration [j]
+            │       │   ╰── Binary [+]
+            │       │       ├── Var [i]
+            │       │       ╰── Var [k]
+            │       ╰── Assign [=]
+            │           ├── Var [k]
+            │           ╰── Var [j]
             ╰── Return
                 ╰── Binary [&&]
                     ├── Binary [&&]
@@ -9959,22 +10192,25 @@ fn test_chapter_8_valid_for_shadow() {
             ├── Declaration [acc]
             │   ╰── Constant [0]
             ├── For
-            │   ├── Declaration [shadow]
-            │   │   ╰── Constant [0]
-            │   ├── Binary [<]
-            │   │   ├── Var [shadow]
-            │   │   ╰── Constant [10]
-            │   ├── Assign [=]
-            │   │   ├── Var [shadow]
-            │   │   ╰── Binary [+]
+            │   ├── Initial
+            │   │   ╰── Declaration [shadow]
+            │   │       ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [<]
             │   │       ├── Var [shadow]
-            │   │       ╰── Constant [1]
-            │   ├── Block
+            │   │       ╰── Constant [10]
+            │   ├── Post
             │   │   ╰── Assign [=]
-            │   │       ├── Var [acc]
+            │   │       ├── Var [shadow]
             │   │       ╰── Binary [+]
-            │   │           ├── Var [acc]
-            │   │           ╰── Var [shadow]
+            │   │           ├── Var [shadow]
+            │   │           ╰── Constant [1]
+            │   ╰── Block
+            │       ╰── Assign [=]
+            │           ├── Var [acc]
+            │           ╰── Binary [+]
+            │               ├── Var [acc]
+            │               ╰── Var [shadow]
             ╰── Return
                 ╰── Binary [&&]
                     ├── Binary [==]
@@ -10013,7 +10249,8 @@ fn test_chapter_8_valid_multi_break() {
             ├── Declaration [i]
             │   ╰── Constant [0]
             ├── While
-            │   ├── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Constant [1]
             │   ╰── Block
             │       ├── Assign [=]
             │       │   ├── Var [i]
@@ -10021,14 +10258,17 @@ fn test_chapter_8_valid_multi_break() {
             │       │       ├── Var [i]
             │       │       ╰── Constant [1]
             │       ╰── If
-            │           ├── Binary [>]
-            │           │   ├── Var [i]
-            │           │   ╰── Constant [10]
-            │           ╰── Break
+            │           ├── Condition
+            │           │   ╰── Binary [>]
+            │           │       ├── Var [i]
+            │           │       ╰── Constant [10]
+            │           ╰── Then
+            │               ╰── Break
             ├── Declaration [j]
             │   ╰── Constant [10]
             ├── While
-            │   ├── Constant [1]
+            │   ├── Condition
+            │   │   ╰── Constant [1]
             │   ╰── Block
             │       ├── Assign [=]
             │       │   ├── Var [j]
@@ -10036,10 +10276,12 @@ fn test_chapter_8_valid_multi_break() {
             │       │       ├── Var [j]
             │       │       ╰── Constant [1]
             │       ╰── If
-            │           ├── Binary [<]
-            │           │   ├── Var [j]
-            │           │   ╰── Constant [0]
-            │           ╰── Break
+            │           ├── Condition
+            │           │   ╰── Binary [<]
+            │           │       ├── Var [j]
+            │           │       ╰── Constant [0]
+            │           ╰── Then
+            │               ╰── Break
             ├── Declaration [result]
             │   ╰── Binary [&&]
             │       ├── Binary [==]
@@ -10091,28 +10333,33 @@ fn test_chapter_8_valid_multi_continue_same_loop() {
             │   │   │       ├── Var [z]
             │   │   │       ╰── Constant [1]
             │   │   ├── If
-            │   │   │   ├── Binary [<=]
-            │   │   │   │   ├── Var [x]
-            │   │   │   │   ╰── Constant [0]
-            │   │   │   ╰── Continue
+            │   │   │   ├── Condition
+            │   │   │   │   ╰── Binary [<=]
+            │   │   │   │       ├── Var [x]
+            │   │   │   │       ╰── Constant [0]
+            │   │   │   ╰── Then
+            │   │   │       ╰── Continue
             │   │   ├── Assign [=]
             │   │   │   ├── Var [x]
             │   │   │   ╰── Binary [-]
             │   │   │       ├── Var [x]
             │   │   │       ╰── Constant [1]
             │   │   ├── If
-            │   │   │   ├── Binary [>=]
-            │   │   │   │   ├── Var [y]
-            │   │   │   │   ╰── Constant [10]
-            │   │   │   ╰── Continue
+            │   │   │   ├── Condition
+            │   │   │   │   ╰── Binary [>=]
+            │   │   │   │       ├── Var [y]
+            │   │   │   │       ╰── Constant [10]
+            │   │   │   ╰── Then
+            │   │   │       ╰── Continue
             │   │   ╰── Assign [=]
             │   │       ├── Var [y]
             │   │       ╰── Binary [+]
             │   │           ├── Var [y]
             │   │           ╰── Constant [1]
-            │   ╰── Binary [!=]
-            │       ├── Var [z]
-            │       ╰── Constant [50]
+            │   ╰── Condition
+            │       ╰── Binary [!=]
+            │           ├── Var [z]
+            │           ╰── Constant [50]
             ╰── Return
                 ╰── Binary [&&]
                     ├── Binary [&&]
@@ -10149,41 +10396,50 @@ fn test_chapter_8_valid_nested_break() {
             ├── Declaration [ans]
             │   ╰── Constant [0]
             ├── For
-            │   ├── Declaration [i]
-            │   │   ╰── Constant [0]
-            │   ├── Binary [<]
-            │   │   ├── Var [i]
-            │   │   ╰── Constant [10]
-            │   ├── Assign [=]
-            │   │   ├── Var [i]
-            │   │   ╰── Binary [+]
+            │   ├── Initial
+            │   │   ╰── Declaration [i]
+            │   │       ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [<]
             │   │       ├── Var [i]
-            │   │       ╰── Constant [1]
-            │   ├── For
-            │   │   ├── Declaration [j]
-            │   │   │   ╰── Constant [0]
-            │   │   ├── Binary [<]
-            │   │   │   ├── Var [j]
-            │   │   │   ╰── Constant [10]
-            │   │   ├── Assign [=]
-            │   │   │   ├── Var [j]
-            │   │   │   ╰── Binary [+]
-            │   │   │       ├── Var [j]
-            │   │   │       ╰── Constant [1]
-            │   │   ├── If
-            │   │   │   ├── Binary [==]
-            │   │   │   │   ├── Binary [*]
-            │   │   │   │   │   ├── Binary [/]
-            │   │   │   │   │   │   ├── Var [i]
-            │   │   │   │   │   │   ╰── Constant [2]
-            │   │   │   │   │   ╰── Constant [2]
-            │   │   │   │   ╰── Var [i]
-            │   │   │   ├── Break
-            │   │   │   ╰── Assign [=]
-            │   │   │       ├── Var [ans]
-            │   │   │       ╰── Binary [+]
-            │   │   │           ├── Var [ans]
-            │   │   │           ╰── Var [i]
+            │   │       ╰── Constant [10]
+            │   ├── Post
+            │   │   ╰── Assign [=]
+            │   │       ├── Var [i]
+            │   │       ╰── Binary [+]
+            │   │           ├── Var [i]
+            │   │           ╰── Constant [1]
+            │   ╰── For
+            │       ├── Initial
+            │       │   ╰── Declaration [j]
+            │       │       ╰── Constant [0]
+            │       ├── Condition
+            │       │   ╰── Binary [<]
+            │       │       ├── Var [j]
+            │       │       ╰── Constant [10]
+            │       ├── Post
+            │       │   ╰── Assign [=]
+            │       │       ├── Var [j]
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [j]
+            │       │           ╰── Constant [1]
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Binary [==]
+            │           │       ├── Binary [*]
+            │           │       │   ├── Binary [/]
+            │           │       │   │   ├── Var [i]
+            │           │       │   │   ╰── Constant [2]
+            │           │       │   ╰── Constant [2]
+            │           │       ╰── Var [i]
+            │           ├── Then
+            │           │   ╰── Break
+            │           ╰── Else
+            │               ╰── Assign [=]
+            │                   ├── Var [ans]
+            │                   ╰── Binary [+]
+            │                       ├── Var [ans]
+            │                       ╰── Var [i]
             ╰── Return
                 ╰── Var [ans]
     "#;
@@ -10217,16 +10473,18 @@ fn test_chapter_8_valid_nested_continue() {
             ├── Declaration [acc]
             │   ╰── Constant [0]
             ├── While
-            │   ├── Binary [>=]
-            │   │   ├── Var [x]
-            │   │   ╰── Constant [0]
+            │   ├── Condition
+            │   │   ╰── Binary [>=]
+            │   │       ├── Var [x]
+            │   │       ╰── Constant [0]
             │   ╰── Block
             │       ├── Declaration [i]
             │       │   ╰── Var [x]
             │       ├── While
-            │       │   ├── Binary [<=]
-            │       │   │   ├── Var [i]
-            │       │   │   ╰── Constant [10]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant [10]
             │       │   ╰── Block
             │       │       ├── Assign [=]
             │       │       │   ├── Var [i]
@@ -10234,10 +10492,12 @@ fn test_chapter_8_valid_nested_continue() {
             │       │       │       ├── Var [i]
             │       │       │       ╰── Constant [1]
             │       │       ├── If
-            │       │       │   ├── Binary [%]
-            │       │       │   │   ├── Var [i]
-            │       │       │   │   ╰── Constant [2]
-            │       │       │   ╰── Continue
+            │       │       │   ├── Condition
+            │       │       │   │   ╰── Binary [%]
+            │       │       │   │       ├── Var [i]
+            │       │       │   │       ╰── Constant [2]
+            │       │       │   ╰── Then
+            │       │       │       ╰── Continue
             │       │       ╰── Assign [=]
             │       │           ├── Var [acc]
             │       │           ╰── Binary [+]
@@ -10279,7 +10539,8 @@ fn test_chapter_8_valid_nested_loop() {
             ├── Declaration [x]
             │   ╰── Constant [100]
             ├── While
-            │   ├── Var [x]
+            │   ├── Condition
+            │   │   ╰── Var [x]
             │   ╰── Block
             │       ├── Declaration [y]
             │       │   ╰── Constant [10]
@@ -10289,7 +10550,8 @@ fn test_chapter_8_valid_nested_loop() {
             │       │       ├── Var [x]
             │       │       ╰── Var [y]
             │       ╰── While
-            │           ├── Var [y]
+            │           ├── Condition
+            │           │   ╰── Var [y]
             │           ╰── Block
             │               ├── Assign [=]
             │               │   ├── Var [acc]
@@ -10332,20 +10594,19 @@ fn test_chapter_8_valid_null_for_header() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── For
-            ├── ├── Empty
-            ├── ├── Empty
-            ├── ├── Empty
-            │   ├── Block
-            │   │   ├── Assign [=]
-            │   │   │   ├── Var [a]
-            │   │   │   ╰── Binary [+]
-            │   │   │       ├── Var [a]
-            │   │   │       ╰── Constant [1]
-            │   │   ╰── If
-            │   │       ├── Binary [>]
-            │   │       │   ├── Var [a]
-            │   │       │   ╰── Constant [3]
-            │   │       ╰── Break
+            │   ╰── Block
+            │       ├── Assign [=]
+            │       │   ├── Var [a]
+            │       │   ╰── Binary [+]
+            │       │       ├── Var [a]
+            │       │       ╰── Constant [1]
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Binary [>]
+            │           │       ├── Var [a]
+            │           │       ╰── Constant [3]
+            │           ╰── Then
+            │               ╰── Break
             ╰── Return
                 ╰── Var [a]
     "#;
@@ -10368,9 +10629,10 @@ fn test_chapter_8_valid_while() {
             ├── Declaration [a]
             │   ╰── Constant [0]
             ├── While
-            │   ├── Binary [<]
-            │   │   ├── Var [a]
-            │   │   ╰── Constant [5]
+            │   ├── Condition
+            │   │   ╰── Binary [<]
+            │   │       ├── Var [a]
+            │   │       ╰── Constant [5]
             │   ╰── Assign [=]
             │       ├── Var [a]
             │       ╰── Binary [+]
