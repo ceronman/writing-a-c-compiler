@@ -86,6 +86,7 @@ pub enum TokenKind {
     CloseBrace,
     Colon,
     Semicolon,
+    Comma,
 
     Eof,
     Error,
@@ -150,6 +151,7 @@ impl Display for TokenKind {
             TokenKind::CloseBrace => "'}'",
             TokenKind::Colon => "':'",
             TokenKind::Semicolon => "';'",
+            TokenKind::Comma => "','",
             TokenKind::Eof => "end of file",
             TokenKind::Error => "error token",
         };
@@ -194,6 +196,7 @@ impl<'src> Lexer<'src> {
             '}' => TokenKind::CloseBrace,
             ':' => TokenKind::Colon,
             ';' => TokenKind::Semicolon,
+            ',' => TokenKind::Comma,
             '?' => TokenKind::Question,
             '+' => match self.peek() {
                 Some('+') => self.eat_and(TokenKind::PlusPlus),
