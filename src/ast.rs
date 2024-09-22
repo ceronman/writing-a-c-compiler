@@ -10,13 +10,7 @@ pub struct Node<T> {
 
 #[derive(Debug)]
 pub struct Program {
-    pub function_definition: Node<Function>,
-}
-
-#[derive(Debug)]
-pub struct Function {
-    pub name: Node<Identifier>,
-    pub body: Node<Block>,
+    pub functions: Vec<Node<FunctionDeclaration>>,
 }
 
 #[derive(Debug)]
@@ -93,7 +87,7 @@ pub struct SwitchLabels {
 #[derive(Debug)]
 pub enum ForInit {
     None,
-    Decl(Node<Declaration>),
+    Decl(Node<VarDeclaration>),
     Expr(Node<Expression>),
 }
 
@@ -124,6 +118,10 @@ pub enum Expression {
         then_expr: Node<Expression>,
         else_expr: Node<Expression>,
     },
+    FunctionCall {
+        name: Node<Identifier>,
+        args: Vec<Node<Expression>>,
+    },
 }
 
 #[derive(Debug)]
@@ -132,9 +130,22 @@ pub struct Block {
 }
 
 #[derive(Debug)]
-pub struct Declaration {
+pub enum Declaration {
+    Var(VarDeclaration),
+    Function(FunctionDeclaration),
+}
+
+#[derive(Debug)]
+pub struct VarDeclaration {
     pub name: Node<Identifier>,
     pub init: Option<Node<Expression>>,
+}
+
+#[derive(Debug)]
+pub struct FunctionDeclaration {
+    pub name: Node<Identifier>,
+    pub params: Vec<Node<Identifier>>,
+    pub body: Option<Node<Block>>,
 }
 
 #[derive(Debug)]

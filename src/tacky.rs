@@ -3,7 +3,6 @@ pub mod interpreter;
 mod test;
 
 use crate::ast;
-use crate::ast::ForInit;
 use crate::symbol::Symbol;
 
 #[derive(Debug)]
@@ -92,8 +91,8 @@ struct TackyGenerator {
 }
 
 impl TackyGenerator {
-    fn emit_function(mut self, function: &ast::Function) -> Vec<Instruction> {
-        self.emit_block(&function.body);
+    fn emit_function(mut self, function: &ast::Block) -> Vec<Instruction> {
+        self.emit_block(function);
         self.instructions
             .push(Instruction::Return(Val::Constant(0)));
         self.instructions
@@ -103,12 +102,15 @@ impl TackyGenerator {
         for block_item in &block.items {
             match block_item {
                 ast::BlockItem::Stmt(stmt) => self.emit_statement(stmt),
-                ast::BlockItem::Decl(decl) => self.emit_declaration(decl),
+                ast::BlockItem::Decl(decl) => match decl.as_ref() {
+                    ast::Declaration::Var(decl) => self.emit_var_declaration(decl),
+                    ast::Declaration::Function(_) => todo!(),
+                },
             }
         }
     }
 
-    fn emit_declaration(&mut self, decl: &ast::Declaration) {
+    fn emit_var_declaration(&mut self, decl: &ast::VarDeclaration) {
         if let Some(init) = &decl.init {
             let result = self.emit_expr(init);
             self.instructions.push(Instruction::Copy {
@@ -215,11 +217,11 @@ impl TackyGenerator {
                 label,
             } => {
                 match init {
-                    ForInit::Decl(decl) => self.emit_declaration(decl),
-                    ForInit::Expr(expr) => {
+                    ast::ForInit::Decl(decl) => self.emit_var_declaration(decl),
+                    ast::ForInit::Expr(expr) => {
                         self.emit_expr(expr);
                     }
-                    ForInit::None => {}
+                    ast::ForInit::None => {}
                 }
                 let start_label = format!("start_{label}");
                 self.instructions
@@ -497,6 +499,7 @@ impl TackyGenerator {
                 self.instructions.push(Instruction::Label(end_label));
                 result
             }
+            _ => todo!(),
         }
     }
 
@@ -514,11 +517,11 @@ impl TackyGenerator {
 }
 
 pub fn emit(program: &ast::Program) -> Program {
-    let function = &program.function_definition;
+    let function = program.functions.first().unwrap();
     Program {
         function: Function {
             name: function.name.symbol.clone(),
-            body: TackyGenerator::default().emit_function(function),
+            body: TackyGenerator::default().emit_function(function.body.as_ref().unwrap()),
         },
     }
 }

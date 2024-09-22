@@ -165,21 +165,61 @@ pub fn annotate(src: &str, error: &crate::error::CompilerError) -> String {
     result
 }
 
+// TODO: refactor this with an homogeneous tree IR, right now it's too complicated.
 fn print_program(file: &mut impl Write, program: &ast::Program) -> Result<()> {
     writeln!(file, "Program")?;
-    print_function(file, &program.function_definition)?;
+    for (i, function) in program.functions.iter().enumerate() {
+        if i < program.functions.len() - 1 {
+            print_function_declaration(file, function, "├──", 1, &[1])?;
+        } else {
+            print_function_declaration(file, function, "╰──", 1, &[])?;
+        }
+    }
     Ok(())
 }
 
-fn print_function(file: &mut impl Write, function: &ast::Function) -> Result<()> {
-    writeln!(file, "╰── Function [{}]", function.name.symbol)?;
-    let body = &function.body;
-    for (i, block_item) in body.items.iter().enumerate() {
-        if i == body.items.len() - 1 {
-            print_block_item(file, block_item, "╰──", 1, &[])?
+fn print_function_declaration(
+    file: &mut impl Write,
+    function: &ast::FunctionDeclaration,
+    pipe: &str,
+    level: usize,
+    pipes: &[usize],
+) -> Result<()> {
+    let indent = make_indent(level, pipes);
+    writeln!(file, "{indent}{pipe} Function [{}]", function.name.symbol)?;
+    let inner_indent = make_indent(level + 1, pipes);
+    if !function.params.is_empty() {
+        let pipe = if function.body.is_some() {
+            "├──"
         } else {
-            print_block_item(file, block_item, "├──", 1, &[1])?
+            "╰──"
         };
+        writeln!(file, "{inner_indent}{pipe} Parameters")?;
+        let param_indent = make_indent(level + 2, pipes);
+        for (i, param) in function.params.iter().enumerate() {
+            let pipe = if i < function.params.len() - 1 {
+                "├──"
+            } else {
+                "╰──"
+            };
+            writeln!(file, "{param_indent}{pipe} {}", param.symbol)?;
+        }
+    }
+    if let Some(body) = function.body.as_ref() {
+        writeln!(file, "{inner_indent}╰── Body")?;
+        for (i, block_item) in body.items.iter().enumerate() {
+            if i < body.items.len() - 1 {
+                print_block_item(
+                    file,
+                    block_item,
+                    "├──",
+                    level + 2,
+                    &[pipes, &[level + 1]].concat(),
+                )?
+            } else {
+                print_block_item(file, block_item, "╰──", level + 2, pipes)?
+            };
+        }
     }
     Ok(())
 }
@@ -216,12 +256,23 @@ fn print_declaration(
     level: usize,
     pipes: &[usize],
 ) -> Result<()> {
+    match declaration {
+        ast::Declaration::Var(decl) => print_var_declaration(file, decl, pipe, level, pipes),
+        ast::Declaration::Function(func) => {
+            print_function_declaration(file, func, pipe, level, pipes)
+        }
+    }
+}
+
+fn print_var_declaration(
+    file: &mut impl Write,
+    declaration: &ast::VarDeclaration,
+    pipe: &str,
+    level: usize,
+    pipes: &[usize],
+) -> Result<()> {
     let indent = make_indent(level, pipes);
-    writeln!(
-        file,
-        "{indent}{pipe} Declaration [{}]",
-        declaration.name.symbol
-    )?;
+    writeln!(file, "{indent}{pipe} Var [{}]", declaration.name.symbol)?;
     if let Some(init) = &declaration.init {
         print_expression(file, init, "╰──", level + 1, pipes)?;
     }
@@ -254,17 +305,17 @@ fn print_named_expression(
     print_expression(file, expr, "╰──", level + 1, pipes)
 }
 
-fn print_named_declaration(
+fn print_named_var_declaration(
     file: &mut impl Write,
     name: &str,
-    decl: &ast::Declaration,
+    decl: &ast::VarDeclaration,
     pipe: &str,
     level: usize,
     pipes: &[usize],
 ) -> Result<()> {
     let indent = make_indent(level, pipes);
     writeln!(file, "{indent}{pipe} {name}")?;
-    print_declaration(file, decl, "╰──", level + 1, pipes)
+    print_var_declaration(file, decl, "╰──", level + 1, pipes)
 }
 
 fn print_statement(
@@ -396,7 +447,7 @@ fn print_statement(
             writeln!(file, "{indent}{pipe} For")?;
             match init {
                 ast::ForInit::Decl(d) => {
-                    print_named_declaration(
+                    print_named_var_declaration(
                         file,
                         "Initial",
                         d,
@@ -518,6 +569,16 @@ fn print_expression(
                 &[pipes, &[level + 1]].concat(),
             )?;
             print_expression(file, else_expr, "╰──", level + 1, pipes)?;
+        }
+        ast::Expression::FunctionCall { name, args } => {
+            writeln!(file, "{indent}{pipe} FunctionCall [{}]", name.symbol)?;
+            for (i, arg) in args.iter().enumerate() {
+                if i < args.len() - 1 {
+                    print_expression(file, arg, "├──", level + 1, &[pipes, &[level + 1]].concat())?;
+                } else {
+                    print_expression(file, arg, "╰──", level + 1, pipes)?;
+                }
+            }
         }
     }
     Ok(())

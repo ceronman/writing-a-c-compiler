@@ -3,7 +3,7 @@ mod test;
 
 use crate::ast::{
     Block, BlockItem, Declaration, Expression, ForInit, Node, Program, Statement, SwitchLabels,
-    UnaryOp,
+    UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
@@ -25,8 +25,15 @@ enum LabelKind {
 
 impl Resolver {
     fn resolve(mut self, mut program: Node<Program>) -> Result<Node<Program>> {
-        self.resolve_block(&mut program.function_definition.body)?;
-        self.check_gotos_block(&mut program.function_definition.body)?;
+        let body = program
+            .functions
+            .first_mut()
+            .unwrap()
+            .body
+            .as_mut()
+            .unwrap();
+        self.resolve_block(body)?;
+        self.check_gotos_block(body)?;
 
         Ok(program)
     }
@@ -98,6 +105,13 @@ impl Resolver {
     }
 
     fn resolve_declaration(&mut self, decl: &mut Declaration) -> Result<()> {
+        match decl {
+            Declaration::Var(decl) => self.resolve_var_declaration(decl),
+            Declaration::Function(_) => todo!(),
+        }
+    }
+
+    fn resolve_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
         let name = &decl.name.symbol;
         let unique_name = self.make_name(name).clone();
         let Some(scope) = self.scopes.front_mut() else {
@@ -179,7 +193,7 @@ impl Resolver {
                     ForInit::Decl(d) => {
                         self.begin_scope();
                         scoped_init = true;
-                        self.resolve_declaration(d)?
+                        self.resolve_var_declaration(d)?
                     }
                     ForInit::Expr(e) => self.resolve_expression(e)?,
                     ForInit::None => {}
@@ -373,6 +387,7 @@ impl Resolver {
                 self.resolve_expression(else_expr)?;
             }
             Expression::Constant(_) => {}
+            _ => todo!(),
         }
         Ok(())
     }

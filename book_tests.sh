@@ -7,7 +7,8 @@ set -euxo pipefail
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler \
     --verbose \
     --failfast \
-    --chapter 8 \
+    --chapter 9 \
+    --stage parse \
     --bitwise \
     --compound \
     --increment \

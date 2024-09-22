@@ -2,8 +2,8 @@
 mod test;
 
 use crate::ast::{
-    AssignOp, BinaryOp, Block, BlockItem, Declaration, Expression, ForInit, Function, Identifier,
-    Node, PostfixOp, Program, Statement, SwitchLabels, UnaryOp,
+    AssignOp, BinaryOp, Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration,
+    Identifier, Node, PostfixOp, Program, Statement, SwitchLabels, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{Lexer, Token, TokenKind};
@@ -29,25 +29,12 @@ impl<'src> Parser<'src> {
 
     fn program(&mut self) -> Result<Node<Program>> {
         let begin = self.current.span;
-        let function_definition = self.function()?;
+        let mut functions = Vec::new();
+        while self.current.kind != TokenKind::Eof {
+            functions.push(self.function_declaration()?);
+        }
         let end = self.expect(TokenKind::Eof)?.span;
-        Ok(Node::from(
-            begin + end,
-            Program {
-                function_definition,
-            },
-        ))
-    }
-
-    fn function(&mut self) -> Result<Node<Function>> {
-        let begin = self.current.span;
-        self.expect(TokenKind::Int)?;
-        let name = self.identifier()?;
-        self.expect(TokenKind::OpenParen)?;
-        self.expect(TokenKind::Void)?;
-        self.expect(TokenKind::CloseParen)?;
-        let body = self.block()?;
-        Ok(Node::from(begin + body.span, Function { name, body }))
+        Ok(Node::from(begin + end, Program { functions }))
     }
 
     fn block(&mut self) -> Result<Node<Block>> {
@@ -71,18 +58,90 @@ impl<'src> Parser<'src> {
         Ok(block)
     }
 
+    fn var_declaration(&mut self) -> Result<Node<VarDeclaration>> {
+        let Node { span, data } = self.declaration()?;
+        let Declaration::Var(decl) = *data else {
+            return Err(CompilerError {
+                kind: ErrorKind::Parse,
+                msg: "Expected variable declaration, but found function declaration".into(),
+                span,
+            });
+        };
+        Ok(Node::from(span, decl))
+    }
+
+    fn function_declaration(&mut self) -> Result<Node<FunctionDeclaration>> {
+        let Node { span, data } = self.declaration()?;
+        let Declaration::Function(decl) = *data else {
+            return Err(CompilerError {
+                kind: ErrorKind::Parse,
+                msg: "Expected function declaration, but found variable declaration".into(),
+                span,
+            });
+        };
+        Ok(Node::from(span, decl))
+    }
+
     fn declaration(&mut self) -> Result<Node<Declaration>> {
         let begin = self.current.span;
         self.expect(TokenKind::Int)?;
         let name = self.identifier()?;
-        let init = if self.current.kind == TokenKind::Equal {
-            self.advance();
-            Some(self.expression()?)
+
+        if let TokenKind::OpenParen = self.current.kind {
+            self.advance(); // TODO: maybe extract the pattern check and advance
+            let params = if let TokenKind::Void = self.current.kind {
+                self.advance();
+                self.expect(TokenKind::CloseParen)?;
+                vec![]
+            } else {
+                let mut params = Vec::new();
+                loop {
+                    self.expect(TokenKind::Int)?;
+                    let name = self.identifier()?;
+                    params.push(name);
+                    if let TokenKind::Comma = self.current.kind {
+                        self.advance();
+                        continue;
+                    }
+                    self.expect(TokenKind::CloseParen)?;
+                    break;
+                }
+                params
+            };
+            if let TokenKind::OpenBrace = self.current.kind {
+                let body = self.block()?;
+                Ok(Node::from(
+                    begin + body.span,
+                    Declaration::Function(FunctionDeclaration {
+                        name,
+                        params,
+                        body: Some(body),
+                    }),
+                ))
+            } else {
+                let end = self.expect(TokenKind::Semicolon)?.span;
+                Ok(Node::from(
+                    begin + end,
+                    Declaration::Function(FunctionDeclaration {
+                        name,
+                        params,
+                        body: None,
+                    }),
+                ))
+            }
         } else {
-            None
-        };
-        let end = self.expect(TokenKind::Semicolon)?.span;
-        Ok(Node::from(begin + end, Declaration { name, init }))
+            let init = if self.current.kind == TokenKind::Equal {
+                self.advance();
+                Some(self.expression()?)
+            } else {
+                None
+            };
+            let end = self.expect(TokenKind::Semicolon)?.span;
+            Ok(Node::from(
+                begin + end,
+                Declaration::Var(VarDeclaration { name, init }),
+            ))
+        }
     }
 
     fn statement(&mut self) -> Result<Node<Statement>> {
@@ -156,7 +215,7 @@ impl<'src> Parser<'src> {
                 self.advance();
                 ForInit::None
             }
-            TokenKind::Int => ForInit::Decl(self.declaration()?),
+            TokenKind::Int => ForInit::Decl(self.var_declaration()?),
             _ => {
                 let expr = self.expression()?;
                 self.expect(TokenKind::Semicolon)?;
@@ -329,7 +388,13 @@ impl<'src> Parser<'src> {
     ) -> Result<Node<Expression>> {
         let mut expr = match self.current.kind {
             TokenKind::Constant => self.int()?,
-            TokenKind::Identifier => self.var()?,
+            TokenKind::Identifier => {
+                if self.next.kind == TokenKind::OpenParen {
+                    self.function_call()?
+                } else {
+                    self.var()?
+                }
+            }
             TokenKind::Minus
             | TokenKind::Tilde
             | TokenKind::Bang
@@ -557,6 +622,27 @@ impl<'src> Parser<'src> {
         let token = self.expect(TokenKind::Identifier)?;
         let symbol = Symbol::from(token.slice(self.source));
         Ok(Node::from(token.span, Identifier { symbol }))
+    }
+
+    fn function_call(&mut self) -> Result<Node<Expression>> {
+        let name = self.identifier()?;
+        let mut args = Vec::new();
+        self.expect(TokenKind::OpenParen)?;
+        if self.current.kind != TokenKind::CloseParen {
+            loop {
+                args.push(self.expression()?);
+                if let TokenKind::Comma = self.current.kind {
+                    self.advance();
+                    continue;
+                }
+                break;
+            }
+        }
+        self.expect(TokenKind::CloseParen)?;
+        Ok(Node::from(
+            name.span,
+            Expression::FunctionCall { name, args },
+        ))
     }
 
     fn var(&mut self) -> Result<Node<Expression>> {
