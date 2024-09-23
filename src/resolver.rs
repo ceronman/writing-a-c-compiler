@@ -2,8 +2,8 @@
 mod test;
 
 use crate::ast::{
-    Block, BlockItem, Declaration, Expression, ForInit, Node, Program, Statement, SwitchLabels,
-    UnaryOp, VarDeclaration,
+    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Node,
+    Program, Statement, SwitchLabels, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
@@ -11,11 +11,18 @@ use std::collections::{HashMap, VecDeque};
 
 #[derive(Default)]
 struct Resolver {
-    scopes: VecDeque<HashMap<Symbol, Symbol>>,
+    scopes: VecDeque<Scope>,
     labels: HashMap<Symbol, Symbol>,
     label_stack: VecDeque<LabelKind>,
     switch_labels: VecDeque<SwitchLabels>,
     counter: usize,
+}
+
+type Scope = HashMap<Symbol, Resolution>;
+
+struct Resolution {
+    name: Symbol,
+    linked: bool,
 }
 
 enum LabelKind {
@@ -25,15 +32,18 @@ enum LabelKind {
 
 impl Resolver {
     fn resolve(mut self, mut program: Node<Program>) -> Result<Node<Program>> {
-        let body = program
-            .functions
-            .first_mut()
-            .unwrap()
-            .body
-            .as_mut()
-            .unwrap();
-        self.resolve_block(body)?;
-        self.check_gotos_block(body)?;
+        self.begin_scope();
+        for decl in &mut program.functions {
+            self.resolve_function_declaration(decl)?;
+        }
+        self.end_scope();
+
+        // Additional pass to check goto labels
+        for decl in &mut program.functions {
+            if let Some(body) = &mut decl.body {
+                self.check_gotos_block(body)?;
+            }
+        }
 
         Ok(program)
     }
@@ -107,32 +117,83 @@ impl Resolver {
     fn resolve_declaration(&mut self, decl: &mut Declaration) -> Result<()> {
         match decl {
             Declaration::Var(decl) => self.resolve_var_declaration(decl),
-            Declaration::Function(_) => todo!(),
+            Declaration::Function(decl) => self.resolve_function_declaration(decl),
         }
     }
 
     fn resolve_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
-        let name = &decl.name.symbol;
-        let unique_name = self.make_name(name).clone();
-        let Some(scope) = self.scopes.front_mut() else {
+        let symbol = &decl.name.symbol;
+        let unique_name = self.make_name(symbol).clone();
+        let scope = self.scopes.front_mut().expect("Invalid scope state");
+        if scope.contains_key(symbol) {
             return Err(CompilerError {
                 kind: ErrorKind::Resolve,
-                msg: format!("Variable '{name}' declared outside of a scope"),
-                span: decl.name.span,
-            });
-        };
-        if scope.contains_key(name) {
-            return Err(CompilerError {
-                kind: ErrorKind::Resolve,
-                msg: format!("Variable '{name}' was already declared"),
+                msg: format!("Variable '{symbol}' was already declared"),
                 span: decl.name.span,
             });
         }
-        scope.insert(name.clone(), unique_name.clone());
+        scope.insert(
+            symbol.clone(),
+            Resolution {
+                name: unique_name.clone(),
+                linked: false,
+            },
+        );
         decl.name.symbol = unique_name;
         if let Some(init) = &mut decl.init {
             self.resolve_expression(init)?;
         }
+        Ok(())
+    }
+
+    fn resolve_function_declaration(&mut self, decl: &mut FunctionDeclaration) -> Result<()> {
+        let symbol = &decl.name.symbol;
+        let scope = self.scopes.front_mut().expect("Invalid scope state");
+        if let Some(resolution) = scope.get(symbol) {
+            if !resolution.linked {
+                return Err(CompilerError {
+                    kind: ErrorKind::Resolve,
+                    msg: format!("Variable '{symbol}' was already declared"),
+                    span: decl.name.span,
+                });
+            }
+        }
+        scope.insert(
+            symbol.clone(),
+            Resolution {
+                name: symbol.clone(),
+                linked: true,
+            },
+        );
+        self.begin_scope();
+        for param in &mut decl.params {
+            self.resolve_param(param)?
+        }
+        self.end_scope();
+        if let Some(body) = &mut decl.body {
+            self.resolve_block(body)?;
+        }
+        Ok(())
+    }
+
+    fn resolve_param(&mut self, param: &mut Node<Identifier>) -> Result<()> {
+        let symbol = &param.symbol;
+        let unique_name = self.make_name(symbol).clone();
+        let scope = self.scopes.front_mut().expect("Invalid scope state");
+        if scope.contains_key(symbol) {
+            return Err(CompilerError {
+                kind: ErrorKind::Resolve,
+                msg: format!("Variable '{symbol}' was already declared"),
+                span: param.span,
+            });
+        }
+        scope.insert(
+            symbol.clone(),
+            Resolution {
+                name: unique_name.clone(),
+                linked: false,
+            },
+        );
         Ok(())
     }
 
@@ -330,7 +391,7 @@ impl Resolver {
             Expression::Var(name) => {
                 for scope in &self.scopes {
                     if let Some(declared) = scope.get(name) {
-                        *name = declared.clone();
+                        *name = declared.name.clone();
                         return Ok(());
                     }
                 }
@@ -387,7 +448,22 @@ impl Resolver {
                 self.resolve_expression(else_expr)?;
             }
             Expression::Constant(_) => {}
-            _ => todo!(),
+            Expression::FunctionCall { name, args } => {
+                let symbol = &name.symbol;
+                for scope in &self.scopes {
+                    if scope.get(symbol).is_some() {
+                        for arg in args {
+                            self.resolve_expression(arg)?;
+                        }
+                        return Ok(());
+                    }
+                }
+                return Err(CompilerError {
+                    kind: ErrorKind::Resolve,
+                    msg: format!("Undeclared function '{symbol}'"),
+                    span: name.span,
+                });
+            }
         }
         Ok(())
     }
