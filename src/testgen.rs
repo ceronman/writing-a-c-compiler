@@ -3,7 +3,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::{fs, panic};
 
-use crate::{lexer, parser, pretty, resolver, tacky};
+use crate::{lexer, parser, pretty, semantic, tacky};
 use anyhow::Result;
 
 pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
@@ -122,13 +122,13 @@ pub fn generate_resolver_tests(path: &Path, source: &str) -> Result<()> {
             file,
             r#"
 use crate::parser::parse;
-use crate::resolver::resolve;
+use crate::semantic::validate;
 use crate::pretty::{{annotate, remove_annotation}};
 
 fn assert_error(expected_annotated: &str) {{
     let clean_source = remove_annotation(expected_annotated);
     let ast = parse(&clean_source).expect("Parse error");
-    let Err(error) = resolve(ast) else {{
+    let Err(error) = validate(ast) else {{
         panic!("No error produced!")
     }};
     let actual_annotated = annotate(&clean_source, &error);
@@ -140,7 +140,7 @@ fn assert_error(expected_annotated: &str) {{
     let name = test_name(path);
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
     let indented = indent(source);
-    let result = resolver::resolve(parser::parse(&indented)?);
+    let result = semantic::validate(parser::parse(&indented)?);
     match result {
         Ok(_) => {}
         Err(error) => {
@@ -177,7 +177,7 @@ use crate::pretty::{{dedent, dump_tacky}};
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
     let indented = indent(source);
     let ast = parser::parse(&indented)?;
-    let ast = resolver::resolve(ast)?;
+    let ast = semantic::validate(ast)?;
     let tacky = tacky::emit(&ast);
     let expected = indent(&pretty::pretty_print_tacky(tacky)?);
     writeln!(file)?;
@@ -204,11 +204,11 @@ pub fn generate_interpreter_tests(path: &Path, source: &str) -> Result<()> {
         writeln!(
             file,
             r#"
-use crate::{{parser, resolver, tacky}};
+use crate::{{parser, semantic, tacky}};
 
 fn run(src: &str) -> i64 {{
     let ast = parser::parse(src).unwrap();
-    let ast = resolver::resolve(ast).unwrap();
+    let ast = semantic::validate(ast).unwrap();
     let tacky = tacky::emit(&ast);
     tacky::interpreter::run(&tacky)
 }}
@@ -219,7 +219,7 @@ fn run(src: &str) -> i64 {{
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
     let indented = indent(source);
     let ast = parser::parse(&indented)?;
-    let ast = resolver::resolve(ast)?;
+    let ast = semantic::validate(ast)?;
     let tacky = tacky::emit(&ast);
     let expected = tacky::interpreter::run(&tacky);
     writeln!(file)?;

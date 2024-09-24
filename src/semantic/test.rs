@@ -1,11 +1,11 @@
 use crate::parser::parse;
 use crate::pretty::{annotate, remove_annotation};
-use crate::resolver::resolve;
+use crate::semantic::validate;
 
 fn assert_error(expected_annotated: &str) {
     let clean_source = remove_annotation(expected_annotated);
     let ast = parse(&clean_source).expect("Parse error");
-    let Err(error) = resolve(ast) else {
+    let Err(error) = validate(ast) else {
         panic!("No error produced!")
     };
     let actual_annotated = annotate(&clean_source, &error);

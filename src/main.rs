@@ -5,7 +5,7 @@ mod error;
 mod lexer;
 mod parser;
 mod pretty;
-mod resolver;
+mod semantic;
 mod symbol;
 mod tacky;
 mod tempfile;
@@ -46,14 +46,14 @@ fn main() -> Result<()> {
         if let Flag::Tacky = options.flag {
             lexer::tokenize(&source); // skip lexing errors
             let ast = parser::parse(&source)?; // skip parsing errors
-            resolver::resolve(ast)?; // skip resolution errors
+            semantic::validate(ast)?; // skip resolution errors
             testgen::generate_tacky_tests(&options.filename, &source)?;
         }
 
         if let Flag::Interpret = options.flag {
             lexer::tokenize(&source); // skip lexing errors
             let ast = parser::parse(&source)?; // skip parsing errors
-            resolver::resolve(ast)?; // skip resolution errors
+            semantic::validate(ast)?; // skip resolution errors
             testgen::generate_interpreter_tests(&options.filename, &source)?;
             return Ok(());
         }
@@ -71,7 +71,7 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let validated_ast = match resolver::resolve(ast) {
+    let validated_ast = match semantic::validate(ast) {
         Ok(ast) => ast,
         Err(error) => {
             let annotated = pretty::annotate(&source, &error);

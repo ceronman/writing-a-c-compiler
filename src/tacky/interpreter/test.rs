@@ -1,8 +1,8 @@
-use crate::{parser, resolver, tacky};
+use crate::{parser, semantic, tacky};
 
 fn run(src: &str) -> i64 {
     let ast = parser::parse(src).unwrap();
-    let ast = resolver::resolve(ast).unwrap();
+    let ast = semantic::validate(ast).unwrap();
     let tacky = tacky::emit(&ast);
     tacky::interpreter::run(&tacky)
 }

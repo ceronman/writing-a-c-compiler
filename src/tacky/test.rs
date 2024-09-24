@@ -3412,11 +3412,11 @@ fn test_chapter_6_valid_extra_credit_goto_after_declaration() {
     let expected = r#"
         function main { 
             x.0 = 1
-            jump post_declaration_2
+            jump post_declaration_0
             x.0 = 0
             i.1 = x.0
         
-          post_declaration_2:
+          post_declaration_0:
             i.1 = 5
             tmp.0 = x.0 == 1
             if !tmp.0 jump and_false_0
@@ -3500,10 +3500,10 @@ fn test_chapter_6_valid_extra_credit_goto_label_and_var() {
     let expected = r#"
         function main { 
             ident.0 = 5
-            jump ident_1
+            jump ident_0
             return 0
         
-          ident_1:
+          ident_0:
             return ident.0
             return 0
         }
@@ -3610,32 +3610,32 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
         function main { 
             a.0 = 1
         
-          label_if_1:
+          label_if_0:
             if !a.0 jump else_1
-            jump label_expression_3
+            jump label_expression_2
             jump end_if_0
         
           else_1:
-            jump label_empty_5
+            jump label_empty_4
         
           end_if_0:
         
-          label_goto_2:
-            jump label_return_4
+          label_goto_1:
+            jump label_return_3
             if !0 jump end_if_2
         
-          label_expression_3:
+          label_expression_2:
             a.0 = 0
         
           end_if_2:
-            jump label_if_1
+            jump label_if_0
         
-          label_return_4:
+          label_return_3:
             return a.0
         
-          label_empty_5:
+          label_empty_4:
             a.0 = 100
-            jump label_goto_2
+            jump label_goto_1
             return 0
         }
     "#;
@@ -4720,12 +4720,12 @@ fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
             tmp.0 = a.0 != 0
             if !tmp.0 jump end_if_0
         
-          return_a_1:
+          return_a_0:
             return a.0
         
           end_if_0:
-            a.2 = 4
-            jump return_a_1
+            a.1 = 4
+            jump return_a_0
             return 0
         }
     "#;
@@ -4749,10 +4749,10 @@ fn test_chapter_7_valid_extra_credit_goto_inner_scope() {
     let expected = r#"
         function main { 
             x.0 = 5
-            jump inner_2
+            jump inner_0
             x.1 = 0
         
-          inner_2:
+          inner_0:
             x.1 = 1
             return x.1
             return 0
@@ -4784,12 +4784,12 @@ fn test_chapter_7_valid_extra_credit_goto_outer_scope() {
             if !a.0 jump end_if_0
             a.2 = 1
             b.1 = a.2
-            jump end_3
+            jump end_0
         
           end_if_0:
             a.0 = 9
         
-          end_3:
+          end_0:
             tmp.0 = a.0 == 10
             if !tmp.0 jump and_false_2
             tmp.3 = b.1 == 1
@@ -4836,10 +4836,10 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
             sum.0 = 0
             if !1 jump end_if_0
             a.1 = 5
-            jump other_if_3
+            jump other_if_1
             sum.0 = 0
         
-          first_if_2:
+          first_if_0:
             a.1 = 5
             tmp.0 = sum.0 + a.1
             sum.0 = tmp.0
@@ -4847,11 +4847,11 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
           end_if_0:
             if !0 jump end_if_2
         
-          other_if_3:
-            a.4 = 6
-            tmp.1 = sum.0 + a.4
+          other_if_1:
+            a.2 = 6
+            tmp.1 = sum.0 + a.2
             sum.0 = tmp.1
-            jump first_if_2
+            jump first_if_0
             sum.0 = 0
         
           end_if_2:
@@ -5138,23 +5138,23 @@ fn test_chapter_8_valid_break() {
             tmp.0 = - 20
             b.1 = tmp.0
         
-          start_loop_2:
+          start_loop_0:
             tmp.1 = b.1 < 0
-            if !tmp.1 jump break_loop_2
+            if !tmp.1 jump break_loop_0
             tmp.2 = a.0 - 1
             a.0 = tmp.2
             tmp.3 = a.0 <= 0
             if !tmp.3 jump end_if_0
-            jump break_loop_2
+            jump break_loop_0
         
           end_if_0:
         
-          continue_loop_2:
+          continue_loop_0:
             tmp.4 = b.1 + 1
             b.1 = tmp.4
-            jump start_loop_2
+            jump start_loop_0
         
-          break_loop_2:
+          break_loop_0:
             tmp.5 = a.0 == 0
             if !tmp.5 jump and_false_2
             tmp.9 = - 11
@@ -5188,13 +5188,13 @@ fn test_chapter_8_valid_break_immediate() {
         function main { 
             a.0 = 10
         
-          continue_loop_1:
+          continue_loop_0:
             a.0 = 1
-            if !a.0 jump break_loop_1
-            jump break_loop_1
-            jump continue_loop_1
+            if !a.0 jump break_loop_0
+            jump break_loop_0
+            jump continue_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return a.0
             return 0
         }
@@ -5220,27 +5220,27 @@ fn test_chapter_8_valid_continue() {
     let expected = r#"
         function main { 
             sum.0 = 0
-            i.3 = 0
+            i.2 = 0
         
-          start_loop_2:
-            tmp.0 = i.3 <= 10
-            if !tmp.0 jump break_loop_2
-            counter.1 = i.3
-            tmp.1 = i.3 % 2
+          start_loop_0:
+            tmp.0 = i.2 <= 10
+            if !tmp.0 jump break_loop_0
+            counter.1 = i.2
+            tmp.1 = i.2 % 2
             tmp.2 = tmp.1 == 0
             if !tmp.2 jump end_if_0
-            jump continue_loop_2
+            jump continue_loop_0
         
           end_if_0:
             tmp.3 = sum.0 + 1
             sum.0 = tmp.3
         
-          continue_loop_2:
-            tmp.4 = i.3 + 1
-            i.3 = tmp.4
-            jump start_loop_2
+          continue_loop_0:
+            tmp.4 = i.2 + 1
+            i.2 = tmp.4
+            jump start_loop_0
         
-          break_loop_2:
+          break_loop_0:
             tmp.5 = sum.0 == 5
             if !tmp.5 jump and_false_2
             tmp.8 = counter.1 == 10
@@ -5276,25 +5276,25 @@ fn test_chapter_8_valid_continue_empty_post() {
     let expected = r#"
         function main { 
             sum.0 = 0
-            i.2 = 0
+            i.1 = 0
         
-          start_loop_1:
-            tmp.0 = i.2 < 10
-            if !tmp.0 jump break_loop_1
-            tmp.1 = i.2 + 1
-            i.2 = tmp.1
-            tmp.2 = i.2 % 2
+          start_loop_0:
+            tmp.0 = i.1 < 10
+            if !tmp.0 jump break_loop_0
+            tmp.1 = i.1 + 1
+            i.1 = tmp.1
+            tmp.2 = i.1 % 2
             if !tmp.2 jump end_if_0
-            jump continue_loop_1
+            jump continue_loop_0
         
           end_if_0:
-            tmp.3 = sum.0 + i.2
+            tmp.3 = sum.0 + i.1
             sum.0 = tmp.3
         
-          continue_loop_1:
-            jump start_loop_1
+          continue_loop_0:
+            jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return sum.0
             return 0
         }
@@ -5317,15 +5317,15 @@ fn test_chapter_8_valid_do_while() {
         function main { 
             a.0 = 1
         
-          start_loop_1:
+          start_loop_0:
             tmp.0 = a.0 * 2
             a.0 = tmp.0
         
-          continue_loop_1:
+          continue_loop_0:
             tmp.1 = a.0 < 11
-            if tmp.1 jump start_loop_1
+            if tmp.1 jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return a.0
             return 0
         }
@@ -5348,14 +5348,14 @@ fn test_chapter_8_valid_do_while_break_immediate() {
         function main { 
             a.0 = 10
         
-          start_loop_1:
-            jump break_loop_1
+          start_loop_0:
+            jump break_loop_0
         
-          continue_loop_1:
+          continue_loop_0:
             a.0 = 1
-            if a.0 jump start_loop_1
+            if a.0 jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return a.0
             return 0
         }
@@ -5392,15 +5392,15 @@ fn test_chapter_8_valid_empty_loop_body() {
         function main { 
             i.0 = 2147
         
-          start_loop_1:
+          start_loop_0:
         
-          continue_loop_1:
+          continue_loop_0:
             tmp.0 = i.0 - 5
             i.0 = tmp.0
             tmp.1 = i.0 >= 256
-            if tmp.1 jump start_loop_1
+            if tmp.1 jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return i.0
             return 0
         }
@@ -5428,14 +5428,14 @@ fn test_chapter_8_valid_extra_credit_case_block() {
             a.0 = 4
             b.1 = 0
             tmp.0 = 2 == 2
-            if tmp.0 jump case_2_switch_2
-            jump break_switch_2
+            if tmp.0 jump case_2_switch_0
+            jump break_switch_0
         
-          case_2_switch_2:
-            a.3 = 8
-            b.1 = a.3
+          case_2_switch_0:
+            a.2 = 8
+            b.1 = a.2
         
-          break_switch_2:
+          break_switch_0:
             tmp.1 = a.0 == 4
             if !tmp.1 jump and_false_0
             tmp.4 = b.1 == 8
@@ -5470,16 +5470,16 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression(
             i.0 = 100
             sum.1 = 0
         
-          start_loop_2:
+          start_loop_0:
             tmp.0 = sum.1 + 2
             sum.1 = tmp.0
         
-          continue_loop_2:
+          continue_loop_0:
             tmp.1 = i.0 - 1
             i.0 = tmp.1
-            if i.0 jump start_loop_2
+            if i.0 jump start_loop_0
         
-          break_loop_2:
+          break_loop_0:
             tmp.2 = i.0 == 0
             if !tmp.2 jump and_false_0
             tmp.5 = sum.1 == 200
@@ -5515,17 +5515,17 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
             tmp.0 = i.0 * tmp.1
             i.0 = tmp.0
         
-          start_loop_1:
+          start_loop_0:
             tmp.3 = - 100
             tmp.2 = i.0 >= tmp.3
-            if !tmp.2 jump break_loop_1
+            if !tmp.2 jump break_loop_0
         
-          continue_loop_1:
+          continue_loop_0:
             tmp.4 = i.0 - 3
             i.0 = tmp.4
-            jump start_loop_1
+            jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             tmp.6 = - 103
             tmp.5 = i.0 == tmp.6
             return tmp.5
@@ -5567,48 +5567,48 @@ fn test_chapter_8_valid_extra_credit_duffs_device() {
             iterations.1 = tmp.1
             tmp.2 = count.0 % 5
             tmp.3 = tmp.2 == 0
-            if tmp.3 jump case_0_switch_2
+            if tmp.3 jump case_0_switch_0
             tmp.4 = tmp.2 == 4
-            if tmp.4 jump case_4_switch_2
+            if tmp.4 jump case_4_switch_0
             tmp.5 = tmp.2 == 3
-            if tmp.5 jump case_3_switch_2
+            if tmp.5 jump case_3_switch_0
             tmp.6 = tmp.2 == 2
-            if tmp.6 jump case_2_switch_2
+            if tmp.6 jump case_2_switch_0
             tmp.7 = tmp.2 == 1
-            if tmp.7 jump case_1_switch_2
-            jump break_switch_2
+            if tmp.7 jump case_1_switch_0
+            jump break_switch_0
         
-          case_0_switch_2:
+          case_0_switch_0:
         
-          start_loop_3:
+          start_loop_1:
             tmp.8 = count.0 - 1
             count.0 = tmp.8
         
-          case_4_switch_2:
+          case_4_switch_0:
             tmp.9 = count.0 - 1
             count.0 = tmp.9
         
-          case_3_switch_2:
+          case_3_switch_0:
             tmp.10 = count.0 - 1
             count.0 = tmp.10
         
-          case_2_switch_2:
+          case_2_switch_0:
             tmp.11 = count.0 - 1
             count.0 = tmp.11
         
-          case_1_switch_2:
+          case_1_switch_0:
             tmp.12 = count.0 - 1
             count.0 = tmp.12
         
-          continue_loop_3:
+          continue_loop_1:
             tmp.13 = iterations.1 - 1
             iterations.1 = tmp.13
             tmp.14 = iterations.1 > 0
-            if tmp.14 jump start_loop_3
+            if tmp.14 jump start_loop_1
         
-          break_loop_3:
+          break_loop_1:
         
-          break_switch_2:
+          break_switch_0:
             tmp.15 = count.0 == 0
             if !tmp.15 jump and_false_0
             tmp.18 = iterations.1 == 0
@@ -5645,21 +5645,21 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_condition() {
         function main { 
             i.0 = 1
         
-          start_loop_1:
+          start_loop_0:
         
-          while_start_2:
+          while_start_1:
             tmp.0 = i.0 + 1
             i.0 = tmp.0
             tmp.1 = i.0 < 10
             if !tmp.1 jump end_if_0
-            jump while_start_2
+            jump while_start_1
         
           end_if_0:
         
-          continue_loop_1:
-            if 0 jump start_loop_1
+          continue_loop_0:
+            if 0 jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return i.0
             return 0
         }
@@ -5683,26 +5683,26 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_init_exp() {
     let expected = r#"
         function main { 
             i.0 = 0
-            jump target_2
+            jump target_1
             i.0 = 5
         
-          start_loop_1:
+          start_loop_0:
             tmp.0 = i.0 < 10
-            if !tmp.0 jump break_loop_1
+            if !tmp.0 jump break_loop_0
         
-          target_2:
+          target_1:
             tmp.1 = i.0 == 0
             if !tmp.1 jump end_if_0
             return 1
         
           end_if_0:
         
-          continue_loop_1:
+          continue_loop_0:
             tmp.2 = i.0 + 1
             i.0 = tmp.2
-            jump start_loop_1
+            jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return 0
             return 0
         }
@@ -5729,28 +5729,28 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_post_exp() {
     let expected = r#"
         function main { 
             sum.0 = 0
-            i.2 = 0
+            i.1 = 0
         
-          start_loop_1:
-            if !1 jump break_loop_1
+          start_loop_0:
+            if !1 jump break_loop_0
         
-          lbl_3:
+          lbl_1:
             tmp.0 = sum.0 + 1
             sum.0 = tmp.0
-            tmp.1 = i.2 + 1
-            i.2 = tmp.1
-            tmp.2 = i.2 > 10
+            tmp.1 = i.1 + 1
+            i.1 = tmp.1
+            tmp.2 = i.1 > 10
             if !tmp.2 jump end_if_0
-            jump break_loop_1
+            jump break_loop_0
         
           end_if_0:
-            jump lbl_3
+            jump lbl_1
         
-          continue_loop_1:
-            i.2 = 0
-            jump start_loop_1
+          continue_loop_0:
+            i.1 = 0
+            jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return sum.0
             return 0
         }
@@ -5773,16 +5773,16 @@ fn test_chapter_8_valid_extra_credit_label_loop_body() {
     let expected = r#"
         function main { 
             result.0 = 0
-            jump label_2
+            jump label_1
         
-          continue_loop_1:
-            if !0 jump break_loop_1
+          continue_loop_0:
+            if !0 jump break_loop_0
         
-          label_2:
+          label_1:
             result.0 = 1
-            jump continue_loop_1
+            jump continue_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return result.0
             return 0
         }
@@ -5827,58 +5827,58 @@ fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
     let expected = r#"
         function main { 
             sum.0 = 0
-            jump do_label_1
+            jump do_label_0
             return 0
         
-          do_label_1:
+          do_label_0:
         
-          start_loop_2:
+          start_loop_1:
             sum.0 = 1
-            jump while_label_3
+            jump while_label_2
         
-          continue_loop_2:
-            if 1 jump start_loop_2
+          continue_loop_1:
+            if 1 jump start_loop_1
         
-          break_loop_2:
+          break_loop_1:
         
-          while_label_3:
+          while_label_2:
         
-          continue_loop_4:
-            if !1 jump break_loop_4
+          continue_loop_3:
+            if !1 jump break_loop_3
             tmp.0 = sum.0 + 1
             sum.0 = tmp.0
-            jump break_label_5
+            jump break_label_4
             return 0
         
-          break_label_5:
-            jump break_loop_4
-            jump continue_loop_4
+          break_label_4:
+            jump break_loop_3
+            jump continue_loop_3
         
-          break_loop_4:
-            jump for_label_6
+          break_loop_3:
+            jump for_label_5
             return 0
         
-          for_label_6:
-            i.8 = 0
+          for_label_5:
+            i.1 = 0
         
-          start_loop_7:
-            tmp.1 = i.8 < 10
-            if !tmp.1 jump break_loop_7
+          start_loop_6:
+            tmp.1 = i.1 < 10
+            if !tmp.1 jump break_loop_6
             tmp.2 = sum.0 + 1
             sum.0 = tmp.2
-            jump continue_label_9
+            jump continue_label_7
             return 0
         
-          continue_label_9:
-            jump continue_loop_7
+          continue_label_7:
+            jump continue_loop_6
             return 0
         
-          continue_loop_7:
-            tmp.3 = i.8 + 1
-            i.8 = tmp.3
-            jump start_loop_7
+          continue_loop_6:
+            tmp.3 = i.1 + 1
+            i.1 = tmp.3
+            jump start_loop_6
         
-          break_loop_7:
+          break_loop_6:
             return sum.0
             return 0
         }
@@ -5908,17 +5908,17 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
             i.0 = 100
             count.1 = 0
         
-          continue_loop_2:
+          continue_loop_0:
             tmp.0 = i.0
             tmp.1 = dec i.0
             i.0 = tmp.1
-            if !tmp.0 jump break_loop_2
+            if !tmp.0 jump break_loop_0
             tmp.2 = count.1
             tmp.3 = inc count.1
             count.1 = tmp.3
-            jump continue_loop_2
+            jump continue_loop_0
         
-          break_loop_2:
+          break_loop_0:
             tmp.4 = count.1 != 100
             if !tmp.4 jump end_if_0
             return 0
@@ -5927,16 +5927,16 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
             i.0 = 100
             count.1 = 0
         
-          continue_loop_3:
+          continue_loop_1:
             tmp.5 = dec i.0
             i.0 = tmp.5
-            if !tmp.5 jump break_loop_3
+            if !tmp.5 jump break_loop_1
             tmp.6 = count.1
             tmp.7 = inc count.1
             count.1 = tmp.7
-            jump continue_loop_3
+            jump continue_loop_1
         
-          break_loop_3:
+          break_loop_1:
             tmp.8 = count.1 != 99
             if !tmp.8 jump end_if_2
             return 0
@@ -5974,41 +5974,41 @@ fn test_chapter_8_valid_extra_credit_loop_in_switch() {
         function main { 
             cond.0 = 10
             tmp.0 = cond.0 == 1
-            if tmp.0 jump case_1_switch_1
+            if tmp.0 jump case_1_switch_0
             tmp.1 = cond.0 == 10
-            if tmp.1 jump case_10_switch_1
-            jump default_switch_1
-            jump break_switch_1
+            if tmp.1 jump case_10_switch_0
+            jump default_switch_0
+            jump break_switch_0
         
-          case_1_switch_1:
+          case_1_switch_0:
             return 0
         
-          case_10_switch_1:
-            i.3 = 0
+          case_10_switch_0:
+            i.1 = 0
         
-          start_loop_2:
-            tmp.2 = i.3 < 5
-            if !tmp.2 jump break_loop_2
+          start_loop_1:
+            tmp.2 = i.1 < 5
+            if !tmp.2 jump break_loop_1
             tmp.3 = cond.0 - 1
             cond.0 = tmp.3
             tmp.4 = cond.0 == 8
             if !tmp.4 jump end_if_0
-            jump break_loop_2
+            jump break_loop_1
         
           end_if_0:
         
-          continue_loop_2:
-            tmp.5 = i.3 + 1
-            i.3 = tmp.5
-            jump start_loop_2
+          continue_loop_1:
+            tmp.5 = i.1 + 1
+            i.1 = tmp.5
+            jump start_loop_1
         
-          break_loop_2:
+          break_loop_1:
             return 123
         
-          default_switch_1:
+          default_switch_0:
             return 2
         
-          break_switch_1:
+          break_switch_0:
             return 3
             return 0
         }
@@ -6030,21 +6030,21 @@ fn test_chapter_8_valid_extra_credit_post_exp_incr() {
     let expected = r#"
         function main { 
             product.0 = 1
-            i.2 = 0
+            i.1 = 0
         
-          start_loop_1:
-            tmp.0 = i.2 < 10
-            if !tmp.0 jump break_loop_1
+          start_loop_0:
+            tmp.0 = i.1 < 10
+            if !tmp.0 jump break_loop_0
             tmp.1 = product.0 + 2
             product.0 = tmp.1
         
-          continue_loop_1:
-            tmp.2 = i.2
-            tmp.3 = inc i.2
-            i.2 = tmp.3
-            jump start_loop_1
+          continue_loop_0:
+            tmp.2 = i.1
+            tmp.3 = inc i.1
+            i.1 = tmp.3
+            jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return product.0
             return 0
         }
@@ -6118,24 +6118,24 @@ fn test_chapter_8_valid_extra_credit_switch_assign_in_condition() {
             a.0 = 0
             a.0 = 1
             tmp.0 = a.0 == 0
-            if tmp.0 jump case_0_switch_1
+            if tmp.0 jump case_0_switch_0
             tmp.1 = a.0 == 1
-            if tmp.1 jump case_1_switch_1
-            jump default_switch_1
-            jump break_switch_1
+            if tmp.1 jump case_1_switch_0
+            jump default_switch_0
+            jump break_switch_0
         
-          case_0_switch_1:
+          case_0_switch_0:
             return 10
         
-          case_1_switch_1:
+          case_1_switch_0:
             tmp.2 = a.0 * 2
             a.0 = tmp.2
-            jump break_switch_1
+            jump break_switch_0
         
-          default_switch_1:
+          default_switch_0:
             a.0 = 99
         
-          break_switch_1:
+          break_switch_0:
             return a.0
             return 0
         }
@@ -6163,20 +6163,20 @@ fn test_chapter_8_valid_extra_credit_switch_break() {
         function main { 
             a.0 = 5
             tmp.0 = a.0 == 5
-            if tmp.0 jump case_5_switch_1
+            if tmp.0 jump case_5_switch_0
             tmp.1 = a.0 == 6
-            if tmp.1 jump case_6_switch_1
-            jump break_switch_1
+            if tmp.1 jump case_6_switch_0
+            jump break_switch_0
         
-          case_5_switch_1:
+          case_5_switch_0:
             a.0 = 10
-            jump break_switch_1
+            jump break_switch_0
         
-          case_6_switch_1:
+          case_6_switch_0:
             a.0 = 0
-            jump break_switch_1
+            jump break_switch_0
         
-          break_switch_1:
+          break_switch_0:
             return a.0
             return 0
         }
@@ -6204,17 +6204,17 @@ fn test_chapter_8_valid_extra_credit_switch_decl() {
             a.0 = 3
             b.1 = 0
             tmp.0 = a.0 == 3
-            if tmp.0 jump case_3_switch_2
-            jump break_switch_2
+            if tmp.0 jump case_3_switch_0
+            jump break_switch_0
             b.1 = 5
-            a.3 = b.1
+            a.2 = b.1
         
-          case_3_switch_2:
-            a.3 = 4
-            tmp.1 = b.1 + a.3
+          case_3_switch_0:
+            a.2 = 4
+            tmp.1 = b.1 + a.2
             b.1 = tmp.1
         
-          break_switch_2:
+          break_switch_0:
             tmp.2 = a.0 == 3
             if !tmp.2 jump and_false_0
             tmp.5 = b.1 == 4
@@ -6256,28 +6256,28 @@ fn test_chapter_8_valid_extra_credit_switch_default() {
         function main { 
             a.0 = 0
             tmp.0 = a.0 == 1
-            if tmp.0 jump case_1_switch_1
+            if tmp.0 jump case_1_switch_0
             tmp.1 = a.0 == 2
-            if tmp.1 jump case_2_switch_1
+            if tmp.1 jump case_2_switch_0
             tmp.2 = a.0 == 4
-            if tmp.2 jump case_4_switch_1
-            jump default_switch_1
-            jump break_switch_1
+            if tmp.2 jump case_4_switch_0
+            jump default_switch_0
+            jump break_switch_0
         
-          case_1_switch_1:
+          case_1_switch_0:
             return 1
         
-          case_2_switch_1:
+          case_2_switch_0:
             return 9
         
-          case_4_switch_1:
+          case_4_switch_0:
             a.0 = 11
-            jump break_switch_1
+            jump break_switch_0
         
-          default_switch_1:
+          default_switch_0:
             a.0 = 22
         
-          break_switch_1:
+          break_switch_0:
             return a.0
             return 0
         }
@@ -6303,17 +6303,17 @@ fn test_chapter_8_valid_extra_credit_switch_default_fallthrough() {
         function main { 
             a.0 = 5
             tmp.0 = 0 == 1
-            if tmp.0 jump case_1_switch_1
-            jump default_switch_1
-            jump break_switch_1
+            if tmp.0 jump case_1_switch_0
+            jump default_switch_0
+            jump break_switch_0
         
-          default_switch_1:
+          default_switch_0:
             a.0 = 0
         
-          case_1_switch_1:
+          case_1_switch_0:
             return a.0
         
-          break_switch_1:
+          break_switch_0:
             tmp.1 = a.0 + 1
             return tmp.1
             return 0
@@ -6340,17 +6340,17 @@ fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
             b.1 = a.0
             tmp.0 = a.0 + b.1
             tmp.1 = tmp.0 == 2
-            if tmp.1 jump case_2_switch_2
-            jump default_switch_2
-            jump break_switch_2
+            if tmp.1 jump case_2_switch_0
+            jump default_switch_0
+            jump break_switch_0
         
-          default_switch_2:
+          default_switch_0:
             return 0
         
-          case_2_switch_2:
+          case_2_switch_0:
             return 1
         
-          break_switch_2:
+          break_switch_0:
             return 0
         }
     "#;
@@ -6369,13 +6369,13 @@ fn test_chapter_8_valid_extra_credit_switch_default_only() {
     let expected = r#"
         function main { 
             a.0 = 1
-            jump default_switch_1
-            jump break_switch_1
+            jump default_switch_0
+            jump break_switch_0
         
-          default_switch_1:
+          default_switch_0:
             return 1
         
-          break_switch_1:
+          break_switch_0:
             return 0
             return 0
         }
@@ -6400,14 +6400,14 @@ fn test_chapter_8_valid_extra_credit_switch_empty() {
             x.0 = 10
             tmp.0 = x.0 + 1
             x.0 = tmp.0
+            jump break_switch_0
+        
+          break_switch_0:
+            tmp.1 = x.0 + 1
+            x.0 = tmp.1
             jump break_switch_1
         
           break_switch_1:
-            tmp.1 = x.0 + 1
-            x.0 = tmp.1
-            jump break_switch_2
-        
-          break_switch_2:
             return x.0
             return 0
         }
@@ -6449,29 +6449,29 @@ fn test_chapter_8_valid_extra_credit_switch_fallthrough() {
         
           end_if_0:
             tmp.1 = tmp.0 == 0
-            if tmp.1 jump case_0_switch_3
+            if tmp.1 jump case_0_switch_0
             tmp.2 = tmp.0 == 7
-            if tmp.2 jump case_7_switch_3
+            if tmp.2 jump case_7_switch_0
             tmp.3 = tmp.0 == 9
-            if tmp.3 jump case_9_switch_3
+            if tmp.3 jump case_9_switch_0
             tmp.4 = tmp.0 == 1
-            if tmp.4 jump case_1_switch_3
-            jump break_switch_3
+            if tmp.4 jump case_1_switch_0
+            jump break_switch_0
         
-          case_0_switch_3:
+          case_0_switch_0:
             return 5
         
-          case_7_switch_3:
+          case_7_switch_0:
             c.2 = 1
         
-          case_9_switch_3:
+          case_9_switch_0:
             c.2 = 2
         
-          case_1_switch_3:
+          case_1_switch_0:
             tmp.5 = c.2 + 4
             c.2 = tmp.5
         
-          break_switch_3:
+          break_switch_0:
             return c.2
             return 0
         }
@@ -6498,20 +6498,20 @@ fn test_chapter_8_valid_extra_credit_switch_goto_mid_case() {
     let expected = r#"
         function main { 
             a.0 = 0
-            jump mid_case_2
+            jump mid_case_1
             tmp.0 = 4 == 4
-            if tmp.0 jump case_4_switch_1
-            jump break_switch_1
+            if tmp.0 jump case_4_switch_0
+            jump break_switch_0
         
-          case_4_switch_1:
+          case_4_switch_0:
             a.0 = 5
         
-          mid_case_2:
+          mid_case_1:
             tmp.1 = a.0 + 1
             a.0 = tmp.1
             return a.0
         
-          break_switch_1:
+          break_switch_0:
             return 100
             return 0
         }
@@ -6548,48 +6548,48 @@ fn test_chapter_8_valid_extra_credit_switch_in_loop() {
         function main { 
             acc.0 = 0
             ctr.1 = 0
-            i.3 = 0
+            i.2 = 0
         
-          start_loop_2:
-            tmp.0 = i.3 < 10
-            if !tmp.0 jump break_loop_2
-            tmp.1 = i.3 == 0
-            if tmp.1 jump case_0_switch_4
-            tmp.2 = i.3 == 1
-            if tmp.2 jump case_1_switch_4
-            tmp.3 = i.3 == 2
-            if tmp.3 jump case_2_switch_4
-            jump default_switch_4
-            jump break_switch_4
+          start_loop_0:
+            tmp.0 = i.2 < 10
+            if !tmp.0 jump break_loop_0
+            tmp.1 = i.2 == 0
+            if tmp.1 jump case_0_switch_1
+            tmp.2 = i.2 == 1
+            if tmp.2 jump case_1_switch_1
+            tmp.3 = i.2 == 2
+            if tmp.3 jump case_2_switch_1
+            jump default_switch_1
+            jump break_switch_1
         
-          case_0_switch_4:
+          case_0_switch_1:
             acc.0 = 2
-            jump break_switch_4
+            jump break_switch_1
         
-          case_1_switch_4:
+          case_1_switch_1:
             tmp.4 = acc.0 * 3
             acc.0 = tmp.4
-            jump break_switch_4
+            jump break_switch_1
         
-          case_2_switch_4:
+          case_2_switch_1:
             tmp.5 = acc.0 * 4
             acc.0 = tmp.5
-            jump break_switch_4
+            jump break_switch_1
         
-          default_switch_4:
+          default_switch_1:
             tmp.6 = acc.0 + 1
             acc.0 = tmp.6
         
-          break_switch_4:
+          break_switch_1:
             tmp.7 = ctr.1 + 1
             ctr.1 = tmp.7
         
-          continue_loop_2:
-            tmp.8 = i.3 + 1
-            i.3 = tmp.8
-            jump start_loop_2
+          continue_loop_0:
+            tmp.8 = i.2 + 1
+            i.2 = tmp.8
+            jump start_loop_0
         
-          break_loop_2:
+          break_loop_0:
             tmp.9 = ctr.1 == 10
             if !tmp.9 jump and_false_0
             tmp.12 = acc.0 == 31
@@ -6647,38 +6647,38 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
             switch2.1 = 0
             switch3.2 = 0
             tmp.0 = 3 == 0
-            if tmp.0 jump case_0_switch_3
+            if tmp.0 jump case_0_switch_0
             tmp.1 = 3 == 1
-            if tmp.1 jump case_1_switch_3
+            if tmp.1 jump case_1_switch_0
             tmp.2 = 3 == 3
-            if tmp.2 jump case_3_switch_3
-            jump default_switch_3
-            jump break_switch_3
+            if tmp.2 jump case_3_switch_0
+            jump default_switch_0
+            jump break_switch_0
         
-          case_0_switch_3:
+          case_0_switch_0:
             return 0
         
-          case_1_switch_3:
+          case_1_switch_0:
             if !0 jump end_if_0
         
-          case_3_switch_3:
+          case_3_switch_0:
             switch1.0 = 1
-            jump break_switch_3
+            jump break_switch_0
         
           end_if_0:
         
-          default_switch_3:
+          default_switch_0:
             return 0
         
-          break_switch_3:
+          break_switch_0:
             tmp.3 = 4 == 0
-            if tmp.3 jump case_0_switch_4
+            if tmp.3 jump case_0_switch_1
             tmp.4 = 4 == 4
-            if tmp.4 jump case_4_switch_4
-            jump default_switch_4
-            jump break_switch_4
+            if tmp.4 jump case_4_switch_1
+            jump default_switch_1
+            jump break_switch_1
         
-          case_0_switch_4:
+          case_0_switch_1:
             return 0
             if !1 jump else_3
             return 0
@@ -6686,42 +6686,42 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
         
           else_3:
         
-          case_4_switch_4:
+          case_4_switch_1:
             switch2.1 = 1
-            jump break_switch_4
+            jump break_switch_1
         
           end_if_2:
         
-          default_switch_4:
+          default_switch_1:
             return 0
         
-          break_switch_4:
+          break_switch_1:
             tmp.5 = 5 == 5
-            if tmp.5 jump case_5_switch_5
-            jump default_switch_5
-            jump break_switch_5
-            i.7 = 0
+            if tmp.5 jump case_5_switch_2
+            jump default_switch_2
+            jump break_switch_2
+            i.3 = 0
         
-          start_loop_6:
-            tmp.6 = i.7 < 10
-            if !tmp.6 jump break_loop_6
+          start_loop_3:
+            tmp.6 = i.3 < 10
+            if !tmp.6 jump break_loop_3
             switch1.0 = 0
         
-          case_5_switch_5:
+          case_5_switch_2:
             switch3.2 = 1
-            jump break_loop_6
+            jump break_loop_3
         
-          default_switch_5:
+          default_switch_2:
             return 0
         
-          continue_loop_6:
-            tmp.7 = i.7 + 1
-            i.7 = tmp.7
-            jump start_loop_6
+          continue_loop_3:
+            tmp.7 = i.3 + 1
+            i.3 = tmp.7
+            jump start_loop_3
         
-          break_loop_6:
+          break_loop_3:
         
-          break_switch_5:
+          break_switch_2:
             if !switch1.0 jump and_false_4
             if !switch2.1 jump and_false_4
             tmp.9 = 1
@@ -6768,28 +6768,28 @@ fn test_chapter_8_valid_extra_credit_switch_nested_not_taken() {
         function main { 
             a.0 = 0
             tmp.0 = a.0 == 1
-            if tmp.0 jump case_1_switch_1
+            if tmp.0 jump case_1_switch_0
+            jump default_switch_0
+            jump break_switch_0
+        
+          case_1_switch_0:
+            tmp.1 = a.0 == 0
+            if tmp.1 jump case_0_switch_1
             jump default_switch_1
             jump break_switch_1
         
-          case_1_switch_1:
-            tmp.1 = a.0 == 0
-            if tmp.1 jump case_0_switch_2
-            jump default_switch_2
-            jump break_switch_2
-        
-          case_0_switch_2:
+          case_0_switch_1:
             return 0
-        
-          default_switch_2:
-            return 0
-        
-          break_switch_2:
         
           default_switch_1:
-            a.0 = 2
+            return 0
         
           break_switch_1:
+        
+          default_switch_0:
+            a.0 = 2
+        
+          break_switch_0:
             return a.0
             return 0
         }
@@ -6875,10 +6875,10 @@ fn test_chapter_8_valid_extra_credit_switch_no_case() {
     let expected = r#"
         function main { 
             a.0 = 4
-            jump break_switch_1
+            jump break_switch_0
             return 0
         
-          break_switch_1:
+          break_switch_0:
             return a.0
             return 0
         }
@@ -6903,23 +6903,23 @@ fn test_chapter_8_valid_extra_credit_switch_not_taken() {
         function main { 
             a.0 = 1
             tmp.0 = a.0 == 0
-            if tmp.0 jump case_0_switch_1
+            if tmp.0 jump case_0_switch_0
             tmp.1 = a.0 == 2
-            if tmp.1 jump case_2_switch_1
+            if tmp.1 jump case_2_switch_0
             tmp.2 = a.0 == 3
-            if tmp.2 jump case_3_switch_1
-            jump break_switch_1
+            if tmp.2 jump case_3_switch_0
+            jump break_switch_0
         
-          case_0_switch_1:
+          case_0_switch_0:
             return 0
         
-          case_2_switch_1:
+          case_2_switch_0:
             return 0
         
-          case_3_switch_1:
+          case_3_switch_0:
             return 0
         
-          break_switch_1:
+          break_switch_0:
             return 1
             return 0
         }
@@ -6940,13 +6940,13 @@ fn test_chapter_8_valid_extra_credit_switch_single_case() {
         function main { 
             a.0 = 1
             tmp.0 = a.0 == 1
-            if tmp.0 jump case_1_switch_1
-            jump break_switch_1
+            if tmp.0 jump case_1_switch_0
+            jump break_switch_0
         
-          case_1_switch_1:
+          case_1_switch_0:
             return 1
         
-          break_switch_1:
+          break_switch_0:
             return 0
             return 0
         }
@@ -6986,27 +6986,27 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue() {
             return 0
         
           case_4_switch_0:
-            acc.1 = 0
-            i.3 = 0
+            acc.0 = 0
+            i.1 = 0
         
-          start_loop_2:
-            tmp.2 = i.3 < 10
-            if !tmp.2 jump break_loop_2
-            tmp.3 = i.3 % 2
+          start_loop_1:
+            tmp.2 = i.1 < 10
+            if !tmp.2 jump break_loop_1
+            tmp.3 = i.1 % 2
             if !tmp.3 jump end_if_0
-            jump continue_loop_2
+            jump continue_loop_1
         
           end_if_0:
-            tmp.4 = acc.1 + 1
-            acc.1 = tmp.4
+            tmp.4 = acc.0 + 1
+            acc.0 = tmp.4
         
-          continue_loop_2:
-            tmp.5 = i.3 + 1
-            i.3 = tmp.5
-            jump start_loop_2
+          continue_loop_1:
+            tmp.5 = i.1 + 1
+            i.1 = tmp.5
+            jump start_loop_1
         
-          break_loop_2:
-            return acc.1
+          break_loop_1:
+            return acc.0
         
           break_switch_0:
             return 0
@@ -7033,32 +7033,32 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
     let expected = r#"
         function main { 
             sum.0 = 0
-            i.2 = 0
+            i.1 = 0
         
-          start_loop_1:
-            tmp.0 = i.2 < 10
-            if !tmp.0 jump break_loop_1
-            tmp.1 = i.2 % 2
+          start_loop_0:
+            tmp.0 = i.1 < 10
+            if !tmp.0 jump break_loop_0
+            tmp.1 = i.1 % 2
             tmp.2 = tmp.1 == 0
-            if tmp.2 jump case_0_switch_3
-            jump default_switch_3
-            jump break_switch_3
+            if tmp.2 jump case_0_switch_1
+            jump default_switch_1
+            jump break_switch_1
         
-          case_0_switch_3:
-            jump continue_loop_1
+          case_0_switch_1:
+            jump continue_loop_0
         
-          default_switch_3:
+          default_switch_1:
             tmp.3 = sum.0 + 1
             sum.0 = tmp.3
         
-          break_switch_3:
+          break_switch_1:
         
-          continue_loop_1:
-            tmp.4 = i.2 + 1
-            i.2 = tmp.4
-            jump start_loop_1
+          continue_loop_0:
+            tmp.4 = i.1 + 1
+            i.1 = tmp.4
+            jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return sum.0
             return 0
         }
@@ -7082,18 +7082,18 @@ fn test_chapter_8_valid_for() {
             a.0 = 12345
             i.1 = 5
         
-          start_loop_2:
+          start_loop_0:
             tmp.0 = i.1 >= 0
-            if !tmp.0 jump break_loop_2
+            if !tmp.0 jump break_loop_0
             tmp.1 = a.0 / 3
             a.0 = tmp.1
         
-          continue_loop_2:
+          continue_loop_0:
             tmp.2 = i.1 - 1
             i.1 = tmp.2
-            jump start_loop_2
+            jump start_loop_0
         
-          break_loop_2:
+          break_loop_0:
             return a.0
             return 0
         }
@@ -7112,19 +7112,19 @@ fn test_chapter_8_valid_for_absent_condition() {
     "#;
     let expected = r#"
         function main { 
-            i.1 = 400
+            i.0 = 400
         
           start_loop_0:
             if !1 jump break_loop_0
-            tmp.0 = i.1 == 100
+            tmp.0 = i.0 == 100
             if !tmp.0 jump end_if_0
             return 0
         
           end_if_0:
         
           continue_loop_0:
-            tmp.1 = i.1 - 100
-            i.1 = tmp.1
+            tmp.1 = i.0 - 100
+            i.0 = tmp.1
             jump start_loop_0
         
           break_loop_0:
@@ -7150,17 +7150,17 @@ fn test_chapter_8_valid_for_absent_post() {
             tmp.0 = - 2147
             a.0 = tmp.0
         
-          start_loop_1:
+          start_loop_0:
             tmp.1 = a.0 % 5
             tmp.2 = tmp.1 != 0
-            if !tmp.2 jump break_loop_1
+            if !tmp.2 jump break_loop_0
             tmp.3 = a.0 + 1
             a.0 = tmp.3
         
-          continue_loop_1:
-            jump start_loop_1
+          continue_loop_0:
+            jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             tmp.4 = a.0 % 5
             if tmp.4 jump or_true_0
             tmp.7 = a.0 > 0
@@ -7193,20 +7193,20 @@ fn test_chapter_8_valid_for_decl() {
         function main { 
             a.0 = 0
             tmp.0 = - 100
-            i.2 = tmp.0
+            i.1 = tmp.0
         
-          start_loop_1:
-            tmp.1 = i.2 <= 0
-            if !tmp.1 jump break_loop_1
+          start_loop_0:
+            tmp.1 = i.1 <= 0
+            if !tmp.1 jump break_loop_0
             tmp.2 = a.0 + 1
             a.0 = tmp.2
         
-          continue_loop_1:
-            tmp.3 = i.2 + 1
-            i.2 = tmp.3
-            jump start_loop_1
+          continue_loop_0:
+            tmp.3 = i.1 + 1
+            i.1 = tmp.3
+            jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return a.0
             return 0
         }
@@ -7234,22 +7234,22 @@ fn test_chapter_8_valid_for_nested_shadow() {
             i.0 = 0
             j.1 = 0
             k.2 = 1
-            i.4 = 100
+            i.3 = 100
         
-          start_loop_3:
-            tmp.0 = i.4 > 0
-            if !tmp.0 jump break_loop_3
-            i.5 = 1
-            tmp.1 = i.5 + k.2
-            j.6 = tmp.1
-            k.2 = j.6
+          start_loop_0:
+            tmp.0 = i.3 > 0
+            if !tmp.0 jump break_loop_0
+            i.4 = 1
+            tmp.1 = i.4 + k.2
+            j.5 = tmp.1
+            k.2 = j.5
         
-          continue_loop_3:
-            tmp.2 = i.4 - 1
-            i.4 = tmp.2
-            jump start_loop_3
+          continue_loop_0:
+            tmp.2 = i.3 - 1
+            i.3 = tmp.2
+            jump start_loop_0
         
-          break_loop_3:
+          break_loop_0:
             tmp.3 = k.2 == 101
             if !tmp.3 jump and_false_0
             tmp.6 = i.0 == 0
@@ -7294,20 +7294,20 @@ fn test_chapter_8_valid_for_shadow() {
         function main { 
             shadow.0 = 1
             acc.1 = 0
-            shadow.3 = 0
+            shadow.2 = 0
         
-          start_loop_2:
-            tmp.0 = shadow.3 < 10
-            if !tmp.0 jump break_loop_2
-            tmp.1 = acc.1 + shadow.3
+          start_loop_0:
+            tmp.0 = shadow.2 < 10
+            if !tmp.0 jump break_loop_0
+            tmp.1 = acc.1 + shadow.2
             acc.1 = tmp.1
         
-          continue_loop_2:
-            tmp.2 = shadow.3 + 1
-            shadow.3 = tmp.2
-            jump start_loop_2
+          continue_loop_0:
+            tmp.2 = shadow.2 + 1
+            shadow.2 = tmp.2
+            jump start_loop_0
         
-          break_loop_2:
+          break_loop_0:
             tmp.3 = acc.1 == 45
             if !tmp.3 jump and_false_0
             tmp.6 = shadow.0 == 1
@@ -7350,34 +7350,34 @@ fn test_chapter_8_valid_multi_break() {
         function main { 
             i.0 = 0
         
-          continue_loop_1:
-            if !1 jump break_loop_1
+          continue_loop_0:
+            if !1 jump break_loop_0
             tmp.0 = i.0 + 1
             i.0 = tmp.0
             tmp.1 = i.0 > 10
             if !tmp.1 jump end_if_0
-            jump break_loop_1
+            jump break_loop_0
         
           end_if_0:
+            jump continue_loop_0
+        
+          break_loop_0:
+            j.1 = 10
+        
+          continue_loop_1:
+            if !1 jump break_loop_1
+            tmp.2 = j.1 - 1
+            j.1 = tmp.2
+            tmp.3 = j.1 < 0
+            if !tmp.3 jump end_if_2
+            jump break_loop_1
+        
+          end_if_2:
             jump continue_loop_1
         
           break_loop_1:
-            j.2 = 10
-        
-          continue_loop_3:
-            if !1 jump break_loop_3
-            tmp.2 = j.2 - 1
-            j.2 = tmp.2
-            tmp.3 = j.2 < 0
-            if !tmp.3 jump end_if_2
-            jump break_loop_3
-        
-          end_if_2:
-            jump continue_loop_3
-        
-          break_loop_3:
             tmp.5 = - 1
-            tmp.4 = j.2 == tmp.5
+            tmp.4 = j.1 == tmp.5
             if !tmp.4 jump and_false_4
             tmp.8 = i.0 == 11
             if !tmp.8 jump and_false_4
@@ -7388,8 +7388,8 @@ fn test_chapter_8_valid_multi_break() {
             tmp.7 = 0
         
           and_end_5:
-            result.4 = tmp.7
-            return result.4
+            result.2 = tmp.7
+            return result.2
             return 0
         }
     "#;
@@ -7421,29 +7421,29 @@ fn test_chapter_8_valid_multi_continue_same_loop() {
             y.1 = 0
             z.2 = 0
         
-          start_loop_3:
+          start_loop_0:
             tmp.0 = z.2 + 1
             z.2 = tmp.0
             tmp.1 = x.0 <= 0
             if !tmp.1 jump end_if_0
-            jump continue_loop_3
+            jump continue_loop_0
         
           end_if_0:
             tmp.2 = x.0 - 1
             x.0 = tmp.2
             tmp.3 = y.1 >= 10
             if !tmp.3 jump end_if_2
-            jump continue_loop_3
+            jump continue_loop_0
         
           end_if_2:
             tmp.4 = y.1 + 1
             y.1 = tmp.4
         
-          continue_loop_3:
+          continue_loop_0:
             tmp.5 = z.2 != 50
-            if tmp.5 jump start_loop_3
+            if tmp.5 jump start_loop_0
         
-          break_loop_3:
+          break_loop_0:
             tmp.6 = z.2 == 50
             if !tmp.6 jump and_false_4
             tmp.9 = x.0 == 0
@@ -7489,42 +7489,42 @@ fn test_chapter_8_valid_nested_break() {
     let expected = r#"
         function main { 
             ans.0 = 0
-            i.2 = 0
+            i.1 = 0
+        
+          start_loop_0:
+            tmp.0 = i.1 < 10
+            if !tmp.0 jump break_loop_0
+            j.2 = 0
         
           start_loop_1:
-            tmp.0 = i.2 < 10
-            if !tmp.0 jump break_loop_1
-            j.4 = 0
-        
-          start_loop_3:
-            tmp.1 = j.4 < 10
-            if !tmp.1 jump break_loop_3
-            tmp.2 = i.2 / 2
+            tmp.1 = j.2 < 10
+            if !tmp.1 jump break_loop_1
+            tmp.2 = i.1 / 2
             tmp.3 = tmp.2 * 2
-            tmp.4 = tmp.3 == i.2
+            tmp.4 = tmp.3 == i.1
             if !tmp.4 jump else_1
-            jump break_loop_3
+            jump break_loop_1
             jump end_if_0
         
           else_1:
-            tmp.5 = ans.0 + i.2
+            tmp.5 = ans.0 + i.1
             ans.0 = tmp.5
         
           end_if_0:
         
-          continue_loop_3:
-            tmp.6 = j.4 + 1
-            j.4 = tmp.6
-            jump start_loop_3
-        
-          break_loop_3:
-        
           continue_loop_1:
-            tmp.7 = i.2 + 1
-            i.2 = tmp.7
+            tmp.6 = j.2 + 1
+            j.2 = tmp.6
             jump start_loop_1
         
           break_loop_1:
+        
+          continue_loop_0:
+            tmp.7 = i.1 + 1
+            i.1 = tmp.7
+            jump start_loop_0
+        
+          break_loop_0:
             return ans.0
             return 0
         }
@@ -7556,31 +7556,31 @@ fn test_chapter_8_valid_nested_continue() {
             x.0 = 5
             acc.1 = 0
         
-          continue_loop_2:
+          continue_loop_0:
             tmp.0 = x.0 >= 0
-            if !tmp.0 jump break_loop_2
-            i.3 = x.0
+            if !tmp.0 jump break_loop_0
+            i.2 = x.0
         
-          continue_loop_4:
-            tmp.1 = i.3 <= 10
-            if !tmp.1 jump break_loop_4
-            tmp.2 = i.3 + 1
-            i.3 = tmp.2
-            tmp.3 = i.3 % 2
+          continue_loop_1:
+            tmp.1 = i.2 <= 10
+            if !tmp.1 jump break_loop_1
+            tmp.2 = i.2 + 1
+            i.2 = tmp.2
+            tmp.3 = i.2 % 2
             if !tmp.3 jump end_if_0
-            jump continue_loop_4
+            jump continue_loop_1
         
           end_if_0:
             tmp.4 = acc.1 + 1
             acc.1 = tmp.4
-            jump continue_loop_4
+            jump continue_loop_1
         
-          break_loop_4:
+          break_loop_1:
             tmp.5 = x.0 - 1
             x.0 = tmp.5
-            jump continue_loop_2
+            jump continue_loop_0
         
-          break_loop_2:
+          break_loop_0:
             return acc.1
             return 0
         }
@@ -7610,24 +7610,24 @@ fn test_chapter_8_valid_nested_loop() {
             acc.0 = 0
             x.1 = 100
         
-          continue_loop_2:
-            if !x.1 jump break_loop_2
-            y.3 = 10
-            tmp.0 = x.1 - y.3
+          continue_loop_0:
+            if !x.1 jump break_loop_0
+            y.2 = 10
+            tmp.0 = x.1 - y.2
             x.1 = tmp.0
         
-          continue_loop_4:
-            if !y.3 jump break_loop_4
+          continue_loop_1:
+            if !y.2 jump break_loop_1
             tmp.1 = acc.0 + 1
             acc.0 = tmp.1
-            tmp.2 = y.3 - 1
-            y.3 = tmp.2
-            jump continue_loop_4
+            tmp.2 = y.2 - 1
+            y.2 = tmp.2
+            jump continue_loop_1
         
-          break_loop_4:
-            jump continue_loop_2
+          break_loop_1:
+            jump continue_loop_0
         
-          break_loop_2:
+          break_loop_0:
             tmp.3 = acc.0 == 100
             if !tmp.3 jump and_false_0
             tmp.6 = x.1 == 0
@@ -7663,20 +7663,20 @@ fn test_chapter_8_valid_null_for_header() {
         function main { 
             a.0 = 0
         
-          start_loop_1:
-            if !1 jump break_loop_1
+          start_loop_0:
+            if !1 jump break_loop_0
             tmp.0 = a.0 + 1
             a.0 = tmp.0
             tmp.1 = a.0 > 3
             if !tmp.1 jump end_if_0
-            jump break_loop_1
+            jump break_loop_0
         
           end_if_0:
         
-          continue_loop_1:
-            jump start_loop_1
+          continue_loop_0:
+            jump start_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return a.0
             return 0
         }
@@ -7698,14 +7698,14 @@ fn test_chapter_8_valid_while() {
         function main { 
             a.0 = 0
         
-          continue_loop_1:
+          continue_loop_0:
             tmp.0 = a.0 < 5
-            if !tmp.0 jump break_loop_1
+            if !tmp.0 jump break_loop_0
             tmp.1 = a.0 + 2
             a.0 = tmp.1
-            jump continue_loop_1
+            jump continue_loop_0
         
-          break_loop_1:
+          break_loop_0:
             return a.0
             return 0
         }

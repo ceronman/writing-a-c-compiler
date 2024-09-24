@@ -1,6 +1,6 @@
 use crate::ast;
 use crate::parser;
-use crate::resolver;
+use crate::semantic;
 use crate::tacky;
 
 use anyhow::Result;
@@ -15,7 +15,7 @@ pub fn dump_ast(src: &str) -> String {
 #[allow(dead_code)]
 pub fn dump_tacky(src: &str) -> String {
     let ast = parser::parse(src).unwrap();
-    let ast = resolver::resolve(ast).unwrap();
+    let ast = semantic::validate(ast).unwrap();
     let tacky = tacky::emit(&ast);
     pretty_print_tacky(tacky).unwrap()
 }
