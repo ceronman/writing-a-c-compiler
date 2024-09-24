@@ -21,6 +21,9 @@ enum LabelKind {
 impl LabelChecker {
     fn check(mut self, mut program: Node<Program>) -> crate::error::Result<Node<Program>> {
         for decl in &mut program.functions {
+            self.labels.clear();
+            debug_assert!(self.label_stack.is_empty());
+            debug_assert!(self.switch_labels.is_empty());
             self.check_function_declaration(decl)?;
         }
 

@@ -6,6 +6,7 @@ use std::fmt::{Display, Formatter};
 pub enum ErrorKind {
     Parse,
     Resolve,
+    Type,
 }
 
 impl Display for ErrorKind {
@@ -13,6 +14,7 @@ impl Display for ErrorKind {
         match self {
             ErrorKind::Parse => write!(f, "Parse error"),
             ErrorKind::Resolve => write!(f, "Resolution error"),
+            ErrorKind::Type => write!(f, "Type error"),
         }
     }
 }

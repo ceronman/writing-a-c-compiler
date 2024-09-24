@@ -30,14 +30,12 @@ impl Resolver {
     }
 
     fn resolve_block(&mut self, block: &mut Block) -> Result<()> {
-        self.begin_scope();
         for block_item in &mut block.items {
             match block_item {
                 BlockItem::Stmt(stmt) => self.resolve_statement(stmt)?,
                 BlockItem::Decl(decl) => self.resolve_declaration(decl)?,
             }
         }
-        self.end_scope();
         Ok(())
     }
 
@@ -96,24 +94,25 @@ impl Resolver {
         for param in &mut decl.params {
             self.resolve_param(param)?
         }
-        self.end_scope();
         if let Some(body) = &mut decl.body {
             self.resolve_block(body)?;
         }
+        self.end_scope();
         Ok(())
     }
 
     fn resolve_param(&mut self, param: &mut Node<Identifier>) -> Result<()> {
-        let symbol = &param.symbol;
-        let unique_name = self.make_name(symbol).clone();
+        let symbol = param.symbol.clone();
+        let unique_name = self.make_name(&symbol).clone();
         let scope = self.scopes.front_mut().expect("Invalid scope state");
-        if scope.contains_key(symbol) {
+        if scope.contains_key(&symbol) {
             return Err(CompilerError {
                 kind: ErrorKind::Resolve,
-                msg: format!("Variable '{symbol}' was already declared"),
+                msg: format!("Parameter '{symbol}' was already declared"),
                 span: param.span,
             });
         }
+        param.symbol = unique_name.clone();
         scope.insert(
             symbol.clone(),
             Resolution {
@@ -146,7 +145,9 @@ impl Resolver {
                 self.resolve_statement(body)?;
             }
             Statement::Compound(block) => {
+                self.begin_scope();
                 self.resolve_block(block)?;
+                self.end_scope();
             }
 
             Statement::While { cond, body, .. }
@@ -257,7 +258,8 @@ impl Resolver {
             Expression::FunctionCall { name, args } => {
                 let symbol = &name.symbol;
                 for scope in &self.scopes {
-                    if scope.get(symbol).is_some() {
+                    if let Some(resolution) = scope.get(symbol) {
+                        name.symbol = resolution.name.clone();
                         for arg in args {
                             self.resolve_expression(arg)?;
                         }
@@ -289,6 +291,6 @@ impl Resolver {
     }
 }
 
-pub fn resolve(program: Node<Program>) -> Result<Node<Program>> {
+pub fn check(program: Node<Program>) -> Result<Node<Program>> {
     Resolver::default().resolve(program)
 }

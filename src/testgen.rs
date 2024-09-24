@@ -115,7 +115,7 @@ pub fn generate_resolver_tests(path: &Path, source: &str) -> Result<()> {
         .unwrap()
         .parent()
         .unwrap()
-        .join("src/resolver/test.rs");
+        .join("src/semantic/test.rs");
     if fs::read_to_string(&output)?.is_empty() {
         let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
         writeln!(
