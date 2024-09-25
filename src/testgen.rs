@@ -179,7 +179,7 @@ use crate::pretty::{{dedent, dump_tacky}};
     let ast = parser::parse(&indented)?;
     let ast = semantic::validate(ast)?;
     let tacky = tacky::emit(&ast);
-    let expected = indent(&pretty::pretty_print_tacky(tacky)?);
+    let expected = indent(&pretty::pp_tacky(&tacky)?);
     writeln!(file)?;
     writeln!(file, "#[test]")?;
     writeln!(file, "fn test_{name}() {{")?;
@@ -192,6 +192,14 @@ use crate::pretty::{{dedent, dump_tacky}};
 }
 
 pub fn generate_interpreter_tests(path: &Path, source: &str) -> Result<()> {
+    if path
+        .as_os_str()
+        .to_str()
+        .unwrap()
+        .contains("test_for_memory_leaks.c")
+    {
+        return Ok(());
+    }
     let output = PathBuf::from(file!());
     let output = output
         .parent()

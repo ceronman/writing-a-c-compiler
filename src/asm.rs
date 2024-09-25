@@ -78,9 +78,9 @@ pub enum CondCode {
 
 pub fn generate(program: &tacky::Program) -> Program {
     let mut instructions = Vec::new();
-    let function = &program.function;
+    let function = &program.functions.first().unwrap();
 
-    for tacky_instruction in &program.function.body {
+    for tacky_instruction in &function.body {
         match tacky_instruction {
             tacky::Instruction::Return(val) => {
                 instructions.push(Instruction::Mov(val.to_asm(), Operand::Reg(Reg::Ax)));
@@ -173,6 +173,7 @@ pub fn generate(program: &tacky::Program) -> Program {
             tacky::Instruction::Label(l) => {
                 instructions.push(Instruction::Label(l.clone()));
             }
+            tacky::Instruction::FunctionCall { .. } => todo!(),
         }
     }
 

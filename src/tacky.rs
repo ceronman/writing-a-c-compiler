@@ -3,20 +3,22 @@ pub mod interpreter;
 mod test;
 
 use crate::ast;
+use crate::ast::Expression;
 use crate::symbol::Symbol;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Program {
-    pub function: Function,
+    pub functions: Vec<Function>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Function {
     pub name: Symbol,
+    pub params: Vec<Symbol>,
     pub body: Vec<Instruction>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Instruction {
     Return(Val),
     Unary {
@@ -46,6 +48,11 @@ pub enum Instruction {
         target: Symbol,
     },
     Label(Symbol),
+    FunctionCall {
+        name: Symbol,
+        args: Vec<Val>,
+        dst: Val,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -54,7 +61,7 @@ pub enum Val {
     Var(Symbol),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum UnaryOp {
     Complement,
     Negate,
@@ -63,7 +70,7 @@ pub enum UnaryOp {
     Decrement,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum BinaryOp {
     Add,
     Subtract,
@@ -91,7 +98,7 @@ struct TackyGenerator {
 }
 
 impl TackyGenerator {
-    fn emit_function(mut self, function: &ast::Block) -> Vec<Instruction> {
+    fn emit_instructions(mut self, function: &ast::Block) -> Vec<Instruction> {
         self.emit_block(function);
         self.instructions
             .push(Instruction::Return(Val::Constant(0)));
@@ -104,7 +111,7 @@ impl TackyGenerator {
                 ast::BlockItem::Stmt(stmt) => self.emit_statement(stmt),
                 ast::BlockItem::Decl(decl) => match decl.as_ref() {
                     ast::Declaration::Var(decl) => self.emit_var_declaration(decl),
-                    ast::Declaration::Function(_) => todo!(),
+                    ast::Declaration::Function(_) => {}
                 },
             }
         }
@@ -499,7 +506,17 @@ impl TackyGenerator {
                 self.instructions.push(Instruction::Label(end_label));
                 result
             }
-            _ => todo!(),
+
+            Expression::FunctionCall { name, args } => {
+                let args: Vec<Val> = args.iter().map(|a| self.emit_expr(a)).collect();
+                let result = self.make_temp();
+                self.instructions.push(Instruction::FunctionCall {
+                    name: name.symbol.clone(),
+                    args,
+                    dst: result.clone(),
+                });
+                result
+            }
         }
     }
 
@@ -517,11 +534,14 @@ impl TackyGenerator {
 }
 
 pub fn emit(program: &ast::Program) -> Program {
-    let function = program.functions.first().unwrap();
-    Program {
-        function: Function {
+    let mut functions = Vec::new();
+    for function in &program.functions {
+        let Some(body) = &function.body else { continue };
+        functions.push(Function {
             name: function.name.symbol.clone(),
-            body: TackyGenerator::default().emit_function(function.body.as_ref().unwrap()),
-        },
+            params: function.params.iter().map(|i| i.symbol.clone()).collect(),
+            body: TackyGenerator::default().emit_instructions(body),
+        });
     }
+    Program { functions }
 }

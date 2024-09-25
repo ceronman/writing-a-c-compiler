@@ -17,7 +17,7 @@ pub fn dump_tacky(src: &str) -> String {
     let ast = parser::parse(src).unwrap();
     let ast = semantic::validate(ast).unwrap();
     let tacky = tacky::emit(&ast);
-    pretty_print_tacky(tacky).unwrap()
+    pp_tacky(&tacky).unwrap().trim().to_owned()
 }
 
 pub fn pretty_print_ast(program: &ast::Program) -> Result<String> {
@@ -26,20 +26,27 @@ pub fn pretty_print_ast(program: &ast::Program) -> Result<String> {
     Ok(String::from_utf8(buffer)?.trim().into())
 }
 
-pub fn pretty_print_tacky(program: tacky::Program) -> Result<String> {
-    let indent = "    ";
+pub fn pp_tacky(program: &tacky::Program) -> Result<String> {
     let mut buffer = Vec::new();
-    writeln!(&mut buffer, "function {} {{ ", program.function.name)?;
     let file = &mut buffer;
-    for item in &program.function.body {
+    for function in &program.functions {
+        pp_function(file, function)?;
+    }
+    Ok(String::from_utf8(buffer)?)
+}
+
+pub fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> {
+    writeln!(file, "function {} {{ ", function.name)?;
+    let indent = "    ";
+    for item in &function.body {
         match item {
             tacky::Instruction::Return(val) => {
                 write!(file, "{indent}return ")?;
-                print_val(file, val)?;
+                pp_val(file, val)?;
             }
             tacky::Instruction::Unary { op, src, dst } => {
                 write!(file, "{indent}")?;
-                print_val(file, dst)?;
+                pp_val(file, dst)?;
                 write!(file, " = ")?;
                 write!(
                     file,
@@ -52,7 +59,7 @@ pub fn pretty_print_tacky(program: tacky::Program) -> Result<String> {
                         tacky::UnaryOp::Decrement => "dec",
                     }
                 )?;
-                print_val(file, src)?;
+                pp_val(file, src)?;
             }
             tacky::Instruction::Binary {
                 op,
@@ -61,9 +68,9 @@ pub fn pretty_print_tacky(program: tacky::Program) -> Result<String> {
                 dst,
             } => {
                 write!(file, "{indent}")?;
-                print_val(file, dst)?;
+                pp_val(file, dst)?;
                 write!(file, " = ")?;
-                print_val(file, src1)?;
+                pp_val(file, src1)?;
                 write!(
                     file,
                     " {} ",
@@ -86,39 +93,52 @@ pub fn pretty_print_tacky(program: tacky::Program) -> Result<String> {
                         tacky::BinaryOp::GreaterOrEqual => ">=",
                     }
                 )?;
-                print_val(file, src2)?;
+                pp_val(file, src2)?;
             }
             tacky::Instruction::Copy { src, dst } => {
                 write!(file, "{indent}")?;
-                print_val(file, dst)?;
+                pp_val(file, dst)?;
                 write!(file, " = ")?;
-                print_val(file, src)?;
+                pp_val(file, src)?;
             }
             tacky::Instruction::Jump { target } => {
                 write!(file, "{indent}jump {target}")?;
             }
             tacky::Instruction::JumpIfZero { cond, target } => {
                 write!(file, "{indent}if !")?;
-                print_val(file, cond)?;
+                pp_val(file, cond)?;
                 write!(file, " jump {target}")?;
             }
             tacky::Instruction::JumpIfNotZero { cond, target } => {
                 write!(file, "{indent}if ")?;
-                print_val(file, cond)?;
+                pp_val(file, cond)?;
                 write!(file, " jump {target}")?;
             }
             tacky::Instruction::Label(name) => {
                 writeln!(file)?;
                 write!(file, "  {name}:")?;
             }
+            tacky::Instruction::FunctionCall { name, args, dst } => {
+                write!(file, "{indent}")?;
+                pp_val(file, dst)?;
+                write!(file, " = ")?;
+                write!(file, "{name}(")?;
+                for (i, arg) in args.iter().enumerate() {
+                    pp_val(file, arg)?;
+                    if i != args.len() - 1 {
+                        write!(file, ", ")?;
+                    }
+                }
+                write!(file, ")")?;
+            }
         }
         writeln!(file)?;
     }
-    writeln!(&mut buffer, "}}")?;
-    Ok(String::from_utf8(buffer)?.trim().into())
+    writeln!(file, "}}")?;
+    Ok(())
 }
 
-pub fn print_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
+pub fn pp_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
     match val {
         tacky::Val::Constant(value) => write!(file, "{value}")?,
         tacky::Val::Var(name) => write!(file, "{name}")?,

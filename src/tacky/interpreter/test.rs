@@ -3252,3 +3252,386 @@ fn test_chapter_8_valid_while() {
     "#;
     assert_eq!(run(src), 6);
 }
+
+#[test]
+fn test_chapter_9_valid_arguments_in_registers_dont_clobber_edx() {
+    let src = r#"
+        int x(int a, int b, int c, int d, int e, int f) {
+            return a == 1 && b == 2 && c == 3 && d == 4 && e == 5 && f == 6;
+        }
+        int main(void) {
+            int a = 4;
+            return x(1, 2, 3, 4, 5, 24 / a);
+        }
+    "#;
+    assert_eq!(run(src), 1);
+}
+
+#[test]
+fn test_chapter_9_valid_arguments_in_registers_expression_args() {
+    let src = r#"
+        int sub(int a, int b) {
+            return a - b;
+        }
+        int main(void) {
+            int sum = sub(1 + 2, 1);
+            return sum;
+        }
+    "#;
+    assert_eq!(run(src), 2);
+}
+
+#[test]
+fn test_chapter_9_valid_arguments_in_registers_fibonacci() {
+    let src = r#"
+        int fib(int n) {
+            if (n == 0 || n == 1) {
+                return n;
+            } else {
+                return fib(n - 1) + fib(n - 2);
+            }
+        }
+        int main(void) {
+            int n = 6;
+            return fib(n);
+        }
+    "#;
+    assert_eq!(run(src), 8);
+}
+
+#[test]
+fn test_chapter_9_valid_arguments_in_registers_forward_decl_multi_arg() {
+    let src = r#"
+        int foo(int a, int b);
+        int main(void) {
+            return foo(2, 1);
+        }
+        int foo(int x, int y){
+            return x - y;
+        }
+    "#;
+    assert_eq!(run(src), 1);
+}
+
+#[test]
+fn test_chapter_9_valid_arguments_in_registers_hello_world() {
+    let src = r#"
+        int putchar(int c);
+        int main(void) {
+            putchar(72);
+            putchar(101);
+            putchar(108);
+            putchar(108);
+            putchar(111);
+            putchar(44);
+            putchar(32);
+            putchar(87);
+            putchar(111);
+            putchar(114);
+            putchar(108);
+            putchar(100);
+            putchar(33);
+            putchar(10);
+        }
+    "#;
+    assert_eq!(run(src), 0);
+}
+
+#[test]
+fn test_chapter_9_valid_arguments_in_registers_param_shadows_local_var() {
+    let src = r#"
+        int main(void) {
+            int a = 10;
+            int f(int a);
+            return f(a);
+        }
+        int f(int a) {
+            return a * 2;
+        }
+    "#;
+    assert_eq!(run(src), 20);
+}
+
+#[test]
+fn test_chapter_9_valid_arguments_in_registers_parameter_shadows_function() {
+    let src = r#"
+        int a(void) {
+            return 1;
+        }
+        int b(int a) {
+            return a;
+        }
+        int main(void) {
+            return a() + b(2);
+        }
+    "#;
+    assert_eq!(run(src), 3);
+}
+
+#[test]
+fn test_chapter_9_valid_arguments_in_registers_parameter_shadows_own_function() {
+    let src = r#"
+        int a(int a) {
+            return a * 2;
+        }
+        int main(void) {
+            return a(1);
+        }
+    "#;
+    assert_eq!(run(src), 2);
+}
+
+#[test]
+fn test_chapter_9_valid_arguments_in_registers_parameters_are_preserved() {
+    let src = r#"
+        int g(int w, int x, int y, int z) {
+            if (w == 2 && x == 4 && y == 6 && z == 8)
+                return 1;
+            return 0;
+        }
+        int f(int a, int b, int c, int d) {
+            int result = g(a * 2, b * 2, c * 2, d * 2);
+            return (result == 1 && a == 1 && b == 2 && c == 3 && d == 4);
+        }
+        int main(void) {
+            return f(1, 2, 3, 4);
+        }
+    "#;
+    assert_eq!(run(src), 1);
+}
+
+#[test]
+fn test_chapter_9_valid_arguments_in_registers_single_arg() {
+    let src = r#"
+        int twice(int x){
+            return 2 * x;
+        }
+        int main(void) {
+            return twice(3);
+        }
+    "#;
+    assert_eq!(run(src), 6);
+}
+
+#[test]
+fn test_chapter_9_valid_extra_credit_compound_assign_function_result() {
+    let src = r#"
+        int foo(void) {
+            return 2;
+        }
+        int main(void) {
+            int x = 3;
+            x -= foo();
+            return x;
+        }
+    "#;
+    assert_eq!(run(src), 1);
+}
+
+#[test]
+fn test_chapter_9_valid_extra_credit_dont_clobber_ecx() {
+    let src = r#"
+        int x(int a, int b, int c, int d, int e, int f) {
+            return a == 1 && b == 2 && c == 3 && d == 4 && e == 5 && f == 6;
+        }
+        int main(void) {
+            int a = 4;
+            return x(1, 2, 3, 4, 5, 24 >> (a / 2));
+        }
+    "#;
+    assert_eq!(run(src), 1);
+}
+
+#[test]
+fn test_chapter_9_valid_extra_credit_goto_label_multiple_functions() {
+    let src = r#"
+        
+        int foo(void) {
+            goto label;
+            return 0;
+            label:
+                return 5;
+        }
+        int main(void) {
+            goto label;
+            return 0;
+            label:
+                return foo();
+        }
+    "#;
+    assert_eq!(run(src), 5);
+}
+
+#[test]
+fn test_chapter_9_valid_extra_credit_goto_shared_name() {
+    let src = r#"
+        int foo(void) {
+            goto foo;
+            return 0;
+            foo:
+                return 1;
+        }
+        int main(void) {
+            return foo();
+        }
+    "#;
+    assert_eq!(run(src), 1);
+}
+
+#[test]
+fn test_chapter_9_valid_extra_credit_label_naming_scheme() {
+    let src = r#"
+        int main(void) {
+            _label:
+            label_:
+            return 0;
+        }
+        int main_(void) {
+            label:
+            return 0;
+        }
+        int _main(void) {
+            label: return 0;
+        }
+    "#;
+    assert_eq!(run(src), 0);
+}
+
+#[test]
+fn test_chapter_9_valid_no_arguments_forward_decl() {
+    let src = r#"
+        int foo(void);
+        int main(void) {
+            return foo();
+        }
+        int foo(void) {
+            return 3;
+        }
+    "#;
+    assert_eq!(run(src), 3);
+}
+
+#[test]
+fn test_chapter_9_valid_no_arguments_function_shadows_variable() {
+    let src = r#"
+        int main(void) {
+            int foo = 3;
+            int bar = 4;
+            if (foo + bar > 0) {
+                int foo(void);
+                bar = foo();
+            }
+            return foo + bar;
+        }
+        int foo(void) {
+            return 8;
+        }
+    "#;
+    assert_eq!(run(src), 11);
+}
+
+#[test]
+fn test_chapter_9_valid_no_arguments_multiple_declarations() {
+    let src = r#"
+        int main(void) {
+            int f(void);
+            int f(void);
+            return f();
+        }
+        int f(void) {
+            return 3;
+        }
+    "#;
+    assert_eq!(run(src), 3);
+}
+
+#[test]
+fn test_chapter_9_valid_no_arguments_no_return_value() {
+    let src = r#"
+        int foo(void) {
+            int x = 1;
+        }
+        int main(void) {
+            foo();
+            return 3;
+        }
+    "#;
+    assert_eq!(run(src), 3);
+}
+
+#[test]
+fn test_chapter_9_valid_no_arguments_precedence() {
+    let src = r#"
+        int three(void) {
+            return 3;
+        }
+        int main(void) {
+            return !three();
+        }
+    "#;
+    assert_eq!(run(src), 0);
+}
+
+#[test]
+fn test_chapter_9_valid_no_arguments_use_function_in_expression() {
+    let src = r#"
+        int bar(void) {
+            return 9;
+        }
+        int foo(void) {
+            return 2 * bar();
+        }
+        int main(void) {
+            return foo() + bar() / 3;
+        }
+    "#;
+    assert_eq!(run(src), 21);
+}
+
+#[test]
+fn test_chapter_9_valid_no_arguments_variable_shadows_function() {
+    let src = r#"
+        int main(void) {
+            int foo(void);
+            int x = foo();
+            if (x > 0) {
+                int foo = 3;
+                x = x + foo;
+            }
+            return x;
+        }
+        int foo(void) {
+            return 4;
+        }
+    "#;
+    assert_eq!(run(src), 7);
+}
+
+#[test]
+fn test_chapter_9_valid_stack_arguments_call_putchar() {
+    let src = r#"
+        int putchar(int c);
+        int foo(int a, int b, int c, int d, int e, int f, int g, int h) {
+            putchar(h);
+            return a + g;
+        }
+        int main(void) {
+            return foo(1, 2, 3, 4, 5, 6, 7, 65);
+        }
+    "#;
+    assert_eq!(run(src), 8);
+}
+
+#[test]
+fn test_chapter_9_valid_stack_arguments_lots_of_arguments() {
+    let src = r#"
+        int foo(int a, int b, int c, int d, int e, int f, int g, int h) {
+            return (a == 1 && b == 2 && c == 3 && d == 4 && e == 5
+                    && f == 6 && g == 7 && h == 8);
+        }
+        int main(void) {
+            return foo(1, 2, 3, 4, 5, 6, 7, 8);
+        }
+    "#;
+    assert_eq!(run(src), 1);
+}

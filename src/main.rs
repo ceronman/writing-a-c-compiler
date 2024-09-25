@@ -13,7 +13,7 @@ mod tempfile;
 #[cfg(feature = "test_gen")]
 mod testgen;
 
-use crate::pretty::{pretty_print_ast, pretty_print_tacky};
+use crate::pretty::{pp_tacky, pretty_print_ast};
 use crate::tempfile::TempPath;
 use anyhow::{bail, Result};
 use std::fs;
@@ -86,7 +86,7 @@ fn main() -> Result<()> {
 
     let tacky = tacky::emit(&validated_ast);
     if let Flag::Tacky = options.flag {
-        println!("{}", pretty_print_tacky(tacky)?);
+        println!("{}", pp_tacky(&tacky)?);
         return Ok(());
     }
 
