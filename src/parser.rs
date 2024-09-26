@@ -87,8 +87,7 @@ impl<'src> Parser<'src> {
         self.expect(TokenKind::Int)?;
         let name = self.identifier()?;
 
-        if let TokenKind::OpenParen = self.current.kind {
-            self.advance(); // TODO: maybe extract the pattern check and advance
+        if self.matches(TokenKind::OpenParen) {
             let params = if let TokenKind::Void = self.current.kind {
                 self.advance();
                 self.expect(TokenKind::CloseParen)?;
@@ -99,8 +98,7 @@ impl<'src> Parser<'src> {
                     self.expect(TokenKind::Int)?;
                     let name = self.identifier()?;
                     params.push(name);
-                    if let TokenKind::Comma = self.current.kind {
-                        self.advance();
+                    if self.matches(TokenKind::Comma) {
                         continue;
                     }
                     self.expect(TokenKind::CloseParen)?;
@@ -130,8 +128,7 @@ impl<'src> Parser<'src> {
                 ))
             }
         } else {
-            let init = if self.current.kind == TokenKind::Equal {
-                self.advance();
+            let init = if self.matches(TokenKind::Equal) {
                 Some(self.expression()?)
             } else {
                 None
@@ -335,8 +332,7 @@ impl<'src> Parser<'src> {
         let cond = self.expression()?;
         self.expect(TokenKind::CloseParen)?;
         let then_stmt = self.statement()?;
-        let else_stmt = if self.current.kind == TokenKind::Else {
-            self.advance();
+        let else_stmt = if self.matches(TokenKind::Else) {
             Some(self.statement()?)
         } else {
             None
@@ -464,8 +460,7 @@ impl<'src> Parser<'src> {
                 break;
             }
 
-            expr = if let TokenKind::Question = self.current.kind {
-                self.advance();
+            expr = if self.matches(TokenKind::Question) {
                 let cond = expr;
                 let then_expr = self.expression()?;
                 self.expect(TokenKind::Colon)?;
@@ -631,8 +626,7 @@ impl<'src> Parser<'src> {
         if self.current.kind != TokenKind::CloseParen {
             loop {
                 args.push(self.expression()?);
-                if let TokenKind::Comma = self.current.kind {
-                    self.advance();
+                if self.matches(TokenKind::Comma) {
                     continue;
                 }
                 break;
@@ -667,6 +661,15 @@ impl<'src> Parser<'src> {
     fn advance(&mut self) {
         self.current = self.next;
         self.next = self.lexer.next();
+    }
+
+    fn matches(&mut self, expected: TokenKind) -> bool {
+        if self.current.kind == expected {
+            self.advance();
+            true
+        } else {
+            false
+        }
     }
 
     fn expect(&mut self, expected: TokenKind) -> Result<Token> {
