@@ -94,7 +94,7 @@ impl Interpreter {
                 }
                 Instruction::Label(_) => {}
 
-                Instruction::FunctionCall { name, args, dst } => {
+                Instruction::FnCall { name, args, dst } => {
                     let mut new_frame = Frame::default();
 
                     let called_function = match self.functions.get(name) {

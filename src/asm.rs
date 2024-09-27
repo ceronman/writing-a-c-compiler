@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct Program {
-    pub function_definition: Function,
+    pub functions: Vec<Function>,
 }
 
 #[derive(Debug)]
@@ -28,6 +28,9 @@ pub enum Instruction {
     SetCC(CondCode, Operand),
     Label(Symbol),
     AllocateStack(u64),
+    DeallocateStack(u64),
+    Push(Operand),
+    Call(Symbol),
     Ret,
 }
 
@@ -57,11 +60,15 @@ pub enum Operand {
     Stack(u64),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Reg {
     Ax,
     Cx,
     Dx,
+    Di,
+    Si,
+    R8,
+    R9,
     R10,
     R11,
 }
@@ -77,8 +84,13 @@ pub enum CondCode {
 }
 
 pub fn generate(program: &tacky::Program) -> Program {
+    Program {
+        functions: program.functions.iter().map(generate_function).collect(),
+    }
+}
+
+fn generate_function(function: &tacky::Function) -> Function {
     let mut instructions = Vec::new();
-    let function = &program.functions.first().unwrap();
 
     for tacky_instruction in &function.body {
         match tacky_instruction {
@@ -173,19 +185,61 @@ pub fn generate(program: &tacky::Program) -> Program {
             tacky::Instruction::Label(l) => {
                 instructions.push(Instruction::Label(l.clone()));
             }
-            tacky::Instruction::FunctionCall { .. } => todo!(),
+            tacky::Instruction::FnCall { name, args, dst } => {
+                generate_call(&mut instructions, name, args, dst);
+            }
         }
     }
 
     let stack_size = replace_pseudo_registers(&mut instructions);
     let instructions = fixup_instructions(instructions, stack_size);
 
-    Program {
-        function_definition: Function {
-            name: function.name.clone(),
-            instructions,
-        },
+    Function {
+        name: function.name.clone(),
+        instructions,
     }
+}
+
+fn generate_call(
+    instructions: &mut Vec<Instruction>,
+    name: &Symbol,
+    args: &[tacky::Val],
+    dst: &tacky::Val,
+) {
+    let padding = if args.len() > 6 && args.len() & 1 == 0 {
+        8
+    } else {
+        0
+    };
+    if padding != 0 {
+        instructions.push(Instruction::AllocateStack(padding))
+    }
+
+    let arg_registers = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
+    let register_args = args.iter().take(6);
+    for (reg, val) in arg_registers.iter().zip(register_args) {
+        instructions.push(Instruction::Mov(val.to_asm(), Operand::Reg(*reg)));
+    }
+
+    let stack_args = args.iter().skip(6);
+    for val in stack_args.clone().rev() {
+        let operand = val.to_asm();
+        if let Operand::Imm(_) | Operand::Reg(_) = operand {
+            instructions.push(Instruction::Push(operand))
+        } else {
+            instructions.push(Instruction::Mov(operand, Operand::Reg(Reg::Ax)));
+            instructions.push(Instruction::Push(Operand::Reg(Reg::Ax)));
+        }
+    }
+
+    instructions.push(Instruction::Call(name.clone()));
+
+    let bytes_to_remove = 8 * stack_args.count() as u64 + padding;
+    if bytes_to_remove != 0 {
+        instructions.push(Instruction::DeallocateStack(bytes_to_remove));
+    }
+
+    instructions.push(Instruction::Mov(Operand::Reg(Reg::Ax), dst.to_asm()));
 }
 
 fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> u64 {
@@ -214,6 +268,7 @@ fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> u64 {
                 update_operand(dst);
             }
             Instruction::Unary(_, src)
+            | Instruction::Push(src)
             | Instruction::Idiv(src)
             | Instruction::Sal(src)
             | Instruction::Sar(src)
@@ -228,7 +283,7 @@ fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> u64 {
 fn fixup_instructions(instructions: Vec<Instruction>, stack_size: u64) -> Vec<Instruction> {
     let mut fixed = Vec::with_capacity(instructions.len() + 1);
 
-    fixed.push(Instruction::AllocateStack(stack_size));
+    fixed.push(Instruction::AllocateStack(stack_size + stack_size % 16));
     for instruction in instructions.into_iter() {
         match instruction {
             Instruction::Mov(Operand::Stack(src), Operand::Stack(dst)) => {

@@ -48,7 +48,7 @@ pub enum Instruction {
         target: Symbol,
     },
     Label(Symbol),
-    FunctionCall {
+    FnCall {
         name: Symbol,
         args: Vec<Val>,
         dst: Val,
@@ -510,7 +510,7 @@ impl TackyGenerator {
             Expression::FunctionCall { name, args } => {
                 let args: Vec<Val> = args.iter().map(|a| self.emit_expr(a)).collect();
                 let result = self.make_temp();
-                self.instructions.push(Instruction::FunctionCall {
+                self.instructions.push(Instruction::FnCall {
                     name: name.symbol.clone(),
                     args,
                     dst: result.clone(),

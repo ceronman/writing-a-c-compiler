@@ -118,7 +118,7 @@ pub fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<
                 writeln!(file)?;
                 write!(file, "  {name}:")?;
             }
-            tacky::Instruction::FunctionCall { name, args, dst } => {
+            tacky::Instruction::FnCall { name, args, dst } => {
                 write!(file, "{indent}")?;
                 pp_val(file, dst)?;
                 write!(file, " = ")?;

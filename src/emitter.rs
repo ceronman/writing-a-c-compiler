@@ -15,7 +15,7 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
 
     let output = &mut BufWriter::new(file);
 
-    let function = &program.function_definition;
+    let function = &program.functions.first().unwrap();
 
     writeln!(output, "\t.globl _{name}", name = function.name)?;
     writeln!(output, "_{name}:", name = function.name)?;
@@ -126,6 +126,8 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
                 emit_label(output, label)?;
                 write!(output, ":")?;
             }
+
+            _ => todo!(),
         }
         writeln!(output)?;
     }
