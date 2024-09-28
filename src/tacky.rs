@@ -3,7 +3,6 @@ pub mod interpreter;
 mod test;
 
 use crate::ast;
-use crate::ast::Expression;
 use crate::symbol::Symbol;
 
 #[derive(Debug, Clone)]
@@ -98,11 +97,11 @@ struct TackyGenerator {
 }
 
 impl TackyGenerator {
-    fn emit_instructions(mut self, function: &ast::Block) -> Vec<Instruction> {
+    fn emit_instructions(&mut self, function: &ast::Block) -> Vec<Instruction> {
         self.emit_block(function);
         self.instructions
             .push(Instruction::Return(Val::Constant(0)));
-        self.instructions
+        self.instructions.clone()
     }
 
     fn emit_block(&mut self, block: &ast::Block) {
@@ -507,7 +506,7 @@ impl TackyGenerator {
                 result
             }
 
-            Expression::FunctionCall { name, args } => {
+            ast::Expression::FunctionCall { name, args } => {
                 let args: Vec<Val> = args.iter().map(|a| self.emit_expr(a)).collect();
                 let result = self.make_temp();
                 self.instructions.push(Instruction::FnCall {
@@ -535,12 +534,14 @@ impl TackyGenerator {
 
 pub fn emit(program: &ast::Program) -> Program {
     let mut functions = Vec::new();
+    let mut generator = TackyGenerator::default();
     for function in &program.functions {
+        generator.instructions.clear();
         let Some(body) = &function.body else { continue };
         functions.push(Function {
             name: function.name.symbol.clone(),
             params: function.params.iter().map(|i| i.symbol.clone()).collect(),
-            body: TackyGenerator::default().emit_instructions(body),
+            body: generator.emit_instructions(body),
         });
     }
     Program { functions }

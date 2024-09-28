@@ -7782,9 +7782,9 @@ fn test_chapter_9_valid_arguments_in_registers_dont_clobber_edx() {
         }
         function main { 
             a.6 = 4
-            tmp.0 = 24 / a.6
-            tmp.1 = x(1, 2, 3, 4, 5, tmp.0)
-            return tmp.1
+            tmp.16 = 24 / a.6
+            tmp.17 = x(1, 2, 3, 4, 5, tmp.16)
+            return tmp.17
             return 0
         }
     "#;
@@ -7809,9 +7809,9 @@ fn test_chapter_9_valid_arguments_in_registers_expression_args() {
             return 0
         }
         function main { 
-            tmp.0 = 1 + 2
-            tmp.1 = sub(tmp.0, 1)
-            sum.2 = tmp.1
+            tmp.1 = 1 + 2
+            tmp.2 = sub(tmp.1, 1)
+            sum.2 = tmp.2
             return sum.2
             return 0
         }
@@ -7864,8 +7864,8 @@ fn test_chapter_9_valid_arguments_in_registers_fibonacci() {
         }
         function main { 
             n.1 = 6
-            tmp.0 = fib(n.1)
-            return tmp.0
+            tmp.9 = fib(n.1)
+            return tmp.9
             return 0
         }
     "#;
@@ -7890,8 +7890,8 @@ fn test_chapter_9_valid_arguments_in_registers_forward_decl_multi_arg() {
             return 0
         }
         function foo { 
-            tmp.0 = x.2 - y.3
-            return tmp.0
+            tmp.1 = x.2 - y.3
+            return tmp.1
             return 0
         }
     "#;
@@ -7961,8 +7961,8 @@ fn test_chapter_9_valid_arguments_in_registers_param_shadows_local_var() {
             return 0
         }
         function f { 
-            tmp.0 = a.2 * 2
-            return tmp.0
+            tmp.1 = a.2 * 2
+            return tmp.1
             return 0
         }
     "#;
@@ -8019,8 +8019,8 @@ fn test_chapter_9_valid_arguments_in_registers_parameter_shadows_own_function() 
             return 0
         }
         function main { 
-            tmp.0 = a(1)
-            return tmp.0
+            tmp.1 = a(1)
+            return tmp.1
             return 0
         }
     "#;
@@ -8084,59 +8084,59 @@ fn test_chapter_9_valid_arguments_in_registers_parameters_are_preserved() {
             return 0
         }
         function f { 
-            tmp.0 = a.4 * 2
-            tmp.1 = b.5 * 2
-            tmp.2 = c.6 * 2
-            tmp.3 = d.7 * 2
-            tmp.4 = g(tmp.0, tmp.1, tmp.2, tmp.3)
-            result.8 = tmp.4
-            tmp.5 = result.8 == 1
-            if !tmp.5 jump and_false_0
-            tmp.8 = a.4 == 1
-            if !tmp.8 jump and_false_0
-            tmp.7 = 1
-            jump and_end_1
+            tmp.10 = a.4 * 2
+            tmp.11 = b.5 * 2
+            tmp.12 = c.6 * 2
+            tmp.13 = d.7 * 2
+            tmp.14 = g(tmp.10, tmp.11, tmp.12, tmp.13)
+            result.8 = tmp.14
+            tmp.15 = result.8 == 1
+            if !tmp.15 jump and_false_8
+            tmp.18 = a.4 == 1
+            if !tmp.18 jump and_false_8
+            tmp.17 = 1
+            jump and_end_9
         
-          and_false_0:
-            tmp.7 = 0
+          and_false_8:
+            tmp.17 = 0
         
-          and_end_1:
-            if !tmp.7 jump and_false_2
-            tmp.11 = b.5 == 2
-            if !tmp.11 jump and_false_2
-            tmp.10 = 1
-            jump and_end_3
+          and_end_9:
+            if !tmp.17 jump and_false_10
+            tmp.21 = b.5 == 2
+            if !tmp.21 jump and_false_10
+            tmp.20 = 1
+            jump and_end_11
         
-          and_false_2:
-            tmp.10 = 0
+          and_false_10:
+            tmp.20 = 0
         
-          and_end_3:
-            if !tmp.10 jump and_false_4
-            tmp.14 = c.6 == 3
-            if !tmp.14 jump and_false_4
-            tmp.13 = 1
-            jump and_end_5
+          and_end_11:
+            if !tmp.20 jump and_false_12
+            tmp.24 = c.6 == 3
+            if !tmp.24 jump and_false_12
+            tmp.23 = 1
+            jump and_end_13
         
-          and_false_4:
-            tmp.13 = 0
+          and_false_12:
+            tmp.23 = 0
         
-          and_end_5:
-            if !tmp.13 jump and_false_6
-            tmp.17 = d.7 == 4
-            if !tmp.17 jump and_false_6
-            tmp.16 = 1
-            jump and_end_7
+          and_end_13:
+            if !tmp.23 jump and_false_14
+            tmp.27 = d.7 == 4
+            if !tmp.27 jump and_false_14
+            tmp.26 = 1
+            jump and_end_15
         
-          and_false_6:
-            tmp.16 = 0
+          and_false_14:
+            tmp.26 = 0
         
-          and_end_7:
-            return tmp.16
+          and_end_15:
+            return tmp.26
             return 0
         }
         function main { 
-            tmp.0 = f(1, 2, 3, 4)
-            return tmp.0
+            tmp.28 = f(1, 2, 3, 4)
+            return tmp.28
             return 0
         }
     "#;
@@ -8160,8 +8160,8 @@ fn test_chapter_9_valid_arguments_in_registers_single_arg() {
             return 0
         }
         function main { 
-            tmp.0 = twice(3)
-            return tmp.0
+            tmp.1 = twice(3)
+            return tmp.1
             return 0
         }
     "#;
@@ -8266,10 +8266,10 @@ fn test_chapter_9_valid_extra_credit_dont_clobber_ecx() {
         }
         function main { 
             a.6 = 4
-            tmp.1 = a.6 / 2
-            tmp.0 = 24 >> tmp.1
-            tmp.2 = x(1, 2, 3, 4, 5, tmp.0)
-            return tmp.2
+            tmp.17 = a.6 / 2
+            tmp.16 = 24 >> tmp.17
+            tmp.18 = x(1, 2, 3, 4, 5, tmp.16)
+            return tmp.18
             return 0
         }
     "#;
@@ -8465,16 +8465,16 @@ fn test_chapter_9_valid_libraries_many_args() {
             return 0
         }
         function multiply_many_args { 
-            tmp.0 = a.1 * b.2
-            tmp.1 = tmp.0 * c.3
-            tmp.2 = tmp.1 * d.4
-            tmp.3 = tmp.2 * e.5
-            tmp.4 = tmp.3 * f.6
-            tmp.6 = fib(g.7)
-            tmp.5 = tmp.4 * tmp.6
-            tmp.8 = fib(h.8)
-            tmp.7 = tmp.5 * tmp.8
-            return tmp.7
+            tmp.9 = a.1 * b.2
+            tmp.10 = tmp.9 * c.3
+            tmp.11 = tmp.10 * d.4
+            tmp.12 = tmp.11 * e.5
+            tmp.13 = tmp.12 * f.6
+            tmp.15 = fib(g.7)
+            tmp.14 = tmp.13 * tmp.15
+            tmp.17 = fib(h.8)
+            tmp.16 = tmp.14 * tmp.17
+            return tmp.16
             return 0
         }
     "#;
@@ -8962,11 +8962,11 @@ fn test_chapter_9_valid_no_arguments_use_function_in_expression() {
             return 0
         }
         function main { 
-            tmp.0 = foo()
-            tmp.2 = bar()
-            tmp.3 = tmp.2 / 3
-            tmp.1 = tmp.0 + tmp.3
-            return tmp.1
+            tmp.2 = foo()
+            tmp.4 = bar()
+            tmp.5 = tmp.4 / 3
+            tmp.3 = tmp.2 + tmp.5
+            return tmp.3
             return 0
         }
     "#;
@@ -9031,8 +9031,8 @@ fn test_chapter_9_valid_stack_arguments_call_putchar() {
             return 0
         }
         function main { 
-            tmp.0 = foo(1, 2, 3, 4, 5, 6, 7, 65)
-            return tmp.0
+            tmp.2 = foo(1, 2, 3, 4, 5, 6, 7, 65)
+            return tmp.2
             return 0
         }
     "#;
@@ -9127,8 +9127,8 @@ fn test_chapter_9_valid_stack_arguments_lots_of_arguments() {
             return 0
         }
         function main { 
-            tmp.0 = foo(1, 2, 3, 4, 5, 6, 7, 8)
-            return tmp.0
+            tmp.22 = foo(1, 2, 3, 4, 5, 6, 7, 8)
+            return tmp.22
             return 0
         }
     "#;
@@ -9184,19 +9184,19 @@ fn test_chapter_9_valid_stack_arguments_test_for_memory_leaks() {
             i.16 = 0
         
           start_loop_0:
-            tmp.0 = i.16 < 10000000
-            if !tmp.0 jump break_loop_0
-            tmp.1 = lots_of_args(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ret.15, 13, 14, 15)
-            ret.15 = tmp.1
+            tmp.1 = i.16 < 10000000
+            if !tmp.1 jump break_loop_0
+            tmp.2 = lots_of_args(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ret.15, 13, 14, 15)
+            ret.15 = tmp.2
         
           continue_loop_0:
-            tmp.2 = i.16 + 1
-            i.16 = tmp.2
+            tmp.3 = i.16 + 1
+            i.16 = tmp.3
             jump start_loop_0
         
           break_loop_0:
-            tmp.3 = ret.15 == 150000000
-            return tmp.3
+            tmp.4 = ret.15 == 150000000
+            return tmp.4
             return 0
         }
     "#;

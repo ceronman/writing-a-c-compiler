@@ -1,4 +1,4 @@
-use crate::asm::{BinaryOp, CondCode, Instruction, Operand, Program, Reg, UnaryOp};
+use crate::asm::{BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, UnaryOp};
 use crate::tempfile::TempPath;
 use std::fs::OpenOptions;
 use std::io::{BufWriter, Result, Write};
@@ -12,25 +12,34 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
         .create(true)
         .truncate(true)
         .open(output_path.as_path())?;
-
     let output = &mut BufWriter::new(file);
+    for (i, function) in program.functions.iter().enumerate() {
+        emit_function(output, function)?;
+        if i < program.functions.len() - 1 {
+            writeln!(output)?;
+        }
+    }
+    Ok(output_path)
+}
 
-    let function = &program.functions.first().unwrap();
-
+// TODO: rewrite with an IR for simplicity
+fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
     writeln!(output, "\t.globl _{name}", name = function.name)?;
     writeln!(output, "_{name}:", name = function.name)?;
 
     // Prologue
-    writeln!(output, "\tpushq    %rbp")?;
-    writeln!(output, "\tmovq     %rsp, %rbp")?;
+    emit_ins(output, "pushq")?;
+    writeln!(output, "%rbp")?;
+    emit_ins(output, "movq")?;
+    writeln!(output, "%rsp, %rbp")?;
 
     for ins in &function.instructions {
         match ins {
             Instruction::Mov(src, dst) => {
                 emit_ins(output, "movl")?;
-                emit_operand(output, src, 4)?;
+                emit_operand(output, src, RegSize::Long)?;
                 write!(output, ", ")?;
-                emit_operand(output, dst, 4)?;
+                emit_operand(output, dst, RegSize::Long)?;
             }
             Instruction::Unary(op, src) => {
                 let op = match op {
@@ -40,7 +49,7 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
                     UnaryOp::Dec => "decl",
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, src, 4)?;
+                emit_operand(output, src, RegSize::Long)?;
             }
             Instruction::Binary(op, left, right) => {
                 let op = match op {
@@ -52,9 +61,9 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
                     BinaryOp::Xor => "xorl",
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, left, 4)?;
+                emit_operand(output, left, RegSize::Long)?;
                 write!(output, ", ")?;
-                emit_operand(output, right, 4)?;
+                emit_operand(output, right, RegSize::Long)?;
             }
             Instruction::AllocateStack(offset) => {
                 emit_ins(output, "subq")?;
@@ -63,38 +72,40 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
 
             Instruction::Sal(dst) => {
                 emit_ins(output, "sall")?;
-                emit_operand(output, &Operand::Reg(Reg::Cx), 1)?;
+                emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
                 write!(output, ", ")?;
-                emit_operand(output, dst, 4)?;
+                emit_operand(output, dst, RegSize::Long)?;
                 writeln!(output)?;
             }
 
             Instruction::Sar(dst) => {
                 emit_ins(output, "sarl")?;
-                emit_operand(output, &Operand::Reg(Reg::Cx), 1)?;
+                emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
                 write!(output, ", ")?;
-                emit_operand(output, dst, 4)?;
+                emit_operand(output, dst, RegSize::Long)?;
             }
 
             Instruction::Idiv(src) => {
                 emit_ins(output, "idivl")?;
-                emit_operand(output, src, 4)?;
+                emit_operand(output, src, RegSize::Long)?;
             }
 
             Instruction::Cdq => write!(output, "\tcdq")?,
 
             Instruction::Ret => {
                 // epilogue
-                writeln!(output, "\tmovq     %rbp, %rsp")?;
-                writeln!(output, "\tpopq     %rbp")?;
-                write!(output, "\tret")?;
+                emit_ins(output, "movq")?;
+                writeln!(output, "%rbp, %rsp")?;
+                emit_ins(output, "popq")?;
+                writeln!(output, "%rbp")?;
+                emit_ins(output, "ret")?;
             }
 
             Instruction::Cmp(left, right) => {
                 emit_ins(output, "cmpl")?;
-                emit_operand(output, left, 4)?;
+                emit_operand(output, left, RegSize::Long)?;
                 write!(output, ", ")?;
-                emit_operand(output, right, 4)?;
+                emit_operand(output, right, RegSize::Long)?;
             }
             Instruction::Jmp(label) => {
                 emit_ins(output, "jmp")?;
@@ -120,40 +131,82 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
                     CondCode::L => emit_ins(output, "setl")?,
                     CondCode::LE => emit_ins(output, "setle")?,
                 }
-                emit_operand(output, dst, 1)?;
+                emit_operand(output, dst, RegSize::Byte)?;
             }
             Instruction::Label(label) => {
                 emit_label(output, label)?;
                 write!(output, ":")?;
             }
 
-            _ => todo!(),
+            Instruction::DeallocateStack(offset) => {
+                emit_ins(output, "addq")?;
+                write!(output, "${offset}, %rsp")?;
+            }
+            Instruction::Push(operand) => {
+                emit_ins(output, "pushq")?;
+                emit_operand(output, operand, RegSize::Quad)?;
+            }
+            Instruction::Call(name) => {
+                emit_ins(output, "call")?;
+                write!(output, "_{name}")?;
+            }
         }
         writeln!(output)?;
     }
-
-    Ok(output_path)
+    Ok(())
 }
 
 fn emit_ins(output: &mut impl Write, ins: &str) -> Result<()> {
     write!(output, "\t{ins:8} ")
 }
 
-fn emit_operand(output: &mut impl Write, operand: &Operand, size: u8) -> Result<()> {
+enum RegSize {
+    Byte,
+    Long,
+    Quad,
+}
+
+fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Result<()> {
     match (operand, size) {
+        (Operand::Reg(Reg::Ax), RegSize::Byte) => write!(output, "%al"),
+        (Operand::Reg(Reg::Ax), RegSize::Long) => write!(output, "%eax"),
+        (Operand::Reg(Reg::Ax), RegSize::Quad) => write!(output, "%rax"),
+
+        (Operand::Reg(Reg::Cx), RegSize::Byte) => write!(output, "%cl"),
+        (Operand::Reg(Reg::Cx), RegSize::Long) => write!(output, "%ecx"),
+        (Operand::Reg(Reg::Cx), RegSize::Quad) => write!(output, "%rcx"),
+
+        (Operand::Reg(Reg::Dx), RegSize::Byte) => write!(output, "%dl"),
+        (Operand::Reg(Reg::Dx), RegSize::Long) => write!(output, "%edx"),
+        (Operand::Reg(Reg::Dx), RegSize::Quad) => write!(output, "%rdx"),
+
+        (Operand::Reg(Reg::Di), RegSize::Byte) => write!(output, "%dil"),
+        (Operand::Reg(Reg::Di), RegSize::Long) => write!(output, "%edi"),
+        (Operand::Reg(Reg::Di), RegSize::Quad) => write!(output, "%rdi"),
+
+        (Operand::Reg(Reg::Si), RegSize::Byte) => write!(output, "%sil"),
+        (Operand::Reg(Reg::Si), RegSize::Long) => write!(output, "%esi"),
+        (Operand::Reg(Reg::Si), RegSize::Quad) => write!(output, "%rsi"),
+
+        (Operand::Reg(Reg::R8), RegSize::Byte) => write!(output, "%r8b"),
+        (Operand::Reg(Reg::R8), RegSize::Long) => write!(output, "%r8d"),
+        (Operand::Reg(Reg::R8), RegSize::Quad) => write!(output, "%r8"),
+
+        (Operand::Reg(Reg::R9), RegSize::Byte) => write!(output, "%r9b"),
+        (Operand::Reg(Reg::R9), RegSize::Long) => write!(output, "%r9d"),
+        (Operand::Reg(Reg::R9), RegSize::Quad) => write!(output, "%r9"),
+
+        (Operand::Reg(Reg::R10), RegSize::Byte) => write!(output, "%r10b"),
+        (Operand::Reg(Reg::R10), RegSize::Long) => write!(output, "%r10d"),
+        (Operand::Reg(Reg::R10), RegSize::Quad) => write!(output, "%r10"),
+
+        (Operand::Reg(Reg::R11), RegSize::Byte) => write!(output, "%r11b"),
+        (Operand::Reg(Reg::R11), RegSize::Long) => write!(output, "%r11d"),
+        (Operand::Reg(Reg::R11), RegSize::Quad) => write!(output, "%r11"),
+
         (Operand::Imm(value), _) => write!(output, "${value}"),
-        (Operand::Reg(Reg::Ax), 1) => write!(output, "%al"),
-        (Operand::Reg(Reg::Ax), 4) => write!(output, "%eax"),
-        (Operand::Reg(Reg::Cx), 1) => write!(output, "%cl"),
-        (Operand::Reg(Reg::Cx), 4) => write!(output, "%ecx"),
-        (Operand::Reg(Reg::Dx), 1) => write!(output, "%dl"),
-        (Operand::Reg(Reg::Dx), 4) => write!(output, "%edx"),
-        (Operand::Reg(Reg::R10), 1) => write!(output, "%r10b"),
-        (Operand::Reg(Reg::R10), 4) => write!(output, "%r10d"),
-        (Operand::Reg(Reg::R11), 1) => write!(output, "%r11b"),
-        (Operand::Reg(Reg::R11), 4) => write!(output, "%r11d"),
-        (Operand::Stack(offset), _) => write!(output, "-{offset}(%rbp)"),
-        _ => unreachable!(),
+        (Operand::Stack(offset), _) => write!(output, "{offset}(%rbp)"),
+        (Operand::Pseudo(_), _) => unreachable!("Pseudo-registers should not appear here"),
     }
 }
 

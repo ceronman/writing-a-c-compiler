@@ -27,8 +27,8 @@ pub enum Instruction {
     JmpCC(CondCode, Symbol),
     SetCC(CondCode, Operand),
     Label(Symbol),
-    AllocateStack(u64),
-    DeallocateStack(u64),
+    AllocateStack(i64),
+    DeallocateStack(i64),
     Push(Operand),
     Call(Symbol),
     Ret,
@@ -57,7 +57,7 @@ pub enum Operand {
     Imm(i64),
     Reg(Reg),
     Pseudo(Symbol),
-    Stack(u64),
+    Stack(i64),
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -72,6 +72,8 @@ pub enum Reg {
     R10,
     R11,
 }
+
+const ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
 
 #[derive(Debug)]
 pub enum CondCode {
@@ -91,6 +93,16 @@ pub fn generate(program: &tacky::Program) -> Program {
 
 fn generate_function(function: &tacky::Function) -> Function {
     let mut instructions = Vec::new();
+
+    for (i, param) in function.params.iter().cloned().enumerate() {
+        let src = if i < ARG_REGISTERS.len() {
+            Operand::Reg(ARG_REGISTERS[i])
+        } else {
+            let offset = 16 + 8 * (i - ARG_REGISTERS.len());
+            Operand::Stack(offset as i64)
+        };
+        instructions.push(Instruction::Mov(src, Operand::Pseudo(param)))
+    }
 
     for tacky_instruction in &function.body {
         match tacky_instruction {
@@ -206,7 +218,7 @@ fn generate_call(
     args: &[tacky::Val],
     dst: &tacky::Val,
 ) {
-    let padding = if args.len() > 6 && args.len() & 1 == 0 {
+    let padding = if args.len() > 6 && args.len() % 2 != 0 {
         8
     } else {
         0
@@ -215,9 +227,8 @@ fn generate_call(
         instructions.push(Instruction::AllocateStack(padding))
     }
 
-    let arg_registers = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
     let register_args = args.iter().take(6);
-    for (reg, val) in arg_registers.iter().zip(register_args) {
+    for (reg, val) in ARG_REGISTERS.iter().zip(register_args) {
         instructions.push(Instruction::Mov(val.to_asm(), Operand::Reg(*reg)));
     }
 
@@ -234,7 +245,7 @@ fn generate_call(
 
     instructions.push(Instruction::Call(name.clone()));
 
-    let bytes_to_remove = 8 * stack_args.count() as u64 + padding;
+    let bytes_to_remove = 8 * stack_args.count() as i64 + padding;
     if bytes_to_remove != 0 {
         instructions.push(Instruction::DeallocateStack(bytes_to_remove));
     }
@@ -242,7 +253,7 @@ fn generate_call(
     instructions.push(Instruction::Mov(Operand::Reg(Reg::Ax), dst.to_asm()));
 }
 
-fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> u64 {
+fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> i64 {
     let mut stack_size = 0;
     let mut stack_vars = HashMap::new();
 
@@ -255,7 +266,7 @@ fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> u64 {
                 stack_vars.insert(name.clone(), stack_size);
                 stack_size
             };
-            *operand = Operand::Stack(offset);
+            *operand = Operand::Stack(-offset);
         }
     };
 
@@ -280,10 +291,12 @@ fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> u64 {
     stack_size
 }
 
-fn fixup_instructions(instructions: Vec<Instruction>, stack_size: u64) -> Vec<Instruction> {
+fn fixup_instructions(instructions: Vec<Instruction>, stack_size: i64) -> Vec<Instruction> {
     let mut fixed = Vec::with_capacity(instructions.len() + 1);
 
-    fixed.push(Instruction::AllocateStack(stack_size + stack_size % 16));
+    // Round stack_size to the closest next multiple of 16
+    fixed.push(Instruction::AllocateStack(((stack_size / 16) + 1) * 16));
+
     for instruction in instructions.into_iter() {
         match instruction {
             Instruction::Mov(Operand::Stack(src), Operand::Stack(dst)) => {

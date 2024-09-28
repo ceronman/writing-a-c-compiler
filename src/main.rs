@@ -102,13 +102,16 @@ fn main() -> Result<()> {
     }
 
     let asm_path = emitter::emit_code(&options.filename, &asm)?;
-    if let Flag::Asm = options.flag {
+    if let Flag::Emit = options.flag {
         println!("{}", fs::read_to_string(asm_path.as_path())?);
         return Ok(());
     }
 
-    assemble_and_link(asm_path.as_path())?;
-    Ok(())
+    match options.flag {
+        Flag::Assemble => assemble(asm_path.as_path()),
+        Flag::AssembleAndLink => assemble_and_link(asm_path.as_path()),
+        _ => unreachable!(),
+    }
 }
 
 struct Options {
@@ -117,14 +120,15 @@ struct Options {
 }
 
 enum Flag {
-    None,
+    Assemble,
+    AssembleAndLink,
     Lex,
     Parse,
     Validate,
     Tacky,
     Interpret,
     Codegen,
-    Asm,
+    Emit,
 }
 
 fn parse_args() -> Options {
@@ -136,9 +140,10 @@ fn parse_args() -> Options {
         ["--validate", path] => (path, Flag::Validate),
         ["--tacky", path] => (path, Flag::Tacky),
         ["--codegen", path] => (path, Flag::Codegen),
-        ["--asm", path] => (path, Flag::Asm),
+        ["--emit", path] => (path, Flag::Emit),
         ["--interpret", "--tacky", path] => (path, Flag::Interpret),
-        [path] => (path, Flag::None),
+        ["-c", path] => (path, Flag::Assemble),
+        [path] => (path, Flag::AssembleAndLink),
         _ => {
             eprintln!("Error: incorrect number of arguments");
             eprintln!("{}", args.join(" "));
@@ -167,6 +172,21 @@ fn run_preprocessor(filename: &Path) -> Result<TempPath> {
     }
 
     Ok(output_path)
+}
+
+fn assemble(path: &Path) -> Result<()> {
+    let output = Command::new("gcc")
+        .arg("-c")
+        .arg(path)
+        .arg("-o")
+        .arg(path.with_extension("o"))
+        .output()?;
+
+    if !output.status.success() {
+        bail!("{}", String::from_utf8(output.stderr)?)
+    }
+
+    Ok(())
 }
 
 fn assemble_and_link(path: &Path) -> Result<()> {
