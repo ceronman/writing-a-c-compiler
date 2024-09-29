@@ -129,6 +129,7 @@ pub struct Block {
     pub items: Vec<BlockItem>,
 }
 
+// TODO: Consider removing completely
 #[derive(Debug)]
 pub enum Declaration {
     Var(VarDeclaration),

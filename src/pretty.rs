@@ -22,7 +22,7 @@ pub fn dump_tacky(src: &str) -> String {
 
 pub fn pretty_print_ast(program: &ast::Program) -> Result<String> {
     let mut buffer = Vec::new();
-    print_program(&mut buffer, program)?;
+    PrettyAst::from_program(program).write(&mut buffer, "", 0, &[])?;
     Ok(String::from_utf8(buffer)?.trim().into())
 }
 
@@ -185,481 +185,289 @@ pub fn annotate(src: &str, error: &crate::error::CompilerError) -> String {
     result
 }
 
-// TODO: refactor this with an homogeneous tree IR, right now it's too complicated.
-fn print_program(file: &mut impl Write, program: &ast::Program) -> Result<()> {
-    writeln!(file, "Program")?;
-    for (i, function) in program.functions.iter().enumerate() {
-        if i < program.functions.len() - 1 {
-            print_function_declaration(file, function, "├──", 1, &[1])?;
-        } else {
-            print_function_declaration(file, function, "╰──", 1, &[])?;
+struct PrettyAst {
+    label: String,
+    children: Vec<PrettyAst>,
+}
+
+impl PrettyAst {
+    fn new(label: impl Into<String>, children: impl IntoIterator<Item = PrettyAst>) -> Self {
+        Self {
+            label: label.into(),
+            children: children.into_iter().collect(),
         }
     }
-    Ok(())
-}
+    fn from_program(program: &ast::Program) -> Self {
+        Self::new(
+            "Program",
+            program
+                .functions
+                .iter()
+                .map(|f| Self::from_function_declaration(f)),
+        )
+    }
+    fn from_function_declaration(function: &ast::FunctionDeclaration) -> PrettyAst {
+        let mut children = Vec::new();
 
-fn print_function_declaration(
-    file: &mut impl Write,
-    function: &ast::FunctionDeclaration,
-    pipe: &str,
-    level: usize,
-    pipes: &[usize],
-) -> Result<()> {
-    let indent = make_indent(level, pipes);
-    writeln!(file, "{indent}{pipe} Function [{}]", function.name.symbol)?;
-    let inner_indent = make_indent(level + 1, pipes);
-    if !function.params.is_empty() {
-        let pipe = if function.body.is_some() {
-            "├──"
-        } else {
-            "╰──"
-        };
-        writeln!(file, "{inner_indent}{pipe} Parameters")?;
-        let param_indent = make_indent(level + 2, pipes);
-        for (i, param) in function.params.iter().enumerate() {
-            let pipe = if i < function.params.len() - 1 {
-                "├──"
-            } else {
-                "╰──"
-            };
-            writeln!(file, "{param_indent}{pipe} {}", param.symbol)?;
+        if !function.params.is_empty() {
+            children.push(Self::new(
+                "Parameters",
+                function.params.iter().map(|p| Self::from_identifier(p)),
+            ))
         }
-    }
-    if let Some(body) = function.body.as_ref() {
-        writeln!(file, "{inner_indent}╰── Body")?;
-        for (i, block_item) in body.items.iter().enumerate() {
-            if i < body.items.len() - 1 {
-                print_block_item(
-                    file,
-                    block_item,
-                    "├──",
-                    level + 2,
-                    &[pipes, &[level + 1]].concat(),
-                )?
-            } else {
-                print_block_item(file, block_item, "╰──", level + 2, pipes)?
-            };
+        if let Some(body) = &function.body {
+            children.push(Self::new(
+                "Body",
+                body.items.iter().map(Self::from_block_item),
+            ))
         }
+        Self::new(format!("Function [{}]", &function.name.symbol), children)
     }
-    Ok(())
-}
-
-fn print_block_item(
-    file: &mut impl Write,
-    item: &ast::BlockItem,
-    pipe: &str,
-    level: usize,
-    pipes: &[usize],
-) -> Result<()> {
-    match item {
-        ast::BlockItem::Stmt(s) => print_statement(file, s, pipe, level, pipes),
-        ast::BlockItem::Decl(d) => print_declaration(file, d, pipe, level, pipes),
-    }
-}
-
-fn make_indent(level: usize, pipes: &[usize]) -> String {
-    let mut indent = String::new();
-    for l in 0..level {
-        if pipes.contains(&l) {
-            indent.push_str("│   ");
-        } else {
-            indent.push_str("    ");
-        }
-    }
-    indent
-}
-
-fn print_declaration(
-    file: &mut impl Write,
-    declaration: &ast::Declaration,
-    pipe: &str,
-    level: usize,
-    pipes: &[usize],
-) -> Result<()> {
-    match declaration {
-        ast::Declaration::Var(decl) => print_var_declaration(file, decl, pipe, level, pipes),
-        ast::Declaration::Function(func) => {
-            print_function_declaration(file, func, pipe, level, pipes)
-        }
-    }
-}
-
-fn print_var_declaration(
-    file: &mut impl Write,
-    declaration: &ast::VarDeclaration,
-    pipe: &str,
-    level: usize,
-    pipes: &[usize],
-) -> Result<()> {
-    let indent = make_indent(level, pipes);
-    writeln!(file, "{indent}{pipe} Var [{}]", declaration.name.symbol)?;
-    if let Some(init) = &declaration.init {
-        print_expression(file, init, "╰──", level + 1, pipes)?;
-    }
-    Ok(())
-}
-
-fn print_named_statement(
-    file: &mut impl Write,
-    name: &str,
-    stmt: &ast::Statement,
-    pipe: &str,
-    level: usize,
-    pipes: &[usize],
-) -> Result<()> {
-    let indent = make_indent(level, pipes);
-    writeln!(file, "{indent}{pipe} {name}")?;
-    print_statement(file, stmt, "╰──", level + 1, pipes)
-}
-
-fn print_named_expression(
-    file: &mut impl Write,
-    name: &str,
-    expr: &ast::Expression,
-    pipe: &str,
-    level: usize,
-    pipes: &[usize],
-) -> Result<()> {
-    let indent = make_indent(level, pipes);
-    writeln!(file, "{indent}{pipe} {name}")?;
-    print_expression(file, expr, "╰──", level + 1, pipes)
-}
-
-fn print_named_var_declaration(
-    file: &mut impl Write,
-    name: &str,
-    decl: &ast::VarDeclaration,
-    pipe: &str,
-    level: usize,
-    pipes: &[usize],
-) -> Result<()> {
-    let indent = make_indent(level, pipes);
-    writeln!(file, "{indent}{pipe} {name}")?;
-    print_var_declaration(file, decl, "╰──", level + 1, pipes)
-}
-
-fn print_statement(
-    file: &mut impl Write,
-    statement: &ast::Statement,
-    pipe: &str,
-    level: usize,
-    pipes: &[usize],
-) -> Result<()> {
-    let indent = make_indent(level, pipes);
-    match statement {
-        ast::Statement::Return { expr } => {
-            print_named_expression(file, "Return", expr, "╰──", level, pipes)?;
-        }
-        ast::Statement::If {
-            cond,
-            then_stmt,
-            else_stmt,
-        } => {
-            writeln!(file, "{indent}{pipe} If")?;
-            print_named_expression(
-                file,
-                "Condition",
-                cond,
-                "├──",
-                level + 1,
-                &[pipes, &[level + 1]].concat(),
-            )?;
-            if let Some(else_stmt) = else_stmt {
-                print_named_statement(
-                    file,
-                    "Then",
-                    then_stmt,
-                    "├──",
-                    level + 1,
-                    &[pipes, &[level + 1]].concat(),
-                )?;
-                print_named_statement(file, "Else", else_stmt, "╰──", level + 1, pipes)?;
-            } else {
-                print_named_statement(file, "Then", then_stmt, "╰──", level + 1, pipes)?;
+    fn from_statement(statement: &ast::Statement) -> PrettyAst {
+        match statement {
+            ast::Statement::Return { expr } => {
+                Self::new("Return", vec![Self::from_expression(expr)])
             }
-        }
-        ast::Statement::Switch {
-            expr: cond, body, ..
-        } => {
-            writeln!(file, "{indent}{pipe} Switch")?;
-            print_named_expression(
-                file,
-                "Condition",
+            ast::Statement::If {
                 cond,
-                "├──",
-                level + 1,
-                &[pipes, &[level + 1]].concat(),
-            )?;
-            print_statement(file, body, "╰──", level + 1, pipes)?;
-        }
-        ast::Statement::Expression(expr) => {
-            print_expression(file, expr, pipe, level, pipes)?;
-        }
-        ast::Statement::Goto(label) => {
-            writeln!(file, "{indent}{pipe} Goto [{}]", label.symbol)?;
-        }
-        ast::Statement::Labeled { name, body: stmt } => {
-            writeln!(file, "{indent}{pipe} Label [{}]", name.symbol)?;
-            print_statement(file, stmt, "╰──", level + 1, pipes)?;
-        }
-        ast::Statement::Case {
-            value, body: stmt, ..
-        } => {
-            writeln!(file, "{indent}{pipe} Case")?;
-            print_expression(
-                file,
-                value,
-                "├──",
-                level + 1,
-                &[pipes, &[level + 1]].concat(),
-            )?;
-            print_statement(file, stmt, "╰──", level + 1, pipes)?;
-        }
-        ast::Statement::Default { body: stmt, .. } => {
-            print_named_statement(file, "Default", stmt, "╰──", level, pipes)?;
-        }
-        ast::Statement::Compound(block) => {
-            writeln!(file, "{indent}{pipe} Block")?;
-            for (i, block_item) in block.items.iter().enumerate() {
-                if i < block.items.len() - 1 {
-                    print_block_item(
-                        file,
-                        block_item,
-                        "├──",
-                        level + 1,
-                        &[pipes, &[level + 1]].concat(),
-                    )?
+                then_stmt,
+                else_stmt,
+            } => {
+                let mut children = vec![
+                    Self::new("Condition", vec![Self::from_expression(cond)]),
+                    Self::new("Then", vec![Self::from_statement(then_stmt)]),
+                ];
+                if let Some(else_stmt) = else_stmt {
+                    children.push(Self::new("Else", vec![Self::from_statement(else_stmt)]))
+                }
+                Self::new("If", children)
+            }
+            ast::Statement::Switch { expr, body, .. } => {
+                let children = vec![
+                    Self::new("Expression", vec![Self::from_expression(expr)]),
+                    Self::from_statement(body),
+                ];
+                Self::new("Switch", children)
+            }
+            ast::Statement::Expression(expr) => Self::from_expression(expr),
+            ast::Statement::Labeled { name, body } => Self::new(
+                format!("Label [{}]", name.symbol),
+                vec![Self::from_statement(body)],
+            ),
+            ast::Statement::Default { body, .. } => {
+                Self::new("Default", vec![Self::from_statement(body)])
+            }
+            ast::Statement::Case { value, body, .. } => {
+                if let ast::Expression::Constant(value) = value.as_ref() {
+                    Self::new(
+                        format!("Case [{}]", value),
+                        vec![Self::from_statement(body)],
+                    )
                 } else {
-                    print_block_item(file, block_item, "╰──", level + 1, pipes)?
-                };
+                    let children = vec![
+                        Self::new("Value", vec![Self::from_expression(value)]),
+                        Self::from_statement(body),
+                    ];
+                    Self::new("Case [invalid]", children)
+                }
             }
-        }
-        ast::Statement::While { cond, body, .. } => {
-            writeln!(file, "{indent}{pipe} While")?;
-            print_named_expression(
-                file,
-                "Condition",
+            ast::Statement::Goto(identifier) => {
+                Self::new(format!("Goto [{}]", identifier.symbol), vec![])
+            }
+            ast::Statement::Compound(block) => {
+                Self::new("Block", block.items.iter().map(Self::from_block_item))
+            }
+            ast::Statement::While { cond, body, .. } => {
+                let children = vec![
+                    Self::new("Condition", vec![Self::from_expression(cond)]),
+                    Self::new("Body", vec![Self::from_statement(body)]),
+                ];
+                Self::new("While", children)
+            }
+            ast::Statement::DoWhile { cond, body, .. } => {
+                let children = vec![
+                    Self::new("Body", vec![Self::from_statement(body)]),
+                    Self::new("Condition", vec![Self::from_expression(cond)]),
+                ];
+                Self::new("DoWhile", children)
+            }
+            ast::Statement::For {
+                init,
                 cond,
-                "├──",
-                level + 1,
-                &[pipes, &[level + 1]].concat(),
-            )?;
-            print_statement(file, body, "╰──", level + 1, pipes)?;
-        }
-        ast::Statement::DoWhile { cond, body, .. } => {
-            writeln!(file, "{indent}{pipe} DoWhile")?;
-            print_statement(
-                file,
+                post,
                 body,
-                "├──",
-                level + 1,
-                &[pipes, &[level + 1]].concat(),
-            )?;
-            print_named_expression(file, "Condition", cond, "╰──", level + 1, pipes)?;
-        }
-        ast::Statement::For {
-            init,
-            cond,
-            post,
-            body,
-            ..
-        } => {
-            writeln!(file, "{indent}{pipe} For")?;
-            match init {
-                ast::ForInit::Decl(d) => {
-                    print_named_var_declaration(
-                        file,
-                        "Initial",
-                        d,
-                        "├──",
-                        level + 1,
-                        &[pipes, &[level + 1]].concat(),
-                    )?;
+                ..
+            } => {
+                let mut children = Vec::new();
+                match init {
+                    ast::ForInit::None => {}
+                    ast::ForInit::Decl(decl) => {
+                        children.push(Self::new("Init", vec![Self::from_var_declaration(decl)]));
+                    }
+                    ast::ForInit::Expr(expr) => {
+                        children.push(Self::new("Init", vec![Self::from_expression(expr)]));
+                    }
                 }
-                ast::ForInit::Expr(e) => {
-                    print_named_expression(
-                        file,
-                        "Initial",
-                        e,
-                        "├──",
-                        level + 1,
-                        &[pipes, &[level + 1]].concat(),
-                    )?;
+                if let Some(cond) = cond {
+                    children.push(Self::new("Condition", vec![Self::from_expression(cond)]))
                 }
-                ast::ForInit::None => {}
+                if let Some(post) = post {
+                    children.push(Self::new("Condition", vec![Self::from_expression(post)]))
+                }
+                children.push(Self::from_statement(body));
+                Self::new("For", children)
             }
-            if let Some(cond) = cond {
-                print_named_expression(
-                    file,
-                    "Condition",
-                    cond,
-                    "├──",
-                    level + 1,
-                    &[pipes, &[level + 1]].concat(),
-                )?;
-            }
-            if let Some(post) = post {
-                print_named_expression(
-                    file,
-                    "Post",
-                    post,
-                    "├──",
-                    level + 1,
-                    &[pipes, &[level + 1]].concat(),
-                )?;
-            }
-            print_statement(file, body, "╰──", level + 1, pipes)?;
-        }
-        ast::Statement::Break(..) => {
-            writeln!(file, "{indent}{pipe} Break")?;
-        }
-        ast::Statement::Continue(..) => {
-            writeln!(file, "{indent}{pipe} Continue")?;
-        }
-        ast::Statement::Null => {
-            writeln!(file, "{indent}{pipe} Empty")?;
+            ast::Statement::Break(_) => Self::new("Break", vec![]),
+            ast::Statement::Continue(_) => Self::new("Continue", vec![]),
+            ast::Statement::Null => Self::new("Empty", vec![]),
         }
     }
-    Ok(())
-}
-
-fn print_expression(
-    file: &mut impl Write,
-    expression: &ast::Expression,
-    pipe: &str,
-    level: usize,
-    pipes: &[usize],
-) -> Result<()> {
-    let indent = make_indent(level, pipes);
-    match expression {
-        ast::Expression::Constant(value) => {
-            writeln!(file, "{indent}{pipe} Constant [{value}]")?;
+    fn from_var_declaration(declaration: &ast::VarDeclaration) -> PrettyAst {
+        let mut children = vec![];
+        if let Some(init) = &declaration.init {
+            children.push(Self::from_expression(init))
         }
-        ast::Expression::Var(value) => {
-            writeln!(file, "{indent}{pipe} Var [{value}]")?;
-        }
-        ast::Expression::Unary { op, expr } => {
-            writeln!(file, "{indent}{pipe} Unary [{}]", unary_op(op))?;
-            print_expression(file, expr, "╰──", level + 1, pipes)?;
-        }
-        ast::Expression::Postfix { op, expr } => {
-            writeln!(file, "{indent}{pipe} Postfix [{}]", postfix_op(op))?;
-            print_expression(file, expr, "╰──", level + 1, pipes)?;
-        }
-        ast::Expression::Binary { op, left, right } => {
-            writeln!(file, "{indent}{pipe} Binary [{}]", binary_op(op))?;
-            print_expression(
-                file,
-                left,
-                "├──",
-                level + 1,
-                &[pipes, &[level + 1]].concat(),
-            )?;
-            print_expression(file, right, "╰──", level + 1, pipes)?;
-        }
-        ast::Expression::Assignment { op, left, right } => {
-            writeln!(file, "{indent}{pipe} Assign [{}]", assign_op(op))?;
-            print_expression(
-                file,
-                left,
-                "├──",
-                level + 1,
-                &[pipes, &[level + 1]].concat(),
-            )?;
-            print_expression(file, right, "╰──", level + 1, pipes)?;
-        }
-        ast::Expression::Conditional {
-            cond,
-            then_expr,
-            else_expr,
-        } => {
-            writeln!(file, "{indent}{pipe} Cond [?]")?;
-            print_expression(
-                file,
+        Self::new(format!("Var [{}]", declaration.name.symbol), children)
+    }
+    fn from_expression(expression: &ast::Expression) -> PrettyAst {
+        match expression {
+            ast::Expression::Constant(value) => Self::new(format!("Constant [{value}]"), vec![]),
+            ast::Expression::Var(name) => Self::new(format!("Var [{name}]"), vec![]),
+            ast::Expression::Unary { op, expr } => Self::new(
+                format!("Unary [{}]", Self::unary_op(op)),
+                vec![Self::from_expression(expr)],
+            ),
+            ast::Expression::Postfix { op, expr } => Self::new(
+                format!("Postfix [{}]", Self::postfix_op(op)),
+                vec![Self::from_expression(expr)],
+            ),
+            ast::Expression::Binary { op, left, right } => Self::new(
+                format!("Binary [{}]", Self::binary_op(op)),
+                vec![Self::from_expression(left), Self::from_expression(right)],
+            ),
+            ast::Expression::Assignment { op, left, right } => Self::new(
+                format!("Assign [{}]", Self::assign_op(op)),
+                vec![Self::from_expression(left), Self::from_expression(right)],
+            ),
+            ast::Expression::Conditional {
                 cond,
-                "├──",
-                level + 1,
-                &[pipes, &[level + 1]].concat(),
-            )?;
-            print_expression(
-                file,
                 then_expr,
-                "├──",
-                level + 1,
-                &[pipes, &[level + 1]].concat(),
-            )?;
-            print_expression(file, else_expr, "╰──", level + 1, pipes)?;
+                else_expr,
+            } => {
+                let children = vec![
+                    Self::from_expression(cond),
+                    Self::new("Then", vec![Self::from_expression(then_expr)]),
+                    Self::new("Else", vec![Self::from_expression(else_expr)]),
+                ];
+                Self::new("Conditional [?]", children)
+            }
+            ast::Expression::FunctionCall { name, args } => Self::new(
+                format!("FunctionCall [{}]", name.symbol),
+                args.iter().map(|arg| Self::from_expression(arg)),
+            ),
         }
-        ast::Expression::FunctionCall { name, args } => {
-            writeln!(file, "{indent}{pipe} FunctionCall [{}]", name.symbol)?;
-            for (i, arg) in args.iter().enumerate() {
-                if i < args.len() - 1 {
-                    print_expression(file, arg, "├──", level + 1, &[pipes, &[level + 1]].concat())?;
-                } else {
-                    print_expression(file, arg, "╰──", level + 1, pipes)?;
-                }
+    }
+    fn from_block_item(item: &ast::BlockItem) -> PrettyAst {
+        match item {
+            ast::BlockItem::Stmt(s) => Self::from_statement(s),
+            ast::BlockItem::Decl(d) => match d.as_ref() {
+                ast::Declaration::Var(d) => Self::from_var_declaration(d),
+                ast::Declaration::Function(d) => Self::from_function_declaration(d),
+            },
+        }
+    }
+    fn from_identifier(identifier: &ast::Identifier) -> PrettyAst {
+        Self::new(&identifier.symbol, vec![])
+    }
+
+    fn write(
+        &self,
+        file: &mut impl Write,
+        pipe: &str,
+        level: usize,
+        pipes: &[usize],
+    ) -> Result<()> {
+        let indent = Self::make_indent(level, pipes);
+        writeln!(file, "{indent}{pipe}{}", self.label)?;
+        for (i, child) in self.children.iter().enumerate() {
+            if i < self.children.len() - 1 {
+                child.write(file, "├── ", level + 1, &[pipes, &[level + 1]].concat())?;
+            } else {
+                child.write(file, "╰── ", level + 1, pipes)?;
             }
         }
+        Ok(())
     }
-    Ok(())
-}
 
-fn binary_op(op: &ast::BinaryOp) -> &str {
-    use ast::BinaryOp::*;
-    match op {
-        Add => "+",
-        Subtract => "-",
-        Multiply => "*",
-        Divide => "/",
-        Reminder => "%",
-        BinAnd => "&",
-        BinOr => "|",
-        BinXor => "^",
-        ShiftLeft => "<<",
-        ShiftRight => ">>",
-        And => "&&",
-        Or => "||",
-        Equal => "==",
-        NotEqual => "!=",
-        LessThan => "<",
-        LessOrEqualThan => "<=",
-        GreaterThan => ">",
-        GreaterOrEqualThan => ">=",
+    fn make_indent(level: usize, pipes: &[usize]) -> String {
+        let mut indent = String::new();
+        for l in 0..level {
+            if pipes.contains(&l) {
+                indent.push_str("│   ");
+            } else {
+                indent.push_str("    ");
+            }
+        }
+        indent
     }
-}
 
-fn assign_op(op: &ast::AssignOp) -> &str {
-    use ast::AssignOp::*;
-    match op {
-        Equal => "=",
-        AddEqual => "+=",
-        SubEqual => "-=",
-        MulEqual => "*=",
-        DivEqual => "/=",
-        ModEqual => "&=",
-        BitAndEqual => "&=",
-        BitOrEqual => "|=",
-        BitXorEqual => "^=",
-        ShiftLeftEqual => "<<=",
-        ShiftRightEqual => ">>=",
+    fn binary_op(op: &ast::BinaryOp) -> &str {
+        use ast::BinaryOp::*;
+        match op {
+            Add => "+",
+            Subtract => "-",
+            Multiply => "*",
+            Divide => "/",
+            Reminder => "%",
+            BinAnd => "&",
+            BinOr => "|",
+            BinXor => "^",
+            ShiftLeft => "<<",
+            ShiftRight => ">>",
+            And => "&&",
+            Or => "||",
+            Equal => "==",
+            NotEqual => "!=",
+            LessThan => "<",
+            LessOrEqualThan => "<=",
+            GreaterThan => ">",
+            GreaterOrEqualThan => ">=",
+        }
     }
-}
 
-fn unary_op(op: &ast::UnaryOp) -> &str {
-    use ast::UnaryOp::*;
-    match op {
-        Complement => "~",
-        Negate => "-",
-        Not => "!",
-        Increment => "++",
-        Decrement => "--",
+    fn assign_op(op: &ast::AssignOp) -> &str {
+        use ast::AssignOp::*;
+        match op {
+            Equal => "=",
+            AddEqual => "+=",
+            SubEqual => "-=",
+            MulEqual => "*=",
+            DivEqual => "/=",
+            ModEqual => "&=",
+            BitAndEqual => "&=",
+            BitOrEqual => "|=",
+            BitXorEqual => "^=",
+            ShiftLeftEqual => "<<=",
+            ShiftRightEqual => ">>=",
+        }
     }
-}
 
-fn postfix_op(op: &ast::PostfixOp) -> &str {
-    use ast::PostfixOp::*;
-    match op {
-        Increment => "++",
-        Decrement => "--",
+    fn unary_op(op: &ast::UnaryOp) -> &str {
+        use ast::UnaryOp::*;
+        match op {
+            Complement => "~",
+            Negate => "-",
+            Not => "!",
+            Increment => "++",
+            Decrement => "--",
+        }
+    }
+
+    fn postfix_op(op: &ast::PostfixOp) -> &str {
+        use ast::PostfixOp::*;
+        match op {
+            Increment => "++",
+            Decrement => "--",
+        }
     }
 }
