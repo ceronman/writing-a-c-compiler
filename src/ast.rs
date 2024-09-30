@@ -26,9 +26,7 @@ pub enum BlockItem {
 
 #[derive(Debug)]
 pub enum Statement {
-    Return {
-        expr: Node<Expression>,
-    },
+    Return(Node<Expression>),
     If {
         cond: Node<Expression>,
         then_stmt: Node<Statement>,

@@ -90,9 +90,7 @@ impl TypeChecker {
 
     fn check_statement(&mut self, stmt: &Node<Statement>) -> Result<()> {
         match stmt.as_ref() {
-            Statement::Return { expr } | Statement::Expression(expr) => {
-                self.check_expression(expr)?
-            }
+            Statement::Return(expr) | Statement::Expression(expr) => self.check_expression(expr)?,
             Statement::If {
                 cond,
                 then_stmt,

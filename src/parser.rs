@@ -370,7 +370,7 @@ impl<'src> Parser<'src> {
         self.expect(TokenKind::Return)?;
         let expr = self.expression()?;
         let end = self.expect(TokenKind::Semicolon)?.span;
-        Ok(Node::from(begin + end, Statement::Return { expr }))
+        Ok(Node::from(begin + end, Statement::Return(expr)))
     }
 
     fn expression(&mut self) -> Result<Node<Expression>> {

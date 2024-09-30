@@ -128,7 +128,7 @@ impl TackyGenerator {
 
     fn emit_statement(&mut self, stmt: &ast::Statement) {
         match stmt {
-            ast::Statement::Return { expr } => {
+            ast::Statement::Return(expr) => {
                 let val = self.emit_expr(expr);
                 self.instructions.push(Instruction::Return(val));
             }

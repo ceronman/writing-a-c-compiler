@@ -125,7 +125,7 @@ impl Resolver {
 
     fn resolve_statement(&mut self, stmt: &mut Node<Statement>) -> Result<()> {
         match stmt.as_mut() {
-            Statement::Return { expr } | Statement::Expression(expr) => {
+            Statement::Return(expr) | Statement::Expression(expr) => {
                 self.resolve_expression(expr)?;
             }
             Statement::If {

@@ -225,9 +225,7 @@ impl PrettyAst {
     }
     fn from_statement(statement: &ast::Statement) -> PrettyAst {
         match statement {
-            ast::Statement::Return { expr } => {
-                Self::new("Return", vec![Self::from_expression(expr)])
-            }
+            ast::Statement::Return(expr) => Self::new("Return", vec![Self::from_expression(expr)]),
             ast::Statement::If {
                 cond,
                 then_stmt,
