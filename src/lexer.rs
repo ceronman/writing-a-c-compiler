@@ -40,8 +40,9 @@ pub enum TokenKind {
     For,
     Break,
     Continue,
-
     Return,
+    Static,
+    Extern,
 
     Plus,
     PlusPlus,
@@ -111,6 +112,8 @@ impl Display for TokenKind {
             TokenKind::Break => "'break'",
             TokenKind::Continue => "'continue'",
             TokenKind::Return => "'return'",
+            TokenKind::Static => "'static'",
+            TokenKind::Extern => "'extern'",
             TokenKind::Plus => "'+'",
             TokenKind::PlusPlus => "'++'",
             TokenKind::PlusEqual => "'+='",
@@ -315,6 +318,8 @@ impl<'src> Lexer<'src> {
             "for" => TokenKind::For,
             "break" => TokenKind::Break,
             "continue" => TokenKind::Continue,
+            "static" => TokenKind::Static,
+            "extern" => TokenKind::Extern,
             _ => TokenKind::Identifier,
         }
     }
