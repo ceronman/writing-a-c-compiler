@@ -22,8 +22,11 @@ struct Resolution {
 impl Resolver {
     fn resolve(mut self, mut program: Node<Program>) -> Result<Node<Program>> {
         self.begin_scope();
-        for decl in &mut program.functions {
-            self.resolve_function_declaration(decl)?;
+        for decl in &mut program.declarations {
+            match decl.as_mut() {
+                Declaration::Var(_) => todo!(),
+                Declaration::Function(d) => self.resolve_function_declaration(d)?,
+            };
         }
         self.end_scope();
         Ok(program)

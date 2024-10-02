@@ -20,8 +20,11 @@ enum Type {
 
 impl TypeChecker {
     fn check(&mut self, program: &Program) -> Result<()> {
-        for function in &program.functions {
-            self.check_function_declaration(function, true)?;
+        for decl in &program.declarations {
+            match decl.as_ref() {
+                Declaration::Var(_) => todo!(),
+                Declaration::Function(f) => self.check_function_declaration(f, true)?,
+            }
         }
         Ok(())
     }

@@ -3,6 +3,7 @@ use crate::parser;
 use crate::semantic;
 use crate::tacky;
 
+use crate::ast::StorageClass;
 use anyhow::Result;
 use std::io::Write;
 
@@ -201,10 +202,16 @@ impl PrettyAst {
         Self::new(
             "Program",
             program
-                .functions
+                .declarations
                 .iter()
-                .map(|f| Self::from_function_declaration(f)),
+                .map(|f| Self::from_declaration(f)),
         )
+    }
+    fn from_declaration(declaration: &ast::Declaration) -> PrettyAst {
+        match declaration {
+            ast::Declaration::Var(d) => Self::from_var_declaration(d),
+            ast::Declaration::Function(d) => Self::from_function_declaration(d),
+        }
     }
     fn from_function_declaration(function: &ast::FunctionDeclaration) -> PrettyAst {
         let mut children = Vec::new();
@@ -221,7 +228,38 @@ impl PrettyAst {
                 body.items.iter().map(Self::from_block_item),
             ))
         }
-        Self::new(format!("Function [{}]", &function.name.symbol), children)
+        Self::new(
+            format!(
+                "Function [{}{}]",
+                Self::storage_class(&function.storage_class),
+                &function.name.symbol
+            ),
+            children,
+        )
+    }
+    fn from_var_declaration(declaration: &ast::VarDeclaration) -> PrettyAst {
+        let mut children = vec![];
+        if let Some(init) = &declaration.init {
+            children.push(Self::from_expression(init))
+        }
+        Self::new(
+            format!(
+                "VarDeclaration [{}{}]",
+                Self::storage_class(&declaration.storage_class),
+                declaration.name.symbol
+            ),
+            children,
+        )
+    }
+    fn storage_class(storage: &Option<ast::Node<StorageClass>>) -> &str {
+        if let Some(s) = storage {
+            match s.as_ref() {
+                StorageClass::Static => "static ",
+                StorageClass::Extern => "extern ",
+            }
+        } else {
+            ""
+        }
     }
     fn from_statement(statement: &ast::Statement) -> PrettyAst {
         match statement {
@@ -320,13 +358,6 @@ impl PrettyAst {
             ast::Statement::Null => Self::new("Empty", vec![]),
         }
     }
-    fn from_var_declaration(declaration: &ast::VarDeclaration) -> PrettyAst {
-        let mut children = vec![];
-        if let Some(init) = &declaration.init {
-            children.push(Self::from_expression(init))
-        }
-        Self::new(format!("Var [{}]", declaration.name.symbol), children)
-    }
     fn from_expression(expression: &ast::Expression) -> PrettyAst {
         match expression {
             ast::Expression::Constant(value) => Self::new(format!("Constant [{value}]"), vec![]),
@@ -368,10 +399,7 @@ impl PrettyAst {
     fn from_block_item(item: &ast::BlockItem) -> PrettyAst {
         match item {
             ast::BlockItem::Stmt(s) => Self::from_statement(s),
-            ast::BlockItem::Decl(d) => match d.as_ref() {
-                ast::Declaration::Var(d) => Self::from_var_declaration(d),
-                ast::Declaration::Function(d) => Self::from_function_declaration(d),
-            },
+            ast::BlockItem::Decl(d) => Self::from_declaration(d),
         }
     }
     fn from_identifier(identifier: &ast::Identifier) -> PrettyAst {

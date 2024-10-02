@@ -3,7 +3,8 @@ mod test;
 
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration,
-    Identifier, Node, PostfixOp, Program, Statement, SwitchLabels, UnaryOp, VarDeclaration,
+    Identifier, Node, PostfixOp, Program, Statement, StorageClass, SwitchLabels, UnaryOp,
+    VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{Lexer, Token, TokenKind};
@@ -29,12 +30,12 @@ impl<'src> Parser<'src> {
 
     fn program(&mut self) -> Result<Node<Program>> {
         let begin = self.current.span;
-        let mut functions = Vec::new();
+        let mut declarations = Vec::new();
         while self.current.kind != TokenKind::Eof {
-            functions.push(self.function_declaration()?);
+            declarations.push(self.declaration()?);
         }
         let end = self.expect(TokenKind::Eof)?.span;
-        Ok(Node::from(begin + end, Program { functions }))
+        Ok(Node::from(begin + end, Program { declarations }))
     }
 
     fn block(&mut self) -> Result<Node<Block>> {
@@ -50,7 +51,7 @@ impl<'src> Parser<'src> {
     }
 
     fn block_item(&mut self) -> Result<BlockItem> {
-        let block = if self.current.kind == TokenKind::Int {
+        let block = if self.is_specifier() {
             BlockItem::Decl(self.declaration()?)
         } else {
             BlockItem::Stmt(self.statement()?)
@@ -58,33 +59,9 @@ impl<'src> Parser<'src> {
         Ok(block)
     }
 
-    fn var_declaration(&mut self) -> Result<Node<VarDeclaration>> {
-        let Node { span, data } = self.declaration()?;
-        let Declaration::Var(decl) = *data else {
-            return Err(CompilerError {
-                kind: ErrorKind::Parse,
-                msg: "Expected variable declaration, but found function declaration".into(),
-                span,
-            });
-        };
-        Ok(Node::from(span, decl))
-    }
-
-    fn function_declaration(&mut self) -> Result<Node<FunctionDeclaration>> {
-        let Node { span, data } = self.declaration()?;
-        let Declaration::Function(decl) = *data else {
-            return Err(CompilerError {
-                kind: ErrorKind::Parse,
-                msg: "Expected function declaration, but found variable declaration".into(),
-                span,
-            });
-        };
-        Ok(Node::from(span, decl))
-    }
-
     fn declaration(&mut self) -> Result<Node<Declaration>> {
         let begin = self.current.span;
-        self.expect(TokenKind::Int)?;
+        let (_, storage_class) = self.type_and_storage()?;
         let name = self.identifier()?;
 
         if self.matches(TokenKind::OpenParen) {
@@ -114,6 +91,7 @@ impl<'src> Parser<'src> {
                         name,
                         params,
                         body: Some(body),
+                        storage_class,
                     }),
                 ))
             } else {
@@ -124,6 +102,7 @@ impl<'src> Parser<'src> {
                         name,
                         params,
                         body: None,
+                        storage_class,
                     }),
                 ))
             }
@@ -136,8 +115,66 @@ impl<'src> Parser<'src> {
             let end = self.expect(TokenKind::Semicolon)?.span;
             Ok(Node::from(
                 begin + end,
-                Declaration::Var(VarDeclaration { name, init }),
+                Declaration::Var(VarDeclaration {
+                    name,
+                    init,
+                    storage_class,
+                }),
             ))
+        }
+    }
+
+    fn is_specifier(&self) -> bool {
+        matches!(
+            self.current.kind,
+            TokenKind::Int | TokenKind::Extern | TokenKind::Static
+        )
+    }
+
+    fn type_and_storage(&mut self) -> Result<(Token, Option<Node<StorageClass>>)> {
+        let mut ty: Option<Token> = None;
+        let mut storage: Option<Node<StorageClass>> = None;
+        loop {
+            let token = self.current;
+            match token.kind {
+                TokenKind::Int => {
+                    if ty.is_some() {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Parse,
+                            msg: "Duplicated type in declaration".to_string(),
+                            span: token.span,
+                        });
+                    }
+                    ty = Some(token);
+                    self.advance();
+                }
+                TokenKind::Static | TokenKind::Extern => {
+                    if storage.is_some() {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Parse,
+                            msg: "Duplicated storage class in declaration".to_string(),
+                            span: token.span,
+                        });
+                    }
+                    let s = match token.kind {
+                        TokenKind::Static => StorageClass::Static,
+                        TokenKind::Extern => StorageClass::Extern,
+                        _ => unreachable!(),
+                    };
+                    storage = Some(Node::from(token.span, s));
+                    self.advance();
+                }
+                _ => break,
+            }
+        }
+        if let Some(ty) = ty {
+            Ok((ty, storage))
+        } else {
+            Err(CompilerError {
+                kind: ErrorKind::Parse,
+                msg: "Expected type specifier in declaration".to_string(),
+                span: self.current.span,
+            })
         }
     }
 
@@ -212,7 +249,18 @@ impl<'src> Parser<'src> {
                 self.advance();
                 ForInit::None
             }
-            TokenKind::Int => ForInit::Decl(self.var_declaration()?),
+            // TODO: unify with self.specifier()
+            TokenKind::Int | TokenKind::Static | TokenKind::Extern => {
+                let Node { span, data } = self.declaration()?;
+                let Declaration::Var(decl) = *data else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Parse,
+                        msg: "Expected variable declaration, but found function declaration".into(),
+                        span,
+                    });
+                };
+                ForInit::Decl(Node::from(span, decl))
+            }
             _ => {
                 let expr = self.expression()?;
                 self.expect(TokenKind::Semicolon)?;
@@ -686,7 +734,7 @@ impl<'src> Parser<'src> {
 
             Err(CompilerError {
                 kind: ErrorKind::Parse,
-                msg: format!("Expected {expected}, but found {found}",),
+                msg: format!("Expected {expected}, but found {found}"),
                 span: token.span,
             })
         }

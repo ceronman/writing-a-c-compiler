@@ -3,6 +3,7 @@ pub mod interpreter;
 mod test;
 
 use crate::ast;
+use crate::ast::Declaration;
 use crate::symbol::Symbol;
 
 #[derive(Debug, Clone)]
@@ -535,14 +536,19 @@ impl TackyGenerator {
 pub fn emit(program: &ast::Program) -> Program {
     let mut functions = Vec::new();
     let mut generator = TackyGenerator::default();
-    for function in &program.functions {
+    for decl in &program.declarations {
         generator.instructions.clear();
-        let Some(body) = &function.body else { continue };
-        functions.push(Function {
-            name: function.name.symbol.clone(),
-            params: function.params.iter().map(|i| i.symbol.clone()).collect(),
-            body: generator.emit_instructions(body),
-        });
+        match decl.as_ref() {
+            Declaration::Var(_) => todo!(),
+            Declaration::Function(function) => {
+                let Some(body) = &function.body else { continue };
+                functions.push(Function {
+                    name: function.name.symbol.clone(),
+                    params: function.params.iter().map(|i| i.symbol.clone()).collect(),
+                    body: generator.emit_instructions(body),
+                });
+            }
+        }
     }
     Program { functions }
 }

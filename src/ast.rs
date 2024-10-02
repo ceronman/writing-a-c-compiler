@@ -10,7 +10,7 @@ pub struct Node<T> {
 
 #[derive(Debug)]
 pub struct Program {
-    pub functions: Vec<Node<FunctionDeclaration>>,
+    pub declarations: Vec<Node<Declaration>>,
 }
 
 #[derive(Debug)]
@@ -138,6 +138,7 @@ pub enum Declaration {
 pub struct VarDeclaration {
     pub name: Node<Identifier>,
     pub init: Option<Node<Expression>>,
+    pub storage_class: Option<Node<StorageClass>>,
 }
 
 #[derive(Debug)]
@@ -145,6 +146,13 @@ pub struct FunctionDeclaration {
     pub name: Node<Identifier>,
     pub params: Vec<Node<Identifier>>,
     pub body: Option<Node<Block>>,
+    pub storage_class: Option<Node<StorageClass>>,
+}
+
+#[derive(Debug)]
+pub enum StorageClass {
+    Static,
+    Extern,
 }
 
 #[derive(Debug)]

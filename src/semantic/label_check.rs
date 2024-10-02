@@ -1,5 +1,6 @@
 use crate::ast::{
-    Block, BlockItem, Expression, FunctionDeclaration, Node, Program, Statement, SwitchLabels,
+    Block, BlockItem, Declaration, Expression, FunctionDeclaration, Node, Program, Statement,
+    SwitchLabels,
 };
 use crate::error::{CompilerError, ErrorKind};
 use crate::symbol::Symbol;
@@ -20,11 +21,14 @@ enum LabelKind {
 
 impl LabelChecker {
     fn check(mut self, mut program: Node<Program>) -> crate::error::Result<Node<Program>> {
-        for decl in &mut program.functions {
+        for decl in &mut program.declarations {
             self.labels.clear();
             debug_assert!(self.label_stack.is_empty());
             debug_assert!(self.switch_labels.is_empty());
-            self.check_function_declaration(decl)?;
+            match decl.as_mut() {
+                Declaration::Var(_) => todo!(),
+                Declaration::Function(d) => self.check_function_declaration(d)?,
+            }
         }
 
         Ok(program)
