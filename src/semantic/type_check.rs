@@ -1,15 +1,43 @@
-use crate::ast::{
-    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Node, Program,
-    Statement, VarDeclaration,
-};
+use crate::ast::{Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Node, Program, Statement, StorageClass, VarDeclaration};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 #[derive(Default)]
 struct TypeChecker {
-    types: HashMap<Symbol, Type>,
-    defined_functions: HashSet<Symbol>,
+    symbol_table: HashMap<Symbol, SymbolData>,
+}
+
+struct SymbolData {
+    ty: Type,
+    attrs: Attributes
+}
+
+impl SymbolData {
+    fn local() -> Self {
+        SymbolData {
+            ty: Type::Int,
+            attrs: Attributes::Local
+        }
+    }
+}
+
+enum Attributes {
+    Function {
+        defined: bool,
+        global: bool
+    },
+    Static {
+        initial_value: InitialValue,
+        global: bool
+    },
+    Local
+}
+
+enum InitialValue {
+    Tentative,
+    Initial(i64),
+    NoInitializer
 }
 
 #[derive(Eq, PartialEq)]
@@ -30,7 +58,7 @@ impl TypeChecker {
     }
 
     fn check_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
-        self.types.insert(decl.name.symbol.clone(), Type::Int);
+        self.symbol_table.insert(decl.name.symbol.clone(), SymbolData::local());
         if let Some(init) = &decl.init {
             self.check_expression(init)?;
         }
@@ -47,23 +75,47 @@ impl TypeChecker {
             num_params: decl.params.len(),
         };
         let has_body = decl.body.is_some();
-        if let Some(prev_ty) = self.types.get(name) {
-            if *prev_ty != this_ty {
+        let mut already_defined = false;
+        let mut is_global = !matches!(decl.storage_class.as_ref().map(Node::as_ref), Some(StorageClass::Static));
+
+        if let Some(data) = self.symbol_table.get(name) {
+            if data.ty != this_ty {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
                     msg: format!("Conflicting declaration types for '{name}'"),
                     span: decl.name.span,
                 });
+            };
+            let Attributes::Function{ defined, global } = data.attrs else {
+                return Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: format!("Function '{name}' does not have function attributes"),
+                    span: decl.name.span,
+                });
+            };
+            already_defined = defined;
+            if already_defined && has_body {
+                return Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: format!("Function '{name}' is defined more than once"),
+                    span: decl.name.span,
+                });
             }
+            let storage = decl.storage_class.as_ref().map(Node::as_ref);
+            if global && matches!(storage, Some(StorageClass::Static)) {
+                return Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: format!("Function '{name}' was previously declared as non-static"),
+                    span: decl.name.span,
+                });
+            }
+            is_global = global
         }
-        if self.defined_functions.contains(name) && has_body {
-            return Err(CompilerError {
-                kind: ErrorKind::Type,
-                msg: format!("Function '{name}' is defined more than once"),
-                span: decl.name.span,
-            });
-        }
-        self.types.insert(name.clone(), this_ty);
+        let data = SymbolData {
+            ty: this_ty,
+            attrs: Attributes::Function { defined: already_defined || has_body, global: is_global },
+        };
+        self.symbol_table.insert(name.clone(), data);
         if let Some(body) = &decl.body {
             if !top_level {
                 return Err(CompilerError {
@@ -72,9 +124,8 @@ impl TypeChecker {
                     span: decl.name.span,
                 });
             }
-            self.defined_functions.insert(name.clone());
             for param in &decl.params {
-                self.types.insert(param.symbol.clone(), Type::Int);
+                self.symbol_table.insert(param.symbol.clone(), SymbolData::local());
             }
             self.check_block(body)?;
         }
@@ -159,7 +210,14 @@ impl TypeChecker {
         match expr.as_ref() {
             Expression::Constant(_) => {}
             Expression::Var(name) => {
-                let Some(Type::Int) = self.types.get(name) else {
+                let Some(data) = self.symbol_table.get(name) else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Unknown type of expression".to_string(),
+                        span: expr.span,
+                    });
+                };
+                if data.ty != Type::Int {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Function used as variable".to_string(),
@@ -176,7 +234,14 @@ impl TypeChecker {
             }
             Expression::FunctionCall { name, args } => {
                 let symbol = name.symbol.clone();
-                let Some(Type::Function { num_params }) = self.types.get(&symbol) else {
+                let Some(data) = self.symbol_table.get(&symbol) else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Unknown type of expression".to_string(),
+                        span: expr.span,
+                    });
+                };
+                let Type::Function { num_params } = &data.ty else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Variable used as function name".to_string(),

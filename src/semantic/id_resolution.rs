@@ -1,7 +1,4 @@
-use crate::ast::{
-    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Node,
-    Program, Statement, UnaryOp, VarDeclaration,
-};
+use crate::ast::{Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Node, Program, Statement, StorageClass, UnaryOp, VarDeclaration};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
 use std::collections::{HashMap, VecDeque};
@@ -24,7 +21,7 @@ impl Resolver {
         self.begin_scope();
         for decl in &mut program.declarations {
             match decl.as_mut() {
-                Declaration::Var(_) => todo!(),
+                Declaration::Var(d) => self.resolve_var_declaration(d)?,
                 Declaration::Function(d) => self.resolve_function_declaration(d)?,
             };
         }
@@ -53,23 +50,36 @@ impl Resolver {
         let symbol = &decl.name.symbol;
         let unique_name = self.make_name(symbol).clone();
         let scope = self.scopes.front_mut().expect("Invalid scope state");
-        if scope.contains_key(symbol) {
-            return Err(CompilerError {
-                kind: ErrorKind::Resolve,
-                msg: format!("Variable '{symbol}' was already declared"),
-                span: decl.name.span,
-            });
+        let storage = decl.storage_class.as_ref().map(Node::as_ref);
+        if let Some(entry) = scope.get(symbol) {
+            if !(entry.linked && matches!(storage, Some(StorageClass::Extern))) {
+                return Err(CompilerError {
+                    kind: ErrorKind::Resolve,
+                    msg: format!("Variable '{symbol}' was already declared"),
+                    span: decl.name.span,
+                });
+            }
         }
-        scope.insert(
-            symbol.clone(),
-            Resolution {
-                name: unique_name.clone(),
-                linked: false,
-            },
-        );
-        decl.name.symbol = unique_name;
-        if let Some(init) = &mut decl.init {
-            self.resolve_expression(init)?;
+        if let Some(StorageClass::Extern) = storage {
+            scope.insert(
+                symbol.clone(),
+                Resolution {
+                    name: decl.name.symbol.clone(),
+                    linked: true,
+                },
+            );
+        } else {
+            scope.insert(
+                symbol.clone(),
+                Resolution {
+                    name: unique_name.clone(),
+                    linked: false,
+                },
+            );
+            decl.name.symbol = unique_name;
+            if let Some(init) = &mut decl.init {
+                self.resolve_expression(init)?;
+            }
         }
         Ok(())
     }
