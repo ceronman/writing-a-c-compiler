@@ -26,7 +26,7 @@ impl LabelChecker {
             debug_assert!(self.label_stack.is_empty());
             debug_assert!(self.switch_labels.is_empty());
             match decl.as_mut() {
-                Declaration::Var(_) => todo!(),
+                Declaration::Var(_) => {}
                 Declaration::Function(d) => self.check_function_declaration(d)?,
             }
         }

@@ -240,3 +240,13 @@ impl<T> Node<T> {
         }
     }
 }
+
+pub trait InnerRef<T> {
+    fn inner_ref(&self) -> Option<&T>;
+}
+
+impl<T> InnerRef<T> for Option<Node<T>> {
+    fn inner_ref(&self) -> Option<&T> {
+        self.as_ref().map(Node::as_ref)
+    }
+}

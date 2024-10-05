@@ -1,4 +1,7 @@
-use crate::ast::{Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Node, Program, Statement, StorageClass, UnaryOp, VarDeclaration};
+use crate::ast::{
+    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Node,
+    Program, Statement, StorageClass, UnaryOp, VarDeclaration,
+};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
 use std::collections::{HashMap, VecDeque};
@@ -21,7 +24,7 @@ impl Resolver {
         self.begin_scope();
         for decl in &mut program.declarations {
             match decl.as_mut() {
-                Declaration::Var(d) => self.resolve_var_declaration(d)?,
+                Declaration::Var(d) => self.resolve_file_var_declaration(d)?,
                 Declaration::Function(d) => self.resolve_function_declaration(d)?,
             };
         }
@@ -41,14 +44,25 @@ impl Resolver {
 
     fn resolve_declaration(&mut self, decl: &mut Declaration) -> Result<()> {
         match decl {
-            Declaration::Var(decl) => self.resolve_var_declaration(decl),
+            Declaration::Var(decl) => self.resolve_local_var_declaration(decl),
             Declaration::Function(decl) => self.resolve_function_declaration(decl),
         }
     }
+    fn resolve_file_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
+        let scope = self.scopes.front_mut().expect("Invalid scope state");
+        scope.insert(
+            decl.name.symbol.clone(),
+            Resolution {
+                name: decl.name.symbol.clone(),
+                linked: true,
+            },
+        );
+        Ok(())
+    }
 
-    fn resolve_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
+    fn resolve_local_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
         let symbol = &decl.name.symbol;
-        let unique_name = self.make_name(symbol).clone();
+        let unique_name = self.make_name(symbol);
         let scope = self.scopes.front_mut().expect("Invalid scope state");
         let storage = decl.storage_class.as_ref().map(Node::as_ref);
         if let Some(entry) = scope.get(symbol) {
@@ -183,7 +197,7 @@ impl Resolver {
                     ForInit::Decl(d) => {
                         self.begin_scope();
                         scoped_init = true;
-                        self.resolve_var_declaration(d)?
+                        self.resolve_local_var_declaration(d)?
                     }
                     ForInit::Expr(e) => self.resolve_expression(e)?,
                     ForInit::None => {}

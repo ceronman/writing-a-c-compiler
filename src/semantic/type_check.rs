@@ -1,4 +1,7 @@
-use crate::ast::{Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Node, Program, Statement, StorageClass, VarDeclaration};
+use crate::ast::{
+    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, InnerRef, Node,
+    Program, Statement, StorageClass, VarDeclaration,
+};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
 use std::collections::HashMap;
@@ -10,14 +13,23 @@ struct TypeChecker {
 
 struct SymbolData {
     ty: Type,
-    attrs: Attributes
+    attrs: Attributes,
 }
 
 impl SymbolData {
     fn local() -> Self {
         SymbolData {
             ty: Type::Int,
-            attrs: Attributes::Local
+            attrs: Attributes::Local,
+        }
+    }
+    fn global() -> Self {
+        SymbolData {
+            ty: Type::Int,
+            attrs: Attributes::Static {
+                initial_value: InitialValue::NoInitializer,
+                global: true,
+            },
         }
     }
 }
@@ -25,19 +37,20 @@ impl SymbolData {
 enum Attributes {
     Function {
         defined: bool,
-        global: bool
+        global: bool,
     },
     Static {
         initial_value: InitialValue,
-        global: bool
+        global: bool,
     },
-    Local
+    Local,
 }
 
+#[derive(Clone, Copy)]
 enum InitialValue {
     Tentative,
     Initial(i64),
-    NoInitializer
+    NoInitializer,
 }
 
 #[derive(Eq, PartialEq)]
@@ -50,18 +63,137 @@ impl TypeChecker {
     fn check(&mut self, program: &Program) -> Result<()> {
         for decl in &program.declarations {
             match decl.as_ref() {
-                Declaration::Var(_) => todo!(),
+                Declaration::Var(v) => self.check_file_var_declaration(v)?,
                 Declaration::Function(f) => self.check_function_declaration(f, true)?,
             }
         }
         Ok(())
     }
 
-    fn check_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
-        self.symbol_table.insert(decl.name.symbol.clone(), SymbolData::local());
-        if let Some(init) = &decl.init {
-            self.check_expression(init)?;
+    fn check_local_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
+        let name = decl.name.symbol.clone();
+        if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
+            if let Some(init) = &decl.init {
+                return Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: "Initializers are not allowed in local extern variable declarations"
+                        .into(),
+                    span: init.span,
+                });
+            }
+            if let Some(data) = self.symbol_table.get(&name) {
+                if !matches!(data.ty, Type::Int) {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: format!("Function with name '{name}' already declared"),
+                        span: decl.name.span,
+                    });
+                }
+            } else {
+                self.symbol_table
+                    .insert(decl.name.symbol.clone(), SymbolData::global());
+            }
+        } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
+            let initial_value = if let Some(init) = &decl.init {
+                if let Expression::Constant(value) = init.as_ref() {
+                    InitialValue::Initial(*value)
+                } else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: format!("Non-constant initializer on local static variable '{name}'"),
+                        span: init.span,
+                    });
+                }
+            } else {
+                InitialValue::Initial(0)
+            };
+            self.symbol_table.insert(
+                decl.name.symbol.clone(),
+                SymbolData {
+                    ty: Type::Int,
+                    attrs: Attributes::Static {
+                        initial_value,
+                        global: false,
+                    },
+                },
+            );
+        } else {
+            self.symbol_table
+                .insert(decl.name.symbol.clone(), SymbolData::local());
+            if let Some(init) = &decl.init {
+                self.check_expression(init)?;
+            }
         }
+        Ok(())
+    }
+
+    fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
+        let mut initial_value = if let Some(init) = &decl.init {
+            if let Expression::Constant(value) = init.as_ref() {
+                InitialValue::Initial(*value)
+            } else {
+                return Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: "Non-constant initializer".into(),
+                    span: init.span,
+                });
+            }
+        } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
+            InitialValue::NoInitializer
+        } else {
+            InitialValue::Tentative
+        };
+        let mut global = !matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
+        let name = decl.name.symbol.clone();
+        if let Some(data) = self.symbol_table.get(&name) {
+            if data.ty != Type::Int {
+                return Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: format!("Name '{name}' is already used for a function"),
+                    span: decl.name.span,
+                });
+            }
+            let Attributes::Static {
+                initial_value: old_initial,
+                global: old_global,
+            } = &data.attrs
+            else {
+                return Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: format!("Variable '{name}' does not have variable attributes"),
+                    span: decl.name.span,
+                });
+            };
+            if matches!(decl.storage_class.inner_ref(), Some(StorageClass::Extern)) {
+                global = *old_global
+            } else if *old_global != global {
+                return Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: format!("Variable '{name}' has conflicting linkage"),
+                    span: decl.name.span,
+                });
+            }
+            initial_value = match (initial_value, old_initial) {
+                (InitialValue::Initial(_), InitialValue::Initial(_)) => {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: format!("Variable '{name}' has conflicting definitions"),
+                        span: decl.name.span,
+                    });
+                }
+                (InitialValue::Initial(_), _) => *old_initial,
+                (_, InitialValue::Tentative) => InitialValue::Tentative,
+                _ => initial_value,
+            };
+        }
+        let data = SymbolData {
+            ty: Type::Int,
+            attrs: Attributes::Static {
+                initial_value,
+                global,
+            },
+        };
+        self.symbol_table.insert(name, data);
         Ok(())
     }
 
@@ -70,15 +202,25 @@ impl TypeChecker {
         decl: &FunctionDeclaration,
         top_level: bool,
     ) -> Result<()> {
-        let name = &decl.name.symbol;
+        let name = decl.name.symbol.clone();
         let this_ty = Type::Function {
             num_params: decl.params.len(),
         };
         let has_body = decl.body.is_some();
         let mut already_defined = false;
-        let mut is_global = !matches!(decl.storage_class.as_ref().map(Node::as_ref), Some(StorageClass::Static));
+        let is_static = matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
 
-        if let Some(data) = self.symbol_table.get(name) {
+        if !top_level && is_static {
+            return Err(CompilerError {
+                kind: ErrorKind::Type,
+                msg: "Block scoped function declarations can't be static".into(),
+                span: decl.storage_class.as_ref().unwrap().span,
+            });
+        }
+
+        let mut is_global = !is_static;
+
+        if let Some(data) = self.symbol_table.get(&name) {
             if data.ty != this_ty {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
@@ -86,7 +228,7 @@ impl TypeChecker {
                     span: decl.name.span,
                 });
             };
-            let Attributes::Function{ defined, global } = data.attrs else {
+            let Attributes::Function { defined, global } = data.attrs else {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
                     msg: format!("Function '{name}' does not have function attributes"),
@@ -101,8 +243,7 @@ impl TypeChecker {
                     span: decl.name.span,
                 });
             }
-            let storage = decl.storage_class.as_ref().map(Node::as_ref);
-            if global && matches!(storage, Some(StorageClass::Static)) {
+            if global && is_static {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
                     msg: format!("Function '{name}' was previously declared as non-static"),
@@ -113,9 +254,12 @@ impl TypeChecker {
         }
         let data = SymbolData {
             ty: this_ty,
-            attrs: Attributes::Function { defined: already_defined || has_body, global: is_global },
+            attrs: Attributes::Function {
+                defined: already_defined || has_body,
+                global: is_global,
+            },
         };
-        self.symbol_table.insert(name.clone(), data);
+        self.symbol_table.insert(name, data);
         if let Some(body) = &decl.body {
             if !top_level {
                 return Err(CompilerError {
@@ -125,7 +269,8 @@ impl TypeChecker {
                 });
             }
             for param in &decl.params {
-                self.symbol_table.insert(param.symbol.clone(), SymbolData::local());
+                self.symbol_table
+                    .insert(param.symbol.clone(), SymbolData::local());
             }
             self.check_block(body)?;
         }
@@ -181,7 +326,17 @@ impl TypeChecker {
                 ..
             } => {
                 match init {
-                    ForInit::Decl(d) => self.check_var_declaration(d)?,
+                    ForInit::Decl(d) => {
+                        if let Some(storage) = &d.storage_class {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Declarations inside for loops can't have storage class"
+                                    .into(),
+                                span: storage.span,
+                            });
+                        }
+                        self.check_local_var_declaration(d)?
+                    }
                     ForInit::Expr(e) => self.check_expression(e)?,
                     ForInit::None => {}
                 }
@@ -201,7 +356,7 @@ impl TypeChecker {
 
     fn check_declaration(&mut self, decl: &Node<Declaration>) -> Result<()> {
         match decl.as_ref() {
-            Declaration::Var(d) => self.check_var_declaration(d),
+            Declaration::Var(d) => self.check_local_var_declaration(d),
             Declaration::Function(d) => self.check_function_declaration(d, false),
         }
     }
