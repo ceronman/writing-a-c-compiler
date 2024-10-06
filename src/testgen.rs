@@ -177,8 +177,8 @@ use crate::pretty::{{dedent, dump_tacky}};
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
     let indented = indent(source);
     let ast = parser::parse(&indented)?;
-    let ast = semantic::validate(ast)?;
-    let tacky = tacky::emit(&ast);
+    let (ast, symbol_table) = semantic::validate(ast)?;
+    let tacky = tacky::emit(&ast, symbol_table);
     let expected = indent(&pretty::pp_tacky(&tacky)?);
     writeln!(file)?;
     writeln!(file, "#[test]")?;
@@ -186,55 +186,6 @@ use crate::pretty::{{dedent, dump_tacky}};
     writeln!(file, "    let src = r#\"{indented}\"#;")?;
     writeln!(file, "    let expected = r#\"{expected}\"#;")?;
     writeln!(file, "    assert_eq!(dump_tacky(src), dedent(expected));")?;
-    writeln!(file, "}}")?;
-
-    Ok(())
-}
-
-pub fn generate_interpreter_tests(path: &Path, source: &str) -> Result<()> {
-    if path
-        .as_os_str()
-        .to_str()
-        .unwrap()
-        .contains("test_for_memory_leaks.c")
-    {
-        return Ok(());
-    }
-    let output = PathBuf::from(file!());
-    let output = output
-        .parent()
-        .unwrap()
-        .parent()
-        .unwrap()
-        .join("src/tacky/interpreter/test.rs");
-    if fs::read_to_string(&output)?.is_empty() {
-        let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
-        writeln!(
-            file,
-            r#"
-use crate::{{parser, semantic, tacky}};
-
-fn run(src: &str) -> i64 {{
-    let ast = parser::parse(src).unwrap();
-    let ast = semantic::validate(ast).unwrap();
-    let tacky = tacky::emit(&ast);
-    tacky::interpreter::run(&tacky)
-}}
-"#
-        )?;
-    }
-    let name = test_name(path);
-    let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
-    let indented = indent(source);
-    let ast = parser::parse(&indented)?;
-    let ast = semantic::validate(ast)?;
-    let tacky = tacky::emit(&ast);
-    let expected = tacky::interpreter::run(&tacky);
-    writeln!(file)?;
-    writeln!(file, "#[test]")?;
-    writeln!(file, "fn test_{name}() {{")?;
-    writeln!(file, "    let src = r#\"{indented}\"#;")?;
-    writeln!(file, "    assert_eq!(run(src), {expected});")?;
     writeln!(file, "}}")?;
 
     Ok(())

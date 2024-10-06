@@ -49,14 +49,6 @@ fn main() -> Result<()> {
             semantic::validate(ast)?; // skip resolution errors
             testgen::generate_tacky_tests(&options.filename, &source)?;
         }
-
-        if let Flag::Interpret = options.flag {
-            lexer::tokenize(&source); // skip lexing errors
-            let ast = parser::parse(&source)?; // skip parsing errors
-            semantic::validate(ast)?; // skip resolution errors
-            testgen::generate_interpreter_tests(&options.filename, &source)?;
-            return Ok(());
-        }
     }
 
     if let Flag::Lex = options.flag {
@@ -71,7 +63,7 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let validated_ast = match semantic::validate(ast) {
+    let (validated_ast, symbol_table) = match semantic::validate(ast) {
         Ok(ast) => ast,
         Err(error) => {
             let annotated = pretty::annotate(&source, &error);
@@ -80,19 +72,15 @@ fn main() -> Result<()> {
     };
 
     if let Flag::Validate = options.flag {
-        print!("{}", pretty_print_ast(&validated_ast)?);
+        println!("{}", pretty_print_ast(&validated_ast)?);
+        println!("{symbol_table:?}");
         return Ok(());
     }
 
-    let tacky = tacky::emit(&validated_ast);
+    let tacky = tacky::emit(&validated_ast, symbol_table);
     if let Flag::Tacky = options.flag {
         println!("{}", pp_tacky(&tacky)?);
         return Ok(());
-    }
-
-    if let Flag::Interpret = options.flag {
-        let result = tacky::interpreter::run(&tacky);
-        std::process::exit(result as i32);
     }
 
     let asm = asm::generate(&tacky);
@@ -126,7 +114,6 @@ enum Flag {
     Parse,
     Validate,
     Tacky,
-    Interpret,
     Codegen,
     Emit,
 }
@@ -141,7 +128,6 @@ fn parse_args() -> Options {
         ["--tacky", path] => (path, Flag::Tacky),
         ["--codegen", path] => (path, Flag::Codegen),
         ["--emit", path] => (path, Flag::Emit),
-        ["--interpret", "--tacky", path] => (path, Flag::Interpret),
         ["-c", path] => (path, Flag::Assemble),
         [path] => (path, Flag::AssembleAndLink),
         _ => {

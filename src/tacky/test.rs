@@ -8,7 +8,7 @@ fn test_chapter_1_valid_multi_digit() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 100
             return 0
         }
@@ -31,7 +31,7 @@ fn test_chapter_1_valid_newlines() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 0
             return 0
         }
@@ -45,7 +45,7 @@ fn test_chapter_1_valid_no_newlines() {
         int main(void){return 0;}
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 0
             return 0
         }
@@ -61,7 +61,7 @@ fn test_chapter_1_valid_return_0() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 0
             return 0
         }
@@ -77,7 +77,7 @@ fn test_chapter_1_valid_return_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 2
             return 0
         }
@@ -91,7 +91,7 @@ fn test_chapter_1_valid_spaces() {
            int main ( void) { return 0 ; }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 0
             return 0
         }
@@ -105,7 +105,7 @@ fn test_chapter_1_valid_tabs() {
         int main ( void) { return 0 ; }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 0
             return 0
         }
@@ -121,7 +121,7 @@ fn test_chapter_2_valid_bitwise() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = ~ 12
             return tmp.0
             return 0
@@ -138,7 +138,7 @@ fn test_chapter_2_valid_bitwise_int_min() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 2147483647
             tmp.1 = ~ tmp.0
             return tmp.1
@@ -156,7 +156,7 @@ fn test_chapter_2_valid_bitwise_zero() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = ~ 0
             return tmp.0
             return 0
@@ -173,7 +173,7 @@ fn test_chapter_2_valid_neg() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 5
             return tmp.0
             return 0
@@ -190,7 +190,7 @@ fn test_chapter_2_valid_neg_zero() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 0
             return tmp.0
             return 0
@@ -207,7 +207,7 @@ fn test_chapter_2_valid_negate_int_max() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 2147483647
             return tmp.0
             return 0
@@ -224,7 +224,7 @@ fn test_chapter_2_valid_nested_ops() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 3
             tmp.1 = ~ tmp.0
             return tmp.1
@@ -242,7 +242,7 @@ fn test_chapter_2_valid_nested_ops_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = ~ 0
             tmp.1 = - tmp.0
             return tmp.1
@@ -260,7 +260,7 @@ fn test_chapter_2_valid_parens() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 2
             return tmp.0
             return 0
@@ -277,7 +277,7 @@ fn test_chapter_2_valid_parens_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = ~ 2
             return tmp.0
             return 0
@@ -294,7 +294,7 @@ fn test_chapter_2_valid_parens_3() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 4
             tmp.1 = - tmp.0
             return tmp.1
@@ -313,7 +313,7 @@ fn test_chapter_2_valid_redundant_parens() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 10
             return tmp.0
             return 0
@@ -330,7 +330,7 @@ fn test_chapter_3_valid_add() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 + 2
             return tmp.0
             return 0
@@ -347,7 +347,7 @@ fn test_chapter_3_valid_associativity() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 - 2
             tmp.1 = tmp.0 - 3
             return tmp.1
@@ -365,7 +365,7 @@ fn test_chapter_3_valid_associativity_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 6 / 3
             tmp.1 = tmp.0 / 2
             return tmp.1
@@ -383,7 +383,7 @@ fn test_chapter_3_valid_associativity_3() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 3 / 2
             tmp.1 = tmp.0 * 4
             tmp.3 = 5 - 4
@@ -405,7 +405,7 @@ fn test_chapter_3_valid_associativity_and_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 5 * 4
             tmp.1 = tmp.0 / 2
             tmp.4 = 2 + 1
@@ -426,7 +426,7 @@ fn test_chapter_3_valid_div() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 4 / 2
             return tmp.0
             return 0
@@ -443,7 +443,7 @@ fn test_chapter_3_valid_div_neg() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 12
             tmp.1 = tmp.0 / 5
             return tmp.1
@@ -461,7 +461,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_and() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 3 & 5
             return tmp.0
             return 0
@@ -478,7 +478,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_or() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 | 2
             return tmp.0
             return 0
@@ -495,7 +495,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 80 >> 2
             tmp.4 = 7 << 1
             tmp.3 = 5 & tmp.4
@@ -516,7 +516,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_shift_associativity() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 33 << 4
             tmp.1 = tmp.0 >> 2
             return tmp.1
@@ -534,7 +534,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_shift_associativity_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 33 >> 2
             tmp.1 = tmp.0 << 1
             return tmp.1
@@ -552,7 +552,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_shift_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.1 = 4 + 12
             tmp.0 = 40 << tmp.1
             tmp.2 = tmp.0 >> 1
@@ -571,7 +571,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_shiftl() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 35 << 2
             return tmp.0
             return 0
@@ -588,7 +588,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_shiftr() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1000 >> 4
             return tmp.0
             return 0
@@ -605,7 +605,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_shiftr_negative() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 5
             tmp.1 = tmp.0 >> 30
             return tmp.1
@@ -623,7 +623,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_variable_shift_count() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.1 = 2 * 2
             tmp.0 = 4 << tmp.1
             tmp.4 = 1 + 2
@@ -644,7 +644,7 @@ fn test_chapter_3_valid_extra_credit_bitwise_xor() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 7 ^ 1
             return tmp.0
             return 0
@@ -661,7 +661,7 @@ fn test_chapter_3_valid_mod() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 4 % 2
             return tmp.0
             return 0
@@ -678,7 +678,7 @@ fn test_chapter_3_valid_mult() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 2 * 3
             return tmp.0
             return 0
@@ -695,7 +695,7 @@ fn test_chapter_3_valid_parens() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.1 = 3 + 4
             tmp.0 = 2 * tmp.1
             return tmp.0
@@ -713,7 +713,7 @@ fn test_chapter_3_valid_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.1 = 3 * 4
             tmp.0 = 2 + tmp.1
             return tmp.0
@@ -731,7 +731,7 @@ fn test_chapter_3_valid_sub() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 - 2
             return tmp.0
             return 0
@@ -748,7 +748,7 @@ fn test_chapter_3_valid_sub_neg() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.1 = - 1
             tmp.0 = 2 - tmp.1
             return tmp.0
@@ -766,7 +766,7 @@ fn test_chapter_3_valid_unop_add() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = ~ 2
             tmp.1 = tmp.0 + 3
             return tmp.1
@@ -784,7 +784,7 @@ fn test_chapter_3_valid_unop_parens() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 + 1
             tmp.1 = ~ tmp.0
             return tmp.1
@@ -802,7 +802,7 @@ fn test_chapter_4_valid_and_false() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if !10 jump and_false_0
             if !0 jump and_false_0
             tmp.1 = 1
@@ -847,7 +847,7 @@ fn test_chapter_4_valid_and_short_circuit() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if !0 jump and_false_0
             tmp.2 = 1 / 0
             if !tmp.2 jump and_false_0
@@ -873,7 +873,7 @@ fn test_chapter_4_valid_and_true() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if !1 jump and_false_0
             tmp.2 = - 1
             if !tmp.2 jump and_false_0
@@ -899,7 +899,7 @@ fn test_chapter_4_valid_associativity() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 5 >= 0
             tmp.1 = tmp.0 > 1
             tmp.2 = tmp.1 <= 0
@@ -918,7 +918,7 @@ fn test_chapter_4_valid_compare_arithmetic_results() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = ~ 2
             tmp.2 = - 2
             tmp.1 = tmp.0 * tmp.2
@@ -939,7 +939,7 @@ fn test_chapter_4_valid_eq_false() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 == 2
             return tmp.0
             return 0
@@ -956,7 +956,7 @@ fn test_chapter_4_valid_eq_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 3 == 1
             tmp.1 = tmp.0 != 2
             return tmp.1
@@ -974,7 +974,7 @@ fn test_chapter_4_valid_eq_true() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 == 1
             return tmp.0
             return 0
@@ -991,7 +991,7 @@ fn test_chapter_4_valid_extra_credit_bitwise_and_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.1 = 7 == 5
             tmp.0 = 5 & tmp.1
             return tmp.0
@@ -1009,7 +1009,7 @@ fn test_chapter_4_valid_extra_credit_bitwise_or_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.1 = 7 != 5
             tmp.0 = 5 | tmp.1
             return tmp.0
@@ -1027,7 +1027,7 @@ fn test_chapter_4_valid_extra_credit_bitwise_shift_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 20 >> 4
             tmp.2 = 3 << 1
             tmp.1 = tmp.0 <= tmp.2
@@ -1046,7 +1046,7 @@ fn test_chapter_4_valid_extra_credit_bitwise_xor_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.1 = 7 < 5
             tmp.0 = 5 ^ tmp.1
             return tmp.0
@@ -1064,7 +1064,7 @@ fn test_chapter_4_valid_ge_false() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 >= 2
             return tmp.0
             return 0
@@ -1081,7 +1081,7 @@ fn test_chapter_4_valid_ge_true() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 >= 1
             tmp.3 = - 4
             tmp.2 = 1 >= tmp.3
@@ -1101,7 +1101,7 @@ fn test_chapter_4_valid_gt_false() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 > 2
             tmp.2 = 1 > 1
             tmp.1 = tmp.0 + tmp.2
@@ -1120,7 +1120,7 @@ fn test_chapter_4_valid_gt_true() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 15 > 10
             return tmp.0
             return 0
@@ -1137,7 +1137,7 @@ fn test_chapter_4_valid_le_false() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.1 = - 1
             tmp.0 = 1 <= tmp.1
             return tmp.0
@@ -1155,7 +1155,7 @@ fn test_chapter_4_valid_le_true() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 0 <= 2
             tmp.2 = 0 <= 0
             tmp.1 = tmp.0 + tmp.2
@@ -1174,7 +1174,7 @@ fn test_chapter_4_valid_lt_false() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 2 < 1
             return tmp.0
             return 0
@@ -1191,7 +1191,7 @@ fn test_chapter_4_valid_lt_true() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 < 2
             return tmp.0
             return 0
@@ -1208,7 +1208,7 @@ fn test_chapter_4_valid_multi_short_circuit() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if 0 jump or_true_0
             if !0 jump and_false_2
             tmp.4 = 1 / 0
@@ -1243,7 +1243,7 @@ fn test_chapter_4_valid_ne_false() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 0 != 0
             return tmp.0
             return 0
@@ -1260,7 +1260,7 @@ fn test_chapter_4_valid_ne_true() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 1
             tmp.2 = - 2
             tmp.1 = tmp.0 != tmp.2
@@ -1279,7 +1279,7 @@ fn test_chapter_4_valid_nested_ops() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 3
             tmp.1 = ! tmp.0
             return tmp.1
@@ -1297,7 +1297,7 @@ fn test_chapter_4_valid_not() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = ! 5
             return tmp.0
             return 0
@@ -1314,7 +1314,7 @@ fn test_chapter_4_valid_not_sum() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 4 - 4
             tmp.1 = ! tmp.0
             return tmp.1
@@ -1332,7 +1332,7 @@ fn test_chapter_4_valid_not_sum_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 3 - 44
             tmp.1 = ! tmp.0
             return tmp.1
@@ -1350,7 +1350,7 @@ fn test_chapter_4_valid_not_zero() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = ! 0
             return tmp.0
             return 0
@@ -1367,7 +1367,7 @@ fn test_chapter_4_valid_operate_on_booleans() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if !0 jump and_false_0
             if !1 jump and_false_0
             tmp.1 = 1
@@ -1404,7 +1404,7 @@ fn test_chapter_4_valid_or_false() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if 0 jump or_true_0
             if 0 jump or_true_0
             tmp.1 = 0
@@ -1429,7 +1429,7 @@ fn test_chapter_4_valid_or_short_circuit() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if 1 jump or_true_0
             tmp.2 = 1 / 0
             if tmp.2 jump or_true_0
@@ -1455,7 +1455,7 @@ fn test_chapter_4_valid_or_true() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if 4 jump or_true_0
             if 0 jump or_true_0
             tmp.1 = 0
@@ -1500,7 +1500,7 @@ fn test_chapter_4_valid_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if 1 jump or_true_0
             if !0 jump and_false_2
             if !2 jump and_false_2
@@ -1534,7 +1534,7 @@ fn test_chapter_4_valid_precedence_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if 1 jump or_true_0
             if 0 jump or_true_0
             tmp.1 = 0
@@ -1568,7 +1568,7 @@ fn test_chapter_4_valid_precedence_3() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.1 = 2 >= 0
             tmp.0 = 2 == tmp.1
             return tmp.0
@@ -1586,7 +1586,7 @@ fn test_chapter_4_valid_precedence_4() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 2 == 2
             if tmp.0 jump or_true_0
             if 0 jump or_true_0
@@ -1612,7 +1612,7 @@ fn test_chapter_4_valid_precedence_5() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 0 == 0
             if !tmp.0 jump and_false_0
             tmp.4 = 2 + 1
@@ -1644,7 +1644,7 @@ fn test_chapter_5_valid_add_variables() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             first_variable.0 = 1
             second_variable.1 = 2
             tmp.0 = first_variable.0 + second_variable.1
@@ -1666,7 +1666,7 @@ fn test_chapter_5_valid_allocate_temps_and_vars() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 2147483646
             b.1 = 0
             tmp.0 = a.0 / 6
@@ -1693,7 +1693,7 @@ fn test_chapter_5_valid_assign() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             var0.0 = 2
             return var0.0
             return 0
@@ -1711,7 +1711,7 @@ fn test_chapter_5_valid_assign_val_in_initializer() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 5
             a.0 = a.0
             return a.0
@@ -1731,7 +1731,7 @@ fn test_chapter_5_valid_assignment_in_initializer() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             b.1 = a.0
             return b.1
@@ -1751,7 +1751,7 @@ fn test_chapter_5_valid_assignment_lowest_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if 0 jump or_true_0
             if 5 jump or_true_0
             tmp.1 = 0
@@ -1776,7 +1776,7 @@ fn test_chapter_5_valid_empty_function_body() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 0
         }
     "#;
@@ -1794,7 +1794,7 @@ fn test_chapter_5_valid_exp_then_declaration() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 2593
             a.0 = tmp.0
             tmp.1 = a.0 % 3
@@ -1818,7 +1818,7 @@ fn test_chapter_5_valid_extra_credit_bitwise_in_initializer() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 15
             tmp.0 = a.0 ^ 5
             b.1 = tmp.0
@@ -1841,7 +1841,7 @@ fn test_chapter_5_valid_extra_credit_bitwise_ops_vars() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 3
             b.1 = 5
             c.2 = 8
@@ -1863,7 +1863,7 @@ fn test_chapter_5_valid_extra_credit_bitwise_shiftl_variable() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 3
             tmp.0 = x.0 << 3
             return tmp.0
@@ -1884,7 +1884,7 @@ fn test_chapter_5_valid_extra_credit_bitwise_shiftr_assign() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             var_to_shift.0 = 1234
             x.1 = 0
             tmp.0 = var_to_shift.0 >> 4
@@ -1913,7 +1913,7 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_chained() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 250
             b.1 = 200
             c.2 = 100
@@ -2023,7 +2023,7 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_lowest_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 10
             b.1 = 12
             if 0 jump or_true_0
@@ -2120,7 +2120,7 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_use_result() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 1
             tmp.0 = x.0 + 3
             x.0 = tmp.0
@@ -2153,7 +2153,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_and() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             to_and.0 = 3
             tmp.0 = to_and.0 & 6
             to_and.0 = tmp.0
@@ -2182,7 +2182,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_preceden
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 11
             b.1 = 12
             if 0 jump or_true_0
@@ -2311,7 +2311,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_chained() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 250
             b.1 = 200
             c.2 = 100
@@ -2447,7 +2447,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_or() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             to_or.0 = 1
             tmp.0 = to_or.0 | 30
             to_or.0 = tmp.0
@@ -2468,7 +2468,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_shiftl() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             to_shiftl.0 = 3
             tmp.0 = to_shiftl.0 << 4
             to_shiftl.0 = tmp.0
@@ -2489,7 +2489,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_shiftr() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             to_shiftr.0 = 382574
             tmp.0 = to_shiftr.0 >> 4
             to_shiftr.0 = tmp.0
@@ -2510,7 +2510,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_xor() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             to_xor.0 = 7
             tmp.0 = to_xor.0 ^ 5
             to_xor.0 = tmp.0
@@ -2531,7 +2531,7 @@ fn test_chapter_5_valid_extra_credit_compound_divide() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             to_divide.0 = 8
             tmp.0 = to_divide.0 / 4
             to_divide.0 = tmp.0
@@ -2552,7 +2552,7 @@ fn test_chapter_5_valid_extra_credit_compound_minus() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             to_subtract.0 = 10
             tmp.0 = to_subtract.0 - 8
             to_subtract.0 = tmp.0
@@ -2573,7 +2573,7 @@ fn test_chapter_5_valid_extra_credit_compound_mod() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             to_mod.0 = 5
             tmp.0 = to_mod.0 % 3
             to_mod.0 = tmp.0
@@ -2594,7 +2594,7 @@ fn test_chapter_5_valid_extra_credit_compound_multiply() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             to_multiply.0 = 4
             tmp.0 = to_multiply.0 * 3
             to_multiply.0 = tmp.0
@@ -2615,7 +2615,7 @@ fn test_chapter_5_valid_extra_credit_compound_plus() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             to_add.0 = 0
             tmp.0 = to_add.0 + 4
             to_add.0 = tmp.0
@@ -2641,7 +2641,7 @@ fn test_chapter_5_valid_extra_credit_incr_expression_statement() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             b.1 = 0
             tmp.0 = a.0
@@ -2686,7 +2686,7 @@ fn test_chapter_5_valid_extra_credit_incr_in_binary_expr() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 2
             tmp.1 = a.0
             tmp.2 = inc a.0
@@ -2738,7 +2738,7 @@ fn test_chapter_5_valid_extra_credit_incr_parenthesized() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             b.1 = 2
             tmp.0 = inc a.0
@@ -2801,7 +2801,7 @@ fn test_chapter_5_valid_extra_credit_postfix_incr_and_decr() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             b.1 = 2
             tmp.0 = a.0
@@ -2860,7 +2860,7 @@ fn test_chapter_5_valid_extra_credit_postfix_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             tmp.0 = a.0
             tmp.1 = inc a.0
@@ -2897,7 +2897,7 @@ fn test_chapter_5_valid_extra_credit_prefix_incr_and_decr() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             b.1 = 2
             tmp.0 = inc a.0
@@ -2954,7 +2954,7 @@ fn test_chapter_5_valid_kw_var_names() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return_val.0 = 3
             void2.1 = 2
             tmp.0 = return_val.0 + void2.1
@@ -2974,7 +2974,7 @@ fn test_chapter_5_valid_local_var_missing_return() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 3
             tmp.0 = a.0 + 5
             a.0 = tmp.0
@@ -2995,7 +2995,7 @@ fn test_chapter_5_valid_mixed_precedence_assignment() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             b.1 = 0
             b.1 = a.0
@@ -3019,7 +3019,7 @@ fn test_chapter_5_valid_non_short_circuit_or() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             if 0 jump or_true_0
             a.0 = 1
@@ -3046,7 +3046,7 @@ fn test_chapter_5_valid_null_statement() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 0
         }
     "#;
@@ -3062,7 +3062,7 @@ fn test_chapter_5_valid_null_then_return() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 0
             return 0
         }
@@ -3079,7 +3079,7 @@ fn test_chapter_5_valid_return_var() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 2
             return a.0
             return 0
@@ -3098,7 +3098,7 @@ fn test_chapter_5_valid_short_circuit_and_fail() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             if !0 jump and_false_0
             a.0 = 5
@@ -3127,7 +3127,7 @@ fn test_chapter_5_valid_short_circuit_or() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             if 1 jump or_true_0
             a.0 = 1
@@ -3155,7 +3155,7 @@ fn test_chapter_5_valid_unused_exp() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 2 + 2
             return 0
             return 0
@@ -3174,7 +3174,7 @@ fn test_chapter_5_valid_use_assignment_result() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             b.1 = 2
             b.1 = 4
@@ -3195,7 +3195,7 @@ fn test_chapter_5_valid_use_val_in_own_initializer() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if !0 jump and_false_0
             if !a.0 jump and_false_0
             tmp.1 = 1
@@ -3223,7 +3223,7 @@ fn test_chapter_6_valid_assign_ternary() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             if !1 jump else_1
             tmp.0 = 2
@@ -3250,7 +3250,7 @@ fn test_chapter_6_valid_binary_condition() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 + 2
             tmp.1 = tmp.0 == 3
             if !tmp.1 jump end_if_0
@@ -3272,7 +3272,7 @@ fn test_chapter_6_valid_binary_false_condition() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 + 2
             tmp.1 = tmp.0 == 4
             if !tmp.1 jump end_if_0
@@ -3297,7 +3297,7 @@ fn test_chapter_6_valid_else() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             if !a.0 jump else_1
             return 1
@@ -3323,7 +3323,7 @@ fn test_chapter_6_valid_extra_credit_bitwise_ternary() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 1 ^ 1
             if !tmp.0 jump else_1
             result.0 = 4
@@ -3352,7 +3352,7 @@ fn test_chapter_6_valid_extra_credit_compound_assign_ternary() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 4
             if !1 jump else_1
             tmp.1 = 2
@@ -3382,7 +3382,7 @@ fn test_chapter_6_valid_extra_credit_compound_if_expression() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             tmp.0 = a.0 + 1
             a.0 = tmp.0
@@ -3410,7 +3410,7 @@ fn test_chapter_6_valid_extra_credit_goto_after_declaration() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 1
             jump post_declaration_0
             x.0 = 0
@@ -3448,7 +3448,7 @@ fn test_chapter_6_valid_extra_credit_goto_backwards() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if !0 jump end_if_0
         
           label_0:
@@ -3474,7 +3474,7 @@ fn test_chapter_6_valid_extra_credit_goto_label() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             jump label_0
             return 0
         
@@ -3498,7 +3498,7 @@ fn test_chapter_6_valid_extra_credit_goto_label_and_var() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             ident.0 = 5
             jump ident_0
             return 0
@@ -3522,7 +3522,7 @@ fn test_chapter_6_valid_extra_credit_goto_label_main() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             jump main_0
             return 5
         
@@ -3545,7 +3545,7 @@ fn test_chapter_6_valid_extra_credit_goto_label_main_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             jump _main_0
             return 0
         
@@ -3569,7 +3569,7 @@ fn test_chapter_6_valid_extra_credit_goto_nested_label() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             jump labelB_1
         
           labelA_0:
@@ -3607,7 +3607,7 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
         
           label_if_0:
@@ -3653,7 +3653,7 @@ fn test_chapter_6_valid_extra_credit_label_token() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             jump _foo_1__0
             return 0
         
@@ -3675,7 +3675,7 @@ fn test_chapter_6_valid_extra_credit_lh_compound_assignment() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 10
             tmp.0 = x.0 - 1
             x.0 = tmp.0
@@ -3710,7 +3710,7 @@ fn test_chapter_6_valid_extra_credit_postfix_if() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             tmp.0 = a.0
             tmp.1 = dec a.0
@@ -3746,7 +3746,7 @@ fn test_chapter_6_valid_extra_credit_postfix_in_ternary() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 10
             tmp.0 = x.0 - 10
             if !tmp.0 jump else_1
@@ -3780,7 +3780,7 @@ fn test_chapter_6_valid_extra_credit_prefix_if() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 1
             a.0 = tmp.0
             tmp.1 = inc a.0
@@ -3814,7 +3814,7 @@ fn test_chapter_6_valid_extra_credit_prefix_in_ternary() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             tmp.0 = inc a.0
             a.0 = tmp.0
@@ -3844,7 +3844,7 @@ fn test_chapter_6_valid_extra_credit_unused_label() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
         
           unused_0:
             return 0
@@ -3867,7 +3867,7 @@ fn test_chapter_6_valid_extra_credit_whitespace_after_label() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             jump label2_1
             return 0
         
@@ -3895,7 +3895,7 @@ fn test_chapter_6_valid_if_nested() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             b.1 = 0
             if !a.0 jump else_1
@@ -3930,7 +3930,7 @@ fn test_chapter_6_valid_if_nested_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             b.1 = 1
             if !a.0 jump else_1
@@ -3966,7 +3966,7 @@ fn test_chapter_6_valid_if_nested_3() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             a.0 = 1
             if !a.0 jump end_if_0
@@ -4002,7 +4002,7 @@ fn test_chapter_6_valid_if_nested_4() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             tmp.0 = ! a.0
             if !tmp.0 jump end_if_0
@@ -4041,7 +4041,7 @@ fn test_chapter_6_valid_if_nested_5() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             if !0 jump else_1
             if !0 jump else_3
@@ -4077,7 +4077,7 @@ fn test_chapter_6_valid_if_not_taken() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             b.1 = 0
             if !a.0 jump end_if_0
@@ -4104,7 +4104,7 @@ fn test_chapter_6_valid_if_null_body() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 0
             if !0 jump else_1
             jump end_if_0
@@ -4132,7 +4132,7 @@ fn test_chapter_6_valid_if_taken() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             b.1 = 0
             if !a.0 jump end_if_0
@@ -4157,7 +4157,7 @@ fn test_chapter_6_valid_lh_assignment() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 10
             y.1 = 0
             x.0 = 5
@@ -4206,7 +4206,7 @@ fn test_chapter_6_valid_multiple_if() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             b.1 = 0
             if !a.0 jump else_1
@@ -4244,7 +4244,7 @@ fn test_chapter_6_valid_nested_ternary() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             b.1 = 2
             flag.2 = 0
@@ -4282,7 +4282,7 @@ fn test_chapter_6_valid_nested_ternary_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if !1 jump else_1
             if !2 jump else_3
             tmp.1 = 3
@@ -4336,7 +4336,7 @@ fn test_chapter_6_valid_rh_assignment() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             flag.0 = 1
             a.1 = 0
             if !flag.0 jump else_1
@@ -4365,7 +4365,7 @@ fn test_chapter_6_valid_ternary() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             tmp.1 = - 1
             tmp.0 = a.0 > tmp.1
@@ -4394,7 +4394,7 @@ fn test_chapter_6_valid_ternary_middle_assignment() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             tmp.0 = a.0 != 2
             if !tmp.0 jump else_1
@@ -4422,7 +4422,7 @@ fn test_chapter_6_valid_ternary_middle_binop() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if !1 jump else_1
             tmp.1 = 3 % 2
             tmp.0 = tmp.1
@@ -4449,7 +4449,7 @@ fn test_chapter_6_valid_ternary_precedence() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 10
             if a.0 jump or_true_0
             if 0 jump or_true_0
@@ -4483,7 +4483,7 @@ fn test_chapter_6_valid_ternary_rh_binop() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             if !0 jump else_1
             tmp.0 = 1
             jump end_if_0
@@ -4519,7 +4519,7 @@ fn test_chapter_6_valid_ternary_short_circuit() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             b.1 = 0
             if !a.0 jump else_1
@@ -4550,7 +4550,7 @@ fn test_chapter_6_valid_ternary_short_circuit_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             b.1 = 0
             if !a.0 jump else_1
@@ -4582,7 +4582,7 @@ fn test_chapter_7_valid_assign_to_self() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 3
             a.1 = 4
             a.1 = a.1
@@ -4605,7 +4605,7 @@ fn test_chapter_7_valid_assign_to_self_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 3
             a.1 = 4
             a.1 = a.1
@@ -4628,7 +4628,7 @@ fn test_chapter_7_valid_declaration_only() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             b.1 = a.0
             return a.0
@@ -4650,7 +4650,7 @@ fn test_chapter_7_valid_empty_blocks() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             ten.0 = 10
             tmp.0 = 10 * 2
             twenty.1 = tmp.0
@@ -4678,7 +4678,7 @@ fn test_chapter_7_valid_extra_credit_compound_subtract_in_block() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 5
             tmp.0 = a.0 > 4
             if !tmp.0 jump end_if_0
@@ -4715,7 +4715,7 @@ fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             tmp.0 = a.0 != 0
             if !tmp.0 jump end_if_0
@@ -4747,7 +4747,7 @@ fn test_chapter_7_valid_extra_credit_goto_inner_scope() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 5
             jump inner_0
             x.1 = 0
@@ -4778,7 +4778,7 @@ fn test_chapter_7_valid_extra_credit_goto_outer_scope() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 10
             b.1 = 0
             if !a.0 jump end_if_0
@@ -4832,7 +4832,7 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             sum.0 = 0
             if !1 jump end_if_0
             a.1 = 5
@@ -4877,7 +4877,7 @@ fn test_chapter_7_valid_hidden_then_visible() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 2
             tmp.0 = - 4
             a.0 = tmp.0
@@ -4915,7 +4915,7 @@ fn test_chapter_7_valid_hidden_variable() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 2
             a.1 = 1
             return a.1
@@ -4937,7 +4937,7 @@ fn test_chapter_7_valid_inner_uninitialized() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 4
             return x.0
             return 0
@@ -4963,7 +4963,7 @@ fn test_chapter_7_valid_multiple_vars_same_name() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             b.1 = 4
             a.0 = b.1
@@ -4997,7 +4997,7 @@ fn test_chapter_7_valid_nested_if() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             if !a.0 jump else_1
             b.1 = 2
@@ -5074,7 +5074,7 @@ fn test_chapter_7_valid_similar_var_names() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a1.2 = 1
             a.3 = 2
             a1.4 = 2
@@ -5108,7 +5108,7 @@ fn test_chapter_7_valid_use_in_inner_scope() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 3
             return x.0
             return 0
@@ -5132,7 +5132,7 @@ fn test_chapter_8_valid_break() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 10
             b.1 = 20
             tmp.0 = - 20
@@ -5185,7 +5185,7 @@ fn test_chapter_8_valid_break_immediate() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 10
         
           continue_loop_0:
@@ -5218,7 +5218,7 @@ fn test_chapter_8_valid_continue() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             sum.0 = 0
             i.2 = 0
         
@@ -5274,7 +5274,7 @@ fn test_chapter_8_valid_continue_empty_post() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             sum.0 = 0
             i.1 = 0
         
@@ -5314,7 +5314,7 @@ fn test_chapter_8_valid_do_while() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
         
           start_loop_0:
@@ -5345,7 +5345,7 @@ fn test_chapter_8_valid_do_while_break_immediate() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 10
         
           start_loop_0:
@@ -5371,7 +5371,7 @@ fn test_chapter_8_valid_empty_expression() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             return 0
             return 0
         }
@@ -5389,7 +5389,7 @@ fn test_chapter_8_valid_empty_loop_body() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             i.0 = 2147
         
           start_loop_0:
@@ -5424,7 +5424,7 @@ fn test_chapter_8_valid_extra_credit_case_block() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 4
             b.1 = 0
             tmp.0 = 2 == 2
@@ -5466,7 +5466,7 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression(
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             i.0 = 100
             sum.1 = 0
         
@@ -5509,7 +5509,7 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             i.0 = 1
             tmp.1 = - 1
             tmp.0 = i.0 * tmp.1
@@ -5560,7 +5560,7 @@ fn test_chapter_8_valid_extra_credit_duffs_device() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             count.0 = 37
             tmp.0 = count.0 + 4
             tmp.1 = tmp.0 / 5
@@ -5642,7 +5642,7 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_condition() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             i.0 = 1
         
           start_loop_0:
@@ -5681,7 +5681,7 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_init_exp() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             i.0 = 0
             jump target_1
             i.0 = 5
@@ -5727,7 +5727,7 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_post_exp() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             sum.0 = 0
             i.1 = 0
         
@@ -5771,7 +5771,7 @@ fn test_chapter_8_valid_extra_credit_label_loop_body() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             result.0 = 0
             jump label_1
         
@@ -5825,7 +5825,7 @@ fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             sum.0 = 0
             jump do_label_0
             return 0
@@ -5904,7 +5904,7 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             i.0 = 100
             count.1 = 0
         
@@ -5971,7 +5971,7 @@ fn test_chapter_8_valid_extra_credit_loop_in_switch() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             cond.0 = 10
             tmp.0 = cond.0 == 1
             if tmp.0 jump case_1_switch_0
@@ -6028,7 +6028,7 @@ fn test_chapter_8_valid_extra_credit_post_exp_incr() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             product.0 = 1
             i.1 = 0
         
@@ -6066,7 +6066,7 @@ fn test_chapter_8_valid_extra_credit_switch() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 3 == 0
             if tmp.0 jump case_0_switch_0
             tmp.1 = 3 == 1
@@ -6114,7 +6114,7 @@ fn test_chapter_8_valid_extra_credit_switch_assign_in_condition() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             a.0 = 1
             tmp.0 = a.0 == 0
@@ -6160,7 +6160,7 @@ fn test_chapter_8_valid_extra_credit_switch_break() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 5
             tmp.0 = a.0 == 5
             if tmp.0 jump case_5_switch_0
@@ -6200,7 +6200,7 @@ fn test_chapter_8_valid_extra_credit_switch_decl() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 3
             b.1 = 0
             tmp.0 = a.0 == 3
@@ -6253,7 +6253,7 @@ fn test_chapter_8_valid_extra_credit_switch_default() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             tmp.0 = a.0 == 1
             if tmp.0 jump case_1_switch_0
@@ -6300,7 +6300,7 @@ fn test_chapter_8_valid_extra_credit_switch_default_fallthrough() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 5
             tmp.0 = 0 == 1
             if tmp.0 jump case_1_switch_0
@@ -6335,7 +6335,7 @@ fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 7
             b.1 = a.0
             tmp.0 = a.0 + b.1
@@ -6367,7 +6367,7 @@ fn test_chapter_8_valid_extra_credit_switch_default_only() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             jump default_switch_0
             jump break_switch_0
@@ -6396,7 +6396,7 @@ fn test_chapter_8_valid_extra_credit_switch_empty() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 10
             tmp.0 = x.0 + 1
             x.0 = tmp.0
@@ -6436,7 +6436,7 @@ fn test_chapter_8_valid_extra_credit_switch_fallthrough() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 4
             b.1 = 9
             c.2 = 0
@@ -6496,7 +6496,7 @@ fn test_chapter_8_valid_extra_credit_switch_goto_mid_case() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             jump mid_case_1
             tmp.0 = 4 == 4
@@ -6545,7 +6545,7 @@ fn test_chapter_8_valid_extra_credit_switch_in_loop() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             acc.0 = 0
             ctr.1 = 0
             i.2 = 0
@@ -6642,7 +6642,7 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             switch1.0 = 0
             switch2.1 = 0
             switch3.2 = 0
@@ -6765,7 +6765,7 @@ fn test_chapter_8_valid_extra_credit_switch_nested_not_taken() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             tmp.0 = a.0 == 1
             if tmp.0 jump case_1_switch_0
@@ -6817,7 +6817,7 @@ fn test_chapter_8_valid_extra_credit_switch_nested_switch() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 3 == 0
             if tmp.0 jump case_0_switch_0
             tmp.1 = 3 == 3
@@ -6873,7 +6873,7 @@ fn test_chapter_8_valid_extra_credit_switch_no_case() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 4
             jump break_switch_0
             return 0
@@ -6900,7 +6900,7 @@ fn test_chapter_8_valid_extra_credit_switch_not_taken() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             tmp.0 = a.0 == 0
             if tmp.0 jump case_0_switch_0
@@ -6937,7 +6937,7 @@ fn test_chapter_8_valid_extra_credit_switch_single_case() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 1
             tmp.0 = a.0 == 1
             if tmp.0 jump case_1_switch_0
@@ -6975,7 +6975,7 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = 4 == 0
             if tmp.0 jump case_0_switch_0
             tmp.1 = 4 == 4
@@ -7031,7 +7031,7 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             sum.0 = 0
             i.1 = 0
         
@@ -7078,7 +7078,7 @@ fn test_chapter_8_valid_for() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 12345
             i.1 = 5
         
@@ -7111,7 +7111,7 @@ fn test_chapter_8_valid_for_absent_condition() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             i.0 = 400
         
           start_loop_0:
@@ -7146,7 +7146,7 @@ fn test_chapter_8_valid_for_absent_post() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 2147
             a.0 = tmp.0
         
@@ -7190,7 +7190,7 @@ fn test_chapter_8_valid_for_decl() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
             tmp.0 = - 100
             i.1 = tmp.0
@@ -7230,7 +7230,7 @@ fn test_chapter_8_valid_for_nested_shadow() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             i.0 = 0
             j.1 = 0
             k.2 = 1
@@ -7291,7 +7291,7 @@ fn test_chapter_8_valid_for_shadow() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             shadow.0 = 1
             acc.1 = 0
             shadow.2 = 0
@@ -7347,7 +7347,7 @@ fn test_chapter_8_valid_multi_break() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             i.0 = 0
         
           continue_loop_0:
@@ -7416,7 +7416,7 @@ fn test_chapter_8_valid_multi_continue_same_loop() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 10
             y.1 = 0
             z.2 = 0
@@ -7487,7 +7487,7 @@ fn test_chapter_8_valid_nested_break() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             ans.0 = 0
             i.1 = 0
         
@@ -7552,7 +7552,7 @@ fn test_chapter_8_valid_nested_continue() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.0 = 5
             acc.1 = 0
         
@@ -7606,7 +7606,7 @@ fn test_chapter_8_valid_nested_loop() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             acc.0 = 0
             x.1 = 100
         
@@ -7660,7 +7660,7 @@ fn test_chapter_8_valid_null_for_header() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
         
           start_loop_0:
@@ -7695,7 +7695,7 @@ fn test_chapter_8_valid_while() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 0
         
           continue_loop_0:
@@ -7725,7 +7725,7 @@ fn test_chapter_9_valid_arguments_in_registers_dont_clobber_edx() {
         }
     "#;
     let expected = r#"
-        function x { 
+        global function x(a.0, b.1, c.2, d.3, e.4, f.5) { 
             tmp.0 = a.0 == 1
             if !tmp.0 jump and_false_0
             tmp.3 = b.1 == 2
@@ -7780,7 +7780,7 @@ fn test_chapter_9_valid_arguments_in_registers_dont_clobber_edx() {
             return tmp.14
             return 0
         }
-        function main { 
+        global function main() { 
             a.6 = 4
             tmp.16 = 24 / a.6
             tmp.17 = x(1, 2, 3, 4, 5, tmp.16)
@@ -7803,12 +7803,12 @@ fn test_chapter_9_valid_arguments_in_registers_expression_args() {
         }
     "#;
     let expected = r#"
-        function sub { 
+        global function sub(a.0, b.1) { 
             tmp.0 = a.0 - b.1
             return tmp.0
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.1 = 1 + 2
             tmp.2 = sub(tmp.1, 1)
             sum.2 = tmp.2
@@ -7835,7 +7835,7 @@ fn test_chapter_9_valid_arguments_in_registers_fibonacci() {
         }
     "#;
     let expected = r#"
-        function fib { 
+        global function fib(n.0) { 
             tmp.0 = n.0 == 0
             if tmp.0 jump or_true_0
             tmp.3 = n.0 == 1
@@ -7862,7 +7862,7 @@ fn test_chapter_9_valid_arguments_in_registers_fibonacci() {
           end_if_2:
             return 0
         }
-        function main { 
+        global function main() { 
             n.1 = 6
             tmp.9 = fib(n.1)
             return tmp.9
@@ -7884,12 +7884,12 @@ fn test_chapter_9_valid_arguments_in_registers_forward_decl_multi_arg() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = foo(2, 1)
             return tmp.0
             return 0
         }
-        function foo { 
+        global function foo(x.2, y.3) { 
             tmp.1 = x.2 - y.3
             return tmp.1
             return 0
@@ -7920,7 +7920,7 @@ fn test_chapter_9_valid_arguments_in_registers_hello_world() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = putchar(72)
             tmp.1 = putchar(101)
             tmp.2 = putchar(108)
@@ -7954,13 +7954,13 @@ fn test_chapter_9_valid_arguments_in_registers_param_shadows_local_var() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             a.0 = 10
             tmp.0 = f(a.0)
             return tmp.0
             return 0
         }
-        function f { 
+        global function f(a.2) { 
             tmp.1 = a.2 * 2
             return tmp.1
             return 0
@@ -7983,15 +7983,15 @@ fn test_chapter_9_valid_arguments_in_registers_parameter_shadows_function() {
         }
     "#;
     let expected = r#"
-        function a { 
+        global function a() { 
             return 1
             return 0
         }
-        function b { 
+        global function b(a.0) { 
             return a.0
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.0 = a()
             tmp.2 = b(2)
             tmp.1 = tmp.0 + tmp.2
@@ -8013,12 +8013,12 @@ fn test_chapter_9_valid_arguments_in_registers_parameter_shadows_own_function() 
         }
     "#;
     let expected = r#"
-        function a { 
+        global function a(a.0) { 
             tmp.0 = a.0 * 2
             return tmp.0
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.1 = a(1)
             return tmp.1
             return 0
@@ -8044,7 +8044,7 @@ fn test_chapter_9_valid_arguments_in_registers_parameters_are_preserved() {
         }
     "#;
     let expected = r#"
-        function g { 
+        global function g(w.0, x.1, y.2, z.3) { 
             tmp.0 = w.0 == 2
             if !tmp.0 jump and_false_0
             tmp.3 = x.1 == 4
@@ -8083,7 +8083,7 @@ fn test_chapter_9_valid_arguments_in_registers_parameters_are_preserved() {
             return 0
             return 0
         }
-        function f { 
+        global function f(a.4, b.5, c.6, d.7) { 
             tmp.10 = a.4 * 2
             tmp.11 = b.5 * 2
             tmp.12 = c.6 * 2
@@ -8134,7 +8134,7 @@ fn test_chapter_9_valid_arguments_in_registers_parameters_are_preserved() {
             return tmp.26
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.28 = f(1, 2, 3, 4)
             return tmp.28
             return 0
@@ -8154,12 +8154,12 @@ fn test_chapter_9_valid_arguments_in_registers_single_arg() {
         }
     "#;
     let expected = r#"
-        function twice { 
+        global function twice(x.0) { 
             tmp.0 = 2 * x.0
             return tmp.0
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.1 = twice(3)
             return tmp.1
             return 0
@@ -8181,11 +8181,11 @@ fn test_chapter_9_valid_extra_credit_compound_assign_function_result() {
         }
     "#;
     let expected = r#"
-        function foo { 
+        global function foo() { 
             return 2
             return 0
         }
-        function main { 
+        global function main() { 
             x.0 = 3
             tmp.1 = foo()
             tmp.0 = x.0 - tmp.1
@@ -8209,7 +8209,7 @@ fn test_chapter_9_valid_extra_credit_dont_clobber_ecx() {
         }
     "#;
     let expected = r#"
-        function x { 
+        global function x(a.0, b.1, c.2, d.3, e.4, f.5) { 
             tmp.0 = a.0 == 1
             if !tmp.0 jump and_false_0
             tmp.3 = b.1 == 2
@@ -8264,7 +8264,7 @@ fn test_chapter_9_valid_extra_credit_dont_clobber_ecx() {
             return tmp.14
             return 0
         }
-        function main { 
+        global function main() { 
             a.6 = 4
             tmp.17 = a.6 / 2
             tmp.16 = 24 >> tmp.17
@@ -8294,7 +8294,7 @@ fn test_chapter_9_valid_extra_credit_goto_label_multiple_functions() {
         }
     "#;
     let expected = r#"
-        function foo { 
+        global function foo() { 
             jump label_0
             return 0
         
@@ -8302,7 +8302,7 @@ fn test_chapter_9_valid_extra_credit_goto_label_multiple_functions() {
             return 5
             return 0
         }
-        function main { 
+        global function main() { 
             jump label_1
             return 0
         
@@ -8329,7 +8329,7 @@ fn test_chapter_9_valid_extra_credit_goto_shared_name() {
         }
     "#;
     let expected = r#"
-        function foo { 
+        global function foo() { 
             jump foo_0
             return 0
         
@@ -8337,7 +8337,7 @@ fn test_chapter_9_valid_extra_credit_goto_shared_name() {
             return 1
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.0 = foo()
             return tmp.0
             return 0
@@ -8363,7 +8363,7 @@ fn test_chapter_9_valid_extra_credit_label_naming_scheme() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
         
           _label_0:
         
@@ -8371,13 +8371,13 @@ fn test_chapter_9_valid_extra_credit_label_naming_scheme() {
             return 0
             return 0
         }
-        function main_ { 
+        global function main_() { 
         
           label_2:
             return 0
             return 0
         }
-        function _main { 
+        global function _main() { 
         
           label_3:
             return 0
@@ -8395,7 +8395,7 @@ fn test_chapter_9_valid_libraries_addition() {
         }
     "#;
     let expected = r#"
-        function add { 
+        global function add(x.0, y.1) { 
             tmp.0 = x.0 + y.1
             return tmp.0
             return 0
@@ -8413,7 +8413,7 @@ fn test_chapter_9_valid_libraries_addition_client() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = add(1, 2)
             return tmp.0
             return 0
@@ -8437,7 +8437,7 @@ fn test_chapter_9_valid_libraries_many_args() {
         }
     "#;
     let expected = r#"
-        function fib { 
+        global function fib(n.0) { 
             tmp.0 = n.0 == 0
             if tmp.0 jump or_true_0
             tmp.3 = n.0 == 1
@@ -8464,7 +8464,7 @@ fn test_chapter_9_valid_libraries_many_args() {
           end_if_2:
             return 0
         }
-        function multiply_many_args { 
+        global function multiply_many_args(a.1, b.2, c.3, d.4, e.5, f.6, g.7, h.8) { 
             tmp.9 = a.1 * b.2
             tmp.10 = tmp.9 * c.3
             tmp.11 = tmp.10 * d.4
@@ -8501,7 +8501,7 @@ fn test_chapter_9_valid_libraries_many_args_client() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = fib(4)
             x.9 = tmp.0
             seven.10 = 7
@@ -8539,7 +8539,7 @@ fn test_chapter_9_valid_libraries_no_function_calls_division() {
         }
     "#;
     let expected = r#"
-        function f { 
+        global function f(a.0, b.1, c.2, d.3) { 
             tmp.0 = a.0 / b.1
             x.4 = tmp.0
             tmp.1 = a.0 == 10
@@ -8603,7 +8603,7 @@ fn test_chapter_9_valid_libraries_no_function_calls_division_client() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = f(10, 2, 100, 4)
             return tmp.0
             return 0
@@ -8629,7 +8629,7 @@ fn test_chapter_9_valid_libraries_no_function_calls_local_stack_variables() {
         }
     "#;
     let expected = r#"
-        function f { 
+        global function f(reg1.0, reg2.1, reg3.2, reg4.3, reg5.4, reg6.5, stack1.6, stack2.7, stack3.8) { 
             x.9 = 10
             tmp.0 = reg1.0 == 1
             if !tmp.0 jump and_false_0
@@ -8747,7 +8747,7 @@ fn test_chapter_9_valid_libraries_no_function_calls_local_stack_variables_client
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = - 1
             tmp.1 = - 2
             tmp.2 = - 3
@@ -8768,7 +8768,7 @@ fn test_chapter_9_valid_libraries_system_call() {
         }
     "#;
     let expected = r#"
-        function incr_and_print { 
+        global function incr_and_print(b.1) { 
             tmp.0 = b.1 + 2
             tmp.1 = putchar(tmp.0)
             return tmp.1
@@ -8788,7 +8788,7 @@ fn test_chapter_9_valid_libraries_system_call_client() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = incr_and_print(70)
             return 0
             return 0
@@ -8809,12 +8809,12 @@ fn test_chapter_9_valid_no_arguments_forward_decl() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = foo()
             return tmp.0
             return 0
         }
-        function foo { 
+        global function foo() { 
             return 3
             return 0
         }
@@ -8839,7 +8839,7 @@ fn test_chapter_9_valid_no_arguments_function_shadows_variable() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             foo.0 = 3
             bar.1 = 4
             tmp.0 = foo.0 + bar.1
@@ -8853,7 +8853,7 @@ fn test_chapter_9_valid_no_arguments_function_shadows_variable() {
             return tmp.3
             return 0
         }
-        function foo { 
+        global function foo() { 
             return 8
             return 0
         }
@@ -8874,12 +8874,12 @@ fn test_chapter_9_valid_no_arguments_multiple_declarations() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = f()
             return tmp.0
             return 0
         }
-        function f { 
+        global function f() { 
             return 3
             return 0
         }
@@ -8899,11 +8899,11 @@ fn test_chapter_9_valid_no_arguments_no_return_value() {
         }
     "#;
     let expected = r#"
-        function foo { 
+        global function foo() { 
             x.0 = 1
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.0 = foo()
             return 3
             return 0
@@ -8923,11 +8923,11 @@ fn test_chapter_9_valid_no_arguments_precedence() {
         }
     "#;
     let expected = r#"
-        function three { 
+        global function three() { 
             return 3
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.0 = three()
             tmp.1 = ! tmp.0
             return tmp.1
@@ -8951,17 +8951,17 @@ fn test_chapter_9_valid_no_arguments_use_function_in_expression() {
         }
     "#;
     let expected = r#"
-        function bar { 
+        global function bar() { 
             return 9
             return 0
         }
-        function foo { 
+        global function foo() { 
             tmp.1 = bar()
             tmp.0 = 2 * tmp.1
             return tmp.0
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.2 = foo()
             tmp.4 = bar()
             tmp.5 = tmp.4 / 3
@@ -8990,7 +8990,7 @@ fn test_chapter_9_valid_no_arguments_variable_shadows_function() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             tmp.0 = foo()
             x.0 = tmp.0
             tmp.1 = x.0 > 0
@@ -9003,7 +9003,7 @@ fn test_chapter_9_valid_no_arguments_variable_shadows_function() {
             return x.0
             return 0
         }
-        function foo { 
+        global function foo() { 
             return 4
             return 0
         }
@@ -9024,13 +9024,13 @@ fn test_chapter_9_valid_stack_arguments_call_putchar() {
         }
     "#;
     let expected = r#"
-        function foo { 
+        global function foo(a.1, b.2, c.3, d.4, e.5, f.6, g.7, h.8) { 
             tmp.0 = putchar(h.8)
             tmp.1 = a.1 + g.7
             return tmp.1
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.2 = foo(1, 2, 3, 4, 5, 6, 7, 65)
             return tmp.2
             return 0
@@ -9051,7 +9051,7 @@ fn test_chapter_9_valid_stack_arguments_lots_of_arguments() {
         }
     "#;
     let expected = r#"
-        function foo { 
+        global function foo(a.0, b.1, c.2, d.3, e.4, f.5, g.6, h.7) { 
             tmp.0 = a.0 == 1
             if !tmp.0 jump and_false_0
             tmp.3 = b.1 == 2
@@ -9126,7 +9126,7 @@ fn test_chapter_9_valid_stack_arguments_lots_of_arguments() {
             return tmp.20
             return 0
         }
-        function main { 
+        global function main() { 
             tmp.22 = foo(1, 2, 3, 4, 5, 6, 7, 8)
             return tmp.22
             return 0
@@ -9148,7 +9148,7 @@ fn test_chapter_9_valid_stack_arguments_stack_alignment() {
         }
     "#;
     let expected = r#"
-        function main { 
+        global function main() { 
             x.17 = 3
             tmp.0 = even_arguments(1, 2, 3, 4, 5, 6, 7, 8)
             tmp.1 = odd_arguments(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -9174,12 +9174,12 @@ fn test_chapter_9_valid_stack_arguments_test_for_memory_leaks() {
         }
     "#;
     let expected = r#"
-        function lots_of_args { 
+        global function lots_of_args(a.0, b.1, c.2, d.3, e.4, f.5, g.6, h.7, i.8, j.9, k.10, l.11, m.12, n.13, o.14) { 
             tmp.0 = l.11 + o.14
             return tmp.0
             return 0
         }
-        function main { 
+        global function main() { 
             ret.15 = 0
             i.16 = 0
         

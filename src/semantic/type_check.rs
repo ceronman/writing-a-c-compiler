@@ -6,14 +6,17 @@ use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
 use std::collections::HashMap;
 
+pub type SymbolTable = HashMap<Symbol, SymbolData>;
+
 #[derive(Default)]
 struct TypeChecker {
-    symbol_table: HashMap<Symbol, SymbolData>,
+    symbol_table: SymbolTable,
 }
 
-struct SymbolData {
-    ty: Type,
-    attrs: Attributes,
+#[derive(Debug)]
+pub struct SymbolData {
+    pub ty: Type,
+    pub attrs: Attributes,
 }
 
 impl SymbolData {
@@ -34,7 +37,8 @@ impl SymbolData {
     }
 }
 
-enum Attributes {
+#[derive(Debug)]
+pub enum Attributes {
     Function {
         defined: bool,
         global: bool,
@@ -46,15 +50,15 @@ enum Attributes {
     Local,
 }
 
-#[derive(Clone, Copy)]
-enum InitialValue {
+#[derive(Clone, Copy, Debug)]
+pub enum InitialValue {
     Tentative,
     Initial(i64),
     NoInitializer,
 }
 
-#[derive(Eq, PartialEq)]
-enum Type {
+#[derive(Debug, Eq, PartialEq)]
+pub enum Type {
     Int,
     Function { num_params: usize },
 }
@@ -428,7 +432,8 @@ impl TypeChecker {
     }
 }
 
-pub fn check(program: Node<Program>) -> Result<Node<Program>> {
-    TypeChecker::default().check(&program)?;
-    Ok(program)
+pub fn check(program: &Node<Program>) -> Result<SymbolTable> {
+    let mut type_checker = TypeChecker::default();
+    type_checker.check(&program)?;
+    Ok(type_checker.symbol_table)
 }

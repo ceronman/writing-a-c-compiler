@@ -1,21 +1,35 @@
-pub mod interpreter;
 #[cfg(test)]
 mod test;
 
 use crate::ast;
 use crate::ast::Declaration;
+use crate::semantic::{Attributes, InitialValue, SymbolTable};
 use crate::symbol::Symbol;
 
 #[derive(Debug, Clone)]
 pub struct Program {
-    pub functions: Vec<Function>,
+    pub top_level: Vec<TopLevel>,
+}
+
+#[derive(Debug, Clone)]
+pub enum TopLevel {
+    Function(Function),
+    StaticVariable(StaticVariable)
 }
 
 #[derive(Debug, Clone)]
 pub struct Function {
     pub name: Symbol,
+    pub global: bool,
     pub params: Vec<Symbol>,
     pub body: Vec<Instruction>,
+}
+
+#[derive(Debug, Clone)]
+pub struct StaticVariable {
+    pub name: Symbol,
+    pub global: bool,
+    pub init: i64
 }
 
 #[derive(Debug, Clone)]
@@ -533,22 +547,44 @@ impl TackyGenerator {
     }
 }
 
-pub fn emit(program: &ast::Program) -> Program {
-    let mut functions = Vec::new();
+pub fn emit(program: &ast::Program, symbol_table: SymbolTable) -> Program {
+    let mut top_level = Vec::new();
     let mut generator = TackyGenerator::default();
     for decl in &program.declarations {
         generator.instructions.clear();
         match decl.as_ref() {
-            Declaration::Var(_) => todo!(),
             Declaration::Function(function) => {
+                let name = function.name.symbol.clone();
+                let symbol_data = symbol_table.get(&name).expect("Function without symbol data");
+                let Attributes::Function { global, .. } = symbol_data.attrs else {
+                    panic!("Function with incorrect symbol attributes");
+                };
                 let Some(body) = &function.body else { continue };
-                functions.push(Function {
-                    name: function.name.symbol.clone(),
+                top_level.push(TopLevel::Function(Function {
+                    name,
+                    global,
                     params: function.params.iter().map(|i| i.symbol.clone()).collect(),
                     body: generator.emit_instructions(body),
-                });
+                }));
+            }
+            Declaration::Var(_) => {},
+        }
+    }
+
+    for (name, symbol_data) in symbol_table {
+        if let Attributes::Static { initial_value, global } = symbol_data.attrs {
+            match initial_value {
+                InitialValue::Initial(init) =>
+                    top_level.push(TopLevel::StaticVariable(StaticVariable {
+                        name, global, init
+                    })),
+                InitialValue::Tentative => top_level.push(TopLevel::StaticVariable(StaticVariable {
+                    name, global, init: 0
+                })),
+                InitialValue::NoInitializer => continue
             }
         }
     }
-    Program { functions }
+
+    Program { top_level }
 }
