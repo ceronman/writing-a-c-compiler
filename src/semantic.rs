@@ -8,9 +8,9 @@ mod type_check;
 #[cfg(test)]
 mod test;
 
-pub use type_check::SymbolTable;
 pub use type_check::Attributes;
 pub use type_check::InitialValue;
+pub use type_check::SymbolTable;
 
 pub fn validate(ast: Node<Program>) -> Result<(Node<Program>, SymbolTable)> {
     let ast = id_resolution::check(ast)?;

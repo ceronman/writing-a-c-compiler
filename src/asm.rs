@@ -1,7 +1,7 @@
 use crate::symbol::Symbol;
 use crate::tacky;
-use std::collections::HashMap;
 use crate::tacky::TopLevel;
+use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct Program {
@@ -87,16 +87,20 @@ pub enum CondCode {
 }
 
 pub fn generate(program: &tacky::Program) -> Program {
-    let functions = program.top_level.iter().filter_map(|top_level| {
-        if let TopLevel::Function(f) = top_level {
-            Some(f)
-        } else {
-            todo!()
-        }
-    }).map(generate_function);
+    let functions = program
+        .top_level
+        .iter()
+        .filter_map(|top_level| {
+            if let TopLevel::Function(f) = top_level {
+                Some(f)
+            } else {
+                todo!()
+            }
+        })
+        .map(generate_function);
 
     Program {
-        functions: functions.collect()
+        functions: functions.collect(),
     }
 }
 

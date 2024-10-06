@@ -4,9 +4,9 @@ use crate::semantic;
 use crate::tacky;
 
 use crate::ast::StorageClass;
+use crate::tacky::TopLevel;
 use anyhow::Result;
 use std::io::Write;
-use crate::tacky::TopLevel;
 
 #[allow(dead_code)]
 pub fn dump_ast(src: &str) -> String {
@@ -34,29 +34,30 @@ pub fn pp_tacky(program: &tacky::Program) -> Result<String> {
     for top_level in &program.top_level {
         match top_level {
             TopLevel::Function(f) => pp_function(file, f)?,
-            TopLevel::StaticVariable(v) => pp_static_variable(file, v)?
+            TopLevel::StaticVariable(v) => pp_static_variable(file, v)?,
         }
     }
     Ok(String::from_utf8(buffer)?)
 }
 
 pub fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -> Result<()> {
-    let global = if variable.global {
-        "global "
-    } else {
-        ""
-    };
-    writeln!(file, "static {}{} = {}", global, variable.name, variable.init)?;
+    let global = if variable.global { "global " } else { "" };
+    writeln!(
+        file,
+        "static {}{} = {}",
+        global, variable.name, variable.init
+    )?;
     Ok(())
 }
 
 pub fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> {
-    let global = if function.global {
-        "global "
-    } else {
-        ""
-    };
-    let params = function.params.iter().cloned().collect::<Vec<_>>().join(", ");
+    let global = if function.global { "global " } else { "" };
+    let params = function
+        .params
+        .iter()
+        .cloned()
+        .collect::<Vec<_>>()
+        .join(", ");
     writeln!(file, "{}function {}({}) {{ ", global, function.name, params)?;
     let indent = "    ";
     for item in &function.body {

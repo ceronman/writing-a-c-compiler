@@ -14,7 +14,7 @@ pub struct Program {
 #[derive(Debug, Clone)]
 pub enum TopLevel {
     Function(Function),
-    StaticVariable(StaticVariable)
+    StaticVariable(StaticVariable),
 }
 
 #[derive(Debug, Clone)]
@@ -29,7 +29,7 @@ pub struct Function {
 pub struct StaticVariable {
     pub name: Symbol,
     pub global: bool,
-    pub init: i64
+    pub init: i64,
 }
 
 #[derive(Debug, Clone)]
@@ -555,7 +555,9 @@ pub fn emit(program: &ast::Program, symbol_table: SymbolTable) -> Program {
         match decl.as_ref() {
             Declaration::Function(function) => {
                 let name = function.name.symbol.clone();
-                let symbol_data = symbol_table.get(&name).expect("Function without symbol data");
+                let symbol_data = symbol_table
+                    .get(&name)
+                    .expect("Function without symbol data");
                 let Attributes::Function { global, .. } = symbol_data.attrs else {
                     panic!("Function with incorrect symbol attributes");
                 };
@@ -567,21 +569,32 @@ pub fn emit(program: &ast::Program, symbol_table: SymbolTable) -> Program {
                     body: generator.emit_instructions(body),
                 }));
             }
-            Declaration::Var(_) => {},
+            Declaration::Var(_) => {}
         }
     }
 
     for (name, symbol_data) in symbol_table {
-        if let Attributes::Static { initial_value, global } = symbol_data.attrs {
+        if let Attributes::Static {
+            initial_value,
+            global,
+        } = symbol_data.attrs
+        {
             match initial_value {
-                InitialValue::Initial(init) =>
+                InitialValue::Initial(init) => {
                     top_level.push(TopLevel::StaticVariable(StaticVariable {
-                        name, global, init
-                    })),
-                InitialValue::Tentative => top_level.push(TopLevel::StaticVariable(StaticVariable {
-                    name, global, init: 0
-                })),
-                InitialValue::NoInitializer => continue
+                        name,
+                        global,
+                        init,
+                    }))
+                }
+                InitialValue::Tentative => {
+                    top_level.push(TopLevel::StaticVariable(StaticVariable {
+                        name,
+                        global,
+                        init: 0,
+                    }))
+                }
+                InitialValue::NoInitializer => continue,
             }
         }
     }

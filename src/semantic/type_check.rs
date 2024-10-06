@@ -4,9 +4,9 @@ use crate::ast::{
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
-pub type SymbolTable = HashMap<Symbol, SymbolData>;
+pub type SymbolTable = BTreeMap<Symbol, SymbolData>;
 
 #[derive(Default)]
 struct TypeChecker {
