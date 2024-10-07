@@ -1,17 +1,31 @@
+use crate::semantic::{Attributes, SymbolData, SymbolTable};
 use crate::symbol::Symbol;
 use crate::tacky;
-use crate::tacky::TopLevel;
 use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct Program {
-    pub functions: Vec<Function>,
+    pub top_level: Vec<TopLevel>,
+}
+
+#[derive(Debug)]
+pub enum TopLevel {
+    Function(Function),
+    Variable(StaticVariable),
 }
 
 #[derive(Debug)]
 pub struct Function {
     pub name: Symbol,
+    pub global: bool,
     pub instructions: Vec<Instruction>,
+}
+
+#[derive(Debug)]
+pub struct StaticVariable {
+    pub name: Symbol,
+    pub global: bool,
+    pub init: i64,
 }
 
 #[derive(Debug)]
@@ -53,11 +67,12 @@ pub enum BinaryOp {
     Xor,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Operand {
     Imm(i64),
     Reg(Reg),
     Pseudo(Symbol),
+    Data(Symbol),
     Stack(i64),
 }
 
@@ -86,25 +101,22 @@ pub enum CondCode {
     LE,
 }
 
-pub fn generate(program: &tacky::Program) -> Program {
-    let functions = program
-        .top_level
-        .iter()
-        .filter_map(|top_level| {
-            if let TopLevel::Function(f) = top_level {
-                Some(f)
-            } else {
-                todo!()
+pub fn generate(program: &tacky::Program, symbol_table: &SymbolTable) -> Program {
+    let mut top_level = Vec::new();
+    for element in &program.top_level {
+        match element {
+            tacky::TopLevel::Function(f) => {
+                top_level.push(TopLevel::Function(generate_function(f, symbol_table)))
             }
-        })
-        .map(generate_function);
-
-    Program {
-        functions: functions.collect(),
+            tacky::TopLevel::Variable(v) => {
+                top_level.push(TopLevel::Variable(generate_static_variable(v)))
+            }
+        }
     }
+    Program { top_level }
 }
 
-fn generate_function(function: &tacky::Function) -> Function {
+fn generate_function(function: &tacky::Function, symbol_table: &SymbolTable) -> Function {
     let mut instructions = Vec::new();
 
     for (i, param) in function.params.iter().cloned().enumerate() {
@@ -216,12 +228,21 @@ fn generate_function(function: &tacky::Function) -> Function {
         }
     }
 
-    let stack_size = replace_pseudo_registers(&mut instructions);
+    let stack_size = replace_pseudo_registers(&mut instructions, symbol_table);
     let instructions = fixup_instructions(instructions, stack_size);
 
     Function {
         name: function.name.clone(),
+        global: function.global,
         instructions,
+    }
+}
+
+fn generate_static_variable(var: &tacky::StaticVariable) -> StaticVariable {
+    StaticVariable {
+        name: var.name.clone(),
+        global: var.global,
+        init: var.init,
     }
 }
 
@@ -266,7 +287,10 @@ fn generate_call(
     instructions.push(Instruction::Mov(Operand::Reg(Reg::Ax), dst.to_asm()));
 }
 
-fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> i64 {
+fn replace_pseudo_registers(
+    instructions: &mut Vec<Instruction>,
+    symbol_table: &SymbolTable,
+) -> i64 {
     let mut stack_size = 0;
     let mut stack_vars = HashMap::new();
 
@@ -274,6 +298,13 @@ fn replace_pseudo_registers(instructions: &mut Vec<Instruction>) -> i64 {
         if let Operand::Pseudo(name) = operand {
             let offset = if let Some(saved) = stack_vars.get(name).copied() {
                 saved
+            } else if let Some(SymbolData {
+                attrs: Attributes::Static { .. },
+                ..
+            }) = symbol_table.get(name)
+            {
+                *operand = Operand::Data(name.clone());
+                return;
             } else {
                 stack_size += 4;
                 stack_vars.insert(name.clone(), stack_size);
@@ -312,41 +343,28 @@ fn fixup_instructions(instructions: Vec<Instruction>, stack_size: i64) -> Vec<In
 
     for instruction in instructions.into_iter() {
         match instruction {
-            Instruction::Mov(Operand::Stack(src), Operand::Stack(dst)) => {
-                fixed.push(Instruction::Mov(
-                    Operand::Stack(src),
-                    Operand::Reg(Reg::R10),
-                ));
-                fixed.push(Instruction::Mov(
-                    Operand::Reg(Reg::R10),
-                    Operand::Stack(dst),
-                ));
+            Instruction::Mov(src, dst) if src.is_mem() && dst.is_mem() => {
+                fixed.push(Instruction::Mov(src, Operand::Reg(Reg::R10)));
+                fixed.push(Instruction::Mov(Operand::Reg(Reg::R10), dst));
             }
-            Instruction::Binary(op, Operand::Stack(left), Operand::Stack(right))
-                if matches!(
-                    op,
-                    BinaryOp::Add | BinaryOp::Sub | BinaryOp::And | BinaryOp::Or | BinaryOp::Xor
-                ) =>
+            Instruction::Binary(op, left, right)
+                if left.is_mem()
+                    && right.is_mem()
+                    && matches!(
+                        op,
+                        BinaryOp::Add
+                            | BinaryOp::Sub
+                            | BinaryOp::And
+                            | BinaryOp::Or
+                            | BinaryOp::Xor
+                    ) =>
             {
-                fixed.push(Instruction::Mov(
-                    Operand::Stack(left),
-                    Operand::Reg(Reg::R10),
-                ));
-                fixed.push(Instruction::Binary(
-                    op,
-                    Operand::Reg(Reg::R10),
-                    Operand::Stack(right),
-                ));
+                fixed.push(Instruction::Mov(left, Operand::Reg(Reg::R10)));
+                fixed.push(Instruction::Binary(op, Operand::Reg(Reg::R10), right));
             }
-            Instruction::Cmp(Operand::Stack(left), Operand::Stack(right)) => {
-                fixed.push(Instruction::Mov(
-                    Operand::Stack(left),
-                    Operand::Reg(Reg::R10),
-                ));
-                fixed.push(Instruction::Cmp(
-                    Operand::Reg(Reg::R10),
-                    Operand::Stack(right),
-                ));
+            Instruction::Cmp(left, right) if left.is_mem() && right.is_mem() => {
+                fixed.push(Instruction::Mov(left, Operand::Reg(Reg::R10)));
+                fixed.push(Instruction::Cmp(Operand::Reg(Reg::R10), right));
             }
             Instruction::Cmp(left, Operand::Imm(value)) => {
                 fixed.push(Instruction::Mov(
@@ -355,20 +373,16 @@ fn fixup_instructions(instructions: Vec<Instruction>, stack_size: i64) -> Vec<In
                 ));
                 fixed.push(Instruction::Cmp(left, Operand::Reg(Reg::R11)));
             }
-            Instruction::Binary(BinaryOp::Mul, left, Operand::Stack(right)) => {
-                fixed.push(Instruction::Mov(
-                    Operand::Stack(right),
-                    Operand::Reg(Reg::R11),
-                ));
+            Instruction::Binary(BinaryOp::Mul, left, right)
+                if matches!(right, Operand::Stack(_) | Operand::Data(_)) =>
+            {
+                fixed.push(Instruction::Mov(right.clone(), Operand::Reg(Reg::R11)));
                 fixed.push(Instruction::Binary(
                     BinaryOp::Mul,
                     left,
                     Operand::Reg(Reg::R11),
                 ));
-                fixed.push(Instruction::Mov(
-                    Operand::Reg(Reg::R11),
-                    Operand::Stack(right),
-                ));
+                fixed.push(Instruction::Mov(Operand::Reg(Reg::R11), right));
             }
             Instruction::Idiv(Operand::Imm(value)) => {
                 fixed.push(Instruction::Mov(
@@ -417,5 +431,11 @@ impl tacky::BinaryOp {
 
             _ => unreachable!(), // Other operators do not have equivalent
         }
+    }
+}
+
+impl Operand {
+    fn is_mem(&self) -> bool {
+        matches!(self, Operand::Stack(_) | Operand::Data(_))
     }
 }

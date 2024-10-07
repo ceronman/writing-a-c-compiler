@@ -18,7 +18,7 @@ pub fn dump_ast(src: &str) -> String {
 pub fn dump_tacky(src: &str) -> String {
     let ast = parser::parse(src).unwrap();
     let (ast, symbol_table) = semantic::validate(ast).unwrap();
-    let tacky = tacky::emit(&ast, symbol_table);
+    let tacky = tacky::emit(&ast, &symbol_table);
     pp_tacky(&tacky).unwrap().trim().to_owned()
 }
 
@@ -34,7 +34,7 @@ pub fn pp_tacky(program: &tacky::Program) -> Result<String> {
     for top_level in &program.top_level {
         match top_level {
             TopLevel::Function(f) => pp_function(file, f)?,
-            TopLevel::StaticVariable(v) => pp_static_variable(file, v)?,
+            TopLevel::Variable(v) => pp_static_variable(file, v)?,
         }
     }
     Ok(String::from_utf8(buffer)?)
@@ -52,12 +52,7 @@ pub fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariabl
 
 pub fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> {
     let global = if function.global { "global " } else { "" };
-    let params = function
-        .params
-        .iter()
-        .cloned()
-        .collect::<Vec<_>>()
-        .join(", ");
+    let params = function.params.to_vec().join(", ");
     writeln!(file, "{}function {}({}) {{ ", global, function.name, params)?;
     let indent = "    ";
     for item in &function.body {

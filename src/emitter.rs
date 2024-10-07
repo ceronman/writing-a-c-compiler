@@ -1,4 +1,7 @@
-use crate::asm::{BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, UnaryOp};
+use crate::asm::{
+    BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticVariable, TopLevel,
+    UnaryOp,
+};
 use crate::tempfile::TempPath;
 use std::fs::OpenOptions;
 use std::io::{BufWriter, Result, Write};
@@ -13,9 +16,12 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
         .truncate(true)
         .open(output_path.as_path())?;
     let output = &mut BufWriter::new(file);
-    for (i, function) in program.functions.iter().enumerate() {
-        emit_function(output, function)?;
-        if i < program.functions.len() - 1 {
+    for (i, top_level) in program.top_level.iter().enumerate() {
+        match top_level {
+            TopLevel::Function(function) => emit_function(output, function)?,
+            TopLevel::Variable(variable) => emit_variable(output, variable)?,
+        }
+        if i < program.top_level.len() - 1 {
             writeln!(output)?;
         }
     }
@@ -24,7 +30,10 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
 
 // TODO: rewrite with an IR for simplicity
 fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
-    writeln!(output, "\t.globl _{name}", name = function.name)?;
+    if function.global {
+        writeln!(output, "\t.globl _{name}", name = function.name)?;
+    }
+    writeln!(output, "\t.text")?;
     writeln!(output, "_{name}:", name = function.name)?;
 
     // Prologue
@@ -156,6 +165,28 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
     Ok(())
 }
 
+fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<()> {
+    if variable.global {
+        writeln!(output, "\t.globl _{name}", name = variable.name)?;
+    }
+    if variable.init == 0 {
+        writeln!(output, "\t.bss")?;
+        emit_ins(output, ".balign")?;
+        writeln!(output, "4")?;
+        writeln!(output, "_{name}:", name = variable.name)?;
+        emit_ins(output, ".zero")?;
+        writeln!(output, "4")?;
+    } else {
+        writeln!(output, "\t.data")?;
+        emit_ins(output, ".balign")?;
+        writeln!(output, "4")?;
+        writeln!(output, "_{name}:", name = variable.name)?;
+        emit_ins(output, ".long")?;
+        writeln!(output, "{}", variable.init)?;
+    }
+    Ok(())
+}
+
 fn emit_ins(output: &mut impl Write, ins: &str) -> Result<()> {
     write!(output, "\t{ins:8} ")
 }
@@ -206,6 +237,7 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
 
         (Operand::Imm(value), _) => write!(output, "${value}"),
         (Operand::Stack(offset), _) => write!(output, "{offset}(%rbp)"),
+        (Operand::Data(name), _) => write!(output, "_{name}(%rip)"),
         (Operand::Pseudo(_), _) => unreachable!("Pseudo-registers should not appear here"),
     }
 }

@@ -178,7 +178,7 @@ use crate::pretty::{{dedent, dump_tacky}};
     let indented = indent(source);
     let ast = parser::parse(&indented)?;
     let (ast, symbol_table) = semantic::validate(ast)?;
-    let tacky = tacky::emit(&ast, symbol_table);
+    let tacky = tacky::emit(&ast, &symbol_table);
     let expected = indent(&pretty::pp_tacky(&tacky)?);
     writeln!(file)?;
     writeln!(file, "#[test]")?;

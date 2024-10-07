@@ -177,7 +177,7 @@ impl TypeChecker {
                     span: decl.name.span,
                 });
             }
-            initial_value = match (initial_value, old_initial) {
+            initial_value = match (old_initial, initial_value) {
                 (InitialValue::Initial(_), InitialValue::Initial(_)) => {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -186,7 +186,10 @@ impl TypeChecker {
                     });
                 }
                 (InitialValue::Initial(_), _) => *old_initial,
-                (_, InitialValue::Tentative) => InitialValue::Tentative,
+                (
+                    InitialValue::Tentative,
+                    InitialValue::NoInitializer | InitialValue::Tentative,
+                ) => InitialValue::Tentative,
                 _ => initial_value,
             };
         }
@@ -434,6 +437,6 @@ impl TypeChecker {
 
 pub fn check(program: &Node<Program>) -> Result<SymbolTable> {
     let mut type_checker = TypeChecker::default();
-    type_checker.check(&program)?;
+    type_checker.check(program)?;
     Ok(type_checker.symbol_table)
 }

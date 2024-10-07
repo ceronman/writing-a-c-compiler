@@ -77,13 +77,13 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let tacky = tacky::emit(&validated_ast, symbol_table);
+    let tacky = tacky::emit(&validated_ast, &symbol_table);
     if let Flag::Tacky = options.flag {
         println!("{}", pp_tacky(&tacky)?);
         return Ok(());
     }
 
-    let asm = asm::generate(&tacky);
+    let asm = asm::generate(&tacky, &symbol_table);
     if let Flag::Codegen = options.flag {
         println!("{asm:#?}");
         return Ok(());

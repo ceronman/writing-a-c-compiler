@@ -14,7 +14,7 @@ pub struct Program {
 #[derive(Debug, Clone)]
 pub enum TopLevel {
     Function(Function),
-    StaticVariable(StaticVariable),
+    Variable(StaticVariable),
 }
 
 #[derive(Debug, Clone)]
@@ -132,6 +132,9 @@ impl TackyGenerator {
     }
 
     fn emit_var_declaration(&mut self, decl: &ast::VarDeclaration) {
+        if decl.storage_class.is_some() {
+            return;
+        }
         if let Some(init) = &decl.init {
             let result = self.emit_expr(init);
             self.instructions.push(Instruction::Copy {
@@ -547,7 +550,7 @@ impl TackyGenerator {
     }
 }
 
-pub fn emit(program: &ast::Program, symbol_table: SymbolTable) -> Program {
+pub fn emit(program: &ast::Program, symbol_table: &SymbolTable) -> Program {
     let mut top_level = Vec::new();
     let mut generator = TackyGenerator::default();
     for decl in &program.declarations {
@@ -580,20 +583,16 @@ pub fn emit(program: &ast::Program, symbol_table: SymbolTable) -> Program {
         } = symbol_data.attrs
         {
             match initial_value {
-                InitialValue::Initial(init) => {
-                    top_level.push(TopLevel::StaticVariable(StaticVariable {
-                        name,
-                        global,
-                        init,
-                    }))
-                }
-                InitialValue::Tentative => {
-                    top_level.push(TopLevel::StaticVariable(StaticVariable {
-                        name,
-                        global,
-                        init: 0,
-                    }))
-                }
+                InitialValue::Initial(init) => top_level.push(TopLevel::Variable(StaticVariable {
+                    name: name.clone(),
+                    global,
+                    init,
+                })),
+                InitialValue::Tentative => top_level.push(TopLevel::Variable(StaticVariable {
+                    name: name.clone(),
+                    global,
+                    init: 0,
+                })),
                 InitialValue::NoInitializer => continue,
             }
         }

@@ -1,6 +1,6 @@
 use crate::ast::{
-    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Node,
-    Program, Statement, StorageClass, UnaryOp, VarDeclaration,
+    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, InnerRef,
+    Node, Program, Statement, StorageClass, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
@@ -64,7 +64,7 @@ impl Resolver {
         let symbol = &decl.name.symbol;
         let unique_name = self.make_name(symbol);
         let scope = self.scopes.front_mut().expect("Invalid scope state");
-        let storage = decl.storage_class.as_ref().map(Node::as_ref);
+        let storage = decl.storage_class.inner_ref();
         if let Some(entry) = scope.get(symbol) {
             if !(entry.linked && matches!(storage, Some(StorageClass::Extern))) {
                 return Err(CompilerError {

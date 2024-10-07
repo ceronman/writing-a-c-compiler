@@ -9270,6 +9270,7 @@ fn test_chapter_10_valid_extern_block_scope_variable() {
             return 0
             return 0
         }
+        static global foo = 3
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9358,10 +9359,6 @@ fn test_chapter_10_valid_extra_credit_compound_assignment_static_var() {
     "#;
     let expected = r#"
         global function f() { 
-            i.0 = 0
-            j.1 = 0
-            k.2 = 1
-            l.3 = 48
             tmp.0 = i.0 + 1
             i.0 = tmp.0
             tmp.1 = j.1 - i.0
@@ -9423,7 +9420,6 @@ fn test_chapter_10_valid_extra_credit_goto_skip_static_initializer() {
     let expected = r#"
         global function main() { 
             jump end_0
-            x.0 = 10
         
           end_0:
             return x.0
@@ -9578,7 +9574,6 @@ fn test_chapter_10_valid_extra_credit_label_static_var_same_name() {
     "#;
     let expected = r#"
         global function main() { 
-            x.0 = 5
             jump x_0
             x.0 = 0
         
@@ -9781,6 +9776,7 @@ fn test_chapter_10_valid_extra_credit_switch_skip_extern_decl() {
             return 6
             return 0
         }
+        static global x = 15
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9809,7 +9805,6 @@ fn test_chapter_10_valid_extra_credit_switch_skip_static_initializer() {
             jump break_switch_0
         
           case_1_switch_0:
-            x.0 = 10
             x.0 = 0
         
           case_3_switch_0:
@@ -10063,7 +10058,7 @@ fn test_chapter_10_valid_libraries_external_variable() {
             return x
             return 0
         }
-        static global x = 0
+        static global x = 3
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10203,6 +10198,7 @@ fn test_chapter_10_valid_libraries_internal_hides_external_linkage_client() {
             return x
             return 0
         }
+        static x = 1
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10239,7 +10235,6 @@ fn test_chapter_10_valid_libraries_internal_linkage_function() {
             return 0
         }
         function my_fun() { 
-            i.0 = 0
             tmp.2 = i.0 + 1
             i.0 = tmp.2
             return i.0
@@ -10326,7 +10321,7 @@ fn test_chapter_10_valid_libraries_internal_linkage_var() {
             return 0
             return 0
         }
-        static x = 0
+        static x = 5
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10418,7 +10413,7 @@ fn test_chapter_10_valid_multiple_static_file_scope_vars() {
             return foo
             return 0
         }
-        static foo = 0
+        static foo = 4
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10442,14 +10437,12 @@ fn test_chapter_10_valid_multiple_static_local() {
     "#;
     let expected = r#"
         global function foo() { 
-            a.0 = 3
             tmp.0 = a.0 * 2
             a.0 = tmp.0
             return a.0
             return 0
         }
         global function bar() { 
-            a.1 = 4
             tmp.1 = a.1 + 1
             a.1 = tmp.1
             return a.1
@@ -10623,11 +10616,9 @@ fn test_chapter_10_valid_static_local_multiple_scopes() {
     "#;
     let expected = r#"
         global function print_letters() { 
-            i.1 = 65
             tmp.0 = putchar(i.1)
             tmp.1 = i.1 + 1
             i.1 = tmp.1
-            i.2 = 97
             tmp.2 = putchar(i.2)
             tmp.3 = i.2 + 1
             i.2 = tmp.3
@@ -10721,7 +10712,6 @@ fn test_chapter_10_valid_static_recursive_call() {
     "#;
     let expected = r#"
         global function print_alphabet() { 
-            count.1 = 0
             tmp.0 = count.1 + 65
             tmp.1 = putchar(tmp.0)
             tmp.2 = count.1 + 1
@@ -10757,6 +10747,7 @@ fn test_chapter_10_valid_static_then_extern() {
             return foo
             return 0
         }
+        static foo = 3
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10775,8 +10766,6 @@ fn test_chapter_10_valid_static_variables_in_expressions() {
     "#;
     let expected = r#"
         global function main() { 
-            i.0 = 2
-            j.1 = 3
             tmp.0 = i.0 < j.1
             cmp.2 = tmp.0
             tmp.1 = ! cmp.2
