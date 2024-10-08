@@ -3,7 +3,6 @@ use crate::parser;
 use crate::semantic;
 use crate::tacky;
 
-use crate::ast::StorageClass;
 use crate::tacky::TopLevel;
 use anyhow::Result;
 use std::io::Write;
@@ -267,11 +266,11 @@ impl PrettyAst {
             children,
         )
     }
-    fn storage_class(storage: &Option<ast::Node<StorageClass>>) -> &str {
+    fn storage_class(storage: &Option<ast::Node<ast::StorageClass>>) -> &str {
         if let Some(s) = storage {
             match s.as_ref() {
-                StorageClass::Static => "static ",
-                StorageClass::Extern => "extern ",
+                ast::StorageClass::Static => "static ",
+                ast::StorageClass::Extern => "extern ",
             }
         } else {
             ""
@@ -311,6 +310,10 @@ impl PrettyAst {
             }
             ast::Statement::Case { value, body, .. } => {
                 if let ast::Expression::Constant(value) = value.as_ref() {
+                    let value = match value {
+                        ast::Constant::Int(v) => *v as i64,
+                        ast::Constant::Long(v) => *v,
+                    };
                     Self::new(
                         format!("Case [{}]", value),
                         vec![Self::from_statement(body)],
@@ -376,7 +379,7 @@ impl PrettyAst {
     }
     fn from_expression(expression: &ast::Expression) -> PrettyAst {
         match expression {
-            ast::Expression::Constant(value) => Self::new(format!("Constant [{value}]"), vec![]),
+            ast::Expression::Constant(value) => Self::from_constant(value),
             ast::Expression::Var(name) => Self::new(format!("Var [{name}]"), vec![]),
             ast::Expression::Unary { op, expr } => Self::new(
                 format!("Unary [{}]", Self::unary_op(op)),
@@ -410,6 +413,13 @@ impl PrettyAst {
                 format!("FunctionCall [{}]", name.symbol),
                 args.iter().map(|arg| Self::from_expression(arg)),
             ),
+            ast::Expression::Cast { target, expr } => Self::new(
+                "Cast",
+                vec![
+                    Self::new("Target", vec![Self::from_type(target)]),
+                    Self::new("Expression", vec![Self::from_expression(expr)]),
+                ],
+            ),
         }
     }
     fn from_block_item(item: &ast::BlockItem) -> PrettyAst {
@@ -420,6 +430,28 @@ impl PrettyAst {
     }
     fn from_identifier(identifier: &ast::Identifier) -> PrettyAst {
         Self::new(&identifier.symbol, vec![])
+    }
+
+    fn from_constant(constant: &ast::Constant) -> PrettyAst {
+        let value = match constant {
+            ast::Constant::Int(v) => format!("{}", *v),
+            ast::Constant::Long(v) => format!("{}L", *v),
+        };
+        Self::new(format!("Constant [{}]", value), vec![])
+    }
+
+    fn from_type(ty: &ast::Type) -> PrettyAst {
+        match ty {
+            ast::Type::Int => Self::new("Int", vec![]),
+            ast::Type::Long => Self::new("Long", vec![]),
+            ast::Type::Function(f) => Self::new(
+                "FunctionType",
+                vec![
+                    Self::new("Return", vec![Self::from_type(&f.ret)]),
+                    Self::new("Params", f.params.iter().map(Self::from_type)),
+                ],
+            ),
+        }
     }
 
     fn write(

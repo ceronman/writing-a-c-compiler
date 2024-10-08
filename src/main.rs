@@ -57,7 +57,13 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let ast = parser::parse(&source)?;
+    let ast = match parser::parse(&source) {
+        Ok(ast) => ast,
+        Err(error) => {
+            let annotated = pretty::annotate(&source, &error);
+            panic!("{annotated}")
+        }
+    };
     if let Flag::Parse = options.flag {
         print!("{}", pretty_print_ast(&ast)?);
         return Ok(());

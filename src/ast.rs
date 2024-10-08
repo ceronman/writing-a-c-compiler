@@ -91,7 +91,7 @@ pub enum ForInit {
 
 #[derive(Debug)]
 pub enum Expression {
-    Constant(i64),
+    Constant(Constant),
     Var(Symbol),
     Unary {
         op: Node<UnaryOp>,
@@ -120,6 +120,16 @@ pub enum Expression {
         name: Node<Identifier>,
         args: Vec<Node<Expression>>,
     },
+    Cast {
+        target: Node<Type>,
+        expr: Node<Expression>,
+    },
+}
+
+#[derive(Debug)]
+pub enum Constant {
+    Int(i32),
+    Long(i64),
 }
 
 #[derive(Debug)]
@@ -134,9 +144,23 @@ pub enum Declaration {
 }
 
 #[derive(Debug)]
+pub enum Type {
+    Int,
+    Long,
+    Function(FunctionType),
+}
+
+#[derive(Debug)]
+pub struct FunctionType {
+    pub params: Vec<Type>,
+    pub ret: Box<Type>,
+}
+
+#[derive(Debug)]
 pub struct VarDeclaration {
     pub name: Node<Identifier>,
     pub init: Option<Node<Expression>>,
+    pub ty: Type,
     pub storage_class: Option<Node<StorageClass>>,
 }
 
@@ -145,6 +169,7 @@ pub struct FunctionDeclaration {
     pub name: Node<Identifier>,
     pub params: Vec<Node<Identifier>>,
     pub body: Option<Node<Block>>,
+    pub ty: FunctionType,
     pub storage_class: Option<Node<StorageClass>>,
 }
 

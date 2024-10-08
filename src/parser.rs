@@ -2,12 +2,12 @@
 mod test;
 
 use crate::ast::{
-    AssignOp, BinaryOp, Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration,
-    Identifier, Node, PostfixOp, Program, Statement, StorageClass, SwitchLabels, UnaryOp,
-    VarDeclaration,
+    AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
+    FunctionDeclaration, FunctionType, Identifier, Node, PostfixOp, Program, Statement,
+    StorageClass, SwitchLabels, Type, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
-use crate::lexer::{Lexer, Token, TokenKind};
+use crate::lexer::{Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
 
 struct Parser<'src> {
@@ -61,27 +61,32 @@ impl<'src> Parser<'src> {
 
     fn declaration(&mut self) -> Result<Node<Declaration>> {
         let begin = self.current.span;
-        let (_, storage_class) = self.type_and_storage()?;
+        let (ty, storage_class) = self.type_and_storage()?;
         let name = self.identifier()?;
 
         if self.matches(TokenKind::OpenParen) {
-            let params = if let TokenKind::Void = self.current.kind {
+            let (params, types) = if let TokenKind::Void = self.current.kind {
                 self.advance();
                 self.expect(TokenKind::CloseParen)?;
-                vec![]
+                (vec![], vec![])
             } else {
                 let mut params = Vec::new();
+                let mut types = Vec::new();
                 loop {
-                    self.expect(TokenKind::Int)?;
-                    let name = self.identifier()?;
-                    params.push(name);
+                    types.push(*self.type_specifier()?.data);
+                    params.push(self.identifier()?);
+
                     if self.matches(TokenKind::Comma) {
                         continue;
                     }
                     self.expect(TokenKind::CloseParen)?;
                     break;
                 }
-                params
+                (params, types)
+            };
+            let function_ty = FunctionType {
+                params: types,
+                ret: ty.data,
             };
             if let TokenKind::OpenBrace = self.current.kind {
                 let body = self.block()?;
@@ -91,6 +96,7 @@ impl<'src> Parser<'src> {
                         name,
                         params,
                         body: Some(body),
+                        ty: function_ty,
                         storage_class,
                     }),
                 ))
@@ -102,6 +108,7 @@ impl<'src> Parser<'src> {
                         name,
                         params,
                         body: None,
+                        ty: function_ty,
                         storage_class,
                     }),
                 ))
@@ -118,6 +125,7 @@ impl<'src> Parser<'src> {
                 Declaration::Var(VarDeclaration {
                     name,
                     init,
+                    ty: *ty.data,
                     storage_class,
                 }),
             ))
@@ -127,25 +135,62 @@ impl<'src> Parser<'src> {
     fn is_specifier(&self) -> bool {
         matches!(
             self.current.kind,
-            TokenKind::Int | TokenKind::Extern | TokenKind::Static
+            TokenKind::Int | TokenKind::Long | TokenKind::Extern | TokenKind::Static
         )
     }
 
-    fn type_and_storage(&mut self) -> Result<(Token, Option<Node<StorageClass>>)> {
-        let mut ty: Option<Token> = None;
+    fn type_specifier(&mut self) -> Result<Node<Type>> {
+        let mut types = Vec::new();
+        let begin = self.current.span;
+        let mut end = self.current.span;
+        while let TokenKind::Int | TokenKind::Long = self.current.kind {
+            types.push(self.current.kind);
+            end = self.current.span;
+            self.advance()
+        }
+        self.type_from_list(begin, end, &types)
+    }
+
+    fn type_from_list(
+        &mut self,
+        begin: Span,
+        end: Span,
+        types: &[TokenKind],
+    ) -> Result<Node<Type>> {
+        if types.is_empty() {
+            return Err(CompilerError {
+                kind: ErrorKind::Parse,
+                msg: "Expected type specifier".into(),
+                span: self.current.span,
+            });
+        }
+        let ty = match types {
+            [TokenKind::Int] => Type::Int,
+            [TokenKind::Long] => Type::Int,
+            [TokenKind::Long, TokenKind::Int] => Type::Long,
+            [TokenKind::Int, TokenKind::Long] => Type::Long,
+            _ => {
+                return Err(CompilerError {
+                    kind: ErrorKind::Parse,
+                    msg: "Invalid type specifier".to_string(),
+                    span: begin + end,
+                })
+            }
+        };
+        Ok(Node::from(begin + end, ty))
+    }
+
+    fn type_and_storage(&mut self) -> Result<(Node<Type>, Option<Node<StorageClass>>)> {
+        let begin = self.current.span;
+        let mut end = self.current.span;
+        let mut types = Vec::new();
         let mut storage: Option<Node<StorageClass>> = None;
         loop {
             let token = self.current;
             match token.kind {
-                TokenKind::Int => {
-                    if ty.is_some() {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Parse,
-                            msg: "Duplicated type in declaration".to_string(),
-                            span: token.span,
-                        });
-                    }
-                    ty = Some(token);
+                TokenKind::Int | TokenKind::Long => {
+                    types.push(token.kind);
+                    end = self.current.span;
                     self.advance();
                 }
                 TokenKind::Static | TokenKind::Extern => {
@@ -167,15 +212,8 @@ impl<'src> Parser<'src> {
                 _ => break,
             }
         }
-        if let Some(ty) = ty {
-            Ok((ty, storage))
-        } else {
-            Err(CompilerError {
-                kind: ErrorKind::Parse,
-                msg: "Expected type specifier in declaration".to_string(),
-                span: self.current.span,
-            })
-        }
+        let ty = self.type_from_list(begin, end, &types)?;
+        Ok((ty, storage))
     }
 
     fn statement(&mut self) -> Result<Node<Statement>> {
@@ -250,7 +288,7 @@ impl<'src> Parser<'src> {
                 ForInit::None
             }
             // TODO: unify with self.specifier()
-            TokenKind::Int | TokenKind::Static | TokenKind::Extern => {
+            TokenKind::Int | TokenKind::Long | TokenKind::Static | TokenKind::Extern => {
                 let Node { span, data } = self.declaration()?;
                 let Declaration::Var(decl) = *data else {
                     return Err(CompilerError {
@@ -431,7 +469,7 @@ impl<'src> Parser<'src> {
         error_kind: &str,
     ) -> Result<Node<Expression>> {
         let mut expr = match self.current.kind {
-            TokenKind::Constant => self.int()?,
+            TokenKind::Constant | TokenKind::LongConstant => self.constant()?,
             TokenKind::Identifier => {
                 if self.next.kind == TokenKind::OpenParen {
                     self.function_call()?
@@ -447,9 +485,15 @@ impl<'src> Parser<'src> {
             TokenKind::OpenParen => {
                 let begin = self.current.span;
                 self.advance();
-                let inner = self.expression()?;
-                let end = self.expect(TokenKind::CloseParen)?.span;
-                Node::from(begin + end, *inner.data)
+                if let Ok(target) = self.type_specifier() {
+                    self.expect(TokenKind::CloseParen)?;
+                    let expr = self.expression()?;
+                    Node::from(begin + expr.span, Expression::Cast { target, expr })
+                } else {
+                    let inner = self.expression()?;
+                    let end = self.expect(TokenKind::CloseParen)?.span;
+                    Node::from(begin + end, *inner.data)
+                }
             }
             _ => {
                 return Err(CompilerError {
@@ -692,18 +736,49 @@ impl<'src> Parser<'src> {
         Ok(Node::from(name.span, Expression::Var(name.data.symbol)))
     }
 
-    fn int(&mut self) -> Result<Node<Expression>> {
-        let span = self.current.span;
-        let token = self.expect(TokenKind::Constant)?;
-        let value = token
-            .slice(self.source)
-            .parse()
-            .map_err(|e| CompilerError {
-                kind: ErrorKind::Parse,
-                msg: format!("Constant parsing error: {e}"),
-                span,
-            })?;
-        Ok(Node::from(span, Expression::Constant(value)))
+    fn constant(&mut self) -> Result<Node<Expression>> {
+        let token = self.current;
+        let constant = match token.kind {
+            TokenKind::Constant => {
+                let value: i64 = token
+                    .slice(self.source)
+                    .parse()
+                    .map_err(|_| CompilerError {
+                        kind: ErrorKind::Parse,
+                        msg: "Integer constant out of range".into(),
+                        span: token.span,
+                    })?;
+                if value > i32::MAX as i64 {
+                    Constant::Long(value)
+                } else {
+                    Constant::Int(value as i32)
+                }
+            }
+            TokenKind::LongConstant => Constant::Long(
+                token
+                    .slice(self.source)
+                    .strip_suffix(&['l', 'L'])
+                    .unwrap()
+                    .parse()
+                    .map_err(|_| CompilerError {
+                        kind: ErrorKind::Parse,
+                        msg: "Long integer constant out of range".into(),
+                        span: token.span,
+                    })?,
+            ),
+            _ => {
+                return Err(CompilerError {
+                    kind: ErrorKind::Parse,
+                    msg: format!(
+                        "Expected constant but found '{}'",
+                        self.current.slice(self.source)
+                    ),
+                    span: token.span,
+                });
+            }
+        };
+        self.advance();
+        Ok(Node::from(token.span, Expression::Constant(constant)))
     }
 
     fn advance(&mut self) {

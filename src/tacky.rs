@@ -316,7 +316,13 @@ impl TackyGenerator {
 
     fn emit_expr(&mut self, expr: &ast::Expression) -> Val {
         match expr {
-            ast::Expression::Constant(val) => Val::Constant(*val),
+            ast::Expression::Constant(c) => {
+                let value = match c {
+                    ast::Constant::Int(v) => *v as i64,
+                    ast::Constant::Long(v) => *v,
+                };
+                Val::Constant(value)
+            }
             ast::Expression::Unary { op, expr } => {
                 let val = self.emit_expr(expr);
                 let dst = self.make_temp();
@@ -534,6 +540,8 @@ impl TackyGenerator {
                 });
                 result
             }
+
+            ast::Expression::Cast { .. } => todo!(),
         }
     }
 

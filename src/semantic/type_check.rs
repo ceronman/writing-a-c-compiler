@@ -1,6 +1,6 @@
 use crate::ast::{
-    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, InnerRef, Node,
-    Program, Statement, StorageClass, VarDeclaration,
+    Block, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration, InnerRef,
+    Node, Program, Statement, StorageClass, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
@@ -99,8 +99,13 @@ impl TypeChecker {
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
             let initial_value = if let Some(init) = &decl.init {
-                if let Expression::Constant(value) = init.as_ref() {
-                    InitialValue::Initial(*value)
+                if let Expression::Constant(c) = init.as_ref() {
+                    // TODO: this is duplicated in multiple places
+                    let value = match c {
+                        Constant::Int(v) => *v as i64,
+                        Constant::Long(v) => *v,
+                    };
+                    InitialValue::Initial(value)
                 } else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -133,8 +138,12 @@ impl TypeChecker {
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let mut initial_value = if let Some(init) = &decl.init {
-            if let Expression::Constant(value) = init.as_ref() {
-                InitialValue::Initial(*value)
+            if let Expression::Constant(c) = init.as_ref() {
+                let value = match c {
+                    Constant::Int(v) => *v as i64,
+                    Constant::Long(v) => *v,
+                };
+                InitialValue::Initial(value)
             } else {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
@@ -430,6 +439,7 @@ impl TypeChecker {
                 self.check_expression(then_expr)?;
                 self.check_expression(else_expr)?;
             }
+            Expression::Cast { .. } => todo!(),
         }
         Ok(())
     }

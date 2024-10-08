@@ -1,6 +1,6 @@
 use crate::ast::{
-    Block, BlockItem, Declaration, Expression, FunctionDeclaration, Node, Program, Statement,
-    SwitchLabels,
+    Block, BlockItem, Constant, Declaration, Expression, FunctionDeclaration, Node, Program,
+    Statement, SwitchLabels,
 };
 use crate::error::{CompilerError, ErrorKind};
 use crate::symbol::Symbol;
@@ -117,12 +117,16 @@ impl LabelChecker {
                 *label = enclosing_label.clone();
             }
             Statement::Case { label, value, body } => {
-                let Expression::Constant(int_value) = *value.as_ref() else {
+                let Expression::Constant(constant) = value.as_ref() else {
                     return Err(CompilerError {
                         kind: ErrorKind::Resolve,
                         msg: "case label does not reduce to an integer constant".to_owned(),
                         span: value.span,
                     });
+                };
+                let int_value = match constant {
+                    Constant::Int(v) => *v as i64,
+                    Constant::Long(v) => *v,
                 };
                 let Some(enclosing_label) = self.label_stack.iter().find_map(|kind| match kind {
                     LabelKind::Loop(_) => None,

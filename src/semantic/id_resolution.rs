@@ -299,6 +299,7 @@ impl Resolver {
                     span: name.span,
                 });
             }
+            Expression::Cast { .. } => todo!(),
         }
         Ok(())
     }
