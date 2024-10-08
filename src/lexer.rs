@@ -26,8 +26,10 @@ pub struct Token {
 pub enum TokenKind {
     Identifier,
     Constant,
+    LongConstant,
 
     Int,
+    Long,
     Void,
     If,
     Else,
@@ -98,7 +100,9 @@ impl Display for TokenKind {
         let s = match self {
             TokenKind::Identifier => "identifier",
             TokenKind::Constant => "constant",
+            TokenKind::LongConstant => "long constant",
             TokenKind::Int => "'int'",
+            TokenKind::Long => "'long'",
             TokenKind::Void => "'void'",
             TokenKind::If => "'if'",
             TokenKind::Else => "'else'",
@@ -289,9 +293,15 @@ impl<'src> Lexer<'src> {
         while let Some('0'..='9') = self.peek() {
             self.advance();
         }
+        let kind = if let Some('l') | Some('L') = self.peek() {
+            self.advance();
+            TokenKind::LongConstant
+        } else {
+            TokenKind::Constant
+        };
         match self.peek() {
             Some(c) if c.is_alphanumeric() => TokenKind::Error,
-            _ => TokenKind::Constant,
+            _ => kind,
         }
     }
 
@@ -305,6 +315,7 @@ impl<'src> Lexer<'src> {
         }
         match &self.source[self.start..self.offset] {
             "int" => TokenKind::Int,
+            "long" => TokenKind::Long,
             "void" => TokenKind::Void,
             "return" => TokenKind::Return,
             "if" => TokenKind::If,
