@@ -2,8 +2,11 @@ use crate::lexer::Span;
 use crate::symbol::Symbol;
 use std::ops::{Deref, DerefMut};
 
+pub type NodeId = u32;
+
 #[derive(Debug)]
 pub struct Node<T> {
+    pub id: NodeId,
     pub span: Span,
     pub data: Box<T>,
 }
@@ -254,15 +257,6 @@ impl<T> AsRef<T> for Node<T> {
 impl<T> AsMut<T> for Node<T> {
     fn as_mut(&mut self) -> &mut T {
         &mut self.data
-    }
-}
-
-impl<T> Node<T> {
-    pub fn from(span: Span, data: T) -> Self {
-        Node {
-            span,
-            data: Box::new(data),
-        }
     }
 }
 
