@@ -2335,7 +2335,11 @@ fn test_chapter_5_invalid_semantics_declared_after_use() {
                     │   ╰── Binary [+]
                     │       ├── Constant [1]
                     │       ╰── Constant [2]
-                    ├── VarDeclaration [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ╰── Type
+                    │       ╰── Int
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -2355,8 +2359,13 @@ fn test_chapter_5_invalid_semantics_extra_credit_compound_invalid_lvalue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Assign [+=]
                     │   ├── Unary [-]
                     │   │   ╰── Var [a]
@@ -2379,8 +2388,13 @@ fn test_chapter_5_invalid_semantics_extra_credit_compound_invalid_lvalue_2() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ╰── Assign [-=]
                         ├── Assign [+=]
                         │   ├── Var [a]
@@ -2402,8 +2416,13 @@ fn test_chapter_5_invalid_semantics_extra_credit_postfix_decr_non_lvalue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ╰── Return
                         ╰── Postfix [--]
                             ╰── Postfix [++]
@@ -2424,8 +2443,13 @@ fn test_chapter_5_invalid_semantics_extra_credit_postfix_incr_non_lvalue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ╰── Postfix [++]
                         ╰── Assign [=]
                             ├── Var [a]
@@ -2465,8 +2489,13 @@ fn test_chapter_5_invalid_semantics_extra_credit_prefix_incr_non_lvalue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Unary [++]
                     │   ╰── Binary [+]
                     │       ├── Var [a]
@@ -2530,8 +2559,13 @@ fn test_chapter_5_invalid_semantics_extra_credit_undeclared_compound_assignment_
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Assign [*=]
                     │   ├── Var [b]
                     │   ╰── Var [a]
@@ -2594,8 +2628,13 @@ fn test_chapter_5_invalid_semantics_invalid_lvalue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ├── Assign [=]
                     │   ├── Binary [+]
                     │   │   ├── Var [a]
@@ -2620,8 +2659,13 @@ fn test_chapter_5_invalid_semantics_invalid_lvalue_2() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ├── Assign [=]
                     │   ├── Unary [!]
                     │   │   ╰── Var [a]
@@ -2645,10 +2689,20 @@ fn test_chapter_5_invalid_semantics_mixed_precedence_assignment() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ╰── Assign [=]
                         ├── Var [a]
                         ╰── Assign [=]
@@ -2673,10 +2727,20 @@ fn test_chapter_5_invalid_semantics_redefine() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -2770,12 +2834,22 @@ fn test_chapter_5_invalid_semantics_use_then_redefine() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Return
                     │   ╰── Var [a]
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -2795,10 +2869,20 @@ fn test_chapter_5_valid_add_variables() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [first_variable]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [second_variable]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── first_variable
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── second_variable
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ╰── Return
                         ╰── Binary [+]
                             ├── Var [first_variable]
@@ -2821,17 +2905,32 @@ fn test_chapter_5_valid_allocate_temps_and_vars() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [2147483646]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [c]
-                    │   ╰── Binary [+]
-                    │       ├── Binary [/]
-                    │       │   ├── Var [a]
-                    │       │   ╰── Constant [6]
-                    │       ╰── Unary [!]
-                    │           ╰── Var [b]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2147483646]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Binary [/]
+                    │           │   ├── Var [a]
+                    │           │   ╰── Constant [6]
+                    │           ╰── Unary [!]
+                    │               ╰── Var [b]
                     ╰── Return
                         ╰── Binary [==]
                             ├── Binary [*]
@@ -2857,7 +2956,11 @@ fn test_chapter_5_valid_assign() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [var0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── var0
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── Assign [=]
                     │   ├── Var [var0]
                     │   ╰── Constant [2]
@@ -2879,10 +2982,15 @@ fn test_chapter_5_valid_assign_val_in_initializer() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Assign [=]
-                    │       ├── Var [a]
-                    │       ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Assign [=]
+                    │           ├── Var [a]
+                    │           ╰── Constant [5]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -2902,11 +3010,20 @@ fn test_chapter_5_valid_assignment_in_initializer() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    ├── VarDeclaration [b]
-                    │   ╰── Assign [=]
-                    │       ├── Var [a]
-                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ╰── Type
+                    │       ╰── Int
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Assign [=]
+                    │           ├── Var [a]
+                    │           ╰── Constant [0]
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -2926,7 +3043,11 @@ fn test_chapter_5_valid_assignment_lowest_precedence() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Binary [||]
@@ -2966,17 +3087,27 @@ fn test_chapter_5_valid_exp_then_declaration() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [2593]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [2593]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Binary [%]
                     │       ├── Var [a]
                     │       ╰── Constant [3]
-                    ├── VarDeclaration [b]
-                    │   ╰── Unary [-]
-                    │       ╰── Var [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Var [a]
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -2996,12 +3127,22 @@ fn test_chapter_5_valid_extra_credit_bitwise_in_initializer() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [15]
-                    ├── VarDeclaration [b]
-                    │   ╰── Binary [^]
-                    │       ├── Var [a]
-                    │       ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [15]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [^]
+                    │           ├── Var [a]
+                    │           ╰── Constant [5]
                     ╰── Return
                         ╰── Binary [|]
                             ├── Constant [1]
@@ -3024,12 +3165,27 @@ fn test_chapter_5_valid_extra_credit_bitwise_ops_vars() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [5]
-                    ├── VarDeclaration [c]
-                    │   ╰── Constant [8]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [8]
                     ╰── Return
                         ╰── Binary [|]
                             ├── Binary [&]
@@ -3052,8 +3208,13 @@ fn test_chapter_5_valid_extra_credit_bitwise_shiftl_variable() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ╰── Return
                         ╰── Binary [<<]
                             ├── Var [x]
@@ -3076,10 +3237,20 @@ fn test_chapter_5_valid_extra_credit_bitwise_shiftr_assign() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [var_to_shift]
-                    │   ╰── Constant [1234]
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── var_to_shift
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1234]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Assign [=]
                     │   ├── Var [x]
                     │   ╰── Binary [>>]
@@ -3111,21 +3282,56 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_chained() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [250]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [200]
-                    ├── VarDeclaration [c]
-                    │   ╰── Constant [100]
-                    ├── VarDeclaration [d]
-                    │   ╰── Constant [75]
-                    ├── VarDeclaration [e]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [25]
-                    ├── VarDeclaration [f]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [250]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [200]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [75]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── e
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [25]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── f
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Assign [=]
                     │   ├── Var [x]
                     │   ╰── Assign [+=]
@@ -3197,10 +3403,20 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_lowest_precedence() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [12]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [12]
                     ├── Assign [+=]
                     │   ├── Var [a]
                     │   ╰── Binary [||]
@@ -3211,15 +3427,25 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_lowest_precedence() {
                     │   ╰── Binary [&&]
                     │       ├── Var [a]
                     │       ╰── Constant [0]
-                    ├── VarDeclaration [c]
-                    │   ╰── Constant [14]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [14]
                     ├── Assign [-=]
                     │   ├── Var [c]
                     │   ╰── Binary [||]
                     │       ├── Var [a]
                     │       ╰── Var [b]
-                    ├── VarDeclaration [d]
-                    │   ╰── Constant [16]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [16]
                     ├── Assign [/=]
                     │   ├── Var [d]
                     │   ╰── Binary [||]
@@ -3258,12 +3484,22 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_use_result() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [y]
-                    │   ╰── Assign [+=]
-                    │       ├── Var [x]
-                    │       ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Assign [+=]
+                    │           ├── Var [x]
+                    │           ╰── Constant [3]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
@@ -3289,8 +3525,13 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_and() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [to_and]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── to_and
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Assign [&=]
                     │   ├── Var [to_and]
                     │   ╰── Constant [6]
@@ -3321,10 +3562,20 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_preceden
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [11]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [12]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [11]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [12]
                     ├── Assign [&=]
                     │   ├── Var [a]
                     │   ╰── Binary [||]
@@ -3335,22 +3586,37 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_preceden
                     │   ╰── Binary [||]
                     │       ├── Var [a]
                     │       ╰── Constant [1]
-                    ├── VarDeclaration [c]
-                    │   ╰── Constant [14]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [14]
                     ├── Assign [|=]
                     │   ├── Var [c]
                     │   ╰── Binary [||]
                     │       ├── Var [a]
                     │       ╰── Var [b]
-                    ├── VarDeclaration [d]
-                    │   ╰── Constant [16]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [16]
                     ├── Assign [>>=]
                     │   ├── Var [d]
                     │   ╰── Binary [||]
                     │       ├── Var [c]
                     │       ╰── Var [d]
-                    ├── VarDeclaration [e]
-                    │   ╰── Constant [18]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── e
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [18]
                     ├── Assign [<<=]
                     │   ├── Var [e]
                     │   ╰── Binary [||]
@@ -3403,26 +3669,76 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_chained() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [250]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [200]
-                    ├── VarDeclaration [c]
-                    │   ╰── Constant [100]
-                    ├── VarDeclaration [d]
-                    │   ╰── Constant [75]
-                    ├── VarDeclaration [e]
-                    │   ╰── Constant [50]
-                    ├── VarDeclaration [f]
-                    │   ╰── Constant [25]
-                    ├── VarDeclaration [g]
-                    │   ╰── Constant [10]
-                    ├── VarDeclaration [h]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [j]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [250]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [200]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [75]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── e
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [50]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── f
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [25]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── g
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── h
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── j
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Assign [=]
                     │   ├── Var [x]
                     │   ╰── Assign [&=]
@@ -3501,8 +3817,13 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_or() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [to_or]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── to_or
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Assign [|=]
                     │   ├── Var [to_or]
                     │   ╰── Constant [30]
@@ -3525,8 +3846,13 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_shiftl() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [to_shiftl]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── to_shiftl
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Assign [<<=]
                     │   ├── Var [to_shiftl]
                     │   ╰── Constant [4]
@@ -3549,8 +3875,13 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_shiftr() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [to_shiftr]
-                    │   ╰── Constant [382574]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── to_shiftr
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [382574]
                     ├── Assign [>>=]
                     │   ├── Var [to_shiftr]
                     │   ╰── Constant [4]
@@ -3573,8 +3904,13 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_xor() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [to_xor]
-                    │   ╰── Constant [7]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── to_xor
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [7]
                     ├── Assign [^=]
                     │   ├── Var [to_xor]
                     │   ╰── Constant [5]
@@ -3597,8 +3933,13 @@ fn test_chapter_5_valid_extra_credit_compound_divide() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [to_divide]
-                    │   ╰── Constant [8]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── to_divide
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [8]
                     ├── Assign [/=]
                     │   ├── Var [to_divide]
                     │   ╰── Constant [4]
@@ -3621,8 +3962,13 @@ fn test_chapter_5_valid_extra_credit_compound_minus() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [to_subtract]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── to_subtract
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Assign [-=]
                     │   ├── Var [to_subtract]
                     │   ╰── Constant [8]
@@ -3645,8 +3991,13 @@ fn test_chapter_5_valid_extra_credit_compound_mod() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [to_mod]
-                    │   ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── to_mod
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [5]
                     ├── Assign [&=]
                     │   ├── Var [to_mod]
                     │   ╰── Constant [3]
@@ -3669,8 +4020,13 @@ fn test_chapter_5_valid_extra_credit_compound_multiply() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [to_multiply]
-                    │   ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── to_multiply
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
                     ├── Assign [*=]
                     │   ├── Var [to_multiply]
                     │   ╰── Constant [3]
@@ -3693,8 +4049,13 @@ fn test_chapter_5_valid_extra_credit_compound_plus() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [to_add]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── to_add
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Assign [+=]
                     │   ├── Var [to_add]
                     │   ╰── Constant [4]
@@ -3722,10 +4083,20 @@ fn test_chapter_5_valid_extra_credit_incr_expression_statement() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Postfix [++]
                     │   ╰── Var [a]
                     ├── Unary [++]
@@ -3763,18 +4134,33 @@ fn test_chapter_5_valid_extra_credit_incr_in_binary_expr() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [2]
-                    ├── VarDeclaration [b]
-                    │   ╰── Binary [+]
-                    │       ├── Constant [3]
-                    │       ╰── Postfix [++]
-                    │           ╰── Var [a]
-                    ├── VarDeclaration [c]
-                    │   ╰── Binary [+]
-                    │       ├── Constant [4]
-                    │       ╰── Unary [++]
-                    │           ╰── Var [b]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Constant [3]
+                    │           ╰── Postfix [++]
+                    │               ╰── Var [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Constant [4]
+                    │           ╰── Unary [++]
+                    │               ╰── Var [b]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [&&]
@@ -3807,18 +4193,38 @@ fn test_chapter_5_valid_extra_credit_incr_parenthesized() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [2]
-                    ├── VarDeclaration [c]
-                    │   ╰── Unary [-]
-                    │       ╰── Unary [++]
-                    │           ╰── Var [a]
-                    ├── VarDeclaration [d]
-                    │   ╰── Unary [!]
-                    │       ╰── Postfix [--]
-                    │           ╰── Var [b]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Unary [++]
+                    │               ╰── Var [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [!]
+                    │           ╰── Postfix [--]
+                    │               ╰── Var [b]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [&&]
@@ -3855,16 +4261,36 @@ fn test_chapter_5_valid_extra_credit_postfix_incr_and_decr() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [2]
-                    ├── VarDeclaration [c]
-                    │   ╰── Postfix [++]
-                    │       ╰── Var [a]
-                    ├── VarDeclaration [d]
-                    │   ╰── Postfix [--]
-                    │       ╰── Var [b]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Postfix [++]
+                    │           ╰── Var [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Postfix [--]
+                    │           ╰── Var [b]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [&&]
@@ -3898,12 +4324,22 @@ fn test_chapter_5_valid_extra_credit_postfix_precedence() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Unary [!]
-                    │       ╰── Postfix [++]
-                    │           ╰── Var [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [!]
+                    │           ╰── Postfix [++]
+                    │               ╰── Var [a]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
@@ -3931,16 +4367,36 @@ fn test_chapter_5_valid_extra_credit_prefix_incr_and_decr() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [2]
-                    ├── VarDeclaration [c]
-                    │   ╰── Unary [++]
-                    │       ╰── Var [a]
-                    ├── VarDeclaration [d]
-                    │   ╰── Unary [--]
-                    │       ╰── Var [b]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [++]
+                    │           ╰── Var [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [--]
+                    │           ╰── Var [b]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [&&]
@@ -3974,10 +4430,20 @@ fn test_chapter_5_valid_kw_var_names() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [return_val]
-                    │   ╰── Constant [3]
-                    ├── VarDeclaration [void2]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── return_val
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── void2
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ╰── Return
                         ╰── Binary [+]
                             ├── Var [return_val]
@@ -3998,8 +4464,13 @@ fn test_chapter_5_valid_local_var_missing_return() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ╰── Assign [=]
                         ├── Var [a]
                         ╰── Binary [+]
@@ -4023,10 +4494,20 @@ fn test_chapter_5_valid_mixed_precedence_assignment() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Binary [*]
@@ -4055,8 +4536,13 @@ fn test_chapter_5_valid_non_short_circuit_or() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Binary [||]
                     │   ├── Constant [0]
                     │   ╰── Assign [=]
@@ -4115,8 +4601,13 @@ fn test_chapter_5_valid_return_var() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -4136,8 +4627,13 @@ fn test_chapter_5_valid_short_circuit_and_fail() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Binary [&&]
                     │   ├── Constant [0]
                     │   ╰── Assign [=]
@@ -4162,8 +4658,13 @@ fn test_chapter_5_valid_short_circuit_or() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Binary [||]
                     │   ├── Constant [1]
                     │   ╰── Assign [=]
@@ -4209,10 +4710,20 @@ fn test_chapter_5_valid_use_assignment_result() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ╰── Return
                         ╰── Assign [=]
                             ├── Var [a]
@@ -4235,10 +4746,15 @@ fn test_chapter_5_valid_use_val_in_own_initializer() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Binary [&&]
-                    │       ├── Constant [0]
-                    │       ╰── Var [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [&&]
+                    │           ├── Constant [0]
+                    │           ╰── Var [a]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -4473,8 +4989,13 @@ fn test_chapter_6_invalid_semantics_extra_credit_duplicate_labels() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Label [label]
                     │   ╰── Assign [=]
                     │       ├── Var [x]
@@ -4518,7 +5039,11 @@ fn test_chapter_6_invalid_semantics_extra_credit_goto_variable() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── Goto [a]
                     ╰── Return
                         ╰── Constant [0]
@@ -4562,8 +5087,13 @@ fn test_chapter_6_invalid_semantics_extra_credit_use_label_as_variable() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Label [a]
                     │   ╰── Assign [=]
                     │       ├── Var [x]
@@ -4593,8 +5123,13 @@ fn test_chapter_6_invalid_semantics_invalid_var_in_if() {
                     │   ╰── Then
                     │       ╰── Return
                     │           ╰── Var [c]
-                    ╰── VarDeclaration [c]
-                        ╰── Constant [0]
+                    ╰── VarDeclaration
+                        ├── Name
+                        │   ╰── c
+                        ├── Type
+                        │   ╰── Int
+                        ╰── Initializer
+                            ╰── Constant [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4613,10 +5148,20 @@ fn test_chapter_6_invalid_semantics_ternary_assign() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [2]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Assign [=]
                     │   ├── Conditional [?]
                     │   │   ├── Binary [>]
@@ -4656,8 +5201,13 @@ fn test_chapter_6_invalid_semantics_undeclared_var_in_ternary() {
                     │       │   ╰── Constant [1]
                     │       ╰── Else
                     │           ╰── Constant [2]
-                    ╰── VarDeclaration [a]
-                        ╰── Constant [5]
+                    ╰── VarDeclaration
+                        ├── Name
+                        │   ╰── a
+                        ├── Type
+                        │   ╰── Int
+                        ╰── Initializer
+                            ╰── Constant [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4675,8 +5225,13 @@ fn test_chapter_6_valid_assign_ternary() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Conditional [?]
@@ -4758,8 +5313,13 @@ fn test_chapter_6_valid_else() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ╰── If
                         ├── Condition
                         │   ╰── Var [a]
@@ -4786,7 +5346,11 @@ fn test_chapter_6_valid_extra_credit_bitwise_ternary() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [result]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── Conditional [?]
                     │   ├── Binary [^]
                     │   │   ├── Constant [1]
@@ -4818,8 +5382,13 @@ fn test_chapter_6_valid_extra_credit_compound_assign_ternary() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
                     ├── Assign [*=]
                     │   ├── Var [a]
                     │   ╰── Conditional [?]
@@ -4848,8 +5417,13 @@ fn test_chapter_6_valid_extra_credit_compound_if_expression() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Assign [+=]
@@ -4880,13 +5454,23 @@ fn test_chapter_6_valid_extra_credit_goto_after_declaration() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Goto [post_declaration]
-                    ├── VarDeclaration [i]
-                    │   ╰── Assign [=]
-                    │       ├── Var [x]
-                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Assign [=]
+                    │           ├── Var [x]
+                    │           ╰── Constant [0]
                     ├── Label [post_declaration]
                     │   ╰── Assign [=]
                     │       ├── Var [i]
@@ -4971,8 +5555,13 @@ fn test_chapter_6_valid_extra_credit_goto_label_and_var() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [ident]
-                    │   ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ident
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [5]
                     ├── Goto [ident]
                     ├── Return
                     │   ╰── Constant [0]
@@ -5084,8 +5673,13 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Label [label_if]
                     │   ╰── If
                     │       ├── Condition
@@ -5155,8 +5749,13 @@ fn test_chapter_6_valid_extra_credit_lh_compound_assignment() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Conditional [?]
                     │   ├── Assign [-=]
                     │   │   ├── Var [x]
@@ -5191,8 +5790,13 @@ fn test_chapter_6_valid_extra_credit_postfix_if() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Postfix [--]
@@ -5227,8 +5831,13 @@ fn test_chapter_6_valid_extra_credit_postfix_in_ternary() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Conditional [?]
                     │   ├── Binary [-]
                     │   │   ├── Var [x]
@@ -5260,9 +5869,14 @@ fn test_chapter_6_valid_extra_credit_prefix_if() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [++]
@@ -5296,8 +5910,13 @@ fn test_chapter_6_valid_extra_credit_prefix_in_ternary() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ╰── Return
                         ╰── Conditional [?]
                             ├── Unary [++]
@@ -5374,10 +5993,20 @@ fn test_chapter_6_valid_if_nested() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
@@ -5416,10 +6045,20 @@ fn test_chapter_6_valid_if_nested_2() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
@@ -5459,8 +6098,13 @@ fn test_chapter_6_valid_if_nested_3() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Assign [=]
@@ -5503,8 +6147,13 @@ fn test_chapter_6_valid_if_nested_4() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -5550,8 +6199,13 @@ fn test_chapter_6_valid_if_nested_5() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Constant [0]
@@ -5592,10 +6246,20 @@ fn test_chapter_6_valid_if_not_taken() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
@@ -5625,8 +6289,13 @@ fn test_chapter_6_valid_if_null_body() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Constant [0]
@@ -5657,10 +6326,20 @@ fn test_chapter_6_valid_if_taken() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
@@ -5688,10 +6367,20 @@ fn test_chapter_6_valid_lh_assignment() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [10]
-                    ├── VarDeclaration [y]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Assign [=]
                     │   ├── Var [y]
                     │   ╰── Conditional [?]
@@ -5735,10 +6424,20 @@ fn test_chapter_6_valid_multiple_if() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
@@ -5783,12 +6482,27 @@ fn test_chapter_6_valid_nested_ternary() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [2]
-                    ├── VarDeclaration [flag]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── flag
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ╰── Return
                         ╰── Conditional [?]
                             ├── Binary [>]
@@ -5820,30 +6534,40 @@ fn test_chapter_6_valid_nested_ternary_2() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Conditional [?]
-                    │       ├── Constant [1]
-                    │       ├── Then
-                    │       │   ╰── Conditional [?]
-                    │       │       ├── Constant [2]
-                    │       │       ├── Then
-                    │       │       │   ╰── Constant [3]
-                    │       │       ╰── Else
-                    │       │           ╰── Constant [4]
-                    │       ╰── Else
-                    │           ╰── Constant [5]
-                    ├── VarDeclaration [b]
-                    │   ╰── Conditional [?]
-                    │       ├── Constant [0]
-                    │       ├── Then
-                    │       │   ╰── Conditional [?]
-                    │       │       ├── Constant [2]
-                    │       │       ├── Then
-                    │       │       │   ╰── Constant [3]
-                    │       │       ╰── Else
-                    │       │           ╰── Constant [4]
-                    │       ╰── Else
-                    │           ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Conditional [?]
+                    │           ├── Constant [1]
+                    │           ├── Then
+                    │           │   ╰── Conditional [?]
+                    │           │       ├── Constant [2]
+                    │           │       ├── Then
+                    │           │       │   ╰── Constant [3]
+                    │           │       ╰── Else
+                    │           │           ╰── Constant [4]
+                    │           ╰── Else
+                    │               ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Conditional [?]
+                    │           ├── Constant [0]
+                    │           ├── Then
+                    │           │   ╰── Conditional [?]
+                    │           │       ├── Constant [2]
+                    │           │       ├── Then
+                    │           │       │   ╰── Constant [3]
+                    │           │       ╰── Else
+                    │           │           ╰── Constant [4]
+                    │           ╰── Else
+                    │               ╰── Constant [5]
                     ╰── Return
                         ╰── Binary [*]
                             ├── Var [a]
@@ -5866,10 +6590,20 @@ fn test_chapter_6_valid_rh_assignment() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [flag]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── flag
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Conditional [?]
                     │   ├── Var [flag]
                     │   ├── Then
@@ -5898,8 +6632,13 @@ fn test_chapter_6_valid_ternary() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ╰── Return
                         ╰── Conditional [?]
                             ├── Binary [>]
@@ -5927,8 +6666,13 @@ fn test_chapter_6_valid_ternary_middle_assignment() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Conditional [?]
                     │   ├── Binary [!=]
                     │   │   ├── Var [a]
@@ -5957,15 +6701,20 @@ fn test_chapter_6_valid_ternary_middle_binop() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Conditional [?]
-                    │       ├── Constant [1]
-                    │       ├── Then
-                    │       │   ╰── Binary [%]
-                    │       │       ├── Constant [3]
-                    │       │       ╰── Constant [2]
-                    │       ╰── Else
-                    │           ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Conditional [?]
+                    │           ├── Constant [1]
+                    │           ├── Then
+                    │           │   ╰── Binary [%]
+                    │           │       ├── Constant [3]
+                    │           │       ╰── Constant [2]
+                    │           ╰── Else
+                    │               ╰── Constant [4]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -5984,8 +6733,13 @@ fn test_chapter_6_valid_ternary_precedence() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ╰── Return
                         ╰── Conditional [?]
                             ├── Binary [||]
@@ -6037,10 +6791,20 @@ fn test_chapter_6_valid_ternary_short_circuit() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Conditional [?]
                     │   ├── Var [a]
                     │   ├── Then
@@ -6071,10 +6835,20 @@ fn test_chapter_6_valid_ternary_short_circuit_2() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Conditional [?]
                     │   ├── Var [a]
                     │   ├── Then
@@ -6164,8 +6938,16 @@ fn test_chapter_7_invalid_semantics_double_define() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Block
-                        ├── VarDeclaration [a]
-                        ╰── VarDeclaration [a]
+                        ├── VarDeclaration
+                        │   ├── Name
+                        │   │   ╰── a
+                        │   ╰── Type
+                        │       ╰── Int
+                        ╰── VarDeclaration
+                            ├── Name
+                            │   ╰── a
+                            ╰── Type
+                                ╰── Int
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -6186,14 +6968,24 @@ fn test_chapter_7_invalid_semantics_double_define_after_scope() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Block
                     │   ╰── Assign [=]
                     │       ├── Var [a]
                     │       ╰── Constant [5]
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -6217,12 +7009,22 @@ fn test_chapter_7_invalid_semantics_extra_credit_different_labels_same_scope() {
                 ╰── Body
                     ├── Label [label1]
                     │   ╰── Empty
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Label [label2]
                     │   ╰── Empty
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [11]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [11]
                     ╰── Return
                         ╰── Constant [1]
     "#;
@@ -6252,8 +7054,13 @@ fn test_chapter_7_invalid_semantics_extra_credit_duplicate_labels_different_scop
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ╰── If
                         ├── Condition
                         │   ╰── Var [x]
@@ -6297,8 +7104,13 @@ fn test_chapter_7_invalid_semantics_extra_credit_goto_use_before_declare() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -6309,8 +7121,13 @@ fn test_chapter_7_invalid_semantics_extra_credit_goto_use_before_declare() {
                     │           ╰── Label [return_y]
                     │               ╰── Return
                     │                   ╰── Var [y]
-                    ├── VarDeclaration [y]
-                    │   ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
                     ╰── Goto [return_y]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -6331,8 +7148,13 @@ fn test_chapter_7_invalid_semantics_out_of_scope() {
             ╰── Function [main]
                 ╰── Body
                     ├── Block
-                    │   ╰── VarDeclaration [a]
-                    │       ╰── Constant [2]
+                    │   ╰── VarDeclaration
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ├── Type
+                    │       │   ╰── Int
+                    │       ╰── Initializer
+                    │           ╰── Constant [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -6355,12 +7177,20 @@ fn test_chapter_7_invalid_semantics_use_before_declare() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── Block
                     │   ╰── Assign [=]
                     │       ├── Var [b]
                     │       ╰── Constant [10]
-                    ├── VarDeclaration [b]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ╰── Type
+                    │       ╰── Int
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -6382,13 +7212,23 @@ fn test_chapter_7_valid_assign_to_self() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ╰── Block
-                        ├── VarDeclaration [a]
-                        │   ╰── Assign [=]
-                        │       ├── Var [a]
-                        │       ╰── Constant [4]
+                        ├── VarDeclaration
+                        │   ├── Name
+                        │   │   ╰── a
+                        │   ├── Type
+                        │   │   ╰── Int
+                        │   ╰── Initializer
+                        │       ╰── Assign [=]
+                        │           ├── Var [a]
+                        │           ╰── Constant [4]
                         ╰── Return
                             ╰── Var [a]
     "#;
@@ -6410,13 +7250,23 @@ fn test_chapter_7_valid_assign_to_self_2() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Block
-                    │   ╰── VarDeclaration [a]
-                    │       ╰── Assign [=]
-                    │           ├── Var [a]
-                    │           ╰── Constant [4]
+                    │   ╰── VarDeclaration
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ├── Type
+                    │       │   ╰── Int
+                    │       ╰── Initializer
+                    │           ╰── Assign [=]
+                    │               ├── Var [a]
+                    │               ╰── Constant [4]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -6438,12 +7288,21 @@ fn test_chapter_7_valid_declaration_only() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── Block
-                    │   ╰── VarDeclaration [b]
-                    │       ╰── Assign [=]
-                    │           ├── Var [a]
-                    │           ╰── Constant [1]
+                    │   ╰── VarDeclaration
+                    │       ├── Name
+                    │       │   ╰── b
+                    │       ├── Type
+                    │       │   ╰── Int
+                    │       ╰── Initializer
+                    │           ╰── Assign [=]
+                    │               ├── Var [a]
+                    │               ╰── Constant [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -6465,13 +7324,23 @@ fn test_chapter_7_valid_empty_blocks() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [ten]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ten
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Block
-                    ├── VarDeclaration [twenty]
-                    │   ╰── Binary [*]
-                    │       ├── Constant [10]
-                    │       ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── twenty
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [*]
+                    │           ├── Constant [10]
+                    │           ╰── Constant [2]
                     ├── Block
                     │   ╰── Block
                     ╰── Return
@@ -6501,8 +7370,13 @@ fn test_chapter_7_valid_extra_credit_compound_subtract_in_block() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [>]
@@ -6513,8 +7387,13 @@ fn test_chapter_7_valid_extra_credit_compound_subtract_in_block() {
                     │           ├── Assign [-=]
                     │           │   ├── Var [a]
                     │           │   ╰── Constant [4]
-                    │           ├── VarDeclaration [a]
-                    │           │   ╰── Constant [5]
+                    │           ├── VarDeclaration
+                    │           │   ├── Name
+                    │           │   │   ╰── a
+                    │           │   ├── Type
+                    │           │   │   ╰── Int
+                    │           │   ╰── Initializer
+                    │           │       ╰── Constant [5]
                     │           ╰── If
                     │               ├── Condition
                     │               │   ╰── Binary [>]
@@ -6549,8 +7428,13 @@ fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ╰── Block
                         ├── If
                         │   ├── Condition
@@ -6561,8 +7445,13 @@ fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
                         │       ╰── Label [return_a]
                         │           ╰── Return
                         │               ╰── Var [a]
-                        ├── VarDeclaration [a]
-                        │   ╰── Constant [4]
+                        ├── VarDeclaration
+                        │   ├── Name
+                        │   │   ╰── a
+                        │   ├── Type
+                        │   │   ╰── Int
+                        │   ╰── Initializer
+                        │       ╰── Constant [4]
                         ╰── Goto [return_a]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -6586,12 +7475,22 @@ fn test_chapter_7_valid_extra_credit_goto_inner_scope() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [5]
                     ├── Goto [inner]
                     ╰── Block
-                        ├── VarDeclaration [x]
-                        │   ╰── Constant [0]
+                        ├── VarDeclaration
+                        │   ├── Name
+                        │   │   ╰── x
+                        │   ├── Type
+                        │   │   ╰── Int
+                        │   ╰── Initializer
+                        │       ╰── Constant [0]
                         ├── Label [inner]
                         │   ╰── Assign [=]
                         │       ├── Var [x]
@@ -6622,17 +7521,32 @@ fn test_chapter_7_valid_extra_credit_goto_outer_scope() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
                     │   ╰── Then
                     │       ╰── Block
-                    │           ├── VarDeclaration [a]
-                    │           │   ╰── Constant [1]
+                    │           ├── VarDeclaration
+                    │           │   ├── Name
+                    │           │   │   ╰── a
+                    │           │   ├── Type
+                    │           │   │   ╰── Int
+                    │           │   ╰── Initializer
+                    │           │       ╰── Constant [1]
                     │           ├── Assign [=]
                     │           │   ├── Var [b]
                     │           │   ╰── Var [a]
@@ -6680,15 +7594,25 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [sum]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── sum
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Constant [1]
                     │   ╰── Then
                     │       ╰── Block
-                    │           ├── VarDeclaration [a]
-                    │           │   ╰── Constant [5]
+                    │           ├── VarDeclaration
+                    │           │   ├── Name
+                    │           │   │   ╰── a
+                    │           │   ├── Type
+                    │           │   │   ╰── Int
+                    │           │   ╰── Initializer
+                    │           │       ╰── Constant [5]
                     │           ├── Goto [other_if]
                     │           ├── Assign [=]
                     │           │   ├── Var [sum]
@@ -6709,8 +7633,13 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
                     │       ╰── Block
                     │           ├── Label [other_if]
                     │           │   ╰── Empty
-                    │           ├── VarDeclaration [a]
-                    │           │   ╰── Constant [6]
+                    │           ├── VarDeclaration
+                    │           │   ├── Name
+                    │           │   │   ╰── a
+                    │           │   ├── Type
+                    │           │   │   ╰── Int
+                    │           │   ╰── Initializer
+                    │           │       ╰── Constant [6]
                     │           ├── Assign [=]
                     │           │   ├── Var [sum]
                     │           │   ╰── Binary [+]
@@ -6744,16 +7673,30 @@ fn test_chapter_7_valid_hidden_then_visible() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [2]
-                    ├── VarDeclaration [b]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── Block
                     │   ├── Assign [=]
                     │   │   ├── Var [a]
                     │   │   ╰── Unary [-]
                     │   │       ╰── Constant [4]
-                    │   ├── VarDeclaration [a]
-                    │   │   ╰── Constant [7]
+                    │   ├── VarDeclaration
+                    │   │   ├── Name
+                    │   │   │   ╰── a
+                    │   │   ├── Type
+                    │   │   │   ╰── Int
+                    │   │   ╰── Initializer
+                    │   │       ╰── Constant [7]
                     │   ╰── Assign [=]
                     │       ├── Var [b]
                     │       ╰── Binary [+]
@@ -6787,11 +7730,21 @@ fn test_chapter_7_valid_hidden_variable() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ╰── Block
-                        ├── VarDeclaration [a]
-                        │   ╰── Constant [1]
+                        ├── VarDeclaration
+                        │   ├── Name
+                        │   │   ╰── a
+                        │   ├── Type
+                        │   │   ╰── Int
+                        │   ╰── Initializer
+                        │       ╰── Constant [1]
                         ╰── Return
                             ╰── Var [a]
     "#;
@@ -6813,10 +7766,19 @@ fn test_chapter_7_valid_inner_uninitialized() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
                     ├── Block
-                    │   ╰── VarDeclaration [x]
+                    │   ╰── VarDeclaration
+                    │       ├── Name
+                    │       │   ╰── x
+                    │       ╰── Type
+                    │           ╰── Int
                     ╰── Return
                         ╰── Var [x]
     "#;
@@ -6843,17 +7805,32 @@ fn test_chapter_7_valid_multiple_vars_same_name() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Block
-                    │   ├── VarDeclaration [b]
-                    │   │   ╰── Constant [4]
+                    │   ├── VarDeclaration
+                    │   │   ├── Name
+                    │   │   │   ╰── b
+                    │   │   ├── Type
+                    │   │   │   ╰── Int
+                    │   │   ╰── Initializer
+                    │   │       ╰── Constant [4]
                     │   ╰── Assign [=]
                     │       ├── Var [a]
                     │       ╰── Var [b]
                     ├── Block
-                    │   ├── VarDeclaration [b]
-                    │   │   ╰── Constant [2]
+                    │   ├── VarDeclaration
+                    │   │   ├── Name
+                    │   │   │   ╰── b
+                    │   │   ├── Type
+                    │   │   │   ╰── Int
+                    │   │   ╰── Initializer
+                    │   │       ╰── Constant [2]
                     │   ╰── Assign [=]
                     │       ├── Var [a]
                     │       ╰── Binary [-]
@@ -6888,21 +7865,36 @@ fn test_chapter_7_valid_nested_if() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
                     │   ├── Then
                     │   │   ╰── Block
-                    │   │       ├── VarDeclaration [b]
-                    │   │       │   ╰── Constant [2]
+                    │   │       ├── VarDeclaration
+                    │   │       │   ├── Name
+                    │   │       │   │   ╰── b
+                    │   │       │   ├── Type
+                    │   │       │   │   ╰── Int
+                    │   │       │   ╰── Initializer
+                    │   │       │       ╰── Constant [2]
                     │   │       ╰── Return
                     │   │           ╰── Var [b]
                     │   ╰── Else
                     │       ╰── Block
-                    │           ├── VarDeclaration [c]
-                    │           │   ╰── Constant [3]
+                    │           ├── VarDeclaration
+                    │           │   ├── Name
+                    │           │   │   ╰── c
+                    │           │   ├── Type
+                    │           │   │   ╰── Int
+                    │           │   ╰── Initializer
+                    │           │       ╰── Constant [3]
                     │           ╰── If
                     │               ├── Condition
                     │               │   ╰── Binary [<]
@@ -6975,39 +7967,103 @@ fn test_chapter_7_valid_similar_var_names() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    ├── VarDeclaration [result]
-                    ├── VarDeclaration [a1]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ╰── Type
+                    │       ╰── Int
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ╰── Type
+                    │       ╰── Int
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a1
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Block
-                    │   ├── VarDeclaration [a]
-                    │   │   ╰── Constant [2]
-                    │   ├── VarDeclaration [a1]
-                    │   │   ╰── Constant [2]
+                    │   ├── VarDeclaration
+                    │   │   ├── Name
+                    │   │   │   ╰── a
+                    │   │   ├── Type
+                    │   │   │   ╰── Int
+                    │   │   ╰── Initializer
+                    │   │       ╰── Constant [2]
+                    │   ├── VarDeclaration
+                    │   │   ├── Name
+                    │   │   │   ╰── a1
+                    │   │   ├── Type
+                    │   │   │   ╰── Int
+                    │   │   ╰── Initializer
+                    │   │       ╰── Constant [2]
                     │   ├── Block
-                    │   │   ├── VarDeclaration [a]
+                    │   │   ├── VarDeclaration
+                    │   │   │   ├── Name
+                    │   │   │   │   ╰── a
+                    │   │   │   ╰── Type
+                    │   │   │       ╰── Int
                     │   │   ╰── Block
-                    │   │       ├── VarDeclaration [a]
+                    │   │       ├── VarDeclaration
+                    │   │       │   ├── Name
+                    │   │       │   │   ╰── a
+                    │   │       │   ╰── Type
+                    │   │       │       ╰── Int
                     │   │       ╰── Block
-                    │   │           ├── VarDeclaration [a]
+                    │   │           ├── VarDeclaration
+                    │   │           │   ├── Name
+                    │   │           │   │   ╰── a
+                    │   │           │   ╰── Type
+                    │   │           │       ╰── Int
                     │   │           ╰── Block
-                    │   │               ├── VarDeclaration [a]
+                    │   │               ├── VarDeclaration
+                    │   │               │   ├── Name
+                    │   │               │   │   ╰── a
+                    │   │               │   ╰── Type
+                    │   │               │       ╰── Int
                     │   │               ╰── Block
-                    │   │                   ├── VarDeclaration [a]
+                    │   │                   ├── VarDeclaration
+                    │   │                   │   ├── Name
+                    │   │                   │   │   ╰── a
+                    │   │                   │   ╰── Type
+                    │   │                   │       ╰── Int
                     │   │                   ╰── Block
-                    │   │                       ├── VarDeclaration [a]
+                    │   │                       ├── VarDeclaration
+                    │   │                       │   ├── Name
+                    │   │                       │   │   ╰── a
+                    │   │                       │   ╰── Type
+                    │   │                       │       ╰── Int
                     │   │                       ╰── Block
-                    │   │                           ├── VarDeclaration [a]
+                    │   │                           ├── VarDeclaration
+                    │   │                           │   ├── Name
+                    │   │                           │   │   ╰── a
+                    │   │                           │   ╰── Type
+                    │   │                           │       ╰── Int
                     │   │                           ╰── Block
-                    │   │                               ├── VarDeclaration [a]
+                    │   │                               ├── VarDeclaration
+                    │   │                               │   ├── Name
+                    │   │                               │   │   ╰── a
+                    │   │                               │   ╰── Type
+                    │   │                               │       ╰── Int
                     │   │                               ╰── Block
-                    │   │                                   ├── VarDeclaration [a]
-                    │   │                                   │   ╰── Constant [20]
+                    │   │                                   ├── VarDeclaration
+                    │   │                                   │   ├── Name
+                    │   │                                   │   │   ╰── a
+                    │   │                                   │   ├── Type
+                    │   │                                   │   │   ╰── Int
+                    │   │                                   │   ╰── Initializer
+                    │   │                                   │       ╰── Constant [20]
                     │   │                                   ├── Assign [=]
                     │   │                                   │   ├── Var [result]
                     │   │                                   │   ╰── Var [a]
                     │   │                                   ╰── Block
-                    │   │                                       ├── VarDeclaration [a]
+                    │   │                                       ├── VarDeclaration
+                    │   │                                       │   ├── Name
+                    │   │                                       │   │   ╰── a
+                    │   │                                       │   ╰── Type
+                    │   │                                       │       ╰── Int
                     │   │                                       ├── Assign [=]
                     │   │                                       │   ├── Var [a]
                     │   │                                       │   ╰── Constant [5]
@@ -7047,7 +8103,11 @@ fn test_chapter_7_valid_use_in_inner_scope() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── Block
                     │   ╰── Assign [=]
                     │       ├── Var [x]
@@ -7361,7 +8421,11 @@ fn test_chapter_8_invalid_semantics_continue_not_in_loop() {
             ╰── Function [main]
                 ╰── Body
                     ├── Block
-                    │   ├── VarDeclaration [a]
+                    │   ├── VarDeclaration
+                    │   │   ├── Name
+                    │   │   │   ╰── a
+                    │   │   ╰── Type
+                    │   │       ╰── Int
                     │   ╰── Continue
                     ╰── Return
                         ╰── Constant [0]
@@ -7386,8 +8450,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_case_continue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Binary [+]
@@ -7422,8 +8491,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_case_outside_switch() {
                 ╰── Body
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
@@ -7461,8 +8535,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_default_continue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Binary [+]
@@ -7524,21 +8603,36 @@ fn test_chapter_8_invalid_semantics_extra_credit_different_cases_same_scope() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
                     │   ╰── Block
                     │       ├── Case [1]
                     │       │   ╰── Empty
-                    │       ├── VarDeclaration [b]
-                    │       │   ╰── Constant [10]
+                    │       ├── VarDeclaration
+                    │       │   ├── Name
+                    │       │   │   ╰── b
+                    │       │   ├── Type
+                    │       │   │   ╰── Int
+                    │       │   ╰── Initializer
+                    │       │       ╰── Constant [10]
                     │       ├── Break
                     │       ├── Case [2]
                     │       │   ╰── Empty
-                    │       ├── VarDeclaration [b]
-                    │       │   ╰── Constant [11]
+                    │       ├── VarDeclaration
+                    │       │   ├── Name
+                    │       │   │   ╰── b
+                    │       │   ├── Type
+                    │       │   │   ╰── Int
+                    │       │   ╰── Initializer
+                    │       │       ╰── Constant [11]
                     │       ├── Break
                     │       ╰── Default
                     │           ╰── Break
@@ -7602,8 +8696,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_labeled_switc
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Label [label]
                     │   ╰── Switch
                     │       ├── Expression
@@ -7639,8 +8738,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_nested_statem
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -7678,8 +8782,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ╰── Switch
                         ├── Expression
                         │   ╰── Var [a]
@@ -7724,8 +8833,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default_in_nested_sta
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -7733,8 +8847,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default_in_nested_sta
                     │       ├── Case [1]
                     │       │   ╰── For
                     │       │       ├── Init
-                    │       │       │   ╰── VarDeclaration [i]
-                    │       │       │       ╰── Constant [0]
+                    │       │       │   ╰── VarDeclaration
+                    │       │       │       ├── Name
+                    │       │       │       │   ╰── i
+                    │       │       │       ├── Type
+                    │       │       │       │   ╰── Int
+                    │       │       │       ╰── Initializer
+                    │       │       │           ╰── Constant [0]
                     │       │       ├── Condition
                     │       │       │   ╰── Binary [<]
                     │       │       │       ├── Var [i]
@@ -7784,8 +8903,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_default() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Label [label]
                     │   ╰── Switch
                     │       ├── Expression
@@ -7856,20 +8980,35 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_variable_in_switch() 
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
                     │   ╰── Block
-                    │       ├── VarDeclaration [b]
-                    │       │   ╰── Constant [2]
+                    │       ├── VarDeclaration
+                    │       │   ├── Name
+                    │       │   │   ╰── b
+                    │       │   ├── Type
+                    │       │   │   ╰── Int
+                    │       │   ╰── Initializer
+                    │       │       ╰── Constant [2]
                     │       ├── Case [0]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
                     │       │       ╰── Constant [3]
-                    │       ╰── VarDeclaration [b]
-                    │           ╰── Constant [2]
+                    │       ╰── VarDeclaration
+                    │           ├── Name
+                    │           │   ╰── b
+                    │           ├── Type
+                    │           │   ╰── Int
+                    │           ╰── Initializer
+                    │               ╰── Constant [2]
                     ╰── Return
                         ╰── Constant [0]
     "#;
@@ -7912,8 +9051,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_non_constant_case() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ╰── Switch
                         ├── Expression
                         │   ╰── Binary [+]
@@ -7953,8 +9097,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_switch_continue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Binary [+]
@@ -8026,8 +9175,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_case() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -8063,8 +9217,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_default(
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -8098,8 +9257,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_undefined_label_in_case() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -8131,10 +9295,15 @@ fn test_chapter_8_invalid_semantics_out_of_scope_do_loop() {
                     ╰── DoWhile
                         ├── Body
                         │   ╰── Block
-                        │       ╰── VarDeclaration [a]
-                        │           ╰── Binary [+]
-                        │               ├── Var [a]
-                        │               ╰── Constant [1]
+                        │       ╰── VarDeclaration
+                        │           ├── Name
+                        │           │   ╰── a
+                        │           ├── Type
+                        │           │   ╰── Int
+                        │           ╰── Initializer
+                        │               ╰── Binary [+]
+                        │                   ├── Var [a]
+                        │                   ╰── Constant [1]
                         ╰── Condition
                             ╰── Binary [<]
                                 ├── Var [a]
@@ -8198,10 +9367,20 @@ fn test_chapter_8_valid_break() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [20]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [20]
                     ├── For
                     │   ├── Init
                     │   │   ╰── Assign [=]
@@ -8258,8 +9437,13 @@ fn test_chapter_8_valid_break_immediate() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Assign [=]
@@ -8292,13 +9476,27 @@ fn test_chapter_8_valid_continue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [sum]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [counter]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── sum
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── counter
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<=]
                     │   │       ├── Var [i]
@@ -8357,12 +9555,22 @@ fn test_chapter_8_valid_continue_empty_post() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [sum]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── sum
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
@@ -8406,8 +9614,13 @@ fn test_chapter_8_valid_do_while() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Block
@@ -8441,8 +9654,13 @@ fn test_chapter_8_valid_do_while_break_immediate() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Break
@@ -8488,8 +9706,13 @@ fn test_chapter_8_valid_empty_loop_body() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [i]
-                    │   ╰── Constant [2147]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2147]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Empty
@@ -8526,18 +9749,33 @@ fn test_chapter_8_valid_extra_credit_case_block() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [4]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Constant [2]
                     │   ╰── Block
                     │       ╰── Case [2]
                     │           ╰── Block
-                    │               ├── VarDeclaration [a]
-                    │               │   ╰── Constant [8]
+                    │               ├── VarDeclaration
+                    │               │   ├── Name
+                    │               │   │   ╰── a
+                    │               │   ├── Type
+                    │               │   │   ╰── Int
+                    │               │   ╰── Initializer
+                    │               │       ╰── Constant [8]
                     │               ╰── Assign [=]
                     │                   ├── Var [b]
                     │                   ╰── Var [a]
@@ -8568,10 +9806,20 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression(
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [i]
-                    │   ╰── Constant [100]
-                    ├── VarDeclaration [sum]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── sum
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Assign [+=]
@@ -8607,8 +9855,13 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [i]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── For
                     │   ├── Init
                     │   │   ╰── Assign [*=]
@@ -8662,14 +9915,24 @@ fn test_chapter_8_valid_extra_credit_duffs_device() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [count]
-                    │   ╰── Constant [37]
-                    ├── VarDeclaration [iterations]
-                    │   ╰── Binary [/]
-                    │       ├── Binary [+]
-                    │       │   ├── Var [count]
-                    │       │   ╰── Constant [4]
-                    │       ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── count
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [37]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── iterations
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [/]
+                    │           ├── Binary [+]
+                    │           │   ├── Var [count]
+                    │           │   ╰── Constant [4]
+                    │           ╰── Constant [5]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Binary [%]
@@ -8747,8 +10010,13 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_condition() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [i]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Block
@@ -8790,8 +10058,13 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_init_exp() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [i]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Goto [target]
                     ├── For
                     │   ├── Init
@@ -8843,12 +10116,22 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_post_exp() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [sum]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── sum
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
@@ -8895,8 +10178,13 @@ fn test_chapter_8_valid_extra_credit_label_loop_body() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [result]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Goto [label]
                     ├── While
                     │   ├── Condition
@@ -8951,8 +10239,13 @@ fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [sum]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── sum
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Goto [do_label]
                     ├── Return
                     │   ╰── Constant [0]
@@ -8989,8 +10282,13 @@ fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
                     ├── Label [for_label]
                     │   ╰── For
                     │       ├── Init
-                    │       │   ╰── VarDeclaration [i]
-                    │       │       ╰── Constant [0]
+                    │       │   ╰── VarDeclaration
+                    │       │       ├── Name
+                    │       │       │   ╰── i
+                    │       │       ├── Type
+                    │       │       │   ╰── Int
+                    │       │       ╰── Initializer
+                    │       │           ╰── Constant [0]
                     │       ├── Condition
                     │       │   ╰── Binary [<]
                     │       │       ├── Var [i]
@@ -9041,10 +10339,20 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [i]
-                    │   ╰── Constant [100]
-                    ├── VarDeclaration [count]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── count
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Postfix [--]
@@ -9112,8 +10420,13 @@ fn test_chapter_8_valid_extra_credit_loop_in_switch() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [cond]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── cond
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [cond]
@@ -9124,8 +10437,13 @@ fn test_chapter_8_valid_extra_credit_loop_in_switch() {
                     │       ├── Case [10]
                     │       │   ╰── For
                     │       │       ├── Init
-                    │       │       │   ╰── VarDeclaration [i]
-                    │       │       │       ╰── Constant [0]
+                    │       │       │   ╰── VarDeclaration
+                    │       │       │       ├── Name
+                    │       │       │       │   ╰── i
+                    │       │       │       ├── Type
+                    │       │       │       │   ╰── Int
+                    │       │       │       ╰── Initializer
+                    │       │       │           ╰── Constant [0]
                     │       │       ├── Condition
                     │       │       │   ╰── Binary [<]
                     │       │       │       ├── Var [i]
@@ -9175,12 +10493,22 @@ fn test_chapter_8_valid_extra_credit_post_exp_incr() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [product]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── product
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
@@ -9258,8 +10586,13 @@ fn test_chapter_8_valid_extra_credit_switch_assign_in_condition() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Assign [=]
@@ -9306,8 +10639,13 @@ fn test_chapter_8_valid_extra_credit_switch_break() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [5]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -9347,18 +10685,33 @@ fn test_chapter_8_valid_extra_credit_switch_decl() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
                     │   ╰── Block
-                    │       ├── VarDeclaration [a]
-                    │       │   ╰── Assign [=]
-                    │       │       ├── Var [b]
-                    │       │       ╰── Constant [5]
+                    │       ├── VarDeclaration
+                    │       │   ├── Name
+                    │       │   │   ╰── a
+                    │       │   ├── Type
+                    │       │   │   ╰── Int
+                    │       │   ╰── Initializer
+                    │       │       ╰── Assign [=]
+                    │       │           ├── Var [b]
+                    │       │           ╰── Constant [5]
                     │       ├── Case [3]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
@@ -9403,8 +10756,13 @@ fn test_chapter_8_valid_extra_credit_switch_default() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -9448,8 +10806,13 @@ fn test_chapter_8_valid_extra_credit_switch_default_fallthrough() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [5]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Constant [0]
@@ -9485,11 +10848,20 @@ fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    ├── VarDeclaration [b]
-                    │   ╰── Assign [=]
-                    │       ├── Var [a]
-                    │       ╰── Constant [7]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ╰── Type
+                    │       ╰── Int
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Assign [=]
+                    │           ├── Var [a]
+                    │           ╰── Constant [7]
                     ╰── Switch
                         ├── Expression
                         │   ╰── Binary [+]
@@ -9519,8 +10891,13 @@ fn test_chapter_8_valid_extra_credit_switch_default_only() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -9549,8 +10926,13 @@ fn test_chapter_8_valid_extra_credit_switch_empty() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Assign [=]
@@ -9597,12 +10979,27 @@ fn test_chapter_8_valid_extra_credit_switch_fallthrough() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [4]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [9]
-                    ├── VarDeclaration [c]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [9]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Conditional [?]
@@ -9655,8 +11052,13 @@ fn test_chapter_8_valid_extra_credit_switch_goto_mid_case() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Goto [mid_case]
                     ├── Switch
                     │   ├── Expression
@@ -9709,14 +11111,29 @@ fn test_chapter_8_valid_extra_credit_switch_in_loop() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [acc]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [ctr]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── acc
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ctr
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
@@ -9811,12 +11228,27 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [switch1]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [switch2]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [switch3]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── switch1
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── switch2
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── switch3
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Constant [3]
@@ -9868,8 +11300,13 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
                     │   ╰── Block
                     │       ╰── For
                     │           ├── Init
-                    │           │   ╰── VarDeclaration [i]
-                    │           │       ╰── Constant [0]
+                    │           │   ╰── VarDeclaration
+                    │           │       ├── Name
+                    │           │       │   ╰── i
+                    │           │       ├── Type
+                    │           │       │   ╰── Int
+                    │           │       ╰── Initializer
+                    │           │           ╰── Constant [0]
                     │           ├── Condition
                     │           │   ╰── Binary [<]
                     │           │       ├── Var [i]
@@ -9923,8 +11360,13 @@ fn test_chapter_8_valid_extra_credit_switch_nested_not_taken() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -10019,8 +11461,13 @@ fn test_chapter_8_valid_extra_credit_switch_no_case() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -10049,8 +11496,13 @@ fn test_chapter_8_valid_extra_credit_switch_not_taken() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -10083,8 +11535,13 @@ fn test_chapter_8_valid_extra_credit_switch_single_case() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -10130,12 +11587,22 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue() {
                     │       │       ╰── Constant [0]
                     │       ╰── Case [4]
                     │           ╰── Block
-                    │               ├── VarDeclaration [acc]
-                    │               │   ╰── Constant [0]
+                    │               ├── VarDeclaration
+                    │               │   ├── Name
+                    │               │   │   ╰── acc
+                    │               │   ├── Type
+                    │               │   │   ╰── Int
+                    │               │   ╰── Initializer
+                    │               │       ╰── Constant [0]
                     │               ├── For
                     │               │   ├── Init
-                    │               │   │   ╰── VarDeclaration [i]
-                    │               │   │       ╰── Constant [0]
+                    │               │   │   ╰── VarDeclaration
+                    │               │   │       ├── Name
+                    │               │   │       │   ╰── i
+                    │               │   │       ├── Type
+                    │               │   │       │   ╰── Int
+                    │               │   │       ╰── Initializer
+                    │               │   │           ╰── Constant [0]
                     │               │   ├── Condition
                     │               │   │   ╰── Binary [<]
                     │               │   │       ├── Var [i]
@@ -10185,12 +11652,22 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [sum]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── sum
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
@@ -10237,9 +11714,18 @@ fn test_chapter_8_valid_for() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [12345]
-                    ├── VarDeclaration [i]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [12345]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── For
                     │   ├── Init
                     │   │   ╰── Assign [=]
@@ -10281,8 +11767,13 @@ fn test_chapter_8_valid_for_absent_condition() {
                 ╰── Body
                     ╰── For
                         ├── Init
-                        │   ╰── VarDeclaration [i]
-                        │       ╰── Constant [400]
+                        │   ╰── VarDeclaration
+                        │       ├── Name
+                        │       │   ╰── i
+                        │       ├── Type
+                        │       │   ╰── Int
+                        │       ╰── Initializer
+                        │           ╰── Constant [400]
                         ├── Condition
                         │   ╰── Assign [=]
                         │       ├── Var [i]
@@ -10316,9 +11807,14 @@ fn test_chapter_8_valid_for_absent_post() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [2147]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [2147]
                     ├── For
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -10358,13 +11854,23 @@ fn test_chapter_8_valid_for_decl() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [100]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Unary [-]
+                    │   │               ╰── Constant [100]
                     │   ├── Condition
                     │   │   ╰── Binary [<=]
                     │   │       ├── Var [i]
@@ -10405,16 +11911,36 @@ fn test_chapter_8_valid_for_nested_shadow() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [i]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [j]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [k]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── j
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── k
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [100]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [100]
                     │   ├── Condition
                     │   │   ╰── Binary [>]
                     │   │       ├── Var [i]
@@ -10426,12 +11952,22 @@ fn test_chapter_8_valid_for_nested_shadow() {
                     │   │           ├── Var [i]
                     │   │           ╰── Constant [1]
                     │   ╰── Block
-                    │       ├── VarDeclaration [i]
-                    │       │   ╰── Constant [1]
-                    │       ├── VarDeclaration [j]
-                    │       │   ╰── Binary [+]
-                    │       │       ├── Var [i]
-                    │       │       ╰── Var [k]
+                    │       ├── VarDeclaration
+                    │       │   ├── Name
+                    │       │   │   ╰── i
+                    │       │   ├── Type
+                    │       │   │   ╰── Int
+                    │       │   ╰── Initializer
+                    │       │       ╰── Constant [1]
+                    │       ├── VarDeclaration
+                    │       │   ├── Name
+                    │       │   │   ╰── j
+                    │       │   ├── Type
+                    │       │   │   ╰── Int
+                    │       │   ╰── Initializer
+                    │       │       ╰── Binary [+]
+                    │       │           ├── Var [i]
+                    │       │           ╰── Var [k]
                     │       ╰── Assign [=]
                     │           ├── Var [k]
                     │           ╰── Var [j]
@@ -10467,14 +12003,29 @@ fn test_chapter_8_valid_for_shadow() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [shadow]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [acc]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── shadow
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── acc
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [shadow]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── shadow
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [shadow]
@@ -10527,8 +12078,13 @@ fn test_chapter_8_valid_multi_break() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [i]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Constant [1]
@@ -10546,8 +12102,13 @@ fn test_chapter_8_valid_multi_break() {
                     │               │       ╰── Constant [10]
                     │               ╰── Then
                     │                   ╰── Break
-                    ├── VarDeclaration [j]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── j
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Constant [1]
@@ -10565,15 +12126,20 @@ fn test_chapter_8_valid_multi_break() {
                     │               │       ╰── Constant [0]
                     │               ╰── Then
                     │                   ╰── Break
-                    ├── VarDeclaration [result]
-                    │   ╰── Binary [&&]
-                    │       ├── Binary [==]
-                    │       │   ├── Var [j]
-                    │       │   ╰── Unary [-]
-                    │       │       ╰── Constant [1]
-                    │       ╰── Binary [==]
-                    │           ├── Var [i]
-                    │           ╰── Constant [11]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [&&]
+                    │           ├── Binary [==]
+                    │           │   ├── Var [j]
+                    │           │   ╰── Unary [-]
+                    │           │       ╰── Constant [1]
+                    │           ╰── Binary [==]
+                    │               ├── Var [i]
+                    │               ╰── Constant [11]
                     ╰── Return
                         ╰── Var [result]
     "#;
@@ -10603,12 +12169,27 @@ fn test_chapter_8_valid_multi_continue_same_loop() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [10]
-                    ├── VarDeclaration [y]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [z]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── z
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Block
@@ -10679,12 +12260,22 @@ fn test_chapter_8_valid_nested_break() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [ans]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ans
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
@@ -10697,8 +12288,13 @@ fn test_chapter_8_valid_nested_break() {
                     │   │           ╰── Constant [1]
                     │   ╰── For
                     │       ├── Init
-                    │       │   ╰── VarDeclaration [j]
-                    │       │       ╰── Constant [0]
+                    │       │   ╰── VarDeclaration
+                    │       │       ├── Name
+                    │       │       │   ╰── j
+                    │       │       ├── Type
+                    │       │       │   ╰── Int
+                    │       │       ╰── Initializer
+                    │       │           ╰── Constant [0]
                     │       ├── Condition
                     │       │   ╰── Binary [<]
                     │       │       ├── Var [j]
@@ -10755,10 +12351,20 @@ fn test_chapter_8_valid_nested_continue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [5]
-                    ├── VarDeclaration [acc]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── acc
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Binary [>=]
@@ -10766,8 +12372,13 @@ fn test_chapter_8_valid_nested_continue() {
                     │   │       ╰── Constant [0]
                     │   ╰── Body
                     │       ╰── Block
-                    │           ├── VarDeclaration [i]
-                    │           │   ╰── Var [x]
+                    │           ├── VarDeclaration
+                    │           │   ├── Name
+                    │           │   │   ╰── i
+                    │           │   ├── Type
+                    │           │   │   ╰── Int
+                    │           │   ╰── Initializer
+                    │           │       ╰── Var [x]
                     │           ├── While
                     │           │   ├── Condition
                     │           │   │   ╰── Binary [<=]
@@ -10824,17 +12435,32 @@ fn test_chapter_8_valid_nested_loop() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [acc]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── acc
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [100]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Var [x]
                     │   ╰── Body
                     │       ╰── Block
-                    │           ├── VarDeclaration [y]
-                    │           │   ╰── Constant [10]
+                    │           ├── VarDeclaration
+                    │           │   ├── Name
+                    │           │   │   ╰── y
+                    │           │   ├── Type
+                    │           │   │   ╰── Int
+                    │           │   ╰── Initializer
+                    │           │       ╰── Constant [10]
                     │           ├── Assign [=]
                     │           │   ├── Var [x]
                     │           │   ╰── Binary [-]
@@ -10884,8 +12510,13 @@ fn test_chapter_8_valid_null_for_header() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ╰── Block
                     │       ├── Assign [=]
@@ -10920,8 +12551,13 @@ fn test_chapter_8_valid_while() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Binary [<]
@@ -10977,8 +12613,16 @@ fn test_chapter_9_invalid_declarations_decl_params_with_same_name() {
         Program
             ├── Function [foo]
             │   ╰── Parameters
-            │       ├── a
-            │       ╰── a
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── a
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
@@ -10987,8 +12631,16 @@ fn test_chapter_9_invalid_declarations_decl_params_with_same_name() {
             │               ╰── Constant [2]
             ╰── Function [foo]
                 ├── Parameters
-                │   ├── a
-                │   ╰── b
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── b
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
                         ╰── Binary [+]
@@ -11013,8 +12665,13 @@ fn test_chapter_9_invalid_declarations_extra_credit_call_label_as_function() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
                     ├── Label [a]
                     │   ╰── Assign [=]
                     │       ├── Var [x]
@@ -11128,8 +12785,16 @@ fn test_chapter_9_invalid_declarations_params_with_same_name() {
         Program
             ├── Function [foo]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ╰── a
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── a
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [a]
@@ -11160,8 +12825,13 @@ fn test_chapter_9_invalid_declarations_redefine_fun_as_var() {
             ├── Function [main]
             │   ╰── Body
             │       ├── Function [foo]
-            │       ├── VarDeclaration [foo]
-            │       │   ╰── Constant [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── foo
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [1]
             │       ╰── Return
             │           ╰── Var [foo]
             ╰── Function [foo]
@@ -11187,10 +12857,19 @@ fn test_chapter_9_invalid_declarations_redefine_parameter() {
         Program
             ├── Function [foo]
             │   ├── Parameters
-            │   │   ╰── a
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── a
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
-            │       ├── VarDeclaration [a]
-            │       │   ╰── Constant [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [5]
             │       ╰── Return
             │           ╰── Var [a]
             ╰── Function [main]
@@ -11218,8 +12897,13 @@ fn test_chapter_9_invalid_declarations_redefine_var_as_fun() {
         Program
             ├── Function [main]
             │   ╰── Body
-            │       ├── VarDeclaration [foo]
-            │       │   ╰── Constant [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── foo
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [1]
             │       ├── Function [foo]
             │       ╰── Return
             │           ╰── Var [foo]
@@ -11250,7 +12934,11 @@ fn test_chapter_9_invalid_declarations_undeclared_fun() {
             │               ╰── Constant [3]
             ╰── Function [foo]
                 ├── Parameters
-                │   ╰── a
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── a
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
                         ╰── Constant [1]
@@ -11273,7 +12961,11 @@ fn test_chapter_9_invalid_declarations_wrong_parameter_names() {
         Program
             ├── Function [foo]
             │   ╰── Parameters
-            │       ╰── a
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── a
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
@@ -11281,7 +12973,11 @@ fn test_chapter_9_invalid_declarations_wrong_parameter_names() {
             │               ╰── Constant [3]
             ╰── Function [foo]
                 ├── Parameters
-                │   ╰── x
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── x
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
                         ╰── Var [a]
@@ -11511,8 +13207,13 @@ fn test_chapter_9_invalid_types_assign_fun_to_variable() {
             ├── Function [x]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Var [x]
@@ -11559,8 +13260,13 @@ fn test_chapter_9_invalid_types_call_variable_as_function() {
             ├── Function [x]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ╰── Return
                         ╰── FunctionCall [x]
     "#;
@@ -11582,15 +13288,27 @@ fn test_chapter_9_invalid_types_conflicting_function_declarations() {
         Program
             ├── Function [foo]
             │   ╰── Parameters
-            │       ╰── a
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── a
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Constant [5]
             ╰── Function [foo]
                 ├── Parameters
-                │   ├── a
-                │   ╰── b
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── b
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
                         ╰── Constant [4]
@@ -11618,7 +13336,11 @@ fn test_chapter_9_invalid_types_conflicting_local_function_declaration() {
             │   ╰── Body
             │       ├── Function [foo]
             │       │   ╰── Parameters
-            │       │       ╰── a
+            │       │       ╰── Param
+            │       │           ├── Name
+            │       │           │   ╰── a
+            │       │           ╰── Type
+            │       │               ╰── Int
             │       ╰── Return
             │           ╰── Binary [+]
             │               ├── FunctionCall [bar]
@@ -11628,8 +13350,16 @@ fn test_chapter_9_invalid_types_conflicting_local_function_declaration() {
                 ╰── Body
                     ├── Function [foo]
                     │   ╰── Parameters
-                    │       ├── a
-                    │       ╰── b
+                    │       ├── Param
+                    │       │   ├── Name
+                    │       │   │   ╰── a
+                    │       │   ╰── Type
+                    │       │       ╰── Int
+                    │       ╰── Param
+                    │           ├── Name
+                    │           │   ╰── b
+                    │           ╰── Type
+                    │               ╰── Int
                     ╰── Return
                         ╰── FunctionCall [foo]
                             ├── Constant [1]
@@ -11652,10 +13382,15 @@ fn test_chapter_9_invalid_types_divide_by_function() {
             ├── Function [x]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Binary [/]
-                    │       ├── Constant [10]
-                    │       ╰── Var [x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [/]
+                    │           ├── Constant [10]
+                    │           ╰── Var [x]
                     ╰── Return
                         ╰── Constant [0]
     "#;
@@ -11723,8 +13458,13 @@ fn test_chapter_9_invalid_types_extra_credit_compound_assign_function_rhs() {
             ├── Function [x]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Assign [+=]
                     │   ├── Var [a]
                     │   ╰── Var [x]
@@ -11881,8 +13621,16 @@ fn test_chapter_9_invalid_types_too_few_args() {
         Program
             ├── Function [foo]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ╰── b
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── b
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [+]
@@ -11911,7 +13659,11 @@ fn test_chapter_9_invalid_types_too_many_args() {
         Program
             ├── Function [foo]
             │   ├── Parameters
-            │   │   ╰── a
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── a
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [+]
@@ -11942,12 +13694,36 @@ fn test_chapter_9_valid_arguments_in_registers_dont_clobber_edx() {
         Program
             ├── Function [x]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ├── b
-            │   │   ├── c
-            │   │   ├── d
-            │   │   ├── e
-            │   │   ╰── f
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── e
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── f
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [&&]
@@ -11975,8 +13751,13 @@ fn test_chapter_9_valid_arguments_in_registers_dont_clobber_edx() {
             │                   ╰── Constant [6]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
                     ╰── Return
                         ╰── FunctionCall [x]
                             ├── Constant [1]
@@ -12006,8 +13787,16 @@ fn test_chapter_9_valid_arguments_in_registers_expression_args() {
         Program
             ├── Function [sub]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ╰── b
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── b
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [-]
@@ -12015,12 +13804,17 @@ fn test_chapter_9_valid_arguments_in_registers_expression_args() {
             │               ╰── Var [b]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [sum]
-                    │   ╰── FunctionCall [sub]
-                    │       ├── Binary [+]
-                    │       │   ├── Constant [1]
-                    │       │   ╰── Constant [2]
-                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── sum
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [sub]
+                    │           ├── Binary [+]
+                    │           │   ├── Constant [1]
+                    │           │   ╰── Constant [2]
+                    │           ╰── Constant [1]
                     ╰── Return
                         ╰── Var [sum]
     "#;
@@ -12046,7 +13840,11 @@ fn test_chapter_9_valid_arguments_in_registers_fibonacci() {
         Program
             ├── Function [fib]
             │   ├── Parameters
-            │   │   ╰── n
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── n
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── If
             │           ├── Condition
@@ -12075,8 +13873,13 @@ fn test_chapter_9_valid_arguments_in_registers_fibonacci() {
             │                                   ╰── Constant [2]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [n]
-                    │   ╰── Constant [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── n
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [6]
                     ╰── Return
                         ╰── FunctionCall [fib]
                             ╰── Var [n]
@@ -12099,8 +13902,16 @@ fn test_chapter_9_valid_arguments_in_registers_forward_decl_multi_arg() {
         Program
             ├── Function [foo]
             │   ╰── Parameters
-            │       ├── a
-            │       ╰── b
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── b
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
@@ -12109,8 +13920,16 @@ fn test_chapter_9_valid_arguments_in_registers_forward_decl_multi_arg() {
             │               ╰── Constant [1]
             ╰── Function [foo]
                 ├── Parameters
-                │   ├── x
-                │   ╰── y
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── x
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── y
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
                         ╰── Binary [-]
@@ -12145,7 +13964,11 @@ fn test_chapter_9_valid_arguments_in_registers_hello_world() {
         Program
             ├── Function [putchar]
             │   ╰── Parameters
-            │       ╰── c
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── c
+            │           ╰── Type
+            │               ╰── Int
             ╰── Function [main]
                 ╰── Body
                     ├── FunctionCall [putchar]
@@ -12196,17 +14019,30 @@ fn test_chapter_9_valid_arguments_in_registers_param_shadows_local_var() {
         Program
             ├── Function [main]
             │   ╰── Body
-            │       ├── VarDeclaration [a]
-            │       │   ╰── Constant [10]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [10]
             │       ├── Function [f]
             │       │   ╰── Parameters
-            │       │       ╰── a
+            │       │       ╰── Param
+            │       │           ├── Name
+            │       │           │   ╰── a
+            │       │           ╰── Type
+            │       │               ╰── Int
             │       ╰── Return
             │           ╰── FunctionCall [f]
             │               ╰── Var [a]
             ╰── Function [f]
                 ├── Parameters
-                │   ╰── a
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── a
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
                         ╰── Binary [*]
@@ -12237,7 +14073,11 @@ fn test_chapter_9_valid_arguments_in_registers_parameter_shadows_function() {
             │           ╰── Constant [1]
             ├── Function [b]
             │   ├── Parameters
-            │   │   ╰── a
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── a
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [a]
@@ -12266,7 +14106,11 @@ fn test_chapter_9_valid_arguments_in_registers_parameter_shadows_own_function() 
         Program
             ├── Function [a]
             │   ├── Parameters
-            │   │   ╰── a
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── a
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [*]
@@ -12301,10 +14145,26 @@ fn test_chapter_9_valid_arguments_in_registers_parameters_are_preserved() {
         Program
             ├── Function [g]
             │   ├── Parameters
-            │   │   ├── w
-            │   │   ├── x
-            │   │   ├── y
-            │   │   ╰── z
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── w
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── x
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── y
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── z
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ├── If
             │       │   ├── Condition
@@ -12330,25 +14190,46 @@ fn test_chapter_9_valid_arguments_in_registers_parameters_are_preserved() {
             │           ╰── Constant [0]
             ├── Function [f]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ├── b
-            │   │   ├── c
-            │   │   ╰── d
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── d
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
-            │       ├── VarDeclaration [result]
-            │       │   ╰── FunctionCall [g]
-            │       │       ├── Binary [*]
-            │       │       │   ├── Var [a]
-            │       │       │   ╰── Constant [2]
-            │       │       ├── Binary [*]
-            │       │       │   ├── Var [b]
-            │       │       │   ╰── Constant [2]
-            │       │       ├── Binary [*]
-            │       │       │   ├── Var [c]
-            │       │       │   ╰── Constant [2]
-            │       │       ╰── Binary [*]
-            │       │           ├── Var [d]
-            │       │           ╰── Constant [2]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── FunctionCall [g]
+            │       │           ├── Binary [*]
+            │       │           │   ├── Var [a]
+            │       │           │   ╰── Constant [2]
+            │       │           ├── Binary [*]
+            │       │           │   ├── Var [b]
+            │       │           │   ╰── Constant [2]
+            │       │           ├── Binary [*]
+            │       │           │   ├── Var [c]
+            │       │           │   ╰── Constant [2]
+            │       │           ╰── Binary [*]
+            │       │               ├── Var [d]
+            │       │               ╰── Constant [2]
             │       ╰── Return
             │           ╰── Binary [&&]
             │               ├── Binary [&&]
@@ -12395,7 +14276,11 @@ fn test_chapter_9_valid_arguments_in_registers_single_arg() {
         Program
             ├── Function [twice]
             │   ├── Parameters
-            │   │   ╰── x
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── x
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [*]
@@ -12430,8 +14315,13 @@ fn test_chapter_9_valid_extra_credit_compound_assign_function_result() {
             │           ╰── Constant [2]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Assign [-=]
                     │   ├── Var [x]
                     │   ╰── FunctionCall [foo]
@@ -12456,12 +14346,36 @@ fn test_chapter_9_valid_extra_credit_dont_clobber_ecx() {
         Program
             ├── Function [x]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ├── b
-            │   │   ├── c
-            │   │   ├── d
-            │   │   ├── e
-            │   │   ╰── f
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── e
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── f
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [&&]
@@ -12489,8 +14403,13 @@ fn test_chapter_9_valid_extra_credit_dont_clobber_ecx() {
             │                   ╰── Constant [6]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
                     ╰── Return
                         ╰── FunctionCall [x]
                             ├── Constant [1]
@@ -12626,8 +14545,16 @@ fn test_chapter_9_valid_libraries_addition() {
         Program
             ╰── Function [add]
                 ├── Parameters
-                │   ├── x
-                │   ╰── y
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── x
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── y
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
                         ╰── Binary [+]
@@ -12649,8 +14576,16 @@ fn test_chapter_9_valid_libraries_addition_client() {
         Program
             ├── Function [add]
             │   ╰── Parameters
-            │       ├── x
-            │       ╰── y
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── y
+            │           ╰── Type
+            │               ╰── Int
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -12679,7 +14614,11 @@ fn test_chapter_9_valid_libraries_many_args() {
         Program
             ├── Function [fib]
             │   ├── Parameters
-            │   │   ╰── n
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── n
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── If
             │           ├── Condition
@@ -12708,14 +14647,46 @@ fn test_chapter_9_valid_libraries_many_args() {
             │                                   ╰── Constant [2]
             ╰── Function [multiply_many_args]
                 ├── Parameters
-                │   ├── a
-                │   ├── b
-                │   ├── c
-                │   ├── d
-                │   ├── e
-                │   ├── f
-                │   ├── g
-                │   ╰── h
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── b
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── c
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── e
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── f
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── g
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── h
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
                         ╰── Binary [*]
@@ -12762,37 +14733,93 @@ fn test_chapter_9_valid_libraries_many_args_client() {
         Program
             ├── Function [fib]
             │   ╰── Parameters
-            │       ╰── a
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── a
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [multiply_many_args]
             │   ╰── Parameters
-            │       ├── a
-            │       ├── b
-            │       ├── c
-            │       ├── d
-            │       ├── e
-            │       ├── f
-            │       ├── g
-            │       ╰── h
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── h
+            │           ╰── Type
+            │               ╰── Int
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── FunctionCall [fib]
-                    │       ╰── Constant [4]
-                    ├── VarDeclaration [seven]
-                    │   ╰── Constant [7]
-                    ├── VarDeclaration [eight]
-                    │   ╰── FunctionCall [fib]
-                    │       ╰── Constant [6]
-                    ├── VarDeclaration [y]
-                    │   ╰── FunctionCall [multiply_many_args]
-                    │       ├── Var [x]
-                    │       ├── Constant [2]
-                    │       ├── Constant [3]
-                    │       ├── Constant [4]
-                    │       ├── Constant [5]
-                    │       ├── Constant [6]
-                    │       ├── Var [seven]
-                    │       ╰── Var [eight]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [fib]
+                    │           ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── seven
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [7]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── eight
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [fib]
+                    │           ╰── Constant [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [multiply_many_args]
+                    │           ├── Var [x]
+                    │           ├── Constant [2]
+                    │           ├── Constant [3]
+                    │           ├── Constant [4]
+                    │           ├── Constant [5]
+                    │           ├── Constant [6]
+                    │           ├── Var [seven]
+                    │           ╰── Var [eight]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -12835,15 +14862,36 @@ fn test_chapter_9_valid_libraries_no_function_calls_division() {
         Program
             ╰── Function [f]
                 ├── Parameters
-                │   ├── a
-                │   ├── b
-                │   ├── c
-                │   ╰── d
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── b
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── c
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── d
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Binary [/]
-                    │       ├── Var [a]
-                    │       ╰── Var [b]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [/]
+                    │           ├── Var [a]
+                    │           ╰── Var [b]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [&&]
@@ -12886,10 +14934,26 @@ fn test_chapter_9_valid_libraries_no_function_calls_division_client() {
         Program
             ├── Function [f]
             │   ╰── Parameters
-            │       ├── a
-            │       ├── b
-            │       ├── c
-            │       ╰── d
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── d
+            │           ╰── Type
+            │               ╰── Int
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -12922,18 +14986,59 @@ fn test_chapter_9_valid_libraries_no_function_calls_local_stack_variables() {
         Program
             ╰── Function [f]
                 ├── Parameters
-                │   ├── reg1
-                │   ├── reg2
-                │   ├── reg3
-                │   ├── reg4
-                │   ├── reg5
-                │   ├── reg6
-                │   ├── stack1
-                │   ├── stack2
-                │   ╰── stack3
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── reg1
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── reg2
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── reg3
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── reg4
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── reg5
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── reg6
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── stack1
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── stack2
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── stack3
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [&&]
@@ -13004,15 +15109,51 @@ fn test_chapter_9_valid_libraries_no_function_calls_local_stack_variables_client
         Program
             ├── Function [f]
             │   ╰── Parameters
-            │       ├── reg1
-            │       ├── reg2
-            │       ├── reg3
-            │       ├── reg4
-            │       ├── reg5
-            │       ├── reg6
-            │       ├── stack1
-            │       ├── stack2
-            │       ╰── stack3
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── reg1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── reg2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── reg3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── reg4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── reg5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── reg6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── stack1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── stack2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── stack3
+            │           ╰── Type
+            │               ╰── Int
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -13045,10 +15186,18 @@ fn test_chapter_9_valid_libraries_system_call() {
         Program
             ├── Function [putchar]
             │   ╰── Parameters
-            │       ╰── c
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── c
+            │           ╰── Type
+            │               ╰── Int
             ╰── Function [incr_and_print]
                 ├── Parameters
-                │   ╰── b
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── b
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [putchar]
@@ -13072,7 +15221,11 @@ fn test_chapter_9_valid_libraries_system_call_client() {
         Program
             ├── Function [incr_and_print]
             │   ╰── Parameters
-            │       ╰── c
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── c
+            │           ╰── Type
+            │               ╰── Int
             ╰── Function [main]
                 ╰── Body
                     ├── FunctionCall [incr_and_print]
@@ -13129,10 +15282,20 @@ fn test_chapter_9_valid_no_arguments_function_shadows_variable() {
         Program
             ├── Function [main]
             │   ╰── Body
-            │       ├── VarDeclaration [foo]
-            │       │   ╰── Constant [3]
-            │       ├── VarDeclaration [bar]
-            │       │   ╰── Constant [4]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── foo
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [3]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── bar
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [4]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [>]
@@ -13201,8 +15364,13 @@ fn test_chapter_9_valid_no_arguments_no_return_value() {
         Program
             ├── Function [foo]
             │   ╰── Body
-            │       ╰── VarDeclaration [x]
-            │           ╰── Constant [1]
+            │       ╰── VarDeclaration
+            │           ├── Name
+            │           │   ╰── x
+            │           ├── Type
+            │           │   ╰── Int
+            │           ╰── Initializer
+            │               ╰── Constant [1]
             ╰── Function [main]
                 ╰── Body
                     ├── FunctionCall [foo]
@@ -13295,8 +15463,13 @@ fn test_chapter_9_valid_no_arguments_variable_shadows_function() {
             ├── Function [main]
             │   ╰── Body
             │       ├── Function [foo]
-            │       ├── VarDeclaration [x]
-            │       │   ╰── FunctionCall [foo]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── FunctionCall [foo]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [>]
@@ -13304,8 +15477,13 @@ fn test_chapter_9_valid_no_arguments_variable_shadows_function() {
             │       │   │       ╰── Constant [0]
             │       │   ╰── Then
             │       │       ╰── Block
-            │       │           ├── VarDeclaration [foo]
-            │       │           │   ╰── Constant [3]
+            │       │           ├── VarDeclaration
+            │       │           │   ├── Name
+            │       │           │   │   ╰── foo
+            │       │           │   ├── Type
+            │       │           │   │   ╰── Int
+            │       │           │   ╰── Initializer
+            │       │           │       ╰── Constant [3]
             │       │           ╰── Assign [=]
             │       │               ├── Var [x]
             │       │               ╰── Binary [+]
@@ -13337,17 +15515,53 @@ fn test_chapter_9_valid_stack_arguments_call_putchar() {
         Program
             ├── Function [putchar]
             │   ╰── Parameters
-            │       ╰── c
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── c
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [foo]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ├── b
-            │   │   ├── c
-            │   │   ├── d
-            │   │   ├── e
-            │   │   ├── f
-            │   │   ├── g
-            │   │   ╰── h
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── e
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── f
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── g
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── h
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ├── FunctionCall [putchar]
             │       │   ╰── Var [h]
@@ -13386,14 +15600,46 @@ fn test_chapter_9_valid_stack_arguments_lots_of_arguments() {
         Program
             ├── Function [foo]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ├── b
-            │   │   ├── c
-            │   │   ├── d
-            │   │   ├── e
-            │   │   ├── f
-            │   │   ├── g
-            │   │   ╰── h
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── e
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── f
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── g
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── h
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [&&]
@@ -13459,29 +15705,102 @@ fn test_chapter_9_valid_stack_arguments_stack_alignment() {
         Program
             ├── Function [even_arguments]
             │   ╰── Parameters
-            │       ├── a
-            │       ├── b
-            │       ├── c
-            │       ├── d
-            │       ├── e
-            │       ├── f
-            │       ├── g
-            │       ╰── h
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── h
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [odd_arguments]
             │   ╰── Parameters
-            │       ├── a
-            │       ├── b
-            │       ├── c
-            │       ├── d
-            │       ├── e
-            │       ├── f
-            │       ├── g
-            │       ├── h
-            │       ╰── i
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── h
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── i
+            │           ╰── Type
+            │               ╰── Int
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── FunctionCall [even_arguments]
                     │   ├── Constant [1]
                     │   ├── Constant [2]
@@ -13525,21 +15844,81 @@ fn test_chapter_9_valid_stack_arguments_test_for_memory_leaks() {
         Program
             ├── Function [lots_of_args]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ├── b
-            │   │   ├── c
-            │   │   ├── d
-            │   │   ├── e
-            │   │   ├── f
-            │   │   ├── g
-            │   │   ├── h
-            │   │   ├── i
-            │   │   ├── j
-            │   │   ├── k
-            │   │   ├── l
-            │   │   ├── m
-            │   │   ├── n
-            │   │   ╰── o
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── e
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── f
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── g
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── h
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── j
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── k
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── l
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── m
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── n
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── o
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [+]
@@ -13547,12 +15926,22 @@ fn test_chapter_9_valid_stack_arguments_test_for_memory_leaks() {
             │               ╰── Var [o]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [ret]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ret
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
@@ -13603,9 +15992,19 @@ fn test_chapter_10_invalid_declarations_conflicting_local_declarations() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [static x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Static
                     ╰── Return
                         ╰── Var [x]
     "#;
@@ -13625,9 +16024,19 @@ fn test_chapter_10_invalid_declarations_extern_follows_local_var() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [3]
-                    ├── VarDeclaration [extern x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Extern
                     ╰── Return
                         ╰── Var [x]
     "#;
@@ -13647,9 +16056,20 @@ fn test_chapter_10_invalid_declarations_extern_follows_static_local_var() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [static x]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [extern x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Constant [0]
+                    │   ╰── Static
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Extern
                     ╰── Return
                         ╰── Var [x]
     "#;
@@ -13668,12 +16088,26 @@ fn test_chapter_10_invalid_declarations_local_var_follows_extern() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [i]
-            │   ╰── Constant [10]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [10]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [extern i]
-                    ├── VarDeclaration [i]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Extern
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ╰── Type
+                    │       ╰── Int
                     ╰── Return
                         ╰── Var [i]
     "#;
@@ -13696,11 +16130,21 @@ fn test_chapter_10_invalid_declarations_out_of_scope_extern_var() {
             ├── Function [main]
             │   ╰── Body
             │       ├── Block
-            │       │   ╰── VarDeclaration [extern a]
+            │       │   ╰── VarDeclaration
+            │       │       ├── Name
+            │       │       │   ╰── a
+            │       │       ├── Type
+            │       │       │   ╰── Int
+            │       │       ╰── Extern
             │       ╰── Return
             │           ╰── Var [a]
-            ╰── VarDeclaration [a]
-                ╰── Constant [1]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── a
+                ├── Type
+                │   ╰── Int
+                ╰── Initializer
+                    ╰── Constant [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13720,9 +16164,18 @@ fn test_chapter_10_invalid_declarations_redefine_param_as_identifier_with_linkag
         Program
             ├── Function [f]
             │   ├── Parameters
-            │   │   ╰── i
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
-            │       ├── VarDeclaration [extern i]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Extern
             │       ╰── Return
             │           ╰── Var [i]
             ╰── Function [main]
@@ -13747,8 +16200,13 @@ fn test_chapter_10_invalid_declarations_undeclared_global_variable() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [x]
-            ╰── VarDeclaration [x]
-                ╰── Constant [0]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── x
+                ├── Type
+                │   ╰── Int
+                ╰── Initializer
+                    ╰── Constant [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13764,8 +16222,13 @@ fn test_chapter_10_invalid_labels_extra_credit_goto_global_var() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [x]
-            │   ╰── Constant [10]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [10]
             ╰── Function [main]
                 ╰── Body
                     ├── Goto [x]
@@ -13983,14 +16446,24 @@ fn test_chapter_10_invalid_types_conflicting_global_definitions() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [foo]
-            │   ╰── Constant [3]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [3]
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Constant [0]
-            ╰── VarDeclaration [foo]
-                ╰── Constant [4]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── foo
+                ├── Type
+                │   ╰── Int
+                ╰── Initializer
+                    ╰── Constant [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14007,13 +16480,23 @@ fn test_chapter_10_invalid_types_conflicting_variable_linkage() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [static foo]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Static
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [foo]
-            ╰── VarDeclaration [foo]
-                ╰── Constant [3]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── foo
+                ├── Type
+                │   ╰── Int
+                ╰── Initializer
+                    ╰── Constant [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14034,14 +16517,30 @@ fn test_chapter_10_invalid_types_conflicting_variable_linkage_2() {
         Program
             ├── Function [main]
             │   ╰── Body
-            │       ├── VarDeclaration [x]
-            │       │   ╰── Constant [3]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [3]
             │       ├── Block
-            │       │   ╰── VarDeclaration [extern x]
+            │       │   ╰── VarDeclaration
+            │       │       ├── Name
+            │       │       │   ╰── x
+            │       │       ├── Type
+            │       │       │   ╰── Int
+            │       │       ╰── Extern
             │       ╰── Return
             │           ╰── Var [x]
-            ╰── VarDeclaration [static x]
-                ╰── Constant [10]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── x
+                ├── Type
+                │   ╰── Int
+                ├── Initializer
+                │   ╰── Constant [10]
+                ╰── Static
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14061,12 +16560,23 @@ fn test_chapter_10_invalid_types_extern_for_loop_counter() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [extern i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ├── Initializer
+                    │   │       │   ╰── Constant [0]
+                    │   │       ╰── Extern
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
@@ -14101,8 +16611,14 @@ fn test_chapter_10_invalid_types_extern_variable_initializer() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [extern i]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Constant [0]
+                    │   ╰── Extern
                     ╰── Return
                         ╰── Var [i]
     "#;
@@ -14124,8 +16640,14 @@ fn test_chapter_10_invalid_types_extra_credit_static_var_case() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [static i]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Constant [0]
+                    │   ╰── Static
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Constant [0]
@@ -14152,12 +16674,22 @@ fn test_chapter_10_invalid_types_non_constant_static_initializer() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [a]
-            │   ╰── Constant [10]
-            ├── VarDeclaration [b]
-            │   ╰── Binary [+]
-            │       ├── Constant [1]
-            │       ╰── Var [a]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── a
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [10]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── b
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Binary [+]
+            │           ├── Constant [1]
+            │           ╰── Var [a]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -14179,12 +16711,23 @@ fn test_chapter_10_invalid_types_non_constant_static_local_initializer() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [1]
-                    ├── VarDeclaration [static b]
-                    │   ╰── Binary [*]
-                    │       ├── Var [a]
-                    │       ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Binary [*]
+                    │   │       ├── Var [a]
+                    │   │       ╰── Constant [2]
+                    │   ╰── Static
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -14202,8 +16745,13 @@ fn test_chapter_10_invalid_types_redeclare_file_scope_var_as_fun() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [foo]
-            │   ╰── Constant [10]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [10]
             ╰── Function [main]
                 ╰── Body
                     ├── Function [foo]
@@ -14225,7 +16773,11 @@ fn test_chapter_10_invalid_types_redeclare_fun_as_file_scope_var() {
     let expected = r#"
         Program
             ├── Function [foo]
-            ├── VarDeclaration [foo]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ╰── Type
+            │       ╰── Int
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -14253,7 +16805,12 @@ fn test_chapter_10_invalid_types_redeclare_fun_as_var() {
             │           ╰── Constant [0]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [extern foo]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── foo
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Extern
                     ╰── Return
                         ╰── Constant [0]
     "#;
@@ -14301,12 +16858,23 @@ fn test_chapter_10_invalid_types_static_for_loop_counter() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [static i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ├── Initializer
+                    │   │       │   ╰── Constant [0]
+                    │   │       ╰── Static
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
@@ -14340,7 +16908,12 @@ fn test_chapter_10_invalid_types_use_file_scope_variable_as_fun() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [extern foo]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Extern
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -14369,18 +16942,33 @@ fn test_chapter_10_valid_distinct_local_and_extern() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [a]
-            │   ╰── Constant [5]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── a
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [5]
             ├── Function [return_a]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [a]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
                     ├── Block
-                    │   ├── VarDeclaration [extern a]
+                    │   ├── VarDeclaration
+                    │   │   ├── Name
+                    │   │   │   ╰── a
+                    │   │   ├── Type
+                    │   │   │   ╰── Int
+                    │   │   ╰── Extern
                     │   ├── If
                     │   │   ├── Condition
                     │   │   │   ╰── Binary [!=]
@@ -14419,23 +17007,48 @@ fn test_chapter_10_valid_extern_block_scope_variable() {
         Program
             ├── Function [main]
             │   ╰── Body
-            │       ├── VarDeclaration [outer]
-            │       │   ╰── Constant [1]
-            │       ├── VarDeclaration [foo]
-            │       │   ╰── Constant [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── outer
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── foo
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [0]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Var [outer]
             │       │   ╰── Then
             │       │       ╰── Block
-            │       │           ├── VarDeclaration [extern foo]
-            │       │           ├── VarDeclaration [extern foo]
+            │       │           ├── VarDeclaration
+            │       │           │   ├── Name
+            │       │           │   │   ╰── foo
+            │       │           │   ├── Type
+            │       │           │   │   ╰── Int
+            │       │           │   ╰── Extern
+            │       │           ├── VarDeclaration
+            │       │           │   ├── Name
+            │       │           │   │   ╰── foo
+            │       │           │   ├── Type
+            │       │           │   │   ╰── Int
+            │       │           │   ╰── Extern
             │       │           ╰── Return
             │       │               ╰── Var [foo]
             │       ╰── Return
             │           ╰── Constant [0]
-            ╰── VarDeclaration [foo]
-                ╰── Constant [3]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── foo
+                ├── Type
+                │   ╰── Int
+                ╰── Initializer
+                    ╰── Constant [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14460,10 +17073,20 @@ fn test_chapter_10_valid_extra_credit_bitwise_ops_file_scope_vars() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [x]
-            │   ╰── Constant [1]
-            ├── VarDeclaration [y]
-            │   ╰── Constant [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [1]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── y
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [0]
             ╰── Function [main]
                 ╰── Body
                     ├── Assign [=]
@@ -14548,14 +17171,38 @@ fn test_chapter_10_valid_extra_credit_compound_assignment_static_var() {
         Program
             ├── Function [f]
             │   ╰── Body
-            │       ├── VarDeclaration [static i]
-            │       │   ╰── Constant [0]
-            │       ├── VarDeclaration [static j]
-            │       │   ╰── Constant [0]
-            │       ├── VarDeclaration [static k]
-            │       │   ╰── Constant [1]
-            │       ├── VarDeclaration [static l]
-            │       │   ╰── Constant [48]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant [0]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── j
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant [0]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── k
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant [1]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── l
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant [48]
+            │       │   ╰── Static
             │       ├── Assign [+=]
             │       │   ├── Var [i]
             │       │   ╰── Constant [1]
@@ -14633,8 +17280,14 @@ fn test_chapter_10_valid_extra_credit_goto_skip_static_initializer() {
             ╰── Function [main]
                 ╰── Body
                     ├── Goto [end]
-                    ├── VarDeclaration [static x]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Constant [10]
+                    │   ╰── Static
                     ╰── Label [end]
                         ╰── Return
                             ╰── Var [x]
@@ -14675,10 +17328,20 @@ fn test_chapter_10_valid_extra_credit_increment_global_vars() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [i]
-            │   ╰── Constant [0]
-            ├── VarDeclaration [j]
-            │   ╰── Constant [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── j
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [0]
             ├── Function [incr_i]
             │   ╰── Body
             │       ├── If
@@ -14766,16 +17429,30 @@ fn test_chapter_10_valid_extra_credit_label_file_scope_var_same_name() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [x]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ╰── Type
+            │       ╰── Int
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── Goto [x]
                     ├── Return
                     │   ╰── Var [x]
                     ╰── Block
-                        ├── VarDeclaration [extern x]
+                        ├── VarDeclaration
+                        │   ├── Name
+                        │   │   ╰── x
+                        │   ├── Type
+                        │   │   ╰── Int
+                        │   ╰── Extern
                         ╰── Label [x]
                             ╰── Return
                                 ╰── Var [x]
@@ -14798,8 +17475,14 @@ fn test_chapter_10_valid_extra_credit_label_static_var_same_name() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [static x]
-                    │   ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Constant [5]
+                    │   ╰── Static
                     ├── Goto [x]
                     ├── Assign [=]
                     │   ├── Var [x]
@@ -14926,7 +17609,12 @@ fn test_chapter_10_valid_extra_credit_switch_on_extern() {
             ├── Function [main]
             │   ╰── Body
             │       ├── FunctionCall [update_x]
-            │       ├── VarDeclaration [extern x]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Extern
             │       ╰── Switch
             │           ├── Expression
             │           │   ╰── Var [x]
@@ -14943,7 +17631,11 @@ fn test_chapter_10_valid_extra_credit_switch_on_extern() {
             │               ╰── Default
             │                   ╰── Return
             │                       ╰── Constant [4]
-            ├── VarDeclaration [x]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ╰── Type
+            │       ╰── Int
             ╰── Function [update_x]
                 ╰── Body
                     ├── Assign [=]
@@ -14978,8 +17670,13 @@ fn test_chapter_10_valid_extra_credit_switch_skip_extern_decl() {
         Program
             ├── Function [main]
             │   ╰── Body
-            │       ├── VarDeclaration [a]
-            │       │   ╰── Constant [10]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [10]
             │       ├── Switch
             │       │   ├── Expression
             │       │   │   ╰── Var [a]
@@ -14987,7 +17684,12 @@ fn test_chapter_10_valid_extra_credit_switch_skip_extern_decl() {
             │       │       ├── Case [1]
             │       │       │   ╰── Return
             │       │       │       ╰── Constant [1]
-            │       │       ├── VarDeclaration [extern x]
+            │       │       ├── VarDeclaration
+            │       │       │   ├── Name
+            │       │       │   │   ╰── x
+            │       │       │   ├── Type
+            │       │       │   │   ╰── Int
+            │       │       │   ╰── Extern
             │       │       ├── Case [2]
             │       │       │   ╰── Return
             │       │       │       ╰── Constant [2]
@@ -15008,8 +17710,13 @@ fn test_chapter_10_valid_extra_credit_switch_skip_extern_decl() {
             │       │               ╰── Constant [5]
             │       ╰── Return
             │           ╰── Constant [6]
-            ╰── VarDeclaration [x]
-                ╰── Constant [15]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── x
+                ├── Type
+                │   ╰── Int
+                ╰── Initializer
+                    ╰── Constant [15]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15031,8 +17738,13 @@ fn test_chapter_10_valid_extra_credit_switch_skip_static_initializer() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [a]
-            │   ╰── Constant [3]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── a
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [3]
             ╰── Function [main]
                 ╰── Body
                     ├── Switch
@@ -15041,8 +17753,14 @@ fn test_chapter_10_valid_extra_credit_switch_skip_static_initializer() {
                     │   ╰── Block
                     │       ├── Case [1]
                     │       │   ╰── Empty
-                    │       ├── VarDeclaration [static x]
-                    │       │   ╰── Constant [10]
+                    │       ├── VarDeclaration
+                    │       │   ├── Name
+                    │       │   │   ╰── x
+                    │       │   ├── Type
+                    │       │   │   ╰── Int
+                    │       │   ├── Initializer
+                    │       │   │   ╰── Constant [10]
+                    │       │   ╰── Static
                     │       ├── Assign [=]
                     │       │   ├── Var [x]
                     │       │   ╰── Constant [0]
@@ -15068,12 +17786,28 @@ fn test_chapter_10_valid_libraries_external_linkage_function() {
         Program
             ├── Function [extern sum]
             │   ╰── Parameters
-            │       ├── a
-            │       ╰── b
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── b
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [sum]
             │   ├── Parameters
-            │   │   ├── i
-            │   │   ╰── j
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── j
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [+]
@@ -15081,8 +17815,16 @@ fn test_chapter_10_valid_libraries_external_linkage_function() {
             │               ╰── Var [j]
             ╰── Function [sum]
                 ╰── Parameters
-                    ├── x
-                    ╰── y
+                    ├── Param
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ╰── Type
+                    │       ╰── Int
+                    ╰── Param
+                        ├── Name
+                        │   ╰── y
+                        ╰── Type
+                            ╰── Int
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15119,28 +17861,65 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
             │   ╰── Body
             │       ├── Function [extern sum]
             │       │   ╰── Parameters
-            │       │       ├── a
-            │       │       ╰── b
+            │       │       ├── Param
+            │       │       │   ├── Name
+            │       │       │   │   ╰── a
+            │       │       │   ╰── Type
+            │       │       │       ╰── Int
+            │       │       ╰── Param
+            │       │           ├── Name
+            │       │           │   ╰── b
+            │       │           ╰── Type
+            │       │               ╰── Int
             │       ├── Function [sum]
             │       │   ╰── Parameters
-            │       │       ├── a
-            │       │       ╰── b
+            │       │       ├── Param
+            │       │       │   ├── Name
+            │       │       │   │   ╰── a
+            │       │       │   ╰── Type
+            │       │       │       ╰── Int
+            │       │       ╰── Param
+            │       │           ├── Name
+            │       │           │   ╰── b
+            │       │           ╰── Type
+            │       │               ╰── Int
             │       ╰── Return
             │           ╰── FunctionCall [sum]
             │               ├── Constant [1]
             │               ╰── Constant [2]
             ├── Function [extern sum]
             │   ╰── Parameters
-            │       ├── x
-            │       ╰── y
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── y
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [sum]
             │   ╰── Parameters
-            │       ├── x
-            │       ╰── y
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── y
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [add_three_and_four]
             │   ╰── Body
-            │       ├── VarDeclaration [f]
-            │       │   ╰── Constant [3]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [>]
@@ -15150,8 +17929,16 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
             │       │       ╰── Block
             │       │           ├── Function [extern sum]
             │       │           │   ╰── Parameters
-            │       │           │       ├── one
-            │       │           │       ╰── two
+            │       │           │       ├── Param
+            │       │           │       │   ├── Name
+            │       │           │       │   │   ╰── one
+            │       │           │       │   ╰── Type
+            │       │           │       │       ╰── Int
+            │       │           │       ╰── Param
+            │       │           │           ├── Name
+            │       │           │           │   ╰── two
+            │       │           │           ╰── Type
+            │       │           │               ╰── Int
             │       │           ╰── Return
             │       │               ╰── FunctionCall [sum]
             │       │                   ├── Constant [3]
@@ -15193,7 +17980,11 @@ fn test_chapter_10_valid_libraries_external_tentative_var() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [x]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ╰── Type
+            │       ╰── Int
             ╰── Function [read_x]
                 ╰── Body
                     ╰── Return
@@ -15221,7 +18012,12 @@ fn test_chapter_10_valid_libraries_external_tentative_var_client() {
             ├── Function [read_x]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [extern x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Extern
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -15264,8 +18060,13 @@ fn test_chapter_10_valid_libraries_external_var_scoping() {
         Program
             ╰── Function [read_x]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
                     ╰── If
                         ├── Condition
                         │   ╰── Binary [==]
@@ -15273,7 +18074,12 @@ fn test_chapter_10_valid_libraries_external_var_scoping() {
                         │       ╰── Constant [4]
                         ├── Then
                         │   ╰── Block
-                        │       ├── VarDeclaration [extern x]
+                        │       ├── VarDeclaration
+                        │       │   ├── Name
+                        │       │   │   ╰── x
+                        │       │   ├── Type
+                        │       │   │   ╰── Int
+                        │       │   ╰── Extern
                         │       ╰── Return
                         │           ╰── Var [x]
                         ╰── Else
@@ -15305,13 +18111,23 @@ fn test_chapter_10_valid_libraries_external_var_scoping_client() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [x]
-            │   ╰── Constant [10]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [10]
             ├── Function [read_x]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [==]
@@ -15327,7 +18143,12 @@ fn test_chapter_10_valid_libraries_external_var_scoping_client() {
                     │           │   ╰── Then
                     │           │       ╰── Return
                     │           │           ╰── Constant [1]
-                    │           ├── VarDeclaration [extern x]
+                    │           ├── VarDeclaration
+                    │           │   ├── Name
+                    │           │   │   ╰── x
+                    │           │   ├── Type
+                    │           │   │   ╰── Int
+                    │           │   ╰── Extern
                     │           ├── If
                     │           │   ├── Condition
                     │           │   │   ╰── Binary [!=]
@@ -15361,12 +18182,29 @@ fn test_chapter_10_valid_libraries_external_variable() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [x]
-            ├── VarDeclaration [extern x]
-            ├── VarDeclaration [x]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ╰── Type
+            │       ╰── Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Extern
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ╰── Type
+            │       ╰── Int
             ├── Function [update_x]
             │   ├── Parameters
-            │   │   ╰── new_val
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── new_val
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ├── Assign [=]
             │       │   ├── Var [x]
@@ -15377,8 +18215,13 @@ fn test_chapter_10_valid_libraries_external_variable() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [x]
-            ╰── VarDeclaration [x]
-                ╰── Constant [3]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── x
+                ├── Type
+                │   ╰── Int
+                ╰── Initializer
+                    ╰── Constant [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15411,9 +18254,18 @@ fn test_chapter_10_valid_libraries_external_variable_client() {
         Program
             ├── Function [update_x]
             │   ╰── Parameters
-            │       ╰── new_val
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── new_val
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [read_x]
-            ├── VarDeclaration [extern x]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Extern
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -15485,8 +18337,13 @@ fn test_chapter_10_valid_libraries_internal_hides_external_linkage() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [x]
-            │   ╰── Constant [10]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [10]
             ╰── Function [read_x]
                 ╰── Body
                     ╰── Return
@@ -15519,13 +18376,24 @@ fn test_chapter_10_valid_libraries_internal_hides_external_linkage_client() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [static x]
-            │   ╰── Constant [1]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ├── Initializer
+            │   │   ╰── Constant [1]
+            │   ╰── Static
             ├── Function [read_internal_x]
             ├── Function [read_x]
             ├── Function [main]
             │   ╰── Body
-            │       ├── VarDeclaration [extern x]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Extern
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
@@ -15555,7 +18423,12 @@ fn test_chapter_10_valid_libraries_internal_hides_external_linkage_client() {
             │       │           ╰── Constant [1]
             │       ╰── Return
             │           ╰── Constant [0]
-            ├── VarDeclaration [extern x]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Extern
             ╰── Function [read_internal_x]
                 ╰── Body
                     ╰── Return
@@ -15600,8 +18473,14 @@ fn test_chapter_10_valid_libraries_internal_linkage_function() {
             ├── Function [static my_fun]
             ╰── Function [my_fun]
                 ╰── Body
-                    ├── VarDeclaration [static i]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Constant [0]
+                    │   ╰── Static
                     ├── Assign [=]
                     │   ├── Var [i]
                     │   ╰── Binary [+]
@@ -15691,25 +18570,55 @@ fn test_chapter_10_valid_libraries_internal_linkage_var() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [static x]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Static
             ├── Function [read_x]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [x]
             ├── Function [update_x]
             │   ├── Parameters
-            │   │   ╰── new_val
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── new_val
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
-            │       ├── VarDeclaration [extern x]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Extern
             │       ├── Assign [=]
             │       │   ├── Var [x]
             │       │   ╰── Var [new_val]
             │       ╰── Return
             │           ╰── Constant [0]
-            ├── VarDeclaration [extern x]
-            ├── VarDeclaration [static x]
-            │   ╰── Constant [5]
-            ╰── VarDeclaration [static x]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Extern
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ├── Initializer
+            │   │   ╰── Constant [5]
+            │   ╰── Static
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── x
+                ├── Type
+                │   ╰── Int
+                ╰── Static
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15743,12 +18652,26 @@ fn test_chapter_10_valid_libraries_internal_linkage_var_client() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [static x]
-            ├── VarDeclaration [static x]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Static
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Static
             ├── Function [read_x]
             ├── Function [update_x]
             │   ╰── Parameters
-            │       ╰── x
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── x
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [main]
             │   ╰── Body
             │       ├── If
@@ -15767,7 +18690,12 @@ fn test_chapter_10_valid_libraries_internal_linkage_var_client() {
             │       │   ╰── Then
             │       │       ╰── Return
             │       │           ╰── Constant [1]
-            │       ├── VarDeclaration [extern x]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Extern
             │       ├── FunctionCall [update_x]
             │       │   ╰── Constant [10]
             │       ├── If
@@ -15807,7 +18735,12 @@ fn test_chapter_10_valid_libraries_internal_linkage_var_client() {
             │       │           ╰── Constant [1]
             │       ╰── Return
             │           ╰── Constant [0]
-            ╰── VarDeclaration [static x]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── x
+                ├── Type
+                │   ╰── Int
+                ╰── Static
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15824,14 +18757,30 @@ fn test_chapter_10_valid_multiple_static_file_scope_vars() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [static foo]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Static
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [foo]
-            ├── VarDeclaration [extern foo]
-            ╰── VarDeclaration [static foo]
-                ╰── Constant [4]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Extern
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── foo
+                ├── Type
+                │   ╰── Int
+                ├── Initializer
+                │   ╰── Constant [4]
+                ╰── Static
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15857,8 +18806,14 @@ fn test_chapter_10_valid_multiple_static_local() {
         Program
             ├── Function [foo]
             │   ╰── Body
-            │       ├── VarDeclaration [static a]
-            │       │   ╰── Constant [3]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant [3]
+            │       │   ╰── Static
             │       ├── Assign [=]
             │       │   ├── Var [a]
             │       │   ╰── Binary [*]
@@ -15868,8 +18823,14 @@ fn test_chapter_10_valid_multiple_static_local() {
             │           ╰── Var [a]
             ├── Function [bar]
             │   ╰── Body
-            │       ├── VarDeclaration [static a]
-            │       │   ╰── Constant [4]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant [4]
+            │       │   ╰── Static
             │       ├── Assign [=]
             │       │   ├── Var [a]
             │       │   ╰── Binary [+]
@@ -15904,16 +18865,49 @@ fn test_chapter_10_valid_push_arg_on_page_boundary() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [extern zed]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── zed
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Extern
             ├── Function [foo]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ├── b
-            │   │   ├── c
-            │   │   ├── d
-            │   │   ├── e
-            │   │   ├── f
-            │   │   ╰── g
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── e
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── f
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── g
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [+]
@@ -15974,19 +18968,41 @@ fn test_chapter_10_valid_shadow_static_local_var() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [i]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ╰── Type
+            │       ╰── Int
             ├── Function [update_static_or_global]
             │   ├── Parameters
-            │   │   ├── update_global
-            │   │   ╰── new_val
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── update_global
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── new_val
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
-            │       ├── VarDeclaration [static i]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Static
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Var [update_global]
             │       │   ├── Then
             │       │   │   ╰── Block
-            │       │   │       ├── VarDeclaration [extern i]
+            │       │   │       ├── VarDeclaration
+            │       │   │       │   ├── Name
+            │       │   │       │   │   ╰── i
+            │       │   │       │   ├── Type
+            │       │   │       │   │   ╰── Int
+            │       │   │       │   ╰── Extern
             │       │   │       ╰── Assign [=]
             │       │   │           ├── Var [i]
             │       │   │           ╰── Var [new_val]
@@ -16006,10 +19022,15 @@ fn test_chapter_10_valid_shadow_static_local_var() {
                     │   ╰── Then
                     │       ╰── Return
                     │           ╰── Constant [1]
-                    ├── VarDeclaration [result]
-                    │   ╰── FunctionCall [update_static_or_global]
-                    │       ├── Constant [1]
-                    │       ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [update_static_or_global]
+                    │           ├── Constant [1]
+                    │           ╰── Constant [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -16099,11 +19120,21 @@ fn test_chapter_10_valid_static_local_multiple_scopes() {
         Program
             ├── Function [putchar]
             │   ╰── Parameters
-            │       ╰── ch
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── ch
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [print_letters]
             │   ╰── Body
-            │       ├── VarDeclaration [static i]
-            │       │   ╰── Constant [65]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant [65]
+            │       │   ╰── Static
             │       ├── FunctionCall [putchar]
             │       │   ╰── Var [i]
             │       ├── Block
@@ -16112,8 +19143,14 @@ fn test_chapter_10_valid_static_local_multiple_scopes() {
             │       │   │   ╰── Binary [+]
             │       │   │       ├── Var [i]
             │       │   │       ╰── Constant [1]
-            │       │   ├── VarDeclaration [static i]
-            │       │   │   ╰── Constant [97]
+            │       │   ├── VarDeclaration
+            │       │   │   ├── Name
+            │       │   │   │   ╰── i
+            │       │   │   ├── Type
+            │       │   │   │   ╰── Int
+            │       │   │   ├── Initializer
+            │       │   │   │   ╰── Constant [97]
+            │       │   │   ╰── Static
             │       │   ├── FunctionCall [putchar]
             │       │   │   ╰── Var [i]
             │       │   ╰── Assign [=]
@@ -16129,8 +19166,13 @@ fn test_chapter_10_valid_static_local_multiple_scopes() {
                 ╰── Body
                     ╰── For
                         ├── Init
-                        │   ╰── VarDeclaration [i]
-                        │       ╰── Constant [0]
+                        │   ╰── VarDeclaration
+                        │       ├── Name
+                        │       │   ╰── i
+                        │       ├── Type
+                        │       │   ╰── Int
+                        │       ╰── Initializer
+                        │           ╰── Constant [0]
                         ├── Condition
                         │   ╰── Binary [<]
                         │       ├── Var [i]
@@ -16165,7 +19207,12 @@ fn test_chapter_10_valid_static_local_uninitialized() {
         Program
             ├── Function [foo]
             │   ╰── Body
-            │       ├── VarDeclaration [static x]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Static
             │       ├── Assign [=]
             │       │   ├── Var [x]
             │       │   ╰── Binary [+]
@@ -16175,11 +19222,20 @@ fn test_chapter_10_valid_static_local_uninitialized() {
             │           ╰── Var [x]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [ret]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ret
+                    │   ╰── Type
+                    │       ╰── Int
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [0]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
@@ -16220,11 +19276,21 @@ fn test_chapter_10_valid_static_recursive_call() {
         Program
             ├── Function [putchar]
             │   ╰── Parameters
-            │       ╰── ch
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── ch
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [print_alphabet]
             │   ╰── Body
-            │       ├── VarDeclaration [static count]
-            │       │   ╰── Constant [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── count
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant [0]
+            │       │   ╰── Static
             │       ├── FunctionCall [putchar]
             │       │   ╰── Binary [+]
             │       │       ├── Var [count]
@@ -16262,13 +19328,24 @@ fn test_chapter_10_valid_static_then_extern() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [static foo]
-            │   ╰── Constant [3]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ├── Type
+            │   │   ╰── Int
+            │   ├── Initializer
+            │   │   ╰── Constant [3]
+            │   ╰── Static
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [foo]
-            ╰── VarDeclaration [extern foo]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── foo
+                ├── Type
+                │   ╰── Int
+                ╰── Extern
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16289,14 +19366,31 @@ fn test_chapter_10_valid_static_variables_in_expressions() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [static i]
-                    │   ╰── Constant [2]
-                    ├── VarDeclaration [static j]
-                    │   ╰── Constant [3]
-                    ├── VarDeclaration [cmp]
-                    │   ╰── Binary [<]
-                    │       ├── Var [i]
-                    │       ╰── Var [j]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Constant [2]
+                    │   ╰── Static
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── j
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Constant [3]
+                    │   ╰── Static
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── cmp
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [<]
+                    │           ├── Var [i]
+                    │           ╰── Var [j]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -16325,15 +19419,33 @@ fn test_chapter_10_valid_tentative_definition() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [extern foo]
-            ├── VarDeclaration [foo]
-            ├── VarDeclaration [foo]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Extern
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ╰── Type
+            │       ╰── Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ╰── Type
+            │       ╰── Int
             ├── Function [main]
             │   ╰── Body
             │       ├── For
             │       │   ├── Init
-            │       │   │   ╰── VarDeclaration [i]
-            │       │   │       ╰── Constant [0]
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant [0]
             │       │   ├── Condition
             │       │   │   ╰── Binary [<]
             │       │   │       ├── Var [i]
@@ -16351,7 +19463,11 @@ fn test_chapter_10_valid_tentative_definition() {
             │       │           ╰── Constant [1]
             │       ╰── Return
             │           ╰── Var [foo]
-            ╰── VarDeclaration [foo]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── foo
+                ╰── Type
+                    ╰── Int
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16375,12 +19491,23 @@ fn test_chapter_10_valid_type_before_storage_class() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── Constant [3]
-            ├── VarDeclaration [static bar]
-            │   ╰── Constant [4]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── bar
+            │   ├── Type
+            │   │   ╰── Int
+            │   ├── Initializer
+            │   │   ╰── Constant [4]
+            │   ╰── Static
             ╰── Function [main]
                 ╰── Body
                     ├── Function [extern foo]
-                    ├── VarDeclaration [extern bar]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── bar
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Extern
                     ╰── Return
                         ╰── Binary [+]
                             ├── FunctionCall [foo]
@@ -16407,8 +19534,13 @@ fn test_chapter_11_invalid_labels_extra_credit_bitshift_duplicate_cases() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [100]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Binary [<<]
@@ -16445,7 +19577,11 @@ fn test_chapter_11_invalid_labels_extra_credit_switch_duplicate_cases() {
         Program
             ├── Function [switch_statement]
             │   ├── Parameters
-            │   │   ╰── i
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Switch
             │           ├── Expression
@@ -16487,13 +19623,17 @@ fn test_chapter_11_invalid_labels_extra_credit_switch_duplicate_cases_2() {
         Program
             ├── Function [switch_statement]
             │   ├── Parameters
-            │   │   ╰── i
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Switch
             │           ├── Expression
             │           │   ╰── Cast
             │           │       ├── Target
-            │           │       │   ╰── Int
+            │           │       │   ╰── Long
             │           │       ╰── Expression
             │           │           ╰── Var [i]
             │           ╰── Block
@@ -16632,8 +19772,13 @@ fn test_chapter_11_invalid_types_call_long_as_function() {
             ├── Function [x]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ╰── Return
                         ╰── FunctionCall [x]
     "#;
@@ -16653,17 +19798,22 @@ fn test_chapter_11_invalid_types_cast_lvalue() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [i]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Assign [=]
                     │   ├── Var [i]
-                    │   ╰── Cast
-                    │       ├── Target
-                    │       │   ╰── Int
-                    │       ╰── Expression
-                    │           ╰── Assign [=]
-                    │               ├── Var [i]
-                    │               ╰── Constant [10]
+                    │   ╰── Assign [=]
+                    │       ├── Cast
+                    │       │   ├── Target
+                    │       │   │   ╰── Long
+                    │       │   ╰── Expression
+                    │       │       ╰── Var [i]
+                    │       ╰── Constant [10]
                     ╰── Return
                         ╰── Constant [0]
     "#;
@@ -16683,14 +19833,22 @@ fn test_chapter_11_invalid_types_conflicting_function_types() {
         Program
             ├── Function [foo]
             │   ╰── Parameters
-            │       ╰── a
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── a
+            │           ╰── Type
+            │               ╰── Int
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Constant [0]
             ╰── Function [foo]
                 ╰── Parameters
-                    ╰── a
+                    ╰── Param
+                        ├── Name
+                        │   ╰── a
+                        ╰── Type
+                            ╰── Long
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16706,9 +19864,18 @@ fn test_chapter_11_invalid_types_conflicting_global_types() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [foo]
-            │   ╰── Constant [3]
-            ├── VarDeclaration [foo]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [3]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ╰── Type
+            │       ╰── Long
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -16728,10 +19895,19 @@ fn test_chapter_11_invalid_types_conflicting_variable_types() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [a]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── a
+            │   ╰── Type
+            │       ╰── Long
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [extern a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Extern
                     ╰── Return
                         ╰── Constant [0]
     "#;
@@ -16763,15 +19939,28 @@ fn test_chapter_11_valid_explicit_casts_sign_extend() {
         Program
             ├── Function [sign_extend]
             │   ├── Parameters
-            │   │   ├── i
-            │   │   ╰── expected
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Long
             │   ╰── Body
-            │       ├── VarDeclaration [extended]
-            │       │   ╰── Cast
-            │       │       ├── Target
-            │       │       │   ╰── Int
-            │       │       ╰── Expression
-            │       │           ╰── Var [i]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── extended
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [i]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [extended]
@@ -16800,12 +19989,17 @@ fn test_chapter_11_valid_explicit_casts_sign_extend() {
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant [2]
-                    ├── VarDeclaration [l]
-                    │   ╰── Cast
-                    │       ├── Target
-                    │       │   ╰── Int
-                    │       ╰── Expression
-                    │           ╰── Constant [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Long
+                    │           ╰── Expression
+                    │               ╰── Constant [100]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -16854,15 +20048,28 @@ fn test_chapter_11_valid_explicit_casts_truncate() {
         Program
             ├── Function [truncate]
             │   ├── Parameters
-            │   │   ├── l
-            │   │   ╰── expected
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── l
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
-            │       ├── VarDeclaration [result]
-            │       │   ╰── Cast
-            │       │       ├── Target
-            │       │       │   ╰── Int
-            │       │       ╰── Expression
-            │       │           ╰── Var [l]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Int
+            │       │           ╰── Expression
+            │       │               ╰── Var [l]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [result]
@@ -16912,12 +20119,17 @@ fn test_chapter_11_valid_explicit_casts_truncate() {
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant [4]
-                    ├── VarDeclaration [i]
-                    │   ╰── Cast
-                    │       ├── Target
-                    │       │   ╰── Int
-                    │       ╰── Expression
-                    │           ╰── Constant [17179869189L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Int
+                    │           ╰── Expression
+                    │               ╰── Constant [17179869189L]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -16974,10 +20186,20 @@ fn test_chapter_11_valid_extra_credit_bitshift() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [l]
-                    │   ╰── Constant [137438953472L]
-                    ├── VarDeclaration [shiftcount]
-                    │   ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [137438953472L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── shiftcount
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -17022,15 +20244,35 @@ fn test_chapter_11_valid_extra_credit_bitshift() {
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant [4]
-                    ├── VarDeclaration [long_shiftcount]
-                    │   ╰── Constant [3L]
-                    ├── VarDeclaration [i_neighbor1]
-                    │   ╰── Constant [0]
-                    ├── VarDeclaration [i]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [2147483645]
-                    ├── VarDeclaration [i_neighbor2]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── long_shiftcount
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [3L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i_neighbor1
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [2147483645]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i_neighbor2
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -17125,11 +20367,21 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [l1]
-                    │   ╰── Constant [71777214294589695L]
-                    ├── VarDeclaration [l2]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [4294967296L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l1
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [71777214294589695L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l2
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [4294967296L]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -17199,14 +20451,29 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant [6]
-                    ├── VarDeclaration [l]
-                    │   ╰── Constant [4611686018427387903L]
-                    ├── VarDeclaration [i]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [1073741824]
-                    ├── VarDeclaration [i2]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [4611686018427387903L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1073741824]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i2
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -17295,14 +20562,29 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_int() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [i]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [20]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [2147483647]
-                    ├── VarDeclaration [c]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [5000000]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [20]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2147483647]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [5000000]
                     ├── Assign [+=]
                     │   ├── Var [i]
                     │   ╰── Constant [2147483648L]
@@ -17389,12 +20671,22 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_long() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [l]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [34359738368L]
-                    ├── VarDeclaration [i]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [34359738368L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [10]
                     ├── Assign [-=]
                     │   ├── Var [l]
                     │   ╰── Var [i]
@@ -17444,8 +20736,13 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [100]
                     ├── Assign [<<=]
                     │   ├── Var [x]
                     │   ╰── Constant [22L]
@@ -17478,8 +20775,13 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant [3]
-                    ├── VarDeclaration [l]
-                    │   ╰── Constant [12345L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [12345L]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -17551,11 +20853,21 @@ fn test_chapter_11_valid_extra_credit_compound_bitwise() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [l1]
-                    │   ╰── Constant [71777214294589695L]
-                    ├── VarDeclaration [l2]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [4294967296L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l1
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [71777214294589695L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l2
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [4294967296L]
                     ├── Assign [&=]
                     │   ├── Var [l1]
                     │   ╰── Var [l2]
@@ -17598,9 +20910,14 @@ fn test_chapter_11_valid_extra_credit_compound_bitwise() {
                     ├── Assign [=]
                     │   ├── Var [l1]
                     │   ╰── Constant [4611686018427387903L]
-                    ├── VarDeclaration [i]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [1073741824]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1073741824]
                     ├── Assign [&=]
                     │   ├── Var [l1]
                     │   ╰── Var [i]
@@ -17670,9 +20987,14 @@ fn test_chapter_11_valid_extra_credit_increment_long() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [9223372036854775807L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [9223372036854775807L]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -17752,7 +21074,11 @@ fn test_chapter_11_valid_extra_credit_switch_int() {
         Program
             ├── Function [switch_on_int]
             │   ├── Parameters
-            │   │   ╰── i
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Switch
             │           ├── Expression
@@ -17840,7 +21166,11 @@ fn test_chapter_11_valid_extra_credit_switch_long() {
         Program
             ├── Function [switch_on_long]
             │   ├── Parameters
-            │   │   ╰── l
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── l
+            │   │       ╰── Type
+            │   │           ╰── Long
             │   ╰── Body
             │       ╰── Switch
             │           ├── Expression
@@ -17930,24 +21260,42 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [l]
-            ├── VarDeclaration [i]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ╰── Type
+            │       ╰── Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ╰── Type
+            │       ╰── Int
             ├── Function [addition]
             │   ╰── Body
-            │       ├── VarDeclaration [result]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [i]
-            │       │       ╰── Var [l]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [i]
+            │       │           ╰── Var [l]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [result]
             │               ╰── Constant [2147483663L]
             ├── Function [division]
             │   ╰── Body
-            │       ├── VarDeclaration [int_result]
-            │       │   ╰── Binary [/]
-            │       │       ├── Var [l]
-            │       │       ╰── Var [i]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── int_result
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [/]
+            │       │           ├── Var [l]
+            │       │           ╰── Var [i]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [int_result]
@@ -17960,13 +21308,18 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
             │               ╰── Var [l]
             ├── Function [conditional]
             │   ╰── Body
-            │       ├── VarDeclaration [result]
-            │       │   ╰── Conditional [?]
-            │       │       ├── Constant [1]
-            │       │       ├── Then
-            │       │       │   ╰── Var [l]
-            │       │       ╰── Else
-            │       │           ╰── Var [i]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Conditional [?]
+            │       │           ├── Constant [1]
+            │       │           ├── Then
+            │       │           │   ╰── Var [l]
+            │       │           ╰── Else
+            │       │               ╰── Var [i]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [result]
@@ -18069,32 +21422,58 @@ fn test_chapter_11_valid_implicit_casts_convert_by_assignment() {
         Program
             ├── Function [return_truncated_long]
             │   ├── Parameters
-            │   │   ╰── l
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── l
+            │   │       ╰── Type
+            │   │           ╰── Long
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [l]
             ├── Function [return_extended_int]
             │   ├── Parameters
-            │   │   ╰── i
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Var [i]
             ├── Function [truncate_on_assignment]
             │   ├── Parameters
-            │   │   ├── l
-            │   │   ╰── expected
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── l
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
-            │       ├── VarDeclaration [result]
-            │       │   ╰── Var [l]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Var [l]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [result]
             │               ╰── Var [expected]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [result]
-                    │   ╰── FunctionCall [return_truncated_long]
-                    │       ╰── Constant [4294967298L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [return_truncated_long]
+                    │           ╰── Constant [4294967298L]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -18119,8 +21498,13 @@ fn test_chapter_11_valid_implicit_casts_convert_by_assignment() {
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant [2]
-                    ├── VarDeclaration [i]
-                    │   ╰── Constant [4294967298L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4294967298L]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -18185,14 +21569,46 @@ fn test_chapter_11_valid_implicit_casts_convert_function_arguments() {
         Program
             ├── Function [foo]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ├── b
-            │   │   ├── c
-            │   │   ├── d
-            │   │   ├── e
-            │   │   ├── f
-            │   │   ├── g
-            │   │   ╰── h
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── e
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── f
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── g
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── h
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ├── If
             │       │   ├── Condition
@@ -18267,28 +21683,68 @@ fn test_chapter_11_valid_implicit_casts_convert_function_arguments() {
             │           ╰── Constant [0]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [1]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [4294967298L]
-                    ├── VarDeclaration [c]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [4294967296L]
-                    ├── VarDeclaration [d]
-                    │   ╰── Constant [21474836475L]
-                    ├── VarDeclaration [e]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [101]
-                    ├── VarDeclaration [f]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [123]
-                    ├── VarDeclaration [g]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [10]
-                    ├── VarDeclaration [h]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [9223372036854774574L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [4294967298L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [4294967296L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [21474836475L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── e
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [101]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── f
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [123]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── g
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── h
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [9223372036854774574L]
                     ╰── Return
                         ╰── FunctionCall [foo]
                             ├── Var [a]
@@ -18320,10 +21776,20 @@ fn test_chapter_11_valid_implicit_casts_convert_static_initializer() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [i]
-            │   ╰── Constant [8589934592L]
-            ├── VarDeclaration [j]
-            │   ╰── Constant [123456]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [8589934592L]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── j
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant [123456]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -18409,15 +21875,51 @@ fn test_chapter_11_valid_libraries_long_args() {
         Program
             ╰── Function [test_sum]
                 ├── Parameters
-                │   ├── a
-                │   ├── b
-                │   ├── c
-                │   ├── d
-                │   ├── e
-                │   ├── f
-                │   ├── g
-                │   ├── h
-                │   ╰── i
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── b
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── c
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d
+                │   │   ╰── Type
+                │   │       ╰── Long
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── e
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── f
+                │   │   ╰── Type
+                │   │       ╰── Long
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── g
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── h
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── i
+                │       ╰── Type
+                │           ╰── Long
                 ╰── Body
                     ├── If
                     │   ├── Condition
@@ -18456,15 +21958,51 @@ fn test_chapter_11_valid_libraries_long_args_client() {
         Program
             ├── Function [test_sum]
             │   ╰── Parameters
-            │       ├── a
-            │       ├── b
-            │       ├── c
-            │       ├── d
-            │       ├── e
-            │       ├── f
-            │       ├── g
-            │       ├── h
-            │       ╰── i
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Long
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Long
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── h
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── i
+            │           ╰── Type
+            │               ╰── Long
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -18495,8 +22033,13 @@ fn test_chapter_11_valid_libraries_long_global_var() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [l]
-            │   ╰── Constant [8589934592L]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant [8589934592L]
             ├── Function [return_l]
             │   ╰── Body
             │       ╰── Return
@@ -18530,7 +22073,12 @@ fn test_chapter_11_valid_libraries_long_global_var_client() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [extern l]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Extern
             ├── Function [return_l]
             ├── Function [return_l_as_int]
             ╰── Function [main]
@@ -18590,9 +22138,21 @@ fn test_chapter_11_valid_libraries_maintain_stack_alignment() {
         Program
             ╰── Function [add_variables]
                 ├── Parameters
-                │   ├── x
-                │   ├── y
-                │   ╰── z
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── x
+                │   │   ╰── Type
+                │   │       ╰── Long
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── y
+                │   │   ╰── Type
+                │   │       ╰── Long
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── z
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
                         ╰── Binary [+]
@@ -18619,17 +22179,44 @@ fn test_chapter_11_valid_libraries_maintain_stack_alignment_client() {
         Program
             ├── Function [add_variables]
             │   ╰── Parameters
-            │       ├── x
-            │       ├── y
-            │       ╰── z
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ╰── Type
+            │       │       ╰── Long
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── y
+            │       │   ╰── Type
+            │       │       ╰── Long
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── z
+            │           ╰── Type
+            │               ╰── Int
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [3]
-                    ├── VarDeclaration [y]
-                    │   ╰── Constant [4]
-                    ├── VarDeclaration [z]
-                    │   ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── z
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [5]
                     ╰── Return
                         ╰── FunctionCall [add_variables]
                             ├── Var [x]
@@ -18650,21 +22237,29 @@ fn test_chapter_11_valid_libraries_return_long() {
         Program
             ╰── Function [add]
                 ├── Parameters
-                │   ├── a
-                │   ╰── b
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── b
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
                     ╰── Return
-                        ╰── Cast
-                            ├── Target
-                            │   ╰── Int
-                            ╰── Expression
-                                ╰── Binary [+]
-                                    ├── Var [a]
-                                    ╰── Cast
-                                        ├── Target
-                                        │   ╰── Int
-                                        ╰── Expression
-                                            ╰── Var [b]
+                        ╰── Binary [+]
+                            ├── Cast
+                            │   ├── Target
+                            │   │   ╰── Long
+                            │   ╰── Expression
+                            │       ╰── Var [a]
+                            ╰── Cast
+                                ├── Target
+                                │   ╰── Long
+                                ╰── Expression
+                                    ╰── Var [b]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -18685,14 +22280,27 @@ fn test_chapter_11_valid_libraries_return_long_client() {
         Program
             ├── Function [add]
             │   ╰── Parameters
-            │       ├── a
-            │       ╰── b
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── b
+            │           ╰── Type
+            │               ╰── Int
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── FunctionCall [add]
-                    │       ├── Constant [2147483645]
-                    │       ╰── Constant [2147483645]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [add]
+                    │           ├── Constant [2147483645]
+                    │           ╰── Constant [2147483645]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -18765,8 +22373,16 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [a]
-            ├── VarDeclaration [b]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── a
+            │   ╰── Type
+            │       ╰── Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── b
+            │   ╰── Type
+            │       ╰── Long
             ├── Function [addition]
             │   ╰── Body
             │       ╰── Return
@@ -18919,10 +22535,20 @@ fn test_chapter_11_valid_long_expressions_assign() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [4294967290L]
-                    ├── VarDeclaration [b]
-                    │   ╰── Constant [0L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [4294967290L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [0L]
                     ├── Assign [=]
                     │   ├── Var [b]
                     │   ╰── Var [a]
@@ -18984,8 +22610,16 @@ fn test_chapter_11_valid_long_expressions_comparisons() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [l]
-            ├── VarDeclaration [l2]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ╰── Type
+            │       ╰── Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l2
+            │   ╰── Type
+            │       ╰── Long
             ├── Function [compare_constants]
             │   ╰── Body
             │       ╰── Return
@@ -19119,8 +22753,13 @@ fn test_chapter_11_valid_long_expressions_large_constants() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [x]
-            │   ╰── Constant [5L]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant [5L]
             ├── Function [add_large]
             │   ╰── Body
             │       ├── Assign [=]
@@ -19232,14 +22871,22 @@ fn test_chapter_11_valid_long_expressions_logical() {
         Program
             ├── Function [not]
             │   ├── Parameters
-            │   │   ╰── l
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── l
+            │   │       ╰── Type
+            │   │           ╰── Long
             │   ╰── Body
             │       ╰── Return
             │           ╰── Unary [!]
             │               ╰── Var [l]
             ├── Function [if_cond]
             │   ├── Parameters
-            │   │   ╰── l
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── l
+            │   │       ╰── Type
+            │   │           ╰── Long
             │   ╰── Body
             │       ├── If
             │       │   ├── Condition
@@ -19252,8 +22899,16 @@ fn test_chapter_11_valid_long_expressions_logical() {
             │           ╰── Constant [0]
             ├── Function [and]
             │   ├── Parameters
-            │   │   ├── l1
-            │   │   ╰── l2
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── l1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── l2
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [&&]
@@ -19261,8 +22916,16 @@ fn test_chapter_11_valid_long_expressions_logical() {
             │               ╰── Var [l2]
             ├── Function [or]
             │   ├── Parameters
-            │   │   ├── l1
-            │   │   ╰── l2
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── l1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── l2
+            │   │       ╰── Type
+            │   │           ╰── Long
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [||]
@@ -19270,10 +22933,20 @@ fn test_chapter_11_valid_long_expressions_logical() {
             │               ╰── Var [l2]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [l]
-                    │   ╰── Constant [1152921504606846976L]
-                    ├── VarDeclaration [zero]
-                    │   ╰── Constant [0L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [1152921504606846976L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── zero
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [0L]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── FunctionCall [not]
@@ -19376,16 +23049,36 @@ fn test_chapter_11_valid_long_expressions_long_and_int_locals() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── Constant [8589934592L]
-                    ├── VarDeclaration [b]
-                    │   ╰── Unary [-]
-                    │       ╰── Constant [1]
-                    ├── VarDeclaration [c]
-                    │   ╰── Unary [-]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
                     │       ╰── Constant [8589934592L]
-                    ├── VarDeclaration [d]
-                    │   ╰── Constant [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [8589934592L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -19506,15 +23199,51 @@ fn test_chapter_11_valid_long_expressions_long_args() {
         Program
             ├── Function [test_sum]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ├── b
-            │   │   ├── c
-            │   │   ├── d
-            │   │   ├── e
-            │   │   ├── f
-            │   │   ├── g
-            │   │   ├── h
-            │   │   ╰── i
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── e
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── f
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── g
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── h
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Long
             │   ╰── Body
             │       ├── If
             │       │   ├── Condition
@@ -19572,14 +23301,23 @@ fn test_chapter_11_valid_long_expressions_multi_op() {
         Program
             ├── Function [target]
             │   ├── Parameters
-            │   │   ╰── a
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── a
+            │   │       ╰── Type
+            │   │           ╰── Long
             │   ╰── Body
-            │       ├── VarDeclaration [b]
-            │       │   ╰── Binary [-]
-            │       │       ├── Binary [*]
-            │       │       │   ├── Var [a]
-            │       │       │   ╰── Constant [5L]
-            │       │       ╰── Constant [10L]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Binary [*]
+            │       │           │   ├── Var [a]
+            │       │           │   ╰── Constant [5L]
+            │       │           ╰── Constant [10L]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [==]
@@ -19618,27 +23356,40 @@ fn test_chapter_11_valid_long_expressions_return_long() {
         Program
             ├── Function [add]
             │   ├── Parameters
-            │   │   ├── a
-            │   │   ╰── b
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── b
+            │   │       ╰── Type
+            │   │           ╰── Int
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Cast
-            │               ├── Target
-            │               │   ╰── Int
-            │               ╰── Expression
-            │                   ╰── Binary [+]
-            │                       ├── Var [a]
-            │                       ╰── Cast
-            │                           ├── Target
-            │                           │   ╰── Int
-            │                           ╰── Expression
-            │                               ╰── Var [b]
+            │           ╰── Binary [+]
+            │               ├── Cast
+            │               │   ├── Target
+            │               │   │   ╰── Long
+            │               │   ╰── Expression
+            │               │       ╰── Var [a]
+            │               ╰── Cast
+            │                   ├── Target
+            │                   │   ╰── Long
+            │                   ╰── Expression
+            │                       ╰── Var [b]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [a]
-                    │   ╰── FunctionCall [add]
-                    │       ├── Constant [2147483645]
-                    │       ╰── Constant [2147483645]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [add]
+                    │           ├── Constant [2147483645]
+                    │           ╰── Constant [2147483645]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [==]
@@ -19754,75 +23505,197 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
         Program
             ├── Function [check_12_ints]
             │   ╰── Parameters
-            │       ├── start
-            │       ├── a
-            │       ├── b
-            │       ├── c
-            │       ├── d
-            │       ├── e
-            │       ├── f
-            │       ├── g
-            │       ├── h
-            │       ├── i
-            │       ├── j
-            │       ├── k
-            │       ╰── l
-            ├── VarDeclaration [glob]
-            │   ╰── Constant [5L]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── start
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── h
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── j
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── k
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── l
+            │           ╰── Type
+            │               ╰── Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── glob
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant [5L]
             ├── Function [main]
             │   ╰── Body
-            │       ├── VarDeclaration [should_spill]
-            │       │   ╰── Binary [*]
-            │       │       ├── Var [glob]
-            │       │       ╰── Constant [4294967307L]
-            │       ├── VarDeclaration [one]
-            │       │   ╰── Binary [-]
-            │       │       ├── Var [glob]
-            │       │       ╰── Constant [4]
-            │       ├── VarDeclaration [two]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [one]
-            │       │       ╰── Var [one]
-            │       ├── VarDeclaration [three]
-            │       │   ╰── Binary [+]
-            │       │       ├── Constant [2]
-            │       │       ╰── Var [one]
-            │       ├── VarDeclaration [four]
-            │       │   ╰── Binary [*]
-            │       │       ├── Var [two]
-            │       │       ╰── Var [two]
-            │       ├── VarDeclaration [five]
-            │       │   ╰── Binary [-]
-            │       │       ├── Constant [6]
-            │       │       ╰── Var [one]
-            │       ├── VarDeclaration [six]
-            │       │   ╰── Binary [*]
-            │       │       ├── Var [two]
-            │       │       ╰── Var [three]
-            │       ├── VarDeclaration [seven]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [one]
-            │       │       ╰── Constant [6]
-            │       ├── VarDeclaration [eight]
-            │       │   ╰── Binary [*]
-            │       │       ├── Var [two]
-            │       │       ╰── Constant [4]
-            │       ├── VarDeclaration [nine]
-            │       │   ╰── Binary [*]
-            │       │       ├── Var [three]
-            │       │       ╰── Var [three]
-            │       ├── VarDeclaration [ten]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [four]
-            │       │       ╰── Var [six]
-            │       ├── VarDeclaration [eleven]
-            │       │   ╰── Binary [-]
-            │       │       ├── Constant [16]
-            │       │       ╰── Var [five]
-            │       ├── VarDeclaration [twelve]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [six]
-            │       │       ╰── Var [six]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── should_spill
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [glob]
+            │       │           ╰── Constant [4294967307L]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── one
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [glob]
+            │       │           ╰── Constant [4]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── two
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [one]
+            │       │           ╰── Var [one]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── three
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Constant [2]
+            │       │           ╰── Var [one]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── four
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [two]
+            │       │           ╰── Var [two]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── five
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant [6]
+            │       │           ╰── Var [one]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── six
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [two]
+            │       │           ╰── Var [three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── seven
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [one]
+            │       │           ╰── Constant [6]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── eight
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [two]
+            │       │           ╰── Constant [4]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nine
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [three]
+            │       │           ╰── Var [three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ten
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [four]
+            │       │           ╰── Var [six]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── eleven
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant [16]
+            │       │           ╰── Var [five]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twelve
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [six]
+            │       │           ╰── Var [six]
             │       ├── FunctionCall [check_12_ints]
             │       │   ├── Var [one]
             │       │   ├── Var [two]
@@ -19837,56 +23710,116 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ├── Var [eleven]
             │       │   ├── Var [twelve]
             │       │   ╰── Constant [1]
-            │       ├── VarDeclaration [thirteen]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [glob]
-            │       │       ╰── Constant [8]
-            │       ├── VarDeclaration [fourteen]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [thirteen]
-            │       │       ╰── Constant [1]
-            │       ├── VarDeclaration [fifteen]
-            │       │   ╰── Binary [-]
-            │       │       ├── Constant [28]
-            │       │       ╰── Var [thirteen]
-            │       ├── VarDeclaration [sixteen]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [fourteen]
-            │       │       ╰── Constant [2]
-            │       ├── VarDeclaration [seventeen]
-            │       │   ╰── Binary [+]
-            │       │       ├── Constant [4]
-            │       │       ╰── Var [thirteen]
-            │       ├── VarDeclaration [eighteen]
-            │       │   ╰── Binary [-]
-            │       │       ├── Constant [32]
-            │       │       ╰── Var [fourteen]
-            │       ├── VarDeclaration [nineteen]
-            │       │   ╰── Binary [-]
-            │       │       ├── Constant [35]
-            │       │       ╰── Var [sixteen]
-            │       ├── VarDeclaration [twenty]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [fifteen]
-            │       │       ╰── Constant [5]
-            │       ├── VarDeclaration [twenty_one]
-            │       │   ╰── Binary [-]
-            │       │       ├── Binary [*]
-            │       │       │   ├── Var [thirteen]
-            │       │       │   ╰── Constant [2]
-            │       │       ╰── Constant [5]
-            │       ├── VarDeclaration [twenty_two]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [fifteen]
-            │       │       ╰── Constant [7]
-            │       ├── VarDeclaration [twenty_three]
-            │       │   ╰── Binary [+]
-            │       │       ├── Constant [6]
-            │       │       ╰── Var [seventeen]
-            │       ├── VarDeclaration [twenty_four]
-            │       │   ╰── Binary [+]
-            │       │       ├── Var [thirteen]
-            │       │       ╰── Constant [11]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── thirteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [glob]
+            │       │           ╰── Constant [8]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── fourteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [thirteen]
+            │       │           ╰── Constant [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── fifteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant [28]
+            │       │           ╰── Var [thirteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── sixteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [fourteen]
+            │       │           ╰── Constant [2]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── seventeen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Constant [4]
+            │       │           ╰── Var [thirteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── eighteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant [32]
+            │       │           ╰── Var [fourteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nineteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant [35]
+            │       │           ╰── Var [sixteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [fifteen]
+            │       │           ╰── Constant [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_one
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Binary [*]
+            │       │           │   ├── Var [thirteen]
+            │       │           │   ╰── Constant [2]
+            │       │           ╰── Constant [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_two
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [fifteen]
+            │       │           ╰── Constant [7]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_three
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Constant [6]
+            │       │           ╰── Var [seventeen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_four
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [thirteen]
+            │       │           ╰── Constant [11]
             │       ├── FunctionCall [check_12_ints]
             │       │   ├── Var [thirteen]
             │       │   ├── Var [fourteen]
@@ -19915,22 +23848,79 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │           ╰── Constant [0]
             ╰── Function [check_12_ints]
                 ├── Parameters
-                │   ├── a
-                │   ├── b
-                │   ├── c
-                │   ├── d
-                │   ├── e
-                │   ├── f
-                │   ├── g
-                │   ├── h
-                │   ├── i
-                │   ├── j
-                │   ├── k
-                │   ├── l
-                │   ╰── start
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── b
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── c
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── e
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── f
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── g
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── h
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── j
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── k
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── l
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── start
+                │       ╰── Type
+                │           ╰── Int
                 ╰── Body
-                    ├── VarDeclaration [expected]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── expected
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── Assign [=]
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
@@ -20117,8 +24107,13 @@ fn test_chapter_11_valid_long_expressions_simple() {
         Program
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [l]
-                    │   ╰── Constant [9223372036854775807L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [9223372036854775807L]
                     ╰── Return
                         ╰── Binary [==]
                             ├── Binary [-]
@@ -20147,8 +24142,14 @@ fn test_chapter_11_valid_long_expressions_static_long() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [static foo]
-            │   ╰── Constant [4294967290L]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── foo
+            │   ├── Type
+            │   │   ╰── Long
+            │   ├── Initializer
+            │   │   ╰── Constant [4294967290L]
+            │   ╰── Static
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -20217,19 +24218,58 @@ fn test_chapter_11_valid_long_expressions_type_specifiers() {
     "#;
     let expected = r#"
         Program
-            ├── VarDeclaration [static a]
-            ├── VarDeclaration [static a]
-            ├── VarDeclaration [static a]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── a
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Static
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── a
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Static
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── a
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Static
             ├── Function [my_function]
             │   ╰── Parameters
-            │       ├── a
-            │       ├── b
-            │       ╰── c
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Long
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Long
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── c
+            │           ╰── Type
+            │               ╰── Long
             ├── Function [my_function]
             │   ├── Parameters
-            │   │   ├── x
-            │   │   ├── y
-            │   │   ╰── z
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── x
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── y
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── z
+            │   │       ╰── Type
+            │   │           ╰── Long
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [+]
@@ -20239,22 +24279,52 @@ fn test_chapter_11_valid_long_expressions_type_specifiers() {
             │               ╰── Var [z]
             ╰── Function [main]
                 ╰── Body
-                    ├── VarDeclaration [x]
-                    │   ╰── Constant [1L]
-                    ├── VarDeclaration [y]
-                    │   ╰── Constant [2L]
-                    ├── VarDeclaration [z]
-                    │   ╰── Constant [3L]
-                    ├── VarDeclaration [extern a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [1L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [2L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── z
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [3L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Extern
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Constant [4]
-                    ├── VarDeclaration [sum]
-                    │   ╰── Constant [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── sum
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
                     ├── For
                     │   ├── Init
-                    │   │   ╰── VarDeclaration [i]
-                    │   │       ╰── Constant [1099511627776L]
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Long
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [1099511627776L]
                     │   ├── Condition
                     │   │   ╰── Binary [>]
                     │   │       ├── Var [i]

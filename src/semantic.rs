@@ -10,6 +10,7 @@ mod test;
 
 pub use type_check::Attributes;
 pub use type_check::InitialValue;
+pub use type_check::StaticInit;
 pub use type_check::SymbolData;
 pub use type_check::SymbolTable;
 

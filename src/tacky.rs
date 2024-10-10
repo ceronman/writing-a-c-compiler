@@ -2,8 +2,7 @@
 mod test;
 
 use crate::ast;
-use crate::ast::Declaration;
-use crate::semantic::{Attributes, InitialValue, SymbolTable};
+use crate::semantic::{Attributes, InitialValue, StaticInit, SymbolTable};
 use crate::symbol::Symbol;
 
 #[derive(Debug, Clone)]
@@ -564,7 +563,7 @@ pub fn emit(program: &ast::Program, symbol_table: &SymbolTable) -> Program {
     for decl in &program.declarations {
         generator.instructions.clear();
         match decl.as_ref() {
-            Declaration::Function(function) => {
+            ast::Declaration::Function(function) => {
                 let name = function.name.symbol.clone();
                 let symbol_data = symbol_table
                     .get(&name)
@@ -580,7 +579,7 @@ pub fn emit(program: &ast::Program, symbol_table: &SymbolTable) -> Program {
                     body: generator.emit_instructions(body),
                 }));
             }
-            Declaration::Var(_) => {}
+            ast::Declaration::Var(_) => {}
         }
     }
 
@@ -591,11 +590,17 @@ pub fn emit(program: &ast::Program, symbol_table: &SymbolTable) -> Program {
         } = symbol_data.attrs
         {
             match initial_value {
-                InitialValue::Initial(init) => top_level.push(TopLevel::Variable(StaticVariable {
-                    name: name.clone(),
-                    global,
-                    init,
-                })),
+                InitialValue::Initial(init) => {
+                    if let StaticInit::Int(init) = init {
+                        top_level.push(TopLevel::Variable(StaticVariable {
+                            name: name.clone(),
+                            global,
+                            init: init as i64,
+                        }))
+                    } else {
+                        todo!()
+                    }
+                }
                 InitialValue::Tentative => top_level.push(TopLevel::Variable(StaticVariable {
                     name: name.clone(),
                     global,

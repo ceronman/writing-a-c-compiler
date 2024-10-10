@@ -1,16 +1,25 @@
 use crate::ast::{
-    Block, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration, InnerRef,
-    Node, Program, Statement, StorageClass, VarDeclaration,
+    BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration,
+    FunctionType, InnerRef, Node, NodeId, Program, Statement, StorageClass, Type, UnaryOp,
+    VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap, VecDeque};
 
 pub type SymbolTable = BTreeMap<Symbol, SymbolData>;
 
 #[derive(Default)]
 struct TypeChecker {
     symbol_table: SymbolTable,
+    expression_types: HashMap<NodeId, Type>,
+    implicit_casts: HashMap<NodeId, Type>,
+    switch_values: VecDeque<SwitchCaseValues>,
+}
+
+struct SwitchCaseValues {
+    switch_expr_id: NodeId,
+    values: Vec<i64>,
 }
 
 #[derive(Debug)]
@@ -20,15 +29,15 @@ pub struct SymbolData {
 }
 
 impl SymbolData {
-    fn local() -> Self {
+    fn local(ty: Type) -> Self {
         SymbolData {
-            ty: Type::Int,
+            ty,
             attrs: Attributes::Local,
         }
     }
-    fn global() -> Self {
+    fn global(ty: Type) -> Self {
         SymbolData {
-            ty: Type::Int,
+            ty,
             attrs: Attributes::Static {
                 initial_value: InitialValue::NoInitializer,
                 global: true,
@@ -53,14 +62,14 @@ pub enum Attributes {
 #[derive(Clone, Copy, Debug)]
 pub enum InitialValue {
     Tentative,
-    Initial(i64),
+    Initial(StaticInit),
     NoInitializer,
 }
 
-#[derive(Debug, Eq, PartialEq)]
-pub enum Type {
-    Int,
-    Function { num_params: usize },
+#[derive(Clone, Copy, Debug)]
+pub enum StaticInit {
+    Int(i32),
+    Long(i64),
 }
 
 impl TypeChecker {
@@ -86,26 +95,27 @@ impl TypeChecker {
                 });
             }
             if let Some(data) = self.symbol_table.get(&name) {
-                if !matches!(data.ty, Type::Int) {
+                if data.ty != decl.ty {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
-                        msg: format!("Function with name '{name}' already declared"),
+                        msg: format!("Name '{name}' was already declared"),
                         span: decl.name.span,
                     });
                 }
             } else {
-                self.symbol_table
-                    .insert(decl.name.symbol.clone(), SymbolData::global());
+                self.symbol_table.insert(
+                    decl.name.symbol.clone(),
+                    SymbolData::global(decl.ty.clone()),
+                );
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
             let initial_value = if let Some(init) = &decl.init {
                 if let Expression::Constant(c) = init.as_ref() {
                     // TODO: this is duplicated in multiple places
-                    let value = match c {
-                        Constant::Int(v) => *v as i64,
-                        Constant::Long(v) => *v,
-                    };
-                    InitialValue::Initial(value)
+                    InitialValue::Initial(match c {
+                        Constant::Int(v) => StaticInit::Int(*v),
+                        Constant::Long(v) => StaticInit::Long(*v),
+                    })
                 } else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -114,23 +124,38 @@ impl TypeChecker {
                     });
                 }
             } else {
-                InitialValue::Initial(0)
+                match decl.ty {
+                    Type::Int => InitialValue::Initial(StaticInit::Int(0)),
+                    Type::Long => InitialValue::Initial(StaticInit::Long(0)),
+                    Type::Function(_) => unreachable!(),
+                }
             };
-            self.symbol_table.insert(
-                decl.name.symbol.clone(),
-                SymbolData {
-                    ty: Type::Int,
-                    attrs: Attributes::Static {
-                        initial_value,
-                        global: false,
+            if let Some(data) = self.symbol_table.get(&name) {
+                if data.ty != decl.ty {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: format!("Name '{name}' was previously declared with a different type"),
+                        span: decl.name.span,
+                    });
+                }
+            } else {
+                self.symbol_table.insert(
+                    decl.name.symbol.clone(),
+                    SymbolData {
+                        ty: decl.ty.clone(),
+                        attrs: Attributes::Static {
+                            initial_value,
+                            global: false,
+                        },
                     },
-                },
-            );
+                );
+            }
         } else {
             self.symbol_table
-                .insert(decl.name.symbol.clone(), SymbolData::local());
+                .insert(decl.name.symbol.clone(), SymbolData::local(decl.ty.clone()));
             if let Some(init) = &decl.init {
-                self.check_expression(init)?;
+                let init_ty = self.check_expression(init)?;
+                self.cast_if_needed(init, &init_ty, &decl.ty);
             }
         }
         Ok(())
@@ -139,11 +164,10 @@ impl TypeChecker {
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let mut initial_value = if let Some(init) = &decl.init {
             if let Expression::Constant(c) = init.as_ref() {
-                let value = match c {
-                    Constant::Int(v) => *v as i64,
-                    Constant::Long(v) => *v,
-                };
-                InitialValue::Initial(value)
+                InitialValue::Initial(match c {
+                    Constant::Int(v) => StaticInit::Int(*v),
+                    Constant::Long(v) => StaticInit::Long(*v),
+                })
             } else {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
@@ -159,10 +183,10 @@ impl TypeChecker {
         let mut global = !matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
         let name = decl.name.symbol.clone();
         if let Some(data) = self.symbol_table.get(&name) {
-            if data.ty != Type::Int {
+            if data.ty != decl.ty {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
-                    msg: format!("Name '{name}' is already used for a function"),
+                    msg: format!("Variable '{name}' is already declared with a different type"),
                     span: decl.name.span,
                 });
             }
@@ -203,7 +227,7 @@ impl TypeChecker {
             };
         }
         let data = SymbolData {
-            ty: Type::Int,
+            ty: decl.ty.clone(),
             attrs: Attributes::Static {
                 initial_value,
                 global,
@@ -219,9 +243,7 @@ impl TypeChecker {
         top_level: bool,
     ) -> Result<()> {
         let name = decl.name.symbol.clone();
-        let this_ty = Type::Function {
-            num_params: decl.params.len(),
-        };
+        let this_ty = Type::Function(decl.ty.clone());
         let has_body = decl.body.is_some();
         let mut already_defined = false;
         let is_static = matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
@@ -284,56 +306,98 @@ impl TypeChecker {
                     span: decl.name.span,
                 });
             }
-            for param in &decl.params {
-                self.symbol_table
-                    .insert(param.symbol.clone(), SymbolData::local());
+            for (param_name, param_ty) in decl.params.iter().zip(decl.ty.params.iter()) {
+                self.symbol_table.insert(
+                    param_name.symbol.clone(),
+                    SymbolData::local(param_ty.clone()),
+                );
             }
-            self.check_block(body)?;
+            self.check_block(&decl.ty, body)?;
         }
         Ok(())
     }
 
-    fn check_block(&mut self, block: &Block) -> Result<()> {
+    fn check_block(&mut self, function: &FunctionType, block: &Block) -> Result<()> {
         for item in &block.items {
             match item {
-                BlockItem::Stmt(stmt) => self.check_statement(stmt)?,
+                BlockItem::Stmt(stmt) => self.check_statement(function, stmt)?,
                 BlockItem::Decl(decl) => self.check_declaration(decl)?,
             }
         }
         Ok(())
     }
 
-    fn check_statement(&mut self, stmt: &Node<Statement>) -> Result<()> {
+    fn check_statement(&mut self, function: &FunctionType, stmt: &Node<Statement>) -> Result<()> {
         match stmt.as_ref() {
-            Statement::Return(expr) | Statement::Expression(expr) => self.check_expression(expr)?,
+            Statement::Return(expr) => {
+                let expr_ty = self.check_expression(expr)?;
+                self.cast_if_needed(expr, &expr_ty, &function.ret);
+            }
+            Statement::Expression(expr) => {
+                self.check_expression(expr)?;
+            }
             Statement::If {
                 cond,
                 then_stmt,
                 else_stmt,
             } => {
                 self.check_expression(cond)?;
-                self.check_statement(then_stmt)?;
+                self.check_statement(function, then_stmt)?;
                 if let Some(else_stmt) = else_stmt {
-                    self.check_statement(else_stmt)?;
+                    self.check_statement(function, else_stmt)?;
                 }
             }
-            Statement::Switch { expr, body, .. }
-            | Statement::Case {
-                value: expr, body, ..
+            Statement::Switch { expr, body, .. } => {
+                self.switch_values.push_front(SwitchCaseValues {
+                    switch_expr_id: expr.id,
+                    values: vec![],
+                });
+                self.check_expression(expr)?;
+                self.check_statement(function, body)?;
+                self.switch_values.pop_front();
             }
-            | Statement::While {
+            Statement::Case { value, .. } => {
+                let switch_values = self.switch_values.front_mut().expect("Case without switch");
+                let switch_expr_ty = self
+                    .expression_types
+                    .get(&switch_values.switch_expr_id)
+                    .expect("Case without switch");
+                // TODO: Deduplicate!
+                let Expression::Constant(constant) = value.as_ref() else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "case label does not reduce to an integer constant".to_owned(),
+                        span: value.span,
+                    });
+                };
+                let int_value = match (constant, switch_expr_ty) {
+                    (Constant::Int(v), _) => *v as i64,
+                    (Constant::Long(v), Type::Int) => (*v as i32) as i64,
+                    (Constant::Long(v), Type::Long) => *v,
+                    _ => unreachable!(),
+                };
+                if switch_values.values.iter().any(|&v| v == int_value) {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Resolve,
+                        msg: "duplicate case value".to_owned(),
+                        span: value.span,
+                    });
+                }
+                switch_values.values.push(int_value);
+            }
+            Statement::While {
                 cond: expr, body, ..
             }
             | Statement::DoWhile {
                 cond: expr, body, ..
             } => {
                 self.check_expression(expr)?;
-                self.check_statement(body)?;
+                self.check_statement(function, body)?;
             }
             Statement::Labeled { body, .. } | Statement::Default { body, .. } => {
-                self.check_statement(body)?
+                self.check_statement(function, body)?
             }
-            Statement::Compound(block) => self.check_block(block)?,
+            Statement::Compound(block) => self.check_block(function, block)?,
             Statement::For {
                 init,
                 cond,
@@ -353,7 +417,9 @@ impl TypeChecker {
                         }
                         self.check_local_var_declaration(d)?
                     }
-                    ForInit::Expr(e) => self.check_expression(e)?,
+                    ForInit::Expr(e) => {
+                        self.check_expression(e)?;
+                    }
                     ForInit::None => {}
                 }
                 if let Some(cond) = cond {
@@ -362,7 +428,7 @@ impl TypeChecker {
                 if let Some(post) = post {
                     self.check_expression(post)?;
                 }
-                self.check_statement(body)?;
+                self.check_statement(function, body)?;
             }
             Statement::Break(_) | Statement::Continue(_) | Statement::Goto(_) | Statement::Null => {
             }
@@ -377,9 +443,12 @@ impl TypeChecker {
         }
     }
 
-    fn check_expression(&self, expr: &Node<Expression>) -> Result<()> {
-        match expr.as_ref() {
-            Expression::Constant(_) => {}
+    fn check_expression(&mut self, expr: &Node<Expression>) -> Result<Type> {
+        let ty = match expr.as_ref() {
+            Expression::Constant(c) => match c {
+                Constant::Int(_) => self.set_type(expr, Type::Int),
+                Constant::Long(_) => self.set_type(expr, Type::Long),
+            },
             Expression::Var(name) => {
                 let Some(data) = self.symbol_table.get(name) else {
                     return Err(CompilerError {
@@ -388,21 +457,73 @@ impl TypeChecker {
                         span: expr.span,
                     });
                 };
-                if data.ty != Type::Int {
+                if let Type::Function(_) = data.ty {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Function used as variable".to_string(),
                         span: expr.span,
                     });
                 };
+                self.set_type(expr, data.ty.clone())
             }
-            Expression::Binary { left, right, .. } | Expression::Assignment { left, right, .. } => {
-                self.check_expression(left)?;
-                self.check_expression(right)?;
+            Expression::Unary { op, expr } => {
+                let operand_ty = self.check_expression(expr)?;
+                match op.as_ref() {
+                    UnaryOp::Not => self.set_type(expr, Type::Int),
+                    _ => self.set_type(expr, operand_ty),
+                }
             }
-            Expression::Postfix { expr, .. } | Expression::Unary { expr, .. } => {
-                self.check_expression(expr)?;
+            Expression::Postfix { expr, .. } => {
+                let operand_ty = self.check_expression(expr)?;
+                self.set_type(expr, operand_ty)
             }
+            Expression::Binary { left, right, op } => {
+                let left_ty = self.check_expression(left)?;
+                let right_ty = self.check_expression(right)?;
+
+                match op.as_ref() {
+                    BinaryOp::And | BinaryOp::Or => self.set_type(expr, Type::Int),
+                    BinaryOp::ShiftRight | BinaryOp::ShiftLeft => {
+                        self.set_type(expr, left_ty) // TODO: Investigate this properly!
+                    }
+                    _ => {
+                        let common = Self::common_type(&left_ty, &right_ty);
+                        self.cast_if_needed(left, &left_ty, &common);
+                        self.cast_if_needed(right, &right_ty, &common);
+                        match op.as_ref() {
+                            BinaryOp::Equal
+                            | BinaryOp::NotEqual
+                            | BinaryOp::LessThan
+                            | BinaryOp::LessOrEqualThan
+                            | BinaryOp::GreaterThan
+                            | BinaryOp::GreaterOrEqualThan => self.set_type(expr, Type::Int),
+                            _ => self.set_type(expr, common),
+                        }
+                    }
+                }
+            }
+
+            Expression::Assignment { left, right, .. } => {
+                let left_ty = self.check_expression(left)?;
+                let right_ty = self.check_expression(right)?;
+                self.cast_if_needed(right, &right_ty, &left_ty);
+                self.set_type(expr, left_ty)
+            }
+
+            Expression::Conditional {
+                cond,
+                then_expr,
+                else_expr,
+            } => {
+                self.check_expression(cond)?;
+                let then_ty = self.check_expression(then_expr)?;
+                let else_ty = self.check_expression(else_expr)?;
+                let common = Self::common_type(&then_ty, &else_ty);
+                self.cast_if_needed(then_expr, &then_ty, &common);
+                self.cast_if_needed(else_expr, &else_ty, &common);
+                self.set_type(expr, common)
+            }
+
             Expression::FunctionCall { name, args } => {
                 let symbol = name.symbol.clone();
                 let Some(data) = self.symbol_table.get(&symbol) else {
@@ -412,36 +533,54 @@ impl TypeChecker {
                         span: expr.span,
                     });
                 };
-                let Type::Function { num_params } = &data.ty else {
+                let Type::Function(function_ty) = data.ty.clone() else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Variable used as function name".to_string(),
                         span: expr.span,
                     });
                 };
-                if *num_params != args.len() {
+                if function_ty.params.len() != args.len() {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Function called with the wrong number of arguments".to_string(),
                         span: expr.span,
                     });
                 }
-                for arg in args {
-                    self.check_expression(arg)?;
+                for (arg, param_ty) in args.iter().zip(&function_ty.params) {
+                    let arg_ty = self.check_expression(arg)?;
+                    self.cast_if_needed(arg, &arg_ty, param_ty);
                 }
+                self.set_type(expr, Type::Function(function_ty))
             }
-            Expression::Conditional {
-                cond,
-                then_expr,
-                else_expr,
-            } => {
-                self.check_expression(cond)?;
-                self.check_expression(then_expr)?;
-                self.check_expression(else_expr)?;
+            Expression::Cast { target, expr } => {
+                self.check_expression(expr)?;
+                self.set_type(expr, (*target.data).clone())
             }
-            Expression::Cast { .. } => todo!(),
+        };
+        Ok(ty)
+    }
+
+    fn set_type(&mut self, expr: &Node<Expression>, ty: Type) -> Type {
+        self.expression_types.insert(expr.id, ty.clone());
+        ty
+    }
+
+    fn cast_if_needed(&mut self, expr: &Node<Expression>, ty: &Type, expected: &Type) -> Type {
+        if ty == expected {
+            expected.clone()
+        } else {
+            self.implicit_casts.insert(expr.id, expected.clone());
+            expected.clone()
         }
-        Ok(())
+    }
+
+    fn common_type(ty1: &Type, ty2: &Type) -> Type {
+        if ty1 == ty2 {
+            ty1.clone()
+        } else {
+            Type::Long
+        }
     }
 }
 

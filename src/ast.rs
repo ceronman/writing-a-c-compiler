@@ -129,7 +129,7 @@ pub enum Expression {
     },
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Constant {
     Int(i32),
     Long(i64),
@@ -146,14 +146,14 @@ pub enum Declaration {
     Function(FunctionDeclaration),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Type {
     Int,
     Long,
     Function(FunctionType),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct FunctionType {
     pub params: Vec<Type>,
     pub ret: Box<Type>,

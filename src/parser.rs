@@ -168,7 +168,7 @@ impl<'src> Parser<'src> {
         }
         let ty = match types {
             [TokenKind::Int] => Type::Int,
-            [TokenKind::Long] => Type::Int,
+            [TokenKind::Long] => Type::Long,
             [TokenKind::Long, TokenKind::Int] => Type::Long,
             [TokenKind::Int, TokenKind::Long] => Type::Long,
             _ => {
@@ -364,10 +364,7 @@ impl<'src> Parser<'src> {
         let name = self.identifier()?;
         self.expect(TokenKind::Colon)?;
         let stmt = self.statement()?;
-        Ok(self.node(
-            begin + stmt.span,
-            Statement::Labeled { name, body: stmt },
-        ))
+        Ok(self.node(begin + stmt.span, Statement::Labeled { name, body: stmt }))
     }
 
     fn case_stmt(&mut self) -> Result<Node<Statement>> {
@@ -489,7 +486,7 @@ impl<'src> Parser<'src> {
                 self.advance();
                 if let Ok(target) = self.type_specifier() {
                     self.expect(TokenKind::CloseParen)?;
-                    let expr = self.expression()?;
+                    let expr = self.expression_precedence(13, "expression")?;
                     self.node(begin + expr.span, Expression::Cast { target, expr })
                 } else {
                     let inner = self.expression()?;
@@ -592,10 +589,7 @@ impl<'src> Parser<'src> {
     fn unary_expression(&mut self) -> Result<Node<Expression>> {
         let op = self.unary_op()?;
         let expr = self.expression_precedence(13, "expression")?;
-        Ok(self.node(
-            op.span + expr.span,
-            Expression::Unary { op, expr },
-        ))
+        Ok(self.node(op.span + expr.span, Expression::Unary { op, expr }))
     }
 
     fn assignment_op(&mut self) -> Result<Node<AssignOp>> {
@@ -727,10 +721,7 @@ impl<'src> Parser<'src> {
             }
         }
         self.expect(TokenKind::CloseParen)?;
-        Ok(self.node(
-            name.span,
-            Expression::FunctionCall { name, args },
-        ))
+        Ok(self.node(name.span, Expression::FunctionCall { name, args }))
     }
 
     fn var(&mut self) -> Result<Node<Expression>> {

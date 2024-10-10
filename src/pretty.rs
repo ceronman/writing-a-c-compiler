@@ -234,7 +234,19 @@ impl PrettyAst {
         if !function.params.is_empty() {
             children.push(Self::new(
                 "Parameters",
-                function.params.iter().map(|p| Self::from_identifier(p)),
+                function
+                    .params
+                    .iter()
+                    .zip(function.ty.params.iter())
+                    .map(|(name, ty)| {
+                        Self::new(
+                            "Param",
+                            vec![
+                                Self::new("Name", vec![Self::from_identifier(name)]),
+                                Self::new("Type", vec![Self::from_type(ty)]),
+                            ],
+                        )
+                    }),
             ))
         }
         if let Some(body) = &function.body {
@@ -253,18 +265,24 @@ impl PrettyAst {
         )
     }
     fn from_var_declaration(declaration: &ast::VarDeclaration) -> PrettyAst {
-        let mut children = vec![];
+        let mut children = vec![
+            Self::new("Name", vec![Self::from_identifier(&declaration.name)]),
+            Self::new("Type", vec![Self::from_type(&declaration.ty)]),
+        ];
         if let Some(init) = &declaration.init {
-            children.push(Self::from_expression(init))
+            children.push(Self::new("Initializer", vec![Self::from_expression(init)]));
         }
-        Self::new(
-            format!(
-                "VarDeclaration [{}{}]",
-                Self::storage_class(&declaration.storage_class),
-                declaration.name.symbol
-            ),
-            children,
-        )
+        if let Some(s) = &declaration.storage_class {
+            match s.as_ref() {
+                ast::StorageClass::Static => {
+                    children.push(Self::new("Static", vec![]));
+                }
+                ast::StorageClass::Extern => {
+                    children.push(Self::new("Extern", vec![]));
+                }
+            }
+        }
+        Self::new("VarDeclaration", children)
     }
     fn storage_class(storage: &Option<ast::Node<ast::StorageClass>>) -> &str {
         if let Some(s) = storage {
