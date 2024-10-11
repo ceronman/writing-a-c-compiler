@@ -2,12 +2,13 @@
 mod test;
 
 use crate::ast;
-use crate::semantic::{Attributes, InitialValue, StaticInit, SymbolTable};
+use crate::semantic::{Attributes, InitialValue, StaticInit, SemanticData, SymbolData};
 use crate::symbol::Symbol;
 
 #[derive(Debug, Clone)]
 pub struct Program {
     pub top_level: Vec<TopLevel>,
+    pub semantics: SemanticData,
 }
 
 #[derive(Debug, Clone)]
@@ -28,7 +29,8 @@ pub struct Function {
 pub struct StaticVariable {
     pub name: Symbol,
     pub global: bool,
-    pub init: i64,
+    pub ty: ast::Type,
+    pub init: StaticInit,
 }
 
 #[derive(Debug, Clone)]
@@ -66,11 +68,22 @@ pub enum Instruction {
         args: Vec<Val>,
         dst: Val,
     },
+    SignExtend {
+        src: Val,
+        dst: Val,
+    },
+    Truncate {
+        src: Val,
+        dst: Val,
+    }
 }
+
+pub type Constant = ast::Constant;
+pub type Type = ast::Type;
 
 #[derive(Debug, Clone)]
 pub enum Val {
-    Constant(i64),
+    Constant(Constant),
     Var(Symbol),
 }
 
@@ -103,8 +116,8 @@ pub enum BinaryOp {
     GreaterOrEqual,
 }
 
-#[derive(Default)]
 struct TackyGenerator {
+    semantics: SemanticData,
     instructions: Vec<Instruction>,
     tmp_counter: u32,
     label_counter: u32,
@@ -114,7 +127,7 @@ impl TackyGenerator {
     fn emit_instructions(&mut self, function: &ast::Block) -> Vec<Instruction> {
         self.emit_block(function);
         self.instructions
-            .push(Instruction::Return(Val::Constant(0)));
+            .push(Instruction::Return(Val::Constant(Constant::Int(0))));
         self.instructions.clone()
     }
 
@@ -252,7 +265,7 @@ impl TackyGenerator {
                 let cond = if let Some(cond) = cond {
                     self.emit_expr(cond)
                 } else {
-                    Val::Constant(1)
+                    Val::Constant(Constant::Int(1))
                 };
                 let break_label = format!("break_{label}");
                 self.instructions.push(Instruction::JumpIfZero {
@@ -272,9 +285,16 @@ impl TackyGenerator {
             }
             ast::Statement::Switch { expr, body, labels } => {
                 let cond = self.emit_expr(expr);
+                let expr_ty = self.semantics.expr_type(expr).clone();
+                // TODO: Maybe value doesn't have to be i64 and it can be Constant
                 for (value, label) in &labels.valued {
-                    let case_value = Val::Constant(*value);
-                    let result = self.make_temp();
+                    let constant = match expr_ty {
+                        Type::Int => Constant::Int(*value as i32),
+                        Type::Long => Constant::Long(*value),
+                        Type::Function(_) => unreachable!()
+                    };
+                    let case_value = Val::Constant(constant);
+                    let result = self.make_temp(&expr_ty);
                     self.instructions.push(Instruction::Binary {
                         op: BinaryOp::Equal,
                         src1: cond.clone(),
@@ -313,18 +333,15 @@ impl TackyGenerator {
         }
     }
 
-    fn emit_expr(&mut self, expr: &ast::Expression) -> Val {
-        match expr {
-            ast::Expression::Constant(c) => {
-                let value = match c {
-                    ast::Constant::Int(v) => *v as i64,
-                    ast::Constant::Long(v) => *v,
-                };
-                Val::Constant(value)
+    fn emit_expr(&mut self, expr: &ast::Node<ast::Expression>) -> Val {
+        let expr_ty = self.semantics.expr_type(expr).clone();
+        let result = match expr.as_ref() {
+            ast::Expression::Constant(value) => {
+                Val::Constant(value.clone())
             }
             ast::Expression::Unary { op, expr } => {
                 let val = self.emit_expr(expr);
-                let dst = self.make_temp();
+                let dst = self.make_temp(&expr_ty);
                 let tacky_op = match op.as_ref() {
                     ast::UnaryOp::Complement => UnaryOp::Complement,
                     ast::UnaryOp::Negate => UnaryOp::Negate,
@@ -347,7 +364,7 @@ impl TackyGenerator {
             }
             ast::Expression::Postfix { op, expr } => {
                 let val = self.emit_expr(expr);
-                let dst = self.make_temp();
+                let dst = self.make_temp(&expr_ty);
                 self.instructions.push(Instruction::Copy {
                     src: val.clone(),
                     dst: dst.clone(),
@@ -358,7 +375,7 @@ impl TackyGenerator {
                     ast::PostfixOp::Decrement => UnaryOp::Decrement,
                 };
 
-                let decremented = self.make_temp();
+                let decremented = self.make_temp(&expr_ty);
                 self.instructions.push(Instruction::Unary {
                     op: tacky_op,
                     src: val.clone(),
@@ -372,7 +389,7 @@ impl TackyGenerator {
             }
             ast::Expression::Binary { op, left, right } => {
                 let src1 = self.emit_expr(left);
-                let dst = self.make_temp();
+                let dst = self.make_temp(&expr_ty);
                 let op = match op.as_ref() {
                     ast::BinaryOp::Add => BinaryOp::Add,
                     ast::BinaryOp::Subtract => BinaryOp::Subtract,
@@ -391,7 +408,7 @@ impl TackyGenerator {
                     ast::BinaryOp::GreaterThan => BinaryOp::GreaterThan,
                     ast::BinaryOp::GreaterOrEqualThan => BinaryOp::GreaterOrEqual,
                     ast::BinaryOp::And => {
-                        let result = self.make_temp();
+                        let result = self.make_temp(&expr_ty);
                         let false_label = self.make_label("and_false");
                         let end_label = self.make_label("and_end");
                         self.instructions.push(Instruction::JumpIfZero {
@@ -404,7 +421,7 @@ impl TackyGenerator {
                             target: false_label.clone(),
                         });
                         self.instructions.push(Instruction::Copy {
-                            src: Val::Constant(1),
+                            src: Val::Constant(Constant::Int(1)),
                             dst: result.clone(),
                         });
                         self.instructions.push(Instruction::Jump {
@@ -412,14 +429,14 @@ impl TackyGenerator {
                         });
                         self.instructions.push(Instruction::Label(false_label));
                         self.instructions.push(Instruction::Copy {
-                            src: Val::Constant(0),
+                            src: Val::Constant(Constant::Int(0)),
                             dst: result.clone(),
                         });
                         self.instructions.push(Instruction::Label(end_label));
                         return result;
                     }
                     ast::BinaryOp::Or => {
-                        let result = self.make_temp();
+                        let result = self.make_temp(&expr_ty);
                         let true_label = self.make_label("or_true");
                         let end_label = self.make_label("or_end");
                         self.instructions.push(Instruction::JumpIfNotZero {
@@ -432,7 +449,7 @@ impl TackyGenerator {
                             target: true_label.clone(),
                         });
                         self.instructions.push(Instruction::Copy {
-                            src: Val::Constant(0),
+                            src: Val::Constant(Constant::Int(0)),
                             dst: result.clone(),
                         });
                         self.instructions.push(Instruction::Jump {
@@ -440,7 +457,7 @@ impl TackyGenerator {
                         });
                         self.instructions.push(Instruction::Label(true_label));
                         self.instructions.push(Instruction::Copy {
-                            src: Val::Constant(1),
+                            src: Val::Constant(Constant::Int(1)),
                             dst: result.clone(),
                         });
                         self.instructions.push(Instruction::Label(end_label));
@@ -478,7 +495,7 @@ impl TackyGenerator {
 
                 let result = if let Some(op) = op {
                     let src1 = self.emit_expr(left);
-                    let dst = self.make_temp();
+                    let dst = self.make_temp(&expr_ty);
                     let src2 = self.emit_expr(right);
                     self.instructions.push(Instruction::Binary {
                         op,
@@ -506,7 +523,7 @@ impl TackyGenerator {
                 let cond_val = self.emit_expr(cond);
                 let end_label = self.make_label("end_if");
                 let else_label = self.make_label("else");
-                let result = self.make_temp();
+                let result = self.make_temp(&expr_ty);
                 self.instructions.push(Instruction::JumpIfZero {
                     cond: cond_val,
                     target: else_label.clone(),
@@ -531,7 +548,7 @@ impl TackyGenerator {
 
             ast::Expression::FunctionCall { name, args } => {
                 let args: Vec<Val> = args.iter().map(|a| self.emit_expr(a)).collect();
-                let result = self.make_temp();
+                let result = self.make_temp(&expr_ty);
                 self.instructions.push(Instruction::FnCall {
                     name: name.symbol.clone(),
                     args,
@@ -540,12 +557,42 @@ impl TackyGenerator {
                 result
             }
 
-            ast::Expression::Cast { .. } => todo!(),
+            ast::Expression::Cast { target, expr: inner } => {
+                let result = self.emit_expr(inner);
+                let inner_ty = self.semantics.expr_type(inner).clone();
+                self.cast(result, &inner_ty, &target)
+            }
+        };
+        if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
+            self.cast(result, &expr_ty, &target)
+        } else {
+            result
         }
     }
 
-    fn make_temp(&mut self) -> Val {
-        let tmp = Val::Var(format!("tmp.{i}", i = self.tmp_counter));
+
+    fn cast(&mut self, src: Val, src_ty: &Type, target: &Type) -> Val {
+        if target == src_ty {
+            src
+        } else {
+            let dst = self.make_temp(&target);
+            match target {
+                Type::Long => {
+                    self.instructions.push(Instruction::SignExtend { src, dst: dst.clone() });
+                }
+                Type::Int => {
+                    self.instructions.push(Instruction::Truncate { src, dst: dst.clone() });
+                }
+                Type::Function(_) => unreachable!()
+            };
+            dst
+        }
+    }
+
+    fn make_temp(&mut self, ty: &Type) -> Val {
+        let name = format!("tmp.{i}", i = self.tmp_counter);
+        let tmp = Val::Var(name.clone());
+        self.semantics.symbols.insert(name, SymbolData { ty: ty.clone(), attrs: Attributes::Local });
         self.tmp_counter += 1;
         tmp
     }
@@ -557,15 +604,20 @@ impl TackyGenerator {
     }
 }
 
-pub fn emit(program: &ast::Program, symbol_table: &SymbolTable) -> Program {
+pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
     let mut top_level = Vec::new();
-    let mut generator = TackyGenerator::default();
+    let mut generator = TackyGenerator {
+        semantics,
+        instructions: vec![],
+        tmp_counter: 0,
+        label_counter: 0,
+    };
     for decl in &program.declarations {
         generator.instructions.clear();
         match decl.as_ref() {
             ast::Declaration::Function(function) => {
                 let name = function.name.symbol.clone();
-                let symbol_data = symbol_table
+                let symbol_data = generator.semantics.symbols
                     .get(&name)
                     .expect("Function without symbol data");
                 let Attributes::Function { global, .. } = symbol_data.attrs else {
@@ -583,33 +635,39 @@ pub fn emit(program: &ast::Program, symbol_table: &SymbolTable) -> Program {
         }
     }
 
-    for (name, symbol_data) in symbol_table {
+    for (name, symbol_data) in &generator.semantics.symbols {
         if let Attributes::Static {
             initial_value,
             global,
         } = symbol_data.attrs
         {
+            let ty = symbol_data.ty.clone();
             match initial_value {
                 InitialValue::Initial(init) => {
-                    if let StaticInit::Int(init) = init {
-                        top_level.push(TopLevel::Variable(StaticVariable {
-                            name: name.clone(),
-                            global,
-                            init: init as i64,
-                        }))
-                    } else {
-                        todo!()
-                    }
+                    top_level.push(TopLevel::Variable(StaticVariable {
+                        name: name.clone(),
+                        ty,
+                        global,
+                        init,
+                    }))
                 }
-                InitialValue::Tentative => top_level.push(TopLevel::Variable(StaticVariable {
-                    name: name.clone(),
-                    global,
-                    init: 0,
-                })),
+                InitialValue::Tentative => {
+                    let init = match &ty {
+                        Type::Int => StaticInit::Int(0),
+                        Type::Long => StaticInit::Long(0),
+                        Type::Function(_) => unreachable!()
+                    };
+                    top_level.push(TopLevel::Variable(StaticVariable {
+                        name: name.clone(),
+                        ty,
+                        global,
+                        init,
+                    }))
+                },
                 InitialValue::NoInitializer => continue,
             }
         }
     }
 
-    Program { top_level }
+    Program { top_level, semantics: generator.semantics }
 }

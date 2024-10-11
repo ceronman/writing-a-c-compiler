@@ -3,9 +3,11 @@ use crate::parser;
 use crate::semantic;
 use crate::tacky;
 
-use crate::tacky::TopLevel;
+use crate::tacky::{Instruction, TopLevel};
 use anyhow::Result;
 use std::io::Write;
+use crate::ast::{Constant, Type};
+use crate::semantic::StaticInit;
 
 #[allow(dead_code)]
 pub fn dump_ast(src: &str) -> String {
@@ -16,8 +18,8 @@ pub fn dump_ast(src: &str) -> String {
 #[allow(dead_code)]
 pub fn dump_tacky(src: &str) -> String {
     let ast = parser::parse(src).unwrap();
-    let (ast, symbol_table) = semantic::validate(ast).unwrap();
-    let tacky = tacky::emit(&ast, &symbol_table);
+    let (ast, semantic_data) = semantic::validate(ast).unwrap();
+    let tacky = tacky::emit(&ast, semantic_data);
     pp_tacky(&tacky).unwrap().trim().to_owned()
 }
 
@@ -39,17 +41,23 @@ pub fn pp_tacky(program: &tacky::Program) -> Result<String> {
     Ok(String::from_utf8(buffer)?)
 }
 
-pub fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -> Result<()> {
-    let global = if variable.global { "global " } else { "" };
-    writeln!(
-        file,
-        "static {}{} = {}",
-        global, variable.name, variable.init
-    )?;
+fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -> Result<()> {
+    write!(file, "static ")?;
+    if variable.global {
+        write!(file, "global ")?;
+    }
+    write!(file, "{}", variable.name)?;
+    write!(file, ": ")?;
+    pp_type(file, &variable.ty)?;
+    write!(file, " = ")?;
+    match variable.init {
+        StaticInit::Int(v) => writeln!(file, "{v}")?,
+        StaticInit::Long(v) => writeln!(file, "{v}L")?,
+    }
     Ok(())
 }
 
-pub fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> {
+fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> {
     let global = if function.global { "global " } else { "" };
     let params = function.params.to_vec().join(", ");
     writeln!(file, "{}function {}({}) {{ ", global, function.name, params)?;
@@ -147,6 +155,18 @@ pub fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<
                 }
                 write!(file, ")")?;
             }
+            Instruction::SignExtend { src, dst } => {
+                write!(file, "{indent}sign_extend ")?;
+                pp_val(file, src)?;
+                write!(file, " -> ")?;
+                pp_val(file, dst)?;
+            }
+            Instruction::Truncate { src, dst } => {
+                write!(file, "{indent}truncate ")?;
+                pp_val(file, src)?;
+                write!(file, " -> ")?;
+                pp_val(file, dst)?;
+            }
         }
         writeln!(file)?;
     }
@@ -154,11 +174,21 @@ pub fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<
     Ok(())
 }
 
-pub fn pp_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
+fn pp_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
     match val {
-        tacky::Val::Constant(value) => write!(file, "{value}")?,
+        tacky::Val::Constant(Constant::Int(value)) => write!(file, "{value}")?,
+        tacky::Val::Constant(Constant::Long(value)) => write!(file, "{value}L")?,
         tacky::Val::Var(name) => write!(file, "{name}")?,
     }
+    Ok(())
+}
+
+fn pp_type(file: &mut impl Write, ty: &ast::Type) -> Result<()> {
+    match ty {
+        Type::Int => write!(file, "Int"),
+        Type::Long => write!(file, "Long"),
+        Type::Function(_) => write!(file, "Function(...)"),
+    }?;
     Ok(())
 }
 

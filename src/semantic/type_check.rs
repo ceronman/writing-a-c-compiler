@@ -4,29 +4,8 @@ use crate::ast::{
     VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
-use crate::symbol::Symbol;
+use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
 use std::collections::{BTreeMap, HashMap, VecDeque};
-
-pub type SymbolTable = BTreeMap<Symbol, SymbolData>;
-
-#[derive(Default)]
-struct TypeChecker {
-    symbol_table: SymbolTable,
-    expression_types: HashMap<NodeId, Type>,
-    implicit_casts: HashMap<NodeId, Type>,
-    switch_values: VecDeque<SwitchCaseValues>,
-}
-
-struct SwitchCaseValues {
-    switch_expr_id: NodeId,
-    values: Vec<i64>,
-}
-
-#[derive(Debug)]
-pub struct SymbolData {
-    pub ty: Type,
-    pub attrs: Attributes,
-}
 
 impl SymbolData {
     fn local(ty: Type) -> Self {
@@ -46,30 +25,17 @@ impl SymbolData {
     }
 }
 
-#[derive(Debug)]
-pub enum Attributes {
-    Function {
-        defined: bool,
-        global: bool,
-    },
-    Static {
-        initial_value: InitialValue,
-        global: bool,
-    },
-    Local,
+#[derive(Default)]
+struct TypeChecker {
+    symbols: BTreeMap<String, SymbolData>,
+    expression_types: HashMap<NodeId, Type>,
+    implicit_casts: HashMap<NodeId, Type>,
+    switch_values: VecDeque<SwitchCaseValues>,
 }
 
-#[derive(Clone, Copy, Debug)]
-pub enum InitialValue {
-    Tentative,
-    Initial(StaticInit),
-    NoInitializer,
-}
-
-#[derive(Clone, Copy, Debug)]
-pub enum StaticInit {
-    Int(i32),
-    Long(i64),
+struct SwitchCaseValues {
+    switch_expr_id: NodeId,
+    values: Vec<i64>,
 }
 
 impl TypeChecker {
@@ -94,7 +60,7 @@ impl TypeChecker {
                     span: init.span,
                 });
             }
-            if let Some(data) = self.symbol_table.get(&name) {
+            if let Some(data) = self.symbols.get(&name) {
                 if data.ty != decl.ty {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -103,7 +69,7 @@ impl TypeChecker {
                     });
                 }
             } else {
-                self.symbol_table.insert(
+                self.symbols.insert(
                     decl.name.symbol.clone(),
                     SymbolData::global(decl.ty.clone()),
                 );
@@ -130,7 +96,7 @@ impl TypeChecker {
                     Type::Function(_) => unreachable!(),
                 }
             };
-            if let Some(data) = self.symbol_table.get(&name) {
+            if let Some(data) = self.symbols.get(&name) {
                 if data.ty != decl.ty {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -139,7 +105,7 @@ impl TypeChecker {
                     });
                 }
             } else {
-                self.symbol_table.insert(
+                self.symbols.insert(
                     decl.name.symbol.clone(),
                     SymbolData {
                         ty: decl.ty.clone(),
@@ -151,7 +117,7 @@ impl TypeChecker {
                 );
             }
         } else {
-            self.symbol_table
+            self.symbols
                 .insert(decl.name.symbol.clone(), SymbolData::local(decl.ty.clone()));
             if let Some(init) = &decl.init {
                 let init_ty = self.check_expression(init)?;
@@ -182,7 +148,7 @@ impl TypeChecker {
         };
         let mut global = !matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
         let name = decl.name.symbol.clone();
-        if let Some(data) = self.symbol_table.get(&name) {
+        if let Some(data) = self.symbols.get(&name) {
             if data.ty != decl.ty {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
@@ -233,7 +199,7 @@ impl TypeChecker {
                 global,
             },
         };
-        self.symbol_table.insert(name, data);
+        self.symbols.insert(name, data);
         Ok(())
     }
 
@@ -258,7 +224,7 @@ impl TypeChecker {
 
         let mut is_global = !is_static;
 
-        if let Some(data) = self.symbol_table.get(&name) {
+        if let Some(data) = self.symbols.get(&name) {
             if data.ty != this_ty {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
@@ -297,7 +263,7 @@ impl TypeChecker {
                 global: is_global,
             },
         };
-        self.symbol_table.insert(name, data);
+        self.symbols.insert(name, data);
         if let Some(body) = &decl.body {
             if !top_level {
                 return Err(CompilerError {
@@ -307,7 +273,7 @@ impl TypeChecker {
                 });
             }
             for (param_name, param_ty) in decl.params.iter().zip(decl.ty.params.iter()) {
-                self.symbol_table.insert(
+                self.symbols.insert(
                     param_name.symbol.clone(),
                     SymbolData::local(param_ty.clone()),
                 );
@@ -450,7 +416,7 @@ impl TypeChecker {
                 Constant::Long(_) => self.set_type(expr, Type::Long),
             },
             Expression::Var(name) => {
-                let Some(data) = self.symbol_table.get(name) else {
+                let Some(data) = self.symbols.get(name) else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Unknown type of expression".to_string(),
@@ -526,7 +492,7 @@ impl TypeChecker {
 
             Expression::FunctionCall { name, args } => {
                 let symbol = name.symbol.clone();
-                let Some(data) = self.symbol_table.get(&symbol) else {
+                let Some(data) = self.symbols.get(&symbol) else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Unknown type of expression".to_string(),
@@ -584,8 +550,12 @@ impl TypeChecker {
     }
 }
 
-pub fn check(program: &Node<Program>) -> Result<SymbolTable> {
+pub fn check(program: &Node<Program>) -> Result<SemanticData> {
     let mut type_checker = TypeChecker::default();
     type_checker.check(program)?;
-    Ok(type_checker.symbol_table)
+    Ok(SemanticData {
+        symbols: type_checker.symbols,
+        expression_types: type_checker.expression_types,
+        implicit_casts: type_checker.implicit_casts,
+    })
 }

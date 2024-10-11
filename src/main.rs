@@ -69,7 +69,7 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    let (validated_ast, symbol_table) = match semantic::validate(ast) {
+    let (validated_ast, semantic_data) = match semantic::validate(ast) {
         Ok(ast) => ast,
         Err(error) => {
             let annotated = pretty::annotate(&source, &error);
@@ -79,17 +79,17 @@ fn main() -> Result<()> {
 
     if let Flag::Validate = options.flag {
         println!("{}", pretty_print_ast(&validated_ast)?);
-        println!("{symbol_table:?}");
+        println!("{semantic_data:?}");
         return Ok(());
     }
 
-    let tacky = tacky::emit(&validated_ast, &symbol_table);
+    let tacky = tacky::emit(&validated_ast, semantic_data);
     if let Flag::Tacky = options.flag {
         println!("{}", pp_tacky(&tacky)?);
         return Ok(());
     }
 
-    let asm = asm::generate(&tacky, &symbol_table);
+    let asm = asm::generate(&tacky);
     if let Flag::Codegen = options.flag {
         println!("{asm:#?}");
         return Ok(());

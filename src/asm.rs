@@ -1,4 +1,4 @@
-use crate::semantic::{Attributes, SymbolData, SymbolTable};
+use crate::semantic::{Attributes, SemanticData, SymbolData};
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
@@ -101,12 +101,12 @@ pub enum CondCode {
     LE,
 }
 
-pub fn generate(program: &tacky::Program, symbol_table: &SymbolTable) -> Program {
+pub fn generate(program: &tacky::Program) -> Program {
     let mut top_level = Vec::new();
     for element in &program.top_level {
         match element {
             tacky::TopLevel::Function(f) => {
-                top_level.push(TopLevel::Function(generate_function(f, symbol_table)))
+                top_level.push(TopLevel::Function(generate_function(f, &program.semantics)))
             }
             tacky::TopLevel::Variable(v) => {
                 top_level.push(TopLevel::Variable(generate_static_variable(v)))
@@ -116,7 +116,7 @@ pub fn generate(program: &tacky::Program, symbol_table: &SymbolTable) -> Program
     Program { top_level }
 }
 
-fn generate_function(function: &tacky::Function, symbol_table: &SymbolTable) -> Function {
+fn generate_function(function: &tacky::Function, semantic: &SemanticData) -> Function {
     let mut instructions = Vec::new();
 
     for (i, param) in function.params.iter().cloned().enumerate() {
@@ -225,10 +225,12 @@ fn generate_function(function: &tacky::Function, symbol_table: &SymbolTable) -> 
             tacky::Instruction::FnCall { name, args, dst } => {
                 generate_call(&mut instructions, name, args, dst);
             }
+            tacky::Instruction::SignExtend { .. } => todo!(),
+            tacky::Instruction::Truncate { .. } => todo!()
         }
     }
 
-    let stack_size = replace_pseudo_registers(&mut instructions, symbol_table);
+    let stack_size = replace_pseudo_registers(&mut instructions, semantic);
     let instructions = fixup_instructions(instructions, stack_size);
 
     Function {
@@ -242,7 +244,7 @@ fn generate_static_variable(var: &tacky::StaticVariable) -> StaticVariable {
     StaticVariable {
         name: var.name.clone(),
         global: var.global,
-        init: var.init,
+        init: todo!(),
     }
 }
 
@@ -289,7 +291,7 @@ fn generate_call(
 
 fn replace_pseudo_registers(
     instructions: &mut Vec<Instruction>,
-    symbol_table: &SymbolTable,
+    semantics: &SemanticData,
 ) -> i64 {
     let mut stack_size = 0;
     let mut stack_vars = HashMap::new();
@@ -301,7 +303,7 @@ fn replace_pseudo_registers(
             } else if let Some(SymbolData {
                 attrs: Attributes::Static { .. },
                 ..
-            }) = symbol_table.get(name)
+            }) = semantics.symbols.get(name)
             {
                 *operand = Operand::Data(name.clone());
                 return;
@@ -400,7 +402,7 @@ fn fixup_instructions(instructions: Vec<Instruction>, stack_size: i64) -> Vec<In
 impl tacky::Val {
     fn to_asm(&self) -> Operand {
         match self {
-            tacky::Val::Constant(value) => Operand::Imm(*value),
+            tacky::Val::Constant(value) => Operand::Imm(todo!()),
             tacky::Val::Var(name) => Operand::Pseudo(name.clone()),
         }
     }
