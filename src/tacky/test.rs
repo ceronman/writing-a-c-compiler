@@ -9239,7 +9239,7 @@ fn test_chapter_10_valid_distinct_local_and_extern() {
             return tmp.1
             return 0
         }
-        static global a = 5
+        static global a: Int = 5
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9270,7 +9270,7 @@ fn test_chapter_10_valid_extern_block_scope_variable() {
             return 0
             return 0
         }
-        static global foo = 3
+        static global foo: Int = 3
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9319,8 +9319,8 @@ fn test_chapter_10_valid_extra_credit_bitwise_ops_file_scope_vars() {
             return 0
             return 0
         }
-        static global x = 1
-        static global y = 0
+        static global x: Int = 1
+        static global y: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9399,10 +9399,10 @@ fn test_chapter_10_valid_extra_credit_compound_assignment_static_var() {
             return tmp.12
             return 0
         }
-        static i.0 = 0
-        static j.1 = 0
-        static k.2 = 1
-        static l.3 = 48
+        static i.0: Int = 0
+        static j.1: Int = 0
+        static k.2: Int = 1
+        static l.3: Int = 48
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9425,7 +9425,7 @@ fn test_chapter_10_valid_extra_credit_goto_skip_static_initializer() {
             return x.0
             return 0
         }
-        static x.0 = 10
+        static x.0: Int = 10
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9525,8 +9525,8 @@ fn test_chapter_10_valid_extra_credit_increment_global_vars() {
             return 0
             return 0
         }
-        static global i = 0
-        static global j = 0
+        static global i: Int = 0
+        static global j: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9556,7 +9556,7 @@ fn test_chapter_10_valid_extra_credit_label_file_scope_var_same_name() {
             return x
             return 0
         }
-        static global x = 0
+        static global x: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9581,7 +9581,7 @@ fn test_chapter_10_valid_extra_credit_label_static_var_same_name() {
             return x.0
             return 0
         }
-        static x.0 = 5
+        static x.0: Int = 5
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9719,7 +9719,7 @@ fn test_chapter_10_valid_extra_credit_switch_on_extern() {
             return 0
             return 0
         }
-        static global x = 0
+        static global x: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9776,7 +9776,7 @@ fn test_chapter_10_valid_extra_credit_switch_skip_extern_decl() {
             return 6
             return 0
         }
-        static global x = 15
+        static global x: Int = 15
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9814,8 +9814,8 @@ fn test_chapter_10_valid_extra_credit_switch_skip_static_initializer() {
             return 0
             return 0
         }
-        static global a = 3
-        static x.0 = 10
+        static global a: Int = 3
+        static x.0: Int = 10
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9916,7 +9916,7 @@ fn test_chapter_10_valid_libraries_external_tentative_var() {
             return x
             return 0
         }
-        static global x = 0
+        static global x: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10028,7 +10028,7 @@ fn test_chapter_10_valid_libraries_external_var_scoping_client() {
             return 1
             return 0
         }
-        static global x = 10
+        static global x: Int = 10
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10058,7 +10058,7 @@ fn test_chapter_10_valid_libraries_external_variable() {
             return x
             return 0
         }
-        static global x = 3
+        static global x: Int = 3
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10144,7 +10144,7 @@ fn test_chapter_10_valid_libraries_internal_hides_external_linkage() {
             return x
             return 0
         }
-        static global x = 10
+        static global x: Int = 10
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10198,7 +10198,7 @@ fn test_chapter_10_valid_libraries_internal_hides_external_linkage_client() {
             return x
             return 0
         }
-        static x = 1
+        static x: Int = 1
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10240,7 +10240,7 @@ fn test_chapter_10_valid_libraries_internal_linkage_function() {
             return i.0
             return 0
         }
-        static i.0 = 0
+        static i.0: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10321,7 +10321,7 @@ fn test_chapter_10_valid_libraries_internal_linkage_var() {
             return 0
             return 0
         }
-        static x = 5
+        static x: Int = 5
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10393,7 +10393,7 @@ fn test_chapter_10_valid_libraries_internal_linkage_var_client() {
             return 0
             return 0
         }
-        static x = 0
+        static x: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10413,7 +10413,7 @@ fn test_chapter_10_valid_multiple_static_file_scope_vars() {
             return foo
             return 0
         }
-        static foo = 4
+        static foo: Int = 4
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10459,8 +10459,8 @@ fn test_chapter_10_valid_multiple_static_local() {
             return tmp.7
             return 0
         }
-        static a.0 = 3
-        static a.1 = 4
+        static a.0: Int = 3
+        static a.1: Int = 4
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10587,8 +10587,8 @@ fn test_chapter_10_valid_shadow_static_local_var() {
             return 0
             return 0
         }
-        static global i = 0
-        static i.2 = 0
+        static global i: Int = 0
+        static i.2: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10642,8 +10642,8 @@ fn test_chapter_10_valid_static_local_multiple_scopes() {
           break_loop_0:
             return 0
         }
-        static i.1 = 65
-        static i.2 = 97
+        static i.1: Int = 65
+        static i.2: Int = 97
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10688,7 +10688,7 @@ fn test_chapter_10_valid_static_local_uninitialized() {
             return ret.1
             return 0
         }
-        static x.0 = 0
+        static x.0: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10728,7 +10728,7 @@ fn test_chapter_10_valid_static_recursive_call() {
             tmp.5 = print_alphabet()
             return 0
         }
-        static count.1 = 0
+        static count.1: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10747,7 +10747,7 @@ fn test_chapter_10_valid_static_then_extern() {
             return foo
             return 0
         }
-        static foo = 3
+        static foo: Int = 3
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10776,8 +10776,8 @@ fn test_chapter_10_valid_static_variables_in_expressions() {
             return 0
             return 0
         }
-        static i.0 = 2
-        static j.1 = 3
+        static i.0: Int = 2
+        static j.1: Int = 3
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10814,7 +10814,7 @@ fn test_chapter_10_valid_tentative_definition() {
             return foo
             return 0
         }
-        static global foo = 0
+        static global foo: Int = 0
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10843,7 +10843,7 @@ fn test_chapter_10_valid_type_before_storage_class() {
             return tmp.1
             return 0
         }
-        static bar = 4
+        static bar: Int = 4
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }

@@ -3,7 +3,6 @@ use crate::parser;
 use crate::semantic;
 use crate::tacky;
 
-use crate::tacky::{Instruction, TopLevel};
 use anyhow::Result;
 use std::io::Write;
 use crate::ast::{Constant, Type};
@@ -34,8 +33,8 @@ pub fn pp_tacky(program: &tacky::Program) -> Result<String> {
     let file = &mut buffer;
     for top_level in &program.top_level {
         match top_level {
-            TopLevel::Function(f) => pp_function(file, f)?,
-            TopLevel::Variable(v) => pp_static_variable(file, v)?,
+            tacky::TopLevel::Function(f) => pp_function(file, f)?,
+            tacky::TopLevel::Variable(v) => pp_static_variable(file, v)?,
         }
     }
     Ok(String::from_utf8(buffer)?)
@@ -155,13 +154,13 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
                 }
                 write!(file, ")")?;
             }
-            Instruction::SignExtend { src, dst } => {
+            tacky::Instruction::SignExtend { src, dst } => {
                 write!(file, "{indent}sign_extend ")?;
                 pp_val(file, src)?;
                 write!(file, " -> ")?;
                 pp_val(file, dst)?;
             }
-            Instruction::Truncate { src, dst } => {
+            tacky::Instruction::Truncate { src, dst } => {
                 write!(file, "{indent}truncate ")?;
                 pp_val(file, src)?;
                 write!(file, " -> ")?;

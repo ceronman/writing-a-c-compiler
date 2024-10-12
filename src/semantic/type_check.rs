@@ -322,12 +322,10 @@ impl TypeChecker {
                 self.check_statement(function, body)?;
                 self.switch_values.pop_front();
             }
-            Statement::Case { value, .. } => {
+            Statement::Case { value, body, ..} => {
+                let switch_expr_ty = self.check_expression(value)?;
+                self.check_statement(function, body)?;
                 let switch_values = self.switch_values.front_mut().expect("Case without switch");
-                let switch_expr_ty = self
-                    .expression_types
-                    .get(&switch_values.switch_expr_id)
-                    .expect("Case without switch");
                 // TODO: Deduplicate!
                 let Expression::Constant(constant) = value.as_ref() else {
                     return Err(CompilerError {
@@ -412,8 +410,8 @@ impl TypeChecker {
     fn check_expression(&mut self, expr: &Node<Expression>) -> Result<Type> {
         let ty = match expr.as_ref() {
             Expression::Constant(c) => match c {
-                Constant::Int(_) => self.set_type(expr, Type::Int),
-                Constant::Long(_) => self.set_type(expr, Type::Long),
+                Constant::Int(_) => Type::Int,
+                Constant::Long(_) => Type::Long,
             },
             Expression::Var(name) => {
                 let Some(data) = self.symbols.get(name) else {
@@ -430,27 +428,26 @@ impl TypeChecker {
                         span: expr.span,
                     });
                 };
-                self.set_type(expr, data.ty.clone())
+                data.ty.clone()
             }
             Expression::Unary { op, expr } => {
                 let operand_ty = self.check_expression(expr)?;
                 match op.as_ref() {
-                    UnaryOp::Not => self.set_type(expr, Type::Int),
-                    _ => self.set_type(expr, operand_ty),
+                    UnaryOp::Not => Type::Int,
+                    _ => operand_ty,
                 }
             }
             Expression::Postfix { expr, .. } => {
-                let operand_ty = self.check_expression(expr)?;
-                self.set_type(expr, operand_ty)
+                self.check_expression(expr)?
             }
             Expression::Binary { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
                 let right_ty = self.check_expression(right)?;
 
                 match op.as_ref() {
-                    BinaryOp::And | BinaryOp::Or => self.set_type(expr, Type::Int),
+                    BinaryOp::And | BinaryOp::Or => Type::Int,
                     BinaryOp::ShiftRight | BinaryOp::ShiftLeft => {
-                        self.set_type(expr, left_ty) // TODO: Investigate this properly!
+                        left_ty // TODO: Investigate this properly!
                     }
                     _ => {
                         let common = Self::common_type(&left_ty, &right_ty);
@@ -462,8 +459,8 @@ impl TypeChecker {
                             | BinaryOp::LessThan
                             | BinaryOp::LessOrEqualThan
                             | BinaryOp::GreaterThan
-                            | BinaryOp::GreaterOrEqualThan => self.set_type(expr, Type::Int),
-                            _ => self.set_type(expr, common),
+                            | BinaryOp::GreaterOrEqualThan => Type::Int,
+                            _ => common,
                         }
                     }
                 }
@@ -473,7 +470,7 @@ impl TypeChecker {
                 let left_ty = self.check_expression(left)?;
                 let right_ty = self.check_expression(right)?;
                 self.cast_if_needed(right, &right_ty, &left_ty);
-                self.set_type(expr, left_ty)
+                left_ty
             }
 
             Expression::Conditional {
@@ -487,7 +484,7 @@ impl TypeChecker {
                 let common = Self::common_type(&then_ty, &else_ty);
                 self.cast_if_needed(then_expr, &then_ty, &common);
                 self.cast_if_needed(else_expr, &else_ty, &common);
-                self.set_type(expr, common)
+                common
             }
 
             Expression::FunctionCall { name, args } => {
@@ -517,19 +514,15 @@ impl TypeChecker {
                     let arg_ty = self.check_expression(arg)?;
                     self.cast_if_needed(arg, &arg_ty, param_ty);
                 }
-                self.set_type(expr, Type::Function(function_ty))
+                *function_ty.ret.clone()
             }
             Expression::Cast { target, expr } => {
                 self.check_expression(expr)?;
-                self.set_type(expr, (*target.data).clone())
+                *target.data.clone()
             }
         };
-        Ok(ty)
-    }
-
-    fn set_type(&mut self, expr: &Node<Expression>, ty: Type) -> Type {
         self.expression_types.insert(expr.id, ty.clone());
-        ty
+        Ok(ty)
     }
 
     fn cast_if_needed(&mut self, expr: &Node<Expression>, ty: &Type, expected: &Type) -> Type {
