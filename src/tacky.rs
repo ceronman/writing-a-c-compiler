@@ -2,7 +2,7 @@
 mod test;
 
 use crate::ast;
-use crate::semantic::{Attributes, InitialValue, StaticInit, SemanticData, SymbolData};
+use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
 use crate::symbol::Symbol;
 
 #[derive(Debug, Clone)]
@@ -75,7 +75,7 @@ pub enum Instruction {
     Truncate {
         src: Val,
         dst: Val,
-    }
+    },
 }
 
 pub type Constant = ast::Constant;
@@ -291,7 +291,7 @@ impl TackyGenerator {
                     let constant = match expr_ty {
                         Type::Int => Constant::Int(*value as i32),
                         Type::Long => Constant::Long(*value),
-                        Type::Function(_) => unreachable!()
+                        Type::Function(_) => unreachable!(),
                     };
                     let case_value = Val::Constant(constant);
                     let result = self.make_temp(&expr_ty);
@@ -336,9 +336,7 @@ impl TackyGenerator {
     fn emit_expr(&mut self, expr: &ast::Node<ast::Expression>) -> Val {
         let expr_ty = self.semantics.expr_type(expr).clone();
         let result = match expr.as_ref() {
-            ast::Expression::Constant(value) => {
-                Val::Constant(value.clone())
-            }
+            ast::Expression::Constant(value) => Val::Constant(value.clone()),
             ast::Expression::Unary { op, expr } => {
                 let val = self.emit_expr(expr);
                 let dst = self.make_temp(&expr_ty);
@@ -557,10 +555,13 @@ impl TackyGenerator {
                 result
             }
 
-            ast::Expression::Cast { target, expr: inner } => {
+            ast::Expression::Cast {
+                target,
+                expr: inner,
+            } => {
                 let result = self.emit_expr(inner);
                 let inner_ty = self.semantics.expr_type(inner).clone();
-                self.cast(result, &inner_ty, &target)
+                self.cast(result, &inner_ty, target)
             }
         };
         if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
@@ -570,20 +571,25 @@ impl TackyGenerator {
         }
     }
 
-
     fn cast(&mut self, src: Val, src_ty: &Type, target: &Type) -> Val {
         if target == src_ty {
             src
         } else {
-            let dst = self.make_temp(&target);
+            let dst = self.make_temp(target);
             match target {
                 Type::Long => {
-                    self.instructions.push(Instruction::SignExtend { src, dst: dst.clone() });
+                    self.instructions.push(Instruction::SignExtend {
+                        src,
+                        dst: dst.clone(),
+                    });
                 }
                 Type::Int => {
-                    self.instructions.push(Instruction::Truncate { src, dst: dst.clone() });
+                    self.instructions.push(Instruction::Truncate {
+                        src,
+                        dst: dst.clone(),
+                    });
                 }
-                Type::Function(_) => unreachable!()
+                Type::Function(_) => unreachable!(),
             };
             dst
         }
@@ -592,7 +598,13 @@ impl TackyGenerator {
     fn make_temp(&mut self, ty: &Type) -> Val {
         let name = format!("tmp.{i}", i = self.tmp_counter);
         let tmp = Val::Var(name.clone());
-        self.semantics.symbols.insert(name, SymbolData { ty: ty.clone(), attrs: Attributes::Local });
+        self.semantics.symbols.insert(
+            name,
+            SymbolData {
+                ty: ty.clone(),
+                attrs: Attributes::Local,
+            },
+        );
         self.tmp_counter += 1;
         tmp
     }
@@ -617,7 +629,9 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
         match decl.as_ref() {
             ast::Declaration::Function(function) => {
                 let name = function.name.symbol.clone();
-                let symbol_data = generator.semantics.symbols
+                let symbol_data = generator
+                    .semantics
+                    .symbols
                     .get(&name)
                     .expect("Function without symbol data");
                 let Attributes::Function { global, .. } = symbol_data.attrs else {
@@ -643,19 +657,17 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
         {
             let ty = symbol_data.ty.clone();
             match initial_value {
-                InitialValue::Initial(init) => {
-                    top_level.push(TopLevel::Variable(StaticVariable {
-                        name: name.clone(),
-                        ty,
-                        global,
-                        init,
-                    }))
-                }
+                InitialValue::Initial(init) => top_level.push(TopLevel::Variable(StaticVariable {
+                    name: name.clone(),
+                    ty,
+                    global,
+                    init,
+                })),
                 InitialValue::Tentative => {
                     let init = match &ty {
                         Type::Int => StaticInit::Int(0),
                         Type::Long => StaticInit::Long(0),
-                        Type::Function(_) => unreachable!()
+                        Type::Function(_) => unreachable!(),
                     };
                     top_level.push(TopLevel::Variable(StaticVariable {
                         name: name.clone(),
@@ -663,11 +675,14 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                         global,
                         init,
                     }))
-                },
+                }
                 InitialValue::NoInitializer => continue,
             }
         }
     }
 
-    Program { top_level, semantics: generator.semantics }
+    Program {
+        top_level,
+        semantics: generator.semantics,
+    }
 }

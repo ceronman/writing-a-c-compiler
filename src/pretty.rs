@@ -3,10 +3,10 @@ use crate::parser;
 use crate::semantic;
 use crate::tacky;
 
-use anyhow::Result;
-use std::io::Write;
 use crate::ast::{Constant, Type};
 use crate::semantic::StaticInit;
+use anyhow::Result;
+use std::io::Write;
 
 #[allow(dead_code)]
 pub fn dump_ast(src: &str) -> String {

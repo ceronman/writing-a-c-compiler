@@ -1,7 +1,7 @@
-use std::collections::{BTreeMap, HashMap};
 use crate::ast::{Expression, Node, NodeId, Program, Type};
 use crate::error::Result;
 use crate::symbol::Symbol;
+use std::collections::{BTreeMap, HashMap};
 
 mod id_resolution;
 mod label_check;
@@ -51,7 +51,9 @@ pub enum StaticInit {
 
 impl SemanticData {
     pub fn expr_type(&self, expr: &Node<Expression>) -> &Type {
-        self.expression_types.get(&expr.id).expect("Expression without type")
+        self.expression_types
+            .get(&expr.id)
+            .expect("Expression without type")
     }
 }
 

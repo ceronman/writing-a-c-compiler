@@ -226,7 +226,7 @@ fn generate_function(function: &tacky::Function, semantic: &SemanticData) -> Fun
                 generate_call(&mut instructions, name, args, dst);
             }
             tacky::Instruction::SignExtend { .. } => todo!(),
-            tacky::Instruction::Truncate { .. } => todo!()
+            tacky::Instruction::Truncate { .. } => todo!(),
         }
     }
 
@@ -289,10 +289,7 @@ fn generate_call(
     instructions.push(Instruction::Mov(Operand::Reg(Reg::Ax), dst.to_asm()));
 }
 
-fn replace_pseudo_registers(
-    instructions: &mut Vec<Instruction>,
-    semantics: &SemanticData,
-) -> i64 {
+fn replace_pseudo_registers(instructions: &mut Vec<Instruction>, semantics: &SemanticData) -> i64 {
     let mut stack_size = 0;
     let mut stack_vars = HashMap::new();
 

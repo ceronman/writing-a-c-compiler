@@ -322,10 +322,12 @@ impl TypeChecker {
                 self.check_statement(function, body)?;
                 self.switch_values.pop_front();
             }
-            Statement::Case { value, body, ..} => {
-                let switch_expr_ty = self.check_expression(value)?;
-                self.check_statement(function, body)?;
+            Statement::Case { value, body, .. } => {
                 let switch_values = self.switch_values.front_mut().expect("Case without switch");
+                let switch_expr_ty = self
+                    .expression_types
+                    .get(&switch_values.switch_expr_id)
+                    .expect("Case without switch");
                 // TODO: Deduplicate!
                 let Expression::Constant(constant) = value.as_ref() else {
                     return Err(CompilerError {
@@ -348,6 +350,7 @@ impl TypeChecker {
                     });
                 }
                 switch_values.values.push(int_value);
+                self.check_statement(function, body)?;
             }
             Statement::While {
                 cond: expr, body, ..
@@ -437,9 +440,7 @@ impl TypeChecker {
                     _ => operand_ty,
                 }
             }
-            Expression::Postfix { expr, .. } => {
-                self.check_expression(expr)?
-            }
+            Expression::Postfix { expr, .. } => self.check_expression(expr)?,
             Expression::Binary { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
                 let right_ty = self.check_expression(right)?;
