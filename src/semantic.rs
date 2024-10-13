@@ -1,4 +1,4 @@
-use crate::ast::{Expression, Node, NodeId, Program, Type};
+use crate::ast::{Constant, Expression, Node, NodeId, Program, Type};
 use crate::error::Result;
 use crate::symbol::Symbol;
 use std::collections::{BTreeMap, HashMap};
@@ -15,6 +15,7 @@ pub struct SemanticData {
     pub symbols: BTreeMap<Symbol, SymbolData>,
     pub expression_types: HashMap<NodeId, Type>,
     pub implicit_casts: HashMap<NodeId, Type>,
+    pub switch_cases: HashMap<NodeId, SwitchCases>,
 }
 
 #[derive(Debug, Clone)]
@@ -49,11 +50,23 @@ pub enum StaticInit {
     Long(i64),
 }
 
+#[derive(Debug, Clone)]
+pub struct SwitchCases {
+    pub expr_ty: Type,
+    pub values: Vec<(Constant, Symbol)>,
+    pub default: Option<Symbol>,
+}
+
 impl SemanticData {
     pub fn expr_type(&self, expr: &Node<Expression>) -> &Type {
         self.expression_types
             .get(&expr.id)
             .expect("Expression without type")
+    }
+    pub fn switch_cases(&self, expr: &Node<Expression>) -> &SwitchCases {
+        self.switch_cases
+            .get(&expr.id)
+            .expect("Switch without cases")
     }
 }
 

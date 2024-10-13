@@ -4,7 +4,10 @@ use crate::ast::{
     VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
-use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
+use crate::semantic::{
+    Attributes, InitialValue, SemanticData, StaticInit, SwitchCases, SymbolData,
+};
+use crate::symbol::Symbol;
 use std::collections::{BTreeMap, HashMap, VecDeque};
 
 impl SymbolData {
@@ -30,12 +33,8 @@ struct TypeChecker {
     symbols: BTreeMap<String, SymbolData>,
     expression_types: HashMap<NodeId, Type>,
     implicit_casts: HashMap<NodeId, Type>,
-    switch_values: VecDeque<SwitchCaseValues>,
-}
-
-struct SwitchCaseValues {
-    switch_expr_id: NodeId,
-    values: Vec<i64>,
+    switch_stack: VecDeque<SwitchCases>,
+    switch_cases: HashMap<NodeId, SwitchCases>,
 }
 
 impl TypeChecker {
@@ -314,21 +313,18 @@ impl TypeChecker {
                 }
             }
             Statement::Switch { expr, body, .. } => {
-                self.switch_values.push_front(SwitchCaseValues {
-                    switch_expr_id: expr.id,
+                let expr_ty = self.check_expression(expr)?;
+                self.switch_stack.push_front(SwitchCases {
+                    expr_ty,
                     values: vec![],
+                    default: None,
                 });
-                self.check_expression(expr)?;
                 self.check_statement(function, body)?;
-                self.switch_values.pop_front();
+                self.switch_cases
+                    .insert(expr.id, self.switch_stack.pop_front().unwrap());
             }
-            Statement::Case { value, body, .. } => {
-                let switch_values = self.switch_values.front_mut().expect("Case without switch");
-                let switch_expr_ty = self
-                    .expression_types
-                    .get(&switch_values.switch_expr_id)
-                    .expect("Case without switch");
-                // TODO: Deduplicate!
+            Statement::Case { value, body, label } => {
+                let switch_cases = self.switch_stack.front_mut().expect("Case without switch");
                 let Expression::Constant(constant) = value.as_ref() else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -336,21 +332,35 @@ impl TypeChecker {
                         span: value.span,
                     });
                 };
-                let int_value = match (constant, switch_expr_ty) {
-                    (Constant::Int(v), _) => *v as i64,
-                    (Constant::Long(v), Type::Int) => (*v as i32) as i64,
-                    (Constant::Long(v), Type::Long) => *v,
+                let case_value = match (constant, &switch_cases.expr_ty) {
+                    (Constant::Int(v), Type::Int) => Constant::Int(*v),
+                    (Constant::Long(v), Type::Long) => Constant::Long(*v),
+                    (Constant::Int(v), Type::Long) => Constant::Long(*v as i64),
+                    (Constant::Long(v), Type::Int) => Constant::Int(*v as i32),
                     _ => unreachable!(),
                 };
-                if switch_values.values.iter().any(|&v| v == int_value) {
+
+                if switch_cases.values.iter().any(|(v, _)| *v == case_value) {
                     return Err(CompilerError {
                         kind: ErrorKind::Resolve,
                         msg: "duplicate case value".to_owned(),
                         span: value.span,
                     });
                 }
-                switch_values.values.push(int_value);
+                switch_cases.values.push((case_value, label.clone()));
                 self.check_statement(function, body)?;
+            }
+            Statement::Default { label, body } => {
+                let switch_cases = self.switch_stack.front_mut().expect("Case without switch");
+                if switch_cases.default.is_some() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Resolve,
+                        msg: "multiple default labels in one switch".to_owned(),
+                        span: stmt.span,
+                    });
+                }
+                switch_cases.default = Some(label.clone());
+                self.check_statement(function, body)?
             }
             Statement::While {
                 cond: expr, body, ..
@@ -361,9 +371,7 @@ impl TypeChecker {
                 self.check_expression(expr)?;
                 self.check_statement(function, body)?;
             }
-            Statement::Labeled { body, .. } | Statement::Default { body, .. } => {
-                self.check_statement(function, body)?
-            }
+            Statement::Labeled { body, .. } => self.check_statement(function, body)?,
             Statement::Compound(block) => self.check_block(function, block)?,
             Statement::For {
                 init,
@@ -551,5 +559,6 @@ pub fn check(program: &Node<Program>) -> Result<SemanticData> {
         symbols: type_checker.symbols,
         expression_types: type_checker.expression_types,
         implicit_casts: type_checker.implicit_casts,
+        switch_cases: type_checker.switch_cases,
     })
 }

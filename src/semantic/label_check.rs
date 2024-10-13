@@ -1,7 +1,4 @@
-use crate::ast::{
-    Block, BlockItem, Constant, Declaration, Expression, FunctionDeclaration, Node, Program,
-    Statement, SwitchLabels,
-};
+use crate::ast::{Block, BlockItem, Declaration, FunctionDeclaration, Node, Program, Statement};
 use crate::error::{CompilerError, ErrorKind};
 use crate::symbol::Symbol;
 use std::collections::{HashMap, VecDeque};
@@ -10,7 +7,6 @@ use std::collections::{HashMap, VecDeque};
 struct LabelChecker {
     labels: HashMap<Symbol, Symbol>,
     label_stack: VecDeque<LabelKind>,
-    switch_labels: VecDeque<SwitchLabels>,
     counter: usize,
 }
 
@@ -24,7 +20,6 @@ impl LabelChecker {
         for decl in &mut program.declarations {
             self.labels.clear();
             debug_assert!(self.label_stack.is_empty());
-            debug_assert!(self.switch_labels.is_empty());
             match decl.as_mut() {
                 Declaration::Var(_) => {}
                 Declaration::Function(d) => self.check_function_declaration(d)?,
@@ -74,20 +69,11 @@ impl LabelChecker {
                 self.check_statement(body)?;
                 self.label_stack.pop_front();
             }
-            Statement::Switch { body, labels, .. } => {
-                let new_labels = SwitchLabels {
-                    label: self.make_label("switch"),
-                    valued: vec![],
-                    default: None,
-                };
+            Statement::Switch { body, label, .. } => {
+                *label = self.make_label("switch");
                 self.label_stack
-                    .push_front(LabelKind::Switch(new_labels.label.clone()));
-                self.switch_labels.push_front(new_labels);
+                    .push_front(LabelKind::Switch(label.clone()));
                 self.check_statement(body)?;
-                *labels = self
-                    .switch_labels
-                    .pop_front()
-                    .expect("Unreachable: switch statement without cases");
                 self.label_stack.pop_front();
             }
             Statement::Break(label) => {
@@ -117,17 +103,6 @@ impl LabelChecker {
                 *label = enclosing_label.clone();
             }
             Statement::Case { label, value, body } => {
-                let Expression::Constant(constant) = value.as_ref() else {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Resolve,
-                        msg: "case label does not reduce to an integer constant".to_owned(),
-                        span: value.span,
-                    });
-                };
-                let int_value = match constant {
-                    Constant::Int(v) => *v as i64,
-                    Constant::Long(v) => *v,
-                };
                 let Some(enclosing_label) = self.label_stack.iter().find_map(|kind| match kind {
                     LabelKind::Loop(_) => None,
                     LabelKind::Switch(label) => Some(label),
@@ -138,19 +113,7 @@ impl LabelChecker {
                         span: stmt.span,
                     });
                 };
-                *label = format!("case_{int_value}_{enclosing_label}");
-                let cases = self
-                    .switch_labels
-                    .front_mut()
-                    .expect("Unreachable: case without a switch");
-                if cases.valued.iter().any(|&(value, _)| value == int_value) {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Resolve,
-                        msg: "duplicate case value".to_owned(),
-                        span: value.span,
-                    });
-                }
-                cases.valued.push((int_value, label.clone()));
+                *label = self.make_label(&format!("{enclosing_label}_case_"));
                 self.check_statement(body)?;
             }
             Statement::Default { label, body } => {
@@ -164,27 +127,14 @@ impl LabelChecker {
                         span: stmt.span,
                     });
                 };
-                *label = format!("default_{enclosing_label}");
-                let cases = self
-                    .switch_labels
-                    .front_mut()
-                    .expect("Unreachable: default without a switch");
-                if cases.default.is_some() {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Resolve,
-                        msg: "multiple default labels in one switch".to_owned(),
-                        span: stmt.span,
-                    });
-                }
-                cases.default = Some(label.clone());
+                *label = self.make_label(&format!("{enclosing_label}_default"));
                 self.check_statement(body)?;
             }
 
             Statement::Goto(_) => {
                 // Note: checking if label exists is done in another pass
             }
-            // TODO: Unify shape of return and expression in ast
-            Statement::Return { .. } | Statement::Expression(..) | Statement::Null => {}
+            Statement::Return(..) | Statement::Expression(..) | Statement::Null => {}
         }
         Ok(())
     }

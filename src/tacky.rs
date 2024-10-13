@@ -283,17 +283,13 @@ impl TackyGenerator {
                 });
                 self.instructions.push(Instruction::Label(break_label));
             }
-            ast::Statement::Switch { expr, body, labels } => {
+            ast::Statement::Switch { expr, body, label } => {
                 let cond = self.emit_expr(expr);
                 let expr_ty = self.semantics.expr_type(expr).clone();
+                let switch_cases = self.semantics.switch_cases(expr).clone();
                 // TODO: Maybe value doesn't have to be i64 and it can be Constant
-                for (value, label) in &labels.valued {
-                    let constant = match expr_ty {
-                        Type::Int => Constant::Int(*value as i32),
-                        Type::Long => Constant::Long(*value),
-                        Type::Function(_) => unreachable!(),
-                    };
-                    let case_value = Val::Constant(constant);
+                for (value, label) in &switch_cases.values {
+                    let case_value = Val::Constant(value.clone());
                     let result = self.make_temp(&expr_ty);
                     self.instructions.push(Instruction::Binary {
                         op: BinaryOp::Equal,
@@ -306,12 +302,12 @@ impl TackyGenerator {
                         target: label.clone(),
                     })
                 }
-                if let Some(label) = &labels.default {
+                if let Some(label) = &switch_cases.default {
                     self.instructions.push(Instruction::Jump {
                         target: label.clone(),
                     })
                 }
-                let break_label = format!("break_{}", labels.label);
+                let break_label = format!("break_{}", label);
                 self.instructions.push(Instruction::Jump {
                     target: break_label.clone(),
                 });

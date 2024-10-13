@@ -5428,10 +5428,10 @@ fn test_chapter_8_valid_extra_credit_case_block() {
             a.0 = 4
             b.1 = 0
             tmp.0 = 2 == 2
-            if tmp.0 jump case_2_switch_0
+            if tmp.0 jump switch_0_case__1
             jump break_switch_0
         
-          case_2_switch_0:
+          switch_0_case__1:
             a.2 = 8
             b.1 = a.2
         
@@ -5567,46 +5567,46 @@ fn test_chapter_8_valid_extra_credit_duffs_device() {
             iterations.1 = tmp.1
             tmp.2 = count.0 % 5
             tmp.3 = tmp.2 == 0
-            if tmp.3 jump case_0_switch_0
+            if tmp.3 jump switch_0_case__1
             tmp.4 = tmp.2 == 4
-            if tmp.4 jump case_4_switch_0
+            if tmp.4 jump switch_0_case__3
             tmp.5 = tmp.2 == 3
-            if tmp.5 jump case_3_switch_0
+            if tmp.5 jump switch_0_case__4
             tmp.6 = tmp.2 == 2
-            if tmp.6 jump case_2_switch_0
+            if tmp.6 jump switch_0_case__5
             tmp.7 = tmp.2 == 1
-            if tmp.7 jump case_1_switch_0
+            if tmp.7 jump switch_0_case__6
             jump break_switch_0
         
-          case_0_switch_0:
+          switch_0_case__1:
         
-          start_loop_1:
+          start_loop_2:
             tmp.8 = count.0 - 1
             count.0 = tmp.8
         
-          case_4_switch_0:
+          switch_0_case__3:
             tmp.9 = count.0 - 1
             count.0 = tmp.9
         
-          case_3_switch_0:
+          switch_0_case__4:
             tmp.10 = count.0 - 1
             count.0 = tmp.10
         
-          case_2_switch_0:
+          switch_0_case__5:
             tmp.11 = count.0 - 1
             count.0 = tmp.11
         
-          case_1_switch_0:
+          switch_0_case__6:
             tmp.12 = count.0 - 1
             count.0 = tmp.12
         
-          continue_loop_1:
+          continue_loop_2:
             tmp.13 = iterations.1 - 1
             iterations.1 = tmp.13
             tmp.14 = iterations.1 > 0
-            if tmp.14 jump start_loop_1
+            if tmp.14 jump start_loop_2
         
-          break_loop_1:
+          break_loop_2:
         
           break_switch_0:
             tmp.15 = count.0 == 0
@@ -5974,38 +5974,38 @@ fn test_chapter_8_valid_extra_credit_loop_in_switch() {
         global function main() { 
             cond.0 = 10
             tmp.0 = cond.0 == 1
-            if tmp.0 jump case_1_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = cond.0 == 10
-            if tmp.1 jump case_10_switch_0
-            jump default_switch_0
+            if tmp.1 jump switch_0_case__2
+            jump switch_0_default_4
             jump break_switch_0
         
-          case_1_switch_0:
+          switch_0_case__1:
             return 0
         
-          case_10_switch_0:
+          switch_0_case__2:
             i.1 = 0
         
-          start_loop_1:
+          start_loop_3:
             tmp.2 = i.1 < 5
-            if !tmp.2 jump break_loop_1
+            if !tmp.2 jump break_loop_3
             tmp.3 = cond.0 - 1
             cond.0 = tmp.3
             tmp.4 = cond.0 == 8
             if !tmp.4 jump end_if_0
-            jump break_loop_1
+            jump break_loop_3
         
           end_if_0:
         
-          continue_loop_1:
+          continue_loop_3:
             tmp.5 = i.1 + 1
             i.1 = tmp.5
-            jump start_loop_1
+            jump start_loop_3
         
-          break_loop_1:
+          break_loop_3:
             return 123
         
-          default_switch_0:
+          switch_0_default_4:
             return 2
         
           break_switch_0:
@@ -6068,25 +6068,25 @@ fn test_chapter_8_valid_extra_credit_switch() {
     let expected = r#"
         global function main() { 
             tmp.0 = 3 == 0
-            if tmp.0 jump case_0_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = 3 == 1
-            if tmp.1 jump case_1_switch_0
+            if tmp.1 jump switch_0_case__2
             tmp.2 = 3 == 3
-            if tmp.2 jump case_3_switch_0
+            if tmp.2 jump switch_0_case__3
             tmp.3 = 3 == 5
-            if tmp.3 jump case_5_switch_0
+            if tmp.3 jump switch_0_case__4
             jump break_switch_0
         
-          case_0_switch_0:
+          switch_0_case__1:
             return 0
         
-          case_1_switch_0:
+          switch_0_case__2:
             return 1
         
-          case_3_switch_0:
+          switch_0_case__3:
             return 3
         
-          case_5_switch_0:
+          switch_0_case__4:
             return 5
         
           break_switch_0:
@@ -6118,21 +6118,21 @@ fn test_chapter_8_valid_extra_credit_switch_assign_in_condition() {
             a.0 = 0
             a.0 = 1
             tmp.0 = a.0 == 0
-            if tmp.0 jump case_0_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = a.0 == 1
-            if tmp.1 jump case_1_switch_0
-            jump default_switch_0
+            if tmp.1 jump switch_0_case__2
+            jump switch_0_default_3
             jump break_switch_0
         
-          case_0_switch_0:
+          switch_0_case__1:
             return 10
         
-          case_1_switch_0:
+          switch_0_case__2:
             tmp.2 = a.0 * 2
             a.0 = tmp.2
             jump break_switch_0
         
-          default_switch_0:
+          switch_0_default_3:
             a.0 = 99
         
           break_switch_0:
@@ -6163,16 +6163,16 @@ fn test_chapter_8_valid_extra_credit_switch_break() {
         global function main() { 
             a.0 = 5
             tmp.0 = a.0 == 5
-            if tmp.0 jump case_5_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = a.0 == 6
-            if tmp.1 jump case_6_switch_0
+            if tmp.1 jump switch_0_case__2
             jump break_switch_0
         
-          case_5_switch_0:
+          switch_0_case__1:
             a.0 = 10
             jump break_switch_0
         
-          case_6_switch_0:
+          switch_0_case__2:
             a.0 = 0
             jump break_switch_0
         
@@ -6204,12 +6204,12 @@ fn test_chapter_8_valid_extra_credit_switch_decl() {
             a.0 = 3
             b.1 = 0
             tmp.0 = a.0 == 3
-            if tmp.0 jump case_3_switch_0
+            if tmp.0 jump switch_0_case__1
             jump break_switch_0
             b.1 = 5
             a.2 = b.1
         
-          case_3_switch_0:
+          switch_0_case__1:
             a.2 = 4
             tmp.1 = b.1 + a.2
             b.1 = tmp.1
@@ -6256,25 +6256,25 @@ fn test_chapter_8_valid_extra_credit_switch_default() {
         global function main() { 
             a.0 = 0
             tmp.0 = a.0 == 1
-            if tmp.0 jump case_1_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = a.0 == 2
-            if tmp.1 jump case_2_switch_0
+            if tmp.1 jump switch_0_case__2
             tmp.2 = a.0 == 4
-            if tmp.2 jump case_4_switch_0
-            jump default_switch_0
+            if tmp.2 jump switch_0_case__3
+            jump switch_0_default_4
             jump break_switch_0
         
-          case_1_switch_0:
+          switch_0_case__1:
             return 1
         
-          case_2_switch_0:
+          switch_0_case__2:
             return 9
         
-          case_4_switch_0:
+          switch_0_case__3:
             a.0 = 11
             jump break_switch_0
         
-          default_switch_0:
+          switch_0_default_4:
             a.0 = 22
         
           break_switch_0:
@@ -6303,14 +6303,14 @@ fn test_chapter_8_valid_extra_credit_switch_default_fallthrough() {
         global function main() { 
             a.0 = 5
             tmp.0 = 0 == 1
-            if tmp.0 jump case_1_switch_0
-            jump default_switch_0
+            if tmp.0 jump switch_0_case__2
+            jump switch_0_default_1
             jump break_switch_0
         
-          default_switch_0:
+          switch_0_default_1:
             a.0 = 0
         
-          case_1_switch_0:
+          switch_0_case__2:
             return a.0
         
           break_switch_0:
@@ -6340,14 +6340,14 @@ fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
             b.1 = a.0
             tmp.0 = a.0 + b.1
             tmp.1 = tmp.0 == 2
-            if tmp.1 jump case_2_switch_0
-            jump default_switch_0
+            if tmp.1 jump switch_0_case__2
+            jump switch_0_default_1
             jump break_switch_0
         
-          default_switch_0:
+          switch_0_default_1:
             return 0
         
-          case_2_switch_0:
+          switch_0_case__2:
             return 1
         
           break_switch_0:
@@ -6369,10 +6369,10 @@ fn test_chapter_8_valid_extra_credit_switch_default_only() {
     let expected = r#"
         global function main() { 
             a.0 = 1
-            jump default_switch_0
+            jump switch_0_default_1
             jump break_switch_0
         
-          default_switch_0:
+          switch_0_default_1:
             return 1
         
           break_switch_0:
@@ -6449,25 +6449,25 @@ fn test_chapter_8_valid_extra_credit_switch_fallthrough() {
         
           end_if_0:
             tmp.1 = tmp.0 == 0
-            if tmp.1 jump case_0_switch_0
+            if tmp.1 jump switch_0_case__1
             tmp.2 = tmp.0 == 7
-            if tmp.2 jump case_7_switch_0
+            if tmp.2 jump switch_0_case__2
             tmp.3 = tmp.0 == 9
-            if tmp.3 jump case_9_switch_0
+            if tmp.3 jump switch_0_case__3
             tmp.4 = tmp.0 == 1
-            if tmp.4 jump case_1_switch_0
+            if tmp.4 jump switch_0_case__4
             jump break_switch_0
         
-          case_0_switch_0:
+          switch_0_case__1:
             return 5
         
-          case_7_switch_0:
+          switch_0_case__2:
             c.2 = 1
         
-          case_9_switch_0:
+          switch_0_case__3:
             c.2 = 2
         
-          case_1_switch_0:
+          switch_0_case__4:
             tmp.5 = c.2 + 4
             c.2 = tmp.5
         
@@ -6498,15 +6498,15 @@ fn test_chapter_8_valid_extra_credit_switch_goto_mid_case() {
     let expected = r#"
         global function main() { 
             a.0 = 0
-            jump mid_case_1
+            jump mid_case_2
             tmp.0 = 4 == 4
-            if tmp.0 jump case_4_switch_0
+            if tmp.0 jump switch_0_case__1
             jump break_switch_0
         
-          case_4_switch_0:
+          switch_0_case__1:
             a.0 = 5
         
-          mid_case_1:
+          mid_case_2:
             tmp.1 = a.0 + 1
             a.0 = tmp.1
             return a.0
@@ -6554,29 +6554,29 @@ fn test_chapter_8_valid_extra_credit_switch_in_loop() {
             tmp.0 = i.2 < 10
             if !tmp.0 jump break_loop_0
             tmp.1 = i.2 == 0
-            if tmp.1 jump case_0_switch_1
+            if tmp.1 jump switch_1_case__2
             tmp.2 = i.2 == 1
-            if tmp.2 jump case_1_switch_1
+            if tmp.2 jump switch_1_case__3
             tmp.3 = i.2 == 2
-            if tmp.3 jump case_2_switch_1
-            jump default_switch_1
+            if tmp.3 jump switch_1_case__4
+            jump switch_1_default_5
             jump break_switch_1
         
-          case_0_switch_1:
+          switch_1_case__2:
             acc.0 = 2
             jump break_switch_1
         
-          case_1_switch_1:
+          switch_1_case__3:
             tmp.4 = acc.0 * 3
             acc.0 = tmp.4
             jump break_switch_1
         
-          case_2_switch_1:
+          switch_1_case__4:
             tmp.5 = acc.0 * 4
             acc.0 = tmp.5
             jump break_switch_1
         
-          default_switch_1:
+          switch_1_default_5:
             tmp.6 = acc.0 + 1
             acc.0 = tmp.6
         
@@ -6647,38 +6647,38 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
             switch2.1 = 0
             switch3.2 = 0
             tmp.0 = 3 == 0
-            if tmp.0 jump case_0_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = 3 == 1
-            if tmp.1 jump case_1_switch_0
+            if tmp.1 jump switch_0_case__2
             tmp.2 = 3 == 3
-            if tmp.2 jump case_3_switch_0
-            jump default_switch_0
+            if tmp.2 jump switch_0_case__3
+            jump switch_0_default_4
             jump break_switch_0
         
-          case_0_switch_0:
+          switch_0_case__1:
             return 0
         
-          case_1_switch_0:
+          switch_0_case__2:
             if !0 jump end_if_0
         
-          case_3_switch_0:
+          switch_0_case__3:
             switch1.0 = 1
             jump break_switch_0
         
           end_if_0:
         
-          default_switch_0:
+          switch_0_default_4:
             return 0
         
           break_switch_0:
             tmp.3 = 4 == 0
-            if tmp.3 jump case_0_switch_1
+            if tmp.3 jump switch_5_case__6
             tmp.4 = 4 == 4
-            if tmp.4 jump case_4_switch_1
-            jump default_switch_1
-            jump break_switch_1
+            if tmp.4 jump switch_5_case__7
+            jump switch_5_default_8
+            jump break_switch_5
         
-          case_0_switch_1:
+          switch_5_case__6:
             return 0
             if !1 jump else_3
             return 0
@@ -6686,42 +6686,42 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
         
           else_3:
         
-          case_4_switch_1:
+          switch_5_case__7:
             switch2.1 = 1
-            jump break_switch_1
+            jump break_switch_5
         
           end_if_2:
         
-          default_switch_1:
+          switch_5_default_8:
             return 0
         
-          break_switch_1:
+          break_switch_5:
             tmp.5 = 5 == 5
-            if tmp.5 jump case_5_switch_2
-            jump default_switch_2
-            jump break_switch_2
+            if tmp.5 jump switch_9_case__11
+            jump switch_9_default_12
+            jump break_switch_9
             i.3 = 0
         
-          start_loop_3:
+          start_loop_10:
             tmp.6 = i.3 < 10
-            if !tmp.6 jump break_loop_3
+            if !tmp.6 jump break_loop_10
             switch1.0 = 0
         
-          case_5_switch_2:
+          switch_9_case__11:
             switch3.2 = 1
-            jump break_loop_3
+            jump break_loop_10
         
-          default_switch_2:
+          switch_9_default_12:
             return 0
         
-          continue_loop_3:
+          continue_loop_10:
             tmp.7 = i.3 + 1
             i.3 = tmp.7
-            jump start_loop_3
+            jump start_loop_10
         
-          break_loop_3:
+          break_loop_10:
         
-          break_switch_2:
+          break_switch_9:
             if !switch1.0 jump and_false_4
             if !switch2.1 jump and_false_4
             tmp.9 = 1
@@ -6768,25 +6768,25 @@ fn test_chapter_8_valid_extra_credit_switch_nested_not_taken() {
         global function main() { 
             a.0 = 0
             tmp.0 = a.0 == 1
-            if tmp.0 jump case_1_switch_0
-            jump default_switch_0
+            if tmp.0 jump switch_0_case__1
+            jump switch_0_default_5
             jump break_switch_0
         
-          case_1_switch_0:
+          switch_0_case__1:
             tmp.1 = a.0 == 0
-            if tmp.1 jump case_0_switch_1
-            jump default_switch_1
-            jump break_switch_1
+            if tmp.1 jump switch_2_case__3
+            jump switch_2_default_4
+            jump break_switch_2
         
-          case_0_switch_1:
+          switch_2_case__3:
             return 0
         
-          default_switch_1:
+          switch_2_default_4:
             return 0
         
-          break_switch_1:
+          break_switch_2:
         
-          default_switch_0:
+          switch_0_default_5:
             a.0 = 2
         
           break_switch_0:
@@ -6819,40 +6819,40 @@ fn test_chapter_8_valid_extra_credit_switch_nested_switch() {
     let expected = r#"
         global function main() { 
             tmp.0 = 3 == 0
-            if tmp.0 jump case_0_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = 3 == 3
-            if tmp.1 jump case_3_switch_0
+            if tmp.1 jump switch_0_case__2
             tmp.2 = 3 == 4
-            if tmp.2 jump case_4_switch_0
-            jump default_switch_0
+            if tmp.2 jump switch_0_case__7
+            jump switch_0_default_8
             jump break_switch_0
         
-          case_0_switch_0:
+          switch_0_case__1:
             return 0
         
-          case_3_switch_0:
+          switch_0_case__2:
             tmp.3 = 4 == 3
-            if tmp.3 jump case_3_switch_1
+            if tmp.3 jump switch_3_case__4
             tmp.4 = 4 == 4
-            if tmp.4 jump case_4_switch_1
-            jump default_switch_1
-            jump break_switch_1
+            if tmp.4 jump switch_3_case__5
+            jump switch_3_default_6
+            jump break_switch_3
         
-          case_3_switch_1:
+          switch_3_case__4:
             return 0
         
-          case_4_switch_1:
+          switch_3_case__5:
             return 1
         
-          default_switch_1:
+          switch_3_default_6:
             return 0
         
-          break_switch_1:
+          break_switch_3:
         
-          case_4_switch_0:
+          switch_0_case__7:
             return 0
         
-          default_switch_0:
+          switch_0_default_8:
             return 0
         
           break_switch_0:
@@ -6903,20 +6903,20 @@ fn test_chapter_8_valid_extra_credit_switch_not_taken() {
         global function main() { 
             a.0 = 1
             tmp.0 = a.0 == 0
-            if tmp.0 jump case_0_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = a.0 == 2
-            if tmp.1 jump case_2_switch_0
+            if tmp.1 jump switch_0_case__2
             tmp.2 = a.0 == 3
-            if tmp.2 jump case_3_switch_0
+            if tmp.2 jump switch_0_case__3
             jump break_switch_0
         
-          case_0_switch_0:
+          switch_0_case__1:
             return 0
         
-          case_2_switch_0:
+          switch_0_case__2:
             return 0
         
-          case_3_switch_0:
+          switch_0_case__3:
             return 0
         
           break_switch_0:
@@ -6940,10 +6940,10 @@ fn test_chapter_8_valid_extra_credit_switch_single_case() {
         global function main() { 
             a.0 = 1
             tmp.0 = a.0 == 1
-            if tmp.0 jump case_1_switch_0
+            if tmp.0 jump switch_0_case__1
             jump break_switch_0
         
-          case_1_switch_0:
+          switch_0_case__1:
             return 1
         
           break_switch_0:
@@ -6977,35 +6977,35 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue() {
     let expected = r#"
         global function main() { 
             tmp.0 = 4 == 0
-            if tmp.0 jump case_0_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = 4 == 4
-            if tmp.1 jump case_4_switch_0
+            if tmp.1 jump switch_0_case__2
             jump break_switch_0
         
-          case_0_switch_0:
+          switch_0_case__1:
             return 0
         
-          case_4_switch_0:
+          switch_0_case__2:
             acc.0 = 0
             i.1 = 0
         
-          start_loop_1:
+          start_loop_3:
             tmp.2 = i.1 < 10
-            if !tmp.2 jump break_loop_1
+            if !tmp.2 jump break_loop_3
             tmp.3 = i.1 % 2
             if !tmp.3 jump end_if_0
-            jump continue_loop_1
+            jump continue_loop_3
         
           end_if_0:
             tmp.4 = acc.0 + 1
             acc.0 = tmp.4
         
-          continue_loop_1:
+          continue_loop_3:
             tmp.5 = i.1 + 1
             i.1 = tmp.5
-            jump start_loop_1
+            jump start_loop_3
         
-          break_loop_1:
+          break_loop_3:
             return acc.0
         
           break_switch_0:
@@ -7040,14 +7040,14 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
             if !tmp.0 jump break_loop_0
             tmp.1 = i.1 % 2
             tmp.2 = tmp.1 == 0
-            if tmp.2 jump case_0_switch_1
-            jump default_switch_1
+            if tmp.2 jump switch_1_case__2
+            jump switch_1_default_3
             jump break_switch_1
         
-          case_0_switch_1:
+          switch_1_case__2:
             jump continue_loop_0
         
-          default_switch_1:
+          switch_1_default_3:
             tmp.3 = sum.0 + 1
             sum.0 = tmp.3
         
@@ -9691,24 +9691,24 @@ fn test_chapter_10_valid_extra_credit_switch_on_extern() {
         global function main() { 
             tmp.0 = update_x()
             tmp.1 = x == 0
-            if tmp.1 jump case_0_switch_0
+            if tmp.1 jump switch_0_case__1
             tmp.2 = x == 1
-            if tmp.2 jump case_1_switch_0
+            if tmp.2 jump switch_0_case__2
             tmp.3 = x == 4
-            if tmp.3 jump case_4_switch_0
-            jump default_switch_0
+            if tmp.3 jump switch_0_case__3
+            jump switch_0_default_4
             jump break_switch_0
         
-          case_0_switch_0:
+          switch_0_case__1:
             return 1
         
-          case_1_switch_0:
+          switch_0_case__2:
             return 2
         
-          case_4_switch_0:
+          switch_0_case__3:
             return 0
         
-          default_switch_0:
+          switch_0_default_4:
             return 4
         
           break_switch_0:
@@ -9747,21 +9747,21 @@ fn test_chapter_10_valid_extra_credit_switch_skip_extern_decl() {
         global function main() { 
             a.0 = 10
             tmp.0 = a.0 == 1
-            if tmp.0 jump case_1_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = a.0 == 2
-            if tmp.1 jump case_2_switch_0
+            if tmp.1 jump switch_0_case__2
             tmp.2 = a.0 == 10
-            if tmp.2 jump case_10_switch_0
-            jump default_switch_0
+            if tmp.2 jump switch_0_case__3
+            jump switch_0_default_4
             jump break_switch_0
         
-          case_1_switch_0:
+          switch_0_case__1:
             return 1
         
-          case_2_switch_0:
+          switch_0_case__2:
             return 2
         
-          case_10_switch_0:
+          switch_0_case__3:
             tmp.3 = x * 2
             tmp.4 = tmp.3 == 30
             if !tmp.4 jump end_if_0
@@ -9769,7 +9769,7 @@ fn test_chapter_10_valid_extra_credit_switch_skip_extern_decl() {
         
           end_if_0:
         
-          default_switch_0:
+          switch_0_default_4:
             return 5
         
           break_switch_0:
@@ -9799,15 +9799,15 @@ fn test_chapter_10_valid_extra_credit_switch_skip_static_initializer() {
     let expected = r#"
         global function main() { 
             tmp.0 = a == 1
-            if tmp.0 jump case_1_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = a == 3
-            if tmp.1 jump case_3_switch_0
+            if tmp.1 jump switch_0_case__2
             jump break_switch_0
         
-          case_1_switch_0:
+          switch_0_case__1:
             x.0 = 0
         
-          case_3_switch_0:
+          switch_0_case__2:
             return x.0
         
           break_switch_0:
@@ -11606,24 +11606,24 @@ fn test_chapter_11_valid_extra_credit_switch_int() {
     let expected = r#"
         global function switch_on_int(i.0) { 
             tmp.0 = i.0 == 5
-            if tmp.0 jump case_5_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = i.0 == 0
-            if tmp.1 jump case_8589934592_switch_0
+            if tmp.1 jump switch_0_case__2
             tmp.2 = i.0 == -1
-            if tmp.2 jump case_34359738367_switch_0
-            jump default_switch_0
+            if tmp.2 jump switch_0_case__3
+            jump switch_0_default_4
             jump break_switch_0
         
-          case_5_switch_0:
+          switch_0_case__1:
             return 0
         
-          case_8589934592_switch_0:
+          switch_0_case__2:
             return 1
         
-          case_34359738367_switch_0:
+          switch_0_case__3:
             return 2
         
-          default_switch_0:
+          switch_0_default_4:
             return 3
         
           break_switch_0:
@@ -11687,24 +11687,24 @@ fn test_chapter_11_valid_extra_credit_switch_long() {
     let expected = r#"
         global function switch_on_long(l.0) { 
             tmp.0 = l.0 == 0L
-            if tmp.0 jump case_0_switch_0
+            if tmp.0 jump switch_0_case__1
             tmp.1 = l.0 == 100L
-            if tmp.1 jump case_100_switch_0
+            if tmp.1 jump switch_0_case__2
             tmp.2 = l.0 == 8589934592L
-            if tmp.2 jump case_8589934592_switch_0
-            jump default_switch_0
+            if tmp.2 jump switch_0_case__3
+            jump switch_0_default_4
             jump break_switch_0
         
-          case_0_switch_0:
+          switch_0_case__1:
             return 0
         
-          case_100_switch_0:
+          switch_0_case__2:
             return 1
         
-          case_8589934592_switch_0:
+          switch_0_case__3:
             return 2
         
-          default_switch_0:
+          switch_0_default_4:
             tmp.3 = - 1
             return tmp.3
         

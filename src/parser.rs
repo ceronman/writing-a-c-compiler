@@ -4,7 +4,7 @@ mod test;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
     FunctionDeclaration, FunctionType, Identifier, Node, PostfixOp, Program, Statement,
-    StorageClass, SwitchLabels, Type, UnaryOp, VarDeclaration,
+    StorageClass, Type, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{Lexer, Span, Token, TokenKind};
@@ -445,7 +445,7 @@ impl<'src> Parser<'src> {
             Statement::Switch {
                 expr: cond,
                 body,
-                labels: SwitchLabels::default(),
+                label: "dummy".into(),
             },
         ))
     }

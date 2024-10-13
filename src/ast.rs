@@ -38,7 +38,7 @@ pub enum Statement {
     Switch {
         expr: Node<Expression>,
         body: Node<Statement>,
-        labels: SwitchLabels,
+        label: Symbol,
     },
     Expression(Node<Expression>),
     Labeled {
@@ -76,13 +76,6 @@ pub enum Statement {
     Break(Symbol),
     Continue(Symbol),
     Null,
-}
-
-#[derive(Debug, Default)]
-pub struct SwitchLabels {
-    pub label: Symbol,
-    pub valued: Vec<(i64, Symbol)>,
-    pub default: Option<Symbol>,
 }
 
 #[derive(Debug)]
@@ -129,7 +122,7 @@ pub enum Expression {
     },
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Constant {
     Int(i32),
     Long(i64),
