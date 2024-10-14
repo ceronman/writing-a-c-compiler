@@ -102,7 +102,7 @@ impl LabelChecker {
                 };
                 *label = enclosing_label.clone();
             }
-            Statement::Case { label, value, body } => {
+            Statement::Case { label, body, .. } => {
                 let Some(enclosing_label) = self.label_stack.iter().find_map(|kind| match kind {
                     LabelKind::Loop(_) => None,
                     LabelKind::Switch(label) => Some(label),

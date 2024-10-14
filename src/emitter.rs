@@ -2,6 +2,7 @@ use crate::asm::{
     BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticVariable, TopLevel,
     UnaryOp,
 };
+use crate::semantic::StaticInit;
 use crate::tempfile::TempPath;
 use std::fs::OpenOptions;
 use std::io::{BufWriter, Result, Write};
@@ -44,13 +45,13 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
 
     for ins in &function.instructions {
         match ins {
-            Instruction::Mov(src, dst) => {
+            Instruction::Mov(ty, src, dst) => {
                 emit_ins(output, "movl")?;
                 emit_operand(output, src, RegSize::Long)?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::Long)?;
             }
-            Instruction::Unary(op, src) => {
+            Instruction::Unary(ty, op, src) => {
                 let op = match op {
                     UnaryOp::Neg => "negl",
                     UnaryOp::Not => "notl",
@@ -60,7 +61,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::Long)?;
             }
-            Instruction::Binary(op, left, right) => {
+            Instruction::Binary(ty, op, left, right) => {
                 let op = match op {
                     BinaryOp::Add => "addl",
                     BinaryOp::Sub => "subl",
@@ -74,12 +75,8 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 write!(output, ", ")?;
                 emit_operand(output, right, RegSize::Long)?;
             }
-            Instruction::AllocateStack(offset) => {
-                emit_ins(output, "subq")?;
-                write!(output, "${offset}, %rsp")?;
-            }
 
-            Instruction::Sal(dst) => {
+            Instruction::Sal(ty, dst) => {
                 emit_ins(output, "sall")?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
                 write!(output, ", ")?;
@@ -87,19 +84,19 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 writeln!(output)?;
             }
 
-            Instruction::Sar(dst) => {
+            Instruction::Sar(ty, dst) => {
                 emit_ins(output, "sarl")?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::Long)?;
             }
 
-            Instruction::Idiv(src) => {
+            Instruction::Idiv(ty, src) => {
                 emit_ins(output, "idivl")?;
                 emit_operand(output, src, RegSize::Long)?;
             }
 
-            Instruction::Cdq => write!(output, "\tcdq")?,
+            Instruction::Cdq(ty) => write!(output, "\tcdq")?,
 
             Instruction::Ret => {
                 // epilogue
@@ -110,7 +107,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 emit_ins(output, "ret")?;
             }
 
-            Instruction::Cmp(left, right) => {
+            Instruction::Cmp(ty, left, right) => {
                 emit_ins(output, "cmpl")?;
                 emit_operand(output, left, RegSize::Long)?;
                 write!(output, ", ")?;
@@ -146,11 +143,6 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 emit_label(output, label)?;
                 write!(output, ":")?;
             }
-
-            Instruction::DeallocateStack(offset) => {
-                emit_ins(output, "addq")?;
-                write!(output, "${offset}, %rsp")?;
-            }
             Instruction::Push(operand) => {
                 emit_ins(output, "pushq")?;
                 emit_operand(output, operand, RegSize::Quad)?;
@@ -159,6 +151,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 emit_ins(output, "call")?;
                 write!(output, "_{name}")?;
             }
+            Instruction::Movx(_, _) => todo!(),
         }
         writeln!(output)?;
     }
@@ -169,7 +162,11 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
     if variable.global {
         writeln!(output, "\t.globl _{name}", name = variable.name)?;
     }
-    if variable.init == 0 {
+    let init_value = match variable.init {
+        StaticInit::Int(v) => v as i64,
+        StaticInit::Long(v) => v,
+    };
+    if init_value == 0 {
         writeln!(output, "\t.bss")?;
         emit_ins(output, ".balign")?;
         writeln!(output, "4")?;
@@ -182,7 +179,7 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
         writeln!(output, "4")?;
         writeln!(output, "_{name}:", name = variable.name)?;
         emit_ins(output, ".long")?;
-        writeln!(output, "{}", variable.init)?;
+        writeln!(output, "{}", init_value)?;
     }
     Ok(())
 }
@@ -235,6 +232,7 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
         (Operand::Reg(Reg::R11), RegSize::Long) => write!(output, "%r11d"),
         (Operand::Reg(Reg::R11), RegSize::Quad) => write!(output, "%r11"),
 
+        (Operand::Reg(Reg::SP), _) => write!(output, "%rsp"),
         (Operand::Imm(value), _) => write!(output, "${value}"),
         (Operand::Stack(offset), _) => write!(output, "{offset}(%rbp)"),
         (Operand::Data(name), _) => write!(output, "_{name}(%rip)"),

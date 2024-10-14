@@ -7,7 +7,6 @@ use crate::error::{CompilerError, ErrorKind, Result};
 use crate::semantic::{
     Attributes, InitialValue, SemanticData, StaticInit, SwitchCases, SymbolData,
 };
-use crate::symbol::Symbol;
 use std::collections::{BTreeMap, HashMap, VecDeque};
 
 impl SymbolData {
