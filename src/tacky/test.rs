@@ -10871,10 +10871,10 @@ fn test_chapter_11_valid_explicit_casts_sign_extend() {
     "#;
     let expected = r#"
         global function sign_extend(i.0, expected.1) { 
-            sign_extend i.0 -> tmp.0
+            tmp.0 = sign_extend i.0
             extended.2 = tmp.0
             tmp.1 = extended.2 == expected.1
-            sign_extend tmp.1 -> tmp.2
+            tmp.2 = sign_extend tmp.1
             return tmp.2
             return 0
         }
@@ -10893,7 +10893,7 @@ fn test_chapter_11_valid_explicit_casts_sign_extend() {
             return 2
         
           end_if_2:
-            sign_extend 100 -> tmp.9
+            tmp.9 = sign_extend 100
             l.3 = tmp.9
             tmp.10 = l.3 != 100L
             if !tmp.10 jump end_if_4
@@ -10938,7 +10938,7 @@ fn test_chapter_11_valid_explicit_casts_truncate() {
     "#;
     let expected = r#"
         global function truncate(l.0, expected.1) { 
-            truncate l.0 -> tmp.0
+            tmp.0 = truncate l.0
             result.2 = tmp.0
             tmp.1 = result.2 == expected.1
             return tmp.1
@@ -10966,14 +10966,14 @@ fn test_chapter_11_valid_explicit_casts_truncate() {
         
           end_if_4:
             tmp.10 = - 17179869179L
-            truncate 5L -> tmp.11
+            tmp.11 = truncate 5L
             tmp.12 = truncate(tmp.10, tmp.11)
             tmp.13 = ! tmp.12
             if !tmp.13 jump end_if_6
             return 4
         
           end_if_6:
-            truncate 17179869189L -> tmp.14
+            tmp.14 = truncate 17179869189L
             i.3 = tmp.14
             tmp.15 = i.3 != 5
             if !tmp.15 jump end_if_8
@@ -11180,23 +11180,23 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
             i.3 = tmp.16
             tmp.17 = - 1
             i2.4 = tmp.17
-            sign_extend i.3 -> tmp.18
+            tmp.18 = sign_extend i.3
             tmp.19 = tmp.18 & l.2
             tmp.20 = tmp.19 != 4611686017353646080L
             if !tmp.20 jump end_if_12
             return 7
         
           end_if_12:
-            sign_extend i.3 -> tmp.22
+            tmp.22 = sign_extend i.3
             tmp.21 = l.2 | tmp.22
             tmp.24 = - 1
-            sign_extend tmp.24 -> tmp.25
+            tmp.25 = sign_extend tmp.24
             tmp.23 = tmp.21 != tmp.25
             if !tmp.23 jump end_if_14
             return 8
         
           end_if_14:
-            sign_extend i.3 -> tmp.27
+            tmp.27 = sign_extend i.3
             tmp.26 = l.2 ^ tmp.27
             tmp.29 = - 4611686017353646081L
             tmp.28 = tmp.26 != tmp.29
@@ -11204,7 +11204,7 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
             return 9
         
           end_if_16:
-            sign_extend i2.4 -> tmp.30
+            tmp.30 = sign_extend i2.4
             tmp.31 = tmp.30 ^ 4611686018427387903L
             tmp.33 = ~ 4611686018427387903L
             tmp.32 = tmp.31 != tmp.33
@@ -11257,43 +11257,49 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_int() {
             b.1 = 2147483647
             tmp.1 = - 5000000
             c.2 = tmp.1
-            truncate 2147483648L -> tmp.3
-            tmp.2 = i.0 + tmp.3
-            i.0 = tmp.2
-            tmp.4 = i.0 != 2147483628
-            if !tmp.4 jump end_if_0
+            tmp.2 = sign_extend i.0
+            tmp.3 = tmp.2 + 2147483648L
+            tmp.4 = truncate tmp.3
+            i.0 = tmp.4
+            tmp.5 = truncate i.0
+            tmp.6 = i.0 != 2147483628
+            if !tmp.6 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.5 = b.1 != 2147483647
-            if !tmp.5 jump end_if_2
+            tmp.7 = b.1 != 2147483647
+            if !tmp.7 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.7 = - 34359738367L
-            truncate tmp.7 -> tmp.8
-            tmp.6 = b.1 / tmp.8
-            b.1 = tmp.6
+            tmp.8 = sign_extend b.1
+            tmp.10 = - 34359738367L
+            tmp.9 = tmp.8 / tmp.10
+            tmp.11 = truncate tmp.9
+            b.1 = tmp.11
+            tmp.12 = truncate b.1
             if !b.1 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.9 = i.0 != 2147483628
-            if !tmp.9 jump end_if_6
+            tmp.13 = i.0 != 2147483628
+            if !tmp.13 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.11 = - 5000000
-            tmp.10 = c.2 != tmp.11
-            if !tmp.10 jump end_if_8
+            tmp.15 = - 5000000
+            tmp.14 = c.2 != tmp.15
+            if !tmp.14 jump end_if_8
             return 5
         
           end_if_8:
-            truncate 10000L -> tmp.13
-            tmp.12 = c.2 * tmp.13
-            c.2 = tmp.12
-            tmp.14 = c.2 != 1539607552
-            if !tmp.14 jump end_if_10
+            tmp.16 = sign_extend c.2
+            tmp.17 = tmp.16 * 10000L
+            tmp.18 = truncate tmp.17
+            c.2 = tmp.18
+            tmp.19 = truncate c.2
+            tmp.20 = c.2 != 1539607552
+            if !tmp.20 jump end_if_10
             return 6
         
           end_if_10:
@@ -11323,7 +11329,7 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_long() {
             l.0 = tmp.0
             tmp.1 = - 10
             i.1 = tmp.1
-            sign_extend i.1 -> tmp.3
+            tmp.3 = sign_extend i.1
             tmp.2 = l.0 - tmp.3
             l.0 = tmp.2
             tmp.5 = - 34359738358L
@@ -11368,7 +11374,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
     let expected = r#"
         global function main() { 
             x.0 = 100
-            truncate 22L -> tmp.1
+            tmp.1 = truncate 22L
             tmp.0 = x.0 << tmp.1
             x.0 = tmp.0
             tmp.2 = x.0 != 419430400
@@ -11376,7 +11382,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
             return 1
         
           end_if_0:
-            truncate 4L -> tmp.4
+            tmp.4 = truncate 4L
             tmp.3 = x.0 >> tmp.4
             x.0 = tmp.3
             tmp.5 = x.0 != 26214400
@@ -11390,7 +11396,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
         
           end_if_4:
             l.1 = 12345L
-            sign_extend 33 -> tmp.8
+            tmp.8 = sign_extend 33
             tmp.7 = l.1 << tmp.8
             l.1 = tmp.7
             tmp.9 = l.1 != 106042742538240L
@@ -11400,7 +11406,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
           end_if_6:
             tmp.10 = - l.1
             l.1 = tmp.10
-            sign_extend 10 -> tmp.12
+            tmp.12 = sign_extend 10
             tmp.11 = l.1 >> tmp.12
             l.1 = tmp.11
             tmp.14 = - 103557365760L
@@ -11482,7 +11488,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitwise() {
             l1.0 = 4611686018427387903L
             tmp.10 = - 1073741824
             i.2 = tmp.10
-            sign_extend i.2 -> tmp.12
+            tmp.12 = sign_extend i.2
             tmp.11 = l1.0 & tmp.12
             l1.0 = tmp.11
             tmp.13 = l1.0 != 4611686017353646080L
@@ -11491,20 +11497,23 @@ fn test_chapter_11_valid_extra_credit_compound_bitwise() {
         
           end_if_6:
             tmp.14 = - 2147483648L
-            truncate tmp.14 -> tmp.15
+            tmp.15 = truncate tmp.14
             i.2 = tmp.15
-            truncate 71777214294589695L -> tmp.17
-            tmp.16 = i.2 | tmp.17
-            i.2 = tmp.16
-            tmp.19 = - 2130771713
-            tmp.18 = i.2 != tmp.19
-            if !tmp.18 jump end_if_8
+            tmp.16 = sign_extend i.2
+            tmp.17 = tmp.16 | 71777214294589695L
+            tmp.18 = truncate tmp.17
+            i.2 = tmp.18
+            tmp.19 = truncate i.2
+            tmp.21 = - 2130771713
+            tmp.22 = sign_extend tmp.21
+            tmp.20 = tmp.19 != tmp.22
+            if !tmp.20 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.21 = - 2130771713
-            tmp.20 = i.2 != tmp.21
-            if !tmp.20 jump end_if_10
+            tmp.24 = - 2130771713
+            tmp.23 = i.2 != tmp.24
+            if !tmp.23 jump end_if_10
             return 6
         
           end_if_10:
@@ -11649,7 +11658,7 @@ fn test_chapter_11_valid_extra_credit_switch_int() {
             return 3
         
           end_if_4:
-            truncate 17179869184L -> tmp.10
+            tmp.10 = truncate 17179869184L
             tmp.11 = switch_on_int(tmp.10)
             tmp.12 = tmp.11 != 1
             if !tmp.12 jump end_if_6
@@ -11718,7 +11727,7 @@ fn test_chapter_11_valid_extra_credit_switch_long() {
             return 1
         
           end_if_0:
-            sign_extend 100 -> tmp.6
+            tmp.6 = sign_extend 100
             tmp.7 = switch_on_long(tmp.6)
             tmp.8 = tmp.7 != 1
             if !tmp.8 jump end_if_2
@@ -11777,7 +11786,7 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
     "#;
     let expected = r#"
         global function addition() { 
-            sign_extend i -> tmp.0
+            tmp.0 = sign_extend i
             tmp.1 = tmp.0 + l
             result.0 = tmp.1
             tmp.2 = result.0 == 2147483663L
@@ -11785,16 +11794,16 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
             return 0
         }
         global function division() { 
-            sign_extend i -> tmp.4
+            tmp.4 = sign_extend i
             tmp.3 = l / tmp.4
-            truncate tmp.3 -> tmp.5
+            tmp.5 = truncate tmp.3
             int_result.1 = tmp.5
             tmp.6 = int_result.1 == 214748364
             return tmp.6
             return 0
         }
         global function comparison() { 
-            sign_extend i -> tmp.7
+            tmp.7 = sign_extend i
             tmp.8 = tmp.7 <= l
             return tmp.8
             return 0
@@ -11805,7 +11814,7 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
             jump end_if_0
         
           else_1:
-            sign_extend i -> tmp.10
+            tmp.10 = sign_extend i
             tmp.9 = tmp.10
         
           end_if_0:
@@ -11890,17 +11899,17 @@ fn test_chapter_11_valid_implicit_casts_convert_by_assignment() {
     "#;
     let expected = r#"
         global function return_truncated_long(l.0) { 
-            truncate l.0 -> tmp.0
+            tmp.0 = truncate l.0
             return tmp.0
             return 0
         }
         global function return_extended_int(i.1) { 
-            sign_extend i.1 -> tmp.1
+            tmp.1 = sign_extend i.1
             return tmp.1
             return 0
         }
         global function truncate_on_assignment(l.2, expected.3) { 
-            truncate l.2 -> tmp.2
+            tmp.2 = truncate l.2
             result.4 = tmp.2
             tmp.3 = result.4 == expected.3
             return tmp.3
@@ -11908,7 +11917,7 @@ fn test_chapter_11_valid_implicit_casts_convert_by_assignment() {
         }
         global function main() { 
             tmp.4 = return_truncated_long(4294967298L)
-            sign_extend tmp.4 -> tmp.5
+            tmp.5 = sign_extend tmp.4
             result.5 = tmp.5
             tmp.6 = result.5 != 2L
             if !tmp.6 jump end_if_0
@@ -11919,13 +11928,13 @@ fn test_chapter_11_valid_implicit_casts_convert_by_assignment() {
             tmp.8 = return_extended_int(tmp.7)
             result.5 = tmp.8
             tmp.10 = - 10
-            sign_extend tmp.10 -> tmp.11
+            tmp.11 = sign_extend tmp.10
             tmp.9 = result.5 != tmp.11
             if !tmp.9 jump end_if_2
             return 2
         
           end_if_2:
-            truncate 4294967298L -> tmp.12
+            tmp.12 = truncate 4294967298L
             i.6 = tmp.12
             tmp.13 = i.6 != 2
             if !tmp.13 jump end_if_4
@@ -12040,20 +12049,20 @@ fn test_chapter_11_valid_implicit_casts_convert_function_arguments() {
             tmp.15 = - 101
             e.12 = tmp.15
             tmp.16 = - 123
-            sign_extend tmp.16 -> tmp.17
+            tmp.17 = sign_extend tmp.16
             f.13 = tmp.17
             tmp.18 = - 10
             g.14 = tmp.18
             tmp.19 = - 9223372036854774574L
             h.15 = tmp.19
-            sign_extend a.8 -> tmp.20
-            truncate b.9 -> tmp.21
-            truncate c.10 -> tmp.22
-            truncate d.11 -> tmp.23
-            sign_extend e.12 -> tmp.24
-            truncate f.13 -> tmp.25
-            sign_extend g.14 -> tmp.26
-            truncate h.15 -> tmp.27
+            tmp.20 = sign_extend a.8
+            tmp.21 = truncate b.9
+            tmp.22 = truncate c.10
+            tmp.23 = truncate d.11
+            tmp.24 = sign_extend e.12
+            tmp.25 = truncate f.13
+            tmp.26 = sign_extend g.14
+            tmp.27 = truncate h.15
             tmp.28 = foo(tmp.20, tmp.21, tmp.22, tmp.23, tmp.24, tmp.25, tmp.26, tmp.27)
             return tmp.28
             return 0
@@ -12092,8 +12101,8 @@ fn test_chapter_11_valid_implicit_casts_convert_static_initializer() {
             return 0
             return 0
         }
-        static global i: Int = 8589934592L
-        static global j: Long = 123456
+        static global i: Int = 0
+        static global j: Long = 123456L
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -12198,7 +12207,7 @@ fn test_chapter_11_valid_libraries_long_global_var() {
             return 0
         }
         global function return_l_as_int() { 
-            truncate l -> tmp.0
+            tmp.0 = truncate l
             return tmp.0
             return 0
         }
@@ -12272,7 +12281,7 @@ fn test_chapter_11_valid_libraries_maintain_stack_alignment() {
     let expected = r#"
         global function add_variables(x.0, y.1, z.2) { 
             tmp.0 = x.0 + y.1
-            sign_extend z.2 -> tmp.2
+            tmp.2 = sign_extend z.2
             tmp.1 = tmp.0 + tmp.2
             return tmp.1
             return 0
@@ -12294,13 +12303,13 @@ fn test_chapter_11_valid_libraries_maintain_stack_alignment_client() {
     "#;
     let expected = r#"
         global function main() { 
-            sign_extend 3 -> tmp.0
+            tmp.0 = sign_extend 3
             x.3 = tmp.0
-            sign_extend 4 -> tmp.1
+            tmp.1 = sign_extend 4
             y.4 = tmp.1
             z.5 = 5
             tmp.2 = add_variables(x.3, y.4, z.5)
-            truncate tmp.2 -> tmp.3
+            tmp.3 = truncate tmp.2
             return tmp.3
             return 0
         }
@@ -12317,8 +12326,8 @@ fn test_chapter_11_valid_libraries_return_long() {
     "#;
     let expected = r#"
         global function add(a.0, b.1) { 
-            sign_extend a.0 -> tmp.0
-            sign_extend b.1 -> tmp.2
+            tmp.0 = sign_extend a.0
+            tmp.2 = sign_extend b.1
             tmp.1 = tmp.0 + tmp.2
             return tmp.1
             return 0
@@ -12951,7 +12960,7 @@ fn test_chapter_11_valid_long_expressions_long_and_int_locals() {
             return 6
         
           end_if_10:
-            sign_extend 2 -> tmp.17
+            tmp.17 = sign_extend 2
             tmp.16 = c.2 != tmp.17
             if !tmp.16 jump end_if_12
             return 7
@@ -13061,8 +13070,8 @@ fn test_chapter_11_valid_long_expressions_return_long() {
     "#;
     let expected = r#"
         global function add(a.0, b.1) { 
-            sign_extend a.0 -> tmp.0
-            sign_extend b.1 -> tmp.2
+            tmp.0 = sign_extend a.0
+            tmp.2 = sign_extend b.1
             tmp.1 = tmp.0 + tmp.2
             return tmp.1
             return 0
@@ -13182,9 +13191,9 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
         global function main() { 
             tmp.0 = glob * 4294967307L
             should_spill.13 = tmp.0
-            sign_extend 4 -> tmp.2
+            tmp.2 = sign_extend 4
             tmp.1 = glob - tmp.2
-            truncate tmp.1 -> tmp.3
+            tmp.3 = truncate tmp.1
             one.14 = tmp.3
             tmp.4 = one.14 + one.14
             two.15 = tmp.4
@@ -13209,9 +13218,9 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             tmp.14 = six.19 + six.19
             twelve.25 = tmp.14
             tmp.15 = check_12_ints(one.14, two.15, three.16, four.17, five.18, six.19, seven.20, eight.21, nine.22, ten.23, eleven.24, twelve.25, 1)
-            sign_extend 8 -> tmp.17
+            tmp.17 = sign_extend 8
             tmp.16 = glob + tmp.17
-            truncate tmp.16 -> tmp.18
+            tmp.18 = truncate tmp.16
             thirteen.26 = tmp.18
             tmp.19 = thirteen.26 + 1
             fourteen.27 = tmp.19
@@ -13439,7 +13448,7 @@ fn test_chapter_11_valid_long_expressions_type_specifiers() {
         global function my_function(x.3, y.4, z.5) { 
             tmp.0 = x.3 + y.4
             tmp.1 = tmp.0 + z.5
-            truncate tmp.1 -> tmp.2
+            tmp.2 = truncate tmp.1
             return tmp.2
             return 0
         }
@@ -13447,38 +13456,38 @@ fn test_chapter_11_valid_long_expressions_type_specifiers() {
             x.6 = 1L
             y.7 = 2L
             z.8 = 3L
-            sign_extend 4 -> tmp.3
+            tmp.3 = sign_extend 4
             a = tmp.3
             sum.10 = 0
             i.11 = 1099511627776L
         
           start_loop_0:
-            sign_extend 0 -> tmp.5
+            tmp.5 = sign_extend 0
             tmp.4 = i.11 > tmp.5
             if !tmp.4 jump break_loop_0
             tmp.6 = sum.10 + 1
             sum.10 = tmp.6
         
           continue_loop_0:
-            sign_extend 2 -> tmp.8
+            tmp.8 = sign_extend 2
             tmp.7 = i.11 / tmp.8
             i.11 = tmp.7
             jump start_loop_0
         
           break_loop_0:
-            sign_extend 1 -> tmp.10
+            tmp.10 = sign_extend 1
             tmp.9 = x.6 != tmp.10
             if !tmp.9 jump end_if_0
             return 1
         
           end_if_0:
-            sign_extend 2 -> tmp.12
+            tmp.12 = sign_extend 2
             tmp.11 = y.7 != tmp.12
             if !tmp.11 jump end_if_2
             return 2
         
           end_if_2:
-            sign_extend 4 -> tmp.14
+            tmp.14 = sign_extend 4
             tmp.13 = a != tmp.14
             if !tmp.13 jump end_if_4
             return 3

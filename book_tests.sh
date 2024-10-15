@@ -9,7 +9,6 @@ set -euxo pipefail
     --verbose \
     --failfast \
     --chapter 11 \
-    --stage validate \
     --bitwise \
     --compound \
     --increment \

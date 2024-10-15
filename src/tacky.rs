@@ -502,6 +502,14 @@ impl TackyGenerator {
                     self.emit_expr(right)
                 };
 
+                // TODO: Duplication
+                let result =
+                    if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
+                        self.cast(result, &expr_ty, &target)
+                    } else {
+                        result
+                    };
+
                 self.instructions.push(Instruction::Copy {
                     src: result,
                     dst: Val::Var(name.clone()),

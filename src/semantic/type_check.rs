@@ -1,7 +1,7 @@
 use crate::ast::{
-    BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration,
-    FunctionType, InnerRef, Node, NodeId, Program, Statement, StorageClass, Type, UnaryOp,
-    VarDeclaration,
+    AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
+    FunctionDeclaration, FunctionType, InnerRef, Node, NodeId, Program, Statement, StorageClass,
+    Type, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::semantic::{
@@ -128,9 +128,18 @@ impl TypeChecker {
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let mut initial_value = if let Some(init) = &decl.init {
             if let Expression::Constant(c) = init.as_ref() {
-                InitialValue::Initial(match c {
-                    Constant::Int(v) => StaticInit::Int(*v),
-                    Constant::Long(v) => StaticInit::Long(*v),
+                InitialValue::Initial(match (&decl.ty, c) {
+                    (Type::Int, Constant::Int(v)) => StaticInit::Int(*v),
+                    (Type::Int, Constant::Long(v)) => StaticInit::Int(*v as i32),
+                    (Type::Long, Constant::Long(v)) => StaticInit::Long(*v),
+                    (Type::Long, Constant::Int(v)) => StaticInit::Long(*v as i64),
+                    _ => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Invalid type of static declaration".into(),
+                            span: init.span,
+                        });
+                    }
                 })
             } else {
                 return Err(CompilerError {
@@ -474,11 +483,22 @@ impl TypeChecker {
                 }
             }
 
-            Expression::Assignment { left, right, .. } => {
+            Expression::Assignment { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
                 let right_ty = self.check_expression(right)?;
-                self.cast_if_needed(right, &right_ty, &left_ty);
-                left_ty
+                match op.as_ref() {
+                    AssignOp::Equal | AssignOp::ShiftLeftEqual | AssignOp::ShiftRightEqual => {
+                        self.cast_if_needed(right, &right_ty, &left_ty);
+                        left_ty
+                    }
+                    _ => {
+                        let common = Self::common_type(&left_ty, &right_ty);
+                        self.cast_if_needed(left, &left_ty, &common);
+                        self.cast_if_needed(right, &right_ty, &common);
+                        self.cast_if_needed(expr, &common, &left_ty);
+                        common
+                    }
+                }
             }
 
             Expression::Conditional {

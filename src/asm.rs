@@ -33,7 +33,7 @@ pub struct StaticVariable {
 #[derive(Debug)]
 pub enum Instruction {
     Mov(AsmType, Operand, Operand),
-    Movx(Operand, Operand),
+    Movsx(Operand, Operand),
     Unary(AsmType, UnaryOp, Operand),
     Binary(AsmType, BinaryOp, Operand, Operand),
     Cmp(AsmType, Operand, Operand),
@@ -243,7 +243,7 @@ fn generate_function(function: &tacky::Function, semantic: &SemanticData) -> Fun
                         src1.to_asm(),
                     ));
                     instructions.push(Instruction::Mov(
-                        semantic.val_type(src1),
+                        semantic.val_type(dst),
                         Operand::Imm(0),
                         dst.to_asm(),
                     ));
@@ -303,7 +303,7 @@ fn generate_function(function: &tacky::Function, semantic: &SemanticData) -> Fun
                 generate_call(&mut instructions, semantic, name, args, dst);
             }
             tacky::Instruction::SignExtend { src, dst } => {
-                instructions.push(Instruction::Movx(src.to_asm(), dst.to_asm()));
+                instructions.push(Instruction::Movsx(src.to_asm(), dst.to_asm()));
             }
             tacky::Instruction::Truncate { src, dst } => {
                 instructions.push(Instruction::Mov(AsmType::I32, src.to_asm(), dst.to_asm()));
@@ -459,7 +459,7 @@ fn replace_pseudo_registers(
     for instruction in instructions {
         match instruction {
             Instruction::Mov(_, src, dst)
-            | Instruction::Movx(src, dst)
+            | Instruction::Movsx(src, dst)
             | Instruction::Binary(_, _, src, dst)
             | Instruction::Cmp(_, src, dst) => {
                 update_operand(src);
@@ -492,11 +492,31 @@ fn fixup_instructions(instructions: Vec<Instruction>, stack_size: i64) -> Vec<In
 
     for instruction in instructions.into_iter() {
         match instruction {
-            Instruction::Mov(ty, src, dst) if src.is_mem() && dst.is_mem() => {
-                fixed.push(Instruction::Mov(ty, src, Operand::Reg(Reg::R10)));
-                fixed.push(Instruction::Mov(ty, Operand::Reg(Reg::R10), dst));
+            Instruction::Mov(ty, src, dst) => {
+                let src = if let Operand::Imm(v) = src {
+                    if v > i32::MAX as i64 {
+                        let value = match ty {
+                            AsmType::I32 => (v as i32) as i64,
+                            AsmType::I64 => v,
+                        };
+                        fixed.push(Instruction::Mov(
+                            ty,
+                            Operand::Imm(value),
+                            Operand::Reg(Reg::R10),
+                        ));
+                        Operand::Reg(Reg::R10)
+                    } else {
+                        src
+                    }
+                } else if src.is_mem() && src.is_mem() {
+                    fixed.push(Instruction::Mov(ty, src, Operand::Reg(Reg::R10)));
+                    Operand::Reg(Reg::R10)
+                } else {
+                    src
+                };
+                fixed.push(Instruction::Mov(ty, src, dst));
             }
-            Instruction::Movx(src, dst) => {
+            Instruction::Movsx(src, dst) => {
                 // TODO: Add is_imm()
                 let src = if let Operand::Imm(value) = src {
                     // TODO: Add shortcuts for constructing operands
@@ -510,10 +530,10 @@ fn fixup_instructions(instructions: Vec<Instruction>, stack_size: i64) -> Vec<In
                     src
                 };
                 if dst.is_mem() {
-                    fixed.push(Instruction::Movx(src, Operand::Reg(Reg::R11)));
+                    fixed.push(Instruction::Movsx(src, Operand::Reg(Reg::R11)));
                     fixed.push(Instruction::Mov(AsmType::I64, Operand::Reg(Reg::R11), dst));
                 } else {
-                    fixed.push(Instruction::Movx(src, dst));
+                    fixed.push(Instruction::Movsx(src, dst));
                 }
             }
             Instruction::Binary(ty, op, left, right)
@@ -555,17 +575,33 @@ fn fixup_instructions(instructions: Vec<Instruction>, stack_size: i64) -> Vec<In
                     fixed.push(Instruction::Binary(ty, op, left, right));
                 }
             }
-            Instruction::Cmp(ty, left, right) if left.is_mem() && right.is_mem() => {
-                fixed.push(Instruction::Mov(ty, left, Operand::Reg(Reg::R10)));
-                fixed.push(Instruction::Cmp(ty, Operand::Reg(Reg::R10), right));
-            }
-            Instruction::Cmp(ty, left, Operand::Imm(value)) => {
-                fixed.push(Instruction::Mov(
-                    ty,
-                    Operand::Imm(value),
-                    Operand::Reg(Reg::R11),
-                ));
-                fixed.push(Instruction::Cmp(ty, left, Operand::Reg(Reg::R11)));
+            Instruction::Cmp(ty, left, right) => {
+                // TODO: Repeated code
+                let left = if let Operand::Imm(v) = left {
+                    if v > i32::MAX as i64 {
+                        fixed.push(Instruction::Mov(ty, left, Operand::Reg(Reg::R10)));
+                        Operand::Reg(Reg::R10)
+                    } else {
+                        left
+                    }
+                } else if left.is_mem() && right.is_mem() {
+                    fixed.push(Instruction::Mov(ty, left, Operand::Reg(Reg::R10)));
+                    Operand::Reg(Reg::R10)
+                } else {
+                    left
+                };
+
+                let right = if let Operand::Imm(value) = right {
+                    fixed.push(Instruction::Mov(
+                        ty,
+                        Operand::Imm(value),
+                        Operand::Reg(Reg::R11),
+                    ));
+                    Operand::Reg(Reg::R11)
+                } else {
+                    right
+                };
+                fixed.push(Instruction::Cmp(ty, left, right));
             }
             Instruction::Idiv(ty, Operand::Imm(value)) => {
                 fixed.push(Instruction::Mov(
@@ -574,6 +610,19 @@ fn fixup_instructions(instructions: Vec<Instruction>, stack_size: i64) -> Vec<In
                     Operand::Reg(Reg::R10),
                 ));
                 fixed.push(Instruction::Idiv(ty, Operand::Reg(Reg::R10)));
+            }
+            Instruction::Push(Operand::Imm(value)) => {
+                let value = if value > i32::MAX as i64 {
+                    fixed.push(Instruction::Mov(
+                        AsmType::I64,
+                        Operand::Imm(value),
+                        Operand::Reg(Reg::R10),
+                    ));
+                    Operand::Reg(Reg::R10)
+                } else {
+                    Operand::Imm(value)
+                };
+                fixed.push(Instruction::Push(value));
             }
             other => fixed.push(other),
         }

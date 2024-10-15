@@ -155,16 +155,16 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
                 write!(file, ")")?;
             }
             tacky::Instruction::SignExtend { src, dst } => {
-                write!(file, "{indent}sign_extend ")?;
-                pp_val(file, src)?;
-                write!(file, " -> ")?;
+                write!(file, "{indent}")?;
                 pp_val(file, dst)?;
+                write!(file, " = sign_extend ")?;
+                pp_val(file, src)?;
             }
             tacky::Instruction::Truncate { src, dst } => {
-                write!(file, "{indent}truncate ")?;
-                pp_val(file, src)?;
-                write!(file, " -> ")?;
+                write!(file, "{indent}")?;
                 pp_val(file, dst)?;
+                write!(file, " = truncate ")?;
+                pp_val(file, src)?;
             }
         }
         writeln!(file)?;
