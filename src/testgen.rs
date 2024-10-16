@@ -27,9 +27,12 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
         .collect::<Vec<_>>()
         .join("\n");
     let result = panic::catch_unwind(|| lexer::tokenize(source));
-    writeln!(file)?;
     match result {
         Ok(tokens) => {
+            if name.contains("invalid") {
+                return Ok(());
+            }
+            writeln!(file)?;
             writeln!(file, "#[test]")?;
             writeln!(file, "fn test_{name}() {{")?;
             writeln!(file, "    let src = r#\"")?;
@@ -40,6 +43,7 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
             writeln!(file, "}}")?;
         }
         Err(_) => {
+            writeln!(file)?;
             writeln!(file, "#[test]")?;
             writeln!(file, "#[should_panic]")?;
             writeln!(file, "fn test_{name}() {{")?;
@@ -83,12 +87,12 @@ fn assert_error(expected_annotated: &str) {{
     let name = test_name(path);
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
     let indented = indent(source);
-    writeln!(file)?;
     let result = parser::parse(&indented);
     match result {
         Ok(ast) => {
             let tree = pretty::pretty_print_ast(&ast)?;
             let tree = indent(&tree);
+            writeln!(file)?;
             writeln!(file, "#[test]")?;
             writeln!(file, "fn test_{name}() {{")?;
             writeln!(file, "    let src = r#\"{indented}\"#;")?;
@@ -98,6 +102,7 @@ fn assert_error(expected_annotated: &str) {{
         }
         Err(error) => {
             let annotated = pretty::annotate(&indented, &error);
+            writeln!(file)?;
             writeln!(file, "#[test]")?;
             writeln!(file, "fn test_{name}() {{")?;
             writeln!(file, "    assert_error(r#\"{annotated}\"#);")?;

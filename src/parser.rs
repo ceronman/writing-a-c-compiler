@@ -468,7 +468,7 @@ impl<'src> Parser<'src> {
         error_kind: &str,
     ) -> Result<Node<Expression>> {
         let mut expr = match self.current.kind {
-            TokenKind::Constant | TokenKind::LongConstant => self.constant()?,
+            TokenKind::IntConstant | TokenKind::LongConstant => self.constant()?,
             TokenKind::Identifier => {
                 if self.next.kind == TokenKind::OpenParen {
                     self.function_call()?
@@ -732,7 +732,7 @@ impl<'src> Parser<'src> {
     fn constant(&mut self) -> Result<Node<Expression>> {
         let token = self.current;
         let constant = match token.kind {
-            TokenKind::Constant => {
+            TokenKind::IntConstant => {
                 let value: i64 = token
                     .slice(self.source)
                     .parse()

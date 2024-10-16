@@ -25,12 +25,17 @@ pub struct Token {
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum TokenKind {
     Identifier,
-    Constant,
+    IntConstant,
+    UIntConstant,
     LongConstant,
+    ULongConstant,
 
     Int,
     Long,
     Void,
+    Signed,
+    Unsigned,
+
     If,
     Else,
     Switch,
@@ -99,11 +104,15 @@ impl Display for TokenKind {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let s = match self {
             TokenKind::Identifier => "identifier",
-            TokenKind::Constant => "constant",
+            TokenKind::IntConstant => "constant",
+            TokenKind::UIntConstant => "unsigned constant",
             TokenKind::LongConstant => "long constant",
+            TokenKind::ULongConstant => "unsigned long constant",
             TokenKind::Int => "'int'",
             TokenKind::Long => "'long'",
             TokenKind::Void => "'void'",
+            TokenKind::Signed => "'signed'",
+            TokenKind::Unsigned => "'unsigned'",
             TokenKind::If => "'if'",
             TokenKind::Else => "'else'",
             TokenKind::Switch => "'switch'",
@@ -293,12 +302,29 @@ impl<'src> Lexer<'src> {
         while let Some('0'..='9') = self.peek() {
             self.advance();
         }
-        let kind = if let Some('l') | Some('L') = self.peek() {
-            self.advance();
-            TokenKind::LongConstant
-        } else {
-            TokenKind::Constant
+
+        let kind = match (self.peek(), self.peek_next()) {
+            (Some('u') | Some('U'), Some('l') | Some('L')) => {
+                self.advance();
+                self.advance();
+                TokenKind::ULongConstant
+            }
+            (Some('l') | Some('L'), Some('u') | Some('U')) => {
+                self.advance();
+                self.advance();
+                TokenKind::ULongConstant
+            }
+            (Some('l') | Some('L'), _) => {
+                self.advance();
+                TokenKind::LongConstant
+            }
+            (Some('u') | Some('U'), _) => {
+                self.advance();
+                TokenKind::UIntConstant
+            }
+            _ => TokenKind::IntConstant,
         };
+
         match self.peek() {
             Some(c) if c.is_alphanumeric() => TokenKind::Error,
             _ => kind,
@@ -317,6 +343,8 @@ impl<'src> Lexer<'src> {
             "int" => TokenKind::Int,
             "long" => TokenKind::Long,
             "void" => TokenKind::Void,
+            "signed" => TokenKind::Signed,
+            "unsigned" => TokenKind::Unsigned,
             "return" => TokenKind::Return,
             "if" => TokenKind::If,
             "else" => TokenKind::Else,
