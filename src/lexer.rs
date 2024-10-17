@@ -25,10 +25,7 @@ pub struct Token {
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum TokenKind {
     Identifier,
-    IntConstant,
-    UIntConstant,
-    LongConstant,
-    ULongConstant,
+    Constant(LiteralKind),
 
     Int,
     Long,
@@ -100,14 +97,22 @@ pub enum TokenKind {
     Error,
 }
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum LiteralKind {
+    Int,
+    Uint,
+    Long,
+    ULong,
+}
+
 impl Display for TokenKind {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let s = match self {
             TokenKind::Identifier => "identifier",
-            TokenKind::IntConstant => "constant",
-            TokenKind::UIntConstant => "unsigned constant",
-            TokenKind::LongConstant => "long constant",
-            TokenKind::ULongConstant => "unsigned long constant",
+            TokenKind::Constant(LiteralKind::Int) => "constant",
+            TokenKind::Constant(LiteralKind::Uint) => "unsigned constant",
+            TokenKind::Constant(LiteralKind::Long) => "long constant",
+            TokenKind::Constant(LiteralKind::ULong) => "unsigned long constant",
             TokenKind::Int => "'int'",
             TokenKind::Long => "'long'",
             TokenKind::Void => "'void'",
@@ -307,22 +312,22 @@ impl<'src> Lexer<'src> {
             (Some('u') | Some('U'), Some('l') | Some('L')) => {
                 self.advance();
                 self.advance();
-                TokenKind::ULongConstant
+                TokenKind::Constant(LiteralKind::ULong)
             }
             (Some('l') | Some('L'), Some('u') | Some('U')) => {
                 self.advance();
                 self.advance();
-                TokenKind::ULongConstant
+                TokenKind::Constant(LiteralKind::ULong)
             }
             (Some('l') | Some('L'), _) => {
                 self.advance();
-                TokenKind::LongConstant
+                TokenKind::Constant(LiteralKind::Long)
             }
             (Some('u') | Some('U'), _) => {
                 self.advance();
-                TokenKind::UIntConstant
+                TokenKind::Constant(LiteralKind::Uint)
             }
-            _ => TokenKind::IntConstant,
+            _ => TokenKind::Constant(LiteralKind::Int),
         };
 
         match self.peek() {

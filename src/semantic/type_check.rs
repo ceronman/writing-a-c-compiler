@@ -79,6 +79,7 @@ impl TypeChecker {
                     InitialValue::Initial(match c {
                         Constant::Int(v) => StaticInit::Int(*v),
                         Constant::Long(v) => StaticInit::Long(*v),
+                        _ => todo!(),
                     })
                 } else {
                     return Err(CompilerError {
@@ -91,6 +92,7 @@ impl TypeChecker {
                 match decl.ty {
                     Type::Int => InitialValue::Initial(StaticInit::Int(0)),
                     Type::Long => InitialValue::Initial(StaticInit::Long(0)),
+                    _ => todo!(),
                     Type::Function(_) => unreachable!(),
                 }
             };
@@ -431,6 +433,7 @@ impl TypeChecker {
             Expression::Constant(c) => match c {
                 Constant::Int(_) => Type::Int,
                 Constant::Long(_) => Type::Long,
+                _ => todo!(),
             },
             Expression::Var(name) => {
                 let Some(data) = self.symbols.get(name) else {

@@ -7,7 +7,7 @@ use crate::ast::{
     StorageClass, Type, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
-use crate::lexer::{Lexer, Span, Token, TokenKind};
+use crate::lexer::{Lexer, LiteralKind, Span, Token, TokenKind};
 use crate::symbol::Symbol;
 
 struct Parser<'src> {
@@ -137,7 +137,12 @@ impl<'src> Parser<'src> {
     fn is_specifier(&self) -> bool {
         matches!(
             self.current.kind,
-            TokenKind::Int | TokenKind::Long | TokenKind::Extern | TokenKind::Static
+            TokenKind::Int
+                | TokenKind::Long
+                | TokenKind::Extern
+                | TokenKind::Static
+                | TokenKind::Unsigned
+                | TokenKind::Signed
         )
     }
 
@@ -145,41 +150,55 @@ impl<'src> Parser<'src> {
         let mut types = Vec::new();
         let begin = self.current.span;
         let mut end = self.current.span;
-        while let TokenKind::Int | TokenKind::Long = self.current.kind {
+        while let TokenKind::Int | TokenKind::Long | TokenKind::Signed | TokenKind::Unsigned =
+            self.current.kind
+        {
             types.push(self.current.kind);
             end = self.current.span;
             self.advance()
         }
-        self.type_from_list(begin, end, &types)
+        self.type_from_list(begin + end, &types)
     }
 
-    fn type_from_list(
-        &mut self,
-        begin: Span,
-        end: Span,
-        types: &[TokenKind],
-    ) -> Result<Node<Type>> {
-        if types.is_empty() {
-            return Err(CompilerError {
-                kind: ErrorKind::Parse,
-                msg: "Expected type specifier".into(),
-                span: self.current.span,
-            });
+    fn type_from_list(&mut self, span: Span, types: &[TokenKind]) -> Result<Node<Type>> {
+        let mut signed = 0;
+        let mut unsigned = 0;
+        let mut int = 0;
+        let mut long = 0;
+
+        for ty in types {
+            match ty {
+                TokenKind::Signed => signed += 1,
+                TokenKind::Unsigned => unsigned += 1,
+                TokenKind::Int => int += 1,
+                TokenKind::Long => long += 1,
+                _ => unreachable!(),
+            };
         }
-        let ty = match types {
-            [TokenKind::Int] => Type::Int,
-            [TokenKind::Long] => Type::Long,
-            [TokenKind::Long, TokenKind::Int] => Type::Long,
-            [TokenKind::Int, TokenKind::Long] => Type::Long,
+
+        let ty = match (signed, unsigned, int, long) {
+            (0, 1, 0 | 1, 1) => Type::ULong,
+            (0, 1, 0 | 1, 0) => Type::UInt,
+            (0 | 1, 0, 0 | 1, 1) => Type::Long,
+            (0 | 1, 0, 1, 0) => Type::Int,
+            (1, 0, 0, 0) => Type::Int,
+            (0, 0, 0, 0) => {
+                return Err(CompilerError {
+                    kind: ErrorKind::Parse,
+                    msg: "Expected type specifier".into(),
+                    span,
+                })
+            }
             _ => {
                 return Err(CompilerError {
                     kind: ErrorKind::Parse,
-                    msg: "Invalid type specifier".to_string(),
-                    span: begin + end,
+                    msg: "Invalid type specifier".into(),
+                    span,
                 })
             }
         };
-        Ok(self.node(begin + end, ty))
+
+        Ok(self.node(span, ty))
     }
 
     fn type_and_storage(&mut self) -> Result<(Node<Type>, Option<Node<StorageClass>>)> {
@@ -190,7 +209,7 @@ impl<'src> Parser<'src> {
         loop {
             let token = self.current;
             match token.kind {
-                TokenKind::Int | TokenKind::Long => {
+                TokenKind::Int | TokenKind::Long | TokenKind::Unsigned | TokenKind::Signed => {
                     types.push(token.kind);
                     end = self.current.span;
                     self.advance();
@@ -214,7 +233,7 @@ impl<'src> Parser<'src> {
                 _ => break,
             }
         }
-        let ty = self.type_from_list(begin, end, &types)?;
+        let ty = self.type_from_list(begin + end, &types)?;
         Ok((ty, storage))
     }
 
@@ -290,7 +309,7 @@ impl<'src> Parser<'src> {
                 ForInit::None
             }
             // TODO: unify with self.specifier()
-            TokenKind::Int | TokenKind::Long | TokenKind::Static | TokenKind::Extern => {
+            _ if self.is_specifier() => {
                 let Node { span, data, .. } = self.declaration()?;
                 let Declaration::Var(decl) = *data else {
                     return Err(CompilerError {
@@ -468,7 +487,7 @@ impl<'src> Parser<'src> {
         error_kind: &str,
     ) -> Result<Node<Expression>> {
         let mut expr = match self.current.kind {
-            TokenKind::IntConstant | TokenKind::LongConstant => self.constant()?,
+            TokenKind::Constant(_) => self.constant()?,
             TokenKind::Identifier => {
                 if self.next.kind == TokenKind::OpenParen {
                     self.function_call()?
@@ -731,46 +750,39 @@ impl<'src> Parser<'src> {
 
     fn constant(&mut self) -> Result<Node<Expression>> {
         let token = self.current;
-        let constant = match token.kind {
-            TokenKind::IntConstant => {
-                let value: i64 = token
-                    .slice(self.source)
-                    .parse()
-                    .map_err(|_| CompilerError {
-                        kind: ErrorKind::Parse,
-                        msg: "Integer constant out of range".into(),
-                        span: token.span,
-                    })?;
-                if value > i32::MAX as i64 {
-                    Constant::Long(value)
-                } else {
-                    Constant::Int(value as i32)
-                }
-            }
-            TokenKind::LongConstant => Constant::Long(
-                token
-                    .slice(self.source)
-                    .strip_suffix(&['l', 'L'])
-                    .unwrap()
-                    .parse()
-                    .map_err(|_| CompilerError {
-                        kind: ErrorKind::Parse,
-                        msg: "Long integer constant out of range".into(),
-                        span: token.span,
-                    })?,
-            ),
-            _ => {
-                return Err(CompilerError {
-                    kind: ErrorKind::Parse,
-                    msg: format!(
-                        "Expected constant but found '{}'",
-                        self.current.slice(self.source)
-                    ),
-                    span: token.span,
-                });
-            }
+        let TokenKind::Constant(kind) = token.kind else {
+            return Err(CompilerError {
+                kind: ErrorKind::Parse,
+                msg: format!(
+                    "Expected constant but found '{}'",
+                    self.current.slice(self.source)
+                ),
+                span: token.span,
+            });
         };
         self.advance();
+        let lexeme = token.slice(self.source);
+        let string_value = lexeme.strip_suffix(&['l', 'L']).unwrap_or(lexeme);
+        let string_value = string_value
+            .strip_suffix(&['u', 'U'])
+            .unwrap_or(string_value);
+
+        // Constant tokens don't have a sign, so u64 is the correct type
+        let value: u64 = string_value.parse().map_err(|e| CompilerError {
+            kind: ErrorKind::Parse,
+            msg: format!("Integer constant out of range: {e:?}"),
+            span: token.span,
+        })?;
+
+        let constant = match kind {
+            LiteralKind::Int if value > i32::MAX as u64 => Constant::Long(value as i64),
+            LiteralKind::Int => Constant::Int(value as i32),
+            LiteralKind::Uint if value > u32::MAX as u64 => Constant::ULong(value),
+            LiteralKind::Uint => Constant::UInt(value as u32),
+            LiteralKind::Long => Constant::Long(value as i64),
+            LiteralKind::ULong => Constant::ULong(value),
+        };
+
         Ok(self.node(token.span, Expression::Constant(constant)))
     }
 

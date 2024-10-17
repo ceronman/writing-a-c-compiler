@@ -125,7 +125,9 @@ pub enum Expression {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Constant {
     Int(i32),
+    UInt(u32),
     Long(i64),
+    ULong(u64),
 }
 
 #[derive(Debug)]
@@ -142,7 +144,9 @@ pub enum Declaration {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Type {
     Int,
+    UInt,
     Long,
+    ULong,
     Function(FunctionType),
 }
 

@@ -3,6 +3,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::{fs, panic};
 
+use crate::lexer::TokenKind;
 use crate::{lexer, parser, pretty, semantic, tacky};
 use anyhow::Result;
 
@@ -16,7 +17,7 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
         .join("src/lexer/test.rs");
     if fs::read_to_string(&output)?.is_empty() {
         let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
-        writeln!(file, "use crate::lexer::tokenize;")?;
+        writeln!(file, "use crate::lexer::{{LiteralKind, tokenize}};")?;
         writeln!(file, "use crate::lexer::TokenKind::*;")?;
     }
     let name = test_name(path);
@@ -38,7 +39,14 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
             writeln!(file, "    let src = r#\"")?;
             writeln!(file, "{indented}")?;
             writeln!(file, "    \"#;")?;
-            writeln!(file, "    let expected = vec!{tokens:?};")?;
+            let expected: Vec<String> = tokens
+                .iter()
+                .map(|t| match t {
+                    TokenKind::Constant(c) => format!("Constant(LiteralKind::{:?})", c),
+                    _ => format!("{:?}", t),
+                })
+                .collect();
+            writeln!(file, "    let expected = vec![{}];", expected.join(","))?;
             writeln!(file, "    assert_eq!(tokenize(src), expected);")?;
             writeln!(file, "}}")?;
         }

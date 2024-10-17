@@ -121,6 +121,7 @@ impl SemanticData {
         match val {
             tacky::Val::Constant(Constant::Int(_)) => AsmType::I32,
             tacky::Val::Constant(Constant::Long(_)) => AsmType::I64,
+            _ => todo!(),
             tacky::Val::Var(name) => self.symbol_ty(name),
         }
     }
@@ -130,6 +131,7 @@ impl SemanticData {
         match ty {
             Type::Int => AsmType::I32,
             Type::Long => AsmType::I64,
+            _ => todo!(),
             Type::Function(_) => unreachable!(),
         }
     }
@@ -637,6 +639,7 @@ impl tacky::Val {
             tacky::Val::Constant(value) => match value {
                 Constant::Int(v) => Operand::Imm(*v as i64),
                 Constant::Long(v) => Operand::Imm(*v),
+                _ => todo!(),
             },
             tacky::Val::Var(name) => Operand::Pseudo(name.clone()),
         }

@@ -593,6 +593,7 @@ impl TackyGenerator {
                         dst: dst.clone(),
                     });
                 }
+                _ => todo!(),
                 Type::Function(_) => unreachable!(),
             };
             dst
@@ -671,6 +672,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                     let init = match &ty {
                         Type::Int => StaticInit::Int(0),
                         Type::Long => StaticInit::Long(0),
+                        _ => todo!(),
                         Type::Function(_) => unreachable!(),
                     };
                     top_level.push(TopLevel::Variable(StaticVariable {

@@ -16260,7 +16260,7 @@ fn test_chapter_10_invalid_parse_extra_credit_extern_label() {
         r#"
         int main(void) {
             extern a:
-                 //^ Expected type specifier
+          //^^^^^^ Expected type specifier
             return 1;
         }
     "#,
@@ -16288,7 +16288,7 @@ fn test_chapter_10_invalid_parse_extra_credit_static_label() {
         r#"
         int main(void) {
             static a:
-                 //^ Expected type specifier
+          //^^^^^^ Expected type specifier
             return 1;
         }
     "#,
@@ -16316,7 +16316,7 @@ fn test_chapter_10_invalid_parse_missing_type_specifier() {
     assert_error(
         r#"
         static var = 0;
-             //^^^ Expected type specifier
+      //^^^^^^ Expected type specifier
         int main(void) {
             return var;
         }
@@ -24391,6 +24391,4740 @@ fn test_chapter_11_valid_long_expressions_type_specifiers() {
                     │               ╰── Constant [5]
                     ╰── Return
                         ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_invalid_labels_extra_credit_switch_duplicate_cases() {
+    let src = r#"
+        int main(void) {
+            unsigned int ui = 10u;
+            switch(ui) {
+                case 4294967295u:
+                    return 0;
+                case 1099511627775l:
+                    return 1;
+                default: return 2;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10U]
+                    ╰── Switch
+                        ├── Expression
+                        │   ╰── Var [ui]
+                        ╰── Block
+                            ├── Case [4294967295]
+                            │   ╰── Return
+                            │       ╰── Constant [0]
+                            ├── Case [1099511627775]
+                            │   ╰── Return
+                            │       ╰── Constant [1]
+                            ╰── Default
+                                ╰── Return
+                                    ╰── Constant [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_invalid_parse_bad_specifiers() {
+    assert_error(
+        r#"
+        int main(void) {
+            int i = 0;
+            return (signed unsigned) i;
+                                 //^ Expected expression, but found ')'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_12_invalid_parse_bad_specifiers_2() {
+    assert_error(
+        r#"
+        int main(void) {
+            unsigned long unsigned i = 0;
+          //^^^^^^^^^^^^^^^^^^^^^^ Invalid type specifier
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_12_invalid_types_conflicting_signed_unsigned() {
+    let src = r#"
+        unsigned x;
+        int x;
+        int main(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ╰── Type
+            │       ╰── Unsigned Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ╰── Type
+            │       ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_invalid_types_conflicting_uint_ulong() {
+    let src = r#"
+        
+        unsigned int foo(void);
+        unsigned long foo(void) {
+            return 0;
+        }
+        int main(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [foo]
+            ├── Function [foo]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Constant [0]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_explicit_casts_chained_casts() {
+    let src = r#"
+        unsigned int ui = 4294967200u;
+        int main(void) {
+            if ((long) (signed) ui != -96l)
+                return 1;
+            if ((unsigned long) (signed) ui != 18446744073709551520ul)
+                return 2;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ui
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant [4294967200U]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Cast
+                    │   │       │   ├── Target
+                    │   │       │   │   ╰── Long
+                    │   │       │   ╰── Expression
+                    │   │       │       ╰── Cast
+                    │   │       │           ├── Target
+                    │   │       │           │   ╰── Int
+                    │   │       │           ╰── Expression
+                    │   │       │               ╰── Var [ui]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [96L]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Cast
+                    │   │       │   ├── Target
+                    │   │       │   │   ╰── Unsigned Long
+                    │   │       │   ╰── Expression
+                    │   │       │       ╰── Cast
+                    │   │       │           ├── Target
+                    │   │       │           │   ╰── Int
+                    │   │       │           ╰── Expression
+                    │   │       │               ╰── Var [ui]
+                    │   │       ╰── Constant [18446744073709551520UL]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [2]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_explicit_casts_extension() {
+    let src = r#"
+        int int_to_ulong(int i, unsigned long expected) {
+            unsigned long result = (unsigned long) i;
+            return result == expected;
+        }
+        int uint_to_long(unsigned int ui, long expected) {
+            long result = (long) ui;
+            return result == expected;
+        }
+        int uint_to_ulong(unsigned ui, unsigned long expected){
+            return (unsigned long) ui == expected;
+        }
+        int main(void) {
+            if (!int_to_ulong(10, 10ul)) {
+                return 1;
+            }
+            if (!int_to_ulong(-10, 18446744073709551606ul)) {
+                return 2;
+            }
+            if (!uint_to_long(4294967200u, 4294967200l)) {
+                return 3;
+            }
+            if (!uint_to_ulong(4294967200u, 4294967200ul)) {
+                return 4;
+            }
+            if ((unsigned long) 4294967200u != 4294967200ul) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [int_to_ulong]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Long
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Unsigned Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [i]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [result]
+            │               ╰── Var [expected]
+            ├── Function [uint_to_long]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ui
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Long
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [ui]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [result]
+            │               ╰── Var [expected]
+            ├── Function [uint_to_ulong]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ui
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Cast
+            │               │   ├── Target
+            │               │   │   ╰── Unsigned Long
+            │               │   ╰── Expression
+            │               │       ╰── Var [ui]
+            │               ╰── Var [expected]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [int_to_ulong]
+                    │   │           ├── Constant [10]
+                    │   │           ╰── Constant [10UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [int_to_ulong]
+                    │   │           ├── Unary [-]
+                    │   │           │   ╰── Constant [10]
+                    │   │           ╰── Constant [18446744073709551606UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [uint_to_long]
+                    │   │           ├── Constant [4294967200U]
+                    │   │           ╰── Constant [4294967200L]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [uint_to_ulong]
+                    │   │           ├── Constant [4294967200U]
+                    │   │           ╰── Constant [4294967200UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Cast
+                    │   │       │   ├── Target
+                    │   │       │   │   ╰── Unsigned Long
+                    │   │       │   ╰── Expression
+                    │   │       │       ╰── Constant [4294967200U]
+                    │   │       ╰── Constant [4294967200UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [5]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
+    let src = r#"
+        int check_12_ints(int start, int a, int b, int c, int d, int e, int f, int g,
+                          int h, int i, int j, int k, int l);
+        unsigned glob = 5000u;
+        int main(void) {
+            long should_spill = (long)glob;
+            int one = glob - 4999;
+            int two = one + one;
+            int three = 2 + one;
+            int four = two * two;
+            int five = 6 - one;
+            int six = two * three;
+            int seven = one + 6;
+            int eight = two * 4;
+            int nine = three * three;
+            int ten = four + six;
+            int eleven = 16 - five;
+            int twelve = six + six;
+            check_12_ints(one, two, three, four, five, six, seven, eight, nine, ten,
+                          eleven, twelve, 1);
+            int thirteen = glob - 4987u;
+            int fourteen = thirteen + 1;
+            int fifteen = 28 - thirteen;
+            int sixteen = fourteen + 2;
+            int seventeen = 4 + thirteen;
+            int eighteen = 32 - fourteen;
+            int nineteen = 35 - sixteen;
+            int twenty = fifteen + 5;
+            int twenty_one = thirteen * 2 - 5;
+            int twenty_two = fifteen + 7;
+            int twenty_three = 6 + seventeen;
+            int twenty_four = thirteen + 11;
+            check_12_ints(thirteen, fourteen, fifteen, sixteen, seventeen, eighteen,
+                          nineteen, twenty, twenty_one, twenty_two, twenty_three,
+                          twenty_four, 13);
+            if (should_spill != 5000l) {
+                return -1;
+            }
+            return 0;
+        }
+        int check_12_ints(int a, int b, int c, int d, int e, int f, int g, int h, int i,
+                          int j, int k, int l, int start) {
+            int expected = 0;
+            expected = start + 0;
+            if (a != expected) {
+                return expected;
+            }
+            expected = start + 1;
+            if (b != expected) {
+                return expected;
+            }
+            expected = start + 2;
+            if (c != expected) {
+                return expected;
+            }
+            expected = start + 3;
+            if (d != expected) {
+                return expected;
+            }
+            expected = start + 4;
+            if (e != expected) {
+                return expected;
+            }
+            expected = start + 5;
+            if (f != expected) {
+                return expected;
+            }
+            expected = start + 6;
+            if (g != expected) {
+                return expected;
+            }
+            expected = start + 7;
+            if (h != expected) {
+                return expected;
+            }
+            expected = start + 8;
+            if (i != expected) {
+                return expected;
+            }
+            expected = start + 9;
+            if (j != expected) {
+                return expected;
+            }
+            expected = start + 10;
+            if (k != expected) {
+                return expected;
+            }
+            expected = start + 11;
+            if (l != expected) {
+                return expected;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [check_12_ints]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── start
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── h
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── j
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── k
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── l
+            │           ╰── Type
+            │               ╰── Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── glob
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant [5000U]
+            ├── Function [main]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── should_spill
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [glob]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── one
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [glob]
+            │       │           ╰── Constant [4999]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── two
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [one]
+            │       │           ╰── Var [one]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── three
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Constant [2]
+            │       │           ╰── Var [one]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── four
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [two]
+            │       │           ╰── Var [two]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── five
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant [6]
+            │       │           ╰── Var [one]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── six
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [two]
+            │       │           ╰── Var [three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── seven
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [one]
+            │       │           ╰── Constant [6]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── eight
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [two]
+            │       │           ╰── Constant [4]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nine
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [three]
+            │       │           ╰── Var [three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ten
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [four]
+            │       │           ╰── Var [six]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── eleven
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant [16]
+            │       │           ╰── Var [five]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twelve
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [six]
+            │       │           ╰── Var [six]
+            │       ├── FunctionCall [check_12_ints]
+            │       │   ├── Var [one]
+            │       │   ├── Var [two]
+            │       │   ├── Var [three]
+            │       │   ├── Var [four]
+            │       │   ├── Var [five]
+            │       │   ├── Var [six]
+            │       │   ├── Var [seven]
+            │       │   ├── Var [eight]
+            │       │   ├── Var [nine]
+            │       │   ├── Var [ten]
+            │       │   ├── Var [eleven]
+            │       │   ├── Var [twelve]
+            │       │   ╰── Constant [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── thirteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [glob]
+            │       │           ╰── Constant [4987U]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── fourteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [thirteen]
+            │       │           ╰── Constant [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── fifteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant [28]
+            │       │           ╰── Var [thirteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── sixteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [fourteen]
+            │       │           ╰── Constant [2]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── seventeen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Constant [4]
+            │       │           ╰── Var [thirteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── eighteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant [32]
+            │       │           ╰── Var [fourteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nineteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant [35]
+            │       │           ╰── Var [sixteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [fifteen]
+            │       │           ╰── Constant [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_one
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Binary [*]
+            │       │           │   ├── Var [thirteen]
+            │       │           │   ╰── Constant [2]
+            │       │           ╰── Constant [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_two
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [fifteen]
+            │       │           ╰── Constant [7]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_three
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Constant [6]
+            │       │           ╰── Var [seventeen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_four
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [thirteen]
+            │       │           ╰── Constant [11]
+            │       ├── FunctionCall [check_12_ints]
+            │       │   ├── Var [thirteen]
+            │       │   ├── Var [fourteen]
+            │       │   ├── Var [fifteen]
+            │       │   ├── Var [sixteen]
+            │       │   ├── Var [seventeen]
+            │       │   ├── Var [eighteen]
+            │       │   ├── Var [nineteen]
+            │       │   ├── Var [twenty]
+            │       │   ├── Var [twenty_one]
+            │       │   ├── Var [twenty_two]
+            │       │   ├── Var [twenty_three]
+            │       │   ├── Var [twenty_four]
+            │       │   ╰── Constant [13]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [should_spill]
+            │       │   │       ╰── Constant [5000L]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Unary [-]
+            │       │                   ╰── Constant [1]
+            │       ╰── Return
+            │           ╰── Constant [0]
+            ╰── Function [check_12_ints]
+                ├── Parameters
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── b
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── c
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── e
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── f
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── g
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── h
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── j
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── k
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── l
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── start
+                │       ╰── Type
+                │           ╰── Int
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── expected
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [a]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [c]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [e]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [f]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [g]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [h]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [j]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [k]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant [11]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_explicit_casts_round_trip_casts() {
+    let src = r#"
+        unsigned long a = 8589934580ul;
+        int main(void) {
+            unsigned long b = (unsigned long) (unsigned int) a;
+            if (b != 4294967284ul)
+                return 1;
+            b = (unsigned long) (signed int) a;
+            if (b != 18446744073709551604ul)
+                return 2;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── a
+            │   ├── Type
+            │   │   ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Constant [8589934580UL]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Unsigned Long
+                    │           ╰── Expression
+                    │               ╰── Cast
+                    │                   ├── Target
+                    │                   │   ╰── Unsigned Int
+                    │                   ╰── Expression
+                    │                       ╰── Var [a]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Constant [4294967284UL]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [1]
+                    ├── Assign [=]
+                    │   ├── Var [b]
+                    │   ╰── Cast
+                    │       ├── Target
+                    │       │   ╰── Unsigned Long
+                    │       ╰── Expression
+                    │           ╰── Cast
+                    │               ├── Target
+                    │               │   ╰── Int
+                    │               ╰── Expression
+                    │                   ╰── Var [a]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Constant [18446744073709551604UL]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [2]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_explicit_casts_same_size_conversion() {
+    let src = r#"
+        int uint_to_int(unsigned int ui, int expected) {
+            return (int) ui == expected;
+        }
+        int int_to_uint(int i, unsigned int expected) {
+            return (unsigned int) i == expected;
+        }
+        int ulong_to_long(unsigned long ul, signed long expected) {
+            return (signed long) ul == expected;
+        }
+        int long_to_ulong(long l, unsigned long expected) {
+            return (unsigned long) l == expected;
+        }
+        int main(void) {
+            if (!int_to_uint(10, 10u)) {
+                return 1;
+            }
+            if (!uint_to_int(10u, 10)) {
+                return 2;
+            }
+            if (!long_to_ulong(-1000l, 18446744073709550616ul)) {
+                return 3;
+            }
+            if (!ulong_to_long(18446744073709550616ul, -1000l)) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [uint_to_int]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ui
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Cast
+            │               │   ├── Target
+            │               │   │   ╰── Int
+            │               │   ╰── Expression
+            │               │       ╰── Var [ui]
+            │               ╰── Var [expected]
+            ├── Function [int_to_uint]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Cast
+            │               │   ├── Target
+            │               │   │   ╰── Unsigned Int
+            │               │   ╰── Expression
+            │               │       ╰── Var [i]
+            │               ╰── Var [expected]
+            ├── Function [ulong_to_long]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ul
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Cast
+            │               │   ├── Target
+            │               │   │   ╰── Long
+            │               │   ╰── Expression
+            │               │       ╰── Var [ul]
+            │               ╰── Var [expected]
+            ├── Function [long_to_ulong]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── l
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Cast
+            │               │   ├── Target
+            │               │   │   ╰── Unsigned Long
+            │               │   ╰── Expression
+            │               │       ╰── Var [l]
+            │               ╰── Var [expected]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [int_to_uint]
+                    │   │           ├── Constant [10]
+                    │   │           ╰── Constant [10U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [uint_to_int]
+                    │   │           ├── Constant [10U]
+                    │   │           ╰── Constant [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [long_to_ulong]
+                    │   │           ├── Unary [-]
+                    │   │           │   ╰── Constant [1000L]
+                    │   │           ╰── Constant [18446744073709550616UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [ulong_to_long]
+                    │   │           ├── Constant [18446744073709550616UL]
+                    │   │           ╰── Unary [-]
+                    │   │               ╰── Constant [1000L]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_explicit_casts_truncate() {
+    let src = r#"
+        
+        int ulong_to_int(unsigned long ul, int expected) {
+            int result = (int) ul;
+            return (result == expected);
+        }
+        int ulong_to_uint(unsigned long ul, unsigned expected) {
+            return ((unsigned int) ul == expected);
+        }
+        int long_to_uint(long l, unsigned int expected) {
+            return (unsigned int) l == expected;
+        }
+        int main(void) {
+            if (!long_to_uint(100l, 100u)) {
+                return 1;
+            }
+            if (!long_to_uint(-9223372036854774574l, 1234u)) {
+                return 2;
+            }
+            if (!ulong_to_int(100ul, 100)) {
+                return 3;
+            }
+            if (!ulong_to_uint(100ul, 100u)) {
+                return 4;
+            }
+            if (!ulong_to_uint(4294967200ul, 4294967200u)) {
+                return 5;
+            }
+            if (!ulong_to_int(4294967200ul, -96)) {
+                return 6;
+            }
+            if (!ulong_to_uint(1152921506754330624ul, 2147483648u)) {
+                return 7;
+            }
+            if (!ulong_to_int(1152921506754330624ul, -2147483648)){
+                return 8;
+            }
+            unsigned int ui = (unsigned int)17179869189ul;
+            if (ui != 5)
+                return 9;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [ulong_to_int]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ul
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Int
+            │       │           ╰── Expression
+            │       │               ╰── Var [ul]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [result]
+            │               ╰── Var [expected]
+            ├── Function [ulong_to_uint]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ul
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Cast
+            │               │   ├── Target
+            │               │   │   ╰── Unsigned Int
+            │               │   ╰── Expression
+            │               │       ╰── Var [ul]
+            │               ╰── Var [expected]
+            ├── Function [long_to_uint]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── l
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Cast
+            │               │   ├── Target
+            │               │   │   ╰── Unsigned Int
+            │               │   ╰── Expression
+            │               │       ╰── Var [l]
+            │               ╰── Var [expected]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [long_to_uint]
+                    │   │           ├── Constant [100L]
+                    │   │           ╰── Constant [100U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [long_to_uint]
+                    │   │           ├── Unary [-]
+                    │   │           │   ╰── Constant [9223372036854774574L]
+                    │   │           ╰── Constant [1234U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [ulong_to_int]
+                    │   │           ├── Constant [100UL]
+                    │   │           ╰── Constant [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [ulong_to_uint]
+                    │   │           ├── Constant [100UL]
+                    │   │           ╰── Constant [100U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [ulong_to_uint]
+                    │   │           ├── Constant [4294967200UL]
+                    │   │           ╰── Constant [4294967200U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [ulong_to_int]
+                    │   │           ├── Constant [4294967200UL]
+                    │   │           ╰── Unary [-]
+                    │   │               ╰── Constant [96]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [ulong_to_uint]
+                    │   │           ├── Constant [1152921506754330624UL]
+                    │   │           ╰── Constant [2147483648U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [ulong_to_int]
+                    │   │           ├── Constant [1152921506754330624UL]
+                    │   │           ╰── Unary [-]
+                    │   │               ╰── Constant [2147483648L]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [8]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Unsigned Int
+                    │           ╰── Expression
+                    │               ╰── Constant [17179869189UL]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ui]
+                    │   │       ╰── Constant [5]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [9]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_extra_credit_bitwise_unsigned_ops() {
+    let src = r#"
+        int main(void) {
+            unsigned int ui = -1u;
+            unsigned long ul = 9223372036854775808ul;
+            if ((ui & ul) != 0)
+                return 1;
+            if ((ui | ul) != 9223372041149743103ul)
+                return 2;
+            signed int i = -1;
+            if ((i & ul) != ul)
+                return 3;
+            if ((i | ul) != i)
+                return 4;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1U]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [9223372036854775808UL]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [&]
+                    │   │       │   ├── Var [ui]
+                    │   │       │   ╰── Var [ul]
+                    │   │       ╰── Constant [0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [|]
+                    │   │       │   ├── Var [ui]
+                    │   │       │   ╰── Var [ul]
+                    │   │       ╰── Constant [9223372041149743103UL]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [&]
+                    │   │       │   ├── Var [i]
+                    │   │       │   ╰── Var [ul]
+                    │   │       ╰── Var [ul]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [|]
+                    │   │       │   ├── Var [i]
+                    │   │       │   ╰── Var [ul]
+                    │   │       ╰── Var [i]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [4]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_extra_credit_bitwise_unsigned_shift() {
+    let src = r#"
+        int main(void) {
+            unsigned int ui = -1u;
+            if ((ui << 2l) != 4294967292) {
+                return 1;
+            }
+            if ((ui >> 2) != 1073741823) {
+                return 2;
+            }
+            static int shiftcount = 5;
+            if ((1000000u >> shiftcount) != 31250) {
+                return 3;
+            }
+            if ((1000000u << shiftcount) != 32000000) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [<<]
+                    │   │       │   ├── Var [ui]
+                    │   │       │   ╰── Constant [2L]
+                    │   │       ╰── Constant [4294967292L]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [>>]
+                    │   │       │   ├── Var [ui]
+                    │   │       │   ╰── Constant [2]
+                    │   │       ╰── Constant [1073741823]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── shiftcount
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Constant [5]
+                    │   ╰── Static
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [>>]
+                    │   │       │   ├── Constant [1000000U]
+                    │   │       │   ╰── Var [shiftcount]
+                    │   │       ╰── Constant [31250]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [<<]
+                    │   │       │   ├── Constant [1000000U]
+                    │   │       │   ╰── Var [shiftcount]
+                    │   │       ╰── Constant [32000000]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_extra_credit_compound_assign_uint() {
+    let src = r#"
+        int main(void) {
+            unsigned int x = -1u;
+            x /= -10l;
+            return (x == 3865470567u);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1U]
+                    ├── Assign [/=]
+                    │   ├── Var [x]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant [10L]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Var [x]
+                            ╰── Constant [3865470567U]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_extra_credit_compound_bitshift() {
+    let src = r#"
+        int main(void) {
+            int i = -2;
+            i >>= 3u;
+            if (i != -1) {
+                return 1;
+            }
+            unsigned long ul = 18446744073709551615UL;
+            ul <<= 44;
+            if (ul != 18446726481523507200ul) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [2]
+                    ├── Assign [>>=]
+                    │   ├── Var [i]
+                    │   ╰── Constant [3U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [18446744073709551615UL]
+                    ├── Assign [<<=]
+                    │   ├── Var [ul]
+                    │   ╰── Constant [44]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant [18446726481523507200UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_extra_credit_compound_bitwise() {
+    let src = r#"
+        int main(void) {
+            unsigned long ul = 18446460386757245432ul;
+            ul &= -1000;
+            if (ul != 18446460386757244952ul ) {
+                return 1;
+            }
+            ul |= 4294967040u;
+            if (ul != 18446460386824683288ul ) {
+                return 2;
+            }
+            int i = 123456;
+            unsigned int ui = 4042322160u;
+            long l = -252645136;
+            if (ui ^= l) {
+                return 3;
+            }
+            if (ui) {
+                return 4;
+            }
+            if (i != 123456) {
+                return 5;
+            }
+            if (l != -252645136) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [18446460386757245432UL]
+                    ├── Assign [&=]
+                    │   ├── Var [ul]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant [1000]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant [18446460386757244952UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── Assign [|=]
+                    │   ├── Var [ul]
+                    │   ╰── Constant [4294967040U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant [18446460386824683288UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [123456]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4042322160U]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [252645136]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Assign [^=]
+                    │   │       ├── Var [ui]
+                    │   │       ╰── Var [l]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [ui]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant [123456]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [252645136]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [6]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_extra_credit_postfix_precedence() {
+    let src = r#"
+        int main(void) {
+            unsigned int ui = 4294967295U;
+            if (((unsigned long)ui++) != 4294967295U) {
+                return 1;
+            }
+            if (ui) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4294967295U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Cast
+                    │   │       │   ├── Target
+                    │   │       │   │   ╰── Unsigned Long
+                    │   │       │   ╰── Expression
+                    │   │       │       ╰── Postfix [++]
+                    │   │       │           ╰── Var [ui]
+                    │   │       ╰── Constant [4294967295U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [ui]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_extra_credit_switch_uint() {
+    let src = r#"
+        int switch_on_uint(unsigned int ui) {
+            switch (ui) {
+                case 5u:
+                    return 0;
+                case 4294967286l:
+                    return 1;
+                case 34359738378ul:
+                    return 2;
+                default:
+                    return 3;
+            }
+        }
+        int main(void) {
+            if (switch_on_uint(5) != 0)
+                return 1;
+            if (switch_on_uint(4294967286) != 1)
+                return 2;
+            if (switch_on_uint(10) != 2)
+                return 3;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [switch_on_uint]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ui
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ╰── Switch
+            │           ├── Expression
+            │           │   ╰── Var [ui]
+            │           ╰── Block
+            │               ├── Case [5]
+            │               │   ╰── Return
+            │               │       ╰── Constant [0]
+            │               ├── Case [4294967286]
+            │               │   ╰── Return
+            │               │       ╰── Constant [1]
+            │               ├── Case [34359738378]
+            │               │   ╰── Return
+            │               │       ╰── Constant [2]
+            │               ╰── Default
+            │                   ╰── Return
+            │                       ╰── Constant [3]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [switch_on_uint]
+                    │   │       │   ╰── Constant [5]
+                    │   │       ╰── Constant [0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [switch_on_uint]
+                    │   │       │   ╰── Constant [4294967286L]
+                    │   │       ╰── Constant [1]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [switch_on_uint]
+                    │   │       │   ╰── Constant [10]
+                    │   │       ╰── Constant [2]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [3]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_extra_credit_unsigned_incr_decr() {
+    let src = r#"
+        
+        int main(void) {
+            unsigned int i = 0;
+            if (i-- != 0) {
+                return 1;
+            }
+            if (i != 4294967295U) {
+                return 2;
+            }
+            if (--i != 4294967294U) {
+                return 3;
+            }
+            if (i != 4294967294U) {
+                return 4;
+            }
+            unsigned long l = 18446744073709551614UL;
+            if (l++ != 18446744073709551614UL) {
+                return 5;
+            }
+            if (l != 18446744073709551615UL) {
+                return 6;
+            }
+            if (++l != 0) {
+                return 7;
+            }
+            if (l != 0) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Postfix [--]
+                    │   │       │   ╰── Var [i]
+                    │   │       ╰── Constant [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant [4294967295U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [--]
+                    │   │       │   ╰── Var [i]
+                    │   │       ╰── Constant [4294967294U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant [4294967294U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [18446744073709551614UL]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Postfix [++]
+                    │   │       │   ╰── Var [l]
+                    │   │       ╰── Constant [18446744073709551614UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Constant [18446744073709551615UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [++]
+                    │   │       │   ╰── Var [l]
+                    │   │       ╰── Constant [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Constant [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [8]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_implicit_casts_common_type() {
+    let src = r#"
+        int int_gt_uint(int i, unsigned int u) {
+            return i > u;
+        }
+        int int_gt_ulong(int i, unsigned long ul) {
+            return i > ul;
+        }
+        int uint_gt_long(unsigned int u, long l) {
+            return u > l;
+        }
+        int uint_lt_ulong(unsigned int u, unsigned long ul) {
+            return u < ul;
+        }
+        int long_gt_ulong(long l, unsigned long ul) {
+            return l > ul;
+        }
+        int ternary_int_uint(int flag, int i, unsigned int ui) {
+            long result = flag ? i : ui;
+            return (result == 4294967295l);
+        }
+        int main(void) {
+            if (!int_gt_uint(-100, 100u)) {
+                return 1;
+            }
+            if (!(int_gt_ulong(-1, 18446744073709551606ul))) {
+                return 2;
+            }
+            if (!uint_gt_long(100u, -100l)) {
+                return 3;
+            }
+            if (!uint_lt_ulong(1073741824u, 34359738368ul)) {
+                return 4;
+            }
+            if (!long_gt_ulong(-1l, 1000ul)) {
+                return 5;
+            }
+            if (!ternary_int_uint(1, -1, 1u)) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [int_gt_uint]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [>]
+            │               ├── Var [i]
+            │               ╰── Var [u]
+            ├── Function [int_gt_ulong]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ul
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [>]
+            │               ├── Var [i]
+            │               ╰── Var [ul]
+            ├── Function [uint_gt_long]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── u
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── l
+            │   │       ╰── Type
+            │   │           ╰── Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [>]
+            │               ├── Var [u]
+            │               ╰── Var [l]
+            ├── Function [uint_lt_ulong]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── u
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ul
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [<]
+            │               ├── Var [u]
+            │               ╰── Var [ul]
+            ├── Function [long_gt_ulong]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── l
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ul
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [>]
+            │               ├── Var [l]
+            │               ╰── Var [ul]
+            ├── Function [ternary_int_uint]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── flag
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ui
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Conditional [?]
+            │       │           ├── Var [flag]
+            │       │           ├── Then
+            │       │           │   ╰── Var [i]
+            │       │           ╰── Else
+            │       │               ╰── Var [ui]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [result]
+            │               ╰── Constant [4294967295L]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [int_gt_uint]
+                    │   │           ├── Unary [-]
+                    │   │           │   ╰── Constant [100]
+                    │   │           ╰── Constant [100U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [int_gt_ulong]
+                    │   │           ├── Unary [-]
+                    │   │           │   ╰── Constant [1]
+                    │   │           ╰── Constant [18446744073709551606UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [uint_gt_long]
+                    │   │           ├── Constant [100U]
+                    │   │           ╰── Unary [-]
+                    │   │               ╰── Constant [100L]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [uint_lt_ulong]
+                    │   │           ├── Constant [1073741824U]
+                    │   │           ╰── Constant [34359738368UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [long_gt_ulong]
+                    │   │           ├── Unary [-]
+                    │   │           │   ╰── Constant [1L]
+                    │   │           ╰── Constant [1000UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [ternary_int_uint]
+                    │   │           ├── Constant [1]
+                    │   │           ├── Unary [-]
+                    │   │           │   ╰── Constant [1]
+                    │   │           ╰── Constant [1U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [6]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_implicit_casts_convert_by_assignment() {
+    let src = r#"
+        int check_int(int converted, int expected) {
+            return (converted == expected);
+        }
+        int check_long(long converted, long expected) {
+            return (converted == expected);
+        }
+        int check_ulong(unsigned long converted, unsigned long expected) {
+            return (converted == expected);
+        }
+        long return_extended_uint(unsigned int u) {
+            return u;
+        }
+        unsigned long return_extended_int(int i) {
+            return i;
+        }
+        int return_truncated_ulong(unsigned long ul) {
+            return ul;
+        }
+        int extend_on_assignment(unsigned int ui, long expected) {
+            long result = ui;
+            return result == expected;
+        }
+        int main(void) {
+            if (!check_int(9223372036854775813ul, 5)) {
+                return 1;
+            }
+            if (!check_long(2147483658u, 2147483658l)) {
+                return 2;
+            }
+            if (!check_ulong(-1, 18446744073709551615UL)) {
+                return 3;
+            }
+            if (return_extended_uint(2147483658u) != 2147483658l) {
+                return 4;
+            }
+            if (return_extended_int(-1) != 18446744073709551615UL) {
+                return 5;
+            }
+            long l = return_truncated_ulong(1125902054326372ul);
+            if (l != -2147483548l) {
+                return 6;
+            }
+            if (!extend_on_assignment(2147483658u, 2147483658l)){
+                return 7;
+            }
+            int i = 4294967196u;
+            if (i != -100) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [check_int]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── converted
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [converted]
+            │               ╰── Var [expected]
+            ├── Function [check_long]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── converted
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [converted]
+            │               ╰── Var [expected]
+            ├── Function [check_ulong]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── converted
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [converted]
+            │               ╰── Var [expected]
+            ├── Function [return_extended_uint]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Var [u]
+            ├── Function [return_extended_int]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Var [i]
+            ├── Function [return_truncated_ulong]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ul
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Var [ul]
+            ├── Function [extend_on_assignment]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ui
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Long
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Var [ui]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [result]
+            │               ╰── Var [expected]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [check_int]
+                    │   │           ├── Constant [9223372036854775813UL]
+                    │   │           ╰── Constant [5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [check_long]
+                    │   │           ├── Constant [2147483658U]
+                    │   │           ╰── Constant [2147483658L]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [check_ulong]
+                    │   │           ├── Unary [-]
+                    │   │           │   ╰── Constant [1]
+                    │   │           ╰── Constant [18446744073709551615UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [return_extended_uint]
+                    │   │       │   ╰── Constant [2147483658U]
+                    │   │       ╰── Constant [2147483658L]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [return_extended_int]
+                    │   │       │   ╰── Unary [-]
+                    │   │       │       ╰── Constant [1]
+                    │   │       ╰── Constant [18446744073709551615UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [return_truncated_ulong]
+                    │           ╰── Constant [1125902054326372UL]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [2147483548L]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [extend_on_assignment]
+                    │   │           ├── Constant [2147483658U]
+                    │   │           ╰── Constant [2147483658L]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [7]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [4294967196U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [8]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_implicit_casts_promote_constants() {
+    let src = r#"
+        long negative_one = 1l;
+        long zero = 0l;
+        int main(void) {
+            negative_one = -negative_one;
+            if (68719476736u >= negative_one) {
+                return 1;
+            }
+            if (-2147483658 >= zero) {
+                return 2;
+            }
+            if (!(3ul + 4294967293ul)) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── negative_one
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant [1L]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── zero
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant [0L]
+            ╰── Function [main]
+                ╰── Body
+                    ├── Assign [=]
+                    │   ├── Var [negative_one]
+                    │   ╰── Unary [-]
+                    │       ╰── Var [negative_one]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [>=]
+                    │   │       ├── Constant [68719476736UL]
+                    │   │       ╰── Var [negative_one]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [>=]
+                    │   │       ├── Unary [-]
+                    │   │       │   ╰── Constant [2147483658L]
+                    │   │       ╰── Var [zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Constant [3UL]
+                    │   │           ╰── Constant [4294967293UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_implicit_casts_static_initializers() {
+    let src = r#"
+        unsigned int u = 1152921506754330636l;
+        int i = 2147483650u;
+        long l = 9223372036854775900u;
+        long l2 = 2147483650u;
+        unsigned long ul = 4294967294u;
+        unsigned long ul2 = 9223372036854775798l;
+        int i2 = 9223372039002259606ul;
+        unsigned ui2 = 9223372039002259606ul;
+        int main(void)
+        {
+            if (u != 2147483660u)
+                return 1;
+            if (i != -2147483646)
+                return 2;
+            if (l != -9223372036854775716l)
+                return 3;
+            if (l2 != 2147483650l)
+                return 4;
+            if (ul != 4294967294ul)
+                return 5;
+            if (ul2 != 9223372036854775798ul)
+                return 6;
+            if (i2 != -2147483498)
+                return 7;
+            if (ui2 != 2147483798u)
+                return 8;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── u
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant [1152921506754330636L]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [2147483650U]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant [9223372036854775900UL]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l2
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant [2147483650U]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul
+            │   ├── Type
+            │   │   ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Constant [4294967294U]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul2
+            │   ├── Type
+            │   │   ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Constant [9223372036854775798L]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i2
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant [9223372039002259606UL]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ui2
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant [9223372039002259606UL]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [u]
+                    │   │       ╰── Constant [2147483660U]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [2147483646]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [9223372036854775716L]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l2]
+                    │   │       ╰── Constant [2147483650L]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant [4294967294UL]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul2]
+                    │   │       ╰── Constant [9223372036854775798UL]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i2]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [2147483498]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ui2]
+                    │   │       ╰── Constant [2147483798U]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [8]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_libraries_unsigned_args() {
+    let src = r#"
+        int accept_unsigned(unsigned int a, unsigned int b, unsigned long c, unsigned long d,
+                         unsigned int e, unsigned int f, unsigned long g, unsigned int h,
+                         unsigned long i) {
+            if (a != 1u) {
+                return 1;
+            }
+            if (b != 4294967295U) {
+                return 2;
+            }
+            if (c != 18446744073709551615UL) {
+                return 3;
+            }
+            if (d != 9223372036854775808ul) {
+                return 4;
+            }
+            if (e != 2147483648u) {
+                return 5;
+            }
+            if (f != 0u) {
+                return 8;
+            }
+            if (g != 123456u) {
+                return 9;
+            }
+            if (h != 2147487744u) {
+                return 10;
+            }
+            if (i != 9223372041149743104ul) {
+                return 11;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [accept_unsigned]
+                ├── Parameters
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Unsigned Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── b
+                │   │   ╰── Type
+                │   │       ╰── Unsigned Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── c
+                │   │   ╰── Type
+                │   │       ╰── Unsigned Long
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d
+                │   │   ╰── Type
+                │   │       ╰── Unsigned Long
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── e
+                │   │   ╰── Type
+                │   │       ╰── Unsigned Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── f
+                │   │   ╰── Type
+                │   │       ╰── Unsigned Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── g
+                │   │   ╰── Type
+                │   │       ╰── Unsigned Long
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── h
+                │   │   ╰── Type
+                │   │       ╰── Unsigned Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── i
+                │       ╰── Type
+                │           ╰── Unsigned Long
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [a]
+                    │   │       ╰── Constant [1U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Constant [4294967295U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [c]
+                    │   │       ╰── Constant [18446744073709551615UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant [9223372036854775808UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [e]
+                    │   │       ╰── Constant [2147483648U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [f]
+                    │   │       ╰── Constant [0U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [g]
+                    │   │       ╰── Constant [123456U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [h]
+                    │   │       ╰── Constant [2147487744U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant [9223372041149743104UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [11]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_libraries_unsigned_args_client() {
+    let src = r#"
+        
+        int accept_unsigned(unsigned int a, unsigned int b, unsigned long c, unsigned long d,
+                         unsigned int e, unsigned int f, unsigned long g, unsigned int h,
+                         unsigned long i);
+        int main(void) {
+            return accept_unsigned(1, -1, -1, 9223372036854775808ul, 2147483648ul, 0, 123456, 2147487744u, 9223372041149743104ul);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [accept_unsigned]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Long
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Long
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Long
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── h
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── i
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── FunctionCall [accept_unsigned]
+                            ├── Constant [1]
+                            ├── Unary [-]
+                            │   ╰── Constant [1]
+                            ├── Unary [-]
+                            │   ╰── Constant [1]
+                            ├── Constant [9223372036854775808UL]
+                            ├── Constant [2147483648UL]
+                            ├── Constant [0]
+                            ├── Constant [123456]
+                            ├── Constant [2147487744U]
+                            ╰── Constant [9223372041149743104UL]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_libraries_unsigned_global_var() {
+    let src = r#"
+        unsigned int ui = 4294967200u;
+        unsigned int return_uint(void) {
+            return ui;
+        }
+        int return_uint_as_signed(void) {
+            return ui;
+        }
+        long return_uint_as_long(void) {
+            return ui;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ui
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant [4294967200U]
+            ├── Function [return_uint]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Var [ui]
+            ├── Function [return_uint_as_signed]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Var [ui]
+            ╰── Function [return_uint_as_long]
+                ╰── Body
+                    ╰── Return
+                        ╰── Var [ui]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_libraries_unsigned_global_var_client() {
+    let src = r#"
+        extern unsigned int ui;
+        unsigned int return_uint(void);
+        int return_uint_as_signed(void);
+        long return_uint_as_long(void);
+        int main(void) {
+            if (ui != 4294967200u)
+                return 0;
+            ui = -1;
+            long result = (long) return_uint();
+            if (result != 4294967295l)
+                return 0;
+            result = (long) return_uint_as_signed();
+            if (result != -1l)
+                return 0;
+            result = return_uint_as_long();
+            if (result != 4294967295l)
+                return 0;
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ui
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Extern
+            ├── Function [return_uint]
+            ├── Function [return_uint_as_signed]
+            ├── Function [return_uint_as_long]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ui]
+                    │   │       ╰── Constant [4294967200U]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [0]
+                    ├── Assign [=]
+                    │   ├── Var [ui]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Long
+                    │           ╰── Expression
+                    │               ╰── FunctionCall [return_uint]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [result]
+                    │   │       ╰── Constant [4294967295L]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [0]
+                    ├── Assign [=]
+                    │   ├── Var [result]
+                    │   ╰── Cast
+                    │       ├── Target
+                    │       │   ╰── Long
+                    │       ╰── Expression
+                    │           ╰── FunctionCall [return_uint_as_signed]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [result]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [1L]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [0]
+                    ├── Assign [=]
+                    │   ├── Var [result]
+                    │   ╰── FunctionCall [return_uint_as_long]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [result]
+                    │   │       ╰── Constant [4294967295L]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [0]
+                    ╰── Return
+                        ╰── Constant [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_type_specifiers_signed_type_specifiers() {
+    let src = r#"
+        static int i;
+        signed extern i;
+        int static signed i = 5;
+        signed int static i;
+        long signed l;
+        long l = 7;
+        int long l;
+        signed long int l;
+        int main(void) {
+            int signed extern i;
+            extern signed long l;
+            if (i != 5) {
+                return 1;
+            }
+            if (l != 7) {
+                return 2;
+            }
+            int counter = 0;
+            for (signed int index = 10; index > 0; index = index - 1) {
+                counter = counter + 1;
+            }
+            if (counter != 10) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Static
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Extern
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ├── Initializer
+            │   │   ╰── Constant [5]
+            │   ╰── Static
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Static
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ╰── Type
+            │       ╰── Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant [7]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ╰── Type
+            │       ╰── Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ╰── Type
+            │       ╰── Long
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Extern
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Extern
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant [5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Constant [7]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── counter
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── index
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [10]
+                    │   ├── Condition
+                    │   │   ╰── Binary [>]
+                    │   │       ├── Var [index]
+                    │   │       ╰── Constant [0]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [index]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [index]
+                    │   │           ╰── Constant [1]
+                    │   ╰── Block
+                    │       ╰── Assign [=]
+                    │           ├── Var [counter]
+                    │           ╰── Binary [+]
+                    │               ├── Var [counter]
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [counter]
+                    │   │       ╰── Constant [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_type_specifiers_unsigned_type_specifiers() {
+    let src = r#"
+        unsigned u;
+        int unsigned u;
+        unsigned int u = 6;
+        unsigned long ul;
+        long unsigned ul;
+        long int unsigned ul;
+        unsigned int long ul = 4;
+        int main(void) {
+            if (u != 6u) {
+                return 1;
+            }
+            long extern unsigned ul;
+            unsigned long extern ul;
+            int extern unsigned long ul;
+            if (ul != 4ul) {
+                return 2;
+            }
+            int counter = 0;
+            for (unsigned int index = 10; index < 4294967295U; index = index - 1) {
+                counter = counter + 1;
+            }
+            if (counter != 11) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── u
+            │   ╰── Type
+            │       ╰── Unsigned Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── u
+            │   ╰── Type
+            │       ╰── Unsigned Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── u
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant [6]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul
+            │   ╰── Type
+            │       ╰── Unsigned Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul
+            │   ╰── Type
+            │       ╰── Unsigned Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul
+            │   ╰── Type
+            │       ╰── Unsigned Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul
+            │   ├── Type
+            │   │   ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Constant [4]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [u]
+                    │   │       ╰── Constant [6U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Extern
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Extern
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Extern
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant [4UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── counter
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [0]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── index
+                    │   │       ├── Type
+                    │   │       │   ╰── Unsigned Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant [10]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [index]
+                    │   │       ╰── Constant [4294967295U]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [index]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [index]
+                    │   │           ╰── Constant [1]
+                    │   ╰── Block
+                    │       ╰── Assign [=]
+                    │           ├── Var [counter]
+                    │           ╰── Binary [+]
+                    │               ├── Var [counter]
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [counter]
+                    │   │       ╰── Constant [11]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
+    let src = r#"
+        unsigned int ui_a;
+        unsigned int ui_b;
+        unsigned long ul_a;
+        unsigned long ul_b;
+        int addition(void) {
+            return (ui_a + 2147483653u == 2147483663u);
+        }
+        int subtraction(void) {
+            return (ul_a - ul_b == 18446744072635808792ul);
+        }
+        int multiplication(void) {
+            return (ui_a * ui_b == 3221225472u);
+        }
+        int division(void) {
+            return (ui_a / ui_b == 0);
+        }
+        int division_large_dividend(void) {
+            return (ui_a / ui_b == 2);
+        }
+        int division_by_literal(void) {
+            return (ul_a / 5ul == 219902325555ul);
+        }
+        int remaind(void) {
+            return (ul_b % ul_a == 5ul);
+        }
+        int complement(void) {
+            return (~ui_a == 0);
+        }
+        int main(void) {
+            ui_a = 10u;
+            if (!addition()) {
+                return 1;
+            }
+            ul_a = 18446744072635809792ul;
+            ul_b = 1000ul;
+            if (!subtraction()) {
+                return 2;
+            }
+            ui_a = 1073741824u;
+            ui_b = 3u;
+            if (!multiplication()) {
+                return 3;
+            }
+            ui_a = 100u;
+            ui_b = 4294967294u;
+            if (!division()) {
+                return 4;
+            }
+            ui_a = 4294967294u;
+            ui_b = 2147483647u;
+            if (!division_large_dividend()) {
+                return 5;
+            }
+            ul_a = 1099511627775ul;
+            if (!division_by_literal()) {
+                return 6;
+            }
+            ul_a = 100ul;
+            ul_b = 18446744073709551605ul;
+            if (!remaind()) {
+                return 7;
+            }
+            ui_a = 4294967295U;
+            if (!complement()) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ui_a
+            │   ╰── Type
+            │       ╰── Unsigned Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ui_b
+            │   ╰── Type
+            │       ╰── Unsigned Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul_a
+            │   ╰── Type
+            │       ╰── Unsigned Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul_b
+            │   ╰── Type
+            │       ╰── Unsigned Long
+            ├── Function [addition]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [+]
+            │               │   ├── Var [ui_a]
+            │               │   ╰── Constant [2147483653U]
+            │               ╰── Constant [2147483663U]
+            ├── Function [subtraction]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [-]
+            │               │   ├── Var [ul_a]
+            │               │   ╰── Var [ul_b]
+            │               ╰── Constant [18446744072635808792UL]
+            ├── Function [multiplication]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [*]
+            │               │   ├── Var [ui_a]
+            │               │   ╰── Var [ui_b]
+            │               ╰── Constant [3221225472U]
+            ├── Function [division]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [/]
+            │               │   ├── Var [ui_a]
+            │               │   ╰── Var [ui_b]
+            │               ╰── Constant [0]
+            ├── Function [division_large_dividend]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [/]
+            │               │   ├── Var [ui_a]
+            │               │   ╰── Var [ui_b]
+            │               ╰── Constant [2]
+            ├── Function [division_by_literal]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [/]
+            │               │   ├── Var [ul_a]
+            │               │   ╰── Constant [5UL]
+            │               ╰── Constant [219902325555UL]
+            ├── Function [remaind]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [%]
+            │               │   ├── Var [ul_b]
+            │               │   ╰── Var [ul_a]
+            │               ╰── Constant [5UL]
+            ├── Function [complement]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Unary [~]
+            │               │   ╰── Var [ui_a]
+            │               ╰── Constant [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── Assign [=]
+                    │   ├── Var [ui_a]
+                    │   ╰── Constant [10U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [addition]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── Assign [=]
+                    │   ├── Var [ul_a]
+                    │   ╰── Constant [18446744072635809792UL]
+                    ├── Assign [=]
+                    │   ├── Var [ul_b]
+                    │   ╰── Constant [1000UL]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [subtraction]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── Assign [=]
+                    │   ├── Var [ui_a]
+                    │   ╰── Constant [1073741824U]
+                    ├── Assign [=]
+                    │   ├── Var [ui_b]
+                    │   ╰── Constant [3U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [multiplication]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── Assign [=]
+                    │   ├── Var [ui_a]
+                    │   ╰── Constant [100U]
+                    ├── Assign [=]
+                    │   ├── Var [ui_b]
+                    │   ╰── Constant [4294967294U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [division]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ├── Assign [=]
+                    │   ├── Var [ui_a]
+                    │   ╰── Constant [4294967294U]
+                    ├── Assign [=]
+                    │   ├── Var [ui_b]
+                    │   ╰── Constant [2147483647U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [division_large_dividend]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [5]
+                    ├── Assign [=]
+                    │   ├── Var [ul_a]
+                    │   ╰── Constant [1099511627775UL]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [division_by_literal]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [6]
+                    ├── Assign [=]
+                    │   ├── Var [ul_a]
+                    │   ╰── Constant [100UL]
+                    ├── Assign [=]
+                    │   ├── Var [ul_b]
+                    │   ╰── Constant [18446744073709551605UL]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [remaind]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [7]
+                    ├── Assign [=]
+                    │   ├── Var [ui_a]
+                    │   ╰── Constant [4294967295U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [complement]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [8]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
+    let src = r#"
+        unsigned int ui_a;
+        unsigned int ui_b;
+        unsigned long ul_a;
+        unsigned long ul_b;
+        int addition(void) {
+            return ui_a + ui_b == 0u;
+        }
+        int subtraction(void) {
+            return (ul_a - ul_b == 18446744073709551606ul);
+        }
+        int neg(void) {
+            return -ul_a == 18446744073709551615UL;
+        }
+        int main(void) {
+            ui_a = 4294967293u;
+            ui_b = 2u;
+            if (!addition()) {
+                return 1;
+            }
+            ul_a = 10ul;
+            ul_b = 20ul;
+            if (!subtraction()) {
+                return 2;
+            }
+            ul_a = 1ul;
+            if (!neg()) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ui_a
+            │   ╰── Type
+            │       ╰── Unsigned Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ui_b
+            │   ╰── Type
+            │       ╰── Unsigned Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul_a
+            │   ╰── Type
+            │       ╰── Unsigned Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul_b
+            │   ╰── Type
+            │       ╰── Unsigned Long
+            ├── Function [addition]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [+]
+            │               │   ├── Var [ui_a]
+            │               │   ╰── Var [ui_b]
+            │               ╰── Constant [0U]
+            ├── Function [subtraction]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [-]
+            │               │   ├── Var [ul_a]
+            │               │   ╰── Var [ul_b]
+            │               ╰── Constant [18446744073709551606UL]
+            ├── Function [neg]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Unary [-]
+            │               │   ╰── Var [ul_a]
+            │               ╰── Constant [18446744073709551615UL]
+            ╰── Function [main]
+                ╰── Body
+                    ├── Assign [=]
+                    │   ├── Var [ui_a]
+                    │   ╰── Constant [4294967293U]
+                    ├── Assign [=]
+                    │   ├── Var [ui_b]
+                    │   ╰── Constant [2U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [addition]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── Assign [=]
+                    │   ├── Var [ul_a]
+                    │   ╰── Constant [10UL]
+                    ├── Assign [=]
+                    │   ├── Var [ul_b]
+                    │   ╰── Constant [20UL]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [subtraction]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── Assign [=]
+                    │   ├── Var [ul_a]
+                    │   ╰── Constant [1UL]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [neg]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_unsigned_expressions_comparisons() {
+    let src = r#"
+        unsigned int one_hundred = 100u;
+        unsigned int large_uint = 4294967294u;
+        unsigned long one_hundred_ulong = 100ul;
+        unsigned long large_ulong = 4294967294ul;
+        int main(void) {
+            if (large_uint < one_hundred)
+                return 1;
+            if (large_uint <= one_hundred)
+                return 2;
+            if (one_hundred >= large_uint)
+                return 3;
+            if (one_hundred > large_uint)
+                return 4;
+            if (!(one_hundred <= large_uint))
+                return 5;
+            if (!(one_hundred < large_uint))
+                return 6;
+            if (!(large_uint > one_hundred))
+                return 7;
+            if (!(large_uint >= one_hundred))
+                return 8;
+            if (large_ulong < one_hundred_ulong)
+                return 9;
+            if (large_ulong <= one_hundred_ulong)
+                return 10;
+            if (one_hundred_ulong >= large_ulong)
+                return 11;
+            if (one_hundred_ulong > large_ulong)
+                return 12;
+            if (!(one_hundred_ulong <= large_ulong))
+                return 13;
+            if (!(one_hundred_ulong < large_ulong))
+                return 14;
+            if (!(large_ulong > one_hundred_ulong))
+                return 15;
+            if (!(large_ulong >= one_hundred_ulong))
+                return 16;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── one_hundred
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant [100U]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── large_uint
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant [4294967294U]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── one_hundred_ulong
+            │   ├── Type
+            │   │   ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Constant [100UL]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── large_ulong
+            │   ├── Type
+            │   │   ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Constant [4294967294UL]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [large_uint]
+                    │   │       ╰── Var [one_hundred]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [<=]
+                    │   │       ├── Var [large_uint]
+                    │   │       ╰── Var [one_hundred]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [>=]
+                    │   │       ├── Var [one_hundred]
+                    │   │       ╰── Var [large_uint]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [>]
+                    │   │       ├── Var [one_hundred]
+                    │   │       ╰── Var [large_uint]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [<=]
+                    │   │           ├── Var [one_hundred]
+                    │   │           ╰── Var [large_uint]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [<]
+                    │   │           ├── Var [one_hundred]
+                    │   │           ╰── Var [large_uint]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [>]
+                    │   │           ├── Var [large_uint]
+                    │   │           ╰── Var [one_hundred]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [>=]
+                    │   │           ├── Var [large_uint]
+                    │   │           ╰── Var [one_hundred]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [large_ulong]
+                    │   │       ╰── Var [one_hundred_ulong]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [<=]
+                    │   │       ├── Var [large_ulong]
+                    │   │       ╰── Var [one_hundred_ulong]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [>=]
+                    │   │       ├── Var [one_hundred_ulong]
+                    │   │       ╰── Var [large_ulong]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [11]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [>]
+                    │   │       ├── Var [one_hundred_ulong]
+                    │   │       ╰── Var [large_ulong]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [12]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [<=]
+                    │   │           ├── Var [one_hundred_ulong]
+                    │   │           ╰── Var [large_ulong]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [13]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [<]
+                    │   │           ├── Var [one_hundred_ulong]
+                    │   │           ╰── Var [large_ulong]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [14]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [>]
+                    │   │           ├── Var [large_ulong]
+                    │   │           ╰── Var [one_hundred_ulong]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [15]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [>=]
+                    │   │           ├── Var [large_ulong]
+                    │   │           ╰── Var [one_hundred_ulong]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [16]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_unsigned_expressions_locals() {
+    let src = r#"
+        int main(void) {
+            unsigned long a = 8589934592ul;
+            int b = -1;
+            long c = -8589934592l;
+            unsigned int d = 10u;
+            if (a != 8589934592ul) {
+                return 1;
+            }
+            if (b != -1){
+                return 2;
+            }
+            if (c != -8589934592l) {
+                return 3;
+            }
+            if (d != 10u) {
+                return 4;
+            }
+            a = -a;
+            b = b - 1;
+            c = c + 8589934594l;
+            d = d * 268435456u;
+            if (a != 18446744065119617024ul) {
+                return 5;
+            }
+            if (b != -2) {
+                return 6;
+            }
+            if (c != 2) {
+                return 7;
+            }
+            if (d != 2684354560u) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [8589934592UL]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant [8589934592L]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [10U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [a]
+                    │   │       ╰── Constant [8589934592UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [c]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [8589934592L]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant [10U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ├── Assign [=]
+                    │   ├── Var [a]
+                    │   ╰── Unary [-]
+                    │       ╰── Var [a]
+                    ├── Assign [=]
+                    │   ├── Var [b]
+                    │   ╰── Binary [-]
+                    │       ├── Var [b]
+                    │       ╰── Constant [1]
+                    ├── Assign [=]
+                    │   ├── Var [c]
+                    │   ╰── Binary [+]
+                    │       ├── Var [c]
+                    │       ╰── Constant [8589934594L]
+                    ├── Assign [=]
+                    │   ├── Var [d]
+                    │   ╰── Binary [*]
+                    │       ├── Var [d]
+                    │       ╰── Constant [268435456U]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [a]
+                    │   │       ╰── Constant [18446744065119617024UL]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [c]
+                    │   │       ╰── Constant [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant [2684354560U]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [8]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_unsigned_expressions_logical() {
+    let src = r#"
+        int not(unsigned long ul) {
+            return !ul;
+        }
+        int if_cond(unsigned u) {
+            if (u) {
+                return 1;
+            }
+            return 0;
+        }
+        int and(unsigned long ul, int i) {
+            return ul && i;
+        }
+        int or(int i, unsigned u) {
+            return i || u;
+        }
+        int main(void) {
+            unsigned long ul = 1152921504606846976ul;
+            unsigned int u = 2147483648u;
+            unsigned long zero = 0l;
+            if (not(ul)) {
+                return 1;
+            }
+            if (!not(zero)) {
+                return 2;
+            }
+            if(!if_cond(u)) {
+                return 3;
+            }
+            if(if_cond(zero)) {
+                return 4;
+            }
+            if (and(zero, 1)) {
+                return 5;
+            }
+            if (!or(1, u)) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [not]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ul
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Unary [!]
+            │               ╰── Var [ul]
+            ├── Function [if_cond]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [u]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant [1]
+            │       ╰── Return
+            │           ╰── Constant [0]
+            ├── Function [and]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ul
+            │   │   │   ╰── Type
+            │   │   │       ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Var [ul]
+            │               ╰── Var [i]
+            ├── Function [or]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [||]
+            │               ├── Var [i]
+            │               ╰── Var [u]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [1152921504606846976UL]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── u
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2147483648U]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── zero
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant [0L]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── FunctionCall [not]
+                    │   │       ╰── Var [ul]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [not]
+                    │   │           ╰── Var [zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [if_cond]
+                    │   │           ╰── Var [u]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── FunctionCall [if_cond]
+                    │   │       ╰── Var [zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── FunctionCall [and]
+                    │   │       ├── Var [zero]
+                    │   │       ╰── Constant [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [or]
+                    │   │           ├── Constant [1]
+                    │   │           ╰── Var [u]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant [6]
+                    ╰── Return
+                        ╰── Constant [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_unsigned_expressions_simple() {
+    let src = r#"
+        int main(void) {
+            unsigned u = 2147483647u;
+            return (u + 2u == 2147483649u);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── u
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant [2147483647U]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Binary [+]
+                            │   ├── Var [u]
+                            │   ╰── Constant [2U]
+                            ╰── Constant [2147483649U]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_12_valid_unsigned_expressions_static_variables() {
+    let src = r#"
+        
+        static unsigned long x = 9223372036854775803ul;
+        unsigned long zero_long;
+        unsigned zero_int;
+        int main(void)
+        {
+            if (x != 9223372036854775803ul)
+                return 0;
+            x = x + 10;
+            if (x != 9223372036854775813ul)
+                return 0;
+            if (zero_long || zero_int)
+                return 0;
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Unsigned Long
+            │   ├── Initializer
+            │   │   ╰── Constant [9223372036854775803UL]
+            │   ╰── Static
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── zero_long
+            │   ╰── Type
+            │       ╰── Unsigned Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── zero_int
+            │   ╰── Type
+            │       ╰── Unsigned Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant [9223372036854775803UL]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [0]
+                    ├── Assign [=]
+                    │   ├── Var [x]
+                    │   ╰── Binary [+]
+                    │       ├── Var [x]
+                    │       ╰── Constant [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant [9223372036854775813UL]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [||]
+                    │   │       ├── Var [zero_long]
+                    │   │       ╰── Var [zero_int]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant [0]
+                    ╰── Return
+                        ╰── Constant [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }

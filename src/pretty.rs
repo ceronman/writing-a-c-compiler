@@ -3,7 +3,6 @@ use crate::parser;
 use crate::semantic;
 use crate::tacky;
 
-use crate::ast::{Constant, Type};
 use crate::semantic::StaticInit;
 use anyhow::Result;
 use std::io::Write;
@@ -175,18 +174,20 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
 
 fn pp_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
     match val {
-        tacky::Val::Constant(Constant::Int(value)) => write!(file, "{value}")?,
-        tacky::Val::Constant(Constant::Long(value)) => write!(file, "{value}L")?,
+        tacky::Val::Constant(ast::Constant::Int(value)) => write!(file, "{value}")?,
+        tacky::Val::Constant(ast::Constant::Long(value)) => write!(file, "{value}L")?,
         tacky::Val::Var(name) => write!(file, "{name}")?,
+        _ => todo!(),
     }
     Ok(())
 }
 
 fn pp_type(file: &mut impl Write, ty: &ast::Type) -> Result<()> {
     match ty {
-        Type::Int => write!(file, "Int"),
-        Type::Long => write!(file, "Long"),
-        Type::Function(_) => write!(file, "Function(...)"),
+        ast::Type::Int => write!(file, "Int"),
+        ast::Type::Long => write!(file, "Long"),
+        ast::Type::Function(_) => write!(file, "Function(...)"),
+        _ => todo!(),
     }?;
     Ok(())
 }
@@ -216,7 +217,8 @@ pub fn annotate(src: &str, error: &crate::error::CompilerError) -> String {
     for line in src.split_inclusive('\n') {
         result.push_str(line);
         if !annotated && offset + line.len() > error.span.0 {
-            let start = error.span.0 - offset - 2;
+            let start = error.span.0 - offset;
+            let start = if start > 2 { start - 2 } else { 0 };
             let len = error.span.1 - error.span.0;
             let annotation = format!("{}//{} {}\n", " ".repeat(start), "^".repeat(len), error.msg);
             result.push_str(&annotation);
@@ -360,6 +362,8 @@ impl PrettyAst {
                     let value = match value {
                         ast::Constant::Int(v) => *v as i64,
                         ast::Constant::Long(v) => *v,
+                        ast::Constant::UInt(v) => *v as i64,
+                        ast::Constant::ULong(v) => *v as i64,
                     };
                     Self::new(
                         format!("Case [{}]", value),
@@ -483,6 +487,8 @@ impl PrettyAst {
         let value = match constant {
             ast::Constant::Int(v) => format!("{}", *v),
             ast::Constant::Long(v) => format!("{}L", *v),
+            ast::Constant::UInt(v) => format!("{}U", *v),
+            ast::Constant::ULong(v) => format!("{}UL", *v),
         };
         Self::new(format!("Constant [{}]", value), vec![])
     }
@@ -491,6 +497,8 @@ impl PrettyAst {
         match ty {
             ast::Type::Int => Self::new("Int", vec![]),
             ast::Type::Long => Self::new("Long", vec![]),
+            ast::Type::ULong => Self::new("Unsigned Long", vec![]),
+            ast::Type::UInt => Self::new("Unsigned Int", vec![]),
             ast::Type::Function(f) => Self::new(
                 "FunctionType",
                 vec![
