@@ -24444,7 +24444,7 @@ fn test_chapter_12_invalid_parse_bad_specifiers() {
         int main(void) {
             int i = 0;
             return (signed unsigned) i;
-                                 //^ Expected expression, but found ')'
+                  //^^^^^^^^^^^^^^^ Invalid type specifier
         }
     "#,
     );

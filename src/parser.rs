@@ -18,6 +18,19 @@ struct Parser<'src> {
     node_id: u32,
 }
 
+impl TokenKind {
+    fn is_decl_specifier(&self) -> bool {
+        self.is_type_specifier() || matches!(self, TokenKind::Extern | TokenKind::Static)
+    }
+
+    fn is_type_specifier(&self) -> bool {
+        matches!(
+            self,
+            TokenKind::Int | TokenKind::Long | TokenKind::Unsigned | TokenKind::Signed
+        )
+    }
+}
+
 impl<'src> Parser<'src> {
     fn new(source: &'src str) -> Self {
         let mut lexer = Lexer::new(source);
@@ -53,7 +66,7 @@ impl<'src> Parser<'src> {
     }
 
     fn block_item(&mut self) -> Result<BlockItem> {
-        let block = if self.is_specifier() {
+        let block = if self.current.kind.is_decl_specifier() {
             BlockItem::Decl(self.declaration()?)
         } else {
             BlockItem::Stmt(self.statement()?)
@@ -134,25 +147,11 @@ impl<'src> Parser<'src> {
         }
     }
 
-    fn is_specifier(&self) -> bool {
-        matches!(
-            self.current.kind,
-            TokenKind::Int
-                | TokenKind::Long
-                | TokenKind::Extern
-                | TokenKind::Static
-                | TokenKind::Unsigned
-                | TokenKind::Signed
-        )
-    }
-
     fn type_specifier(&mut self) -> Result<Node<Type>> {
         let mut types = Vec::new();
         let begin = self.current.span;
         let mut end = self.current.span;
-        while let TokenKind::Int | TokenKind::Long | TokenKind::Signed | TokenKind::Unsigned =
-            self.current.kind
-        {
+        while self.current.kind.is_type_specifier() {
             types.push(self.current.kind);
             end = self.current.span;
             self.advance()
@@ -209,7 +208,7 @@ impl<'src> Parser<'src> {
         loop {
             let token = self.current;
             match token.kind {
-                TokenKind::Int | TokenKind::Long | TokenKind::Unsigned | TokenKind::Signed => {
+                kind if kind.is_type_specifier() => {
                     types.push(token.kind);
                     end = self.current.span;
                     self.advance();
@@ -308,8 +307,9 @@ impl<'src> Parser<'src> {
                 self.advance();
                 ForInit::None
             }
-            // TODO: unify with self.specifier()
-            _ if self.is_specifier() => {
+            // Checkin if declaration contains storage class specifier (static, extern) is done
+            // during type checking for better error messages.
+            _ if self.current.kind.is_decl_specifier() => {
                 let Node { span, data, .. } = self.declaration()?;
                 let Declaration::Var(decl) = *data else {
                     return Err(CompilerError {
@@ -503,14 +503,10 @@ impl<'src> Parser<'src> {
             TokenKind::OpenParen => {
                 let begin = self.current.span;
                 self.advance();
-                if let Ok(target) = self.type_specifier() {
-                    self.expect(TokenKind::CloseParen)?;
-                    let expr = self.expression_precedence(13, "expression")?;
-                    self.node(begin + expr.span, Expression::Cast { target, expr })
+                if self.current.kind.is_type_specifier() {
+                    self.cast_expression(begin)?
                 } else {
-                    let inner = self.expression()?;
-                    let end = self.expect(TokenKind::CloseParen)?.span;
-                    self.node(begin + end, *inner.data)
+                    self.paren_expression(begin)?
                 }
             }
             _ => {
@@ -603,6 +599,19 @@ impl<'src> Parser<'src> {
         }
 
         Ok(expr)
+    }
+
+    fn cast_expression(&mut self, begin: Span) -> Result<Node<Expression>> {
+        let target = self.type_specifier()?;
+        self.expect(TokenKind::CloseParen)?;
+        let expr = self.expression_precedence(13, "expression")?;
+        Ok(self.node(begin + expr.span, Expression::Cast { target, expr }))
+    }
+
+    fn paren_expression(&mut self, begin: Span) -> Result<Node<Expression>> {
+        let inner = self.expression()?;
+        let end = self.expect(TokenKind::CloseParen)?.span;
+        Ok(self.node(begin + end, *inner.data))
     }
 
     fn unary_expression(&mut self) -> Result<Node<Expression>> {
