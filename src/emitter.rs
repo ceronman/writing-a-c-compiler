@@ -227,6 +227,9 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
                 emit_ins(output, ".quad")?;
                 writeln!(output, "{}", v)?;
             }
+
+            StaticInit::UInt(_) => todo!(),
+            StaticInit::ULong(_) => todo!(),
         }
     }
     Ok(())

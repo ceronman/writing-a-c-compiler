@@ -47,7 +47,9 @@ pub enum InitialValue {
 #[derive(Clone, Copy, Debug)]
 pub enum StaticInit {
     Int(i32),
+    UInt(u32),
     Long(i64),
+    ULong(u64),
 }
 
 #[derive(Debug, Clone)]

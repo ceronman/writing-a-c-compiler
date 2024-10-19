@@ -36,6 +36,28 @@ struct TypeChecker {
     switch_cases: HashMap<NodeId, SwitchCases>,
 }
 
+impl Type {
+    fn size(&self) -> u8 {
+        match self {
+            Type::Int => 4,
+            Type::UInt => 4,
+            Type::Long => 8,
+            Type::ULong => 8,
+            Type::Function(_) => panic!("Size of function type"),
+        }
+    }
+
+    fn singed(&self) -> bool {
+        match self {
+            Type::Int => true,
+            Type::UInt => false,
+            Type::Long => true,
+            Type::ULong => false,
+            Type::Function(_) => panic!("Size of function type"),
+        }
+    }
+}
+
 impl TypeChecker {
     fn check(&mut self, program: &Program) -> Result<()> {
         for decl in &program.declarations {
@@ -79,7 +101,8 @@ impl TypeChecker {
                     InitialValue::Initial(match c {
                         Constant::Int(v) => StaticInit::Int(*v),
                         Constant::Long(v) => StaticInit::Long(*v),
-                        _ => todo!(),
+                        Constant::UInt(v) => StaticInit::UInt(*v),
+                        Constant::ULong(v) => StaticInit::ULong(*v),
                     })
                 } else {
                     return Err(CompilerError {
@@ -92,7 +115,8 @@ impl TypeChecker {
                 match decl.ty {
                     Type::Int => InitialValue::Initial(StaticInit::Int(0)),
                     Type::Long => InitialValue::Initial(StaticInit::Long(0)),
-                    _ => todo!(),
+                    Type::UInt => InitialValue::Initial(StaticInit::UInt(0)),
+                    Type::ULong => InitialValue::Initial(StaticInit::ULong(0)),
                     Type::Function(_) => unreachable!(),
                 }
             };
@@ -130,11 +154,17 @@ impl TypeChecker {
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let mut initial_value = if let Some(init) = &decl.init {
             if let Expression::Constant(c) = init.as_ref() {
-                InitialValue::Initial(match (&decl.ty, c) {
-                    (Type::Int, Constant::Int(v)) => StaticInit::Int(*v),
-                    (Type::Int, Constant::Long(v)) => StaticInit::Int(*v as i32),
-                    (Type::Long, Constant::Long(v)) => StaticInit::Long(*v),
-                    (Type::Long, Constant::Int(v)) => StaticInit::Long(*v as i64),
+                let value = match c {
+                    Constant::Int(v) => *v as u64,
+                    Constant::UInt(v) => *v as u64,
+                    Constant::Long(v) => *v as u64,
+                    Constant::ULong(v) => *v,
+                };
+                let static_init = match &decl.ty {
+                    Type::Int => StaticInit::Int(value as i32),
+                    Type::UInt => StaticInit::UInt(value as u32),
+                    Type::Long => StaticInit::Long(value as i64),
+                    Type::ULong => StaticInit::ULong(value),
                     _ => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
@@ -142,7 +172,8 @@ impl TypeChecker {
                             span: init.span,
                         });
                     }
-                })
+                };
+                InitialValue::Initial(static_init)
             } else {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
@@ -342,12 +373,20 @@ impl TypeChecker {
                         span: value.span,
                     });
                 };
-                let case_value = match (constant, &switch_cases.expr_ty) {
-                    (Constant::Int(v), Type::Int) => Constant::Int(*v),
-                    (Constant::Long(v), Type::Long) => Constant::Long(*v),
-                    (Constant::Int(v), Type::Long) => Constant::Long(*v as i64),
-                    (Constant::Long(v), Type::Int) => Constant::Int(*v as i32),
-                    _ => unreachable!(),
+                // TODO: Code almost duplicated for static initializers
+                let case_constant = match constant {
+                    Constant::Int(v) => *v as u64,
+                    Constant::UInt(v) => *v as u64,
+                    Constant::Long(v) => *v as u64,
+                    Constant::ULong(v) => *v,
+                };
+
+                let case_value = match &switch_cases.expr_ty {
+                    Type::Int => Constant::Int(case_constant as i32),
+                    Type::UInt => Constant::UInt(case_constant as u32),
+                    Type::Long => Constant::Long(case_constant as i64),
+                    Type::ULong => Constant::ULong(case_constant),
+                    Type::Function(_) => unreachable!(),
                 };
 
                 if switch_cases.values.iter().any(|(v, _)| *v == case_value) {
@@ -433,7 +472,8 @@ impl TypeChecker {
             Expression::Constant(c) => match c {
                 Constant::Int(_) => Type::Int,
                 Constant::Long(_) => Type::Long,
-                _ => todo!(),
+                Constant::UInt(_) => Type::UInt,
+                Constant::ULong(_) => Type::ULong,
             },
             Expression::Var(name) => {
                 let Some(data) = self.symbols.get(name) else {
@@ -566,11 +606,20 @@ impl TypeChecker {
     }
 
     fn common_type(ty1: &Type, ty2: &Type) -> Type {
-        if ty1 == ty2 {
-            ty1.clone()
+        let result = if ty1 == ty2 {
+            ty1
+        } else if ty1.size() == ty2.size() {
+            if ty1.singed() {
+                ty2
+            } else {
+                ty1
+            }
+        } else if ty1.size() > ty2.size() {
+            ty1
         } else {
-            Type::Long
-        }
+            ty2
+        };
+        result.clone()
     }
 }
 

@@ -51,6 +51,8 @@ fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -
     match variable.init {
         StaticInit::Int(v) => writeln!(file, "{v}")?,
         StaticInit::Long(v) => writeln!(file, "{v}L")?,
+        StaticInit::UInt(_) => todo!(),
+        StaticInit::ULong(_) => todo!(),
     }
     Ok(())
 }
