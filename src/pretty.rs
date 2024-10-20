@@ -51,8 +51,8 @@ fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -
     match variable.init {
         StaticInit::Int(v) => writeln!(file, "{v}")?,
         StaticInit::Long(v) => writeln!(file, "{v}L")?,
-        StaticInit::UInt(_) => todo!(),
-        StaticInit::ULong(_) => todo!(),
+        StaticInit::UInt(v) => writeln!(file, "{v}U")?,
+        StaticInit::ULong(v) => writeln!(file, "{v}UL")?,
     }
     Ok(())
 }
@@ -167,6 +167,12 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
                 write!(file, " = truncate ")?;
                 pp_val(file, src)?;
             }
+            tacky::Instruction::ZeroExtend { src, dst } => {
+                write!(file, "{indent}")?;
+                pp_val(file, dst)?;
+                write!(file, " = zero_extend ")?;
+                pp_val(file, src)?;
+            }
         }
         writeln!(file)?;
     }
@@ -178,8 +184,9 @@ fn pp_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
     match val {
         tacky::Val::Constant(ast::Constant::Int(value)) => write!(file, "{value}")?,
         tacky::Val::Constant(ast::Constant::Long(value)) => write!(file, "{value}L")?,
+        tacky::Val::Constant(ast::Constant::UInt(value)) => write!(file, "{value}U")?,
+        tacky::Val::Constant(ast::Constant::ULong(value)) => write!(file, "{value}UL")?,
         tacky::Val::Var(name) => write!(file, "{name}")?,
-        _ => todo!(),
     }
     Ok(())
 }
@@ -188,8 +195,9 @@ fn pp_type(file: &mut impl Write, ty: &ast::Type) -> Result<()> {
     match ty {
         ast::Type::Int => write!(file, "Int"),
         ast::Type::Long => write!(file, "Long"),
+        ast::Type::UInt => write!(file, "Unsigned Int"),
+        ast::Type::ULong => write!(file, "Unsigned Long"),
         ast::Type::Function(_) => write!(file, "Function(...)"),
-        _ => todo!(),
     }?;
     Ok(())
 }

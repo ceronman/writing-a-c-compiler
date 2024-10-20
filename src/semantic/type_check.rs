@@ -36,28 +36,6 @@ struct TypeChecker {
     switch_cases: HashMap<NodeId, SwitchCases>,
 }
 
-impl Type {
-    fn size(&self) -> u8 {
-        match self {
-            Type::Int => 4,
-            Type::UInt => 4,
-            Type::Long => 8,
-            Type::ULong => 8,
-            Type::Function(_) => panic!("Size of function type"),
-        }
-    }
-
-    fn singed(&self) -> bool {
-        match self {
-            Type::Int => true,
-            Type::UInt => false,
-            Type::Long => true,
-            Type::ULong => false,
-            Type::Function(_) => panic!("Size of function type"),
-        }
-    }
-}
-
 impl TypeChecker {
     fn check(&mut self, program: &Program) -> Result<()> {
         for decl in &program.declarations {

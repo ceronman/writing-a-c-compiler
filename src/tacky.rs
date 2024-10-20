@@ -76,6 +76,10 @@ pub enum Instruction {
         src: Val,
         dst: Val,
     },
+    ZeroExtend {
+        src: Val,
+        dst: Val,
+    },
 }
 
 pub type Constant = ast::Constant;
@@ -287,7 +291,6 @@ impl TackyGenerator {
                 let cond = self.emit_expr(expr);
                 let expr_ty = self.semantics.expr_type(expr).clone();
                 let switch_cases = self.semantics.switch_cases(expr).clone();
-                // TODO: Maybe value doesn't have to be i64 and it can be Constant
                 for (value, label) in &switch_cases.values {
                     let case_value = Val::Constant(value.clone());
                     let result = self.make_temp(&expr_ty);
@@ -503,6 +506,7 @@ impl TackyGenerator {
                 };
 
                 // TODO: Duplication
+                // TODO`: Duplication
                 let result =
                     if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
                         self.cast(result, &expr_ty, &target)
@@ -580,22 +584,28 @@ impl TackyGenerator {
             src
         } else {
             let dst = self.make_temp(target);
-            match target {
-                Type::Long => {
-                    self.instructions.push(Instruction::SignExtend {
-                        src,
-                        dst: dst.clone(),
-                    });
-                }
-                Type::Int => {
-                    self.instructions.push(Instruction::Truncate {
-                        src,
-                        dst: dst.clone(),
-                    });
-                }
-                _ => todo!(),
-                Type::Function(_) => unreachable!(),
-            };
+
+            if target.size() == src_ty.size() {
+                self.instructions.push(Instruction::Copy {
+                    src,
+                    dst: dst.clone(),
+                });
+            } else if target.size() < src_ty.size() {
+                self.instructions.push(Instruction::Truncate {
+                    src,
+                    dst: dst.clone(),
+                });
+            } else if src_ty.singed() {
+                self.instructions.push(Instruction::SignExtend {
+                    src,
+                    dst: dst.clone(),
+                });
+            } else {
+                self.instructions.push(Instruction::ZeroExtend {
+                    src,
+                    dst: dst.clone(),
+                });
+            }
             dst
         }
     }
@@ -672,7 +682,8 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                     let init = match &ty {
                         Type::Int => StaticInit::Int(0),
                         Type::Long => StaticInit::Long(0),
-                        _ => todo!(),
+                        Type::UInt => StaticInit::UInt(0),
+                        Type::ULong => StaticInit::ULong(0),
                         Type::Function(_) => unreachable!(),
                     };
                     top_level.push(TopLevel::Variable(StaticVariable {
