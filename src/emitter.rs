@@ -47,8 +47,8 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
         match ins {
             Instruction::Mov(ty, src, dst) => {
                 let op = match ty {
-                    AsmType::I32 => "movl",
-                    AsmType::I64 => "movq",
+                    AsmType::Longword => "movl",
+                    AsmType::Quadword => "movq",
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -57,35 +57,35 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
             }
             Instruction::Unary(ty, op, src) => {
                 let op = match (op, ty) {
-                    (UnaryOp::Neg, AsmType::I32) => "negl",
-                    (UnaryOp::Neg, AsmType::I64) => "negq",
+                    (UnaryOp::Neg, AsmType::Longword) => "negl",
+                    (UnaryOp::Neg, AsmType::Quadword) => "negq",
 
-                    (UnaryOp::Not, AsmType::I32) => "notl",
-                    (UnaryOp::Not, AsmType::I64) => "notq",
+                    (UnaryOp::Not, AsmType::Longword) => "notl",
+                    (UnaryOp::Not, AsmType::Quadword) => "notq",
 
-                    (UnaryOp::Inc, AsmType::I32) => "incl",
-                    (UnaryOp::Inc, AsmType::I64) => "incq",
+                    (UnaryOp::Inc, AsmType::Longword) => "incl",
+                    (UnaryOp::Inc, AsmType::Quadword) => "incq",
 
-                    (UnaryOp::Dec, AsmType::I32) => "decl",
-                    (UnaryOp::Dec, AsmType::I64) => "decq",
+                    (UnaryOp::Dec, AsmType::Longword) => "decl",
+                    (UnaryOp::Dec, AsmType::Quadword) => "decq",
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
             }
             Instruction::Binary(ty, op, left, right) => {
                 let op = match (op, ty) {
-                    (BinaryOp::Add, AsmType::I32) => "addl",
-                    (BinaryOp::Add, AsmType::I64) => "addq",
-                    (BinaryOp::Sub, AsmType::I32) => "subl",
-                    (BinaryOp::Sub, AsmType::I64) => "subq",
-                    (BinaryOp::Mul, AsmType::I32) => "imull",
-                    (BinaryOp::Mul, AsmType::I64) => "imulq",
-                    (BinaryOp::And, AsmType::I32) => "andl",
-                    (BinaryOp::And, AsmType::I64) => "andq",
-                    (BinaryOp::Or, AsmType::I32) => "orl",
-                    (BinaryOp::Or, AsmType::I64) => "orq",
-                    (BinaryOp::Xor, AsmType::I32) => "xorl",
-                    (BinaryOp::Xor, AsmType::I64) => "xorq",
+                    (BinaryOp::Add, AsmType::Longword) => "addl",
+                    (BinaryOp::Add, AsmType::Quadword) => "addq",
+                    (BinaryOp::Sub, AsmType::Longword) => "subl",
+                    (BinaryOp::Sub, AsmType::Quadword) => "subq",
+                    (BinaryOp::Mul, AsmType::Longword) => "imull",
+                    (BinaryOp::Mul, AsmType::Quadword) => "imulq",
+                    (BinaryOp::And, AsmType::Longword) => "andl",
+                    (BinaryOp::And, AsmType::Quadword) => "andq",
+                    (BinaryOp::Or, AsmType::Longword) => "orl",
+                    (BinaryOp::Or, AsmType::Quadword) => "orq",
+                    (BinaryOp::Xor, AsmType::Longword) => "xorl",
+                    (BinaryOp::Xor, AsmType::Quadword) => "xorq",
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, left, RegSize::from_ty(ty))?;
@@ -95,8 +95,20 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
 
             Instruction::Sal(ty, dst) => {
                 let op = match ty {
-                    AsmType::I32 => "sall",
-                    AsmType::I64 => "salq",
+                    AsmType::Longword => "sall",
+                    AsmType::Quadword => "salq",
+                };
+                emit_ins(output, op)?;
+                emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
+                write!(output, ", ")?;
+                emit_operand(output, dst, RegSize::from_ty(ty))?;
+                writeln!(output)?;
+            }
+
+            Instruction::Shl(ty, dst) => {
+                let op = match ty {
+                    AsmType::Longword => "shll",
+                    AsmType::Quadword => "shlq",
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
@@ -107,8 +119,19 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
 
             Instruction::Sar(ty, dst) => {
                 let op = match ty {
-                    AsmType::I32 => "sarl",
-                    AsmType::I64 => "sarq",
+                    AsmType::Longword => "sarl",
+                    AsmType::Quadword => "sarq",
+                };
+                emit_ins(output, op)?;
+                emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
+                write!(output, ", ")?;
+                emit_operand(output, dst, RegSize::from_ty(ty))?;
+            }
+
+            Instruction::Shr(ty, dst) => {
+                let op = match ty {
+                    AsmType::Longword => "shrl",
+                    AsmType::Quadword => "shrq",
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
@@ -118,8 +141,17 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
 
             Instruction::Idiv(ty, src) => {
                 let op = match ty {
-                    AsmType::I32 => "idivl",
-                    AsmType::I64 => "idivq",
+                    AsmType::Longword => "idivl",
+                    AsmType::Quadword => "idivq",
+                };
+                emit_ins(output, op)?;
+                emit_operand(output, src, RegSize::from_ty(ty))?;
+            }
+
+            Instruction::Div(ty, src) => {
+                let op = match ty {
+                    AsmType::Longword => "divl",
+                    AsmType::Quadword => "divq",
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -127,8 +159,8 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
 
             Instruction::Cdq(ty) => {
                 let op = match ty {
-                    AsmType::I32 => "cdq",
-                    AsmType::I64 => "cqo",
+                    AsmType::Longword => "cdq",
+                    AsmType::Quadword => "cqo",
                 };
                 emit_ins(output, op)?;
             }
@@ -144,8 +176,8 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
 
             Instruction::Cmp(ty, left, right) => {
                 let op = match ty {
-                    AsmType::I32 => "cmpl",
-                    AsmType::I64 => "cmpq",
+                    AsmType::Longword => "cmpl",
+                    AsmType::Quadword => "cmpq",
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, left, RegSize::from_ty(ty))?;
@@ -164,6 +196,10 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     CondCode::GE => emit_ins(output, "jge")?,
                     CondCode::L => emit_ins(output, "jl")?,
                     CondCode::LE => emit_ins(output, "jle")?,
+                    CondCode::A => emit_ins(output, "ja")?,
+                    CondCode::AE => emit_ins(output, "jae")?,
+                    CondCode::B => emit_ins(output, "jb")?,
+                    CondCode::BE => emit_ins(output, "jbe")?,
                 }
                 emit_label(output, target)?;
             }
@@ -175,6 +211,10 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     CondCode::GE => emit_ins(output, "setge")?,
                     CondCode::L => emit_ins(output, "setl")?,
                     CondCode::LE => emit_ins(output, "setle")?,
+                    CondCode::A => emit_ins(output, "seta")?,
+                    CondCode::AE => emit_ins(output, "setae")?,
+                    CondCode::B => emit_ins(output, "setb")?,
+                    CondCode::BE => emit_ins(output, "setbe")?,
                 }
                 emit_operand(output, dst, RegSize::Byte)?;
             }
@@ -196,6 +236,9 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::Quad)?;
             }
+            Instruction::MovZeroExtend(_, _) => {
+                unreachable!("Should have been replaced in fixup instructions")
+            }
         }
         writeln!(output)?;
     }
@@ -206,7 +249,10 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
     if variable.global {
         writeln!(output, "\t.globl _{name}", name = variable.name)?;
     }
-    if matches!(variable.init, StaticInit::Int(0) | StaticInit::Long(0)) {
+    if matches!(
+        variable.init,
+        StaticInit::Int(0) | StaticInit::Long(0) | StaticInit::UInt(0) | StaticInit::ULong(0)
+    ) {
         writeln!(output, "\t.bss")?;
         emit_ins(output, ".balign")?;
         writeln!(output, "{}", variable.alignment)?;
@@ -223,13 +269,18 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
                 emit_ins(output, ".long")?;
                 writeln!(output, "{}", v)?;
             }
+            StaticInit::UInt(v) => {
+                emit_ins(output, ".long")?;
+                writeln!(output, "{}", v)?;
+            }
             StaticInit::Long(v) => {
                 emit_ins(output, ".quad")?;
                 writeln!(output, "{}", v)?;
             }
-
-            StaticInit::UInt(_) => todo!(),
-            StaticInit::ULong(_) => todo!(),
+            StaticInit::ULong(v) => {
+                emit_ins(output, ".quad")?;
+                writeln!(output, "{}", v)?;
+            }
         }
     }
     Ok(())
@@ -248,8 +299,8 @@ enum RegSize {
 impl RegSize {
     fn from_ty(ty: &AsmType) -> RegSize {
         match ty {
-            AsmType::I32 => RegSize::Long,
-            AsmType::I64 => RegSize::Quad,
+            AsmType::Longword => RegSize::Long,
+            AsmType::Quadword => RegSize::Quad,
         }
     }
 }

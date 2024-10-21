@@ -15,7 +15,7 @@ struct Parser<'src> {
     current: Token,
     next: Token,
     lexer: Lexer<'src>,
-    node_id: u32
+    node_id: u32,
 }
 
 impl TokenKind {
@@ -771,9 +771,9 @@ impl<'src> Parser<'src> {
         };
         self.advance();
         let lexeme = token.slice(self.source);
-        let string_value = lexeme.strip_suffix(&['l', 'L']).unwrap_or(lexeme);
+        let string_value = lexeme.strip_suffix(['l', 'L']).unwrap_or(lexeme);
         let string_value = string_value
-            .strip_suffix(&['u', 'U'])
+            .strip_suffix(['u', 'U'])
             .unwrap_or(string_value);
 
         // Constant tokens don't have a sign, so u64 is the correct type
