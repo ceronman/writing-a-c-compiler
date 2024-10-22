@@ -288,3 +288,14 @@ impl Type {
         }
     }
 }
+
+impl Constant {
+    pub fn as_u64(&self) -> u64 {
+        match self {
+            Constant::Int(v) => *v as u64,
+            Constant::UInt(v) => *v as u64,
+            Constant::Long(v) => *v as u64,
+            Constant::ULong(v) => *v,
+        }
+    }
+}

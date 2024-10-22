@@ -75,13 +75,7 @@ impl TypeChecker {
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
             let initial_value = if let Some(init) = &decl.init {
                 if let Expression::Constant(c) = init.as_ref() {
-                    // TODO: this is duplicated in multiple places
-                    InitialValue::Initial(match c {
-                        Constant::Int(v) => StaticInit::Int(*v),
-                        Constant::Long(v) => StaticInit::Long(*v),
-                        Constant::UInt(v) => StaticInit::UInt(*v),
-                        Constant::ULong(v) => StaticInit::ULong(*v),
-                    })
+                    InitialValue::Initial(StaticInit::from_const(c))
                 } else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -132,12 +126,7 @@ impl TypeChecker {
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let mut initial_value = if let Some(init) = &decl.init {
             if let Expression::Constant(c) = init.as_ref() {
-                let value = match c {
-                    Constant::Int(v) => *v as u64,
-                    Constant::UInt(v) => *v as u64,
-                    Constant::Long(v) => *v as u64,
-                    Constant::ULong(v) => *v,
-                };
+                let value = c.as_u64();
                 let static_init = match &decl.ty {
                     Type::Int => StaticInit::Int(value as i32),
                     Type::UInt => StaticInit::UInt(value as u32),
@@ -351,14 +340,7 @@ impl TypeChecker {
                         span: value.span,
                     });
                 };
-                // TODO: Code almost duplicated for static initializers
-                let case_constant = match constant {
-                    Constant::Int(v) => *v as u64,
-                    Constant::UInt(v) => *v as u64,
-                    Constant::Long(v) => *v as u64,
-                    Constant::ULong(v) => *v,
-                };
-
+                let case_constant = constant.as_u64();
                 let case_value = match &switch_cases.expr_ty {
                     Type::Int => Constant::Int(case_constant as i32),
                     Type::UInt => Constant::UInt(case_constant as u32),
@@ -484,9 +466,7 @@ impl TypeChecker {
 
                 match op.as_ref() {
                     BinaryOp::And | BinaryOp::Or => Type::Int,
-                    BinaryOp::ShiftRight | BinaryOp::ShiftLeft => {
-                        left_ty // TODO: Investigate this properly!
-                    }
+                    BinaryOp::ShiftRight | BinaryOp::ShiftLeft => left_ty,
                     _ => {
                         let common = Self::common_type(&left_ty, &right_ty);
                         self.cast_if_needed(left, &left_ty, &common);

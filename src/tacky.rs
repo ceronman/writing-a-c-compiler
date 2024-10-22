@@ -505,14 +505,7 @@ impl TackyGenerator {
                     self.emit_expr(right)
                 };
 
-                // TODO: Duplication
-                // TODO`: Duplication
-                let result =
-                    if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
-                        self.cast(result, &expr_ty, &target)
-                    } else {
-                        result
-                    };
+                let result = self.cast_if_needed(result, expr, &expr_ty);
 
                 self.instructions.push(Instruction::Copy {
                     src: result,
@@ -572,10 +565,19 @@ impl TackyGenerator {
                 self.cast(result, &inner_ty, target)
             }
         };
+        self.cast_if_needed(result, expr, &expr_ty)
+    }
+
+    fn cast_if_needed(
+        &mut self,
+        val: Val,
+        expr: &ast::Node<ast::Expression>,
+        expr_ty: &Type,
+    ) -> Val {
         if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
-            self.cast(result, &expr_ty, &target)
+            self.cast(val, expr_ty, &target)
         } else {
-            result
+            val
         }
     }
 
