@@ -545,8 +545,9 @@ fn replace_pseudo_registers(
 fn fixup_instructions(instructions: Vec<Instruction>, stack_size: i64) -> Vec<Instruction> {
     let mut fixed = Vec::with_capacity(instructions.len() + 1);
 
-    let stack_size = ((stack_size / 16) + 1) * 16;
-    // TODO: test: let stack_size = stack_size + stack_size % 16;
+    // Trick to align to the next multiple of 16 or same value if it's already there:
+    // https://math.stackexchange.com/a/291494
+    let stack_size = ((stack_size - 1) | 15) + 1;
     fixed.push(Instruction::Binary(
         AsmType::Quadword,
         BinaryOp::Sub,
