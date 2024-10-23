@@ -790,6 +790,7 @@ impl<'src> Parser<'src> {
             LiteralKind::Uint => Constant::UInt(value as u32),
             LiteralKind::Long => Constant::Long(value as i64),
             LiteralKind::ULong => Constant::ULong(value),
+            LiteralKind::Double => todo!(),
         };
 
         Ok(self.node(token.span, Expression::Constant(constant)))

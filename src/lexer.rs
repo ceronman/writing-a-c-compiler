@@ -4,6 +4,7 @@ mod test;
 use std::fmt::{Display, Formatter};
 use std::ops::Add;
 use std::str::Chars;
+use crate::lexer::TokenKind::Constant;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Span(pub usize, pub usize);
@@ -32,6 +33,7 @@ pub enum TokenKind {
     Void,
     Signed,
     Unsigned,
+    Double,
 
     If,
     Else,
@@ -103,6 +105,7 @@ pub enum LiteralKind {
     Uint,
     Long,
     ULong,
+    Double,
 }
 
 impl Display for TokenKind {
@@ -113,11 +116,13 @@ impl Display for TokenKind {
             TokenKind::Constant(LiteralKind::Uint) => "unsigned constant",
             TokenKind::Constant(LiteralKind::Long) => "long constant",
             TokenKind::Constant(LiteralKind::ULong) => "unsigned long constant",
+            TokenKind::Constant(LiteralKind::Double) => "double constant",
             TokenKind::Int => "'int'",
             TokenKind::Long => "'long'",
             TokenKind::Void => "'void'",
             TokenKind::Signed => "'signed'",
             TokenKind::Unsigned => "'unsigned'",
+            TokenKind::Double => "'double'",
             TokenKind::If => "'if'",
             TokenKind::Else => "'else'",
             TokenKind::Switch => "'switch'",
@@ -287,7 +292,7 @@ impl<'src> Lexer<'src> {
                 Some('=') => self.eat_and(TokenKind::LessEqual),
                 _ => TokenKind::Less,
             },
-            '0'..='9' => self.constant(),
+            '0'..='9' | '.' => self.constant(c),
             c if c == '_' || c.is_alphabetic() => self.identifier(),
             _ => TokenKind::Error,
         }
@@ -303,35 +308,63 @@ impl<'src> Lexer<'src> {
         }
     }
 
-    fn constant(&mut self) -> TokenKind {
+    fn eat_numbers(&mut self) {
         while let Some('0'..='9') = self.peek() {
             self.advance();
         }
+    }
 
-        let kind = match (self.peek(), self.peek_next()) {
-            (Some('u') | Some('U'), Some('l') | Some('L')) => {
+    fn fraction(&mut self) -> TokenKind {
+        self.eat_numbers();
+        if let Some('e' | 'E') = self.peek() {
+            self.advance();
+            if let Some('+' | '-') = self.peek() {
                 self.advance();
-                self.advance();
-                TokenKind::Constant(LiteralKind::ULong)
             }
-            (Some('l') | Some('L'), Some('u') | Some('U')) => {
-                self.advance();
-                self.advance();
-                TokenKind::Constant(LiteralKind::ULong)
+            if !matches!(self.peek(), Some('0'..='9')) {
+                return TokenKind::Error;
             }
-            (Some('l') | Some('L'), _) => {
-                self.advance();
-                TokenKind::Constant(LiteralKind::Long)
+            self.eat_numbers()
+        }
+        Constant(LiteralKind::Double)
+    }
+
+    fn constant(&mut self, first: char) -> TokenKind {
+        let kind = if first == '.' {
+            self.fraction()
+        } else {
+            self.eat_numbers();
+            match (self.peek(), self.peek_next()) {
+                (Some('.'), _) => {
+                    self.advance();
+                    self.fraction()
+                }
+                (Some('e' | 'E'), _) => self.fraction(),
+                (Some('u') | Some('U'), Some('l') | Some('L')) => {
+                    self.advance();
+                    self.advance();
+                    TokenKind::Constant(LiteralKind::ULong)
+                }
+                (Some('l') | Some('L'), Some('u') | Some('U')) => {
+                    self.advance();
+                    self.advance();
+                    TokenKind::Constant(LiteralKind::ULong)
+                }
+                (Some('l') | Some('L'), _) => {
+                    self.advance();
+                    TokenKind::Constant(LiteralKind::Long)
+                }
+                (Some('u') | Some('U'), _) => {
+                    self.advance();
+                    TokenKind::Constant(LiteralKind::Uint)
+                }
+                _ => TokenKind::Constant(LiteralKind::Int),
             }
-            (Some('u') | Some('U'), _) => {
-                self.advance();
-                TokenKind::Constant(LiteralKind::Uint)
-            }
-            _ => TokenKind::Constant(LiteralKind::Int),
         };
 
         match self.peek() {
             Some(c) if c.is_alphanumeric() => TokenKind::Error,
+            Some('.' | '_') => TokenKind::Error,
             _ => kind,
         }
     }
@@ -350,6 +383,7 @@ impl<'src> Lexer<'src> {
             "void" => TokenKind::Void,
             "signed" => TokenKind::Signed,
             "unsigned" => TokenKind::Unsigned,
+            "double" => TokenKind::Double,
             "return" => TokenKind::Return,
             "if" => TokenKind::If,
             "else" => TokenKind::Else,
