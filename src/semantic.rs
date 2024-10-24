@@ -59,6 +59,7 @@ impl StaticInit {
             Constant::UInt(v) => StaticInit::UInt(v),
             Constant::Long(v) => StaticInit::Long(v),
             Constant::ULong(v) => StaticInit::ULong(v),
+            Constant::Double(v) => todo!(),
         }
     }
 }

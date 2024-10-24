@@ -141,6 +141,7 @@ impl SemanticData {
         match val {
             tacky::Val::Constant(Constant::Int(_) | Constant::UInt(_)) => AsmType::Longword,
             tacky::Val::Constant(Constant::Long(_) | Constant::ULong(_)) => AsmType::Quadword,
+            tacky::Val::Constant(Constant::Double(_)) => todo!(),
             tacky::Val::Var(name) => self.symbol_asm_ty(name),
         }
     }
@@ -149,6 +150,7 @@ impl SemanticData {
         match self.symbol_ty(symbol) {
             Type::Int | Type::UInt => AsmType::Longword,
             Type::Long | Type::ULong => AsmType::Quadword,
+            Type::Double => todo!(),
             Type::Function(_) => unreachable!(),
         }
     }
@@ -161,9 +163,11 @@ impl SemanticData {
         match val {
             tacky::Val::Constant(Constant::Int(_) | Constant::Long(_)) => true,
             tacky::Val::Constant(Constant::UInt(_) | Constant::ULong(_)) => false,
+            tacky::Val::Constant(Constant::Double(_)) => todo!(),
             tacky::Val::Var(name) => match self.symbol_ty(name) {
                 Type::Int | Type::Long => true,
                 Type::UInt | Type::ULong => false,
+                Type::Double => todo!(),
                 Type::Function(_) => unreachable!(),
             },
         }

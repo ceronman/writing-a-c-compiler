@@ -186,6 +186,7 @@ fn pp_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
         tacky::Val::Constant(ast::Constant::Long(value)) => write!(file, "{value}L")?,
         tacky::Val::Constant(ast::Constant::UInt(value)) => write!(file, "{value}U")?,
         tacky::Val::Constant(ast::Constant::ULong(value)) => write!(file, "{value}UL")?,
+        tacky::Val::Constant(ast::Constant::Double(value)) => write!(file, "{value}D")?,
         tacky::Val::Var(name) => write!(file, "{name}")?,
     }
     Ok(())
@@ -198,6 +199,7 @@ fn pp_type(file: &mut impl Write, ty: &ast::Type) -> Result<()> {
         ast::Type::UInt => write!(file, "Unsigned Int"),
         ast::Type::ULong => write!(file, "Unsigned Long"),
         ast::Type::Function(_) => write!(file, "Function(...)"),
+        ast::Type::Double => write!(file, "Double"),
     }?;
     Ok(())
 }
@@ -374,6 +376,7 @@ impl PrettyAst {
                         ast::Constant::Long(v) => *v,
                         ast::Constant::UInt(v) => *v as i64,
                         ast::Constant::ULong(v) => *v as i64,
+                        ast::Constant::Double(v) => *v as i64,
                     };
                     Self::new(
                         format!("Case [{}]", value),
@@ -494,13 +497,13 @@ impl PrettyAst {
     }
 
     fn from_constant(constant: &ast::Constant) -> PrettyAst {
-        let value = match constant {
-            ast::Constant::Int(v) => format!("{}", *v),
-            ast::Constant::Long(v) => format!("{}L", *v),
-            ast::Constant::UInt(v) => format!("{}U", *v),
-            ast::Constant::ULong(v) => format!("{}UL", *v),
-        };
-        Self::new(format!("Constant [{}]", value), vec![])
+        match constant {
+            ast::Constant::Int(v) => Self::new(format!("Constant Int [{}]", *v), vec![]),
+            ast::Constant::Long(v) => Self::new(format!("Constant Long [{}]", *v), vec![]),
+            ast::Constant::UInt(v) => Self::new(format!("Constant UInt [{}]", *v), vec![]),
+            ast::Constant::ULong(v) => Self::new(format!("Constant ULong [{}]", *v), vec![]),
+            ast::Constant::Double(v) => Self::new(format!("Constant Double [{:+e}]", *v), vec![]),
+        }
     }
 
     fn from_type(ty: &ast::Type) -> PrettyAst {
@@ -509,6 +512,7 @@ impl PrettyAst {
             ast::Type::Long => Self::new("Long", vec![]),
             ast::Type::ULong => Self::new("Unsigned Long", vec![]),
             ast::Type::UInt => Self::new("Unsigned Int", vec![]),
+            ast::Type::Double => Self::new("Double", vec![]),
             ast::Type::Function(f) => Self::new(
                 "FunctionType",
                 vec![

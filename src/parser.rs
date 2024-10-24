@@ -7,7 +7,7 @@ use crate::ast::{
     StorageClass, Type, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
-use crate::lexer::{Lexer, LiteralKind, Span, Token, TokenKind};
+use crate::lexer::{IntKind, Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
 
 struct Parser<'src> {
@@ -26,7 +26,11 @@ impl TokenKind {
     fn is_type_specifier(&self) -> bool {
         matches!(
             self,
-            TokenKind::Int | TokenKind::Long | TokenKind::Unsigned | TokenKind::Signed
+            TokenKind::Double
+                | TokenKind::Int
+                | TokenKind::Long
+                | TokenKind::Unsigned
+                | TokenKind::Signed
         )
     }
 }
@@ -160,6 +164,10 @@ impl<'src> Parser<'src> {
     }
 
     fn type_from_list(&mut self, span: Span, types: &[TokenKind]) -> Result<Node<Type>> {
+        if let [TokenKind::Double] = types {
+            return Ok(self.node(span, Type::Double));
+        }
+
         let mut signed = 0;
         let mut unsigned = 0;
         let mut int = 0;
@@ -171,6 +179,13 @@ impl<'src> Parser<'src> {
                 TokenKind::Unsigned => unsigned += 1,
                 TokenKind::Int => int += 1,
                 TokenKind::Long => long += 1,
+                TokenKind::Double => {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Parse,
+                        msg: "Invalid type specifier".into(),
+                        span,
+                    })
+                }
                 _ => unreachable!(),
             };
         }
@@ -487,7 +502,8 @@ impl<'src> Parser<'src> {
         error_kind: &str,
     ) -> Result<Node<Expression>> {
         let mut expr = match self.current.kind {
-            TokenKind::Constant(_) => self.constant()?,
+            TokenKind::IntConstant(_) => self.int_constant()?,
+            TokenKind::DoubleConstant => self.double_constant()?,
             TokenKind::Identifier => {
                 if self.next.kind == TokenKind::OpenParen {
                     self.function_call()?
@@ -757,9 +773,20 @@ impl<'src> Parser<'src> {
         Ok(self.node(name.span, Expression::Var(name.data.symbol)))
     }
 
-    fn constant(&mut self) -> Result<Node<Expression>> {
+    fn double_constant(&mut self) -> Result<Node<Expression>> {
+        let token = self.expect(TokenKind::DoubleConstant)?;
+        let lexeme = token.slice(self.source);
+        let value: f64 = lexeme.parse().map_err(|e| CompilerError {
+            kind: ErrorKind::Parse,
+            msg: format!("Integer constant out of range: {e:?}"),
+            span: token.span,
+        })?;
+        Ok(self.node(token.span, Expression::Constant(Constant::Double(value))))
+    }
+
+    fn int_constant(&mut self) -> Result<Node<Expression>> {
         let token = self.current;
-        let TokenKind::Constant(kind) = token.kind else {
+        let TokenKind::IntConstant(kind) = token.kind else {
             return Err(CompilerError {
                 kind: ErrorKind::Parse,
                 msg: format!(
@@ -784,13 +811,12 @@ impl<'src> Parser<'src> {
         })?;
 
         let constant = match kind {
-            LiteralKind::Int if value > i32::MAX as u64 => Constant::Long(value as i64),
-            LiteralKind::Int => Constant::Int(value as i32),
-            LiteralKind::Uint if value > u32::MAX as u64 => Constant::ULong(value),
-            LiteralKind::Uint => Constant::UInt(value as u32),
-            LiteralKind::Long => Constant::Long(value as i64),
-            LiteralKind::ULong => Constant::ULong(value),
-            LiteralKind::Double => todo!(),
+            IntKind::Int if value > i32::MAX as u64 => Constant::Long(value as i64),
+            IntKind::Int => Constant::Int(value as i32),
+            IntKind::Uint if value > u32::MAX as u64 => Constant::ULong(value),
+            IntKind::Uint => Constant::UInt(value as u32),
+            IntKind::Long => Constant::Long(value as i64),
+            IntKind::ULong => Constant::ULong(value),
         };
 
         Ok(self.node(token.span, Expression::Constant(constant)))

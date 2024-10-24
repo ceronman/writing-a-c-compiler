@@ -686,6 +686,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                         Type::Long => StaticInit::Long(0),
                         Type::UInt => StaticInit::UInt(0),
                         Type::ULong => StaticInit::ULong(0),
+                        Type::Double => todo!(),
                         Type::Function(_) => unreachable!(),
                     };
                     top_level.push(TopLevel::Variable(StaticVariable {

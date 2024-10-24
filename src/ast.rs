@@ -122,12 +122,13 @@ pub enum Expression {
     },
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Constant {
     Int(i32),
     UInt(u32),
     Long(i64),
     ULong(u64),
+    Double(f64),
 }
 
 #[derive(Debug)]
@@ -147,6 +148,7 @@ pub enum Type {
     UInt,
     Long,
     ULong,
+    Double,
     Function(FunctionType),
 }
 
@@ -274,6 +276,7 @@ impl Type {
             Type::UInt => 4,
             Type::Long => 8,
             Type::ULong => 8,
+            Type::Double => 8,
             Type::Function(_) => panic!("Size of function type"),
         }
     }
@@ -284,6 +287,7 @@ impl Type {
             Type::UInt => false,
             Type::Long => true,
             Type::ULong => false,
+            Type::Double => false,
             Type::Function(_) => panic!("Size of function type"),
         }
     }
@@ -296,6 +300,7 @@ impl Constant {
             Constant::UInt(v) => *v as u64,
             Constant::Long(v) => *v as u64,
             Constant::ULong(v) => *v,
+            Constant::Double(v) => *v as u64,
         }
     }
 }

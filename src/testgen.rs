@@ -17,7 +17,7 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
         .join("src/lexer/test.rs");
     if fs::read_to_string(&output)?.is_empty() {
         let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
-        writeln!(file, "use crate::lexer::{{LiteralKind, tokenize}};")?;
+        writeln!(file, "use crate::lexer::{{IntKind, tokenize}};")?;
         writeln!(file, "use crate::lexer::TokenKind::*;")?;
     }
     let name = test_name(path);
@@ -42,7 +42,7 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
             let expected: Vec<String> = tokens
                 .iter()
                 .map(|t| match t {
-                    TokenKind::Constant(c) => format!("Constant(LiteralKind::{:?})", c),
+                    TokenKind::IntConstant(c) => format!("IntConstant(IntKind::{:?})", c),
                     _ => format!("{:?}", t),
                 })
                 .collect();

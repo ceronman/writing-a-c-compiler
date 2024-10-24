@@ -89,6 +89,7 @@ impl TypeChecker {
                     Type::Long => InitialValue::Initial(StaticInit::Long(0)),
                     Type::UInt => InitialValue::Initial(StaticInit::UInt(0)),
                     Type::ULong => InitialValue::Initial(StaticInit::ULong(0)),
+                    Type::Double => todo!(),
                     Type::Function(_) => unreachable!(),
                 }
             };
@@ -346,6 +347,7 @@ impl TypeChecker {
                     Type::UInt => Constant::UInt(case_constant as u32),
                     Type::Long => Constant::Long(case_constant as i64),
                     Type::ULong => Constant::ULong(case_constant),
+                    Type::Double => todo!(),
                     Type::Function(_) => unreachable!(),
                 };
 
@@ -434,6 +436,7 @@ impl TypeChecker {
                 Constant::Long(_) => Type::Long,
                 Constant::UInt(_) => Type::UInt,
                 Constant::ULong(_) => Type::ULong,
+                Constant::Double(_) => todo!(),
             },
             Expression::Var(name) => {
                 let Some(data) = self.symbols.get(name) else {

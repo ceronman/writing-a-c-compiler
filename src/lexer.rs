@@ -4,7 +4,6 @@ mod test;
 use std::fmt::{Display, Formatter};
 use std::ops::Add;
 use std::str::Chars;
-use crate::lexer::TokenKind::Constant;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Span(pub usize, pub usize);
@@ -26,7 +25,8 @@ pub struct Token {
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum TokenKind {
     Identifier,
-    Constant(LiteralKind),
+    IntConstant(IntKind),
+    DoubleConstant,
 
     Int,
     Long,
@@ -100,23 +100,22 @@ pub enum TokenKind {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum LiteralKind {
+pub enum IntKind {
     Int,
     Uint,
     Long,
     ULong,
-    Double,
 }
 
 impl Display for TokenKind {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let s = match self {
             TokenKind::Identifier => "identifier",
-            TokenKind::Constant(LiteralKind::Int) => "constant",
-            TokenKind::Constant(LiteralKind::Uint) => "unsigned constant",
-            TokenKind::Constant(LiteralKind::Long) => "long constant",
-            TokenKind::Constant(LiteralKind::ULong) => "unsigned long constant",
-            TokenKind::Constant(LiteralKind::Double) => "double constant",
+            TokenKind::IntConstant(IntKind::Int) => "constant",
+            TokenKind::IntConstant(IntKind::Uint) => "unsigned constant",
+            TokenKind::IntConstant(IntKind::Long) => "long constant",
+            TokenKind::IntConstant(IntKind::ULong) => "unsigned long constant",
+            TokenKind::DoubleConstant => "double constant",
             TokenKind::Int => "'int'",
             TokenKind::Long => "'long'",
             TokenKind::Void => "'void'",
@@ -326,7 +325,7 @@ impl<'src> Lexer<'src> {
             }
             self.eat_numbers()
         }
-        Constant(LiteralKind::Double)
+        TokenKind::DoubleConstant
     }
 
     fn constant(&mut self, first: char) -> TokenKind {
@@ -343,22 +342,22 @@ impl<'src> Lexer<'src> {
                 (Some('u') | Some('U'), Some('l') | Some('L')) => {
                     self.advance();
                     self.advance();
-                    TokenKind::Constant(LiteralKind::ULong)
+                    TokenKind::IntConstant(IntKind::ULong)
                 }
                 (Some('l') | Some('L'), Some('u') | Some('U')) => {
                     self.advance();
                     self.advance();
-                    TokenKind::Constant(LiteralKind::ULong)
+                    TokenKind::IntConstant(IntKind::ULong)
                 }
                 (Some('l') | Some('L'), _) => {
                     self.advance();
-                    TokenKind::Constant(LiteralKind::Long)
+                    TokenKind::IntConstant(IntKind::Long)
                 }
                 (Some('u') | Some('U'), _) => {
                     self.advance();
-                    TokenKind::Constant(LiteralKind::Uint)
+                    TokenKind::IntConstant(IntKind::Uint)
                 }
-                _ => TokenKind::Constant(LiteralKind::Int),
+                _ => TokenKind::IntConstant(IntKind::Int),
             }
         };
 

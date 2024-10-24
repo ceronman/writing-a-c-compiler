@@ -167,7 +167,7 @@ fn test_chapter_1_valid_multi_digit() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [100]
+                        ╰── Constant Int [100]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -191,7 +191,7 @@ fn test_chapter_1_valid_newlines() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -206,7 +206,7 @@ fn test_chapter_1_valid_no_newlines() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -223,7 +223,7 @@ fn test_chapter_1_valid_return_0() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -240,7 +240,7 @@ fn test_chapter_1_valid_return_2() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [2]
+                        ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -255,7 +255,7 @@ fn test_chapter_1_valid_spaces() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -270,7 +270,7 @@ fn test_chapter_1_valid_tabs() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -375,7 +375,7 @@ fn test_chapter_2_valid_bitwise() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [~]
-                            ╰── Constant [12]
+                            ╰── Constant Int [12]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -394,7 +394,7 @@ fn test_chapter_2_valid_bitwise_int_min() {
                     ╰── Return
                         ╰── Unary [~]
                             ╰── Unary [-]
-                                ╰── Constant [2147483647]
+                                ╰── Constant Int [2147483647]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -412,7 +412,7 @@ fn test_chapter_2_valid_bitwise_zero() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [~]
-                            ╰── Constant [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -430,7 +430,7 @@ fn test_chapter_2_valid_neg() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [-]
-                            ╰── Constant [5]
+                            ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -448,7 +448,7 @@ fn test_chapter_2_valid_neg_zero() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [-]
-                            ╰── Constant [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -466,7 +466,7 @@ fn test_chapter_2_valid_negate_int_max() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [-]
-                            ╰── Constant [2147483647]
+                            ╰── Constant Int [2147483647]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -485,7 +485,7 @@ fn test_chapter_2_valid_nested_ops() {
                     ╰── Return
                         ╰── Unary [~]
                             ╰── Unary [-]
-                                ╰── Constant [3]
+                                ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -504,7 +504,7 @@ fn test_chapter_2_valid_nested_ops_2() {
                     ╰── Return
                         ╰── Unary [-]
                             ╰── Unary [~]
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -522,7 +522,7 @@ fn test_chapter_2_valid_parens() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [-]
-                            ╰── Constant [2]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -540,7 +540,7 @@ fn test_chapter_2_valid_parens_2() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [~]
-                            ╰── Constant [2]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -559,7 +559,7 @@ fn test_chapter_2_valid_parens_3() {
                     ╰── Return
                         ╰── Unary [-]
                             ╰── Unary [-]
-                                ╰── Constant [4]
+                                ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -578,7 +578,7 @@ fn test_chapter_2_valid_redundant_parens() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [-]
-                            ╰── Constant [10]
+                            ╰── Constant Int [10]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -704,8 +704,8 @@ fn test_chapter_3_valid_add() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [+]
-                            ├── Constant [1]
-                            ╰── Constant [2]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -724,9 +724,9 @@ fn test_chapter_3_valid_associativity() {
                     ╰── Return
                         ╰── Binary [-]
                             ├── Binary [-]
-                            │   ├── Constant [1]
-                            │   ╰── Constant [2]
-                            ╰── Constant [3]
+                            │   ├── Constant Int [1]
+                            │   ╰── Constant Int [2]
+                            ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -745,9 +745,9 @@ fn test_chapter_3_valid_associativity_2() {
                     ╰── Return
                         ╰── Binary [/]
                             ├── Binary [/]
-                            │   ├── Constant [6]
-                            │   ╰── Constant [3]
-                            ╰── Constant [2]
+                            │   ├── Constant Int [6]
+                            │   ╰── Constant Int [3]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -767,14 +767,14 @@ fn test_chapter_3_valid_associativity_3() {
                         ╰── Binary [+]
                             ├── Binary [*]
                             │   ├── Binary [/]
-                            │   │   ├── Constant [3]
-                            │   │   ╰── Constant [2]
-                            │   ╰── Constant [4]
+                            │   │   ├── Constant Int [3]
+                            │   │   ╰── Constant Int [2]
+                            │   ╰── Constant Int [4]
                             ╰── Binary [+]
                                 ├── Binary [-]
-                                │   ├── Constant [5]
-                                │   ╰── Constant [4]
-                                ╰── Constant [3]
+                                │   ├── Constant Int [5]
+                                │   ╰── Constant Int [4]
+                                ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -795,14 +795,14 @@ fn test_chapter_3_valid_associativity_and_precedence() {
                         ╰── Binary [-]
                             ├── Binary [/]
                             │   ├── Binary [*]
-                            │   │   ├── Constant [5]
-                            │   │   ╰── Constant [4]
-                            │   ╰── Constant [2]
+                            │   │   ├── Constant Int [5]
+                            │   │   ╰── Constant Int [4]
+                            │   ╰── Constant Int [2]
                             ╰── Binary [%]
-                                ├── Constant [3]
+                                ├── Constant Int [3]
                                 ╰── Binary [+]
-                                    ├── Constant [2]
-                                    ╰── Constant [1]
+                                    ├── Constant Int [2]
+                                    ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -820,8 +820,8 @@ fn test_chapter_3_valid_div() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [/]
-                            ├── Constant [4]
-                            ╰── Constant [2]
+                            ├── Constant Int [4]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -840,8 +840,8 @@ fn test_chapter_3_valid_div_neg() {
                     ╰── Return
                         ╰── Binary [/]
                             ├── Unary [-]
-                            │   ╰── Constant [12]
-                            ╰── Constant [5]
+                            │   ╰── Constant Int [12]
+                            ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -859,8 +859,8 @@ fn test_chapter_3_valid_extra_credit_bitwise_and() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [&]
-                            ├── Constant [3]
-                            ╰── Constant [5]
+                            ├── Constant Int [3]
+                            ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -878,8 +878,8 @@ fn test_chapter_3_valid_extra_credit_bitwise_or() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [|]
-                            ├── Constant [1]
-                            ╰── Constant [2]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -898,15 +898,15 @@ fn test_chapter_3_valid_extra_credit_bitwise_precedence() {
                     ╰── Return
                         ╰── Binary [|]
                             ├── Binary [>>]
-                            │   ├── Constant [80]
-                            │   ╰── Constant [2]
+                            │   ├── Constant Int [80]
+                            │   ╰── Constant Int [2]
                             ╰── Binary [^]
-                                ├── Constant [1]
+                                ├── Constant Int [1]
                                 ╰── Binary [&]
-                                    ├── Constant [5]
+                                    ├── Constant Int [5]
                                     ╰── Binary [<<]
-                                        ├── Constant [7]
-                                        ╰── Constant [1]
+                                        ├── Constant Int [7]
+                                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -925,9 +925,9 @@ fn test_chapter_3_valid_extra_credit_bitwise_shift_associativity() {
                     ╰── Return
                         ╰── Binary [>>]
                             ├── Binary [<<]
-                            │   ├── Constant [33]
-                            │   ╰── Constant [4]
-                            ╰── Constant [2]
+                            │   ├── Constant Int [33]
+                            │   ╰── Constant Int [4]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -946,9 +946,9 @@ fn test_chapter_3_valid_extra_credit_bitwise_shift_associativity_2() {
                     ╰── Return
                         ╰── Binary [<<]
                             ├── Binary [>>]
-                            │   ├── Constant [33]
-                            │   ╰── Constant [2]
-                            ╰── Constant [1]
+                            │   ├── Constant Int [33]
+                            │   ╰── Constant Int [2]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -967,11 +967,11 @@ fn test_chapter_3_valid_extra_credit_bitwise_shift_precedence() {
                     ╰── Return
                         ╰── Binary [>>]
                             ├── Binary [<<]
-                            │   ├── Constant [40]
+                            │   ├── Constant Int [40]
                             │   ╰── Binary [+]
-                            │       ├── Constant [4]
-                            │       ╰── Constant [12]
-                            ╰── Constant [1]
+                            │       ├── Constant Int [4]
+                            │       ╰── Constant Int [12]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -989,8 +989,8 @@ fn test_chapter_3_valid_extra_credit_bitwise_shiftl() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [<<]
-                            ├── Constant [35]
-                            ╰── Constant [2]
+                            ├── Constant Int [35]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1008,8 +1008,8 @@ fn test_chapter_3_valid_extra_credit_bitwise_shiftr() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [>>]
-                            ├── Constant [1000]
-                            ╰── Constant [4]
+                            ├── Constant Int [1000]
+                            ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1028,8 +1028,8 @@ fn test_chapter_3_valid_extra_credit_bitwise_shiftr_negative() {
                     ╰── Return
                         ╰── Binary [>>]
                             ├── Unary [-]
-                            │   ╰── Constant [5]
-                            ╰── Constant [30]
+                            │   ╰── Constant Int [5]
+                            ╰── Constant Int [30]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1048,15 +1048,15 @@ fn test_chapter_3_valid_extra_credit_bitwise_variable_shift_count() {
                     ╰── Return
                         ╰── Binary [+]
                             ├── Binary [<<]
-                            │   ├── Constant [4]
+                            │   ├── Constant Int [4]
                             │   ╰── Binary [*]
-                            │       ├── Constant [2]
-                            │       ╰── Constant [2]
+                            │       ├── Constant Int [2]
+                            │       ╰── Constant Int [2]
                             ╰── Binary [>>]
-                                ├── Constant [100]
+                                ├── Constant Int [100]
                                 ╰── Binary [+]
-                                    ├── Constant [1]
-                                    ╰── Constant [2]
+                                    ├── Constant Int [1]
+                                    ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1074,8 +1074,8 @@ fn test_chapter_3_valid_extra_credit_bitwise_xor() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [^]
-                            ├── Constant [7]
-                            ╰── Constant [1]
+                            ├── Constant Int [7]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1093,8 +1093,8 @@ fn test_chapter_3_valid_mod() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [%]
-                            ├── Constant [4]
-                            ╰── Constant [2]
+                            ├── Constant Int [4]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1112,8 +1112,8 @@ fn test_chapter_3_valid_mult() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [*]
-                            ├── Constant [2]
-                            ╰── Constant [3]
+                            ├── Constant Int [2]
+                            ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1131,10 +1131,10 @@ fn test_chapter_3_valid_parens() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [*]
-                            ├── Constant [2]
+                            ├── Constant Int [2]
                             ╰── Binary [+]
-                                ├── Constant [3]
-                                ╰── Constant [4]
+                                ├── Constant Int [3]
+                                ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1152,10 +1152,10 @@ fn test_chapter_3_valid_precedence() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [+]
-                            ├── Constant [2]
+                            ├── Constant Int [2]
                             ╰── Binary [*]
-                                ├── Constant [3]
-                                ╰── Constant [4]
+                                ├── Constant Int [3]
+                                ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1173,8 +1173,8 @@ fn test_chapter_3_valid_sub() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [-]
-                            ├── Constant [1]
-                            ╰── Constant [2]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1192,9 +1192,9 @@ fn test_chapter_3_valid_sub_neg() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [-]
-                            ├── Constant [2]
+                            ├── Constant Int [2]
                             ╰── Unary [-]
-                                ╰── Constant [1]
+                                ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1213,8 +1213,8 @@ fn test_chapter_3_valid_unop_add() {
                     ╰── Return
                         ╰── Binary [+]
                             ├── Unary [~]
-                            │   ╰── Constant [2]
-                            ╰── Constant [3]
+                            │   ╰── Constant Int [2]
+                            ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1233,8 +1233,8 @@ fn test_chapter_3_valid_unop_parens() {
                     ╰── Return
                         ╰── Unary [~]
                             ╰── Binary [+]
-                                ├── Constant [1]
-                                ╰── Constant [1]
+                                ├── Constant Int [1]
+                                ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1328,14 +1328,14 @@ fn test_chapter_4_valid_and_false() {
                         ╰── Binary [+]
                             ├── Binary [+]
                             │   ├── Binary [&&]
-                            │   │   ├── Constant [10]
-                            │   │   ╰── Constant [0]
+                            │   │   ├── Constant Int [10]
+                            │   │   ╰── Constant Int [0]
                             │   ╰── Binary [&&]
-                            │       ├── Constant [0]
-                            │       ╰── Constant [4]
+                            │       ├── Constant Int [0]
+                            │       ╰── Constant Int [4]
                             ╰── Binary [&&]
-                                ├── Constant [0]
-                                ╰── Constant [0]
+                                ├── Constant Int [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1353,10 +1353,10 @@ fn test_chapter_4_valid_and_short_circuit() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [&&]
-                            ├── Constant [0]
+                            ├── Constant Int [0]
                             ╰── Binary [/]
-                                ├── Constant [1]
-                                ╰── Constant [0]
+                                ├── Constant Int [1]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1374,9 +1374,9 @@ fn test_chapter_4_valid_and_true() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [&&]
-                            ├── Constant [1]
+                            ├── Constant Int [1]
                             ╰── Unary [-]
-                                ╰── Constant [1]
+                                ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1396,10 +1396,10 @@ fn test_chapter_4_valid_associativity() {
                         ╰── Binary [<=]
                             ├── Binary [>]
                             │   ├── Binary [>=]
-                            │   │   ├── Constant [5]
-                            │   │   ╰── Constant [0]
-                            │   ╰── Constant [1]
-                            ╰── Constant [0]
+                            │   │   ├── Constant Int [5]
+                            │   │   ╰── Constant Int [0]
+                            │   ╰── Constant Int [1]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1419,12 +1419,12 @@ fn test_chapter_4_valid_compare_arithmetic_results() {
                         ╰── Binary [==]
                             ├── Binary [*]
                             │   ├── Unary [~]
-                            │   │   ╰── Constant [2]
+                            │   │   ╰── Constant Int [2]
                             │   ╰── Unary [-]
-                            │       ╰── Constant [2]
+                            │       ╰── Constant Int [2]
                             ╰── Binary [+]
-                                ├── Constant [1]
-                                ╰── Constant [5]
+                                ├── Constant Int [1]
+                                ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1442,8 +1442,8 @@ fn test_chapter_4_valid_eq_false() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [==]
-                            ├── Constant [1]
-                            ╰── Constant [2]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1462,9 +1462,9 @@ fn test_chapter_4_valid_eq_precedence() {
                     ╰── Return
                         ╰── Binary [!=]
                             ├── Binary [==]
-                            │   ├── Constant [3]
-                            │   ╰── Constant [1]
-                            ╰── Constant [2]
+                            │   ├── Constant Int [3]
+                            │   ╰── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1482,8 +1482,8 @@ fn test_chapter_4_valid_eq_true() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [==]
-                            ├── Constant [1]
-                            ╰── Constant [1]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1501,10 +1501,10 @@ fn test_chapter_4_valid_extra_credit_bitwise_and_precedence() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [&]
-                            ├── Constant [5]
+                            ├── Constant Int [5]
                             ╰── Binary [==]
-                                ├── Constant [7]
-                                ╰── Constant [5]
+                                ├── Constant Int [7]
+                                ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1522,10 +1522,10 @@ fn test_chapter_4_valid_extra_credit_bitwise_or_precedence() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [|]
-                            ├── Constant [5]
+                            ├── Constant Int [5]
                             ╰── Binary [!=]
-                                ├── Constant [7]
-                                ╰── Constant [5]
+                                ├── Constant Int [7]
+                                ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1544,11 +1544,11 @@ fn test_chapter_4_valid_extra_credit_bitwise_shift_precedence() {
                     ╰── Return
                         ╰── Binary [<=]
                             ├── Binary [>>]
-                            │   ├── Constant [20]
-                            │   ╰── Constant [4]
+                            │   ├── Constant Int [20]
+                            │   ╰── Constant Int [4]
                             ╰── Binary [<<]
-                                ├── Constant [3]
-                                ╰── Constant [1]
+                                ├── Constant Int [3]
+                                ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1566,10 +1566,10 @@ fn test_chapter_4_valid_extra_credit_bitwise_xor_precedence() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [^]
-                            ├── Constant [5]
+                            ├── Constant Int [5]
                             ╰── Binary [<]
-                                ├── Constant [7]
-                                ╰── Constant [5]
+                                ├── Constant Int [7]
+                                ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1587,8 +1587,8 @@ fn test_chapter_4_valid_ge_false() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [>=]
-                            ├── Constant [1]
-                            ╰── Constant [2]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1607,12 +1607,12 @@ fn test_chapter_4_valid_ge_true() {
                     ╰── Return
                         ╰── Binary [+]
                             ├── Binary [>=]
-                            │   ├── Constant [1]
-                            │   ╰── Constant [1]
+                            │   ├── Constant Int [1]
+                            │   ╰── Constant Int [1]
                             ╰── Binary [>=]
-                                ├── Constant [1]
+                                ├── Constant Int [1]
                                 ╰── Unary [-]
-                                    ╰── Constant [4]
+                                    ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1631,11 +1631,11 @@ fn test_chapter_4_valid_gt_false() {
                     ╰── Return
                         ╰── Binary [+]
                             ├── Binary [>]
-                            │   ├── Constant [1]
-                            │   ╰── Constant [2]
+                            │   ├── Constant Int [1]
+                            │   ╰── Constant Int [2]
                             ╰── Binary [>]
-                                ├── Constant [1]
-                                ╰── Constant [1]
+                                ├── Constant Int [1]
+                                ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1653,8 +1653,8 @@ fn test_chapter_4_valid_gt_true() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [>]
-                            ├── Constant [15]
-                            ╰── Constant [10]
+                            ├── Constant Int [15]
+                            ╰── Constant Int [10]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1672,9 +1672,9 @@ fn test_chapter_4_valid_le_false() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [<=]
-                            ├── Constant [1]
+                            ├── Constant Int [1]
                             ╰── Unary [-]
-                                ╰── Constant [1]
+                                ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1693,11 +1693,11 @@ fn test_chapter_4_valid_le_true() {
                     ╰── Return
                         ╰── Binary [+]
                             ├── Binary [<=]
-                            │   ├── Constant [0]
-                            │   ╰── Constant [2]
+                            │   ├── Constant Int [0]
+                            │   ╰── Constant Int [2]
                             ╰── Binary [<=]
-                                ├── Constant [0]
-                                ╰── Constant [0]
+                                ├── Constant Int [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1715,8 +1715,8 @@ fn test_chapter_4_valid_lt_false() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [<]
-                            ├── Constant [2]
-                            ╰── Constant [1]
+                            ├── Constant Int [2]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1734,8 +1734,8 @@ fn test_chapter_4_valid_lt_true() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [<]
-                            ├── Constant [1]
-                            ╰── Constant [2]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1753,12 +1753,12 @@ fn test_chapter_4_valid_multi_short_circuit() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [||]
-                            ├── Constant [0]
+                            ├── Constant Int [0]
                             ╰── Binary [&&]
-                                ├── Constant [0]
+                                ├── Constant Int [0]
                                 ╰── Binary [/]
-                                    ├── Constant [1]
-                                    ╰── Constant [0]
+                                    ├── Constant Int [1]
+                                    ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1776,8 +1776,8 @@ fn test_chapter_4_valid_ne_false() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [!=]
-                            ├── Constant [0]
-                            ╰── Constant [0]
+                            ├── Constant Int [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1796,9 +1796,9 @@ fn test_chapter_4_valid_ne_true() {
                     ╰── Return
                         ╰── Binary [!=]
                             ├── Unary [-]
-                            │   ╰── Constant [1]
+                            │   ╰── Constant Int [1]
                             ╰── Unary [-]
-                                ╰── Constant [2]
+                                ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1817,7 +1817,7 @@ fn test_chapter_4_valid_nested_ops() {
                     ╰── Return
                         ╰── Unary [!]
                             ╰── Unary [-]
-                                ╰── Constant [3]
+                                ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1835,7 +1835,7 @@ fn test_chapter_4_valid_not() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [!]
-                            ╰── Constant [5]
+                            ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1854,8 +1854,8 @@ fn test_chapter_4_valid_not_sum() {
                     ╰── Return
                         ╰── Unary [!]
                             ╰── Binary [-]
-                                ├── Constant [4]
-                                ╰── Constant [4]
+                                ├── Constant Int [4]
+                                ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1874,8 +1874,8 @@ fn test_chapter_4_valid_not_sum_2() {
                     ╰── Return
                         ╰── Unary [!]
                             ╰── Binary [-]
-                                ├── Constant [3]
-                                ╰── Constant [44]
+                                ├── Constant Int [3]
+                                ╰── Constant Int [44]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1893,7 +1893,7 @@ fn test_chapter_4_valid_not_zero() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [!]
-                            ╰── Constant [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1913,12 +1913,12 @@ fn test_chapter_4_valid_operate_on_booleans() {
                         ╰── Binary [-]
                             ├── Unary [~]
                             │   ╰── Binary [&&]
-                            │       ├── Constant [0]
-                            │       ╰── Constant [1]
+                            │       ├── Constant Int [0]
+                            │       ╰── Constant Int [1]
                             ╰── Unary [-]
                                 ╰── Binary [||]
-                                    ├── Constant [4]
-                                    ╰── Constant [3]
+                                    ├── Constant Int [4]
+                                    ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1936,8 +1936,8 @@ fn test_chapter_4_valid_or_false() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [||]
-                            ├── Constant [0]
-                            ╰── Constant [0]
+                            ├── Constant Int [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1955,10 +1955,10 @@ fn test_chapter_4_valid_or_short_circuit() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [||]
-                            ├── Constant [1]
+                            ├── Constant Int [1]
                             ╰── Binary [/]
-                                ├── Constant [1]
-                                ╰── Constant [0]
+                                ├── Constant Int [1]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -1978,14 +1978,14 @@ fn test_chapter_4_valid_or_true() {
                         ╰── Binary [+]
                             ├── Binary [+]
                             │   ├── Binary [||]
-                            │   │   ├── Constant [4]
-                            │   │   ╰── Constant [0]
+                            │   │   ├── Constant Int [4]
+                            │   │   ╰── Constant Int [0]
                             │   ╰── Binary [||]
-                            │       ├── Constant [0]
-                            │       ╰── Constant [3]
+                            │       ├── Constant Int [0]
+                            │       ╰── Constant Int [3]
                             ╰── Binary [||]
-                                ├── Constant [5]
-                                ╰── Constant [5]
+                                ├── Constant Int [5]
+                                ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2003,10 +2003,10 @@ fn test_chapter_4_valid_precedence() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [||]
-                            ├── Constant [1]
+                            ├── Constant Int [1]
                             ╰── Binary [&&]
-                                ├── Constant [0]
-                                ╰── Constant [2]
+                                ├── Constant Int [0]
+                                ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2025,9 +2025,9 @@ fn test_chapter_4_valid_precedence_2() {
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [||]
-                            │   ├── Constant [1]
-                            │   ╰── Constant [0]
-                            ╰── Constant [0]
+                            │   ├── Constant Int [1]
+                            │   ╰── Constant Int [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2045,10 +2045,10 @@ fn test_chapter_4_valid_precedence_3() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [==]
-                            ├── Constant [2]
+                            ├── Constant Int [2]
                             ╰── Binary [>=]
-                                ├── Constant [2]
-                                ╰── Constant [0]
+                                ├── Constant Int [2]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2067,9 +2067,9 @@ fn test_chapter_4_valid_precedence_4() {
                     ╰── Return
                         ╰── Binary [||]
                             ├── Binary [==]
-                            │   ├── Constant [2]
-                            │   ╰── Constant [2]
-                            ╰── Constant [0]
+                            │   ├── Constant Int [2]
+                            │   ╰── Constant Int [2]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2089,16 +2089,16 @@ fn test_chapter_4_valid_precedence_5() {
                         ╰── Binary [+]
                             ├── Binary [&&]
                             │   ├── Binary [==]
-                            │   │   ├── Constant [0]
-                            │   │   ╰── Constant [0]
+                            │   │   ├── Constant Int [0]
+                            │   │   ╰── Constant Int [0]
                             │   ╰── Binary [==]
-                            │       ├── Constant [3]
+                            │       ├── Constant Int [3]
                             │       ╰── Binary [>]
                             │           ├── Binary [+]
-                            │           │   ├── Constant [2]
-                            │           │   ╰── Constant [1]
-                            │           ╰── Constant [1]
-                            ╰── Constant [1]
+                            │           │   ├── Constant Int [2]
+                            │           │   ╰── Constant Int [1]
+                            │           ╰── Constant Int [1]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2333,8 +2333,8 @@ fn test_chapter_5_invalid_semantics_declared_after_use() {
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Binary [+]
-                    │       ├── Constant [1]
-                    │       ╰── Constant [2]
+                    │       ├── Constant Int [1]
+                    │       ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── a
@@ -2365,11 +2365,11 @@ fn test_chapter_5_invalid_semantics_extra_credit_compound_invalid_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [+=]
                     │   ├── Unary [-]
                     │   │   ╰── Var [a]
-                    │   ╰── Constant [1]
+                    │   ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -2394,12 +2394,12 @@ fn test_chapter_5_invalid_semantics_extra_credit_compound_invalid_lvalue_2() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ╰── Assign [-=]
                         ├── Assign [+=]
                         │   ├── Var [a]
-                        │   ╰── Constant [1]
-                        ╰── Constant [2]
+                        │   ╰── Constant Int [1]
+                        ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2422,7 +2422,7 @@ fn test_chapter_5_invalid_semantics_extra_credit_postfix_decr_non_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ╰── Return
                         ╰── Postfix [--]
                             ╰── Postfix [++]
@@ -2449,11 +2449,11 @@ fn test_chapter_5_invalid_semantics_extra_credit_postfix_incr_non_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Postfix [++]
                         ╰── Assign [=]
                             ├── Var [a]
-                            ╰── Constant [4]
+                            ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2471,7 +2471,7 @@ fn test_chapter_5_invalid_semantics_extra_credit_prefix_decr_non_lvalue() {
                 ╰── Body
                     ╰── Return
                         ╰── Unary [--]
-                            ╰── Constant [3]
+                            ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2495,13 +2495,13 @@ fn test_chapter_5_invalid_semantics_extra_credit_prefix_incr_non_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Unary [++]
                     │   ╰── Binary [+]
                     │       ├── Var [a]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2520,7 +2520,7 @@ fn test_chapter_5_invalid_semantics_extra_credit_undeclared_bitwise_op() {
                     ╰── Return
                         ╰── Binary [>>]
                             ├── Var [a]
-                            ╰── Constant [2]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2539,9 +2539,9 @@ fn test_chapter_5_invalid_semantics_extra_credit_undeclared_compound_assignment(
                 ╰── Body
                     ├── Assign [+=]
                     │   ├── Var [a]
-                    │   ╰── Constant [1]
+                    │   ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2565,12 +2565,12 @@ fn test_chapter_5_invalid_semantics_extra_credit_undeclared_compound_assignment_
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Assign [*=]
                     │   ├── Var [b]
                     │   ╰── Var [a]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2590,7 +2590,7 @@ fn test_chapter_5_invalid_semantics_extra_credit_undeclared_postfix_decr() {
                     ├── Postfix [--]
                     │   ╰── Var [a]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2610,7 +2610,7 @@ fn test_chapter_5_invalid_semantics_extra_credit_undeclared_prefix_incr() {
                     ├── Postfix [++]
                     │   ╰── Var [a]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2634,12 +2634,12 @@ fn test_chapter_5_invalid_semantics_invalid_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── Assign [=]
                     │   ├── Binary [+]
                     │   │   ├── Var [a]
-                    │   │   ╰── Constant [3]
-                    │   ╰── Constant [4]
+                    │   │   ╰── Constant Int [3]
+                    │   ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -2665,11 +2665,11 @@ fn test_chapter_5_invalid_semantics_invalid_lvalue_2() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── Assign [=]
                     │   ├── Unary [!]
                     │   │   ╰── Var [a]
-                    │   ╰── Constant [3]
+                    │   ╰── Constant Int [3]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -2695,19 +2695,19 @@ fn test_chapter_5_invalid_semantics_mixed_precedence_assignment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ╰── Assign [=]
                         ├── Var [a]
                         ╰── Assign [=]
                             ├── Binary [*]
-                            │   ├── Constant [3]
+                            │   ├── Constant Int [3]
                             │   ╰── Var [b]
                             ╰── Var [a]
     "#;
@@ -2733,14 +2733,14 @@ fn test_chapter_5_invalid_semantics_redefine() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── a
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -2777,7 +2777,7 @@ fn test_chapter_5_invalid_semantics_undeclared_var_and() {
                 ╰── Body
                     ╰── Return
                         ╰── Binary [&&]
-                            ├── Constant [0]
+                            ├── Constant Int [0]
                             ╰── Var [a]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -2797,7 +2797,7 @@ fn test_chapter_5_invalid_semantics_undeclared_var_compare() {
                     ╰── Return
                         ╰── Binary [<]
                             ├── Var [a]
-                            ╰── Constant [5]
+                            ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2840,7 +2840,7 @@ fn test_chapter_5_invalid_semantics_use_then_redefine() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Return
                     │   ╰── Var [a]
                     ├── VarDeclaration
@@ -2849,7 +2849,7 @@ fn test_chapter_5_invalid_semantics_use_then_redefine() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -2875,14 +2875,14 @@ fn test_chapter_5_valid_add_variables() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── second_variable
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ╰── Return
                         ╰── Binary [+]
                             ├── Var [first_variable]
@@ -2911,14 +2911,14 @@ fn test_chapter_5_valid_allocate_temps_and_vars() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2147483646]
+                    │       ╰── Constant Int [2147483646]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -2928,17 +2928,17 @@ fn test_chapter_5_valid_allocate_temps_and_vars() {
                     │       ╰── Binary [+]
                     │           ├── Binary [/]
                     │           │   ├── Var [a]
-                    │           │   ╰── Constant [6]
+                    │           │   ╰── Constant Int [6]
                     │           ╰── Unary [!]
                     │               ╰── Var [b]
                     ╰── Return
                         ╰── Binary [==]
                             ├── Binary [*]
                             │   ├── Var [c]
-                            │   ╰── Constant [2]
+                            │   ╰── Constant Int [2]
                             ╰── Binary [-]
                                 ├── Var [a]
-                                ╰── Constant [1431655762]
+                                ╰── Constant Int [1431655762]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -2963,7 +2963,7 @@ fn test_chapter_5_valid_assign() {
                     │       ╰── Int
                     ├── Assign [=]
                     │   ├── Var [var0]
-                    │   ╰── Constant [2]
+                    │   ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [var0]
     "#;
@@ -2990,7 +2990,7 @@ fn test_chapter_5_valid_assign_val_in_initializer() {
                     │   ╰── Initializer
                     │       ╰── Assign [=]
                     │           ├── Var [a]
-                    │           ╰── Constant [5]
+                    │           ╰── Constant Int [5]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -3023,7 +3023,7 @@ fn test_chapter_5_valid_assignment_in_initializer() {
                     │   ╰── Initializer
                     │       ╰── Assign [=]
                     │           ├── Var [a]
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -3051,8 +3051,8 @@ fn test_chapter_5_valid_assignment_lowest_precedence() {
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Binary [||]
-                    │       ├── Constant [0]
-                    │       ╰── Constant [5]
+                    │       ├── Constant Int [0]
+                    │       ╰── Constant Int [5]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -3094,12 +3094,12 @@ fn test_chapter_5_valid_exp_then_declaration() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [2593]
+                    │           ╰── Constant Int [2593]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Binary [%]
                     │       ├── Var [a]
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -3133,7 +3133,7 @@ fn test_chapter_5_valid_extra_credit_bitwise_in_initializer() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [15]
+                    │       ╰── Constant Int [15]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -3142,10 +3142,10 @@ fn test_chapter_5_valid_extra_credit_bitwise_in_initializer() {
                     │   ╰── Initializer
                     │       ╰── Binary [^]
                     │           ├── Var [a]
-                    │           ╰── Constant [5]
+                    │           ╰── Constant Int [5]
                     ╰── Return
                         ╰── Binary [|]
-                            ├── Constant [1]
+                            ├── Constant Int [1]
                             ╰── Var [b]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -3171,21 +3171,21 @@ fn test_chapter_5_valid_extra_credit_bitwise_ops_vars() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [8]
+                    │       ╰── Constant Int [8]
                     ╰── Return
                         ╰── Binary [|]
                             ├── Binary [&]
@@ -3214,11 +3214,11 @@ fn test_chapter_5_valid_extra_credit_bitwise_shiftl_variable() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ╰── Return
                         ╰── Binary [<<]
                             ├── Var [x]
-                            ╰── Constant [3]
+                            ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -3243,19 +3243,19 @@ fn test_chapter_5_valid_extra_credit_bitwise_shiftr_assign() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1234]
+                    │       ╰── Constant Int [1234]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [x]
                     │   ╰── Binary [>>]
                     │       ├── Var [var_to_shift]
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [x]
     "#;
@@ -3288,28 +3288,28 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_chained() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [250]
+                    │       ╰── Constant Int [250]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [200]
+                    │       ╰── Constant Int [200]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [100]
+                    │       ╰── Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [75]
+                    │       ╰── Constant Int [75]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── e
@@ -3317,21 +3317,21 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_chained() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [25]
+                    │           ╰── Constant Int [25]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── f
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [x]
                     │   ╰── Assign [+=]
@@ -3347,7 +3347,7 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_chained() {
                     │                       ╰── Assign [=]
                     │                           ├── Var [f]
                     │                           ╰── Unary [-]
-                    │                               ╰── Constant [7]
+                    │                               ╰── Constant Int [7]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [&&]
@@ -3357,29 +3357,29 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_chained() {
                             │   │   │   │   ├── Binary [&&]
                             │   │   │   │   │   ├── Binary [==]
                             │   │   │   │   │   │   ├── Var [a]
-                            │   │   │   │   │   │   ╰── Constant [2250]
+                            │   │   │   │   │   │   ╰── Constant Int [2250]
                             │   │   │   │   │   ╰── Binary [==]
                             │   │   │   │   │       ├── Var [b]
-                            │   │   │   │   │       ╰── Constant [2000]
+                            │   │   │   │   │       ╰── Constant Int [2000]
                             │   │   │   │   ╰── Binary [==]
                             │   │   │   │       ├── Var [c]
                             │   │   │   │       ╰── Unary [-]
-                            │   │   │   │           ╰── Constant [1800]
+                            │   │   │   │           ╰── Constant Int [1800]
                             │   │   │   ╰── Binary [==]
                             │   │   │       ├── Var [d]
                             │   │   │       ╰── Unary [-]
-                            │   │   │           ╰── Constant [18]
+                            │   │   │           ╰── Constant Int [18]
                             │   │   ╰── Binary [==]
                             │   │       ├── Var [e]
                             │   │       ╰── Unary [-]
-                            │   │           ╰── Constant [4]
+                            │   │           ╰── Constant Int [4]
                             │   ╰── Binary [==]
                             │       ├── Var [f]
                             │       ╰── Unary [-]
-                            │           ╰── Constant [7]
+                            │           ╰── Constant Int [7]
                             ╰── Binary [==]
                                 ├── Var [x]
-                                ╰── Constant [2250]
+                                ╰── Constant Int [2250]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -3409,31 +3409,31 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_lowest_precedence() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [12]
+                    │       ╰── Constant Int [12]
                     ├── Assign [+=]
                     │   ├── Var [a]
                     │   ╰── Binary [||]
-                    │       ├── Constant [0]
+                    │       ├── Constant Int [0]
                     │       ╰── Var [b]
                     ├── Assign [*=]
                     │   ├── Var [b]
                     │   ╰── Binary [&&]
                     │       ├── Var [a]
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [14]
+                    │       ╰── Constant Int [14]
                     ├── Assign [-=]
                     │   ├── Var [c]
                     │   ╰── Binary [||]
@@ -3445,7 +3445,7 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_lowest_precedence() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [16]
+                    │       ╰── Constant Int [16]
                     ├── Assign [/=]
                     │   ├── Var [d]
                     │   ╰── Binary [||]
@@ -3457,16 +3457,16 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_lowest_precedence() {
                             │   ├── Binary [&&]
                             │   │   ├── Binary [==]
                             │   │   │   ├── Var [a]
-                            │   │   │   ╰── Constant [11]
+                            │   │   │   ╰── Constant Int [11]
                             │   │   ╰── Binary [==]
                             │   │       ├── Var [b]
-                            │   │       ╰── Constant [0]
+                            │   │       ╰── Constant Int [0]
                             │   ╰── Binary [==]
                             │       ├── Var [c]
-                            │       ╰── Constant [13]
+                            │       ╰── Constant Int [13]
                             ╰── Binary [==]
                                 ├── Var [d]
-                                ╰── Constant [16]
+                                ╰── Constant Int [16]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -3490,7 +3490,7 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_use_result() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
@@ -3499,15 +3499,15 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_use_result() {
                     │   ╰── Initializer
                     │       ╰── Assign [+=]
                     │           ├── Var [x]
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [x]
-                            │   ╰── Constant [4]
+                            │   ╰── Constant Int [4]
                             ╰── Binary [==]
                                 ├── Var [y]
-                                ╰── Constant [4]
+                                ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -3531,10 +3531,10 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_and() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Assign [&=]
                     │   ├── Var [to_and]
-                    │   ╰── Constant [6]
+                    │   ╰── Constant Int [6]
                     ╰── Return
                         ╰── Var [to_and]
     "#;
@@ -3568,31 +3568,31 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_preceden
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [11]
+                    │       ╰── Constant Int [11]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [12]
+                    │       ╰── Constant Int [12]
                     ├── Assign [&=]
                     │   ├── Var [a]
                     │   ╰── Binary [||]
-                    │       ├── Constant [0]
+                    │       ├── Constant Int [0]
                     │       ╰── Var [b]
                     ├── Assign [^=]
                     │   ├── Var [b]
                     │   ╰── Binary [||]
                     │       ├── Var [a]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [14]
+                    │       ╰── Constant Int [14]
                     ├── Assign [|=]
                     │   ├── Var [c]
                     │   ╰── Binary [||]
@@ -3604,7 +3604,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_preceden
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [16]
+                    │       ╰── Constant Int [16]
                     ├── Assign [>>=]
                     │   ├── Var [d]
                     │   ╰── Binary [||]
@@ -3616,7 +3616,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_preceden
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [18]
+                    │       ╰── Constant Int [18]
                     ├── Assign [<<=]
                     │   ├── Var [e]
                     │   ╰── Binary [||]
@@ -3629,19 +3629,19 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_assignment_lowest_preceden
                             │   │   ├── Binary [&&]
                             │   │   │   ├── Binary [==]
                             │   │   │   │   ├── Var [a]
-                            │   │   │   │   ╰── Constant [1]
+                            │   │   │   │   ╰── Constant Int [1]
                             │   │   │   ╰── Binary [==]
                             │   │   │       ├── Var [b]
-                            │   │   │       ╰── Constant [13]
+                            │   │   │       ╰── Constant Int [13]
                             │   │   ╰── Binary [==]
                             │   │       ├── Var [c]
-                            │   │       ╰── Constant [15]
+                            │   │       ╰── Constant Int [15]
                             │   ╰── Binary [==]
                             │       ├── Var [d]
-                            │       ╰── Constant [8]
+                            │       ╰── Constant Int [8]
                             ╰── Binary [==]
                                 ├── Var [e]
-                                ╰── Constant [36]
+                                ╰── Constant Int [36]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -3675,70 +3675,70 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_chained() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [250]
+                    │       ╰── Constant Int [250]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [200]
+                    │       ╰── Constant Int [200]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [100]
+                    │       ╰── Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [75]
+                    │       ╰── Constant Int [75]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── e
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [50]
+                    │       ╰── Constant Int [50]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── f
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [25]
+                    │       ╰── Constant Int [25]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── g
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── h
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── j
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [x]
                     │   ╰── Assign [&=]
@@ -3759,7 +3759,7 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_chained() {
                     │                                   ├── Var [h]
                     │                                   ╰── Assign [=]
                     │                                       ├── Var [j]
-                    │                                       ╰── Constant [1]
+                    │                                       ╰── Constant Int [1]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [&&]
@@ -3772,34 +3772,34 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_chained() {
                             │   │   │   │   │   │   │   ├── Binary [&&]
                             │   │   │   │   │   │   │   │   ├── Binary [==]
                             │   │   │   │   │   │   │   │   │   ├── Var [a]
-                            │   │   │   │   │   │   │   │   │   ╰── Constant [40]
+                            │   │   │   │   │   │   │   │   │   ╰── Constant Int [40]
                             │   │   │   │   │   │   │   │   ╰── Binary [==]
                             │   │   │   │   │   │   │   │       ├── Var [b]
-                            │   │   │   │   │   │   │   │       ╰── Constant [21800]
+                            │   │   │   │   │   │   │   │       ╰── Constant Int [21800]
                             │   │   │   │   │   │   │   ╰── Binary [==]
                             │   │   │   │   │   │   │       ├── Var [c]
-                            │   │   │   │   │   │   │       ╰── Constant [109]
+                            │   │   │   │   │   │   │       ╰── Constant Int [109]
                             │   │   │   │   │   │   ╰── Binary [==]
                             │   │   │   │   │   │       ├── Var [d]
-                            │   │   │   │   │   │       ╰── Constant [41]
+                            │   │   │   │   │   │       ╰── Constant Int [41]
                             │   │   │   │   │   ╰── Binary [==]
                             │   │   │   │   │       ├── Var [e]
-                            │   │   │   │   │       ╰── Constant [41]
+                            │   │   │   │   │       ╰── Constant Int [41]
                             │   │   │   │   ╰── Binary [==]
                             │   │   │   │       ├── Var [f]
-                            │   │   │   │       ╰── Constant [27]
+                            │   │   │   │       ╰── Constant Int [27]
                             │   │   │   ╰── Binary [==]
                             │   │   │       ├── Var [g]
-                            │   │   │       ╰── Constant [2]
+                            │   │   │       ╰── Constant Int [2]
                             │   │   ╰── Binary [==]
                             │   │       ├── Var [h]
-                            │   │       ╰── Constant [2]
+                            │   │       ╰── Constant Int [2]
                             │   ╰── Binary [==]
                             │       ├── Var [j]
-                            │       ╰── Constant [1]
+                            │       ╰── Constant Int [1]
                             ╰── Binary [==]
                                 ├── Var [x]
-                                ╰── Constant [40]
+                                ╰── Constant Int [40]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -3823,10 +3823,10 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_or() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Assign [|=]
                     │   ├── Var [to_or]
-                    │   ╰── Constant [30]
+                    │   ╰── Constant Int [30]
                     ╰── Return
                         ╰── Var [to_or]
     "#;
@@ -3852,10 +3852,10 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_shiftl() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Assign [<<=]
                     │   ├── Var [to_shiftl]
-                    │   ╰── Constant [4]
+                    │   ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [to_shiftl]
     "#;
@@ -3881,10 +3881,10 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_shiftr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [382574]
+                    │       ╰── Constant Int [382574]
                     ├── Assign [>>=]
                     │   ├── Var [to_shiftr]
-                    │   ╰── Constant [4]
+                    │   ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [to_shiftr]
     "#;
@@ -3910,10 +3910,10 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_xor() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [7]
+                    │       ╰── Constant Int [7]
                     ├── Assign [^=]
                     │   ├── Var [to_xor]
-                    │   ╰── Constant [5]
+                    │   ╰── Constant Int [5]
                     ╰── Return
                         ╰── Var [to_xor]
     "#;
@@ -3939,10 +3939,10 @@ fn test_chapter_5_valid_extra_credit_compound_divide() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [8]
+                    │       ╰── Constant Int [8]
                     ├── Assign [/=]
                     │   ├── Var [to_divide]
-                    │   ╰── Constant [4]
+                    │   ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [to_divide]
     "#;
@@ -3968,10 +3968,10 @@ fn test_chapter_5_valid_extra_credit_compound_minus() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Assign [-=]
                     │   ├── Var [to_subtract]
-                    │   ╰── Constant [8]
+                    │   ╰── Constant Int [8]
                     ╰── Return
                         ╰── Var [to_subtract]
     "#;
@@ -3997,10 +3997,10 @@ fn test_chapter_5_valid_extra_credit_compound_mod() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── Assign [&=]
                     │   ├── Var [to_mod]
-                    │   ╰── Constant [3]
+                    │   ╰── Constant Int [3]
                     ╰── Return
                         ╰── Var [to_mod]
     "#;
@@ -4026,10 +4026,10 @@ fn test_chapter_5_valid_extra_credit_compound_multiply() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ├── Assign [*=]
                     │   ├── Var [to_multiply]
-                    │   ╰── Constant [3]
+                    │   ╰── Constant Int [3]
                     ╰── Return
                         ╰── Var [to_multiply]
     "#;
@@ -4055,10 +4055,10 @@ fn test_chapter_5_valid_extra_credit_compound_plus() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [+=]
                     │   ├── Var [to_add]
-                    │   ╰── Constant [4]
+                    │   ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [to_add]
     "#;
@@ -4089,14 +4089,14 @@ fn test_chapter_5_valid_extra_credit_incr_expression_statement() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Postfix [++]
                     │   ╰── Var [a]
                     ├── Unary [++]
@@ -4111,11 +4111,11 @@ fn test_chapter_5_valid_extra_credit_incr_expression_statement() {
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [a]
-                            │   ╰── Constant [3]
+                            │   ╰── Constant Int [3]
                             ╰── Binary [==]
                                 ├── Var [b]
                                 ╰── Unary [-]
-                                    ╰── Constant [2]
+                                    ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4140,7 +4140,7 @@ fn test_chapter_5_valid_extra_credit_incr_in_binary_expr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -4148,7 +4148,7 @@ fn test_chapter_5_valid_extra_credit_incr_in_binary_expr() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Binary [+]
-                    │           ├── Constant [3]
+                    │           ├── Constant Int [3]
                     │           ╰── Postfix [++]
                     │               ╰── Var [a]
                     ├── VarDeclaration
@@ -4158,7 +4158,7 @@ fn test_chapter_5_valid_extra_credit_incr_in_binary_expr() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Binary [+]
-                    │           ├── Constant [4]
+                    │           ├── Constant Int [4]
                     │           ╰── Unary [++]
                     │               ╰── Var [b]
                     ╰── Return
@@ -4166,13 +4166,13 @@ fn test_chapter_5_valid_extra_credit_incr_in_binary_expr() {
                             ├── Binary [&&]
                             │   ├── Binary [==]
                             │   │   ├── Var [a]
-                            │   │   ╰── Constant [3]
+                            │   │   ╰── Constant Int [3]
                             │   ╰── Binary [==]
                             │       ├── Var [b]
-                            │       ╰── Constant [6]
+                            │       ╰── Constant Int [6]
                             ╰── Binary [==]
                                 ├── Var [c]
-                                ╰── Constant [10]
+                                ╰── Constant Int [10]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4199,14 +4199,14 @@ fn test_chapter_5_valid_extra_credit_incr_parenthesized() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -4231,17 +4231,17 @@ fn test_chapter_5_valid_extra_credit_incr_parenthesized() {
                             │   ├── Binary [&&]
                             │   │   ├── Binary [==]
                             │   │   │   ├── Var [a]
-                            │   │   │   ╰── Constant [2]
+                            │   │   │   ╰── Constant Int [2]
                             │   │   ╰── Binary [==]
                             │   │       ├── Var [b]
-                            │   │       ╰── Constant [1]
+                            │   │       ╰── Constant Int [1]
                             │   ╰── Binary [==]
                             │       ├── Var [c]
                             │       ╰── Unary [-]
-                            │           ╰── Constant [2]
+                            │           ╰── Constant Int [2]
                             ╰── Binary [==]
                                 ├── Var [d]
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4267,14 +4267,14 @@ fn test_chapter_5_valid_extra_credit_postfix_incr_and_decr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -4297,16 +4297,16 @@ fn test_chapter_5_valid_extra_credit_postfix_incr_and_decr() {
                             │   ├── Binary [&&]
                             │   │   ├── Binary [==]
                             │   │   │   ├── Var [a]
-                            │   │   │   ╰── Constant [2]
+                            │   │   │   ╰── Constant Int [2]
                             │   │   ╰── Binary [==]
                             │   │       ├── Var [b]
-                            │   │       ╰── Constant [1]
+                            │   │       ╰── Constant Int [1]
                             │   ╰── Binary [==]
                             │       ├── Var [c]
-                            │       ╰── Constant [1]
+                            │       ╰── Constant Int [1]
                             ╰── Binary [==]
                                 ├── Var [d]
-                                ╰── Constant [2]
+                                ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4330,7 +4330,7 @@ fn test_chapter_5_valid_extra_credit_postfix_precedence() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -4344,10 +4344,10 @@ fn test_chapter_5_valid_extra_credit_postfix_precedence() {
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [a]
-                            │   ╰── Constant [2]
+                            │   ╰── Constant Int [2]
                             ╰── Binary [==]
                                 ├── Var [b]
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4373,14 +4373,14 @@ fn test_chapter_5_valid_extra_credit_prefix_incr_and_decr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -4403,16 +4403,16 @@ fn test_chapter_5_valid_extra_credit_prefix_incr_and_decr() {
                             │   ├── Binary [&&]
                             │   │   ├── Binary [==]
                             │   │   │   ├── Var [a]
-                            │   │   │   ╰── Constant [2]
+                            │   │   │   ╰── Constant Int [2]
                             │   │   ╰── Binary [==]
                             │   │       ├── Var [b]
-                            │   │       ╰── Constant [1]
+                            │   │       ╰── Constant Int [1]
                             │   ╰── Binary [==]
                             │       ├── Var [c]
-                            │       ╰── Constant [2]
+                            │       ╰── Constant Int [2]
                             ╰── Binary [==]
                                 ├── Var [d]
-                                ╰── Constant [1]
+                                ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4436,14 +4436,14 @@ fn test_chapter_5_valid_kw_var_names() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── void2
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ╰── Return
                         ╰── Binary [+]
                             ├── Var [return_val]
@@ -4470,12 +4470,12 @@ fn test_chapter_5_valid_local_var_missing_return() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ╰── Assign [=]
                         ├── Var [a]
                         ╰── Binary [+]
                             ├── Var [a]
-                            ╰── Constant [5]
+                            ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4500,18 +4500,18 @@ fn test_chapter_5_valid_mixed_precedence_assignment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Binary [*]
-                    │       ├── Constant [3]
+                    │       ├── Constant Int [3]
                     │       ╰── Assign [=]
                     │           ├── Var [b]
                     │           ╰── Var [a]
@@ -4542,12 +4542,12 @@ fn test_chapter_5_valid_non_short_circuit_or() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Binary [||]
-                    │   ├── Constant [0]
+                    │   ├── Constant Int [0]
                     │   ╰── Assign [=]
                     │       ├── Var [a]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -4584,7 +4584,7 @@ fn test_chapter_5_valid_null_then_return() {
                 ╰── Body
                     ├── Empty
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4607,7 +4607,7 @@ fn test_chapter_5_valid_return_var() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -4633,12 +4633,12 @@ fn test_chapter_5_valid_short_circuit_and_fail() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Binary [&&]
-                    │   ├── Constant [0]
+                    │   ├── Constant Int [0]
                     │   ╰── Assign [=]
                     │       ├── Var [a]
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -4664,12 +4664,12 @@ fn test_chapter_5_valid_short_circuit_or() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Binary [||]
-                    │   ├── Constant [1]
+                    │   ├── Constant Int [1]
                     │   ╰── Assign [=]
                     │       ├── Var [a]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -4689,10 +4689,10 @@ fn test_chapter_5_valid_unused_exp() {
             ╰── Function [main]
                 ╰── Body
                     ├── Binary [+]
-                    │   ├── Constant [2]
-                    │   ╰── Constant [2]
+                    │   ├── Constant Int [2]
+                    │   ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4716,20 +4716,20 @@ fn test_chapter_5_valid_use_assignment_result() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ╰── Return
                         ╰── Assign [=]
                             ├── Var [a]
                             ╰── Assign [=]
                                 ├── Var [b]
-                                ╰── Constant [4]
+                                ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -4753,7 +4753,7 @@ fn test_chapter_5_valid_use_val_in_own_initializer() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Binary [&&]
-                    │           ├── Constant [0]
+                    │           ├── Constant Int [0]
                     │           ╰── Var [a]
                     ╰── Return
                         ╰── Var [a]
@@ -4995,14 +4995,14 @@ fn test_chapter_6_invalid_semantics_extra_credit_duplicate_labels() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Label [label]
                     │   ╰── Assign [=]
                     │       ├── Var [x]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ╰── Label [label]
                         ╰── Return
-                            ╰── Constant [2]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5021,7 +5021,7 @@ fn test_chapter_6_invalid_semantics_extra_credit_goto_missing_label() {
                 ╰── Body
                     ├── Goto [label]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5046,7 +5046,7 @@ fn test_chapter_6_invalid_semantics_extra_credit_goto_variable() {
                     │       ╰── Int
                     ├── Goto [a]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5068,7 +5068,7 @@ fn test_chapter_6_invalid_semantics_extra_credit_undeclared_var_in_labeled_state
                     │   ╰── Return
                     │       ╰── Var [a]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5093,13 +5093,13 @@ fn test_chapter_6_invalid_semantics_extra_credit_use_label_as_variable() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Label [a]
                     │   ╰── Assign [=]
                     │       ├── Var [x]
                     │       ╰── Var [a]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5119,7 +5119,7 @@ fn test_chapter_6_invalid_semantics_invalid_var_in_if() {
                 ╰── Body
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── Constant [1]
+                    │   │   ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Return
                     │           ╰── Var [c]
@@ -5129,7 +5129,7 @@ fn test_chapter_6_invalid_semantics_invalid_var_in_if() {
                         ├── Type
                         │   ╰── Int
                         ╰── Initializer
-                            ╰── Constant [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5154,14 +5154,14 @@ fn test_chapter_6_invalid_semantics_ternary_assign() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Conditional [?]
                     │   │   ├── Binary [>]
@@ -5170,10 +5170,10 @@ fn test_chapter_6_invalid_semantics_ternary_assign() {
                     │   │   ├── Then
                     │   │   │   ╰── Assign [=]
                     │   │   │       ├── Var [a]
-                    │   │   │       ╰── Constant [1]
+                    │   │   │       ╰── Constant Int [1]
                     │   │   ╰── Else
                     │   │       ╰── Var [a]
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -5196,18 +5196,18 @@ fn test_chapter_6_invalid_semantics_undeclared_var_in_ternary() {
                     │   ╰── Conditional [?]
                     │       ├── Binary [>]
                     │       │   ├── Var [a]
-                    │       │   ╰── Constant [0]
+                    │       │   ╰── Constant Int [0]
                     │       ├── Then
-                    │       │   ╰── Constant [1]
+                    │       │   ╰── Constant Int [1]
                     │       ╰── Else
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ╰── VarDeclaration
                         ├── Name
                         │   ╰── a
                         ├── Type
                         │   ╰── Int
                         ╰── Initializer
-                            ╰── Constant [5]
+                            ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5231,15 +5231,15 @@ fn test_chapter_6_valid_assign_ternary() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Conditional [?]
-                    │       ├── Constant [1]
+                    │       ├── Constant Int [1]
                     │       ├── Then
-                    │       │   ╰── Constant [2]
+                    │       │   ╰── Constant Int [2]
                     │       ╰── Else
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -5262,12 +5262,12 @@ fn test_chapter_6_valid_binary_condition() {
                         ├── Condition
                         │   ╰── Binary [==]
                         │       ├── Binary [+]
-                        │       │   ├── Constant [1]
-                        │       │   ╰── Constant [2]
-                        │       ╰── Constant [3]
+                        │       │   ├── Constant Int [1]
+                        │       │   ╰── Constant Int [2]
+                        │       ╰── Constant Int [3]
                         ╰── Then
                             ╰── Return
-                                ╰── Constant [5]
+                                ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5288,12 +5288,12 @@ fn test_chapter_6_valid_binary_false_condition() {
                         ├── Condition
                         │   ╰── Binary [==]
                         │       ├── Binary [+]
-                        │       │   ├── Constant [1]
-                        │       │   ╰── Constant [2]
-                        │       ╰── Constant [4]
+                        │       │   ├── Constant Int [1]
+                        │       │   ╰── Constant Int [2]
+                        │       ╰── Constant Int [4]
                         ╰── Then
                             ╰── Return
-                                ╰── Constant [5]
+                                ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5319,16 +5319,16 @@ fn test_chapter_6_valid_else() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── If
                         ├── Condition
                         │   ╰── Var [a]
                         ├── Then
                         │   ╰── Return
-                        │       ╰── Constant [1]
+                        │       ╰── Constant Int [1]
                         ╰── Else
                             ╰── Return
-                                ╰── Constant [2]
+                                ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5353,16 +5353,16 @@ fn test_chapter_6_valid_extra_credit_bitwise_ternary() {
                     │       ╰── Int
                     ├── Conditional [?]
                     │   ├── Binary [^]
-                    │   │   ├── Constant [1]
-                    │   │   ╰── Constant [1]
+                    │   │   ├── Constant Int [1]
+                    │   │   ╰── Constant Int [1]
                     │   ├── Then
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [result]
-                    │   │       ╰── Constant [4]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Else
                     │       ╰── Assign [=]
                     │           ├── Var [result]
-                    │           ╰── Constant [5]
+                    │           ╰── Constant Int [5]
                     ╰── Return
                         ╰── Var [result]
     "#;
@@ -5388,15 +5388,15 @@ fn test_chapter_6_valid_extra_credit_compound_assign_ternary() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ├── Assign [*=]
                     │   ├── Var [a]
                     │   ╰── Conditional [?]
-                    │       ├── Constant [1]
+                    │       ├── Constant Int [1]
                     │       ├── Then
-                    │       │   ╰── Constant [2]
+                    │       │   ╰── Constant Int [2]
                     │       ╰── Else
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -5423,17 +5423,17 @@ fn test_chapter_6_valid_extra_credit_compound_if_expression() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Assign [+=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Return
                     │           ╰── Var [a]
                     ╰── Return
-                        ╰── Constant [10]
+                        ╰── Constant Int [10]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5460,7 +5460,7 @@ fn test_chapter_6_valid_extra_credit_goto_after_declaration() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Goto [post_declaration]
                     ├── VarDeclaration
                     │   ├── Name
@@ -5470,19 +5470,19 @@ fn test_chapter_6_valid_extra_credit_goto_after_declaration() {
                     │   ╰── Initializer
                     │       ╰── Assign [=]
                     │           ├── Var [x]
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ├── Label [post_declaration]
                     │   ╰── Assign [=]
                     │       ├── Var [i]
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [x]
-                            │   ╰── Constant [1]
+                            │   ╰── Constant Int [1]
                             ╰── Binary [==]
                                 ├── Var [i]
-                                ╰── Constant [5]
+                                ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5504,14 +5504,14 @@ fn test_chapter_6_valid_extra_credit_goto_backwards() {
                 ╰── Body
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Label [label]
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── Goto [label]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5532,10 +5532,10 @@ fn test_chapter_6_valid_extra_credit_goto_label() {
                 ╰── Body
                     ├── Goto [label]
                     ├── Return
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ╰── Label [label]
                         ╰── Return
-                            ╰── Constant [1]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5561,10 +5561,10 @@ fn test_chapter_6_valid_extra_credit_goto_label_and_var() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── Goto [ident]
                     ├── Return
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ╰── Label [ident]
                         ╰── Return
                             ╰── Var [ident]
@@ -5588,10 +5588,10 @@ fn test_chapter_6_valid_extra_credit_goto_label_main() {
                 ╰── Body
                     ├── Goto [main]
                     ├── Return
-                    │   ╰── Constant [5]
+                    │   ╰── Constant Int [5]
                     ╰── Label [main]
                         ╰── Return
-                            ╰── Constant [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5612,10 +5612,10 @@ fn test_chapter_6_valid_extra_credit_goto_label_main_2() {
                 ╰── Body
                     ├── Goto [_main]
                     ├── Return
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ╰── Label [_main]
                         ╰── Return
-                            ╰── Constant [1]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5639,9 +5639,9 @@ fn test_chapter_6_valid_extra_credit_goto_nested_label() {
                     ├── Label [labelA]
                     │   ╰── Label [labelB]
                     │       ╰── Return
-                    │           ╰── Constant [5]
+                    │           ╰── Constant Int [5]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5679,7 +5679,7 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Label [label_if]
                     │   ╰── If
                     │       ├── Condition
@@ -5692,12 +5692,12 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
                     │   ╰── Goto [label_return]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Label [label_expression]
                     │           ╰── Assign [=]
                     │               ├── Var [a]
-                    │               ╰── Constant [0]
+                    │               ╰── Constant Int [0]
                     ├── Goto [label_if]
                     ├── Label [label_return]
                     │   ╰── Return
@@ -5706,7 +5706,7 @@ fn test_chapter_6_valid_extra_credit_label_all_statements() {
                     │   ╰── Empty
                     ├── Assign [=]
                     │   ├── Var [a]
-                    │   ╰── Constant [100]
+                    │   ╰── Constant Int [100]
                     ╰── Goto [label_goto]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -5728,10 +5728,10 @@ fn test_chapter_6_valid_extra_credit_label_token() {
                 ╰── Body
                     ├── Goto [_foo_1_]
                     ├── Return
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ╰── Label [_foo_1_]
                         ╰── Return
-                            ╰── Constant [1]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5755,21 +5755,21 @@ fn test_chapter_6_valid_extra_credit_lh_compound_assignment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Conditional [?]
                     │   ├── Assign [-=]
                     │   │   ├── Var [x]
-                    │   │   ╰── Constant [1]
+                    │   │   ╰── Constant Int [1]
                     │   ├── Then
                     │   │   ╰── Assign [/=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Else
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Return
                         ╰── Binary [==]
                             ├── Var [x]
-                            ╰── Constant [4]
+                            ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5796,14 +5796,14 @@ fn test_chapter_6_valid_extra_credit_postfix_if() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Postfix [--]
                     │   │       ╰── Var [a]
                     │   ├── Then
                     │   │   ╰── Return
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Else
                     │       ╰── If
                     │           ├── Condition
@@ -5811,9 +5811,9 @@ fn test_chapter_6_valid_extra_credit_postfix_if() {
                     │           │       ╰── Var [a]
                     │           ╰── Then
                     │               ╰── Return
-                    │                   ╰── Constant [1]
+                    │                   ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5837,13 +5837,13 @@ fn test_chapter_6_valid_extra_credit_postfix_in_ternary() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Conditional [?]
                     │   ├── Binary [-]
                     │   │   ├── Var [x]
-                    │   │   ╰── Constant [10]
+                    │   │   ╰── Constant Int [10]
                     │   ├── Then
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Else
                     │       ╰── Postfix [--]
                     │           ╰── Var [x]
@@ -5876,14 +5876,14 @@ fn test_chapter_6_valid_extra_credit_prefix_if() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [++]
                     │   │       ╰── Var [a]
                     │   ├── Then
                     │   │   ╰── Return
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Else
                     │       ╰── If
                     │           ├── Condition
@@ -5891,9 +5891,9 @@ fn test_chapter_6_valid_extra_credit_prefix_if() {
                     │           │       ╰── Var [a]
                     │           ╰── Then
                     │               ╰── Return
-                    │                   ╰── Constant [1]
+                    │                   ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5916,7 +5916,7 @@ fn test_chapter_6_valid_extra_credit_prefix_in_ternary() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Return
                         ╰── Conditional [?]
                             ├── Unary [++]
@@ -5925,7 +5925,7 @@ fn test_chapter_6_valid_extra_credit_prefix_in_ternary() {
                             │   ╰── Unary [++]
                             │       ╰── Var [a]
                             ╰── Else
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5944,7 +5944,7 @@ fn test_chapter_6_valid_extra_credit_unused_label() {
                 ╰── Body
                     ╰── Label [unused]
                         ╰── Return
-                            ╰── Constant [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5967,11 +5967,11 @@ fn test_chapter_6_valid_extra_credit_whitespace_after_label() {
                 ╰── Body
                     ├── Goto [label2]
                     ├── Return
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ╰── Label [label1]
                         ╰── Label [label2]
                             ╰── Return
-                                ╰── Constant [1]
+                                ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -5999,21 +5999,21 @@ fn test_chapter_6_valid_if_nested() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
                     │   ├── Then
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [b]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Else
                     │       ╰── If
                     │           ├── Condition
@@ -6021,7 +6021,7 @@ fn test_chapter_6_valid_if_nested() {
                     │           ╰── Then
                     │               ╰── Assign [=]
                     │                   ├── Var [b]
-                    │                   ╰── Constant [2]
+                    │                   ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -6051,21 +6051,21 @@ fn test_chapter_6_valid_if_nested_2() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
                     │   ├── Then
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [b]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Else
                     │       ╰── If
                     │           ├── Condition
@@ -6074,7 +6074,7 @@ fn test_chapter_6_valid_if_nested_2() {
                     │           ╰── Then
                     │               ╰── Assign [=]
                     │                   ├── Var [b]
-                    │                   ╰── Constant [2]
+                    │                   ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -6104,26 +6104,26 @@ fn test_chapter_6_valid_if_nested_3() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── Binary [==]
                     │           │       ├── Var [a]
-                    │           │       ╰── Constant [1]
+                    │           │       ╰── Constant Int [1]
                     │           ├── Then
                     │           │   ╰── Assign [=]
                     │           │       ├── Var [a]
-                    │           │       ╰── Constant [3]
+                    │           │       ╰── Constant Int [3]
                     │           ╰── Else
                     │               ╰── Assign [=]
                     │                   ├── Var [a]
-                    │                   ╰── Constant [4]
+                    │                   ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -6153,7 +6153,7 @@ fn test_chapter_6_valid_if_nested_4() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -6162,18 +6162,18 @@ fn test_chapter_6_valid_if_nested_4() {
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── Binary [/]
-                    │           │       ├── Constant [3]
-                    │           │       ╰── Constant [4]
+                    │           │       ├── Constant Int [3]
+                    │           │       ╰── Constant Int [4]
                     │           ├── Then
                     │           │   ╰── Assign [=]
                     │           │       ├── Var [a]
-                    │           │       ╰── Constant [3]
+                    │           │       ╰── Constant Int [3]
                     │           ╰── Else
                     │               ╰── Assign [=]
                     │                   ├── Var [a]
                     │                   ╰── Binary [/]
-                    │                       ├── Constant [8]
-                    │                       ╰── Constant [2]
+                    │                       ├── Constant Int [8]
+                    │                       ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -6205,26 +6205,26 @@ fn test_chapter_6_valid_if_nested_5() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ├── Then
                     │   │   ╰── If
                     │   │       ├── Condition
-                    │   │       │   ╰── Constant [0]
+                    │   │       │   ╰── Constant Int [0]
                     │   │       ├── Then
                     │   │       │   ╰── Assign [=]
                     │   │       │       ├── Var [a]
-                    │   │       │       ╰── Constant [3]
+                    │   │       │       ╰── Constant Int [3]
                     │   │       ╰── Else
                     │   │           ╰── Assign [=]
                     │   │               ├── Var [a]
-                    │   │               ╰── Constant [4]
+                    │   │               ╰── Constant Int [4]
                     │   ╰── Else
                     │       ╰── Assign [=]
                     │           ├── Var [a]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -6252,21 +6252,21 @@ fn test_chapter_6_valid_if_not_taken() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
                     │   ╰── Then
                     │       ╰── Assign [=]
                     │           ├── Var [b]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -6295,16 +6295,16 @@ fn test_chapter_6_valid_if_null_body() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ├── Then
                     │   │   ╰── Empty
                     │   ╰── Else
                     │       ╰── Assign [=]
                     │           ├── Var [x]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [x]
     "#;
@@ -6332,21 +6332,21 @@ fn test_chapter_6_valid_if_taken() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
                     │   ╰── Then
                     │       ╰── Assign [=]
                     │           ├── Var [b]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -6373,32 +6373,32 @@ fn test_chapter_6_valid_lh_assignment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [y]
                     │   ╰── Conditional [?]
                     │       ├── Assign [=]
                     │       │   ├── Var [x]
-                    │       │   ╰── Constant [5]
+                    │       │   ╰── Constant Int [5]
                     │       ├── Then
                     │       │   ╰── Var [x]
                     │       ╰── Else
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [x]
-                            │   ╰── Constant [5]
+                            │   ╰── Constant Int [5]
                             ╰── Binary [==]
                                 ├── Var [y]
-                                ╰── Constant [5]
+                                ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -6430,36 +6430,36 @@ fn test_chapter_6_valid_multiple_if() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
                     │   ├── Then
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Else
                     │       ╰── Assign [=]
                     │           ├── Var [a]
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [b]
                     │   ├── Then
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [b]
-                    │   │       ╰── Constant [4]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Else
                     │       ╰── Assign [=]
                     │           ├── Var [b]
-                    │           ╰── Constant [5]
+                    │           ╰── Constant Int [5]
                     ╰── Return
                         ╰── Binary [+]
                             ├── Var [a]
@@ -6488,35 +6488,35 @@ fn test_chapter_6_valid_nested_ternary() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── flag
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Return
                         ╰── Conditional [?]
                             ├── Binary [>]
                             │   ├── Var [a]
                             │   ╰── Var [b]
                             ├── Then
-                            │   ╰── Constant [5]
+                            │   ╰── Constant Int [5]
                             ╰── Else
                                 ╰── Conditional [?]
                                     ├── Var [flag]
                                     ├── Then
-                                    │   ╰── Constant [6]
+                                    │   ╰── Constant Int [6]
                                     ╰── Else
-                                        ╰── Constant [7]
+                                        ╰── Constant Int [7]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -6541,16 +6541,16 @@ fn test_chapter_6_valid_nested_ternary_2() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Conditional [?]
-                    │           ├── Constant [1]
+                    │           ├── Constant Int [1]
                     │           ├── Then
                     │           │   ╰── Conditional [?]
-                    │           │       ├── Constant [2]
+                    │           │       ├── Constant Int [2]
                     │           │       ├── Then
-                    │           │       │   ╰── Constant [3]
+                    │           │       │   ╰── Constant Int [3]
                     │           │       ╰── Else
-                    │           │           ╰── Constant [4]
+                    │           │           ╰── Constant Int [4]
                     │           ╰── Else
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -6558,16 +6558,16 @@ fn test_chapter_6_valid_nested_ternary_2() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Conditional [?]
-                    │           ├── Constant [0]
+                    │           ├── Constant Int [0]
                     │           ├── Then
                     │           │   ╰── Conditional [?]
-                    │           │       ├── Constant [2]
+                    │           │       ├── Constant Int [2]
                     │           │       ├── Then
-                    │           │       │   ╰── Constant [3]
+                    │           │       │   ╰── Constant Int [3]
                     │           │       ╰── Else
-                    │           │           ╰── Constant [4]
+                    │           │           ╰── Constant Int [4]
                     │           ╰── Else
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ╰── Return
                         ╰── Binary [*]
                             ├── Var [a]
@@ -6596,24 +6596,24 @@ fn test_chapter_6_valid_rh_assignment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── a
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Conditional [?]
                     │   ├── Var [flag]
                     │   ├── Then
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Else
                     │       ╰── Assign [=]
                     │           ├── Var [a]
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -6638,17 +6638,17 @@ fn test_chapter_6_valid_ternary() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Return
                         ╰── Conditional [?]
                             ├── Binary [>]
                             │   ├── Var [a]
                             │   ╰── Unary [-]
-                            │       ╰── Constant [1]
+                            │       ╰── Constant Int [1]
                             ├── Then
-                            │   ╰── Constant [4]
+                            │   ╰── Constant Int [4]
                             ╰── Else
-                                ╰── Constant [5]
+                                ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -6672,17 +6672,17 @@ fn test_chapter_6_valid_ternary_middle_assignment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Conditional [?]
                     │   ├── Binary [!=]
                     │   │   ├── Var [a]
-                    │   │   ╰── Constant [2]
+                    │   │   ╰── Constant Int [2]
                     │   ├── Then
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Else
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -6708,13 +6708,13 @@ fn test_chapter_6_valid_ternary_middle_binop() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Conditional [?]
-                    │           ├── Constant [1]
+                    │           ├── Constant Int [1]
                     │           ├── Then
                     │           │   ╰── Binary [%]
-                    │           │       ├── Constant [3]
-                    │           │       ╰── Constant [2]
+                    │           │       ├── Constant Int [3]
+                    │           │       ╰── Constant Int [2]
                     │           ╰── Else
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -6739,16 +6739,16 @@ fn test_chapter_6_valid_ternary_precedence() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ╰── Return
                         ╰── Conditional [?]
                             ├── Binary [||]
                             │   ├── Var [a]
-                            │   ╰── Constant [0]
+                            │   ╰── Constant Int [0]
                             ├── Then
-                            │   ╰── Constant [20]
+                            │   ╰── Constant Int [20]
                             ╰── Else
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -6766,13 +6766,13 @@ fn test_chapter_6_valid_ternary_rh_binop() {
                 ╰── Body
                     ╰── Return
                         ╰── Conditional [?]
-                            ├── Constant [0]
+                            ├── Constant Int [0]
                             ├── Then
-                            │   ╰── Constant [1]
+                            │   ╰── Constant Int [1]
                             ╰── Else
                                 ╰── Binary [||]
-                                    ├── Constant [0]
-                                    ╰── Constant [2]
+                                    ├── Constant Int [0]
+                                    ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -6797,24 +6797,24 @@ fn test_chapter_6_valid_ternary_short_circuit() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Conditional [?]
                     │   ├── Var [a]
                     │   ├── Then
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [b]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Else
                     │       ╰── Assign [=]
                     │           ├── Var [b]
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -6841,24 +6841,24 @@ fn test_chapter_6_valid_ternary_short_circuit_2() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Conditional [?]
                     │   ├── Var [a]
                     │   ├── Then
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [b]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Else
                     │       ╰── Assign [=]
                     │           ├── Var [b]
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [b]
     "#;
@@ -6974,18 +6974,18 @@ fn test_chapter_7_invalid_semantics_double_define_after_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Block
                     │   ╰── Assign [=]
                     │       ├── Var [a]
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── a
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -7015,7 +7015,7 @@ fn test_chapter_7_invalid_semantics_extra_credit_different_labels_same_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Label [label2]
                     │   ╰── Empty
                     ├── VarDeclaration
@@ -7024,9 +7024,9 @@ fn test_chapter_7_invalid_semantics_extra_credit_different_labels_same_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [11]
+                    │       ╰── Constant Int [11]
                     ╰── Return
-                        ╰── Constant [1]
+                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -7060,7 +7060,7 @@ fn test_chapter_7_invalid_semantics_extra_credit_duplicate_labels_different_scop
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── If
                         ├── Condition
                         │   ╰── Var [x]
@@ -7068,10 +7068,10 @@ fn test_chapter_7_invalid_semantics_extra_credit_duplicate_labels_different_scop
                         │   ╰── Block
                         │       ├── Assign [=]
                         │       │   ├── Var [x]
-                        │       │   ╰── Constant [5]
+                        │       │   ╰── Constant Int [5]
                         │       ├── Goto [l]
                         │       ├── Return
-                        │       │   ╰── Constant [0]
+                        │       │   ╰── Constant Int [0]
                         │       ╰── Label [l]
                         │           ╰── Return
                         │               ╰── Var [x]
@@ -7079,7 +7079,7 @@ fn test_chapter_7_invalid_semantics_extra_credit_duplicate_labels_different_scop
                             ╰── Block
                                 ├── Goto [l]
                                 ├── Return
-                                │   ╰── Constant [0]
+                                │   ╰── Constant Int [0]
                                 ╰── Label [l]
                                     ╰── Return
                                         ╰── Var [x]
@@ -7110,12 +7110,12 @@ fn test_chapter_7_invalid_semantics_extra_credit_goto_use_before_declare() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Label [return_y]
@@ -7127,7 +7127,7 @@ fn test_chapter_7_invalid_semantics_extra_credit_goto_use_before_declare() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ╰── Goto [return_y]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -7154,7 +7154,7 @@ fn test_chapter_7_invalid_semantics_out_of_scope() {
                     │       ├── Type
                     │       │   ╰── Int
                     │       ╰── Initializer
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -7185,7 +7185,7 @@ fn test_chapter_7_invalid_semantics_use_before_declare() {
                     ├── Block
                     │   ╰── Assign [=]
                     │       ├── Var [b]
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -7218,7 +7218,7 @@ fn test_chapter_7_valid_assign_to_self() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ╰── Block
                         ├── VarDeclaration
                         │   ├── Name
@@ -7228,7 +7228,7 @@ fn test_chapter_7_valid_assign_to_self() {
                         │   ╰── Initializer
                         │       ╰── Assign [=]
                         │           ├── Var [a]
-                        │           ╰── Constant [4]
+                        │           ╰── Constant Int [4]
                         ╰── Return
                             ╰── Var [a]
     "#;
@@ -7256,7 +7256,7 @@ fn test_chapter_7_valid_assign_to_self_2() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Block
                     │   ╰── VarDeclaration
                     │       ├── Name
@@ -7266,7 +7266,7 @@ fn test_chapter_7_valid_assign_to_self_2() {
                     │       ╰── Initializer
                     │           ╰── Assign [=]
                     │               ├── Var [a]
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -7302,7 +7302,7 @@ fn test_chapter_7_valid_declaration_only() {
                     │       ╰── Initializer
                     │           ╰── Assign [=]
                     │               ├── Var [a]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -7330,7 +7330,7 @@ fn test_chapter_7_valid_empty_blocks() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Block
                     ├── VarDeclaration
                     │   ├── Name
@@ -7339,8 +7339,8 @@ fn test_chapter_7_valid_empty_blocks() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Binary [*]
-                    │           ├── Constant [10]
-                    │           ╰── Constant [2]
+                    │           ├── Constant Int [10]
+                    │           ╰── Constant Int [2]
                     ├── Block
                     │   ╰── Block
                     ╰── Return
@@ -7376,34 +7376,34 @@ fn test_chapter_7_valid_extra_credit_compound_subtract_in_block() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [>]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [4]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── Assign [-=]
                     │           │   ├── Var [a]
-                    │           │   ╰── Constant [4]
+                    │           │   ╰── Constant Int [4]
                     │           ├── VarDeclaration
                     │           │   ├── Name
                     │           │   │   ╰── a
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── Constant [5]
+                    │           │       ╰── Constant Int [5]
                     │           ╰── If
                     │               ├── Condition
                     │               │   ╰── Binary [>]
                     │               │       ├── Var [a]
-                    │               │       ╰── Constant [4]
+                    │               │       ╰── Constant Int [4]
                     │               ╰── Then
                     │                   ╰── Block
                     │                       ╰── Assign [-=]
                     │                           ├── Var [a]
-                    │                           ╰── Constant [4]
+                    │                           ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -7434,13 +7434,13 @@ fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Block
                         ├── If
                         │   ├── Condition
                         │   │   ╰── Binary [!=]
                         │   │       ├── Var [a]
-                        │   │       ╰── Constant [0]
+                        │   │       ╰── Constant Int [0]
                         │   ╰── Then
                         │       ╰── Label [return_a]
                         │           ╰── Return
@@ -7451,7 +7451,7 @@ fn test_chapter_7_valid_extra_credit_goto_before_declaration() {
                         │   ├── Type
                         │   │   ╰── Int
                         │   ╰── Initializer
-                        │       ╰── Constant [4]
+                        │       ╰── Constant Int [4]
                         ╰── Goto [return_a]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -7481,7 +7481,7 @@ fn test_chapter_7_valid_extra_credit_goto_inner_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── Goto [inner]
                     ╰── Block
                         ├── VarDeclaration
@@ -7490,11 +7490,11 @@ fn test_chapter_7_valid_extra_credit_goto_inner_scope() {
                         │   ├── Type
                         │   │   ╰── Int
                         │   ╰── Initializer
-                        │       ╰── Constant [0]
+                        │       ╰── Constant Int [0]
                         ├── Label [inner]
                         │   ╰── Assign [=]
                         │       ├── Var [x]
-                        │       ╰── Constant [1]
+                        │       ╰── Constant Int [1]
                         ╰── Return
                             ╰── Var [x]
     "#;
@@ -7527,14 +7527,14 @@ fn test_chapter_7_valid_extra_credit_goto_outer_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
@@ -7546,23 +7546,23 @@ fn test_chapter_7_valid_extra_credit_goto_outer_scope() {
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── Constant [1]
+                    │           │       ╰── Constant Int [1]
                     │           ├── Assign [=]
                     │           │   ├── Var [b]
                     │           │   ╰── Var [a]
                     │           ╰── Goto [end]
                     ├── Assign [=]
                     │   ├── Var [a]
-                    │   ╰── Constant [9]
+                    │   ╰── Constant Int [9]
                     ╰── Label [end]
                         ╰── Return
                             ╰── Binary [&&]
                                 ├── Binary [==]
                                 │   ├── Var [a]
-                                │   ╰── Constant [10]
+                                │   ╰── Constant Int [10]
                                 ╰── Binary [==]
                                     ├── Var [b]
-                                    ╰── Constant [1]
+                                    ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -7600,10 +7600,10 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── Constant [1]
+                    │   │   ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── VarDeclaration
@@ -7612,15 +7612,15 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── Constant [5]
+                    │           │       ╰── Constant Int [5]
                     │           ├── Goto [other_if]
                     │           ├── Assign [=]
                     │           │   ├── Var [sum]
-                    │           │   ╰── Constant [0]
+                    │           │   ╰── Constant Int [0]
                     │           ├── Label [first_if]
                     │           │   ╰── Assign [=]
                     │           │       ├── Var [a]
-                    │           │       ╰── Constant [5]
+                    │           │       ╰── Constant Int [5]
                     │           ╰── Assign [=]
                     │               ├── Var [sum]
                     │               ╰── Binary [+]
@@ -7628,7 +7628,7 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
                     │                   ╰── Var [a]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── Label [other_if]
@@ -7639,7 +7639,7 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── Constant [6]
+                    │           │       ╰── Constant Int [6]
                     │           ├── Assign [=]
                     │           │   ├── Var [sum]
                     │           │   ╰── Binary [+]
@@ -7648,7 +7648,7 @@ fn test_chapter_7_valid_extra_credit_goto_sibling_scope() {
                     │           ├── Goto [first_if]
                     │           ╰── Assign [=]
                     │               ├── Var [sum]
-                    │               ╰── Constant [0]
+                    │               ╰── Constant Int [0]
                     ╰── Return
                         ╰── Var [sum]
     "#;
@@ -7679,7 +7679,7 @@ fn test_chapter_7_valid_hidden_then_visible() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -7689,28 +7689,28 @@ fn test_chapter_7_valid_hidden_then_visible() {
                     │   ├── Assign [=]
                     │   │   ├── Var [a]
                     │   │   ╰── Unary [-]
-                    │   │       ╰── Constant [4]
+                    │   │       ╰── Constant Int [4]
                     │   ├── VarDeclaration
                     │   │   ├── Name
                     │   │   │   ╰── a
                     │   │   ├── Type
                     │   │   │   ╰── Int
                     │   │   ╰── Initializer
-                    │   │       ╰── Constant [7]
+                    │   │       ╰── Constant Int [7]
                     │   ╰── Assign [=]
                     │       ├── Var [b]
                     │       ╰── Binary [+]
                     │           ├── Var [a]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [b]
-                            │   ╰── Constant [8]
+                            │   ╰── Constant Int [8]
                             ╰── Binary [==]
                                 ├── Var [a]
                                 ╰── Unary [-]
-                                    ╰── Constant [4]
+                                    ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -7736,7 +7736,7 @@ fn test_chapter_7_valid_hidden_variable() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ╰── Block
                         ├── VarDeclaration
                         │   ├── Name
@@ -7744,7 +7744,7 @@ fn test_chapter_7_valid_hidden_variable() {
                         │   ├── Type
                         │   │   ╰── Int
                         │   ╰── Initializer
-                        │       ╰── Constant [1]
+                        │       ╰── Constant Int [1]
                         ╰── Return
                             ╰── Var [a]
     "#;
@@ -7772,7 +7772,7 @@ fn test_chapter_7_valid_inner_uninitialized() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ├── Block
                     │   ╰── VarDeclaration
                     │       ├── Name
@@ -7811,7 +7811,7 @@ fn test_chapter_7_valid_multiple_vars_same_name() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Block
                     │   ├── VarDeclaration
                     │   │   ├── Name
@@ -7819,7 +7819,7 @@ fn test_chapter_7_valid_multiple_vars_same_name() {
                     │   │   ├── Type
                     │   │   │   ╰── Int
                     │   │   ╰── Initializer
-                    │   │       ╰── Constant [4]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Assign [=]
                     │       ├── Var [a]
                     │       ╰── Var [b]
@@ -7830,7 +7830,7 @@ fn test_chapter_7_valid_multiple_vars_same_name() {
                     │   │   ├── Type
                     │   │   │   ╰── Int
                     │   │   ╰── Initializer
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Assign [=]
                     │       ├── Var [a]
                     │       ╰── Binary [-]
@@ -7871,7 +7871,7 @@ fn test_chapter_7_valid_nested_if() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [a]
@@ -7883,7 +7883,7 @@ fn test_chapter_7_valid_nested_if() {
                     │   │       │   ├── Type
                     │   │       │   │   ╰── Int
                     │   │       │   ╰── Initializer
-                    │   │       │       ╰── Constant [2]
+                    │   │       │       ╰── Constant Int [2]
                     │   │       ╰── Return
                     │   │           ╰── Var [b]
                     │   ╰── Else
@@ -7894,7 +7894,7 @@ fn test_chapter_7_valid_nested_if() {
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── Constant [3]
+                    │           │       ╰── Constant Int [3]
                     │           ╰── If
                     │               ├── Condition
                     │               │   ╰── Binary [<]
@@ -7908,7 +7908,7 @@ fn test_chapter_7_valid_nested_if() {
                     │               ╰── Else
                     │                   ╰── Block
                     │                       ╰── Return
-                    │                           ╰── Constant [5]
+                    │                           ╰── Constant Int [5]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -7983,7 +7983,7 @@ fn test_chapter_7_valid_similar_var_names() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Block
                     │   ├── VarDeclaration
                     │   │   ├── Name
@@ -7991,14 +7991,14 @@ fn test_chapter_7_valid_similar_var_names() {
                     │   │   ├── Type
                     │   │   │   ╰── Int
                     │   │   ╰── Initializer
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ├── VarDeclaration
                     │   │   ├── Name
                     │   │   │   ╰── a1
                     │   │   ├── Type
                     │   │   │   ╰── Int
                     │   │   ╰── Initializer
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ├── Block
                     │   │   ├── VarDeclaration
                     │   │   │   ├── Name
@@ -8054,7 +8054,7 @@ fn test_chapter_7_valid_similar_var_names() {
                     │   │                                   │   ├── Type
                     │   │                                   │   │   ╰── Int
                     │   │                                   │   ╰── Initializer
-                    │   │                                   │       ╰── Constant [20]
+                    │   │                                   │       ╰── Constant Int [20]
                     │   │                                   ├── Assign [=]
                     │   │                                   │   ├── Var [result]
                     │   │                                   │   ╰── Var [a]
@@ -8066,7 +8066,7 @@ fn test_chapter_7_valid_similar_var_names() {
                     │   │                                       │       ╰── Int
                     │   │                                       ├── Assign [=]
                     │   │                                       │   ├── Var [a]
-                    │   │                                       │   ╰── Constant [5]
+                    │   │                                       │   ╰── Constant Int [5]
                     │   │                                       ╰── Assign [=]
                     │   │                                           ├── Var [result]
                     │   │                                           ╰── Binary [+]
@@ -8111,7 +8111,7 @@ fn test_chapter_7_valid_use_in_inner_scope() {
                     ├── Block
                     │   ╰── Assign [=]
                     │       ├── Var [x]
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ╰── Block
                         ╰── Return
                             ╰── Var [x]
@@ -8398,7 +8398,7 @@ fn test_chapter_8_invalid_semantics_break_not_in_loop() {
                 ╰── Body
                     ╰── If
                         ├── Condition
-                        │   ╰── Constant [1]
+                        │   ╰── Constant Int [1]
                         ╰── Then
                             ╰── Break
     "#;
@@ -8428,7 +8428,7 @@ fn test_chapter_8_invalid_semantics_continue_not_in_loop() {
                     │   │       ╰── Int
                     │   ╰── Continue
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8456,19 +8456,19 @@ fn test_chapter_8_invalid_semantics_extra_credit_case_continue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Binary [+]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Continue
                     │       ╰── Default
                     │           ╰── Assign [=]
                     │               ├── Var [a]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -8497,23 +8497,23 @@ fn test_chapter_8_invalid_semantics_extra_credit_case_outside_switch() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ╰── Case [0]
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [9]
+                        ╰── Constant Int [9]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8541,17 +8541,17 @@ fn test_chapter_8_invalid_semantics_extra_credit_default_continue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Binary [+]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [1]
+                    │       │       ╰── Constant Int [1]
                     │       ╰── Default
                     │           ╰── Continue
                     ╰── Return
@@ -8576,7 +8576,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_default_outside_switch() {
                     ╰── Block
                         ╰── Default
                             ╰── Return
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8609,7 +8609,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_different_cases_same_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -8622,7 +8622,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_different_cases_same_scope() {
                     │       │   ├── Type
                     │       │   │   ╰── Int
                     │       │   ╰── Initializer
-                    │       │       ╰── Constant [10]
+                    │       │       ╰── Constant Int [10]
                     │       ├── Break
                     │       ├── Case [2]
                     │       │   ╰── Empty
@@ -8632,12 +8632,12 @@ fn test_chapter_8_invalid_semantics_extra_credit_different_cases_same_scope() {
                     │       │   ├── Type
                     │       │   │   ╰── Int
                     │       │   ╰── Initializer
-                    │       │       ╰── Constant [11]
+                    │       │       ╰── Constant Int [11]
                     │       ├── Break
                     │       ╰── Default
                     │           ╰── Break
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8660,20 +8660,20 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case() {
                 ╰── Body
                     ╰── Switch
                         ├── Expression
-                        │   ╰── Constant [4]
+                        │   ╰── Constant Int [4]
                         ╰── Block
                             ├── Case [5]
                             │   ╰── Return
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ├── Case [4]
                             │   ╰── Return
-                            │       ╰── Constant [1]
+                            │       ╰── Constant Int [1]
                             ├── Case [5]
                             │   ╰── Return
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant [2]
+                                    ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8702,7 +8702,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_labeled_switc
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Label [label]
                     │   ╰── Switch
                     │       ├── Expression
@@ -8712,7 +8712,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_labeled_switc
                     │               ╰── Case [1]
                     │                   ╰── Break
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8744,7 +8744,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_nested_statem
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -8753,14 +8753,14 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_case_in_nested_statem
                     │           ╰── Block
                     │               ╰── If
                     │                   ├── Condition
-                    │                   │   ╰── Constant [1]
+                    │                   │   ╰── Constant Int [1]
                     │                   ╰── Then
                     │                       ╰── Block
                     │                           ╰── Case [1]
                     │                               ╰── Return
-                    │                                   ╰── Constant [0]
+                    │                                   ╰── Constant Int [0]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8788,23 +8788,23 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Switch
                         ├── Expression
                         │   ╰── Var [a]
                         ╰── Block
                             ├── Case [0]
                             │   ╰── Return
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ├── Default
                             │   ╰── Return
-                            │       ╰── Constant [1]
+                            │       ╰── Constant Int [1]
                             ├── Case [2]
                             │   ╰── Return
-                            │       ╰── Constant [2]
+                            │       ╰── Constant Int [2]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant [2]
+                                    ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8839,7 +8839,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default_in_nested_sta
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -8853,32 +8853,32 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_default_in_nested_sta
                     │       │       │       ├── Type
                     │       │       │       │   ╰── Int
                     │       │       │       ╰── Initializer
-                    │       │       │           ╰── Constant [0]
+                    │       │       │           ╰── Constant Int [0]
                     │       │       ├── Condition
                     │       │       │   ╰── Binary [<]
                     │       │       │       ├── Var [i]
-                    │       │       │       ╰── Constant [10]
+                    │       │       │       ╰── Constant Int [10]
                     │       │       ├── Condition
                     │       │       │   ╰── Assign [=]
                     │       │       │       ├── Var [i]
                     │       │       │       ╰── Binary [+]
                     │       │       │           ├── Var [i]
-                    │       │       │           ╰── Constant [1]
+                    │       │       │           ╰── Constant Int [1]
                     │       │       ╰── Block
                     │       │           ├── Continue
                     │       │           ╰── While
                     │       │               ├── Condition
-                    │       │               │   ╰── Constant [1]
+                    │       │               │   ╰── Constant Int [1]
                     │       │               ╰── Body
                     │       │                   ╰── Default
                     │       │                       ╰── Empty
                     │       ├── Case [2]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [0]
+                    │       │       ╰── Constant Int [0]
                     │       ╰── Default
                     │           ╰── Empty
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8909,7 +8909,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_default() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Label [label]
                     │   ╰── Switch
                     │       ├── Expression
@@ -8917,13 +8917,13 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_default() {
                     │       ╰── Block
                     │           ├── Case [1]
                     │           │   ╰── Return
-                    │           │       ╰── Constant [0]
+                    │           │       ╰── Constant Int [0]
                     │           ╰── Default
                     │               ╰── Label [label]
                     │                   ╰── Return
-                    │                       ╰── Constant [1]
+                    │                       ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8950,14 +8950,14 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_label_in_loop() {
                     │   │   ╰── Block
                     │   │       ├── Label [lbl]
                     │   │       │   ╰── Return
-                    │   │       │       ╰── Constant [1]
+                    │   │       │       ╰── Constant Int [1]
                     │   │       ╰── Label [lbl]
                     │   │           ╰── Return
-                    │   │               ╰── Constant [2]
+                    │   │               ╰── Constant Int [2]
                     │   ╰── Condition
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -8986,7 +8986,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_variable_in_switch() 
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -8997,20 +8997,20 @@ fn test_chapter_8_invalid_semantics_extra_credit_duplicate_variable_in_switch() 
                     │       │   ├── Type
                     │       │   │   ╰── Int
                     │       │   ╰── Initializer
-                    │       │       ╰── Constant [2]
+                    │       │       ╰── Constant Int [2]
                     │       ├── Case [0]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [3]
+                    │       │       ╰── Constant Int [3]
                     │       ╰── VarDeclaration
                     │           ├── Name
                     │           │   ╰── b
                     │           ├── Type
                     │           │   ╰── Int
                     │           ╰── Initializer
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9030,7 +9030,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_labeled_break_outside_loop() {
                     ├── Label [label]
                     │   ╰── Break
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9057,24 +9057,24 @@ fn test_chapter_8_invalid_semantics_extra_credit_non_constant_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ╰── Switch
                         ├── Expression
                         │   ╰── Binary [+]
                         │       ├── Var [a]
-                        │       ╰── Constant [1]
+                        │       ╰── Constant Int [1]
                         ╰── Block
                             ├── Case [0]
                             │   ╰── Return
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ├── Case [invalid]
                             │   ├── Value
                             │   │   ╰── Var [a]
                             │   ╰── Return
-                            │       ╰── Constant [1]
+                            │       ╰── Constant Int [1]
                             ╰── Case [1]
                                 ╰── Return
-                                    ╰── Constant [2]
+                                    ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9103,22 +9103,22 @@ fn test_chapter_8_invalid_semantics_extra_credit_switch_continue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Binary [+]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [4]
+                    │       │       ╰── Constant Int [4]
                     │       ├── Continue
                     │       ╰── Default
                     │           ╰── Assign [=]
                     │               ├── Var [a]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -9146,12 +9146,12 @@ fn test_chapter_8_invalid_semantics_extra_credit_undeclared_var_switch_expressio
                     │   ╰── Block
                     │       ├── Case [1]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [0]
+                    │       │       ╰── Constant Int [0]
                     │       ╰── Case [2]
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9181,7 +9181,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -9193,7 +9193,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_case() {
                     │       ╰── Default
                     │           ╰── Break
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9223,7 +9223,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_default(
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -9235,7 +9235,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_undeclared_variable_in_default(
                     │       │       ╰── Var [b]
                     │       ╰── Break
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9263,7 +9263,7 @@ fn test_chapter_8_invalid_semantics_extra_credit_undefined_label_in_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -9272,9 +9272,9 @@ fn test_chapter_8_invalid_semantics_extra_credit_undefined_label_in_case() {
                     │       │   ╰── Goto [foo]
                     │       ╰── Default
                     │           ╰── Return
-                    │               ╰── Constant [0]
+                    │               ╰── Constant Int [0]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9303,11 +9303,11 @@ fn test_chapter_8_invalid_semantics_out_of_scope_do_loop() {
                         │           ╰── Initializer
                         │               ╰── Binary [+]
                         │                   ├── Var [a]
-                        │                   ╰── Constant [1]
+                        │                   ╰── Constant Int [1]
                         ╰── Condition
                             ╰── Binary [<]
                                 ├── Var [a]
-                                ╰── Constant [100]
+                                ╰── Constant Int [100]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9331,20 +9331,20 @@ fn test_chapter_8_invalid_semantics_out_of_scope_loop_variable() {
                         ├── Init
                         │   ╰── Assign [=]
                         │       ├── Var [i]
-                        │       ╰── Constant [0]
+                        │       ╰── Constant Int [0]
                         ├── Condition
                         │   ╰── Binary [<]
                         │       ├── Var [i]
-                        │       ╰── Constant [1]
+                        │       ╰── Constant Int [1]
                         ├── Condition
                         │   ╰── Assign [=]
                         │       ├── Var [i]
                         │       ╰── Binary [+]
                         │           ├── Var [i]
-                        │           ╰── Constant [1]
+                        │           ╰── Constant Int [1]
                         ╰── Block
                             ╰── Return
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9373,52 +9373,52 @@ fn test_chapter_8_valid_break() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [20]
+                    │       ╰── Constant Int [20]
                     ├── For
                     │   ├── Init
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [b]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [20]
+                    │   │           ╰── Constant Int [20]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [b]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [b]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [b]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ├── Assign [=]
                     │       │   ├── Var [a]
                     │       │   ╰── Binary [-]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [1]
+                    │       │       ╰── Constant Int [1]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── Binary [<=]
                     │           │       ├── Var [a]
-                    │           │       ╰── Constant [0]
+                    │           │       ╰── Constant Int [0]
                     │           ╰── Then
                     │               ╰── Break
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [a]
-                            │   ╰── Constant [0]
+                            │   ╰── Constant Int [0]
                             ╰── Binary [==]
                                 ├── Var [b]
                                 ╰── Unary [-]
-                                    ╰── Constant [11]
+                                    ╰── Constant Int [11]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9443,12 +9443,12 @@ fn test_chapter_8_valid_break_immediate() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Body
                     │       ╰── Break
                     ╰── Return
@@ -9482,7 +9482,7 @@ fn test_chapter_8_valid_continue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── counter
@@ -9496,17 +9496,17 @@ fn test_chapter_8_valid_continue() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ├── Assign [=]
                     │       │   ├── Var [counter]
@@ -9516,23 +9516,23 @@ fn test_chapter_8_valid_continue() {
                     │       │   │   ╰── Binary [==]
                     │       │   │       ├── Binary [%]
                     │       │   │       │   ├── Var [i]
-                    │       │   │       │   ╰── Constant [2]
-                    │       │   │       ╰── Constant [0]
+                    │       │   │       │   ╰── Constant Int [2]
+                    │       │   │       ╰── Constant Int [0]
                     │       │   ╰── Then
                     │       │       ╰── Continue
                     │       ╰── Assign [=]
                     │           ├── Var [sum]
                     │           ╰── Binary [+]
                     │               ├── Var [sum]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [sum]
-                            │   ╰── Constant [5]
+                            │   ╰── Constant Int [5]
                             ╰── Binary [==]
                                 ├── Var [counter]
-                                ╰── Constant [10]
+                                ╰── Constant Int [10]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9561,7 +9561,7 @@ fn test_chapter_8_valid_continue_empty_post() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -9570,22 +9570,22 @@ fn test_chapter_8_valid_continue_empty_post() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ╰── Block
                     │       ├── Assign [=]
                     │       │   ├── Var [i]
                     │       │   ╰── Binary [+]
                     │       │       ├── Var [i]
-                    │       │       ╰── Constant [1]
+                    │       │       ╰── Constant Int [1]
                     │       ├── If
                     │       │   ├── Condition
                     │       │   │   ╰── Binary [%]
                     │       │   │       ├── Var [i]
-                    │       │   │       ╰── Constant [2]
+                    │       │   │       ╰── Constant Int [2]
                     │       │   ╰── Then
                     │       │       ╰── Continue
                     │       ╰── Assign [=]
@@ -9620,7 +9620,7 @@ fn test_chapter_8_valid_do_while() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Block
@@ -9628,11 +9628,11 @@ fn test_chapter_8_valid_do_while() {
                     │   │           ├── Var [a]
                     │   │           ╰── Binary [*]
                     │   │               ├── Var [a]
-                    │   │               ╰── Constant [2]
+                    │   │               ╰── Constant Int [2]
                     │   ╰── Condition
                     │       ╰── Binary [<]
                     │           ├── Var [a]
-                    │           ╰── Constant [11]
+                    │           ╰── Constant Int [11]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -9660,14 +9660,14 @@ fn test_chapter_8_valid_do_while_break_immediate() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Break
                     │   ╰── Condition
                     │       ╰── Assign [=]
                     │           ├── Var [a]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -9686,7 +9686,7 @@ fn test_chapter_8_valid_empty_expression() {
             ╰── Function [main]
                 ╰── Body
                     ├── Return
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ├── Empty
                     ╰── Empty
     "#;
@@ -9712,7 +9712,7 @@ fn test_chapter_8_valid_empty_loop_body() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2147]
+                    │       ╰── Constant Int [2147]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Empty
@@ -9722,8 +9722,8 @@ fn test_chapter_8_valid_empty_loop_body() {
                     │           │   ├── Var [i]
                     │           │   ╰── Binary [-]
                     │           │       ├── Var [i]
-                    │           │       ╰── Constant [5]
-                    │           ╰── Constant [256]
+                    │           │       ╰── Constant Int [5]
+                    │           ╰── Constant Int [256]
                     ╰── Return
                         ╰── Var [i]
     "#;
@@ -9755,17 +9755,17 @@ fn test_chapter_8_valid_extra_credit_case_block() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant [2]
+                    │   │   ╰── Constant Int [2]
                     │   ╰── Block
                     │       ╰── Case [2]
                     │           ╰── Block
@@ -9775,7 +9775,7 @@ fn test_chapter_8_valid_extra_credit_case_block() {
                     │               │   ├── Type
                     │               │   │   ╰── Int
                     │               │   ╰── Initializer
-                    │               │       ╰── Constant [8]
+                    │               │       ╰── Constant Int [8]
                     │               ╰── Assign [=]
                     │                   ├── Var [b]
                     │                   ╰── Var [a]
@@ -9783,10 +9783,10 @@ fn test_chapter_8_valid_extra_credit_case_block() {
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [a]
-                            │   ╰── Constant [4]
+                            │   ╰── Constant Int [4]
                             ╰── Binary [==]
                                 ├── Var [b]
-                                ╰── Constant [8]
+                                ╰── Constant Int [8]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9812,31 +9812,31 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression(
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [100]
+                    │       ╰── Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── sum
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Assign [+=]
                     │   │       ├── Var [sum]
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Condition
                     │       ╰── Assign [-=]
                     │           ├── Var [i]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [i]
-                            │   ╰── Constant [0]
+                            │   ╰── Constant Int [0]
                             ╰── Binary [==]
                                 ├── Var [sum]
-                                ╰── Constant [200]
+                                ╰── Constant Int [200]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9861,28 +9861,28 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_for_loop() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── For
                     │   ├── Init
                     │   │   ╰── Assign [*=]
                     │   │       ├── Var [i]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ├── Condition
                     │   │   ╰── Binary [>=]
                     │   │       ├── Var [i]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [100]
+                    │   │           ╰── Constant Int [100]
                     │   ├── Condition
                     │   │   ╰── Assign [-=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [3]
+                    │   │       ╰── Constant Int [3]
                     │   ╰── Empty
                     ╰── Return
                         ╰── Binary [==]
                             ├── Var [i]
                             ╰── Unary [-]
-                                ╰── Constant [103]
+                                ╰── Constant Int [103]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -9921,7 +9921,7 @@ fn test_chapter_8_valid_extra_credit_duffs_device() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [37]
+                    │       ╰── Constant Int [37]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── iterations
@@ -9931,13 +9931,13 @@ fn test_chapter_8_valid_extra_credit_duffs_device() {
                     │       ╰── Binary [/]
                     │           ├── Binary [+]
                     │           │   ├── Var [count]
-                    │           │   ╰── Constant [4]
-                    │           ╰── Constant [5]
+                    │           │   ╰── Constant Int [4]
+                    │           ╰── Constant Int [5]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Binary [%]
                     │   │       ├── Var [count]
-                    │   │       ╰── Constant [5]
+                    │   │       ╰── Constant Int [5]
                     │   ╰── Block
                     │       ╰── Case [0]
                     │           ╰── DoWhile
@@ -9947,47 +9947,47 @@ fn test_chapter_8_valid_extra_credit_duffs_device() {
                     │               │       │   ├── Var [count]
                     │               │       │   ╰── Binary [-]
                     │               │       │       ├── Var [count]
-                    │               │       │       ╰── Constant [1]
+                    │               │       │       ╰── Constant Int [1]
                     │               │       ├── Case [4]
                     │               │       │   ╰── Assign [=]
                     │               │       │       ├── Var [count]
                     │               │       │       ╰── Binary [-]
                     │               │       │           ├── Var [count]
-                    │               │       │           ╰── Constant [1]
+                    │               │       │           ╰── Constant Int [1]
                     │               │       ├── Case [3]
                     │               │       │   ╰── Assign [=]
                     │               │       │       ├── Var [count]
                     │               │       │       ╰── Binary [-]
                     │               │       │           ├── Var [count]
-                    │               │       │           ╰── Constant [1]
+                    │               │       │           ╰── Constant Int [1]
                     │               │       ├── Case [2]
                     │               │       │   ╰── Assign [=]
                     │               │       │       ├── Var [count]
                     │               │       │       ╰── Binary [-]
                     │               │       │           ├── Var [count]
-                    │               │       │           ╰── Constant [1]
+                    │               │       │           ╰── Constant Int [1]
                     │               │       ╰── Case [1]
                     │               │           ╰── Assign [=]
                     │               │               ├── Var [count]
                     │               │               ╰── Binary [-]
                     │               │                   ├── Var [count]
-                    │               │                   ╰── Constant [1]
+                    │               │                   ╰── Constant Int [1]
                     │               ╰── Condition
                     │                   ╰── Binary [>]
                     │                       ├── Assign [=]
                     │                       │   ├── Var [iterations]
                     │                       │   ╰── Binary [-]
                     │                       │       ├── Var [iterations]
-                    │                       │       ╰── Constant [1]
-                    │                       ╰── Constant [0]
+                    │                       │       ╰── Constant Int [1]
+                    │                       ╰── Constant Int [0]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [count]
-                            │   ╰── Constant [0]
+                            │   ╰── Constant Int [0]
                             ╰── Binary [==]
                                 ├── Var [iterations]
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -10016,7 +10016,7 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_condition() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Block
@@ -10025,16 +10025,16 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_condition() {
                     │   │       │       ├── Var [i]
                     │   │       │       ╰── Binary [+]
                     │   │       │           ├── Var [i]
-                    │   │       │           ╰── Constant [1]
+                    │   │       │           ╰── Constant Int [1]
                     │   │       ╰── If
                     │   │           ├── Condition
                     │   │           │   ╰── Binary [<]
                     │   │           │       ├── Var [i]
-                    │   │           │       ╰── Constant [10]
+                    │   │           │       ╰── Constant Int [10]
                     │   │           ╰── Then
                     │   │               ╰── Goto [while_start]
                     │   ╰── Condition
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Return
                         ╰── Var [i]
     "#;
@@ -10064,34 +10064,34 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_init_exp() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Goto [target]
                     ├── For
                     │   ├── Init
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [5]
+                    │   │       ╰── Constant Int [5]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Label [target]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── Binary [==]
                     │           │       ├── Var [i]
-                    │           │       ╰── Constant [0]
+                    │           │       ╰── Constant Int [0]
                     │           ╰── Then
                     │               ╰── Return
-                    │                   ╰── Constant [1]
+                    │                   ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -10122,7 +10122,7 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_post_exp() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -10131,28 +10131,28 @@ fn test_chapter_8_valid_extra_credit_goto_bypass_post_exp() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Block
                     │       ├── Label [lbl]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [sum]
                     │       │       ╰── Binary [+]
                     │       │           ├── Var [sum]
-                    │       │           ╰── Constant [1]
+                    │       │           ╰── Constant Int [1]
                     │       ├── Assign [=]
                     │       │   ├── Var [i]
                     │       │   ╰── Binary [+]
                     │       │       ├── Var [i]
-                    │       │       ╰── Constant [1]
+                    │       │       ╰── Constant Int [1]
                     │       ├── If
                     │       │   ├── Condition
                     │       │   │   ╰── Binary [>]
                     │       │   │       ├── Var [i]
-                    │       │   │       ╰── Constant [10]
+                    │       │   │       ╰── Constant Int [10]
                     │       │   ╰── Then
                     │       │       ╰── Break
                     │       ╰── Goto [lbl]
@@ -10184,17 +10184,17 @@ fn test_chapter_8_valid_extra_credit_label_loop_body() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Goto [label]
                     ├── While
                     │   ├── Condition
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Body
                     │       ╰── Label [label]
                     │           ╰── Block
                     │               ╰── Assign [=]
                     │                   ├── Var [result]
-                    │                   ╰── Constant [1]
+                    │                   ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [result]
     "#;
@@ -10245,40 +10245,40 @@ fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Goto [do_label]
                     ├── Return
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ├── Label [do_label]
                     │   ╰── DoWhile
                     │       ├── Body
                     │       │   ╰── Block
                     │       │       ├── Assign [=]
                     │       │       │   ├── Var [sum]
-                    │       │       │   ╰── Constant [1]
+                    │       │       │   ╰── Constant Int [1]
                     │       │       ╰── Goto [while_label]
                     │       ╰── Condition
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── Label [while_label]
                     │   ╰── While
                     │       ├── Condition
-                    │       │   ╰── Constant [1]
+                    │       │   ╰── Constant Int [1]
                     │       ╰── Body
                     │           ╰── Block
                     │               ├── Assign [=]
                     │               │   ├── Var [sum]
                     │               │   ╰── Binary [+]
                     │               │       ├── Var [sum]
-                    │               │       ╰── Constant [1]
+                    │               │       ╰── Constant Int [1]
                     │               ├── Goto [break_label]
                     │               ├── Return
-                    │               │   ╰── Constant [0]
+                    │               │   ╰── Constant Int [0]
                     │               ╰── Label [break_label]
                     │                   ╰── Break
                     ├── Empty
                     ├── Goto [for_label]
                     ├── Return
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ├── Label [for_label]
                     │   ╰── For
                     │       ├── Init
@@ -10288,30 +10288,30 @@ fn test_chapter_8_valid_extra_credit_label_loops_breaks_and_continues() {
                     │       │       ├── Type
                     │       │       │   ╰── Int
                     │       │       ╰── Initializer
-                    │       │           ╰── Constant [0]
+                    │       │           ╰── Constant Int [0]
                     │       ├── Condition
                     │       │   ╰── Binary [<]
                     │       │       ├── Var [i]
-                    │       │       ╰── Constant [10]
+                    │       │       ╰── Constant Int [10]
                     │       ├── Condition
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [i]
                     │       │       ╰── Binary [+]
                     │       │           ├── Var [i]
-                    │       │           ╰── Constant [1]
+                    │       │           ╰── Constant Int [1]
                     │       ╰── Block
                     │           ├── Assign [=]
                     │           │   ├── Var [sum]
                     │           │   ╰── Binary [+]
                     │           │       ├── Var [sum]
-                    │           │       ╰── Constant [1]
+                    │           │       ╰── Constant Int [1]
                     │           ├── Goto [continue_label]
                     │           ├── Return
-                    │           │   ╰── Constant [0]
+                    │           │   ╰── Constant Int [0]
                     │           ├── Label [continue_label]
                     │           │   ╰── Continue
                     │           ╰── Return
-                    │               ╰── Constant [0]
+                    │               ╰── Constant Int [0]
                     ╰── Return
                         ╰── Var [sum]
     "#;
@@ -10345,14 +10345,14 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [100]
+                    │       ╰── Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── count
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Postfix [--]
@@ -10364,16 +10364,16 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [count]
-                    │   │       ╰── Constant [100]
+                    │   │       ╰── Constant Int [100]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [i]
-                    │   ╰── Constant [100]
+                    │   ╰── Constant Int [100]
                     ├── Assign [=]
                     │   ├── Var [count]
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Unary [--]
@@ -10385,12 +10385,12 @@ fn test_chapter_8_valid_extra_credit_loop_header_postfix_and_prefix() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [count]
-                    │   │       ╰── Constant [99]
+                    │   │       ╰── Constant Int [99]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ╰── Return
-                        ╰── Constant [1]
+                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -10426,14 +10426,14 @@ fn test_chapter_8_valid_extra_credit_loop_in_switch() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [cond]
                     │   ╰── Block
                     │       ├── Case [1]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [0]
+                    │       │       ╰── Constant Int [0]
                     │       ├── Case [10]
                     │       │   ╰── For
                     │       │       ├── Init
@@ -10443,37 +10443,37 @@ fn test_chapter_8_valid_extra_credit_loop_in_switch() {
                     │       │       │       ├── Type
                     │       │       │       │   ╰── Int
                     │       │       │       ╰── Initializer
-                    │       │       │           ╰── Constant [0]
+                    │       │       │           ╰── Constant Int [0]
                     │       │       ├── Condition
                     │       │       │   ╰── Binary [<]
                     │       │       │       ├── Var [i]
-                    │       │       │       ╰── Constant [5]
+                    │       │       │       ╰── Constant Int [5]
                     │       │       ├── Condition
                     │       │       │   ╰── Assign [=]
                     │       │       │       ├── Var [i]
                     │       │       │       ╰── Binary [+]
                     │       │       │           ├── Var [i]
-                    │       │       │           ╰── Constant [1]
+                    │       │       │           ╰── Constant Int [1]
                     │       │       ╰── Block
                     │       │           ├── Assign [=]
                     │       │           │   ├── Var [cond]
                     │       │           │   ╰── Binary [-]
                     │       │           │       ├── Var [cond]
-                    │       │           │       ╰── Constant [1]
+                    │       │           │       ╰── Constant Int [1]
                     │       │           ╰── If
                     │       │               ├── Condition
                     │       │               │   ╰── Binary [==]
                     │       │               │       ├── Var [cond]
-                    │       │               │       ╰── Constant [8]
+                    │       │               │       ╰── Constant Int [8]
                     │       │               ╰── Then
                     │       │                   ╰── Break
                     │       ├── Return
-                    │       │   ╰── Constant [123]
+                    │       │   ╰── Constant Int [123]
                     │       ╰── Default
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [3]
+                        ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -10499,7 +10499,7 @@ fn test_chapter_8_valid_extra_credit_post_exp_incr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -10508,11 +10508,11 @@ fn test_chapter_8_valid_extra_credit_post_exp_incr() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Postfix [++]
                     │   │       ╰── Var [i]
@@ -10521,7 +10521,7 @@ fn test_chapter_8_valid_extra_credit_post_exp_incr() {
                     │           ├── Var [product]
                     │           ╰── Binary [+]
                     │               ├── Var [product]
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [product]
     "#;
@@ -10547,20 +10547,20 @@ fn test_chapter_8_valid_extra_credit_switch() {
                 ╰── Body
                     ╰── Switch
                         ├── Expression
-                        │   ╰── Constant [3]
+                        │   ╰── Constant Int [3]
                         ╰── Block
                             ├── Case [0]
                             │   ╰── Return
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ├── Case [1]
                             │   ╰── Return
-                            │       ╰── Constant [1]
+                            │       ╰── Constant Int [1]
                             ├── Case [3]
                             │   ╰── Return
-                            │       ╰── Constant [3]
+                            │       ╰── Constant Int [3]
                             ╰── Case [5]
                                 ╰── Return
-                                    ╰── Constant [5]
+                                    ╰── Constant Int [5]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -10592,27 +10592,27 @@ fn test_chapter_8_valid_extra_credit_switch_assign_in_condition() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [10]
+                    │       │       ╰── Constant Int [10]
                     │       ├── Case [1]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
                     │       │       ╰── Binary [*]
                     │       │           ├── Var [a]
-                    │       │           ╰── Constant [2]
+                    │       │           ╰── Constant Int [2]
                     │       ├── Break
                     │       ╰── Default
                     │           ╰── Assign [=]
                     │               ├── Var [a]
-                    │               ╰── Constant [99]
+                    │               ╰── Constant Int [99]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -10645,7 +10645,7 @@ fn test_chapter_8_valid_extra_credit_switch_break() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -10653,12 +10653,12 @@ fn test_chapter_8_valid_extra_credit_switch_break() {
                     │       ├── Case [5]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [10]
+                    │       │       ╰── Constant Int [10]
                     │       ├── Break
                     │       ├── Case [6]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [0]
+                    │       │       ╰── Constant Int [0]
                     │       ╰── Break
                     ╰── Return
                         ╰── Var [a]
@@ -10691,14 +10691,14 @@ fn test_chapter_8_valid_extra_credit_switch_decl() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -10711,11 +10711,11 @@ fn test_chapter_8_valid_extra_credit_switch_decl() {
                     │       │   ╰── Initializer
                     │       │       ╰── Assign [=]
                     │       │           ├── Var [b]
-                    │       │           ╰── Constant [5]
+                    │       │           ╰── Constant Int [5]
                     │       ├── Case [3]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [4]
+                    │       │       ╰── Constant Int [4]
                     │       ╰── Assign [=]
                     │           ├── Var [b]
                     │           ╰── Binary [+]
@@ -10725,10 +10725,10 @@ fn test_chapter_8_valid_extra_credit_switch_decl() {
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [a]
-                            │   ╰── Constant [3]
+                            │   ╰── Constant Int [3]
                             ╰── Binary [==]
                                 ├── Var [b]
-                                ╰── Constant [4]
+                                ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -10762,26 +10762,26 @@ fn test_chapter_8_valid_extra_credit_switch_default() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
                     │   ╰── Block
                     │       ├── Case [1]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [1]
+                    │       │       ╰── Constant Int [1]
                     │       ├── Case [2]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [9]
+                    │       │       ╰── Constant Int [9]
                     │       ├── Case [4]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [11]
+                    │       │       ╰── Constant Int [11]
                     │       ├── Break
                     │       ╰── Default
                     │           ╰── Assign [=]
                     │               ├── Var [a]
-                    │               ╰── Constant [22]
+                    │               ╰── Constant Int [22]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -10812,22 +10812,22 @@ fn test_chapter_8_valid_extra_credit_switch_default_fallthrough() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Block
                     │       ├── Default
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [0]
+                    │       │       ╰── Constant Int [0]
                     │       ╰── Case [1]
                     │           ╰── Return
                     │               ╰── Var [a]
                     ╰── Return
                         ╰── Binary [+]
                             ├── Var [a]
-                            ╰── Constant [1]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -10861,7 +10861,7 @@ fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
                     │   ╰── Initializer
                     │       ╰── Assign [=]
                     │           ├── Var [a]
-                    │           ╰── Constant [7]
+                    │           ╰── Constant Int [7]
                     ╰── Switch
                         ├── Expression
                         │   ╰── Binary [+]
@@ -10870,10 +10870,10 @@ fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
                         ╰── Block
                             ├── Default
                             │   ╰── Return
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ╰── Case [2]
                                 ╰── Return
-                                    ╰── Constant [1]
+                                    ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -10897,15 +10897,15 @@ fn test_chapter_8_valid_extra_credit_switch_default_only() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
                     │   ╰── Default
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -10932,14 +10932,14 @@ fn test_chapter_8_valid_extra_credit_switch_empty() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [x]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [x]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     ├── Switch
                     │   ├── Expression
@@ -10947,7 +10947,7 @@ fn test_chapter_8_valid_extra_credit_switch_empty() {
                     │   │       ├── Var [x]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [x]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Empty
                     ╰── Return
                         ╰── Var [x]
@@ -10985,21 +10985,21 @@ fn test_chapter_8_valid_extra_credit_switch_fallthrough() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [9]
+                    │       ╰── Constant Int [9]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Conditional [?]
@@ -11007,25 +11007,25 @@ fn test_chapter_8_valid_extra_credit_switch_fallthrough() {
                     │   │       ├── Then
                     │   │       │   ╰── Var [b]
                     │   │       ╰── Else
-                    │   │           ╰── Constant [7]
+                    │   │           ╰── Constant Int [7]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [5]
+                    │       │       ╰── Constant Int [5]
                     │       ├── Case [7]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [c]
-                    │       │       ╰── Constant [1]
+                    │       │       ╰── Constant Int [1]
                     │       ├── Case [9]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [c]
-                    │       │       ╰── Constant [2]
+                    │       │       ╰── Constant Int [2]
                     │       ╰── Case [1]
                     │           ╰── Assign [=]
                     │               ├── Var [c]
                     │               ╰── Binary [+]
                     │                   ├── Var [c]
-                    │                   ╰── Constant [4]
+                    │                   ╰── Constant Int [4]
                     ╰── Return
                         ╰── Var [c]
     "#;
@@ -11058,26 +11058,26 @@ fn test_chapter_8_valid_extra_credit_switch_goto_mid_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Goto [mid_case]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant [4]
+                    │   │   ╰── Constant Int [4]
                     │   ╰── Block
                     │       ├── Case [4]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [5]
+                    │       │       ╰── Constant Int [5]
                     │       ├── Label [mid_case]
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [a]
                     │       │       ╰── Binary [+]
                     │       │           ├── Var [a]
-                    │       │           ╰── Constant [1]
+                    │       │           ╰── Constant Int [1]
                     │       ╰── Return
                     │           ╰── Var [a]
                     ╰── Return
-                        ╰── Constant [100]
+                        ╰── Constant Int [100]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -11117,14 +11117,14 @@ fn test_chapter_8_valid_extra_credit_switch_in_loop() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ctr
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -11133,17 +11133,17 @@ fn test_chapter_8_valid_extra_credit_switch_in_loop() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ├── Switch
                     │       │   ├── Expression
@@ -11152,41 +11152,41 @@ fn test_chapter_8_valid_extra_credit_switch_in_loop() {
                     │       │       ├── Case [0]
                     │       │       │   ╰── Assign [=]
                     │       │       │       ├── Var [acc]
-                    │       │       │       ╰── Constant [2]
+                    │       │       │       ╰── Constant Int [2]
                     │       │       ├── Break
                     │       │       ├── Case [1]
                     │       │       │   ╰── Assign [=]
                     │       │       │       ├── Var [acc]
                     │       │       │       ╰── Binary [*]
                     │       │       │           ├── Var [acc]
-                    │       │       │           ╰── Constant [3]
+                    │       │       │           ╰── Constant Int [3]
                     │       │       ├── Break
                     │       │       ├── Case [2]
                     │       │       │   ╰── Assign [=]
                     │       │       │       ├── Var [acc]
                     │       │       │       ╰── Binary [*]
                     │       │       │           ├── Var [acc]
-                    │       │       │           ╰── Constant [4]
+                    │       │       │           ╰── Constant Int [4]
                     │       │       ├── Break
                     │       │       ╰── Default
                     │       │           ╰── Assign [=]
                     │       │               ├── Var [acc]
                     │       │               ╰── Binary [+]
                     │       │                   ├── Var [acc]
-                    │       │                   ╰── Constant [1]
+                    │       │                   ╰── Constant Int [1]
                     │       ╰── Assign [=]
                     │           ├── Var [ctr]
                     │           ╰── Binary [+]
                     │               ├── Var [ctr]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [ctr]
-                            │   ╰── Constant [10]
+                            │   ╰── Constant Int [10]
                             ╰── Binary [==]
                                 ├── Var [acc]
-                                ╰── Constant [31]
+                                ╰── Constant Int [31]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -11234,69 +11234,69 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── switch2
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── switch3
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant [3]
+                    │   │   ╰── Constant Int [3]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [0]
+                    │       │       ╰── Constant Int [0]
                     │       ├── Case [1]
                     │       │   ╰── If
                     │       │       ├── Condition
-                    │       │       │   ╰── Constant [0]
+                    │       │       │   ╰── Constant Int [0]
                     │       │       ╰── Then
                     │       │           ╰── Block
                     │       │               ├── Case [3]
                     │       │               │   ╰── Assign [=]
                     │       │               │       ├── Var [switch1]
-                    │       │               │       ╰── Constant [1]
+                    │       │               │       ╰── Constant Int [1]
                     │       │               ╰── Break
                     │       ╰── Default
                     │           ╰── Return
-                    │               ╰── Constant [0]
+                    │               ╰── Constant Int [0]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant [4]
+                    │   │   ╰── Constant Int [4]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [0]
+                    │       │       ╰── Constant Int [0]
                     │       ├── If
                     │       │   ├── Condition
-                    │       │   │   ╰── Constant [1]
+                    │       │   │   ╰── Constant Int [1]
                     │       │   ├── Then
                     │       │   │   ╰── Block
                     │       │   │       ╰── Return
-                    │       │   │           ╰── Constant [0]
+                    │       │   │           ╰── Constant Int [0]
                     │       │   ╰── Else
                     │       │       ╰── Block
                     │       │           ├── Case [4]
                     │       │           │   ╰── Assign [=]
                     │       │           │       ├── Var [switch2]
-                    │       │           │       ╰── Constant [1]
+                    │       │           │       ╰── Constant Int [1]
                     │       │           ╰── Break
                     │       ╰── Default
                     │           ╰── Return
-                    │               ╰── Constant [0]
+                    │               ╰── Constant Int [0]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant [5]
+                    │   │   ╰── Constant Int [5]
                     │   ╰── Block
                     │       ╰── For
                     │           ├── Init
@@ -11306,29 +11306,29 @@ fn test_chapter_8_valid_extra_credit_switch_nested_cases() {
                     │           │       ├── Type
                     │           │       │   ╰── Int
                     │           │       ╰── Initializer
-                    │           │           ╰── Constant [0]
+                    │           │           ╰── Constant Int [0]
                     │           ├── Condition
                     │           │   ╰── Binary [<]
                     │           │       ├── Var [i]
-                    │           │       ╰── Constant [10]
+                    │           │       ╰── Constant Int [10]
                     │           ├── Condition
                     │           │   ╰── Assign [=]
                     │           │       ├── Var [i]
                     │           │       ╰── Binary [+]
                     │           │           ├── Var [i]
-                    │           │           ╰── Constant [1]
+                    │           │           ╰── Constant Int [1]
                     │           ╰── Block
                     │               ├── Assign [=]
                     │               │   ├── Var [switch1]
-                    │               │   ╰── Constant [0]
+                    │               │   ╰── Constant Int [0]
                     │               ├── Case [5]
                     │               │   ╰── Assign [=]
                     │               │       ├── Var [switch3]
-                    │               │       ╰── Constant [1]
+                    │               │       ╰── Constant Int [1]
                     │               ├── Break
                     │               ╰── Default
                     │                   ╰── Return
-                    │                       ╰── Constant [0]
+                    │                       ╰── Constant Int [0]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [&&]
@@ -11366,7 +11366,7 @@ fn test_chapter_8_valid_extra_credit_switch_nested_not_taken() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
@@ -11378,14 +11378,14 @@ fn test_chapter_8_valid_extra_credit_switch_nested_not_taken() {
                     │       │       ╰── Block
                     │       │           ├── Case [0]
                     │       │           │   ╰── Return
-                    │       │           │       ╰── Constant [0]
+                    │       │           │       ╰── Constant Int [0]
                     │       │           ╰── Default
                     │       │               ╰── Return
-                    │       │                   ╰── Constant [0]
+                    │       │                   ╰── Constant Int [0]
                     │       ╰── Default
                     │           ╰── Assign [=]
                     │               ├── Var [a]
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -11417,32 +11417,32 @@ fn test_chapter_8_valid_extra_credit_switch_nested_switch() {
                 ╰── Body
                     ╰── Switch
                         ├── Expression
-                        │   ╰── Constant [3]
+                        │   ╰── Constant Int [3]
                         ╰── Block
                             ├── Case [0]
                             │   ╰── Return
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ├── Case [3]
                             │   ╰── Block
                             │       ╰── Switch
                             │           ├── Expression
-                            │           │   ╰── Constant [4]
+                            │           │   ╰── Constant Int [4]
                             │           ╰── Block
                             │               ├── Case [3]
                             │               │   ╰── Return
-                            │               │       ╰── Constant [0]
+                            │               │       ╰── Constant Int [0]
                             │               ├── Case [4]
                             │               │   ╰── Return
-                            │               │       ╰── Constant [1]
+                            │               │       ╰── Constant Int [1]
                             │               ╰── Default
                             │                   ╰── Return
-                            │                       ╰── Constant [0]
+                            │                       ╰── Constant Int [0]
                             ├── Case [4]
                             │   ╰── Return
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant [0]
+                                    ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -11467,12 +11467,12 @@ fn test_chapter_8_valid_extra_credit_switch_no_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
                     │   ╰── Return
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -11502,22 +11502,22 @@ fn test_chapter_8_valid_extra_credit_switch_not_taken() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [0]
+                    │       │       ╰── Constant Int [0]
                     │       ├── Case [2]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [0]
+                    │       │       ╰── Constant Int [0]
                     │       ╰── Case [3]
                     │           ╰── Return
-                    │               ╰── Constant [0]
+                    │               ╰── Constant Int [0]
                     ╰── Return
-                        ╰── Constant [1]
+                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -11541,15 +11541,15 @@ fn test_chapter_8_valid_extra_credit_switch_single_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Var [a]
                     │   ╰── Case [1]
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -11580,11 +11580,11 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue() {
                 ╰── Body
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant [4]
+                    │   │   ╰── Constant Int [4]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [0]
+                    │       │       ╰── Constant Int [0]
                     │       ╰── Case [4]
                     │           ╰── Block
                     │               ├── VarDeclaration
@@ -11593,7 +11593,7 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue() {
                     │               │   ├── Type
                     │               │   │   ╰── Int
                     │               │   ╰── Initializer
-                    │               │       ╰── Constant [0]
+                    │               │       ╰── Constant Int [0]
                     │               ├── For
                     │               │   ├── Init
                     │               │   │   ╰── VarDeclaration
@@ -11602,34 +11602,34 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue() {
                     │               │   │       ├── Type
                     │               │   │       │   ╰── Int
                     │               │   │       ╰── Initializer
-                    │               │   │           ╰── Constant [0]
+                    │               │   │           ╰── Constant Int [0]
                     │               │   ├── Condition
                     │               │   │   ╰── Binary [<]
                     │               │   │       ├── Var [i]
-                    │               │   │       ╰── Constant [10]
+                    │               │   │       ╰── Constant Int [10]
                     │               │   ├── Condition
                     │               │   │   ╰── Assign [=]
                     │               │   │       ├── Var [i]
                     │               │   │       ╰── Binary [+]
                     │               │   │           ├── Var [i]
-                    │               │   │           ╰── Constant [1]
+                    │               │   │           ╰── Constant Int [1]
                     │               │   ╰── Block
                     │               │       ├── If
                     │               │       │   ├── Condition
                     │               │       │   │   ╰── Binary [%]
                     │               │       │   │       ├── Var [i]
-                    │               │       │   │       ╰── Constant [2]
+                    │               │       │   │       ╰── Constant Int [2]
                     │               │       │   ╰── Then
                     │               │       │       ╰── Continue
                     │               │       ╰── Assign [=]
                     │               │           ├── Var [acc]
                     │               │           ╰── Binary [+]
                     │               │               ├── Var [acc]
-                    │               │               ╰── Constant [1]
+                    │               │               ╰── Constant Int [1]
                     │               ╰── Return
                     │                   ╰── Var [acc]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -11658,7 +11658,7 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -11667,23 +11667,23 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ╰── Switch
                     │           ├── Expression
                     │           │   ╰── Binary [%]
                     │           │       ├── Var [i]
-                    │           │       ╰── Constant [2]
+                    │           │       ╰── Constant Int [2]
                     │           ╰── Block
                     │               ├── Case [0]
                     │               │   ╰── Continue
@@ -11692,7 +11692,7 @@ fn test_chapter_8_valid_extra_credit_switch_with_continue_2() {
                     │                       ├── Var [sum]
                     │                       ╰── Binary [+]
                     │                           ├── Var [sum]
-                    │                           ╰── Constant [1]
+                    │                           ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [sum]
     "#;
@@ -11720,7 +11720,7 @@ fn test_chapter_8_valid_for() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [12345]
+                    │       ╰── Constant Int [12345]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -11730,22 +11730,22 @@ fn test_chapter_8_valid_for() {
                     │   ├── Init
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [5]
+                    │   │       ╰── Constant Int [5]
                     │   ├── Condition
                     │   │   ╰── Binary [>=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [-]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Assign [=]
                     │       ├── Var [a]
                     │       ╰── Binary [/]
                     │           ├── Var [a]
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -11773,21 +11773,21 @@ fn test_chapter_8_valid_for_absent_condition() {
                         │       ├── Type
                         │       │   ╰── Int
                         │       ╰── Initializer
-                        │           ╰── Constant [400]
+                        │           ╰── Constant Int [400]
                         ├── Condition
                         │   ╰── Assign [=]
                         │       ├── Var [i]
                         │       ╰── Binary [-]
                         │           ├── Var [i]
-                        │           ╰── Constant [100]
+                        │           ╰── Constant Int [100]
                         ╰── If
                             ├── Condition
                             │   ╰── Binary [==]
                             │       ├── Var [i]
-                            │       ╰── Constant [100]
+                            │       ╰── Constant Int [100]
                             ╰── Then
                                 ╰── Return
-                                    ╰── Constant [0]
+                                    ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -11814,28 +11814,28 @@ fn test_chapter_8_valid_for_absent_post() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [2147]
+                    │           ╰── Constant Int [2147]
                     ├── For
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [%]
                     │   │       │   ├── Var [a]
-                    │   │       │   ╰── Constant [5]
-                    │   │       ╰── Constant [0]
+                    │   │       │   ╰── Constant Int [5]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Block
                     │       ╰── Assign [=]
                     │           ├── Var [a]
                     │           ╰── Binary [+]
                     │               ├── Var [a]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
                         ╰── Binary [||]
                             ├── Binary [%]
                             │   ├── Var [a]
-                            │   ╰── Constant [5]
+                            │   ╰── Constant Int [5]
                             ╰── Binary [>]
                                 ├── Var [a]
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -11860,7 +11860,7 @@ fn test_chapter_8_valid_for_decl() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -11870,22 +11870,22 @@ fn test_chapter_8_valid_for_decl() {
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
                     │   │           ╰── Unary [-]
-                    │   │               ╰── Constant [100]
+                    │   │               ╰── Constant Int [100]
                     │   ├── Condition
                     │   │   ╰── Binary [<=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Assign [=]
                     │       ├── Var [a]
                     │       ╰── Binary [+]
                     │           ├── Var [a]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -11917,21 +11917,21 @@ fn test_chapter_8_valid_for_nested_shadow() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── j
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── k
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -11940,17 +11940,17 @@ fn test_chapter_8_valid_for_nested_shadow() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [100]
+                    │   │           ╰── Constant Int [100]
                     │   ├── Condition
                     │   │   ╰── Binary [>]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [-]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ├── VarDeclaration
                     │       │   ├── Name
@@ -11958,7 +11958,7 @@ fn test_chapter_8_valid_for_nested_shadow() {
                     │       │   ├── Type
                     │       │   │   ╰── Int
                     │       │   ╰── Initializer
-                    │       │       ╰── Constant [1]
+                    │       │       ╰── Constant Int [1]
                     │       ├── VarDeclaration
                     │       │   ├── Name
                     │       │   │   ╰── j
@@ -11976,13 +11976,13 @@ fn test_chapter_8_valid_for_nested_shadow() {
                             ├── Binary [&&]
                             │   ├── Binary [==]
                             │   │   ├── Var [k]
-                            │   │   ╰── Constant [101]
+                            │   │   ╰── Constant Int [101]
                             │   ╰── Binary [==]
                             │       ├── Var [i]
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ╰── Binary [==]
                                 ├── Var [j]
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12009,14 +12009,14 @@ fn test_chapter_8_valid_for_shadow() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── acc
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -12025,17 +12025,17 @@ fn test_chapter_8_valid_for_shadow() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [shadow]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [shadow]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [shadow]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ╰── Assign [=]
                     │           ├── Var [acc]
@@ -12046,10 +12046,10 @@ fn test_chapter_8_valid_for_shadow() {
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [acc]
-                            │   ╰── Constant [45]
+                            │   ╰── Constant Int [45]
                             ╰── Binary [==]
                                 ├── Var [shadow]
-                                ╰── Constant [1]
+                                ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12084,22 +12084,22 @@ fn test_chapter_8_valid_multi_break() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── While
                     │   ├── Condition
-                    │   │   ╰── Constant [1]
+                    │   │   ╰── Constant Int [1]
                     │   ╰── Body
                     │       ╰── Block
                     │           ├── Assign [=]
                     │           │   ├── Var [i]
                     │           │   ╰── Binary [+]
                     │           │       ├── Var [i]
-                    │           │       ╰── Constant [1]
+                    │           │       ╰── Constant Int [1]
                     │           ╰── If
                     │               ├── Condition
                     │               │   ╰── Binary [>]
                     │               │       ├── Var [i]
-                    │               │       ╰── Constant [10]
+                    │               │       ╰── Constant Int [10]
                     │               ╰── Then
                     │                   ╰── Break
                     ├── VarDeclaration
@@ -12108,22 +12108,22 @@ fn test_chapter_8_valid_multi_break() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── While
                     │   ├── Condition
-                    │   │   ╰── Constant [1]
+                    │   │   ╰── Constant Int [1]
                     │   ╰── Body
                     │       ╰── Block
                     │           ├── Assign [=]
                     │           │   ├── Var [j]
                     │           │   ╰── Binary [-]
                     │           │       ├── Var [j]
-                    │           │       ╰── Constant [1]
+                    │           │       ╰── Constant Int [1]
                     │           ╰── If
                     │               ├── Condition
                     │               │   ╰── Binary [<]
                     │               │       ├── Var [j]
-                    │               │       ╰── Constant [0]
+                    │               │       ╰── Constant Int [0]
                     │               ╰── Then
                     │                   ╰── Break
                     ├── VarDeclaration
@@ -12136,10 +12136,10 @@ fn test_chapter_8_valid_multi_break() {
                     │           ├── Binary [==]
                     │           │   ├── Var [j]
                     │           │   ╰── Unary [-]
-                    │           │       ╰── Constant [1]
+                    │           │       ╰── Constant Int [1]
                     │           ╰── Binary [==]
                     │               ├── Var [i]
-                    │               ╰── Constant [11]
+                    │               ╰── Constant Int [11]
                     ╰── Return
                         ╰── Var [result]
     "#;
@@ -12175,21 +12175,21 @@ fn test_chapter_8_valid_multi_continue_same_loop() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── z
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Block
@@ -12197,47 +12197,47 @@ fn test_chapter_8_valid_multi_continue_same_loop() {
                     │   │       │   ├── Var [z]
                     │   │       │   ╰── Binary [+]
                     │   │       │       ├── Var [z]
-                    │   │       │       ╰── Constant [1]
+                    │   │       │       ╰── Constant Int [1]
                     │   │       ├── If
                     │   │       │   ├── Condition
                     │   │       │   │   ╰── Binary [<=]
                     │   │       │   │       ├── Var [x]
-                    │   │       │   │       ╰── Constant [0]
+                    │   │       │   │       ╰── Constant Int [0]
                     │   │       │   ╰── Then
                     │   │       │       ╰── Continue
                     │   │       ├── Assign [=]
                     │   │       │   ├── Var [x]
                     │   │       │   ╰── Binary [-]
                     │   │       │       ├── Var [x]
-                    │   │       │       ╰── Constant [1]
+                    │   │       │       ╰── Constant Int [1]
                     │   │       ├── If
                     │   │       │   ├── Condition
                     │   │       │   │   ╰── Binary [>=]
                     │   │       │   │       ├── Var [y]
-                    │   │       │   │       ╰── Constant [10]
+                    │   │       │   │       ╰── Constant Int [10]
                     │   │       │   ╰── Then
                     │   │       │       ╰── Continue
                     │   │       ╰── Assign [=]
                     │   │           ├── Var [y]
                     │   │           ╰── Binary [+]
                     │   │               ├── Var [y]
-                    │   │               ╰── Constant [1]
+                    │   │               ╰── Constant Int [1]
                     │   ╰── Condition
                     │       ╰── Binary [!=]
                     │           ├── Var [z]
-                    │           ╰── Constant [50]
+                    │           ╰── Constant Int [50]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [&&]
                             │   ├── Binary [==]
                             │   │   ├── Var [z]
-                            │   │   ╰── Constant [50]
+                            │   │   ╰── Constant Int [50]
                             │   ╰── Binary [==]
                             │       ├── Var [x]
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ╰── Binary [==]
                                 ├── Var [y]
-                                ╰── Constant [10]
+                                ╰── Constant Int [10]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12266,7 +12266,7 @@ fn test_chapter_8_valid_nested_break() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -12275,17 +12275,17 @@ fn test_chapter_8_valid_nested_break() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── For
                     │       ├── Init
                     │       │   ╰── VarDeclaration
@@ -12294,25 +12294,25 @@ fn test_chapter_8_valid_nested_break() {
                     │       │       ├── Type
                     │       │       │   ╰── Int
                     │       │       ╰── Initializer
-                    │       │           ╰── Constant [0]
+                    │       │           ╰── Constant Int [0]
                     │       ├── Condition
                     │       │   ╰── Binary [<]
                     │       │       ├── Var [j]
-                    │       │       ╰── Constant [10]
+                    │       │       ╰── Constant Int [10]
                     │       ├── Condition
                     │       │   ╰── Assign [=]
                     │       │       ├── Var [j]
                     │       │       ╰── Binary [+]
                     │       │           ├── Var [j]
-                    │       │           ╰── Constant [1]
+                    │       │           ╰── Constant Int [1]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── Binary [==]
                     │           │       ├── Binary [*]
                     │           │       │   ├── Binary [/]
                     │           │       │   │   ├── Var [i]
-                    │           │       │   │   ╰── Constant [2]
-                    │           │       │   ╰── Constant [2]
+                    │           │       │   │   ╰── Constant Int [2]
+                    │           │       │   ╰── Constant Int [2]
                     │           │       ╰── Var [i]
                     │           ├── Then
                     │           │   ╰── Break
@@ -12357,19 +12357,19 @@ fn test_chapter_8_valid_nested_continue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── acc
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Binary [>=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Body
                     │       ╰── Block
                     │           ├── VarDeclaration
@@ -12383,31 +12383,31 @@ fn test_chapter_8_valid_nested_continue() {
                     │           │   ├── Condition
                     │           │   │   ╰── Binary [<=]
                     │           │   │       ├── Var [i]
-                    │           │   │       ╰── Constant [10]
+                    │           │   │       ╰── Constant Int [10]
                     │           │   ╰── Body
                     │           │       ╰── Block
                     │           │           ├── Assign [=]
                     │           │           │   ├── Var [i]
                     │           │           │   ╰── Binary [+]
                     │           │           │       ├── Var [i]
-                    │           │           │       ╰── Constant [1]
+                    │           │           │       ╰── Constant Int [1]
                     │           │           ├── If
                     │           │           │   ├── Condition
                     │           │           │   │   ╰── Binary [%]
                     │           │           │   │       ├── Var [i]
-                    │           │           │   │       ╰── Constant [2]
+                    │           │           │   │       ╰── Constant Int [2]
                     │           │           │   ╰── Then
                     │           │           │       ╰── Continue
                     │           │           ╰── Assign [=]
                     │           │               ├── Var [acc]
                     │           │               ╰── Binary [+]
                     │           │                   ├── Var [acc]
-                    │           │                   ╰── Constant [1]
+                    │           │                   ╰── Constant Int [1]
                     │           ╰── Assign [=]
                     │               ├── Var [x]
                     │               ╰── Binary [-]
                     │                   ├── Var [x]
-                    │                   ╰── Constant [1]
+                    │                   ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [acc]
     "#;
@@ -12441,14 +12441,14 @@ fn test_chapter_8_valid_nested_loop() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [100]
+                    │       ╰── Constant Int [100]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Var [x]
@@ -12460,7 +12460,7 @@ fn test_chapter_8_valid_nested_loop() {
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── Constant [10]
+                    │           │       ╰── Constant Int [10]
                     │           ├── Assign [=]
                     │           │   ├── Var [x]
                     │           │   ╰── Binary [-]
@@ -12475,20 +12475,20 @@ fn test_chapter_8_valid_nested_loop() {
                     │                       │   ├── Var [acc]
                     │                       │   ╰── Binary [+]
                     │                       │       ├── Var [acc]
-                    │                       │       ╰── Constant [1]
+                    │                       │       ╰── Constant Int [1]
                     │                       ╰── Assign [=]
                     │                           ├── Var [y]
                     │                           ╰── Binary [-]
                     │                               ├── Var [y]
-                    │                               ╰── Constant [1]
+                    │                               ╰── Constant Int [1]
                     ╰── Return
                         ╰── Binary [&&]
                             ├── Binary [==]
                             │   ├── Var [acc]
-                            │   ╰── Constant [100]
+                            │   ╰── Constant Int [100]
                             ╰── Binary [==]
                                 ├── Var [x]
-                                ╰── Constant [0]
+                                ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12516,19 +12516,19 @@ fn test_chapter_8_valid_null_for_header() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ╰── Block
                     │       ├── Assign [=]
                     │       │   ├── Var [a]
                     │       │   ╰── Binary [+]
                     │       │       ├── Var [a]
-                    │       │       ╰── Constant [1]
+                    │       │       ╰── Constant Int [1]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── Binary [>]
                     │           │       ├── Var [a]
-                    │           │       ╰── Constant [3]
+                    │           │       ╰── Constant Int [3]
                     │           ╰── Then
                     │               ╰── Break
                     ╰── Return
@@ -12557,18 +12557,18 @@ fn test_chapter_8_valid_while() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [5]
+                    │   │       ╰── Constant Int [5]
                     │   ╰── Body
                     │       ╰── Assign [=]
                     │           ├── Var [a]
                     │           ╰── Binary [+]
                     │               ├── Var [a]
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
                         ╰── Var [a]
     "#;
@@ -12591,9 +12591,9 @@ fn test_chapter_9_invalid_declarations_assign_to_fun_call() {
                 ╰── Body
                     ├── Assign [=]
                     │   ├── FunctionCall [x]
-                    │   ╰── Constant [1]
+                    │   ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12627,8 +12627,8 @@ fn test_chapter_9_invalid_declarations_decl_params_with_same_name() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── FunctionCall [foo]
-            │               ├── Constant [1]
-            │               ╰── Constant [2]
+            │               ├── Constant Int [1]
+            │               ╰── Constant Int [2]
             ╰── Function [foo]
                 ├── Parameters
                 │   ├── Param
@@ -12671,13 +12671,13 @@ fn test_chapter_9_invalid_declarations_extra_credit_call_label_as_function() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Label [a]
                     │   ╰── Assign [=]
                     │       ├── Var [x]
                     │       ╰── Binary [+]
                     │           ├── Var [x]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── FunctionCall [a]
                     ╰── Return
                         ╰── Var [x]
@@ -12701,9 +12701,9 @@ fn test_chapter_9_invalid_declarations_extra_credit_compound_assign_to_fun_call(
                 ╰── Body
                     ├── Assign [+=]
                     │   ├── FunctionCall [x]
-                    │   ╰── Constant [1]
+                    │   ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12763,7 +12763,7 @@ fn test_chapter_9_invalid_declarations_nested_function_definition() {
                     ├── Function [foo]
                     │   ╰── Body
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
                         ╰── FunctionCall [foo]
     "#;
@@ -12802,8 +12802,8 @@ fn test_chapter_9_invalid_declarations_params_with_same_name() {
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [foo]
-                            ├── Constant [1]
-                            ╰── Constant [2]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12831,13 +12831,13 @@ fn test_chapter_9_invalid_declarations_redefine_fun_as_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [1]
+            │       │       ╰── Constant Int [1]
             │       ╰── Return
             │           ╰── Var [foo]
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [1]
+                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12869,14 +12869,14 @@ fn test_chapter_9_invalid_declarations_redefine_parameter() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [5]
+            │       │       ╰── Constant Int [5]
             │       ╰── Return
             │           ╰── Var [a]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [foo]
-                            ╰── Constant [3]
+                            ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12903,14 +12903,14 @@ fn test_chapter_9_invalid_declarations_redefine_var_as_fun() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [1]
+            │       │       ╰── Constant Int [1]
             │       ├── Function [foo]
             │       ╰── Return
             │           ╰── Var [foo]
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [1]
+                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12931,7 +12931,7 @@ fn test_chapter_9_invalid_declarations_undeclared_fun() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── FunctionCall [foo]
-            │               ╰── Constant [3]
+            │               ╰── Constant Int [3]
             ╰── Function [foo]
                 ├── Parameters
                 │   ╰── Param
@@ -12941,7 +12941,7 @@ fn test_chapter_9_invalid_declarations_undeclared_fun() {
                 │           ╰── Int
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [1]
+                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -12970,7 +12970,7 @@ fn test_chapter_9_invalid_declarations_wrong_parameter_names() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── FunctionCall [foo]
-            │               ╰── Constant [3]
+            │               ╰── Constant Int [3]
             ╰── Function [foo]
                 ├── Parameters
                 │   ╰── Param
@@ -13003,12 +13003,12 @@ fn test_chapter_9_invalid_labels_extra_credit_goto_cross_function() {
             │   ╰── Body
             │       ╰── Label [label]
             │           ╰── Return
-            │               ╰── Constant [0]
+            │               ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── Goto [label]
                     ╰── Return
-                        ╰── Constant [1]
+                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13029,12 +13029,12 @@ fn test_chapter_9_invalid_labels_extra_credit_goto_function() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [3]
+            │           ╰── Constant Int [3]
             ╰── Function [main]
                 ╰── Body
                     ├── Goto [foo]
                     ╰── Return
-                        ╰── Constant [3]
+                        ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13213,12 +13213,12 @@ fn test_chapter_9_invalid_types_assign_fun_to_variable() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Var [x]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13239,9 +13239,9 @@ fn test_chapter_9_invalid_types_assign_value_to_function() {
                     ├── Function [x]
                     ├── Assign [=]
                     │   ├── Var [x]
-                    │   ╰── Constant [3]
+                    │   ╰── Constant Int [3]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13266,7 +13266,7 @@ fn test_chapter_9_invalid_types_call_variable_as_function() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Return
                         ╰── FunctionCall [x]
     "#;
@@ -13296,7 +13296,7 @@ fn test_chapter_9_invalid_types_conflicting_function_declarations() {
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [5]
+            │           ╰── Constant Int [5]
             ╰── Function [foo]
                 ├── Parameters
                 │   ├── Param
@@ -13311,7 +13311,7 @@ fn test_chapter_9_invalid_types_conflicting_function_declarations() {
                 │           ╰── Int
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [4]
+                        ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13345,7 +13345,7 @@ fn test_chapter_9_invalid_types_conflicting_local_function_declaration() {
             │           ╰── Binary [+]
             │               ├── FunctionCall [bar]
             │               ╰── FunctionCall [foo]
-            │                   ╰── Constant [1]
+            │                   ╰── Constant Int [1]
             ╰── Function [bar]
                 ╰── Body
                     ├── Function [foo]
@@ -13362,8 +13362,8 @@ fn test_chapter_9_invalid_types_conflicting_local_function_declaration() {
                     │               ╰── Int
                     ╰── Return
                         ╰── FunctionCall [foo]
-                            ├── Constant [1]
-                            ╰── Constant [2]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13389,10 +13389,10 @@ fn test_chapter_9_invalid_types_divide_by_function() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Binary [/]
-                    │           ├── Constant [10]
+                    │           ├── Constant Int [10]
                     │           ╰── Var [x]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13413,9 +13413,9 @@ fn test_chapter_9_invalid_types_extra_credit_bitwise_op_function() {
                 ╰── Body
                     ├── Binary [>>]
                     │   ├── Var [x]
-                    │   ╰── Constant [2]
+                    │   ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13436,9 +13436,9 @@ fn test_chapter_9_invalid_types_extra_credit_compound_assign_function_lhs() {
                 ╰── Body
                     ├── Assign [+=]
                     │   ├── Var [x]
-                    │   ╰── Constant [3]
+                    │   ╰── Constant Int [3]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13464,12 +13464,12 @@ fn test_chapter_9_invalid_types_extra_credit_compound_assign_function_rhs() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Assign [+=]
                     │   ├── Var [a]
                     │   ╰── Var [x]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13491,7 +13491,7 @@ fn test_chapter_9_invalid_types_extra_credit_postfix_incr_fun_name() {
                     ├── Postfix [++]
                     │   ╰── Var [x]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13513,7 +13513,7 @@ fn test_chapter_9_invalid_types_extra_credit_prefix_decr_fun_name() {
                     ├── Unary [--]
                     │   ╰── Var [x]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13536,7 +13536,7 @@ fn test_chapter_9_invalid_types_extra_credit_switch_on_function() {
                         ├── Expression
                         │   ╰── Var [f]
                         ╰── Return
-                            ╰── Constant [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13560,7 +13560,7 @@ fn test_chapter_9_invalid_types_multiple_function_definitions() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [3]
+            │           ╰── Constant Int [3]
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
@@ -13568,7 +13568,7 @@ fn test_chapter_9_invalid_types_multiple_function_definitions() {
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [4]
+                        ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13593,7 +13593,7 @@ fn test_chapter_9_invalid_types_multiple_function_definitions_2() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [3]
+            │           ╰── Constant Int [3]
             ├── Function [main]
             │   ╰── Body
             │       ├── Function [foo]
@@ -13602,7 +13602,7 @@ fn test_chapter_9_invalid_types_multiple_function_definitions_2() {
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [4]
+                        ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13635,12 +13635,12 @@ fn test_chapter_9_invalid_types_too_few_args() {
             │       ╰── Return
             │           ╰── Binary [+]
             │               ├── Var [a]
-            │               ╰── Constant [1]
+            │               ╰── Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [foo]
-                            ╰── Constant [1]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13668,13 +13668,13 @@ fn test_chapter_9_invalid_types_too_many_args() {
             │       ╰── Return
             │           ╰── Binary [+]
             │               ├── Var [a]
-            │               ╰── Constant [1]
+            │               ╰── Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [foo]
-                            ├── Constant [1]
-                            ╰── Constant [2]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -13733,22 +13733,22 @@ fn test_chapter_9_valid_arguments_in_registers_dont_clobber_edx() {
             │               │   │   │   ├── Binary [&&]
             │               │   │   │   │   ├── Binary [==]
             │               │   │   │   │   │   ├── Var [a]
-            │               │   │   │   │   │   ╰── Constant [1]
+            │               │   │   │   │   │   ╰── Constant Int [1]
             │               │   │   │   │   ╰── Binary [==]
             │               │   │   │   │       ├── Var [b]
-            │               │   │   │   │       ╰── Constant [2]
+            │               │   │   │   │       ╰── Constant Int [2]
             │               │   │   │   ╰── Binary [==]
             │               │   │   │       ├── Var [c]
-            │               │   │   │       ╰── Constant [3]
+            │               │   │   │       ╰── Constant Int [3]
             │               │   │   ╰── Binary [==]
             │               │   │       ├── Var [d]
-            │               │   │       ╰── Constant [4]
+            │               │   │       ╰── Constant Int [4]
             │               │   ╰── Binary [==]
             │               │       ├── Var [e]
-            │               │       ╰── Constant [5]
+            │               │       ╰── Constant Int [5]
             │               ╰── Binary [==]
             │                   ├── Var [f]
-            │                   ╰── Constant [6]
+            │                   ╰── Constant Int [6]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -13757,16 +13757,16 @@ fn test_chapter_9_valid_arguments_in_registers_dont_clobber_edx() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ╰── Return
                         ╰── FunctionCall [x]
-                            ├── Constant [1]
-                            ├── Constant [2]
-                            ├── Constant [3]
-                            ├── Constant [4]
-                            ├── Constant [5]
+                            ├── Constant Int [1]
+                            ├── Constant Int [2]
+                            ├── Constant Int [3]
+                            ├── Constant Int [4]
+                            ├── Constant Int [5]
                             ╰── Binary [/]
-                                ├── Constant [24]
+                                ├── Constant Int [24]
                                 ╰── Var [a]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -13812,9 +13812,9 @@ fn test_chapter_9_valid_arguments_in_registers_expression_args() {
                     │   ╰── Initializer
                     │       ╰── FunctionCall [sub]
                     │           ├── Binary [+]
-                    │           │   ├── Constant [1]
-                    │           │   ╰── Constant [2]
-                    │           ╰── Constant [1]
+                    │           │   ├── Constant Int [1]
+                    │           │   ╰── Constant Int [2]
+                    │           ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [sum]
     "#;
@@ -13851,10 +13851,10 @@ fn test_chapter_9_valid_arguments_in_registers_fibonacci() {
             │           │   ╰── Binary [||]
             │           │       ├── Binary [==]
             │           │       │   ├── Var [n]
-            │           │       │   ╰── Constant [0]
+            │           │       │   ╰── Constant Int [0]
             │           │       ╰── Binary [==]
             │           │           ├── Var [n]
-            │           │           ╰── Constant [1]
+            │           │           ╰── Constant Int [1]
             │           ├── Then
             │           │   ╰── Block
             │           │       ╰── Return
@@ -13866,11 +13866,11 @@ fn test_chapter_9_valid_arguments_in_registers_fibonacci() {
             │                           ├── FunctionCall [fib]
             │                           │   ╰── Binary [-]
             │                           │       ├── Var [n]
-            │                           │       ╰── Constant [1]
+            │                           │       ╰── Constant Int [1]
             │                           ╰── FunctionCall [fib]
             │                               ╰── Binary [-]
             │                                   ├── Var [n]
-            │                                   ╰── Constant [2]
+            │                                   ╰── Constant Int [2]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -13879,7 +13879,7 @@ fn test_chapter_9_valid_arguments_in_registers_fibonacci() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [6]
+                    │       ╰── Constant Int [6]
                     ╰── Return
                         ╰── FunctionCall [fib]
                             ╰── Var [n]
@@ -13916,8 +13916,8 @@ fn test_chapter_9_valid_arguments_in_registers_forward_decl_multi_arg() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── FunctionCall [foo]
-            │               ├── Constant [2]
-            │               ╰── Constant [1]
+            │               ├── Constant Int [2]
+            │               ╰── Constant Int [1]
             ╰── Function [foo]
                 ├── Parameters
                 │   ├── Param
@@ -13972,33 +13972,33 @@ fn test_chapter_9_valid_arguments_in_registers_hello_world() {
             ╰── Function [main]
                 ╰── Body
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [72]
+                    │   ╰── Constant Int [72]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [101]
+                    │   ╰── Constant Int [101]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [108]
+                    │   ╰── Constant Int [108]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [108]
+                    │   ╰── Constant Int [108]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [111]
+                    │   ╰── Constant Int [111]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [44]
+                    │   ╰── Constant Int [44]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [32]
+                    │   ╰── Constant Int [32]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [87]
+                    │   ╰── Constant Int [87]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [111]
+                    │   ╰── Constant Int [111]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [114]
+                    │   ╰── Constant Int [114]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [108]
+                    │   ╰── Constant Int [108]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [100]
+                    │   ╰── Constant Int [100]
                     ├── FunctionCall [putchar]
-                    │   ╰── Constant [33]
+                    │   ╰── Constant Int [33]
                     ╰── FunctionCall [putchar]
-                        ╰── Constant [10]
+                        ╰── Constant Int [10]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14025,7 +14025,7 @@ fn test_chapter_9_valid_arguments_in_registers_param_shadows_local_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [10]
+            │       │       ╰── Constant Int [10]
             │       ├── Function [f]
             │       │   ╰── Parameters
             │       │       ╰── Param
@@ -14047,7 +14047,7 @@ fn test_chapter_9_valid_arguments_in_registers_param_shadows_local_var() {
                     ╰── Return
                         ╰── Binary [*]
                             ├── Var [a]
-                            ╰── Constant [2]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14070,7 +14070,7 @@ fn test_chapter_9_valid_arguments_in_registers_parameter_shadows_function() {
             ├── Function [a]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [1]
+            │           ╰── Constant Int [1]
             ├── Function [b]
             │   ├── Parameters
             │   │   ╰── Param
@@ -14087,7 +14087,7 @@ fn test_chapter_9_valid_arguments_in_registers_parameter_shadows_function() {
                         ╰── Binary [+]
                             ├── FunctionCall [a]
                             ╰── FunctionCall [b]
-                                ╰── Constant [2]
+                                ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14115,12 +14115,12 @@ fn test_chapter_9_valid_arguments_in_registers_parameter_shadows_own_function() 
             │       ╰── Return
             │           ╰── Binary [*]
             │               ├── Var [a]
-            │               ╰── Constant [2]
+            │               ╰── Constant Int [2]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [a]
-                            ╰── Constant [1]
+                            ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14173,21 +14173,21 @@ fn test_chapter_9_valid_arguments_in_registers_parameters_are_preserved() {
             │       │   │       │   ├── Binary [&&]
             │       │   │       │   │   ├── Binary [==]
             │       │   │       │   │   │   ├── Var [w]
-            │       │   │       │   │   │   ╰── Constant [2]
+            │       │   │       │   │   │   ╰── Constant Int [2]
             │       │   │       │   │   ╰── Binary [==]
             │       │   │       │   │       ├── Var [x]
-            │       │   │       │   │       ╰── Constant [4]
+            │       │   │       │   │       ╰── Constant Int [4]
             │       │   │       │   ╰── Binary [==]
             │       │   │       │       ├── Var [y]
-            │       │   │       │       ╰── Constant [6]
+            │       │   │       │       ╰── Constant Int [6]
             │       │   │       ╰── Binary [==]
             │       │   │           ├── Var [z]
-            │       │   │           ╰── Constant [8]
+            │       │   │           ╰── Constant Int [8]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ├── Function [f]
             │   ├── Parameters
             │   │   ├── Param
@@ -14220,16 +14220,16 @@ fn test_chapter_9_valid_arguments_in_registers_parameters_are_preserved() {
             │       │       ╰── FunctionCall [g]
             │       │           ├── Binary [*]
             │       │           │   ├── Var [a]
-            │       │           │   ╰── Constant [2]
+            │       │           │   ╰── Constant Int [2]
             │       │           ├── Binary [*]
             │       │           │   ├── Var [b]
-            │       │           │   ╰── Constant [2]
+            │       │           │   ╰── Constant Int [2]
             │       │           ├── Binary [*]
             │       │           │   ├── Var [c]
-            │       │           │   ╰── Constant [2]
+            │       │           │   ╰── Constant Int [2]
             │       │           ╰── Binary [*]
             │       │               ├── Var [d]
-            │       │               ╰── Constant [2]
+            │       │               ╰── Constant Int [2]
             │       ╰── Return
             │           ╰── Binary [&&]
             │               ├── Binary [&&]
@@ -14237,27 +14237,27 @@ fn test_chapter_9_valid_arguments_in_registers_parameters_are_preserved() {
             │               │   │   ├── Binary [&&]
             │               │   │   │   ├── Binary [==]
             │               │   │   │   │   ├── Var [result]
-            │               │   │   │   │   ╰── Constant [1]
+            │               │   │   │   │   ╰── Constant Int [1]
             │               │   │   │   ╰── Binary [==]
             │               │   │   │       ├── Var [a]
-            │               │   │   │       ╰── Constant [1]
+            │               │   │   │       ╰── Constant Int [1]
             │               │   │   ╰── Binary [==]
             │               │   │       ├── Var [b]
-            │               │   │       ╰── Constant [2]
+            │               │   │       ╰── Constant Int [2]
             │               │   ╰── Binary [==]
             │               │       ├── Var [c]
-            │               │       ╰── Constant [3]
+            │               │       ╰── Constant Int [3]
             │               ╰── Binary [==]
             │                   ├── Var [d]
-            │                   ╰── Constant [4]
+            │                   ╰── Constant Int [4]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [f]
-                            ├── Constant [1]
-                            ├── Constant [2]
-                            ├── Constant [3]
-                            ╰── Constant [4]
+                            ├── Constant Int [1]
+                            ├── Constant Int [2]
+                            ├── Constant Int [3]
+                            ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14284,13 +14284,13 @@ fn test_chapter_9_valid_arguments_in_registers_single_arg() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [*]
-            │               ├── Constant [2]
+            │               ├── Constant Int [2]
             │               ╰── Var [x]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [twice]
-                            ╰── Constant [3]
+                            ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14312,7 +14312,7 @@ fn test_chapter_9_valid_extra_credit_compound_assign_function_result() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [2]
+            │           ╰── Constant Int [2]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -14321,7 +14321,7 @@ fn test_chapter_9_valid_extra_credit_compound_assign_function_result() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Assign [-=]
                     │   ├── Var [x]
                     │   ╰── FunctionCall [foo]
@@ -14385,22 +14385,22 @@ fn test_chapter_9_valid_extra_credit_dont_clobber_ecx() {
             │               │   │   │   ├── Binary [&&]
             │               │   │   │   │   ├── Binary [==]
             │               │   │   │   │   │   ├── Var [a]
-            │               │   │   │   │   │   ╰── Constant [1]
+            │               │   │   │   │   │   ╰── Constant Int [1]
             │               │   │   │   │   ╰── Binary [==]
             │               │   │   │   │       ├── Var [b]
-            │               │   │   │   │       ╰── Constant [2]
+            │               │   │   │   │       ╰── Constant Int [2]
             │               │   │   │   ╰── Binary [==]
             │               │   │   │       ├── Var [c]
-            │               │   │   │       ╰── Constant [3]
+            │               │   │   │       ╰── Constant Int [3]
             │               │   │   ╰── Binary [==]
             │               │   │       ├── Var [d]
-            │               │   │       ╰── Constant [4]
+            │               │   │       ╰── Constant Int [4]
             │               │   ╰── Binary [==]
             │               │       ├── Var [e]
-            │               │       ╰── Constant [5]
+            │               │       ╰── Constant Int [5]
             │               ╰── Binary [==]
             │                   ├── Var [f]
-            │                   ╰── Constant [6]
+            │                   ╰── Constant Int [6]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -14409,19 +14409,19 @@ fn test_chapter_9_valid_extra_credit_dont_clobber_ecx() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ╰── Return
                         ╰── FunctionCall [x]
-                            ├── Constant [1]
-                            ├── Constant [2]
-                            ├── Constant [3]
-                            ├── Constant [4]
-                            ├── Constant [5]
+                            ├── Constant Int [1]
+                            ├── Constant Int [2]
+                            ├── Constant Int [3]
+                            ├── Constant Int [4]
+                            ├── Constant Int [5]
                             ╰── Binary [>>]
-                                ├── Constant [24]
+                                ├── Constant Int [24]
                                 ╰── Binary [/]
                                     ├── Var [a]
-                                    ╰── Constant [2]
+                                    ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14449,15 +14449,15 @@ fn test_chapter_9_valid_extra_credit_goto_label_multiple_functions() {
             │   ╰── Body
             │       ├── Goto [label]
             │       ├── Return
-            │       │   ╰── Constant [0]
+            │       │   ╰── Constant Int [0]
             │       ╰── Label [label]
             │           ╰── Return
-            │               ╰── Constant [5]
+            │               ╰── Constant Int [5]
             ╰── Function [main]
                 ╰── Body
                     ├── Goto [label]
                     ├── Return
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ╰── Label [label]
                         ╰── Return
                             ╰── FunctionCall [foo]
@@ -14484,10 +14484,10 @@ fn test_chapter_9_valid_extra_credit_goto_shared_name() {
             │   ╰── Body
             │       ├── Goto [foo]
             │       ├── Return
-            │       │   ╰── Constant [0]
+            │       │   ╰── Constant Int [0]
             │       ╰── Label [foo]
             │           ╰── Return
-            │               ╰── Constant [1]
+            │               ╰── Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -14519,17 +14519,17 @@ fn test_chapter_9_valid_extra_credit_label_naming_scheme() {
             │       ╰── Label [_label]
             │           ╰── Label [label_]
             │               ╰── Return
-            │                   ╰── Constant [0]
+            │                   ╰── Constant Int [0]
             ├── Function [main_]
             │   ╰── Body
             │       ╰── Label [label]
             │           ╰── Return
-            │               ╰── Constant [0]
+            │               ╰── Constant Int [0]
             ╰── Function [_main]
                 ╰── Body
                     ╰── Label [label]
                         ╰── Return
-                            ╰── Constant [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14590,8 +14590,8 @@ fn test_chapter_9_valid_libraries_addition_client() {
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [add]
-                            ├── Constant [1]
-                            ╰── Constant [2]
+                            ├── Constant Int [1]
+                            ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14625,10 +14625,10 @@ fn test_chapter_9_valid_libraries_many_args() {
             │           │   ╰── Binary [||]
             │           │       ├── Binary [==]
             │           │       │   ├── Var [n]
-            │           │       │   ╰── Constant [0]
+            │           │       │   ╰── Constant Int [0]
             │           │       ╰── Binary [==]
             │           │           ├── Var [n]
-            │           │           ╰── Constant [1]
+            │           │           ╰── Constant Int [1]
             │           ├── Then
             │           │   ╰── Block
             │           │       ╰── Return
@@ -14640,11 +14640,11 @@ fn test_chapter_9_valid_libraries_many_args() {
             │                           ├── FunctionCall [fib]
             │                           │   ╰── Binary [-]
             │                           │       ├── Var [n]
-            │                           │       ╰── Constant [1]
+            │                           │       ╰── Constant Int [1]
             │                           ╰── FunctionCall [fib]
             │                               ╰── Binary [-]
             │                                   ├── Var [n]
-            │                                   ╰── Constant [2]
+            │                                   ╰── Constant Int [2]
             ╰── Function [multiply_many_args]
                 ├── Parameters
                 │   ├── Param
@@ -14789,14 +14789,14 @@ fn test_chapter_9_valid_libraries_many_args_client() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── FunctionCall [fib]
-                    │           ╰── Constant [4]
+                    │           ╰── Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── seven
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [7]
+                    │       ╰── Constant Int [7]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── eight
@@ -14804,7 +14804,7 @@ fn test_chapter_9_valid_libraries_many_args_client() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── FunctionCall [fib]
-                    │           ╰── Constant [6]
+                    │           ╰── Constant Int [6]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
@@ -14813,37 +14813,37 @@ fn test_chapter_9_valid_libraries_many_args_client() {
                     │   ╰── Initializer
                     │       ╰── FunctionCall [multiply_many_args]
                     │           ├── Var [x]
-                    │           ├── Constant [2]
-                    │           ├── Constant [3]
-                    │           ├── Constant [4]
-                    │           ├── Constant [5]
-                    │           ├── Constant [6]
+                    │           ├── Constant Int [2]
+                    │           ├── Constant Int [3]
+                    │           ├── Constant Int [4]
+                    │           ├── Constant Int [5]
+                    │           ├── Constant Int [6]
                     │           ├── Var [seven]
                     │           ╰── Var [eight]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [3]
+                    │   │       ╰── Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [y]
-                    │   │       ╰── Constant [589680]
+                    │   │       ╰── Constant Int [589680]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
                         ╰── Binary [+]
                             ├── Var [x]
                             ╰── Binary [%]
                                 ├── Var [y]
-                                ╰── Constant [256]
+                                ╰── Constant Int [256]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14900,24 +14900,24 @@ fn test_chapter_9_valid_libraries_no_function_calls_division() {
                     │   │       │   │   ├── Binary [&&]
                     │   │       │   │   │   ├── Binary [==]
                     │   │       │   │   │   │   ├── Var [a]
-                    │   │       │   │   │   │   ╰── Constant [10]
+                    │   │       │   │   │   │   ╰── Constant Int [10]
                     │   │       │   │   │   ╰── Binary [==]
                     │   │       │   │   │       ├── Var [b]
-                    │   │       │   │   │       ╰── Constant [2]
+                    │   │       │   │   │       ╰── Constant Int [2]
                     │   │       │   │   ╰── Binary [==]
                     │   │       │   │       ├── Var [c]
-                    │   │       │   │       ╰── Constant [100]
+                    │   │       │   │       ╰── Constant Int [100]
                     │   │       │   ╰── Binary [==]
                     │   │       │       ├── Var [d]
-                    │   │       │       ╰── Constant [4]
+                    │   │       │       ╰── Constant Int [4]
                     │   │       ╰── Binary [==]
                     │   │           ├── Var [x]
-                    │   │           ╰── Constant [5]
+                    │   │           ╰── Constant Int [5]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -14958,10 +14958,10 @@ fn test_chapter_9_valid_libraries_no_function_calls_division_client() {
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [f]
-                            ├── Constant [10]
-                            ├── Constant [2]
-                            ├── Constant [100]
-                            ╰── Constant [4]
+                            ├── Constant Int [10]
+                            ├── Constant Int [2]
+                            ├── Constant Int [100]
+                            ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15038,7 +15038,7 @@ fn test_chapter_9_valid_libraries_no_function_calls_local_stack_variables() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [&&]
@@ -15052,46 +15052,46 @@ fn test_chapter_9_valid_libraries_no_function_calls_local_stack_variables() {
                     │   │       │   │   │   │   │   │   │   ├── Binary [&&]
                     │   │       │   │   │   │   │   │   │   │   ├── Binary [==]
                     │   │       │   │   │   │   │   │   │   │   │   ├── Var [reg1]
-                    │   │       │   │   │   │   │   │   │   │   │   ╰── Constant [1]
+                    │   │       │   │   │   │   │   │   │   │   │   ╰── Constant Int [1]
                     │   │       │   │   │   │   │   │   │   │   ╰── Binary [==]
                     │   │       │   │   │   │   │   │   │   │       ├── Var [reg2]
-                    │   │       │   │   │   │   │   │   │   │       ╰── Constant [2]
+                    │   │       │   │   │   │   │   │   │   │       ╰── Constant Int [2]
                     │   │       │   │   │   │   │   │   │   ╰── Binary [==]
                     │   │       │   │   │   │   │   │   │       ├── Var [reg3]
-                    │   │       │   │   │   │   │   │   │       ╰── Constant [3]
+                    │   │       │   │   │   │   │   │   │       ╰── Constant Int [3]
                     │   │       │   │   │   │   │   │   ╰── Binary [==]
                     │   │       │   │   │   │   │   │       ├── Var [reg4]
-                    │   │       │   │   │   │   │   │       ╰── Constant [4]
+                    │   │       │   │   │   │   │   │       ╰── Constant Int [4]
                     │   │       │   │   │   │   │   ╰── Binary [==]
                     │   │       │   │   │   │   │       ├── Var [reg5]
-                    │   │       │   │   │   │   │       ╰── Constant [5]
+                    │   │       │   │   │   │   │       ╰── Constant Int [5]
                     │   │       │   │   │   │   ╰── Binary [==]
                     │   │       │   │   │   │       ├── Var [reg6]
-                    │   │       │   │   │   │       ╰── Constant [6]
+                    │   │       │   │   │   │       ╰── Constant Int [6]
                     │   │       │   │   │   ╰── Binary [==]
                     │   │       │   │   │       ├── Var [stack1]
                     │   │       │   │   │       ╰── Unary [-]
-                    │   │       │   │   │           ╰── Constant [1]
+                    │   │       │   │   │           ╰── Constant Int [1]
                     │   │       │   │   ╰── Binary [==]
                     │   │       │   │       ├── Var [stack2]
                     │   │       │   │       ╰── Unary [-]
-                    │   │       │   │           ╰── Constant [2]
+                    │   │       │   │           ╰── Constant Int [2]
                     │   │       │   ╰── Binary [==]
                     │   │       │       ├── Var [stack3]
                     │   │       │       ╰── Unary [-]
-                    │   │       │           ╰── Constant [3]
+                    │   │       │           ╰── Constant Int [3]
                     │   │       ╰── Binary [==]
                     │   │           ├── Var [x]
-                    │   │           ╰── Constant [10]
+                    │   │           ╰── Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── Assign [=]
                     │           │   ├── Var [stack2]
-                    │           │   ╰── Constant [100]
+                    │           │   ╰── Constant Int [100]
                     │           ╰── Return
                     │               ╰── Var [stack2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15158,18 +15158,18 @@ fn test_chapter_9_valid_libraries_no_function_calls_local_stack_variables_client
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [f]
-                            ├── Constant [1]
-                            ├── Constant [2]
-                            ├── Constant [3]
-                            ├── Constant [4]
-                            ├── Constant [5]
-                            ├── Constant [6]
+                            ├── Constant Int [1]
+                            ├── Constant Int [2]
+                            ├── Constant Int [3]
+                            ├── Constant Int [4]
+                            ├── Constant Int [5]
+                            ├── Constant Int [6]
                             ├── Unary [-]
-                            │   ╰── Constant [1]
+                            │   ╰── Constant Int [1]
                             ├── Unary [-]
-                            │   ╰── Constant [2]
+                            │   ╰── Constant Int [2]
                             ╰── Unary [-]
-                                ╰── Constant [3]
+                                ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15203,7 +15203,7 @@ fn test_chapter_9_valid_libraries_system_call() {
                         ╰── FunctionCall [putchar]
                             ╰── Binary [+]
                                 ├── Var [b]
-                                ╰── Constant [2]
+                                ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15229,9 +15229,9 @@ fn test_chapter_9_valid_libraries_system_call_client() {
             ╰── Function [main]
                 ╰── Body
                     ├── FunctionCall [incr_and_print]
-                    │   ╰── Constant [70]
+                    │   ╰── Constant Int [70]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15257,7 +15257,7 @@ fn test_chapter_9_valid_no_arguments_forward_decl() {
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [3]
+                        ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15288,21 +15288,21 @@ fn test_chapter_9_valid_no_arguments_function_shadows_variable() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [3]
+            │       │       ╰── Constant Int [3]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── bar
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [4]
+            │       │       ╰── Constant Int [4]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [>]
             │       │   │       ├── Binary [+]
             │       │   │       │   ├── Var [foo]
             │       │   │       │   ╰── Var [bar]
-            │       │   │       ╰── Constant [0]
+            │       │   │       ╰── Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ├── Function [foo]
@@ -15316,7 +15316,7 @@ fn test_chapter_9_valid_no_arguments_function_shadows_variable() {
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [8]
+                        ╰── Constant Int [8]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15344,7 +15344,7 @@ fn test_chapter_9_valid_no_arguments_multiple_declarations() {
             ╰── Function [f]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [3]
+                        ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15370,12 +15370,12 @@ fn test_chapter_9_valid_no_arguments_no_return_value() {
             │           ├── Type
             │           │   ╰── Int
             │           ╰── Initializer
-            │               ╰── Constant [1]
+            │               ╰── Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ├── FunctionCall [foo]
                     ╰── Return
-                        ╰── Constant [3]
+                        ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15395,7 +15395,7 @@ fn test_chapter_9_valid_no_arguments_precedence() {
             ├── Function [three]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [3]
+            │           ╰── Constant Int [3]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -15423,12 +15423,12 @@ fn test_chapter_9_valid_no_arguments_use_function_in_expression() {
             ├── Function [bar]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [9]
+            │           ╰── Constant Int [9]
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [*]
-            │               ├── Constant [2]
+            │               ├── Constant Int [2]
             │               ╰── FunctionCall [bar]
             ╰── Function [main]
                 ╰── Body
@@ -15437,7 +15437,7 @@ fn test_chapter_9_valid_no_arguments_use_function_in_expression() {
                             ├── FunctionCall [foo]
                             ╰── Binary [/]
                                 ├── FunctionCall [bar]
-                                ╰── Constant [3]
+                                ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15474,7 +15474,7 @@ fn test_chapter_9_valid_no_arguments_variable_shadows_function() {
             │       │   ├── Condition
             │       │   │   ╰── Binary [>]
             │       │   │       ├── Var [x]
-            │       │   │       ╰── Constant [0]
+            │       │   │       ╰── Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ├── VarDeclaration
@@ -15483,7 +15483,7 @@ fn test_chapter_9_valid_no_arguments_variable_shadows_function() {
             │       │           │   ├── Type
             │       │           │   │   ╰── Int
             │       │           │   ╰── Initializer
-            │       │           │       ╰── Constant [3]
+            │       │           │       ╰── Constant Int [3]
             │       │           ╰── Assign [=]
             │       │               ├── Var [x]
             │       │               ╰── Binary [+]
@@ -15494,7 +15494,7 @@ fn test_chapter_9_valid_no_arguments_variable_shadows_function() {
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [4]
+                        ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15573,14 +15573,14 @@ fn test_chapter_9_valid_stack_arguments_call_putchar() {
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [foo]
-                            ├── Constant [1]
-                            ├── Constant [2]
-                            ├── Constant [3]
-                            ├── Constant [4]
-                            ├── Constant [5]
-                            ├── Constant [6]
-                            ├── Constant [7]
-                            ╰── Constant [65]
+                            ├── Constant Int [1]
+                            ├── Constant Int [2]
+                            ├── Constant Int [3]
+                            ├── Constant Int [4]
+                            ├── Constant Int [5]
+                            ├── Constant Int [6]
+                            ├── Constant Int [7]
+                            ╰── Constant Int [65]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15651,40 +15651,40 @@ fn test_chapter_9_valid_stack_arguments_lots_of_arguments() {
             │               │   │   │   │   │   ├── Binary [&&]
             │               │   │   │   │   │   │   ├── Binary [==]
             │               │   │   │   │   │   │   │   ├── Var [a]
-            │               │   │   │   │   │   │   │   ╰── Constant [1]
+            │               │   │   │   │   │   │   │   ╰── Constant Int [1]
             │               │   │   │   │   │   │   ╰── Binary [==]
             │               │   │   │   │   │   │       ├── Var [b]
-            │               │   │   │   │   │   │       ╰── Constant [2]
+            │               │   │   │   │   │   │       ╰── Constant Int [2]
             │               │   │   │   │   │   ╰── Binary [==]
             │               │   │   │   │   │       ├── Var [c]
-            │               │   │   │   │   │       ╰── Constant [3]
+            │               │   │   │   │   │       ╰── Constant Int [3]
             │               │   │   │   │   ╰── Binary [==]
             │               │   │   │   │       ├── Var [d]
-            │               │   │   │   │       ╰── Constant [4]
+            │               │   │   │   │       ╰── Constant Int [4]
             │               │   │   │   ╰── Binary [==]
             │               │   │   │       ├── Var [e]
-            │               │   │   │       ╰── Constant [5]
+            │               │   │   │       ╰── Constant Int [5]
             │               │   │   ╰── Binary [==]
             │               │   │       ├── Var [f]
-            │               │   │       ╰── Constant [6]
+            │               │   │       ╰── Constant Int [6]
             │               │   ╰── Binary [==]
             │               │       ├── Var [g]
-            │               │       ╰── Constant [7]
+            │               │       ╰── Constant Int [7]
             │               ╰── Binary [==]
             │                   ├── Var [h]
-            │                   ╰── Constant [8]
+            │                   ╰── Constant Int [8]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [foo]
-                            ├── Constant [1]
-                            ├── Constant [2]
-                            ├── Constant [3]
-                            ├── Constant [4]
-                            ├── Constant [5]
-                            ├── Constant [6]
-                            ├── Constant [7]
-                            ╰── Constant [8]
+                            ├── Constant Int [1]
+                            ├── Constant Int [2]
+                            ├── Constant Int [3]
+                            ├── Constant Int [4]
+                            ├── Constant Int [5]
+                            ├── Constant Int [6]
+                            ├── Constant Int [7]
+                            ╰── Constant Int [8]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15800,26 +15800,26 @@ fn test_chapter_9_valid_stack_arguments_stack_alignment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── FunctionCall [even_arguments]
-                    │   ├── Constant [1]
-                    │   ├── Constant [2]
-                    │   ├── Constant [3]
-                    │   ├── Constant [4]
-                    │   ├── Constant [5]
-                    │   ├── Constant [6]
-                    │   ├── Constant [7]
-                    │   ╰── Constant [8]
+                    │   ├── Constant Int [1]
+                    │   ├── Constant Int [2]
+                    │   ├── Constant Int [3]
+                    │   ├── Constant Int [4]
+                    │   ├── Constant Int [5]
+                    │   ├── Constant Int [6]
+                    │   ├── Constant Int [7]
+                    │   ╰── Constant Int [8]
                     ├── FunctionCall [odd_arguments]
-                    │   ├── Constant [1]
-                    │   ├── Constant [2]
-                    │   ├── Constant [3]
-                    │   ├── Constant [4]
-                    │   ├── Constant [5]
-                    │   ├── Constant [6]
-                    │   ├── Constant [7]
-                    │   ├── Constant [8]
-                    │   ╰── Constant [9]
+                    │   ├── Constant Int [1]
+                    │   ├── Constant Int [2]
+                    │   ├── Constant Int [3]
+                    │   ├── Constant Int [4]
+                    │   ├── Constant Int [5]
+                    │   ├── Constant Int [6]
+                    │   ├── Constant Int [7]
+                    │   ├── Constant Int [8]
+                    │   ╰── Constant Int [9]
                     ╰── Return
                         ╰── Var [x]
     "#;
@@ -15932,7 +15932,7 @@ fn test_chapter_9_valid_stack_arguments_test_for_memory_leaks() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -15941,40 +15941,40 @@ fn test_chapter_9_valid_stack_arguments_test_for_memory_leaks() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10000000]
+                    │   │       ╰── Constant Int [10000000]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ╰── Assign [=]
                     │           ├── Var [ret]
                     │           ╰── FunctionCall [lots_of_args]
-                    │               ├── Constant [1]
-                    │               ├── Constant [2]
-                    │               ├── Constant [3]
-                    │               ├── Constant [4]
-                    │               ├── Constant [5]
-                    │               ├── Constant [6]
-                    │               ├── Constant [7]
-                    │               ├── Constant [8]
-                    │               ├── Constant [9]
-                    │               ├── Constant [10]
-                    │               ├── Constant [11]
+                    │               ├── Constant Int [1]
+                    │               ├── Constant Int [2]
+                    │               ├── Constant Int [3]
+                    │               ├── Constant Int [4]
+                    │               ├── Constant Int [5]
+                    │               ├── Constant Int [6]
+                    │               ├── Constant Int [7]
+                    │               ├── Constant Int [8]
+                    │               ├── Constant Int [9]
+                    │               ├── Constant Int [10]
+                    │               ├── Constant Int [11]
                     │               ├── Var [ret]
-                    │               ├── Constant [13]
-                    │               ├── Constant [14]
-                    │               ╰── Constant [15]
+                    │               ├── Constant Int [13]
+                    │               ├── Constant Int [14]
+                    │               ╰── Constant Int [15]
                     ╰── Return
                         ╰── Binary [==]
                             ├── Var [ret]
-                            ╰── Constant [150000000]
+                            ╰── Constant Int [150000000]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -15998,7 +15998,7 @@ fn test_chapter_10_invalid_declarations_conflicting_local_declarations() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
@@ -16030,7 +16030,7 @@ fn test_chapter_10_invalid_declarations_extern_follows_local_var() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
@@ -16062,7 +16062,7 @@ fn test_chapter_10_invalid_declarations_extern_follows_static_local_var() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Static
                     ├── VarDeclaration
                     │   ├── Name
@@ -16094,7 +16094,7 @@ fn test_chapter_10_invalid_declarations_local_var_follows_extern() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [10]
+            │       ╰── Constant Int [10]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -16144,7 +16144,7 @@ fn test_chapter_10_invalid_declarations_out_of_scope_extern_var() {
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant [1]
+                    ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16181,7 +16181,7 @@ fn test_chapter_10_invalid_declarations_redefine_param_as_identifier_with_linkag
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16206,7 +16206,7 @@ fn test_chapter_10_invalid_declarations_undeclared_global_variable() {
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant [0]
+                    ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16228,12 +16228,12 @@ fn test_chapter_10_invalid_labels_extra_credit_goto_global_var() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [10]
+            │       ╰── Constant Int [10]
             ╰── Function [main]
                 ╰── Body
                     ├── Goto [x]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16404,7 +16404,7 @@ fn test_chapter_10_invalid_types_conflicting_function_linkage() {
             ╰── Function [static foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16430,7 +16430,7 @@ fn test_chapter_10_invalid_types_conflicting_function_linkage_2() {
             ╰── Function [static foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16452,18 +16452,18 @@ fn test_chapter_10_invalid_types_conflicting_global_definitions() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [3]
+            │       ╰── Constant Int [3]
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── VarDeclaration
                 ├── Name
                 │   ╰── foo
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant [4]
+                    ╰── Constant Int [4]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16496,7 +16496,7 @@ fn test_chapter_10_invalid_types_conflicting_variable_linkage() {
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant [3]
+                    ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16523,7 +16523,7 @@ fn test_chapter_10_invalid_types_conflicting_variable_linkage_2() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [3]
+            │       │       ╰── Constant Int [3]
             │       ├── Block
             │       │   ╰── VarDeclaration
             │       │       ├── Name
@@ -16539,7 +16539,7 @@ fn test_chapter_10_invalid_types_conflicting_variable_linkage_2() {
                 ├── Type
                 │   ╰── Int
                 ├── Initializer
-                │   ╰── Constant [10]
+                │   ╰── Constant Int [10]
                 ╰── Static
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -16566,7 +16566,7 @@ fn test_chapter_10_invalid_types_extern_for_loop_counter() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -16575,24 +16575,24 @@ fn test_chapter_10_invalid_types_extern_for_loop_counter() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ├── Initializer
-                    │   │       │   ╰── Constant [0]
+                    │   │       │   ╰── Constant Int [0]
                     │   │       ╰── Extern
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ╰── Assign [=]
                     │           ├── Var [x]
                     │           ╰── Binary [+]
                     │               ├── Var [x]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [x]
     "#;
@@ -16617,7 +16617,7 @@ fn test_chapter_10_invalid_types_extern_variable_initializer() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Extern
                     ╰── Return
                         ╰── Var [i]
@@ -16646,19 +16646,19 @@ fn test_chapter_10_invalid_types_extra_credit_static_var_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Static
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Block
                     │       ╰── Case [invalid]
                     │           ├── Value
                     │           │   ╰── Var [i]
                     │           ╰── Return
-                    │               ╰── Constant [0]
+                    │               ╰── Constant Int [0]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16680,7 +16680,7 @@ fn test_chapter_10_invalid_types_non_constant_static_initializer() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [10]
+            │       ╰── Constant Int [10]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── b
@@ -16688,7 +16688,7 @@ fn test_chapter_10_invalid_types_non_constant_static_initializer() {
             │   │   ╰── Int
             │   ╰── Initializer
             │       ╰── Binary [+]
-            │           ├── Constant [1]
+            │           ├── Constant Int [1]
             │           ╰── Var [a]
             ╰── Function [main]
                 ╰── Body
@@ -16717,7 +16717,7 @@ fn test_chapter_10_invalid_types_non_constant_static_local_initializer() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -16726,7 +16726,7 @@ fn test_chapter_10_invalid_types_non_constant_static_local_initializer() {
                     │   ├── Initializer
                     │   │   ╰── Binary [*]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Static
                     ╰── Return
                         ╰── Var [b]
@@ -16751,12 +16751,12 @@ fn test_chapter_10_invalid_types_redeclare_file_scope_var_as_fun() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [10]
+            │       ╰── Constant Int [10]
             ╰── Function [main]
                 ╰── Body
                     ├── Function [foo]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16781,7 +16781,7 @@ fn test_chapter_10_invalid_types_redeclare_fun_as_file_scope_var() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16802,7 +16802,7 @@ fn test_chapter_10_invalid_types_redeclare_fun_as_var() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -16812,7 +16812,7 @@ fn test_chapter_10_invalid_types_redeclare_fun_as_var() {
                     │   │   ╰── Int
                     │   ╰── Extern
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16838,7 +16838,7 @@ fn test_chapter_10_invalid_types_static_block_scope_function_declaration() {
             ╰── Function [static foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -16864,7 +16864,7 @@ fn test_chapter_10_invalid_types_static_for_loop_counter() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -16873,24 +16873,24 @@ fn test_chapter_10_invalid_types_static_for_loop_counter() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ├── Initializer
-                    │   │       │   ╰── Constant [0]
+                    │   │       │   ╰── Constant Int [0]
                     │   │       ╰── Static
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ╰── Assign [=]
                     │           ├── Var [x]
                     │           ╰── Binary [+]
                     │               ├── Var [x]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [x]
     "#;
@@ -16948,7 +16948,7 @@ fn test_chapter_10_valid_distinct_local_and_extern() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [5]
+            │       ╰── Constant Int [5]
             ├── Function [return_a]
             │   ╰── Body
             │       ╰── Return
@@ -16961,7 +16961,7 @@ fn test_chapter_10_valid_distinct_local_and_extern() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── Block
                     │   ├── VarDeclaration
                     │   │   ├── Name
@@ -16973,13 +16973,13 @@ fn test_chapter_10_valid_distinct_local_and_extern() {
                     │   │   ├── Condition
                     │   │   │   ╰── Binary [!=]
                     │   │   │       ├── Var [a]
-                    │   │   │       ╰── Constant [5]
+                    │   │   │       ╰── Constant Int [5]
                     │   │   ╰── Then
                     │   │       ╰── Return
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Assign [=]
                     │       ├── Var [a]
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ╰── Return
                         ╰── Binary [+]
                             ├── Var [a]
@@ -17013,14 +17013,14 @@ fn test_chapter_10_valid_extern_block_scope_variable() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [1]
+            │       │       ╰── Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── foo
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [0]
+            │       │       ╰── Constant Int [0]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Var [outer]
@@ -17041,14 +17041,14 @@ fn test_chapter_10_valid_extern_block_scope_variable() {
             │       │           ╰── Return
             │       │               ╰── Var [foo]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── VarDeclaration
                 ├── Name
                 │   ╰── foo
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant [3]
+                    ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -17079,36 +17079,36 @@ fn test_chapter_10_valid_extra_credit_bitwise_ops_file_scope_vars() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [1]
+            │       ╰── Constant Int [1]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── y
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [0]
+            │       ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── Assign [=]
                     │   ├── Var [y]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [x]
                     │   ╰── Binary [|]
                     │       ├── Binary [<<]
                     │       │   ├── Var [x]
-                    │       │   ╰── Constant [1]
-                    │       ╰── Constant [1]
+                    │       │   ╰── Constant Int [1]
+                    │       ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [3]
+                    │   │       ╰── Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [y]
                     │   ╰── Binary [>>]
@@ -17116,21 +17116,21 @@ fn test_chapter_10_valid_extra_credit_bitwise_ops_file_scope_vars() {
                     │       │   ├── Binary [&]
                     │       │   │   ├── Var [y]
                     │       │   │   ╰── Unary [-]
-                    │       │   │       ╰── Constant [5]
-                    │       │   ╰── Constant [12]
-                    │       ╰── Constant [2]
+                    │       │   │       ╰── Constant Int [5]
+                    │       │   ╰── Constant Int [12]
+                    │       ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [y]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [3]
+                    │   │           ╰── Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -17177,7 +17177,7 @@ fn test_chapter_10_valid_extra_credit_compound_assignment_static_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant [0]
+            │       │   │   ╰── Constant Int [0]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -17185,7 +17185,7 @@ fn test_chapter_10_valid_extra_credit_compound_assignment_static_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant [0]
+            │       │   │   ╰── Constant Int [0]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -17193,7 +17193,7 @@ fn test_chapter_10_valid_extra_credit_compound_assignment_static_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant [1]
+            │       │   │   ╰── Constant Int [1]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -17201,11 +17201,11 @@ fn test_chapter_10_valid_extra_credit_compound_assignment_static_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant [48]
+            │       │   │   ╰── Constant Int [48]
             │       │   ╰── Static
             │       ├── Assign [+=]
             │       │   ├── Var [i]
-            │       │   ╰── Constant [1]
+            │       │   ╰── Constant Int [1]
             │       ├── Assign [-=]
             │       │   ├── Var [j]
             │       │   ╰── Var [i]
@@ -17214,47 +17214,47 @@ fn test_chapter_10_valid_extra_credit_compound_assignment_static_var() {
             │       │   ╰── Var [j]
             │       ├── Assign [/=]
             │       │   ├── Var [l]
-            │       │   ╰── Constant [2]
+            │       │   ╰── Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [i]
-            │       │   │       ╰── Constant [3]
+            │       │   │       ╰── Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant [1]
+            │       │               ╰── Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [j]
             │       │   │       ╰── Unary [-]
-            │       │   │           ╰── Constant [6]
+            │       │   │           ╰── Constant Int [6]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant [2]
+            │       │               ╰── Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [k]
             │       │   │       ╰── Unary [-]
-            │       │   │           ╰── Constant [18]
+            │       │   │           ╰── Constant Int [18]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant [3]
+            │       │               ╰── Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [l]
-            │       │   │       ╰── Constant [6]
+            │       │   │       ╰── Constant Int [6]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant [4]
+            │       │               ╰── Constant Int [4]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── FunctionCall [f]
@@ -17286,7 +17286,7 @@ fn test_chapter_10_valid_extra_credit_goto_skip_static_initializer() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant [10]
+                    │   │   ╰── Constant Int [10]
                     │   ╰── Static
                     ╰── Label [end]
                         ╰── Return
@@ -17334,21 +17334,21 @@ fn test_chapter_10_valid_extra_credit_increment_global_vars() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [0]
+            │       ╰── Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── j
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [0]
+            │       ╰── Constant Int [0]
             ├── Function [incr_i]
             │   ╰── Body
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [==]
             │       │   │       ├── Var [i]
-            │       │   │       ╰── Constant [1]
+            │       │   │       ╰── Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ├── Postfix [++]
@@ -17356,7 +17356,7 @@ fn test_chapter_10_valid_extra_credit_increment_global_vars() {
             │       │           ╰── Unary [++]
             │       │               ╰── Var [i]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ├── Function [decr_j]
             │   ╰── Body
             │       ├── If
@@ -17364,50 +17364,50 @@ fn test_chapter_10_valid_extra_credit_increment_global_vars() {
             │       │   │   ╰── Binary [==]
             │       │   │       ├── Var [j]
             │       │   │       ╰── Unary [-]
-            │       │   │           ╰── Constant [1]
+            │       │   │           ╰── Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Postfix [--]
             │       │               ╰── Var [j]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── Conditional [?]
                     │   ├── Postfix [++]
                     │   │   ╰── Var [i]
                     │   ├── Then
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Else
                     │       ╰── FunctionCall [incr_i]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [3]
+                    │   │       ╰── Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── Conditional [?]
                     │   ├── Unary [--]
                     │   │   ╰── Var [j]
                     │   ├── Then
                     │   │   ╰── FunctionCall [decr_j]
                     │   ╰── Else
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [j]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [2]
+                    │   │           ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -17442,7 +17442,7 @@ fn test_chapter_10_valid_extra_credit_label_file_scope_var_same_name() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── Goto [x]
                     ├── Return
                     │   ╰── Var [x]
@@ -17481,12 +17481,12 @@ fn test_chapter_10_valid_extra_credit_label_static_var_same_name() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant [5]
+                    │   │   ╰── Constant Int [5]
                     │   ╰── Static
                     ├── Goto [x]
                     ├── Assign [=]
                     │   ├── Var [x]
-                    │   ╰── Constant [0]
+                    │   ╰── Constant Int [0]
                     ╰── Label [x]
                         ╰── Return
                             ╰── Var [x]
@@ -17513,10 +17513,10 @@ fn test_chapter_10_valid_extra_credit_libraries_same_label_same_fun() {
             │   ╰── Body
             │       ├── Goto [x]
             │       ├── Return
-            │       │   ╰── Constant [0]
+            │       │   ╰── Constant Int [0]
             │       ╰── Label [x]
             │           ╰── Return
-            │               ╰── Constant [2]
+            │               ╰── Constant Int [2]
             ╰── Function [f_caller]
                 ╰── Body
                     ╰── Return
@@ -17552,10 +17552,10 @@ fn test_chapter_10_valid_extra_credit_libraries_same_label_same_fun_client() {
             │   ╰── Body
             │       ├── Goto [x]
             │       ├── Return
-            │       │   ╰── Constant [0]
+            │       │   ╰── Constant Int [0]
             │       ╰── Label [x]
             │           ╰── Return
-            │               ╰── Constant [1]
+            │               ╰── Constant Int [1]
             ├── Function [f_caller]
             ╰── Function [main]
                 ╰── Body
@@ -17563,22 +17563,22 @@ fn test_chapter_10_valid_extra_credit_libraries_same_label_same_fun_client() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [f]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [f_caller]
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -17621,16 +17621,16 @@ fn test_chapter_10_valid_extra_credit_switch_on_extern() {
             │           ╰── Block
             │               ├── Case [0]
             │               │   ╰── Return
-            │               │       ╰── Constant [1]
+            │               │       ╰── Constant Int [1]
             │               ├── Case [1]
             │               │   ╰── Return
-            │               │       ╰── Constant [2]
+            │               │       ╰── Constant Int [2]
             │               ├── Case [4]
             │               │   ╰── Return
-            │               │       ╰── Constant [0]
+            │               │       ╰── Constant Int [0]
             │               ╰── Default
             │                   ╰── Return
-            │                       ╰── Constant [4]
+            │                       ╰── Constant Int [4]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── x
@@ -17640,9 +17640,9 @@ fn test_chapter_10_valid_extra_credit_switch_on_extern() {
                 ╰── Body
                     ├── Assign [=]
                     │   ├── Var [x]
-                    │   ╰── Constant [4]
+                    │   ╰── Constant Int [4]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -17676,14 +17676,14 @@ fn test_chapter_10_valid_extra_credit_switch_skip_extern_decl() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [10]
+            │       │       ╰── Constant Int [10]
             │       ├── Switch
             │       │   ├── Expression
             │       │   │   ╰── Var [a]
             │       │   ╰── Block
             │       │       ├── Case [1]
             │       │       │   ╰── Return
-            │       │       │       ╰── Constant [1]
+            │       │       │       ╰── Constant Int [1]
             │       │       ├── VarDeclaration
             │       │       │   ├── Name
             │       │       │   │   ╰── x
@@ -17692,31 +17692,31 @@ fn test_chapter_10_valid_extra_credit_switch_skip_extern_decl() {
             │       │       │   ╰── Extern
             │       │       ├── Case [2]
             │       │       │   ╰── Return
-            │       │       │       ╰── Constant [2]
+            │       │       │       ╰── Constant Int [2]
             │       │       ├── Case [10]
             │       │       │   ╰── If
             │       │       │       ├── Condition
             │       │       │       │   ╰── Binary [==]
             │       │       │       │       ├── Binary [*]
             │       │       │       │       │   ├── Var [x]
-            │       │       │       │       │   ╰── Constant [2]
-            │       │       │       │       ╰── Constant [30]
+            │       │       │       │       │   ╰── Constant Int [2]
+            │       │       │       │       ╰── Constant Int [30]
             │       │       │       ╰── Then
             │       │       │           ╰── Block
             │       │       │               ╰── Return
-            │       │       │                   ╰── Constant [0]
+            │       │       │                   ╰── Constant Int [0]
             │       │       ╰── Default
             │       │           ╰── Return
-            │       │               ╰── Constant [5]
+            │       │               ╰── Constant Int [5]
             │       ╰── Return
-            │           ╰── Constant [6]
+            │           ╰── Constant Int [6]
             ╰── VarDeclaration
                 ├── Name
                 │   ╰── x
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant [15]
+                    ╰── Constant Int [15]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -17744,7 +17744,7 @@ fn test_chapter_10_valid_extra_credit_switch_skip_static_initializer() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [3]
+            │       ╰── Constant Int [3]
             ╰── Function [main]
                 ╰── Body
                     ├── Switch
@@ -17759,16 +17759,16 @@ fn test_chapter_10_valid_extra_credit_switch_skip_static_initializer() {
                     │       │   ├── Type
                     │       │   │   ╰── Int
                     │       │   ├── Initializer
-                    │       │   │   ╰── Constant [10]
+                    │       │   │   ╰── Constant Int [10]
                     │       │   ╰── Static
                     │       ├── Assign [=]
                     │       │   ├── Var [x]
-                    │       │   ╰── Constant [0]
+                    │       │   ╰── Constant Int [0]
                     │       ╰── Case [3]
                     │           ╰── Return
                     │               ╰── Var [x]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -17885,8 +17885,8 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
             │       │               ╰── Int
             │       ╰── Return
             │           ╰── FunctionCall [sum]
-            │               ├── Constant [1]
-            │               ╰── Constant [2]
+            │               ├── Constant Int [1]
+            │               ╰── Constant Int [2]
             ├── Function [extern sum]
             │   ╰── Parameters
             │       ├── Param
@@ -17919,12 +17919,12 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant [3]
+            │       │       ╰── Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [>]
             │       │   │       ├── Var [f]
-            │       │   │       ╰── Constant [2]
+            │       │   │       ╰── Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ├── Function [extern sum]
@@ -17941,30 +17941,30 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
             │       │           │               ╰── Int
             │       │           ╰── Return
             │       │               ╰── FunctionCall [sum]
-            │       │                   ├── Constant [3]
-            │       │                   ╰── Constant [4]
+            │       │                   ├── Constant Int [3]
+            │       │                   ╰── Constant Int [4]
             │       ╰── Return
-            │           ╰── Constant [1]
+            │           ╰── Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [add_three_and_four]
-                    │   │       ╰── Constant [7]
+                    │   │       ╰── Constant Int [7]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [add_one_and_two]
-                    │   │       ╰── Constant [3]
+                    │   │       ╰── Constant Int [3]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -18022,23 +18022,23 @@ fn test_chapter_10_valid_libraries_external_tentative_var_client() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [x]
-                    │   ╰── Constant [3]
+                    │   ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [read_x]
-                    │   │       ╰── Constant [3]
+                    │   │       ╰── Constant Int [3]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -18066,12 +18066,12 @@ fn test_chapter_10_valid_libraries_external_var_scoping() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ╰── If
                         ├── Condition
                         │   ╰── Binary [==]
                         │       ├── Var [x]
-                        │       ╰── Constant [4]
+                        │       ╰── Constant Int [4]
                         ├── Then
                         │   ╰── Block
                         │       ├── VarDeclaration
@@ -18086,7 +18086,7 @@ fn test_chapter_10_valid_libraries_external_var_scoping() {
                             ╰── Block
                                 ╰── Return
                                     ╰── Unary [-]
-                                        ╰── Constant [1]
+                                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -18117,7 +18117,7 @@ fn test_chapter_10_valid_libraries_external_var_scoping_client() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [10]
+            │       ╰── Constant Int [10]
             ├── Function [read_x]
             ╰── Function [main]
                 ╰── Body
@@ -18127,22 +18127,22 @@ fn test_chapter_10_valid_libraries_external_var_scoping_client() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [==]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── If
                     │           │   ├── Condition
                     │           │   │   ╰── Binary [!=]
                     │           │   │       ├── FunctionCall [read_x]
-                    │           │   │       ╰── Constant [10]
+                    │           │   │       ╰── Constant Int [10]
                     │           │   ╰── Then
                     │           │       ╰── Return
-                    │           │           ╰── Constant [1]
+                    │           │           ╰── Constant Int [1]
                     │           ├── VarDeclaration
                     │           │   ├── Name
                     │           │   │   ╰── x
@@ -18153,14 +18153,14 @@ fn test_chapter_10_valid_libraries_external_var_scoping_client() {
                     │           │   ├── Condition
                     │           │   │   ╰── Binary [!=]
                     │           │   │       ├── Var [x]
-                    │           │   │       ╰── Constant [10]
+                    │           │   │       ╰── Constant Int [10]
                     │           │   ╰── Then
                     │           │       ╰── Return
-                    │           │           ╰── Constant [1]
+                    │           │           ╰── Constant Int [1]
                     │           ╰── Return
-                    │               ╰── Constant [0]
+                    │               ╰── Constant Int [0]
                     ╰── Return
-                        ╰── Constant [1]
+                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -18210,7 +18210,7 @@ fn test_chapter_10_valid_libraries_external_variable() {
             │       │   ├── Var [x]
             │       │   ╰── Var [new_val]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ├── Function [read_x]
             │   ╰── Body
             │       ╰── Return
@@ -18221,7 +18221,7 @@ fn test_chapter_10_valid_libraries_external_variable() {
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant [3]
+                    ╰── Constant Int [3]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -18272,57 +18272,57 @@ fn test_chapter_10_valid_libraries_external_variable_client() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [3]
+                    │   │       ╰── Constant Int [3]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [read_x]
-                    │   │       ╰── Constant [3]
+                    │   │       ╰── Constant Int [3]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [x]
-                    │   ╰── Constant [4]
+                    │   ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [4]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [read_x]
-                    │   │       ╰── Constant [4]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── FunctionCall [update_x]
-                    │   ╰── Constant [5]
+                    │   ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [5]
+                    │   │       ╰── Constant Int [5]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [read_x]
-                    │   │       ╰── Constant [5]
+                    │   │       ╰── Constant Int [5]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -18343,7 +18343,7 @@ fn test_chapter_10_valid_libraries_internal_hides_external_linkage() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [10]
+            │       ╰── Constant Int [10]
             ╰── Function [read_x]
                 ╰── Body
                     ╰── Return
@@ -18382,7 +18382,7 @@ fn test_chapter_10_valid_libraries_internal_hides_external_linkage_client() {
             │   ├── Type
             │   │   ╰── Int
             │   ├── Initializer
-            │   │   ╰── Constant [1]
+            │   │   ╰── Constant Int [1]
             │   ╰── Static
             ├── Function [read_internal_x]
             ├── Function [read_x]
@@ -18398,31 +18398,31 @@ fn test_chapter_10_valid_libraries_internal_hides_external_linkage_client() {
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [x]
-            │       │   │       ╰── Constant [1]
+            │       │   │       ╰── Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── Assign [=]
             │       │   ├── Var [x]
-            │       │   ╰── Constant [2]
+            │       │   ╰── Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── FunctionCall [read_internal_x]
-            │       │   │       ╰── Constant [2]
+            │       │   │       ╰── Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── FunctionCall [read_x]
-            │       │   │       ╰── Constant [10]
+            │       │   │       ╰── Constant Int [10]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── x
@@ -18479,13 +18479,13 @@ fn test_chapter_10_valid_libraries_internal_linkage_function() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant [0]
+                    │   │   ╰── Constant Int [0]
                     │   ╰── Static
                     ├── Assign [=]
                     │   ├── Var [i]
                     │   ╰── Binary [+]
                     │       ├── Var [i]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ╰── Return
                         ╰── Var [i]
     "#;
@@ -18522,32 +18522,32 @@ fn test_chapter_10_valid_libraries_internal_linkage_function_client() {
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── FunctionCall [call_static_my_fun]
-            │       │   │       ╰── Constant [1]
+            │       │   │       ╰── Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── FunctionCall [my_fun]
-            │       │   │       ╰── Constant [100]
+            │       │   │       ╰── Constant Int [100]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── FunctionCall [call_static_my_fun_2]
-            │       │   │       ╰── Constant [2]
+            │       │   │       ╰── Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [my_fun]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [100]
+                        ╰── Constant Int [100]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -18598,7 +18598,7 @@ fn test_chapter_10_valid_libraries_internal_linkage_var() {
             │       │   ├── Var [x]
             │       │   ╰── Var [new_val]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── x
@@ -18611,7 +18611,7 @@ fn test_chapter_10_valid_libraries_internal_linkage_var() {
             │   ├── Type
             │   │   ╰── Int
             │   ├── Initializer
-            │   │   ╰── Constant [5]
+            │   │   ╰── Constant Int [5]
             │   ╰── Static
             ╰── VarDeclaration
                 ├── Name
@@ -18678,18 +18678,18 @@ fn test_chapter_10_valid_libraries_internal_linkage_var_client() {
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [x]
-            │       │   │       ╰── Constant [0]
+            │       │   │       ╰── Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── FunctionCall [read_x]
-            │       │   │       ╰── Constant [5]
+            │       │   │       ╰── Constant Int [5]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── x
@@ -18697,44 +18697,44 @@ fn test_chapter_10_valid_libraries_internal_linkage_var_client() {
             │       │   │   ╰── Int
             │       │   ╰── Extern
             │       ├── FunctionCall [update_x]
-            │       │   ╰── Constant [10]
+            │       │   ╰── Constant Int [10]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── FunctionCall [read_x]
-            │       │   │       ╰── Constant [10]
+            │       │   │       ╰── Constant Int [10]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [x]
-            │       │   │       ╰── Constant [0]
+            │       │   │       ╰── Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── Assign [=]
             │       │   ├── Var [x]
-            │       │   ╰── Constant [20]
+            │       │   ╰── Constant Int [20]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [x]
-            │       │   │       ╰── Constant [20]
+            │       │   │       ╰── Constant Int [20]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── FunctionCall [read_x]
-            │       │   │       ╰── Constant [10]
+            │       │   │       ╰── Constant Int [10]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── VarDeclaration
                 ├── Name
                 │   ╰── x
@@ -18779,7 +18779,7 @@ fn test_chapter_10_valid_multiple_static_file_scope_vars() {
                 ├── Type
                 │   ╰── Int
                 ├── Initializer
-                │   ╰── Constant [4]
+                │   ╰── Constant Int [4]
                 ╰── Static
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -18812,13 +18812,13 @@ fn test_chapter_10_valid_multiple_static_local() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant [3]
+            │       │   │   ╰── Constant Int [3]
             │       │   ╰── Static
             │       ├── Assign [=]
             │       │   ├── Var [a]
             │       │   ╰── Binary [*]
             │       │       ├── Var [a]
-            │       │       ╰── Constant [2]
+            │       │       ╰── Constant Int [2]
             │       ╰── Return
             │           ╰── Var [a]
             ├── Function [bar]
@@ -18829,13 +18829,13 @@ fn test_chapter_10_valid_multiple_static_local() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant [4]
+            │       │   │   ╰── Constant Int [4]
             │       │   ╰── Static
             │       ├── Assign [=]
             │       │   ├── Var [a]
             │       │   ╰── Binary [+]
             │       │       ├── Var [a]
-            │       │       ╰── Constant [1]
+            │       │       ╰── Constant Int [1]
             │       ╰── Return
             │           ╰── Var [a]
             ╰── Function [main]
@@ -18912,17 +18912,17 @@ fn test_chapter_10_valid_push_arg_on_page_boundary() {
             │       ╰── Return
             │           ╰── Binary [+]
             │               ├── Var [g]
-            │               ╰── Constant [1]
+            │               ╰── Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [foo]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ├── Constant [0]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
                             ╰── Var [zed]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -19018,10 +19018,10 @@ fn test_chapter_10_valid_shadow_static_local_var() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── result
@@ -19029,68 +19029,68 @@ fn test_chapter_10_valid_shadow_static_local_var() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── FunctionCall [update_static_or_global]
-                    │           ├── Constant [1]
-                    │           ╰── Constant [10]
+                    │           ├── Constant Int [1]
+                    │           ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [result]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [result]
                     │   ╰── FunctionCall [update_static_or_global]
-                    │       ├── Constant [0]
-                    │       ╰── Constant [9]
+                    │       ├── Constant Int [0]
+                    │       ╰── Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [result]
-                    │   │       ╰── Constant [9]
+                    │   │       ╰── Constant Int [9]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [result]
                     │   ╰── FunctionCall [update_static_or_global]
-                    │       ├── Constant [1]
-                    │       ╰── Constant [11]
+                    │       ├── Constant Int [1]
+                    │       ╰── Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [result]
-                    │   │       ╰── Constant [9]
+                    │   │       ╰── Constant Int [9]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [11]
+                    │   │       ╰── Constant Int [11]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -19133,7 +19133,7 @@ fn test_chapter_10_valid_static_local_multiple_scopes() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant [65]
+            │       │   │   ╰── Constant Int [65]
             │       │   ╰── Static
             │       ├── FunctionCall [putchar]
             │       │   ╰── Var [i]
@@ -19142,14 +19142,14 @@ fn test_chapter_10_valid_static_local_multiple_scopes() {
             │       │   │   ├── Var [i]
             │       │   │   ╰── Binary [+]
             │       │   │       ├── Var [i]
-            │       │   │       ╰── Constant [1]
+            │       │   │       ╰── Constant Int [1]
             │       │   ├── VarDeclaration
             │       │   │   ├── Name
             │       │   │   │   ╰── i
             │       │   │   ├── Type
             │       │   │   │   ╰── Int
             │       │   │   ├── Initializer
-            │       │   │   │   ╰── Constant [97]
+            │       │   │   │   ╰── Constant Int [97]
             │       │   │   ╰── Static
             │       │   ├── FunctionCall [putchar]
             │       │   │   ╰── Var [i]
@@ -19157,11 +19157,11 @@ fn test_chapter_10_valid_static_local_multiple_scopes() {
             │       │       ├── Var [i]
             │       │       ╰── Binary [+]
             │       │           ├── Var [i]
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── FunctionCall [putchar]
-            │       │   ╰── Constant [10]
+            │       │   ╰── Constant Int [10]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ╰── For
@@ -19172,17 +19172,17 @@ fn test_chapter_10_valid_static_local_multiple_scopes() {
                         │       ├── Type
                         │       │   ╰── Int
                         │       ╰── Initializer
-                        │           ╰── Constant [0]
+                        │           ╰── Constant Int [0]
                         ├── Condition
                         │   ╰── Binary [<]
                         │       ├── Var [i]
-                        │       ╰── Constant [26]
+                        │       ╰── Constant Int [26]
                         ├── Condition
                         │   ╰── Assign [=]
                         │       ├── Var [i]
                         │       ╰── Binary [+]
                         │           ├── Var [i]
-                        │           ╰── Constant [1]
+                        │           ╰── Constant Int [1]
                         ╰── FunctionCall [print_letters]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
@@ -19217,7 +19217,7 @@ fn test_chapter_10_valid_static_local_uninitialized() {
             │       │   ├── Var [x]
             │       │   ╰── Binary [+]
             │       │       ├── Var [x]
-            │       │       ╰── Constant [1]
+            │       │       ╰── Constant Int [1]
             │       ╰── Return
             │           ╰── Var [x]
             ╰── Function [main]
@@ -19235,17 +19235,17 @@ fn test_chapter_10_valid_static_local_uninitialized() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [0]
+                    │   │           ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [4]
+                    │   │       ╰── Constant Int [4]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [+]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Assign [=]
                     │       ├── Var [ret]
                     │       ╰── FunctionCall [foo]
@@ -19289,22 +19289,22 @@ fn test_chapter_10_valid_static_recursive_call() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant [0]
+            │       │   │   ╰── Constant Int [0]
             │       │   ╰── Static
             │       ├── FunctionCall [putchar]
             │       │   ╰── Binary [+]
             │       │       ├── Var [count]
-            │       │       ╰── Constant [65]
+            │       │       ╰── Constant Int [65]
             │       ├── Assign [=]
             │       │   ├── Var [count]
             │       │   ╰── Binary [+]
             │       │       ├── Var [count]
-            │       │       ╰── Constant [1]
+            │       │       ╰── Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [<]
             │       │   │       ├── Var [count]
-            │       │   │       ╰── Constant [26]
+            │       │   │       ╰── Constant Int [26]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── FunctionCall [print_alphabet]
@@ -19334,7 +19334,7 @@ fn test_chapter_10_valid_static_then_extern() {
             │   ├── Type
             │   │   ╰── Int
             │   ├── Initializer
-            │   │   ╰── Constant [3]
+            │   │   ╰── Constant Int [3]
             │   ╰── Static
             ├── Function [main]
             │   ╰── Body
@@ -19372,7 +19372,7 @@ fn test_chapter_10_valid_static_variables_in_expressions() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant [2]
+                    │   │   ╰── Constant Int [2]
                     │   ╰── Static
                     ├── VarDeclaration
                     │   ├── Name
@@ -19380,7 +19380,7 @@ fn test_chapter_10_valid_static_variables_in_expressions() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant [3]
+                    │   │   ╰── Constant Int [3]
                     │   ╰── Static
                     ├── VarDeclaration
                     │   ├── Name
@@ -19397,9 +19397,9 @@ fn test_chapter_10_valid_static_variables_in_expressions() {
                     │   │       ╰── Var [cmp]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -19445,22 +19445,22 @@ fn test_chapter_10_valid_tentative_definition() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant [0]
+            │       │   │           ╰── Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── Binary [<]
             │       │   │       ├── Var [i]
-            │       │   │       ╰── Constant [5]
+            │       │   │       ╰── Constant Int [5]
             │       │   ├── Condition
             │       │   │   ╰── Assign [=]
             │       │   │       ├── Var [i]
             │       │   │       ╰── Binary [+]
             │       │   │           ├── Var [i]
-            │       │   │           ╰── Constant [1]
+            │       │   │           ╰── Constant Int [1]
             │       │   ╰── Assign [=]
             │       │       ├── Var [foo]
             │       │       ╰── Binary [+]
             │       │           ├── Var [foo]
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ╰── Return
             │           ╰── Var [foo]
             ╰── VarDeclaration
@@ -19490,14 +19490,14 @@ fn test_chapter_10_valid_type_before_storage_class() {
             ├── Function [static foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [3]
+            │           ╰── Constant Int [3]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── bar
             │   ├── Type
             │   │   ╰── Int
             │   ├── Initializer
-            │   │   ╰── Constant [4]
+            │   │   ╰── Constant Int [4]
             │   ╰── Static
             ╰── Function [main]
                 ╰── Body
@@ -19540,21 +19540,21 @@ fn test_chapter_11_invalid_labels_extra_credit_bitshift_duplicate_cases() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [100]
+                    │       ╰── Constant Int [100]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── Binary [<<]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [2L]
+                    │   │       ╰── Constant Long [2]
                     │   ╰── Block
                     │       ├── Case [34359738768]
                     │       │   ╰── Return
-                    │       │       ╰── Constant [1]
+                    │       │       ╰── Constant Int [1]
                     │       ╰── Case [400]
                     │           ╰── Return
-                    │               ╰── Constant [0]
+                    │               ╰── Constant Int [0]
                     ╰── Return
-                        ╰── Constant [10]
+                        ╰── Constant Int [10]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -19589,18 +19589,18 @@ fn test_chapter_11_invalid_labels_extra_credit_switch_duplicate_cases() {
             │           ╰── Block
             │               ├── Case [0]
             │               │   ╰── Return
-            │               │       ╰── Constant [0]
+            │               │       ╰── Constant Int [0]
             │               ├── Case [17179869184]
             │               │   ╰── Return
-            │               │       ╰── Constant [0]
+            │               │       ╰── Constant Int [0]
             │               ╰── Default
             │                   ╰── Return
-            │                       ╰── Constant [1]
+            │                       ╰── Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [switch_statement]
-                            ╰── Constant [0]
+                            ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -19639,18 +19639,18 @@ fn test_chapter_11_invalid_labels_extra_credit_switch_duplicate_cases_2() {
             │           ╰── Block
             │               ├── Case [100]
             │               │   ╰── Return
-            │               │       ╰── Constant [0]
+            │               │       ╰── Constant Int [0]
             │               ├── Case [100]
             │               │   ╰── Return
-            │               │       ╰── Constant [0]
+            │               │       ╰── Constant Int [0]
             │               ╰── Default
             │                   ╰── Return
-            │                       ╰── Constant [1]
+            │                       ╰── Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [switch_statement]
-                            ╰── Constant [100]
+                            ╰── Constant Int [100]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -19778,7 +19778,7 @@ fn test_chapter_11_invalid_types_call_long_as_function() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ╰── Return
                         ╰── FunctionCall [x]
     "#;
@@ -19804,7 +19804,7 @@ fn test_chapter_11_invalid_types_cast_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [i]
                     │   ╰── Assign [=]
@@ -19813,9 +19813,9 @@ fn test_chapter_11_invalid_types_cast_lvalue() {
                     │       │   │   ╰── Long
                     │       │   ╰── Expression
                     │       │       ╰── Var [i]
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -19841,7 +19841,7 @@ fn test_chapter_11_invalid_types_conflicting_function_types() {
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [foo]
                 ╰── Parameters
                     ╰── Param
@@ -19870,7 +19870,7 @@ fn test_chapter_11_invalid_types_conflicting_global_types() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [3]
+            │       ╰── Constant Int [3]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── foo
@@ -19909,7 +19909,7 @@ fn test_chapter_11_invalid_types_conflicting_variable_types() {
                     │   │   ╰── Int
                     │   ╰── Extern
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -19971,24 +19971,24 @@ fn test_chapter_11_valid_explicit_casts_sign_extend() {
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [sign_extend]
-                    │   │           ├── Constant [10]
-                    │   │           ╰── Constant [10L]
+                    │   │           ├── Constant Int [10]
+                    │   │           ╰── Constant Long [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [sign_extend]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [10]
+                    │   │           │   ╰── Constant Int [10]
                     │   │           ╰── Unary [-]
-                    │   │               ╰── Constant [10L]
+                    │   │               ╰── Constant Long [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l
@@ -19999,18 +19999,18 @@ fn test_chapter_11_valid_explicit_casts_sign_extend() {
                     │           ├── Target
                     │           │   ╰── Long
                     │           ╰── Expression
-                    │               ╰── Constant [100]
+                    │               ╰── Constant Int [100]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l]
-                    │   │       ╰── Constant [100L]
+                    │   │       ╰── Constant Long [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -20080,45 +20080,45 @@ fn test_chapter_11_valid_explicit_casts_truncate() {
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [truncate]
-                    │   │           ├── Constant [10L]
-                    │   │           ╰── Constant [10]
+                    │   │           ├── Constant Long [10]
+                    │   │           ╰── Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [truncate]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [10L]
+                    │   │           │   ╰── Constant Long [10]
                     │   │           ╰── Unary [-]
-                    │   │               ╰── Constant [10]
+                    │   │               ╰── Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [truncate]
-                    │   │           ├── Constant [17179869189L]
-                    │   │           ╰── Constant [5]
+                    │   │           ├── Constant Long [17179869189]
+                    │   │           ╰── Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [truncate]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [17179869179L]
-                    │   │           ╰── Constant [5L]
+                    │   │           │   ╰── Constant Long [17179869179]
+                    │   │           ╰── Constant Long [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -20129,17 +20129,17 @@ fn test_chapter_11_valid_explicit_casts_truncate() {
                     │           ├── Target
                     │           │   ╰── Int
                     │           ╰── Expression
-                    │               ╰── Constant [17179869189L]
+                    │               ╰── Constant Long [17179869189]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [5]
+                    │   │       ╰── Constant Int [5]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [5]
+                    │           ╰── Constant Int [5]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -20192,72 +20192,72 @@ fn test_chapter_11_valid_extra_credit_bitshift() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [137438953472L]
+                    │       ╰── Constant Long [137438953472]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── shiftcount
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [>>]
                     │   │       │   ├── Var [l]
                     │   │       │   ╰── Var [shiftcount]
-                    │   │       ╰── Constant [34359738368L]
+                    │   │       ╰── Constant Long [34359738368]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [<<]
                     │   │       │   ├── Var [l]
                     │   │       │   ╰── Var [shiftcount]
-                    │   │       ╰── Constant [549755813888L]
+                    │   │       ╰── Constant Long [549755813888]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [<<]
                     │   │       │   ├── Var [l]
-                    │   │       │   ╰── Constant [2]
-                    │   │       ╰── Constant [549755813888L]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant Long [549755813888]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [<<]
-                    │   │       │   ├── Constant [40L]
-                    │   │       │   ╰── Constant [40]
-                    │   │       ╰── Constant [43980465111040L]
+                    │   │       │   ├── Constant Long [40]
+                    │   │       │   ╰── Constant Int [40]
+                    │   │       ╰── Constant Long [43980465111040]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── long_shiftcount
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [3L]
+                    │       ╰── Constant Long [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i_neighbor1
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -20265,14 +20265,14 @@ fn test_chapter_11_valid_extra_credit_bitshift() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [2147483645]
+                    │           ╰── Constant Int [2147483645]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i_neighbor2
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -20280,43 +20280,43 @@ fn test_chapter_11_valid_extra_credit_bitshift() {
                     │   │       │   ├── Var [i]
                     │   │       │   ╰── Var [long_shiftcount]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [268435456]
+                    │   │           ╰── Constant Int [268435456]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── Assign [=]
                     │   ├── Var [i]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [>>]
                     │   │       │   ├── Var [i]
-                    │   │       │   ╰── Constant [10L]
+                    │   │       │   ╰── Constant Long [10]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [i_neighbor1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [7]
+                    │               ╰── Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [i_neighbor2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [8]
+                    │               ╰── Constant Int [8]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -20373,7 +20373,7 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [71777214294589695L]
+                    │       ╰── Constant Long [71777214294589695]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l2
@@ -20381,18 +20381,18 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [4294967296L]
+                    │           ╰── Constant Long [4294967296]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [&]
                     │   │       │   ├── Var [l1]
                     │   │       │   ╰── Var [l2]
-                    │   │       ╰── Constant [71777214277877760L]
+                    │   │       ╰── Constant Long [71777214277877760]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -20400,11 +20400,11 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
                     │   │       │   ├── Var [l1]
                     │   │       │   ╰── Var [l2]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [4278255361L]
+                    │   │           ╰── Constant Long [4278255361]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -20412,52 +20412,52 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
                     │   │       │   ├── Var [l1]
                     │   │       │   ╰── Var [l2]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [71777218556133121L]
+                    │   │           ╰── Constant Long [71777218556133121]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [&]
                     │   │       │   ├── Unary [-]
-                    │   │       │   │   ╰── Constant [1L]
-                    │   │       │   ╰── Constant [34359738368L]
-                    │   │       ╰── Constant [34359738368L]
+                    │   │       │   │   ╰── Constant Long [1]
+                    │   │       │   ╰── Constant Long [34359738368]
+                    │   │       ╰── Constant Long [34359738368]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [|]
-                    │   │       │   ├── Constant [0L]
-                    │   │       │   ╰── Constant [34359738368L]
-                    │   │       ╰── Constant [34359738368L]
+                    │   │       │   ├── Constant Long [0]
+                    │   │       │   ╰── Constant Long [34359738368]
+                    │   │       ╰── Constant Long [34359738368]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [^]
-                    │   │       │   ├── Constant [34359738368L]
-                    │   │       │   ╰── Constant [137438953472L]
-                    │   │       ╰── Constant [171798691840L]
+                    │   │       │   ├── Constant Long [34359738368]
+                    │   │       │   ╰── Constant Long [137438953472]
+                    │   │       ╰── Constant Long [171798691840]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [4611686018427387903L]
+                    │       ╰── Constant Long [4611686018427387903]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -20465,7 +20465,7 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1073741824]
+                    │           ╰── Constant Int [1073741824]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i2
@@ -20473,18 +20473,18 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [&]
                     │   │       │   ├── Var [i]
                     │   │       │   ╰── Var [l]
-                    │   │       ╰── Constant [4611686017353646080L]
+                    │   │       ╰── Constant Long [4611686017353646080]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [7]
+                    │               ╰── Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -20492,11 +20492,11 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
                     │   │       │   ├── Var [l]
                     │   │       │   ╰── Var [i]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [8]
+                    │               ╰── Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -20504,25 +20504,25 @@ fn test_chapter_11_valid_extra_credit_bitwise_long_op() {
                     │   │       │   ├── Var [l]
                     │   │       │   ╰── Var [i]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [4611686017353646081L]
+                    │   │           ╰── Constant Long [4611686017353646081]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [9]
+                    │               ╰── Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [^]
                     │   │       │   ├── Var [i2]
-                    │   │       │   ╰── Constant [4611686018427387903L]
+                    │   │       │   ╰── Constant Long [4611686018427387903]
                     │   │       ╰── Unary [~]
-                    │   │           ╰── Constant [4611686018427387903L]
+                    │   │           ╰── Constant Long [4611686018427387903]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [10]
+                    │               ╰── Constant Int [10]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -20569,14 +20569,14 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_int() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [20]
+                    │           ╰── Constant Int [20]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2147483647]
+                    │       ╰── Constant Int [2147483647]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -20584,72 +20584,72 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_int() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [5000000]
+                    │           ╰── Constant Int [5000000]
                     ├── Assign [+=]
                     │   ├── Var [i]
-                    │   ╰── Constant [2147483648L]
+                    │   ╰── Constant Long [2147483648]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [2147483628]
+                    │   │       ╰── Constant Int [2147483628]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [b]
-                    │   │       ╰── Constant [2147483647]
+                    │   │       ╰── Constant Int [2147483647]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── Assign [/=]
                     │   ├── Var [b]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [34359738367L]
+                    │       ╰── Constant Long [34359738367]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [b]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [2147483628]
+                    │   │       ╰── Constant Int [2147483628]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [c]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [5000000]
+                    │   │           ╰── Constant Int [5000000]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── Assign [*=]
                     │   ├── Var [c]
-                    │   ╰── Constant [10000L]
+                    │   ╰── Constant Long [10000]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [c]
-                    │   │       ╰── Constant [1539607552]
+                    │   │       ╰── Constant Int [1539607552]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -20678,7 +20678,7 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_long() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [34359738368L]
+                    │           ╰── Constant Long [34359738368]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -20686,7 +20686,7 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_long() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [10]
+                    │           ╰── Constant Int [10]
                     ├── Assign [-=]
                     │   ├── Var [l]
                     │   ╰── Var [i]
@@ -20695,13 +20695,13 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_long() {
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [34359738358L]
+                    │   │           ╰── Constant Long [34359738358]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -20742,57 +20742,57 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [100]
+                    │       ╰── Constant Int [100]
                     ├── Assign [<<=]
                     │   ├── Var [x]
-                    │   ╰── Constant [22L]
+                    │   ╰── Constant Long [22]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [419430400]
+                    │   │       ╰── Constant Int [419430400]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Assign [>>=]
                     │   │       │   ├── Var [x]
-                    │   │       │   ╰── Constant [4L]
-                    │   │       ╰── Constant [26214400]
+                    │   │       │   ╰── Constant Long [4]
+                    │   │       ╰── Constant Int [26214400]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [26214400]
+                    │   │       ╰── Constant Int [26214400]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [12345L]
+                    │       ╰── Constant Long [12345]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Assign [<<=]
                     │   │       │   ├── Var [l]
-                    │   │       │   ╰── Constant [33]
-                    │   │       ╰── Constant [106042742538240L]
+                    │   │       │   ╰── Constant Int [33]
+                    │   │       ╰── Constant Long [106042742538240]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── Assign [=]
                     │   ├── Var [l]
                     │   ╰── Unary [-]
@@ -20802,15 +20802,15 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
                     │   │   ╰── Binary [!=]
                     │   │       ├── Assign [>>=]
                     │   │       │   ├── Var [l]
-                    │   │       │   ╰── Constant [10]
+                    │   │       │   ╰── Constant Int [10]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [103557365760L]
+                    │   │           ╰── Constant Long [103557365760]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -20859,7 +20859,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitwise() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [71777214294589695L]
+                    │       ╰── Constant Long [71777214294589695]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l2
@@ -20867,7 +20867,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitwise() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [4294967296L]
+                    │           ╰── Constant Long [4294967296]
                     ├── Assign [&=]
                     │   ├── Var [l1]
                     │   ╰── Var [l2]
@@ -20875,41 +20875,41 @@ fn test_chapter_11_valid_extra_credit_compound_bitwise() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l1]
-                    │   │       ╰── Constant [71777214277877760L]
+                    │   │       ╰── Constant Long [71777214277877760]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── Assign [|=]
                     │   ├── Var [l2]
-                    │   ╰── Constant [100L]
+                    │   ╰── Constant Long [100]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l2]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [4294967196L]
+                    │   │           ╰── Constant Long [4294967196]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── Assign [^=]
                     │   ├── Var [l1]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [9223372036854775807L]
+                    │       ╰── Constant Long [9223372036854775807]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l1]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [9151594822576898047L]
+                    │   │           ╰── Constant Long [9151594822576898047]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── Assign [=]
                     │   ├── Var [l1]
-                    │   ╰── Constant [4611686018427387903L]
+                    │   ╰── Constant Long [4611686018427387903]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -20917,7 +20917,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitwise() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1073741824]
+                    │           ╰── Constant Int [1073741824]
                     ├── Assign [&=]
                     │   ├── Var [l1]
                     │   ╰── Var [i]
@@ -20925,39 +20925,39 @@ fn test_chapter_11_valid_extra_credit_compound_bitwise() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l1]
-                    │   │       ╰── Constant [4611686017353646080L]
+                    │   │       ╰── Constant Long [4611686017353646080]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── Assign [=]
                     │   ├── Var [i]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [2147483648L]
+                    │       ╰── Constant Long [2147483648]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Assign [|=]
                     │   │       │   ├── Var [i]
-                    │   │       │   ╰── Constant [71777214294589695L]
+                    │   │       │   ╰── Constant Long [71777214294589695]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [2130771713]
+                    │   │           ╰── Constant Int [2130771713]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [2130771713]
+                    │   │           ╰── Constant Int [2130771713]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -20994,51 +20994,51 @@ fn test_chapter_11_valid_extra_credit_increment_long() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [9223372036854775807L]
+                    │           ╰── Constant Long [9223372036854775807]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Postfix [++]
                     │   │       │   ╰── Var [x]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [9223372036854775807L]
+                    │   │           ╰── Constant Long [9223372036854775807]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [9223372036854775806L]
+                    │   │           ╰── Constant Long [9223372036854775806]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Unary [--]
                     │   │       │   ╰── Var [x]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [9223372036854775807L]
+                    │   │           ╰── Constant Long [9223372036854775807]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [9223372036854775807L]
+                    │   │           ╰── Constant Long [9223372036854775807]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -21086,57 +21086,57 @@ fn test_chapter_11_valid_extra_credit_switch_int() {
             │           ╰── Block
             │               ├── Case [5]
             │               │   ╰── Return
-            │               │       ╰── Constant [0]
+            │               │       ╰── Constant Int [0]
             │               ├── Case [8589934592]
             │               │   ╰── Return
-            │               │       ╰── Constant [1]
+            │               │       ╰── Constant Int [1]
             │               ├── Case [34359738367]
             │               │   ╰── Return
-            │               │       ╰── Constant [2]
+            │               │       ╰── Constant Int [2]
             │               ╰── Default
             │                   ╰── Return
-            │                       ╰── Constant [3]
+            │                       ╰── Constant Int [3]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [switch_on_int]
-                    │   │       │   ╰── Constant [5]
-                    │   │       ╰── Constant [0]
+                    │   │       │   ╰── Constant Int [5]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [switch_on_int]
-                    │   │       │   ╰── Constant [0]
-                    │   │       ╰── Constant [1]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [switch_on_int]
                     │   │       │   ╰── Unary [-]
-                    │   │       │       ╰── Constant [1]
-                    │   │       ╰── Constant [2]
+                    │   │       │       ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [switch_on_int]
-                    │   │       │   ╰── Constant [17179869184L]
-                    │   │       ╰── Constant [1]
+                    │   │       │   ╰── Constant Long [17179869184]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [4]
+                    │           ╰── Constant Int [4]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -21178,39 +21178,39 @@ fn test_chapter_11_valid_extra_credit_switch_long() {
             │           ╰── Block
             │               ├── Case [0]
             │               │   ╰── Return
-            │               │       ╰── Constant [0]
+            │               │       ╰── Constant Int [0]
             │               ├── Case [100]
             │               │   ╰── Return
-            │               │       ╰── Constant [1]
+            │               │       ╰── Constant Int [1]
             │               ├── Case [8589934592]
             │               │   ╰── Return
-            │               │       ╰── Constant [2]
+            │               │       ╰── Constant Int [2]
             │               ╰── Default
             │                   ╰── Return
             │                       ╰── Unary [-]
-            │                           ╰── Constant [1]
+            │                           ╰── Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [switch_on_long]
-                    │   │       │   ╰── Constant [8589934592L]
-                    │   │       ╰── Constant [2]
+                    │   │       │   ╰── Constant Long [8589934592]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [switch_on_long]
-                    │   │       │   ╰── Constant [100]
-                    │   │       ╰── Constant [1]
+                    │   │       │   ╰── Constant Int [100]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -21284,7 +21284,7 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [result]
-            │               ╰── Constant [2147483663L]
+            │               ╰── Constant Long [2147483663]
             ├── Function [division]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -21299,7 +21299,7 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [int_result]
-            │               ╰── Constant [214748364]
+            │               ╰── Constant Int [214748364]
             ├── Function [comparison]
             │   ╰── Body
             │       ╰── Return
@@ -21315,7 +21315,7 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
             │       │   │   ╰── Long
             │       │   ╰── Initializer
             │       │       ╰── Conditional [?]
-            │       │           ├── Constant [1]
+            │       │           ├── Constant Int [1]
             │       │           ├── Then
             │       │           │   ╰── Var [l]
             │       │           ╰── Else
@@ -21323,15 +21323,15 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [result]
-            │               ╰── Constant [8589934592L]
+            │               ╰── Constant Long [8589934592]
             ╰── Function [main]
                 ╰── Body
                     ├── Assign [=]
                     │   ├── Var [l]
-                    │   ╰── Constant [2147483653L]
+                    │   ╰── Constant Long [2147483653]
                     ├── Assign [=]
                     │   ├── Var [i]
-                    │   ╰── Constant [10]
+                    │   ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -21339,10 +21339,10 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [l]
-                    │   ╰── Constant [2147483649L]
+                    │   ╰── Constant Long [2147483649]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -21350,14 +21350,14 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── Assign [=]
                     │   ├── Var [i]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [100]
+                    │       ╰── Constant Int [100]
                     ├── Assign [=]
                     │   ├── Var [l]
-                    │   ╰── Constant [4294967296L]
+                    │   ╰── Constant Long [4294967296]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -21365,13 +21365,13 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── Assign [=]
                     │   ├── Var [l]
-                    │   ╰── Constant [8589934592L]
+                    │   ╰── Constant Long [8589934592]
                     ├── Assign [=]
                     │   ├── Var [i]
-                    │   ╰── Constant [10]
+                    │   ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -21379,9 +21379,9 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -21473,59 +21473,59 @@ fn test_chapter_11_valid_implicit_casts_convert_by_assignment() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── FunctionCall [return_truncated_long]
-                    │           ╰── Constant [4294967298L]
+                    │           ╰── Constant Long [4294967298]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [result]
-                    │   │       ╰── Constant [2L]
+                    │   │       ╰── Constant Long [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [result]
                     │   ╰── FunctionCall [return_extended_int]
                     │       ╰── Unary [-]
-                    │           ╰── Constant [10]
+                    │           ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [result]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [10]
+                    │   │           ╰── Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4294967298L]
+                    │       ╰── Constant Long [4294967298]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [truncate_on_assignment]
-                    │   │           ├── Constant [17179869184L]
-                    │   │           ╰── Constant [0]
+                    │   │           ├── Constant Long [17179869184]
+                    │   │           ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -21615,72 +21615,72 @@ fn test_chapter_11_valid_implicit_casts_convert_function_arguments() {
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [a]
             │       │   │       ╰── Unary [-]
-            │       │   │           ╰── Constant [1L]
+            │       │   │           ╰── Constant Long [1]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [b]
-            │       │   │       ╰── Constant [2]
+            │       │   │       ╰── Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [2]
+            │       │           ╰── Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [c]
-            │       │   │       ╰── Constant [0]
+            │       │   │       ╰── Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [3]
+            │       │           ╰── Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [d]
             │       │   │       ╰── Unary [-]
-            │       │   │           ╰── Constant [5]
+            │       │   │           ╰── Constant Int [5]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [4]
+            │       │           ╰── Constant Int [4]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [e]
             │       │   │       ╰── Unary [-]
-            │       │   │           ╰── Constant [101L]
+            │       │   │           ╰── Constant Long [101]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [5]
+            │       │           ╰── Constant Int [5]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [f]
             │       │   │       ╰── Unary [-]
-            │       │   │           ╰── Constant [123]
+            │       │   │           ╰── Constant Int [123]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [6]
+            │       │           ╰── Constant Int [6]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [g]
             │       │   │       ╰── Unary [-]
-            │       │   │           ╰── Constant [10L]
+            │       │   │           ╰── Constant Long [10]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [7]
+            │       │           ╰── Constant Int [7]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [h]
-            │       │   │       ╰── Constant [1234]
+            │       │   │       ╰── Constant Int [1234]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [8]
+            │       │           ╰── Constant Int [8]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -21690,14 +21690,14 @@ fn test_chapter_11_valid_implicit_casts_convert_function_arguments() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [4294967298L]
+                    │       ╰── Constant Long [4294967298]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -21705,14 +21705,14 @@ fn test_chapter_11_valid_implicit_casts_convert_function_arguments() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [4294967296L]
+                    │           ╰── Constant Long [4294967296]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [21474836475L]
+                    │       ╰── Constant Long [21474836475]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── e
@@ -21720,7 +21720,7 @@ fn test_chapter_11_valid_implicit_casts_convert_function_arguments() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [101]
+                    │           ╰── Constant Int [101]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── f
@@ -21728,7 +21728,7 @@ fn test_chapter_11_valid_implicit_casts_convert_function_arguments() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [123]
+                    │           ╰── Constant Int [123]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── g
@@ -21736,7 +21736,7 @@ fn test_chapter_11_valid_implicit_casts_convert_function_arguments() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [10]
+                    │           ╰── Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── h
@@ -21744,7 +21744,7 @@ fn test_chapter_11_valid_implicit_casts_convert_function_arguments() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [9223372036854774574L]
+                    │           ╰── Constant Long [9223372036854774574]
                     ╰── Return
                         ╰── FunctionCall [foo]
                             ├── Var [a]
@@ -21782,36 +21782,36 @@ fn test_chapter_11_valid_implicit_casts_convert_static_initializer() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [8589934592L]
+            │       ╰── Constant Long [8589934592]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── j
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant [123456]
+            │       ╰── Constant Int [123456]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [j]
-                    │   │       ╰── Constant [123456L]
+                    │   │       ╰── Constant Long [123456]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -21837,24 +21837,24 @@ fn test_chapter_11_valid_implicit_casts_long_constants() {
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Binary [+]
-                    │   │       │   ├── Constant [2147483647L]
-                    │   │       │   ╰── Constant [2147483647L]
-                    │   │       ╰── Constant [0L]
+                    │   │       │   ├── Constant Long [2147483647]
+                    │   │       │   ╰── Constant Long [2147483647]
+                    │   │       ╰── Constant Long [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [<]
-                    │   │       ├── Constant [17179869184L]
-                    │   │       ╰── Constant [100L]
+                    │   │       ├── Constant Long [17179869184]
+                    │   │       ╰── Constant Long [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -21927,21 +21927,21 @@ fn test_chapter_11_valid_libraries_long_args() {
                     │   │       ├── Binary [+]
                     │   │       │   ├── Var [d]
                     │   │       │   ╰── Var [f]
-                    │   │       ╰── Constant [100L]
+                    │   │       ╰── Constant Long [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [100L]
+                    │   │       ╰── Constant Long [100]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -22007,15 +22007,15 @@ fn test_chapter_11_valid_libraries_long_args_client() {
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [test_sum]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ├── Constant [34359738368L]
-                            ├── Constant [0]
-                            ├── Constant [34359738368L]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ╰── Constant [34359738368L]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ├── Constant Long [34359738368]
+                            ├── Constant Int [0]
+                            ├── Constant Long [34359738368]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ╰── Constant Long [34359738368]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -22039,7 +22039,7 @@ fn test_chapter_11_valid_libraries_long_global_var() {
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant [8589934592L]
+            │       ╰── Constant Long [8589934592]
             ├── Function [return_l]
             │   ╰── Body
             │       ╰── Return
@@ -22087,42 +22087,42 @@ fn test_chapter_11_valid_libraries_long_global_var_client() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [return_l]
-                    │   │       ╰── Constant [8589934592L]
+                    │   │       ╰── Constant Long [8589934592]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [return_l_as_int]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ├── Assign [=]
                     │   ├── Var [l]
                     │   ╰── Binary [-]
                     │       ├── Var [l]
-                    │       ╰── Constant [10L]
+                    │       ╰── Constant Long [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [return_l]
-                    │   │       ╰── Constant [8589934582L]
+                    │   │       ╰── Constant Long [8589934582]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [return_l_as_int]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [10]
+                    │   │           ╰── Constant Int [10]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [4]
+                    │           ╰── Constant Int [4]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -22202,21 +22202,21 @@ fn test_chapter_11_valid_libraries_maintain_stack_alignment_client() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── z
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ╰── Return
                         ╰── FunctionCall [add_variables]
                             ├── Var [x]
@@ -22299,19 +22299,19 @@ fn test_chapter_11_valid_libraries_return_long_client() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── FunctionCall [add]
-                    │           ├── Constant [2147483645]
-                    │           ╰── Constant [2147483645]
+                    │           ├── Constant Int [2147483645]
+                    │           ╰── Constant Int [2147483645]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [4294967290L]
+                    │   │       ╰── Constant Long [4294967290]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -22390,7 +22390,7 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
             │               ├── Binary [+]
             │               │   ├── Var [a]
             │               │   ╰── Var [b]
-            │               ╰── Constant [4294967295L]
+            │               ╰── Constant Long [4294967295]
             ├── Function [subtraction]
             │   ╰── Body
             │       ╰── Return
@@ -22399,26 +22399,26 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
             │               │   ├── Var [a]
             │               │   ╰── Var [b]
             │               ╰── Unary [-]
-            │                   ╰── Constant [4294967380L]
+            │                   ╰── Constant Long [4294967380]
             ├── Function [multiplication]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Binary [*]
             │               │   ├── Var [a]
-            │               │   ╰── Constant [4L]
-            │               ╰── Constant [17179869160L]
+            │               │   ╰── Constant Long [4]
+            │               ╰── Constant Long [17179869160]
             ├── Function [division]
             │   ╰── Body
             │       ├── Assign [=]
             │       │   ├── Var [b]
             │       │   ╰── Binary [/]
             │       │       ├── Var [a]
-            │       │       ╰── Constant [128L]
+            │       │       ╰── Constant Long [128]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [b]
-            │               ╰── Constant [33554431L]
+            │               ╰── Constant Long [33554431]
             ├── Function [remaind]
             │   ╰── Body
             │       ├── Assign [=]
@@ -22426,12 +22426,12 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
             │       │   ╰── Binary [%]
             │       │       ├── Unary [-]
             │       │       │   ╰── Var [a]
-            │       │       ╰── Constant [4294967290L]
+            │       │       ╰── Constant Long [4294967290]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [b]
             │               ╰── Unary [-]
-            │                   ╰── Constant [5L]
+            │                   ╰── Constant Long [5]
             ├── Function [complement]
             │   ╰── Body
             │       ╰── Return
@@ -22439,15 +22439,15 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
             │               ├── Unary [~]
             │               │   ╰── Var [a]
             │               ╰── Unary [-]
-            │                   ╰── Constant [9223372036854775807L]
+            │                   ╰── Constant Long [9223372036854775807]
             ╰── Function [main]
                 ╰── Body
                     ├── Assign [=]
                     │   ├── Var [a]
-                    │   ╰── Constant [4294967290L]
+                    │   ╰── Constant Long [4294967290]
                     ├── Assign [=]
                     │   ├── Var [b]
-                    │   ╰── Constant [5L]
+                    │   ╰── Constant Long [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22455,14 +22455,14 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [4294967290L]
+                    │       ╰── Constant Long [4294967290]
                     ├── Assign [=]
                     │   ├── Var [b]
-                    │   ╰── Constant [90L]
+                    │   ╰── Constant Long [90]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22470,10 +22470,10 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── Assign [=]
                     │   ├── Var [a]
-                    │   ╰── Constant [4294967290L]
+                    │   ╰── Constant Long [4294967290]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22481,10 +22481,10 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── Assign [=]
                     │   ├── Var [a]
-                    │   ╰── Constant [4294967290L]
+                    │   ╰── Constant Long [4294967290]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22492,10 +22492,10 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── Assign [=]
                     │   ├── Var [a]
-                    │   ╰── Constant [8589934585L]
+                    │   ╰── Constant Long [8589934585]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22503,10 +22503,10 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── Assign [=]
                     │   ├── Var [a]
-                    │   ╰── Constant [9223372036854775806L]
+                    │   ╰── Constant Long [9223372036854775806]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22514,9 +22514,9 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -22541,21 +22541,21 @@ fn test_chapter_11_valid_long_expressions_assign() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [4294967290L]
+                    │       ╰── Constant Long [4294967290]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [0L]
+                    │       ╰── Constant Long [0]
                     ├── Assign [=]
                     │   ├── Var [b]
                     │   ╰── Var [a]
                     ╰── Return
                         ╰── Binary [==]
                             ├── Var [b]
-                            ╰── Constant [4294967290L]
+                            ╰── Constant Long [4294967290]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -22624,25 +22624,25 @@ fn test_chapter_11_valid_long_expressions_comparisons() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [>]
-            │               ├── Constant [8589934593L]
-            │               ╰── Constant [255L]
+            │               ├── Constant Long [8589934593]
+            │               ╰── Constant Long [255]
             ├── Function [compare_constants_2]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [<]
-            │               ├── Constant [255L]
-            │               ╰── Constant [8589934593L]
+            │               ├── Constant Long [255]
+            │               ╰── Constant Long [8589934593]
             ├── Function [l_geq_2_60]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [>=]
             │               ├── Var [l]
-            │               ╰── Constant [1152921504606846976L]
+            │               ╰── Constant Long [1152921504606846976]
             ├── Function [uint_max_leq_l]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [<=]
-            │               ├── Constant [4294967295L]
+            │               ├── Constant Long [4294967295]
             │               ╰── Var [l]
             ├── Function [l_eq_l2]
             │   ╰── Body
@@ -22659,7 +22659,7 @@ fn test_chapter_11_valid_long_expressions_comparisons() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22667,28 +22667,28 @@ fn test_chapter_11_valid_long_expressions_comparisons() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── Assign [=]
                     │   ├── Var [l]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [9223372036854775807L]
+                    │       ╰── Constant Long [9223372036854775807]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── FunctionCall [l_geq_2_60]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── FunctionCall [uint_max_leq_l]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── Assign [=]
                     │   ├── Var [l]
-                    │   ╰── Constant [1152921504606846976L]
+                    │   ╰── Constant Long [1152921504606846976]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22696,7 +22696,7 @@ fn test_chapter_11_valid_long_expressions_comparisons() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22704,7 +22704,7 @@ fn test_chapter_11_valid_long_expressions_comparisons() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ├── Assign [=]
                     │   ├── Var [l2]
                     │   ╰── Var [l]
@@ -22715,9 +22715,9 @@ fn test_chapter_11_valid_long_expressions_comparisons() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [7]
+                    │               ╰── Constant Int [7]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -22759,40 +22759,40 @@ fn test_chapter_11_valid_long_expressions_large_constants() {
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant [5L]
+            │       ╰── Constant Long [5]
             ├── Function [add_large]
             │   ╰── Body
             │       ├── Assign [=]
             │       │   ├── Var [x]
             │       │   ╰── Binary [+]
             │       │       ├── Var [x]
-            │       │       ╰── Constant [4294967290L]
+            │       │       ╰── Constant Long [4294967290]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [x]
-            │               ╰── Constant [4294967295L]
+            │               ╰── Constant Long [4294967295]
             ├── Function [subtract_large]
             │   ╰── Body
             │       ├── Assign [=]
             │       │   ├── Var [x]
             │       │   ╰── Binary [-]
             │       │       ├── Var [x]
-            │       │       ╰── Constant [4294967290L]
+            │       │       ╰── Constant Long [4294967290]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [x]
-            │               ╰── Constant [5L]
+            │               ╰── Constant Long [5]
             ├── Function [multiply_by_large]
             │   ╰── Body
             │       ├── Assign [=]
             │       │   ├── Var [x]
             │       │   ╰── Binary [*]
             │       │       ├── Var [x]
-            │       │       ╰── Constant [4294967290L]
+            │       │       ╰── Constant Long [4294967290]
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [x]
-            │               ╰── Constant [21474836450L]
+            │               ╰── Constant Long [21474836450]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -22802,7 +22802,7 @@ fn test_chapter_11_valid_long_expressions_large_constants() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22810,7 +22810,7 @@ fn test_chapter_11_valid_long_expressions_large_constants() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22818,9 +22818,9 @@ fn test_chapter_11_valid_long_expressions_large_constants() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -22894,9 +22894,9 @@ fn test_chapter_11_valid_long_expressions_logical() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant [1]
+            │       │               ╰── Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ├── Function [and]
             │   ├── Parameters
             │   │   ├── Param
@@ -22939,14 +22939,14 @@ fn test_chapter_11_valid_long_expressions_logical() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [1152921504606846976L]
+                    │       ╰── Constant Long [1152921504606846976]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── zero
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [0L]
+                    │       ╰── Constant Long [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── FunctionCall [not]
@@ -22954,7 +22954,7 @@ fn test_chapter_11_valid_long_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22963,7 +22963,7 @@ fn test_chapter_11_valid_long_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -22972,7 +22972,7 @@ fn test_chapter_11_valid_long_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── FunctionCall [if_cond]
@@ -22980,28 +22980,28 @@ fn test_chapter_11_valid_long_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── FunctionCall [and]
                     │   │       ├── Var [zero]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [or]
-                    │   │           ├── Constant [1]
+                    │   │           ├── Constant Int [1]
                     │   │           ╰── Var [l]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -23055,7 +23055,7 @@ fn test_chapter_11_valid_long_expressions_long_and_int_locals() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [8589934592L]
+                    │       ╰── Constant Long [8589934592]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -23063,7 +23063,7 @@ fn test_chapter_11_valid_long_expressions_long_and_int_locals() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -23071,52 +23071,52 @@ fn test_chapter_11_valid_long_expressions_long_and_int_locals() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [8589934592L]
+                    │           ╰── Constant Long [8589934592]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [8589934592L]
+                    │   │       ╰── Constant Long [8589934592]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [b]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [c]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [8589934592L]
+                    │   │           ╰── Constant Long [8589934592]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [d]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Unary [-]
@@ -23125,57 +23125,57 @@ fn test_chapter_11_valid_long_expressions_long_and_int_locals() {
                     │   ├── Var [b]
                     │   ╰── Binary [-]
                     │       ├── Var [b]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [c]
                     │   ╰── Binary [+]
                     │       ├── Var [c]
-                    │       ╰── Constant [8589934594L]
+                    │       ╰── Constant Long [8589934594]
                     ├── Assign [=]
                     │   ├── Var [d]
                     │   ╰── Binary [+]
                     │       ├── Var [d]
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [a]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [8589934592L]
+                    │   │           ╰── Constant Long [8589934592]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [b]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [2]
+                    │   │           ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [c]
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [7]
+                    │               ╰── Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [d]
-                    │   │       ╰── Constant [20]
+                    │   │       ╰── Constant Int [20]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [8]
+                    │               ╰── Constant Int [8]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -23251,34 +23251,34 @@ fn test_chapter_11_valid_long_expressions_long_args() {
             │       │   │       ├── Binary [+]
             │       │   │       │   ├── Var [a]
             │       │   │       │   ╰── Var [b]
-            │       │   │       ╰── Constant [100L]
+            │       │   │       ╰── Constant Long [100]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant [1]
+            │       │               ╰── Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [<]
             │       │   │       ├── Var [i]
-            │       │   │       ╰── Constant [100L]
+            │       │   │       ╰── Constant Long [100]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant [2]
+            │       │           ╰── Constant Int [2]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [test_sum]
-                            ├── Constant [34359738368L]
-                            ├── Constant [34359738368L]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ├── Constant [0]
-                            ╰── Constant [34359738368L]
+                            ├── Constant Long [34359738368]
+                            ├── Constant Long [34359738368]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ├── Constant Int [0]
+                            ╰── Constant Long [34359738368]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -23316,24 +23316,24 @@ fn test_chapter_11_valid_long_expressions_multi_op() {
             │       │       ╰── Binary [-]
             │       │           ├── Binary [*]
             │       │           │   ├── Var [a]
-            │       │           │   ╰── Constant [5L]
-            │       │           ╰── Constant [10L]
+            │       │           │   ╰── Constant Long [5]
+            │       │           ╰── Constant Long [10]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [==]
             │       │   │       ├── Var [b]
-            │       │   │       ╰── Constant [21474836440L]
+            │       │   │       ╰── Constant Long [21474836440]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant [1]
+            │       │               ╰── Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [target]
-                            ╰── Constant [4294967290L]
+                            ╰── Constant Long [4294967290]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -23388,19 +23388,19 @@ fn test_chapter_11_valid_long_expressions_return_long() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── FunctionCall [add]
-                    │           ├── Constant [2147483645]
-                    │           ╰── Constant [2147483645]
+                    │           ├── Constant Int [2147483645]
+                    │           ╰── Constant Int [2147483645]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [==]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [4294967290L]
+                    │   │       ╰── Constant Long [4294967290]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -23576,7 +23576,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant [5L]
+            │       ╰── Constant Long [5]
             ├── Function [main]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -23587,7 +23587,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [*]
             │       │           ├── Var [glob]
-            │       │           ╰── Constant [4294967307L]
+            │       │           ╰── Constant Long [4294967307]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── one
@@ -23596,7 +23596,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
             │       │           ├── Var [glob]
-            │       │           ╰── Constant [4]
+            │       │           ╰── Constant Int [4]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── two
@@ -23613,7 +23613,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
-            │       │           ├── Constant [2]
+            │       │           ├── Constant Int [2]
             │       │           ╰── Var [one]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -23631,7 +23631,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
-            │       │           ├── Constant [6]
+            │       │           ├── Constant Int [6]
             │       │           ╰── Var [one]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -23650,7 +23650,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [one]
-            │       │           ╰── Constant [6]
+            │       │           ╰── Constant Int [6]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── eight
@@ -23659,7 +23659,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [*]
             │       │           ├── Var [two]
-            │       │           ╰── Constant [4]
+            │       │           ╰── Constant Int [4]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── nine
@@ -23685,7 +23685,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
-            │       │           ├── Constant [16]
+            │       │           ├── Constant Int [16]
             │       │           ╰── Var [five]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -23709,7 +23709,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ├── Var [ten]
             │       │   ├── Var [eleven]
             │       │   ├── Var [twelve]
-            │       │   ╰── Constant [1]
+            │       │   ╰── Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── thirteen
@@ -23718,7 +23718,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [glob]
-            │       │           ╰── Constant [8]
+            │       │           ╰── Constant Int [8]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── fourteen
@@ -23727,7 +23727,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [thirteen]
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── fifteen
@@ -23735,7 +23735,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
-            │       │           ├── Constant [28]
+            │       │           ├── Constant Int [28]
             │       │           ╰── Var [thirteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -23745,7 +23745,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [fourteen]
-            │       │           ╰── Constant [2]
+            │       │           ╰── Constant Int [2]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── seventeen
@@ -23753,7 +23753,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
-            │       │           ├── Constant [4]
+            │       │           ├── Constant Int [4]
             │       │           ╰── Var [thirteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -23762,7 +23762,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
-            │       │           ├── Constant [32]
+            │       │           ├── Constant Int [32]
             │       │           ╰── Var [fourteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -23771,7 +23771,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
-            │       │           ├── Constant [35]
+            │       │           ├── Constant Int [35]
             │       │           ╰── Var [sixteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -23781,7 +23781,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [fifteen]
-            │       │           ╰── Constant [5]
+            │       │           ╰── Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_one
@@ -23791,8 +23791,8 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │       ╰── Binary [-]
             │       │           ├── Binary [*]
             │       │           │   ├── Var [thirteen]
-            │       │           │   ╰── Constant [2]
-            │       │           ╰── Constant [5]
+            │       │           │   ╰── Constant Int [2]
+            │       │           ╰── Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_two
@@ -23801,7 +23801,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [fifteen]
-            │       │           ╰── Constant [7]
+            │       │           ╰── Constant Int [7]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_three
@@ -23809,7 +23809,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
-            │       │           ├── Constant [6]
+            │       │           ├── Constant Int [6]
             │       │           ╰── Var [seventeen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -23819,7 +23819,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [thirteen]
-            │       │           ╰── Constant [11]
+            │       │           ╰── Constant Int [11]
             │       ├── FunctionCall [check_12_ints]
             │       │   ├── Var [thirteen]
             │       │   ├── Var [fourteen]
@@ -23833,19 +23833,19 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
             │       │   ├── Var [twenty_two]
             │       │   ├── Var [twenty_three]
             │       │   ├── Var [twenty_four]
-            │       │   ╰── Constant [13]
+            │       │   ╰── Constant Int [13]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [should_spill]
-            │       │   │       ╰── Constant [21474836535L]
+            │       │   │       ╰── Constant Long [21474836535]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── Unary [-]
-            │       │                   ╰── Constant [1]
+            │       │                   ╰── Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [check_12_ints]
                 ├── Parameters
                 │   ├── Param
@@ -23920,12 +23920,12 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -23939,7 +23939,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -23953,7 +23953,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -23967,7 +23967,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -23981,7 +23981,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -23995,7 +23995,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -24009,7 +24009,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [6]
+                    │       ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -24023,7 +24023,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [7]
+                    │       ╰── Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -24037,7 +24037,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [8]
+                    │       ╰── Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -24051,7 +24051,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [9]
+                    │       ╰── Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -24065,7 +24065,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -24079,7 +24079,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [11]
+                    │       ╰── Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -24090,7 +24090,7 @@ fn test_chapter_11_valid_long_expressions_rewrite_large_multiply_regression() {
                     │           ╰── Return
                     │               ╰── Var [expected]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -24113,13 +24113,13 @@ fn test_chapter_11_valid_long_expressions_simple() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [9223372036854775807L]
+                    │       ╰── Constant Long [9223372036854775807]
                     ╰── Return
                         ╰── Binary [==]
                             ├── Binary [-]
                             │   ├── Var [l]
-                            │   ╰── Constant [2L]
-                            ╰── Constant [9223372036854775805L]
+                            │   ╰── Constant Long [2]
+                            ╰── Constant Long [9223372036854775805]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -24148,7 +24148,7 @@ fn test_chapter_11_valid_long_expressions_static_long() {
             │   ├── Type
             │   │   ╰── Long
             │   ├── Initializer
-            │   │   ╰── Constant [4294967290L]
+            │   │   ╰── Constant Long [4294967290]
             │   ╰── Static
             ╰── Function [main]
                 ╰── Body
@@ -24157,23 +24157,23 @@ fn test_chapter_11_valid_long_expressions_static_long() {
                     │   │   ╰── Binary [==]
                     │   │       ├── Binary [+]
                     │   │       │   ├── Var [foo]
-                    │   │       │   ╰── Constant [5L]
-                    │   │       ╰── Constant [4294967295L]
+                    │   │       │   ╰── Constant Long [5]
+                    │   │       ╰── Constant Long [4294967295]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── Assign [=]
                     │           │   ├── Var [foo]
-                    │           │   ╰── Constant [1152921504606846988L]
+                    │           │   ╰── Constant Long [1152921504606846988]
                     │           ╰── If
                     │               ├── Condition
                     │               │   ╰── Binary [==]
                     │               │       ├── Var [foo]
-                    │               │       ╰── Constant [1152921504606846988L]
+                    │               │       ╰── Constant Long [1152921504606846988]
                     │               ╰── Then
                     │                   ╰── Return
-                    │                       ╰── Constant [1]
+                    │                       ╰── Constant Int [1]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -24285,21 +24285,21 @@ fn test_chapter_11_valid_long_expressions_type_specifiers() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [1L]
+                    │       ╰── Constant Long [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [2L]
+                    │       ╰── Constant Long [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── z
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant [3L]
+                    │       ╰── Constant Long [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── a
@@ -24308,14 +24308,14 @@ fn test_chapter_11_valid_long_expressions_type_specifiers() {
                     │   ╰── Extern
                     ├── Assign [=]
                     │   ├── Var [a]
-                    │   ╰── Constant [4]
+                    │   ╰── Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── sum
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -24324,50 +24324,50 @@ fn test_chapter_11_valid_long_expressions_type_specifiers() {
                     │   │       ├── Type
                     │   │       │   ╰── Long
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [1099511627776L]
+                    │   │           ╰── Constant Long [1099511627776]
                     │   ├── Condition
                     │   │   ╰── Binary [>]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [i]
                     │   │       ╰── Binary [/]
                     │   │           ├── Var [i]
-                    │   │           ╰── Constant [2]
+                    │   │           ╰── Constant Int [2]
                     │   ╰── Block
                     │       ╰── Assign [=]
                     │           ├── Var [sum]
                     │           ╰── Binary [+]
                     │               ├── Var [sum]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [y]
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [4]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -24375,22 +24375,22 @@ fn test_chapter_11_valid_long_expressions_type_specifiers() {
                     │   │       │   ├── Var [x]
                     │   │       │   ├── Var [y]
                     │   │       │   ╰── Var [z]
-                    │   │       ╰── Constant [6]
+                    │   │       ╰── Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [sum]
-                    │   │       ╰── Constant [41]
+                    │   │       ╰── Constant Int [41]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -24419,20 +24419,20 @@ fn test_chapter_12_invalid_labels_extra_credit_switch_duplicate_cases() {
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10U]
+                    │       ╰── Constant UInt [10]
                     ╰── Switch
                         ├── Expression
                         │   ╰── Var [ui]
                         ╰── Block
                             ├── Case [4294967295]
                             │   ╰── Return
-                            │       ╰── Constant [0]
+                            │       ╰── Constant Int [0]
                             ├── Case [1099511627775]
                             │   ╰── Return
-                            │       ╰── Constant [1]
+                            │       ╰── Constant Int [1]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant [2]
+                                    ╰── Constant Int [2]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -24487,7 +24487,7 @@ fn test_chapter_12_invalid_types_conflicting_signed_unsigned() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -24510,11 +24510,11 @@ fn test_chapter_12_invalid_types_conflicting_uint_ulong() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -24539,7 +24539,7 @@ fn test_chapter_12_valid_explicit_casts_chained_casts() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant [4294967200U]
+            │       ╰── Constant UInt [4294967200]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -24555,10 +24555,10 @@ fn test_chapter_12_valid_explicit_casts_chained_casts() {
                     │   │       │           ╰── Expression
                     │   │       │               ╰── Var [ui]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [96L]
+                    │   │           ╰── Constant Long [96]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -24571,12 +24571,12 @@ fn test_chapter_12_valid_explicit_casts_chained_casts() {
                     │   │       │           │   ╰── Int
                     │   │       │           ╰── Expression
                     │   │       │               ╰── Var [ui]
-                    │   │       ╰── Constant [18446744073709551520UL]
+                    │   │       ╰── Constant ULong [18446744073709551520]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -24699,43 +24699,43 @@ fn test_chapter_12_valid_explicit_casts_extension() {
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [int_to_ulong]
-                    │   │           ├── Constant [10]
-                    │   │           ╰── Constant [10UL]
+                    │   │           ├── Constant Int [10]
+                    │   │           ╰── Constant ULong [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [int_to_ulong]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [10]
-                    │   │           ╰── Constant [18446744073709551606UL]
+                    │   │           │   ╰── Constant Int [10]
+                    │   │           ╰── Constant ULong [18446744073709551606]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [uint_to_long]
-                    │   │           ├── Constant [4294967200U]
-                    │   │           ╰── Constant [4294967200L]
+                    │   │           ├── Constant UInt [4294967200]
+                    │   │           ╰── Constant Long [4294967200]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [uint_to_ulong]
-                    │   │           ├── Constant [4294967200U]
-                    │   │           ╰── Constant [4294967200UL]
+                    │   │           ├── Constant UInt [4294967200]
+                    │   │           ╰── Constant ULong [4294967200]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -24743,14 +24743,14 @@ fn test_chapter_12_valid_explicit_casts_extension() {
                     │   │       │   ├── Target
                     │   │       │   │   ╰── Unsigned Long
                     │   │       │   ╰── Expression
-                    │   │       │       ╰── Constant [4294967200U]
-                    │   │       ╰── Constant [4294967200UL]
+                    │   │       │       ╰── Constant UInt [4294967200]
+                    │   │       ╰── Constant ULong [4294967200]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -24926,7 +24926,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant [5000U]
+            │       ╰── Constant UInt [5000]
             ├── Function [main]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -24948,7 +24948,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
             │       │           ├── Var [glob]
-            │       │           ╰── Constant [4999]
+            │       │           ╰── Constant Int [4999]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── two
@@ -24965,7 +24965,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
-            │       │           ├── Constant [2]
+            │       │           ├── Constant Int [2]
             │       │           ╰── Var [one]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -24983,7 +24983,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
-            │       │           ├── Constant [6]
+            │       │           ├── Constant Int [6]
             │       │           ╰── Var [one]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -25002,7 +25002,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [one]
-            │       │           ╰── Constant [6]
+            │       │           ╰── Constant Int [6]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── eight
@@ -25011,7 +25011,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [*]
             │       │           ├── Var [two]
-            │       │           ╰── Constant [4]
+            │       │           ╰── Constant Int [4]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── nine
@@ -25037,7 +25037,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
-            │       │           ├── Constant [16]
+            │       │           ├── Constant Int [16]
             │       │           ╰── Var [five]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -25061,7 +25061,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ├── Var [ten]
             │       │   ├── Var [eleven]
             │       │   ├── Var [twelve]
-            │       │   ╰── Constant [1]
+            │       │   ╰── Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── thirteen
@@ -25070,7 +25070,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
             │       │           ├── Var [glob]
-            │       │           ╰── Constant [4987U]
+            │       │           ╰── Constant UInt [4987]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── fourteen
@@ -25079,7 +25079,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [thirteen]
-            │       │           ╰── Constant [1]
+            │       │           ╰── Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── fifteen
@@ -25087,7 +25087,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
-            │       │           ├── Constant [28]
+            │       │           ├── Constant Int [28]
             │       │           ╰── Var [thirteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -25097,7 +25097,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [fourteen]
-            │       │           ╰── Constant [2]
+            │       │           ╰── Constant Int [2]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── seventeen
@@ -25105,7 +25105,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
-            │       │           ├── Constant [4]
+            │       │           ├── Constant Int [4]
             │       │           ╰── Var [thirteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -25114,7 +25114,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
-            │       │           ├── Constant [32]
+            │       │           ├── Constant Int [32]
             │       │           ╰── Var [fourteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -25123,7 +25123,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [-]
-            │       │           ├── Constant [35]
+            │       │           ├── Constant Int [35]
             │       │           ╰── Var [sixteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -25133,7 +25133,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [fifteen]
-            │       │           ╰── Constant [5]
+            │       │           ╰── Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_one
@@ -25143,8 +25143,8 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │       ╰── Binary [-]
             │       │           ├── Binary [*]
             │       │           │   ├── Var [thirteen]
-            │       │           │   ╰── Constant [2]
-            │       │           ╰── Constant [5]
+            │       │           │   ╰── Constant Int [2]
+            │       │           ╰── Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_two
@@ -25153,7 +25153,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [fifteen]
-            │       │           ╰── Constant [7]
+            │       │           ╰── Constant Int [7]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_three
@@ -25161,7 +25161,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
-            │       │           ├── Constant [6]
+            │       │           ├── Constant Int [6]
             │       │           ╰── Var [seventeen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -25171,7 +25171,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── Binary [+]
             │       │           ├── Var [thirteen]
-            │       │           ╰── Constant [11]
+            │       │           ╰── Constant Int [11]
             │       ├── FunctionCall [check_12_ints]
             │       │   ├── Var [thirteen]
             │       │   ├── Var [fourteen]
@@ -25185,19 +25185,19 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ├── Var [twenty_two]
             │       │   ├── Var [twenty_three]
             │       │   ├── Var [twenty_four]
-            │       │   ╰── Constant [13]
+            │       │   ╰── Constant Int [13]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── Binary [!=]
             │       │   │       ├── Var [should_spill]
-            │       │   │       ╰── Constant [5000L]
+            │       │   │       ╰── Constant Long [5000]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── Unary [-]
-            │       │                   ╰── Constant [1]
+            │       │                   ╰── Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ╰── Function [check_12_ints]
                 ├── Parameters
                 │   ├── Param
@@ -25272,12 +25272,12 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25291,7 +25291,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25305,7 +25305,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [2]
+                    │       ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25319,7 +25319,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [3]
+                    │       ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25333,7 +25333,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [4]
+                    │       ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25347,7 +25347,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [5]
+                    │       ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25361,7 +25361,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [6]
+                    │       ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25375,7 +25375,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [7]
+                    │       ╰── Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25389,7 +25389,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [8]
+                    │       ╰── Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25403,7 +25403,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [9]
+                    │       ╰── Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25417,7 +25417,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25431,7 +25431,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Var [expected]
                     │   ╰── Binary [+]
                     │       ├── Var [start]
-                    │       ╰── Constant [11]
+                    │       ╰── Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25442,7 +25442,7 @@ fn test_chapter_12_valid_explicit_casts_rewrite_movz_regression() {
                     │           ╰── Return
                     │               ╰── Var [expected]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -25469,7 +25469,7 @@ fn test_chapter_12_valid_explicit_casts_round_trip_casts() {
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant [8589934580UL]
+            │       ╰── Constant ULong [8589934580]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -25491,10 +25491,10 @@ fn test_chapter_12_valid_explicit_casts_round_trip_casts() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [b]
-                    │   │       ╰── Constant [4294967284UL]
+                    │   │       ╰── Constant ULong [4294967284]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [b]
                     │   ╰── Cast
@@ -25510,12 +25510,12 @@ fn test_chapter_12_valid_explicit_casts_round_trip_casts() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [b]
-                    │   │       ╰── Constant [18446744073709551604UL]
+                    │   │       ╰── Constant ULong [18446744073709551604]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -25643,46 +25643,46 @@ fn test_chapter_12_valid_explicit_casts_same_size_conversion() {
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [int_to_uint]
-                    │   │           ├── Constant [10]
-                    │   │           ╰── Constant [10U]
+                    │   │           ├── Constant Int [10]
+                    │   │           ╰── Constant UInt [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [uint_to_int]
-                    │   │           ├── Constant [10U]
-                    │   │           ╰── Constant [10]
+                    │   │           ├── Constant UInt [10]
+                    │   │           ╰── Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [long_to_ulong]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [1000L]
-                    │   │           ╰── Constant [18446744073709550616UL]
+                    │   │           │   ╰── Constant Long [1000]
+                    │   │           ╰── Constant ULong [18446744073709550616]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [ulong_to_long]
-                    │   │           ├── Constant [18446744073709550616UL]
+                    │   │           ├── Constant ULong [18446744073709550616]
                     │   │           ╰── Unary [-]
-                    │   │               ╰── Constant [1000L]
+                    │   │               ╰── Constant Long [1000]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -25810,85 +25810,85 @@ fn test_chapter_12_valid_explicit_casts_truncate() {
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [long_to_uint]
-                    │   │           ├── Constant [100L]
-                    │   │           ╰── Constant [100U]
+                    │   │           ├── Constant Long [100]
+                    │   │           ╰── Constant UInt [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [long_to_uint]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [9223372036854774574L]
-                    │   │           ╰── Constant [1234U]
+                    │   │           │   ╰── Constant Long [9223372036854774574]
+                    │   │           ╰── Constant UInt [1234]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [ulong_to_int]
-                    │   │           ├── Constant [100UL]
-                    │   │           ╰── Constant [100]
+                    │   │           ├── Constant ULong [100]
+                    │   │           ╰── Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [ulong_to_uint]
-                    │   │           ├── Constant [100UL]
-                    │   │           ╰── Constant [100U]
+                    │   │           ├── Constant ULong [100]
+                    │   │           ╰── Constant UInt [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [ulong_to_uint]
-                    │   │           ├── Constant [4294967200UL]
-                    │   │           ╰── Constant [4294967200U]
+                    │   │           ├── Constant ULong [4294967200]
+                    │   │           ╰── Constant UInt [4294967200]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [ulong_to_int]
-                    │   │           ├── Constant [4294967200UL]
+                    │   │           ├── Constant ULong [4294967200]
                     │   │           ╰── Unary [-]
-                    │   │               ╰── Constant [96]
+                    │   │               ╰── Constant Int [96]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [ulong_to_uint]
-                    │   │           ├── Constant [1152921506754330624UL]
-                    │   │           ╰── Constant [2147483648U]
+                    │   │           ├── Constant ULong [1152921506754330624]
+                    │   │           ╰── Constant UInt [2147483648]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [7]
+                    │               ╰── Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [ulong_to_int]
-                    │   │           ├── Constant [1152921506754330624UL]
+                    │   │           ├── Constant ULong [1152921506754330624]
                     │   │           ╰── Unary [-]
-                    │   │               ╰── Constant [2147483648L]
+                    │   │               ╰── Constant Long [2147483648]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [8]
+                    │               ╰── Constant Int [8]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ui
@@ -25899,17 +25899,17 @@ fn test_chapter_12_valid_explicit_casts_truncate() {
                     │           ├── Target
                     │           │   ╰── Unsigned Int
                     │           ╰── Expression
-                    │               ╰── Constant [17179869189UL]
+                    │               ╰── Constant ULong [17179869189]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [ui]
-                    │   │       ╰── Constant [5]
+                    │   │       ╰── Constant Int [5]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [9]
+                    │           ╰── Constant Int [9]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -25943,34 +25943,34 @@ fn test_chapter_12_valid_extra_credit_bitwise_unsigned_ops() {
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1U]
+                    │           ╰── Constant UInt [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ul
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant [9223372036854775808UL]
+                    │       ╰── Constant ULong [9223372036854775808]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [&]
                     │   │       │   ├── Var [ui]
                     │   │       │   ╰── Var [ul]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [|]
                     │   │       │   ├── Var [ui]
                     │   │       │   ╰── Var [ul]
-                    │   │       ╰── Constant [9223372041149743103UL]
+                    │   │       ╰── Constant ULong [9223372041149743103]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -25978,7 +25978,7 @@ fn test_chapter_12_valid_extra_credit_bitwise_unsigned_ops() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25988,7 +25988,7 @@ fn test_chapter_12_valid_extra_credit_bitwise_unsigned_ops() {
                     │   │       ╰── Var [ul]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -25998,9 +25998,9 @@ fn test_chapter_12_valid_extra_credit_bitwise_unsigned_ops() {
                     │   │       ╰── Var [i]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [4]
+                    │           ╰── Constant Int [4]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -26037,61 +26037,61 @@ fn test_chapter_12_valid_extra_credit_bitwise_unsigned_shift() {
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1U]
+                    │           ╰── Constant UInt [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [<<]
                     │   │       │   ├── Var [ui]
-                    │   │       │   ╰── Constant [2L]
-                    │   │       ╰── Constant [4294967292L]
+                    │   │       │   ╰── Constant Long [2]
+                    │   │       ╰── Constant Long [4294967292]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [>>]
                     │   │       │   ├── Var [ui]
-                    │   │       │   ╰── Constant [2]
-                    │   │       ╰── Constant [1073741823]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [1073741823]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── shiftcount
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant [5]
+                    │   │   ╰── Constant Int [5]
                     │   ╰── Static
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [>>]
-                    │   │       │   ├── Constant [1000000U]
+                    │   │       │   ├── Constant UInt [1000000]
                     │   │       │   ╰── Var [shiftcount]
-                    │   │       ╰── Constant [31250]
+                    │   │       ╰── Constant Int [31250]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Binary [<<]
-                    │   │       │   ├── Constant [1000000U]
+                    │   │       │   ├── Constant UInt [1000000]
                     │   │       │   ╰── Var [shiftcount]
-                    │   │       ╰── Constant [32000000]
+                    │   │       ╰── Constant Int [32000000]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -26116,15 +26116,15 @@ fn test_chapter_12_valid_extra_credit_compound_assign_uint() {
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1U]
+                    │           ╰── Constant UInt [1]
                     ├── Assign [/=]
                     │   ├── Var [x]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [10L]
+                    │       ╰── Constant Long [10]
                     ╰── Return
                         ╰── Binary [==]
                             ├── Var [x]
-                            ╰── Constant [3865470567U]
+                            ╰── Constant UInt [3865470567]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -26157,41 +26157,41 @@ fn test_chapter_12_valid_extra_credit_compound_bitshift() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ├── Assign [>>=]
                     │   ├── Var [i]
-                    │   ╰── Constant [3U]
+                    │   ╰── Constant UInt [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ul
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant [18446744073709551615UL]
+                    │       ╰── Constant ULong [18446744073709551615]
                     ├── Assign [<<=]
                     │   ├── Var [ul]
-                    │   ╰── Constant [44]
+                    │   ╰── Constant Int [44]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [ul]
-                    │   │       ╰── Constant [18446726481523507200UL]
+                    │   │       ╰── Constant ULong [18446726481523507200]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -26237,46 +26237,46 @@ fn test_chapter_12_valid_extra_credit_compound_bitwise() {
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant [18446460386757245432UL]
+                    │       ╰── Constant ULong [18446460386757245432]
                     ├── Assign [&=]
                     │   ├── Var [ul]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [1000]
+                    │       ╰── Constant Int [1000]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [ul]
-                    │   │       ╰── Constant [18446460386757244952UL]
+                    │   │       ╰── Constant ULong [18446460386757244952]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── Assign [|=]
                     │   ├── Var [ul]
-                    │   ╰── Constant [4294967040U]
+                    │   ╰── Constant UInt [4294967040]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [ul]
-                    │   │       ╰── Constant [18446460386824683288UL]
+                    │   │       ╰── Constant ULong [18446460386824683288]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [123456]
+                    │       ╰── Constant Int [123456]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ui
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4042322160U]
+                    │       ╰── Constant UInt [4042322160]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l
@@ -26284,7 +26284,7 @@ fn test_chapter_12_valid_extra_credit_compound_bitwise() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [252645136]
+                    │           ╰── Constant Int [252645136]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Assign [^=]
@@ -26293,35 +26293,35 @@ fn test_chapter_12_valid_extra_credit_compound_bitwise() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [ui]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [123456]
+                    │   │       ╰── Constant Int [123456]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [252645136]
+                    │   │           ╰── Constant Int [252645136]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -26350,7 +26350,7 @@ fn test_chapter_12_valid_extra_credit_postfix_precedence() {
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4294967295U]
+                    │       ╰── Constant UInt [4294967295]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
@@ -26360,20 +26360,20 @@ fn test_chapter_12_valid_extra_credit_postfix_precedence() {
                     │   │       │   ╰── Expression
                     │   │       │       ╰── Postfix [++]
                     │   │       │           ╰── Var [ui]
-                    │   │       ╰── Constant [4294967295U]
+                    │   │       ╰── Constant UInt [4294967295]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Var [ui]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -26419,47 +26419,47 @@ fn test_chapter_12_valid_extra_credit_switch_uint() {
             │           ╰── Block
             │               ├── Case [5]
             │               │   ╰── Return
-            │               │       ╰── Constant [0]
+            │               │       ╰── Constant Int [0]
             │               ├── Case [4294967286]
             │               │   ╰── Return
-            │               │       ╰── Constant [1]
+            │               │       ╰── Constant Int [1]
             │               ├── Case [34359738378]
             │               │   ╰── Return
-            │               │       ╰── Constant [2]
+            │               │       ╰── Constant Int [2]
             │               ╰── Default
             │                   ╰── Return
-            │                       ╰── Constant [3]
+            │                       ╰── Constant Int [3]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [switch_on_uint]
-                    │   │       │   ╰── Constant [5]
-                    │   │       ╰── Constant [0]
+                    │   │       │   ╰── Constant Int [5]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [switch_on_uint]
-                    │   │       │   ╰── Constant [4294967286L]
-                    │   │       ╰── Constant [1]
+                    │   │       │   ╰── Constant Long [4294967286]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [switch_on_uint]
-                    │   │       │   ╰── Constant [10]
-                    │   │       ╰── Constant [2]
+                    │   │       │   ╰── Constant Int [10]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -26508,92 +26508,92 @@ fn test_chapter_12_valid_extra_credit_unsigned_incr_decr() {
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Postfix [--]
                     │   │       │   ╰── Var [i]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [4294967295U]
+                    │   │       ╰── Constant UInt [4294967295]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Unary [--]
                     │   │       │   ╰── Var [i]
-                    │   │       ╰── Constant [4294967294U]
+                    │   │       ╰── Constant UInt [4294967294]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [4294967294U]
+                    │   │       ╰── Constant UInt [4294967294]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant [18446744073709551614UL]
+                    │       ╰── Constant ULong [18446744073709551614]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Postfix [++]
                     │   │       │   ╰── Var [l]
-                    │   │       ╰── Constant [18446744073709551614UL]
+                    │   │       ╰── Constant ULong [18446744073709551614]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l]
-                    │   │       ╰── Constant [18446744073709551615UL]
+                    │   │       ╰── Constant ULong [18446744073709551615]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Unary [++]
                     │   │       │   ╰── Var [l]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [7]
+                    │               ╰── Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [8]
+                    │               ╰── Constant Int [8]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -26762,7 +26762,7 @@ fn test_chapter_12_valid_implicit_casts_common_type() {
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Var [result]
-            │               ╰── Constant [4294967295L]
+            │               ╰── Constant Long [4294967295]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -26770,69 +26770,69 @@ fn test_chapter_12_valid_implicit_casts_common_type() {
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [int_gt_uint]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [100]
-                    │   │           ╰── Constant [100U]
+                    │   │           │   ╰── Constant Int [100]
+                    │   │           ╰── Constant UInt [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [int_gt_ulong]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [1]
-                    │   │           ╰── Constant [18446744073709551606UL]
+                    │   │           │   ╰── Constant Int [1]
+                    │   │           ╰── Constant ULong [18446744073709551606]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [uint_gt_long]
-                    │   │           ├── Constant [100U]
+                    │   │           ├── Constant UInt [100]
                     │   │           ╰── Unary [-]
-                    │   │               ╰── Constant [100L]
+                    │   │               ╰── Constant Long [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [uint_lt_ulong]
-                    │   │           ├── Constant [1073741824U]
-                    │   │           ╰── Constant [34359738368UL]
+                    │   │           ├── Constant UInt [1073741824]
+                    │   │           ╰── Constant ULong [34359738368]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [long_gt_ulong]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [1L]
-                    │   │           ╰── Constant [1000UL]
+                    │   │           │   ╰── Constant Long [1]
+                    │   │           ╰── Constant ULong [1000]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [ternary_int_uint]
-                    │   │           ├── Constant [1]
+                    │   │           ├── Constant Int [1]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [1]
-                    │   │           ╰── Constant [1U]
+                    │   │           │   ╰── Constant Int [1]
+                    │   │           ╰── Constant UInt [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -27005,54 +27005,54 @@ fn test_chapter_12_valid_implicit_casts_convert_by_assignment() {
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [check_int]
-                    │   │           ├── Constant [9223372036854775813UL]
-                    │   │           ╰── Constant [5]
+                    │   │           ├── Constant ULong [9223372036854775813]
+                    │   │           ╰── Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [check_long]
-                    │   │           ├── Constant [2147483658U]
-                    │   │           ╰── Constant [2147483658L]
+                    │   │           ├── Constant UInt [2147483658]
+                    │   │           ╰── Constant Long [2147483658]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [check_ulong]
                     │   │           ├── Unary [-]
-                    │   │           │   ╰── Constant [1]
-                    │   │           ╰── Constant [18446744073709551615UL]
+                    │   │           │   ╰── Constant Int [1]
+                    │   │           ╰── Constant ULong [18446744073709551615]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [return_extended_uint]
-                    │   │       │   ╰── Constant [2147483658U]
-                    │   │       ╰── Constant [2147483658L]
+                    │   │       │   ╰── Constant UInt [2147483658]
+                    │   │       ╰── Constant Long [2147483658]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── FunctionCall [return_extended_int]
                     │   │       │   ╰── Unary [-]
-                    │   │       │       ╰── Constant [1]
-                    │   │       ╰── Constant [18446744073709551615UL]
+                    │   │       │       ╰── Constant Int [1]
+                    │   │       ╰── Constant ULong [18446744073709551615]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l
@@ -27060,46 +27060,46 @@ fn test_chapter_12_valid_implicit_casts_convert_by_assignment() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── FunctionCall [return_truncated_ulong]
-                    │           ╰── Constant [1125902054326372UL]
+                    │           ╰── Constant ULong [1125902054326372]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [2147483548L]
+                    │   │           ╰── Constant Long [2147483548]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [extend_on_assignment]
-                    │   │           ├── Constant [2147483658U]
-                    │   │           ╰── Constant [2147483658L]
+                    │   │           ├── Constant UInt [2147483658]
+                    │   │           ╰── Constant Long [2147483658]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [7]
+                    │               ╰── Constant Int [7]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [4294967196U]
+                    │       ╰── Constant UInt [4294967196]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [100]
+                    │   │           ╰── Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [8]
+                    │               ╰── Constant Int [8]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -27131,14 +27131,14 @@ fn test_chapter_12_valid_implicit_casts_promote_constants() {
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant [1L]
+            │       ╰── Constant Long [1]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── zero
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant [0L]
+            │       ╰── Constant Long [0]
             ╰── Function [main]
                 ╰── Body
                     ├── Assign [=]
@@ -27148,34 +27148,34 @@ fn test_chapter_12_valid_implicit_casts_promote_constants() {
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [>=]
-                    │   │       ├── Constant [68719476736UL]
+                    │   │       ├── Constant ULong [68719476736]
                     │   │       ╰── Var [negative_one]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [>=]
                     │   │       ├── Unary [-]
-                    │   │       │   ╰── Constant [2147483658L]
+                    │   │       │   ╰── Constant Long [2147483658]
                     │   │       ╰── Var [zero]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── Binary [+]
-                    │   │           ├── Constant [3UL]
-                    │   │           ╰── Constant [4294967293UL]
+                    │   │           ├── Constant ULong [3]
+                    │   │           ╰── Constant ULong [4294967293]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -27220,127 +27220,127 @@ fn test_chapter_12_valid_implicit_casts_static_initializers() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant [1152921506754330636L]
+            │       ╰── Constant Long [1152921506754330636]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── i
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [2147483650U]
+            │       ╰── Constant UInt [2147483650]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── l
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant [9223372036854775900UL]
+            │       ╰── Constant ULong [9223372036854775900]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── l2
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant [2147483650U]
+            │       ╰── Constant UInt [2147483650]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── ul
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant [4294967294U]
+            │       ╰── Constant UInt [4294967294]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── ul2
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant [9223372036854775798L]
+            │       ╰── Constant Long [9223372036854775798]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── i2
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant [9223372039002259606UL]
+            │       ╰── Constant ULong [9223372039002259606]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── ui2
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant [9223372039002259606UL]
+            │       ╰── Constant ULong [9223372039002259606]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [u]
-                    │   │       ╰── Constant [2147483660U]
+                    │   │       ╰── Constant UInt [2147483660]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [2147483646]
+                    │   │           ╰── Constant Int [2147483646]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [9223372036854775716L]
+                    │   │           ╰── Constant Long [9223372036854775716]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l2]
-                    │   │       ╰── Constant [2147483650L]
+                    │   │       ╰── Constant Long [2147483650]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [4]
+                    │           ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [ul]
-                    │   │       ╰── Constant [4294967294UL]
+                    │   │       ╰── Constant ULong [4294967294]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [5]
+                    │           ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [ul2]
-                    │   │       ╰── Constant [9223372036854775798UL]
+                    │   │       ╰── Constant ULong [9223372036854775798]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [6]
+                    │           ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i2]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [2147483498]
+                    │   │           ╰── Constant Int [2147483498]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [7]
+                    │           ╰── Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [ui2]
-                    │   │       ╰── Constant [2147483798U]
+                    │   │       ╰── Constant UInt [2147483798]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [8]
+                    │           ╰── Constant Int [8]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -27435,85 +27435,85 @@ fn test_chapter_12_valid_libraries_unsigned_args() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [1U]
+                    │   │       ╰── Constant UInt [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [b]
-                    │   │       ╰── Constant [4294967295U]
+                    │   │       ╰── Constant UInt [4294967295]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [c]
-                    │   │       ╰── Constant [18446744073709551615UL]
+                    │   │       ╰── Constant ULong [18446744073709551615]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [d]
-                    │   │       ╰── Constant [9223372036854775808UL]
+                    │   │       ╰── Constant ULong [9223372036854775808]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [e]
-                    │   │       ╰── Constant [2147483648U]
+                    │   │       ╰── Constant UInt [2147483648]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [f]
-                    │   │       ╰── Constant [0U]
+                    │   │       ╰── Constant UInt [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [8]
+                    │               ╰── Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [g]
-                    │   │       ╰── Constant [123456U]
+                    │   │       ╰── Constant UInt [123456]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [9]
+                    │               ╰── Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [h]
-                    │   │       ╰── Constant [2147487744U]
+                    │   │       ╰── Constant UInt [2147487744]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [10]
+                    │               ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [9223372041149743104UL]
+                    │   │       ╰── Constant ULong [9223372041149743104]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [11]
+                    │               ╰── Constant Int [11]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -27582,17 +27582,17 @@ fn test_chapter_12_valid_libraries_unsigned_args_client() {
                 ╰── Body
                     ╰── Return
                         ╰── FunctionCall [accept_unsigned]
-                            ├── Constant [1]
+                            ├── Constant Int [1]
                             ├── Unary [-]
-                            │   ╰── Constant [1]
+                            │   ╰── Constant Int [1]
                             ├── Unary [-]
-                            │   ╰── Constant [1]
-                            ├── Constant [9223372036854775808UL]
-                            ├── Constant [2147483648UL]
-                            ├── Constant [0]
-                            ├── Constant [123456]
-                            ├── Constant [2147487744U]
-                            ╰── Constant [9223372041149743104UL]
+                            │   ╰── Constant Int [1]
+                            ├── Constant ULong [9223372036854775808]
+                            ├── Constant ULong [2147483648]
+                            ├── Constant Int [0]
+                            ├── Constant Int [123456]
+                            ├── Constant UInt [2147487744]
+                            ╰── Constant ULong [9223372041149743104]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -27619,7 +27619,7 @@ fn test_chapter_12_valid_libraries_unsigned_global_var() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant [4294967200U]
+            │       ╰── Constant UInt [4294967200]
             ├── Function [return_uint]
             │   ╰── Body
             │       ╰── Return
@@ -27676,14 +27676,14 @@ fn test_chapter_12_valid_libraries_unsigned_global_var_client() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [ui]
-                    │   │       ╰── Constant [4294967200U]
+                    │   │       ╰── Constant UInt [4294967200]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [ui]
                     │   ╰── Unary [-]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── result
@@ -27699,10 +27699,10 @@ fn test_chapter_12_valid_libraries_unsigned_global_var_client() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [result]
-                    │   │       ╰── Constant [4294967295L]
+                    │   │       ╰── Constant Long [4294967295]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [result]
                     │   ╰── Cast
@@ -27715,10 +27715,10 @@ fn test_chapter_12_valid_libraries_unsigned_global_var_client() {
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [result]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [1L]
+                    │   │           ╰── Constant Long [1]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [result]
                     │   ╰── FunctionCall [return_uint_as_long]
@@ -27726,12 +27726,12 @@ fn test_chapter_12_valid_libraries_unsigned_global_var_client() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [result]
-                    │   │       ╰── Constant [4294967295L]
+                    │   │       ╰── Constant Long [4294967295]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ╰── Return
-                        ╰── Constant [1]
+                        ╰── Constant Int [1]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -27786,7 +27786,7 @@ fn test_chapter_12_valid_type_specifiers_signed_type_specifiers() {
             │   ├── Type
             │   │   ╰── Int
             │   ├── Initializer
-            │   │   ╰── Constant [5]
+            │   │   ╰── Constant Int [5]
             │   ╰── Static
             ├── VarDeclaration
             │   ├── Name
@@ -27805,7 +27805,7 @@ fn test_chapter_12_valid_type_specifiers_signed_type_specifiers() {
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant [7]
+            │       ╰── Constant Int [7]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── l
@@ -27834,27 +27834,27 @@ fn test_chapter_12_valid_type_specifiers_signed_type_specifiers() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [i]
-                    │   │       ╰── Constant [5]
+                    │   │       ╰── Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [l]
-                    │   │       ╰── Constant [7]
+                    │   │       ╰── Constant Int [7]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── counter
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -27863,34 +27863,34 @@ fn test_chapter_12_valid_type_specifiers_signed_type_specifiers() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [10]
+                    │   │           ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Binary [>]
                     │   │       ├── Var [index]
-                    │   │       ╰── Constant [0]
+                    │   │       ╰── Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [index]
                     │   │       ╰── Binary [-]
                     │   │           ├── Var [index]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ╰── Assign [=]
                     │           ├── Var [counter]
                     │           ╰── Binary [+]
                     │               ├── Var [counter]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [counter]
-                    │   │       ╰── Constant [10]
+                    │   │       ╰── Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -27943,7 +27943,7 @@ fn test_chapter_12_valid_type_specifiers_unsigned_type_specifiers() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant [6]
+            │       ╰── Constant Int [6]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── ul
@@ -27965,18 +27965,18 @@ fn test_chapter_12_valid_type_specifiers_unsigned_type_specifiers() {
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant [4]
+            │       ╰── Constant Int [4]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [u]
-                    │   │       ╰── Constant [6U]
+                    │   │       ╰── Constant UInt [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ul
@@ -27999,18 +27999,18 @@ fn test_chapter_12_valid_type_specifiers_unsigned_type_specifiers() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [ul]
-                    │   │       ╰── Constant [4UL]
+                    │   │       ╰── Constant ULong [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── counter
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant [0]
+                    │       ╰── Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -28019,34 +28019,34 @@ fn test_chapter_12_valid_type_specifiers_unsigned_type_specifiers() {
                     │   │       ├── Type
                     │   │       │   ╰── Unsigned Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant [10]
+                    │   │           ╰── Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── Binary [<]
                     │   │       ├── Var [index]
-                    │   │       ╰── Constant [4294967295U]
+                    │   │       ╰── Constant UInt [4294967295]
                     │   ├── Condition
                     │   │   ╰── Assign [=]
                     │   │       ├── Var [index]
                     │   │       ╰── Binary [-]
                     │   │           ├── Var [index]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Block
                     │       ╰── Assign [=]
                     │           ├── Var [counter]
                     │           ╰── Binary [+]
                     │               ├── Var [counter]
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [counter]
-                    │   │       ╰── Constant [11]
+                    │   │       ╰── Constant Int [11]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -28151,8 +28151,8 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
             │           ╰── Binary [==]
             │               ├── Binary [+]
             │               │   ├── Var [ui_a]
-            │               │   ╰── Constant [2147483653U]
-            │               ╰── Constant [2147483663U]
+            │               │   ╰── Constant UInt [2147483653]
+            │               ╰── Constant UInt [2147483663]
             ├── Function [subtraction]
             │   ╰── Body
             │       ╰── Return
@@ -28160,7 +28160,7 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
             │               ├── Binary [-]
             │               │   ├── Var [ul_a]
             │               │   ╰── Var [ul_b]
-            │               ╰── Constant [18446744072635808792UL]
+            │               ╰── Constant ULong [18446744072635808792]
             ├── Function [multiplication]
             │   ╰── Body
             │       ╰── Return
@@ -28168,7 +28168,7 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
             │               ├── Binary [*]
             │               │   ├── Var [ui_a]
             │               │   ╰── Var [ui_b]
-            │               ╰── Constant [3221225472U]
+            │               ╰── Constant UInt [3221225472]
             ├── Function [division]
             │   ╰── Body
             │       ╰── Return
@@ -28176,7 +28176,7 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
             │               ├── Binary [/]
             │               │   ├── Var [ui_a]
             │               │   ╰── Var [ui_b]
-            │               ╰── Constant [0]
+            │               ╰── Constant Int [0]
             ├── Function [division_large_dividend]
             │   ╰── Body
             │       ╰── Return
@@ -28184,15 +28184,15 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
             │               ├── Binary [/]
             │               │   ├── Var [ui_a]
             │               │   ╰── Var [ui_b]
-            │               ╰── Constant [2]
+            │               ╰── Constant Int [2]
             ├── Function [division_by_literal]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Binary [/]
             │               │   ├── Var [ul_a]
-            │               │   ╰── Constant [5UL]
-            │               ╰── Constant [219902325555UL]
+            │               │   ╰── Constant ULong [5]
+            │               ╰── Constant ULong [219902325555]
             ├── Function [remaind]
             │   ╰── Body
             │       ╰── Return
@@ -28200,19 +28200,19 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
             │               ├── Binary [%]
             │               │   ├── Var [ul_b]
             │               │   ╰── Var [ul_a]
-            │               ╰── Constant [5UL]
+            │               ╰── Constant ULong [5]
             ├── Function [complement]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Unary [~]
             │               │   ╰── Var [ui_a]
-            │               ╰── Constant [0]
+            │               ╰── Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── Assign [=]
                     │   ├── Var [ui_a]
-                    │   ╰── Constant [10U]
+                    │   ╰── Constant UInt [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28220,13 +28220,13 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [ul_a]
-                    │   ╰── Constant [18446744072635809792UL]
+                    │   ╰── Constant ULong [18446744072635809792]
                     ├── Assign [=]
                     │   ├── Var [ul_b]
-                    │   ╰── Constant [1000UL]
+                    │   ╰── Constant ULong [1000]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28234,13 +28234,13 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── Assign [=]
                     │   ├── Var [ui_a]
-                    │   ╰── Constant [1073741824U]
+                    │   ╰── Constant UInt [1073741824]
                     ├── Assign [=]
                     │   ├── Var [ui_b]
-                    │   ╰── Constant [3U]
+                    │   ╰── Constant UInt [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28248,13 +28248,13 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── Assign [=]
                     │   ├── Var [ui_a]
-                    │   ╰── Constant [100U]
+                    │   ╰── Constant UInt [100]
                     ├── Assign [=]
                     │   ├── Var [ui_b]
-                    │   ╰── Constant [4294967294U]
+                    │   ╰── Constant UInt [4294967294]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28262,13 +28262,13 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── Assign [=]
                     │   ├── Var [ui_a]
-                    │   ╰── Constant [4294967294U]
+                    │   ╰── Constant UInt [4294967294]
                     ├── Assign [=]
                     │   ├── Var [ui_b]
-                    │   ╰── Constant [2147483647U]
+                    │   ╰── Constant UInt [2147483647]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28276,10 +28276,10 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── Assign [=]
                     │   ├── Var [ul_a]
-                    │   ╰── Constant [1099511627775UL]
+                    │   ╰── Constant ULong [1099511627775]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28287,13 +28287,13 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ├── Assign [=]
                     │   ├── Var [ul_a]
-                    │   ╰── Constant [100UL]
+                    │   ╰── Constant ULong [100]
                     ├── Assign [=]
                     │   ├── Var [ul_b]
-                    │   ╰── Constant [18446744073709551605UL]
+                    │   ╰── Constant ULong [18446744073709551605]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28301,10 +28301,10 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [7]
+                    │               ╰── Constant Int [7]
                     ├── Assign [=]
                     │   ├── Var [ui_a]
-                    │   ╰── Constant [4294967295U]
+                    │   ╰── Constant UInt [4294967295]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28312,9 +28312,9 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [8]
+                    │               ╰── Constant Int [8]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -28382,7 +28382,7 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
             │               ├── Binary [+]
             │               │   ├── Var [ui_a]
             │               │   ╰── Var [ui_b]
-            │               ╰── Constant [0U]
+            │               ╰── Constant UInt [0]
             ├── Function [subtraction]
             │   ╰── Body
             │       ╰── Return
@@ -28390,22 +28390,22 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
             │               ├── Binary [-]
             │               │   ├── Var [ul_a]
             │               │   ╰── Var [ul_b]
-            │               ╰── Constant [18446744073709551606UL]
+            │               ╰── Constant ULong [18446744073709551606]
             ├── Function [neg]
             │   ╰── Body
             │       ╰── Return
             │           ╰── Binary [==]
             │               ├── Unary [-]
             │               │   ╰── Var [ul_a]
-            │               ╰── Constant [18446744073709551615UL]
+            │               ╰── Constant ULong [18446744073709551615]
             ╰── Function [main]
                 ╰── Body
                     ├── Assign [=]
                     │   ├── Var [ui_a]
-                    │   ╰── Constant [4294967293U]
+                    │   ╰── Constant UInt [4294967293]
                     ├── Assign [=]
                     │   ├── Var [ui_b]
-                    │   ╰── Constant [2U]
+                    │   ╰── Constant UInt [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28413,13 +28413,13 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [ul_a]
-                    │   ╰── Constant [10UL]
+                    │   ╰── Constant ULong [10]
                     ├── Assign [=]
                     │   ├── Var [ul_b]
-                    │   ╰── Constant [20UL]
+                    │   ╰── Constant ULong [20]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28427,10 +28427,10 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── Assign [=]
                     │   ├── Var [ul_a]
-                    │   ╰── Constant [1UL]
+                    │   ╰── Constant ULong [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28438,9 +28438,9 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -28496,28 +28496,28 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant [100U]
+            │       ╰── Constant UInt [100]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── large_uint
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant [4294967294U]
+            │       ╰── Constant UInt [4294967294]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── one_hundred_ulong
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant [100UL]
+            │       ╰── Constant ULong [100]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── large_ulong
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant [4294967294UL]
+            │       ╰── Constant ULong [4294967294]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -28527,7 +28527,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── Var [one_hundred]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [<=]
@@ -28535,7 +28535,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── Var [one_hundred]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [2]
+                    │           ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [>=]
@@ -28543,7 +28543,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── Var [large_uint]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [3]
+                    │           ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [>]
@@ -28551,7 +28551,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── Var [large_uint]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [4]
+                    │           ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28560,7 +28560,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── Var [large_uint]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [5]
+                    │           ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28569,7 +28569,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── Var [large_uint]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [6]
+                    │           ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28578,7 +28578,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── Var [one_hundred]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [7]
+                    │           ╰── Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28587,7 +28587,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── Var [one_hundred]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [8]
+                    │           ╰── Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [<]
@@ -28595,7 +28595,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── Var [one_hundred_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [9]
+                    │           ╰── Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [<=]
@@ -28603,7 +28603,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── Var [one_hundred_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [10]
+                    │           ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [>=]
@@ -28611,7 +28611,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── Var [large_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [11]
+                    │           ╰── Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [>]
@@ -28619,7 +28619,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── Var [large_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [12]
+                    │           ╰── Constant Int [12]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28628,7 +28628,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── Var [large_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [13]
+                    │           ╰── Constant Int [13]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28637,7 +28637,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── Var [large_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [14]
+                    │           ╰── Constant Int [14]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28646,7 +28646,7 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── Var [one_hundred_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [15]
+                    │           ╰── Constant Int [15]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28655,9 +28655,9 @@ fn test_chapter_12_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── Var [one_hundred_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [16]
+                    │           ╰── Constant Int [16]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -28711,7 +28711,7 @@ fn test_chapter_12_valid_unsigned_expressions_locals() {
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant [8589934592UL]
+                    │       ╰── Constant ULong [8589934592]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -28719,7 +28719,7 @@ fn test_chapter_12_valid_unsigned_expressions_locals() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [1]
+                    │           ╰── Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -28727,52 +28727,52 @@ fn test_chapter_12_valid_unsigned_expressions_locals() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── Unary [-]
-                    │           ╰── Constant [8589934592L]
+                    │           ╰── Constant Long [8589934592]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant [10U]
+                    │       ╰── Constant UInt [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [8589934592UL]
+                    │   │       ╰── Constant ULong [8589934592]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [b]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [1]
+                    │   │           ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [c]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [8589934592L]
+                    │   │           ╰── Constant Long [8589934592]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [d]
-                    │   │       ╰── Constant [10U]
+                    │   │       ╰── Constant UInt [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── Assign [=]
                     │   ├── Var [a]
                     │   ╰── Unary [-]
@@ -28781,56 +28781,56 @@ fn test_chapter_12_valid_unsigned_expressions_locals() {
                     │   ├── Var [b]
                     │   ╰── Binary [-]
                     │       ├── Var [b]
-                    │       ╰── Constant [1]
+                    │       ╰── Constant Int [1]
                     ├── Assign [=]
                     │   ├── Var [c]
                     │   ╰── Binary [+]
                     │       ├── Var [c]
-                    │       ╰── Constant [8589934594L]
+                    │       ╰── Constant Long [8589934594]
                     ├── Assign [=]
                     │   ├── Var [d]
                     │   ╰── Binary [*]
                     │       ├── Var [d]
-                    │       ╰── Constant [268435456U]
+                    │       ╰── Constant UInt [268435456]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [a]
-                    │   │       ╰── Constant [18446744065119617024UL]
+                    │   │       ╰── Constant ULong [18446744065119617024]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [b]
                     │   │       ╰── Unary [-]
-                    │   │           ╰── Constant [2]
+                    │   │           ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [c]
-                    │   │       ╰── Constant [2]
+                    │   │       ╰── Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [7]
+                    │               ╰── Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [d]
-                    │   │       ╰── Constant [2684354560U]
+                    │   │       ╰── Constant UInt [2684354560]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [8]
+                    │               ╰── Constant Int [8]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -28905,9 +28905,9 @@ fn test_chapter_12_valid_unsigned_expressions_logical() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant [1]
+            │       │               ╰── Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant [0]
+            │           ╰── Constant Int [0]
             ├── Function [and]
             │   ├── Parameters
             │   │   ├── Param
@@ -28950,21 +28950,21 @@ fn test_chapter_12_valid_unsigned_expressions_logical() {
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant [1152921504606846976UL]
+                    │       ╰── Constant ULong [1152921504606846976]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── u
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2147483648U]
+                    │       ╰── Constant UInt [2147483648]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── zero
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant [0L]
+                    │       ╰── Constant Long [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── FunctionCall [not]
@@ -28972,7 +28972,7 @@ fn test_chapter_12_valid_unsigned_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [1]
+                    │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28981,7 +28981,7 @@ fn test_chapter_12_valid_unsigned_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [2]
+                    │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
@@ -28990,7 +28990,7 @@ fn test_chapter_12_valid_unsigned_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [3]
+                    │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── FunctionCall [if_cond]
@@ -28998,28 +28998,28 @@ fn test_chapter_12_valid_unsigned_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [4]
+                    │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── FunctionCall [and]
                     │   │       ├── Var [zero]
-                    │   │       ╰── Constant [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [5]
+                    │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Unary [!]
                     │   │       ╰── FunctionCall [or]
-                    │   │           ├── Constant [1]
+                    │   │           ├── Constant Int [1]
                     │   │           ╰── Var [u]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant [6]
+                    │               ╰── Constant Int [6]
                     ╰── Return
-                        ╰── Constant [0]
+                        ╰── Constant Int [0]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -29042,13 +29042,13 @@ fn test_chapter_12_valid_unsigned_expressions_simple() {
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant [2147483647U]
+                    │       ╰── Constant UInt [2147483647]
                     ╰── Return
                         ╰── Binary [==]
                             ├── Binary [+]
                             │   ├── Var [u]
-                            │   ╰── Constant [2U]
-                            ╰── Constant [2147483649U]
+                            │   ╰── Constant UInt [2]
+                            ╰── Constant UInt [2147483649]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
@@ -29080,7 +29080,7 @@ fn test_chapter_12_valid_unsigned_expressions_static_variables() {
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ├── Initializer
-            │   │   ╰── Constant [9223372036854775803UL]
+            │   │   ╰── Constant ULong [9223372036854775803]
             │   ╰── Static
             ├── VarDeclaration
             │   ├── Name
@@ -29098,23 +29098,23 @@ fn test_chapter_12_valid_unsigned_expressions_static_variables() {
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [9223372036854775803UL]
+                    │   │       ╰── Constant ULong [9223372036854775803]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ├── Assign [=]
                     │   ├── Var [x]
                     │   ╰── Binary [+]
                     │       ├── Var [x]
-                    │       ╰── Constant [10]
+                    │       ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [!=]
                     │   │       ├── Var [x]
-                    │   │       ╰── Constant [9223372036854775813UL]
+                    │   │       ╰── Constant ULong [9223372036854775813]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── Binary [||]
@@ -29122,9 +29122,6756 @@ fn test_chapter_12_valid_unsigned_expressions_static_variables() {
                     │   │       ╰── Var [zero_int]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant [0]
+                    │           ╰── Constant Int [0]
                     ╰── Return
-                        ╰── Constant [1]
+                        ╰── Constant Int [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_parse_invalid_type_specifier() {
+    assert_error(
+        r#"
+        int main(void) {
+            unsigned double d = 10.0;
+          //^^^^^^^^^^^^^^^ Invalid type specifier
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_13_invalid_parse_invalid_type_specifier_2() {
+    assert_error(
+        r#"
+        int main(void) {
+            double double d = 10.0;
+          //^^^^^^^^^^^^^ Invalid type specifier
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_13_invalid_types_complement_double() {
+    let src = r#"
+        int main(void) {
+            double d = ~10.0;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Unary [~]
+                    │           ╰── Constant Double [+1e1]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_bitwise_and() {
+    let src = r#"
+        int main(void) {
+            double d = 10.0 & -1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Binary [&]
+                    │           ├── Constant Double [+1e1]
+                    │           ╰── Unary [-]
+                    │               ╰── Constant Int [1]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_bitwise_or() {
+    let src = r#"
+        int main(void) {
+            double d = 0.0 | -0.0;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Binary [|]
+                    │           ├── Constant Double [+0e0]
+                    │           ╰── Unary [-]
+                    │               ╰── Constant Double [+0e0]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_bitwise_shift_double() {
+    let src = r#"
+        int main(void) {
+            double d = 5.0 << 3;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Binary [<<]
+                    │           ├── Constant Double [+5e0]
+                    │           ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_bitwise_shift_double_2() {
+    let src = r#"
+        int main(void) {
+            return 1 << 2.0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── Binary [<<]
+                            ├── Constant Int [1]
+                            ╰── Constant Double [+2e0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_bitwise_xor() {
+    let src = r#"
+        int main(void) {
+            return 1e10 ^ -1e10;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── Binary [^]
+                            ├── Constant Double [+1e10]
+                            ╰── Unary [-]
+                                ╰── Constant Double [+1e10]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_compound_bitwise_and() {
+    let src = r#"
+        int main(void) {
+            double d = 1.0;
+            d &= 0;
+            return (int) d;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e0]
+                    ├── Assign [&=]
+                    │   ├── Var [d]
+                    │   ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Cast
+                            ├── Target
+                            │   ╰── Int
+                            ╰── Expression
+                                ╰── Var [d]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_compound_bitwise_xor() {
+    let src = r#"
+        int main(void) {
+            int i = 0;
+            i |= 2.0;
+            return (int) i;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Assign [|=]
+                    │   ├── Var [i]
+                    │   ╰── Constant Double [+2e0]
+                    ╰── Return
+                        ╰── Cast
+                            ├── Target
+                            │   ╰── Int
+                            ╰── Expression
+                                ╰── Var [i]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_compound_left_bitshift() {
+    let src = r#"
+        int main(void) {
+            double d = 1.0;
+            d <<= 1;
+            return d;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e0]
+                    ├── Assign [<<=]
+                    │   ├── Var [d]
+                    │   ╰── Constant Int [1]
+                    ╰── Return
+                        ╰── Var [d]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_compound_mod() {
+    let src = r#"
+        
+        int main(void) {
+            double d = 5.0;
+            d %= 2;
+            return (int) d;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+5e0]
+                    ├── Assign [&=]
+                    │   ├── Var [d]
+                    │   ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Cast
+                            ├── Target
+                            │   ╰── Int
+                            ╰── Expression
+                                ╰── Var [d]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_compound_mod_2() {
+    let src = r#"
+        
+        int main(void) {
+            int i = 5;
+            i %= 1.0;
+            return i;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [5]
+                    ├── Assign [&=]
+                    │   ├── Var [i]
+                    │   ╰── Constant Double [+1e0]
+                    ╰── Return
+                        ╰── Var [i]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_compound_right_bitshift() {
+    let src = r#"
+        int main(void) {
+            int i = 1000;
+            i >>= 2.0;
+            return i;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [1000]
+                    ├── Assign [>>=]
+                    │   ├── Var [i]
+                    │   ╰── Constant Double [+2e0]
+                    ╰── Return
+                        ╰── Var [i]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_switch_double_case() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            switch (x) {
+                case 1.0: return 0;
+                default: return 4;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ╰── Switch
+                        ├── Expression
+                        │   ╰── Var [x]
+                        ╰── Block
+                            ├── Case [1]
+                            │   ╰── Return
+                            │       ╰── Constant Int [0]
+                            ╰── Default
+                                ╰── Return
+                                    ╰── Constant Int [4]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_extra_credit_switch_on_double() {
+    let src = r#"
+        int main(void) {
+            double d = 10;
+            switch (d) {
+                case 10: return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── Switch
+                    │   ├── Expression
+                    │   │   ╰── Var [d]
+                    │   ╰── Block
+                    │       ╰── Case [10]
+                    │           ╰── Return
+                    │               ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Constant Int [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_mod_double() {
+    let src = r#"
+        int main(void) {
+            double d = 10.0;
+            d = d % 3;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e1]
+                    ├── Assign [=]
+                    │   ├── Var [d]
+                    │   ╰── Binary [%]
+                    │       ├── Var [d]
+                    │       ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_invalid_types_mod_double_2() {
+    let src = r#"
+        int main(void) {
+            double e = 3.0 % 5;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── e
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Binary [%]
+                    │           ├── Constant Double [+3e0]
+                    │           ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_constants_constant_doubles() {
+    let src = r#"
+        int main(void) {
+            double a = 1.0;
+            double b = 1.;
+            double c = 1E0;
+            double d = .01e+2;
+            if (! (a == b && a == c && a == d) )
+                return 1;
+            if (a + b + c + d != 4.0)
+                return 2;
+            double e = .125;
+            double f = 12.5e-2;
+            double g = 125.E-3;
+            double h = 1250000000e-10;
+            if (! (e == f && e == g && e == h) )
+                return 3;
+            if (e + f + g + h != 0.5)
+                return 4;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── c
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [&&]
+                    │   │           ├── Binary [&&]
+                    │   │           │   ├── Binary [==]
+                    │   │           │   │   ├── Var [a]
+                    │   │           │   │   ╰── Var [b]
+                    │   │           │   ╰── Binary [==]
+                    │   │           │       ├── Var [a]
+                    │   │           │       ╰── Var [c]
+                    │   │           ╰── Binary [==]
+                    │   │               ├── Var [a]
+                    │   │               ╰── Var [d]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [+]
+                    │   │       │   ├── Binary [+]
+                    │   │       │   │   ├── Binary [+]
+                    │   │       │   │   │   ├── Var [a]
+                    │   │       │   │   │   ╰── Var [b]
+                    │   │       │   │   ╰── Var [c]
+                    │   │       │   ╰── Var [d]
+                    │   │       ╰── Constant Double [+4e0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── e
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1.25e-1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── f
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1.25e-1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── g
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1.25e-1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── h
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1.25e-1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [&&]
+                    │   │           ├── Binary [&&]
+                    │   │           │   ├── Binary [==]
+                    │   │           │   │   ├── Var [e]
+                    │   │           │   │   ╰── Var [f]
+                    │   │           │   ╰── Binary [==]
+                    │   │           │       ├── Var [e]
+                    │   │           │       ╰── Var [g]
+                    │   │           ╰── Binary [==]
+                    │   │               ├── Var [e]
+                    │   │               ╰── Var [h]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [+]
+                    │   │       │   ├── Binary [+]
+                    │   │       │   │   ├── Binary [+]
+                    │   │       │   │   │   ├── Var [e]
+                    │   │       │   │   │   ╰── Var [f]
+                    │   │       │   │   ╰── Var [g]
+                    │   │       │   ╰── Var [h]
+                    │   │       ╰── Constant Double [+5e-1]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_constants_round_constants() {
+    let src = r#"
+        int main(void) {
+            if (1.00000000000000033306690738754696212708950042724609375 != 1.0000000000000004) {
+                return 1;
+            }
+            if (9223372036854776832.5 != 9223372036854777856.0) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Constant Double [+1.0000000000000004e0]
+                    │   │       ╰── Constant Double [+1.0000000000000004e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Constant Double [+9.223372036854778e18]
+                    │   │       ╰── Constant Double [+9.223372036854778e18]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_explicit_casts_cvttsd2si_rewrite() {
+    let src = r#"
+        double glob = 3.0;
+        int main(void) {
+            long l = -1l;
+            int i = -1;
+            int j = (int) glob;
+            int k = 20;
+            if (l != -1l) {
+                return 1;
+            }
+            if (i != -1) {
+                return 2;
+            }
+            if (j != 3) {
+                return 3;
+            }
+            if (k != 20) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── glob
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+3e0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant Long [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── j
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Int
+                    │           ╰── Expression
+                    │               ╰── Var [glob]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── k
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [20]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Long [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [j]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [k]
+                    │   │       ╰── Constant Int [20]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_explicit_casts_double_to_signed() {
+    let src = r#"
+        int double_to_int(double d) {
+            return (int) d;
+        }
+        long double_to_long(double d) {
+            return (long) d;
+        }
+        int main(void) {
+            long l = double_to_long(2148429099.3);
+            if (l != 2148429099l) {
+                return 1;
+            }
+            int i = double_to_int(-200000.9999);
+            if (i != -200000) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [double_to_int]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── d
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Cast
+            │               ├── Target
+            │               │   ╰── Int
+            │               ╰── Expression
+            │                   ╰── Var [d]
+            ├── Function [double_to_long]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── d
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Cast
+            │               ├── Target
+            │               │   ╰── Long
+            │               ╰── Expression
+            │                   ╰── Var [d]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [double_to_long]
+                    │           ╰── Constant Double [+2.1484290993e9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Constant Long [2148429099]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [double_to_int]
+                    │           ╰── Unary [-]
+                    │               ╰── Constant Double [+2.000009999e5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [200000]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_explicit_casts_double_to_unsigned() {
+    let src = r#"
+        unsigned int double_to_uint(double d) {
+            return (unsigned int) d;
+        }
+        unsigned long double_to_ulong(double d) {
+            return (unsigned long) d;
+        }
+        int main(void) {
+            if (double_to_uint(10.9) != 10u) {
+                return 1;
+            }
+            if (double_to_uint(2147483750.5) != 2147483750) {
+                return 2;
+            }
+            if (double_to_ulong(34359738368.5) != 34359738368ul) {
+                return 3;
+            }
+            if (double_to_ulong(3458764513821589504.0) != 3458764513821589504ul) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [double_to_uint]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── d
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Cast
+            │               ├── Target
+            │               │   ╰── Unsigned Int
+            │               ╰── Expression
+            │                   ╰── Var [d]
+            ├── Function [double_to_ulong]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── d
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Cast
+            │               ├── Target
+            │               │   ╰── Unsigned Long
+            │               ╰── Expression
+            │                   ╰── Var [d]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [double_to_uint]
+                    │   │       │   ╰── Constant Double [+1.09e1]
+                    │   │       ╰── Constant UInt [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [double_to_uint]
+                    │   │       │   ╰── Constant Double [+2.1474837505e9]
+                    │   │       ╰── Constant Long [2147483750]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [double_to_ulong]
+                    │   │       │   ╰── Constant Double [+3.43597383685e10]
+                    │   │       ╰── Constant ULong [34359738368]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [double_to_ulong]
+                    │   │       │   ╰── Constant Double [+3.4587645138215895e18]
+                    │   │       ╰── Constant ULong [3458764513821589504]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_explicit_casts_rewrite_cvttsd2si_regression() {
+    let src = r#"
+        int check_12_ints(int start, int a, int b, int c, int d, int e, int f, int g,
+                          int h, int i, int j, int k, int l);
+        double glob = 5000.;
+        int main(void) {
+            long should_spill = (long)glob;
+            int one = glob - 4999;
+            int two = one + one;
+            int three = 2 + one;
+            int four = two * two;
+            int five = 6 - one;
+            int six = two * three;
+            int seven = one + 6;
+            int eight = two * 4;
+            int nine = three * three;
+            int ten = four + six;
+            int eleven = 16 - five;
+            int twelve = six + six;
+            check_12_ints(one, two, three, four, five, six, seven, eight, nine, ten,
+                          eleven, twelve, 1);
+            int thirteen = glob - 4987;
+            int fourteen = thirteen + 1;
+            int fifteen = 28 - thirteen;
+            int sixteen = fourteen + 2;
+            int seventeen = 4 + thirteen;
+            int eighteen = 32 - fourteen;
+            int nineteen = 35 - sixteen;
+            int twenty = fifteen + 5;
+            int twenty_one = thirteen * 2 - 5;
+            int twenty_two = fifteen + 7;
+            int twenty_three = 6 + seventeen;
+            int twenty_four = thirteen + 11;
+            check_12_ints(thirteen, fourteen, fifteen, sixteen, seventeen, eighteen,
+                          nineteen, twenty, twenty_one, twenty_two, twenty_three,
+                          twenty_four, 13);
+            if (should_spill != 5000) {
+                return -1;
+            }
+            return 0;
+        }
+        int check_12_ints(int a, int b, int c, int d, int e, int f, int g, int h, int i,
+                          int j, int k, int l, int start) {
+            int expected = 0;
+            expected = start + 0;
+            if (a != expected) {
+                return expected;
+            }
+            expected = start + 1;
+            if (b != expected) {
+                return expected;
+            }
+            expected = start + 2;
+            if (c != expected) {
+                return expected;
+            }
+            expected = start + 3;
+            if (d != expected) {
+                return expected;
+            }
+            expected = start + 4;
+            if (e != expected) {
+                return expected;
+            }
+            expected = start + 5;
+            if (f != expected) {
+                return expected;
+            }
+            expected = start + 6;
+            if (g != expected) {
+                return expected;
+            }
+            expected = start + 7;
+            if (h != expected) {
+                return expected;
+            }
+            expected = start + 8;
+            if (i != expected) {
+                return expected;
+            }
+            expected = start + 9;
+            if (j != expected) {
+                return expected;
+            }
+            expected = start + 10;
+            if (k != expected) {
+                return expected;
+            }
+            expected = start + 11;
+            if (l != expected) {
+                return expected;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [check_12_ints]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── start
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── h
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── j
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── k
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── l
+            │           ╰── Type
+            │               ╰── Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── glob
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+5e3]
+            ├── Function [main]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── should_spill
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [glob]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── one
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [glob]
+            │       │           ╰── Constant Int [4999]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── two
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [one]
+            │       │           ╰── Var [one]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── three
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Constant Int [2]
+            │       │           ╰── Var [one]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── four
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [two]
+            │       │           ╰── Var [two]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── five
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant Int [6]
+            │       │           ╰── Var [one]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── six
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [two]
+            │       │           ╰── Var [three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── seven
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [one]
+            │       │           ╰── Constant Int [6]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── eight
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [two]
+            │       │           ╰── Constant Int [4]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nine
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [three]
+            │       │           ╰── Var [three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ten
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [four]
+            │       │           ╰── Var [six]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── eleven
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant Int [16]
+            │       │           ╰── Var [five]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twelve
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [six]
+            │       │           ╰── Var [six]
+            │       ├── FunctionCall [check_12_ints]
+            │       │   ├── Var [one]
+            │       │   ├── Var [two]
+            │       │   ├── Var [three]
+            │       │   ├── Var [four]
+            │       │   ├── Var [five]
+            │       │   ├── Var [six]
+            │       │   ├── Var [seven]
+            │       │   ├── Var [eight]
+            │       │   ├── Var [nine]
+            │       │   ├── Var [ten]
+            │       │   ├── Var [eleven]
+            │       │   ├── Var [twelve]
+            │       │   ╰── Constant Int [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── thirteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [glob]
+            │       │           ╰── Constant Int [4987]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── fourteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [thirteen]
+            │       │           ╰── Constant Int [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── fifteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant Int [28]
+            │       │           ╰── Var [thirteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── sixteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [fourteen]
+            │       │           ╰── Constant Int [2]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── seventeen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Constant Int [4]
+            │       │           ╰── Var [thirteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── eighteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant Int [32]
+            │       │           ╰── Var [fourteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nineteen
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Constant Int [35]
+            │       │           ╰── Var [sixteen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [fifteen]
+            │       │           ╰── Constant Int [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_one
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Binary [*]
+            │       │           │   ├── Var [thirteen]
+            │       │           │   ╰── Constant Int [2]
+            │       │           ╰── Constant Int [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_two
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [fifteen]
+            │       │           ╰── Constant Int [7]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_three
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Constant Int [6]
+            │       │           ╰── Var [seventeen]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── twenty_four
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [thirteen]
+            │       │           ╰── Constant Int [11]
+            │       ├── FunctionCall [check_12_ints]
+            │       │   ├── Var [thirteen]
+            │       │   ├── Var [fourteen]
+            │       │   ├── Var [fifteen]
+            │       │   ├── Var [sixteen]
+            │       │   ├── Var [seventeen]
+            │       │   ├── Var [eighteen]
+            │       │   ├── Var [nineteen]
+            │       │   ├── Var [twenty]
+            │       │   ├── Var [twenty_one]
+            │       │   ├── Var [twenty_two]
+            │       │   ├── Var [twenty_three]
+            │       │   ├── Var [twenty_four]
+            │       │   ╰── Constant Int [13]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [should_spill]
+            │       │   │       ╰── Constant Int [5000]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Unary [-]
+            │       │                   ╰── Constant Int [1]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [check_12_ints]
+                ├── Parameters
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── b
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── c
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── e
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── f
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── g
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── h
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── j
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── k
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── l
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── start
+                │       ╰── Type
+                │           ╰── Int
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── expected
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [a]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [c]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [e]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [f]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [g]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [h]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [j]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [k]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ├── Assign [=]
+                    │   ├── Var [expected]
+                    │   ╰── Binary [+]
+                    │       ├── Var [start]
+                    │       ╰── Constant Int [11]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Var [expected]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [expected]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_explicit_casts_signed_to_double() {
+    let src = r#"
+        
+        double int_to_double(int i) {
+            return (double) i;
+        }
+        double long_to_double(long l) {
+            return (double) l;
+        }
+        int main(void) {
+            if (int_to_double(-100000) != -100000.0) {
+                return 1;
+            }
+            if (long_to_double(-9007199254751227l) != -9007199254751228.0) {
+                return 2;
+            }
+            double d = (double) 1152921504606846977l;
+            if (d != 1152921504606846976.0) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [int_to_double]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Cast
+            │               ├── Target
+            │               │   ╰── Double
+            │               ╰── Expression
+            │                   ╰── Var [i]
+            ├── Function [long_to_double]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── l
+            │   │       ╰── Type
+            │   │           ╰── Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Cast
+            │               ├── Target
+            │               │   ╰── Double
+            │               ╰── Expression
+            │                   ╰── Var [l]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [int_to_double]
+                    │   │       │   ╰── Unary [-]
+                    │   │       │       ╰── Constant Int [100000]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+1e5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [long_to_double]
+                    │   │       │   ╰── Unary [-]
+                    │   │       │       ╰── Constant Long [9007199254751227]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+9.007199254751228e15]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Double
+                    │           ╰── Expression
+                    │               ╰── Constant Long [1152921504606846977]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+1.152921504606847e18]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_explicit_casts_unsigned_to_double() {
+    let src = r#"
+        
+        double uint_to_double(unsigned int ui) {
+            return (double) ui;
+        }
+        double ulong_to_double(unsigned long ul) {
+            return (double) ul;
+        }
+        int main(void) {
+            if (uint_to_double(1000u) != 1000.0) {
+                return 1;
+            }
+            if (uint_to_double(4294967200u) != 4294967200.0) {
+                return 2;
+            }
+            if (ulong_to_double(138512825844ul) != 138512825844.0) {
+                return 3;
+            }
+            if (ulong_to_double(10223372036854775816ul) != 10223372036854775808.0) {
+                return 4;
+            }
+            if (ulong_to_double(9223372036854776832ul) != 9223372036854775808.0) {
+                return 5;
+            }
+            if (ulong_to_double(9223372036854776833ul) != 9223372036854777856.0) {
+                return 6;
+            }
+            if (ulong_to_double(9223372036854776831ul) != 9223372036854775808.0) {
+                return 7;
+            }
+            if (ulong_to_double(9223372036854776830ul) != 9223372036854775808.0) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [uint_to_double]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ui
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Cast
+            │               ├── Target
+            │               │   ╰── Double
+            │               ╰── Expression
+            │                   ╰── Var [ui]
+            ├── Function [ulong_to_double]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ul
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Cast
+            │               ├── Target
+            │               │   ╰── Double
+            │               ╰── Expression
+            │                   ╰── Var [ul]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [uint_to_double]
+                    │   │       │   ╰── Constant UInt [1000]
+                    │   │       ╰── Constant Double [+1e3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [uint_to_double]
+                    │   │       │   ╰── Constant UInt [4294967200]
+                    │   │       ╰── Constant Double [+4.2949672e9]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [ulong_to_double]
+                    │   │       │   ╰── Constant ULong [138512825844]
+                    │   │       ╰── Constant Double [+1.38512825844e11]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [ulong_to_double]
+                    │   │       │   ╰── Constant ULong [10223372036854775816]
+                    │   │       ╰── Constant Double [+1.0223372036854776e19]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [ulong_to_double]
+                    │   │       │   ╰── Constant ULong [9223372036854776832]
+                    │   │       ╰── Constant Double [+9.223372036854776e18]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [ulong_to_double]
+                    │   │       │   ╰── Constant ULong [9223372036854776833]
+                    │   │       ╰── Constant Double [+9.223372036854778e18]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [ulong_to_double]
+                    │   │       │   ╰── Constant ULong [9223372036854776831]
+                    │   │       ╰── Constant Double [+9.223372036854776e18]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [ulong_to_double]
+                    │   │       │   ╰── Constant ULong [9223372036854776830]
+                    │   │       ╰── Constant Double [+9.223372036854776e18]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_extra_credit_compound_assign() {
+    let src = r#"
+        
+        int main(void) {
+            double d = 10.0;
+            d /= 4.0;
+            if (d != 2.5) {
+                return 1;
+            }
+            d *= 10000.0;
+            if (d != 25000.0) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e1]
+                    ├── Assign [/=]
+                    │   ├── Var [d]
+                    │   ╰── Constant Double [+4e0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+2.5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── Assign [*=]
+                    │   ├── Var [d]
+                    │   ╰── Constant Double [+1e4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+2.5e4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_extra_credit_compound_assign_implicit_cast() {
+    let src = r#"
+        int main(void) {
+            double d = 1000.5;
+            d += 1000;
+            if (d != 2000.5) {
+                return 1;
+            }
+            unsigned long ul = 18446744073709551586ul;
+            ul -= 1.5E19;
+            if (ul != 3446744073709551616ul) {
+                return 2;
+            }
+            int i = 10;
+            i += 0.99999;
+            if (i != 10) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1.0005e3]
+                    ├── Assign [+=]
+                    │   ├── Var [d]
+                    │   ╰── Constant Int [1000]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+2.0005e3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [18446744073709551586]
+                    ├── Assign [-=]
+                    │   ├── Var [ul]
+                    │   ╰── Constant Double [+1.5e19]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant ULong [3446744073709551616]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── Assign [+=]
+                    │   ├── Var [i]
+                    │   ╰── Constant Double [+9.9999e-1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_extra_credit_incr_and_decr() {
+    let src = r#"
+        
+        int main(void) {
+            static double d = 0.75;
+            if (d++ != 0.75) {
+                return 1;
+            }
+            if (d != 1.75) {
+                return 2;
+            }
+            d = -100.2;
+            if (++d != -99.2) {
+                return 3;
+            }
+            if (d != -99.2) {
+                return 4;
+            }
+            if (d-- != -99.2) {
+                return 5;
+            }
+            if (d != -100.2) {
+                return 6;
+            }
+            if (--d != -101.2) {
+                return 7;
+            }
+            if (d != -101.2) {
+                return 8;
+            }
+            d = 0.000000000000000000001;
+            d++;
+            if (d != 1.0) {
+                return 9;
+            }
+            d = 10e20;
+            d--;
+            if (d != 10e20) {
+                return 10;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ├── Initializer
+                    │   │   ╰── Constant Double [+7.5e-1]
+                    │   ╰── Static
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Postfix [++]
+                    │   │       │   ╰── Var [d]
+                    │   │       ╰── Constant Double [+7.5e-1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+1.75e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── Assign [=]
+                    │   ├── Var [d]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant Double [+1.002e2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [++]
+                    │   │       │   ╰── Var [d]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+9.92e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+9.92e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Postfix [--]
+                    │   │       │   ╰── Var [d]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+9.92e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+1.002e2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [--]
+                    │   │       │   ╰── Var [d]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+1.012e2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+1.012e2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── Assign [=]
+                    │   ├── Var [d]
+                    │   ╰── Constant Double [+1e-21]
+                    ├── Postfix [++]
+                    │   ╰── Var [d]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── Assign [=]
+                    │   ├── Var [d]
+                    │   ╰── Constant Double [+1e21]
+                    ├── Postfix [--]
+                    │   ╰── Var [d]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+1e21]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [10]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_floating_expressions_arithmetic_ops() {
+    let src = r#"
+        double point_one = 0.1;
+        double point_two = 0.2;
+        double point_three = 0.3;
+        double two = 2.0;
+        double three = 3.0;
+        double four = 4.0;
+        double twelveE30 = 12e30;
+        int addition(void) {
+            return (point_one + point_two == 0.30000000000000004);
+        }
+        int subtraction(void) {
+            return (four - 1.0 == 3.0);
+        }
+        int multiplication(void) {
+            return (0.01 * point_three == 0.003);
+        }
+        int division(void) {
+            return (7.0 / two == 3.5);
+        }
+        int negation(void) {
+            double neg = -twelveE30;
+            return !(12e30 + neg);
+        }
+        int complex_expression(void) {
+            double complex_expression = (two + three) - 127.5 * four;
+            return complex_expression == -505.0;
+        }
+        int main(void) {
+            if (!addition()) {
+                return 1;
+            }
+            if (!subtraction()){
+                return 2;
+            }
+            if (!multiplication()) {
+                return 3;
+            }
+            if (!division()) {
+                return 4;
+            }
+            if (!negation()) {
+                return 5;
+            }
+            if (!complex_expression()) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── point_one
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+1e-1]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── point_two
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+2e-1]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── point_three
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+3e-1]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── two
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+2e0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── three
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+3e0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── four
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+4e0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── twelveE30
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+1.2e31]
+            ├── Function [addition]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [+]
+            │               │   ├── Var [point_one]
+            │               │   ╰── Var [point_two]
+            │               ╰── Constant Double [+3.0000000000000004e-1]
+            ├── Function [subtraction]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [-]
+            │               │   ├── Var [four]
+            │               │   ╰── Constant Double [+1e0]
+            │               ╰── Constant Double [+3e0]
+            ├── Function [multiplication]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [*]
+            │               │   ├── Constant Double [+1e-2]
+            │               │   ╰── Var [point_three]
+            │               ╰── Constant Double [+3e-3]
+            ├── Function [division]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [/]
+            │               │   ├── Constant Double [+7e0]
+            │               │   ╰── Var [two]
+            │               ╰── Constant Double [+3.5e0]
+            ├── Function [negation]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── neg
+            │       │   ├── Type
+            │       │   │   ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Unary [-]
+            │       │           ╰── Var [twelveE30]
+            │       ╰── Return
+            │           ╰── Unary [!]
+            │               ╰── Binary [+]
+            │                   ├── Constant Double [+1.2e31]
+            │                   ╰── Var [neg]
+            ├── Function [complex_expression]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── complex_expression
+            │       │   ├── Type
+            │       │   │   ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Binary [+]
+            │       │           │   ├── Var [two]
+            │       │           │   ╰── Var [three]
+            │       │           ╰── Binary [*]
+            │       │               ├── Constant Double [+1.275e2]
+            │       │               ╰── Var [four]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [complex_expression]
+            │               ╰── Unary [-]
+            │                   ╰── Constant Double [+5.05e2]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [addition]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [subtraction]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [multiplication]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [division]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [negation]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [complex_expression]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_floating_expressions_comparisons() {
+    let src = r#"
+        double fifty_fiveE5 = 55e5;
+        double fifty_fourE4 = 54e4;
+        double tiny = .00004;
+        double four = 4.;
+        double point_one = 0.1;
+        int main(void) {
+            if (fifty_fiveE5 < fifty_fourE4) {
+                return 1;
+            }
+            if (four > 4.0) {
+                return 2;
+            }
+            if (tiny <= 0.0) {
+                return 3;
+            }
+            if (fifty_fourE4 >= fifty_fiveE5) {
+                return 4;
+            }
+            if (tiny == 0.0) {
+                return 5;
+            }
+            if (point_one != point_one) {
+                return 6;
+            }
+            if (!(tiny > 00.000005)) {
+                return 7;
+            }
+            if (!(-.00004 < four)) {
+                return 8;
+            }
+            if (!(tiny <= tiny)) {
+                return 9;
+            }
+            if (!(fifty_fiveE5 >= fifty_fiveE5)) {
+                return 10;
+            }
+            if (!(0.1 == point_one)) {
+                return 11;
+            }
+            if (!(tiny != .00003)) {
+                return 12;
+            }
+            if (0.00003 < 0.000000000003) {
+                return 13;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── fifty_fiveE5
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+5.5e6]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── fifty_fourE4
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+5.4e5]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── tiny
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+4e-5]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── four
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+4e0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── point_one
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+1e-1]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [fifty_fiveE5]
+                    │   │       ╰── Var [fifty_fourE4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [>]
+                    │   │       ├── Var [four]
+                    │   │       ╰── Constant Double [+4e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [<=]
+                    │   │       ├── Var [tiny]
+                    │   │       ╰── Constant Double [+0e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [>=]
+                    │   │       ├── Var [fifty_fourE4]
+                    │   │       ╰── Var [fifty_fiveE5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [tiny]
+                    │   │       ╰── Constant Double [+0e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [point_one]
+                    │   │       ╰── Var [point_one]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [>]
+                    │   │           ├── Var [tiny]
+                    │   │           ╰── Constant Double [+5e-6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [<]
+                    │   │           ├── Unary [-]
+                    │   │           │   ╰── Constant Double [+4e-5]
+                    │   │           ╰── Var [four]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [<=]
+                    │   │           ├── Var [tiny]
+                    │   │           ╰── Var [tiny]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [>=]
+                    │   │           ├── Var [fifty_fiveE5]
+                    │   │           ╰── Var [fifty_fiveE5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [==]
+                    │   │           ├── Constant Double [+1e-1]
+                    │   │           ╰── Var [point_one]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [11]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [!=]
+                    │   │           ├── Var [tiny]
+                    │   │           ╰── Constant Double [+3e-5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [12]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Constant Double [+3e-5]
+                    │   │       ╰── Constant Double [+3e-12]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [13]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_floating_expressions_logical() {
+    let src = r#"
+        double zero = 0.0;
+        double non_zero = 1E-20;
+        double one = 1.0;
+        double rounded_to_zero = 1e-330;
+        int main(void) {
+            if (zero) {
+                return 1;
+            }
+            if (rounded_to_zero) {
+                return 2;
+            }
+            if (non_zero) {
+            } else {
+                return 3;
+            }
+            if (0.e10) {
+                return 4;
+            }
+            if (!non_zero) {
+                return 4;
+            }
+            if (!(!zero)) {
+                return 5;
+            }
+            if (!(!rounded_to_zero)) {
+                return 6;
+            }
+            if (!(non_zero && 1.0)) {
+                return 8;
+            }
+            if (3.0 && zero) {
+                return 8;
+            }
+            if (rounded_to_zero && 1000e10) {
+                return 9;
+            }
+            if (18446744073709551615UL && zero) {
+                return 10;
+            }
+            if (!(non_zero && 5l)) {
+                return 11;
+            }
+            if (!(5.0 || zero)) {
+                return 12;
+            }
+            if (zero || rounded_to_zero) {
+                return 13;
+            }
+            if (!(rounded_to_zero || 0.0001)) {
+                return 14;
+            }
+            if (!(non_zero || 0u)) {
+                return 15;
+            }
+            if (!(0 || 0.0000005)) {
+                return 16;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── zero
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+0e0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── non_zero
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+1e-20]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── one
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+1e0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── rounded_to_zero
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+0e0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [rounded_to_zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [non_zero]
+                    │   ├── Then
+                    │   │   ╰── Block
+                    │   ╰── Else
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Constant Double [+0e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Var [non_zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Unary [!]
+                    │   │           ╰── Var [zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Unary [!]
+                    │   │           ╰── Var [rounded_to_zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [&&]
+                    │   │           ├── Var [non_zero]
+                    │   │           ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [&&]
+                    │   │       ├── Constant Double [+3e0]
+                    │   │       ╰── Var [zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [&&]
+                    │   │       ├── Var [rounded_to_zero]
+                    │   │       ╰── Constant Double [+1e13]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [&&]
+                    │   │       ├── Constant ULong [18446744073709551615]
+                    │   │       ╰── Var [zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [&&]
+                    │   │           ├── Var [non_zero]
+                    │   │           ╰── Constant Long [5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [11]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [||]
+                    │   │           ├── Constant Double [+5e0]
+                    │   │           ╰── Var [zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [12]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [||]
+                    │   │       ├── Var [zero]
+                    │   │       ╰── Var [rounded_to_zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [13]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [||]
+                    │   │           ├── Var [rounded_to_zero]
+                    │   │           ╰── Constant Double [+1e-4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [14]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [||]
+                    │   │           ├── Var [non_zero]
+                    │   │           ╰── Constant UInt [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [15]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [||]
+                    │   │           ├── Constant Int [0]
+                    │   │           ╰── Constant Double [+5e-7]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [16]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_floating_expressions_loop_controlling_expression() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            for(double d = 100.0; d > 0.0; d = d - 1.0) {
+                a = a + 1;
+            }
+            return a;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── d
+                    │   │       ├── Type
+                    │   │       │   ╰── Double
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Double [+1e2]
+                    │   ├── Condition
+                    │   │   ╰── Binary [>]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+0e0]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [d]
+                    │   │           ╰── Constant Double [+1e0]
+                    │   ╰── Block
+                    │       ╰── Assign [=]
+                    │           ├── Var [a]
+                    │           ╰── Binary [+]
+                    │               ├── Var [a]
+                    │               ╰── Constant Int [1]
+                    ╰── Return
+                        ╰── Var [a]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_floating_expressions_simple() {
+    let src = r#"
+        
+        int main(void) {
+            double x = 2.0;
+            return (x * 2.0 == 4.0);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+2e0]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Binary [*]
+                            │   ├── Var [x]
+                            │   ╰── Constant Double [+2e0]
+                            ╰── Constant Double [+4e0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_floating_expressions_static_initialized_double() {
+    let src = r#"
+        double return_static_variable(void) {
+            static double d = 0.5;
+            double ret = d;
+            d = d + 1.0;
+            return ret;
+        }
+        int main(void) {
+            double d1 = return_static_variable();
+            double d2 = return_static_variable();
+            double d3 = return_static_variable();
+            if (d1 != 0.5) {
+                return 1;
+            }
+            if (d2 != 1.5) {
+                return 2;
+            }
+            if (d3 != 2.5) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [return_static_variable]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ├── Type
+            │       │   │   ╰── Double
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Double [+5e-1]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ret
+            │       │   ├── Type
+            │       │   │   ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Var [d]
+            │       ├── Assign [=]
+            │       │   ├── Var [d]
+            │       │   ╰── Binary [+]
+            │       │       ├── Var [d]
+            │       │       ╰── Constant Double [+1e0]
+            │       ╰── Return
+            │           ╰── Var [ret]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d1
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [return_static_variable]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d2
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [return_static_variable]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d3
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [return_static_variable]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d1]
+                    │   │       ╰── Constant Double [+5e-1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d2]
+                    │   │       ╰── Constant Double [+1.5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d3]
+                    │   │       ╰── Constant Double [+2.5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_function_calls_double_and_int_parameters() {
+    let src = r#"
+        int check_arguments(double d1, double d2, int i1, double d3, double d4, int i2, int i3,
+                            int i4, double d5, double d6, double d7, int i5, double d8) {
+            if (d1 != 1.0) {
+                return 1;
+            }
+            if (d2 != 2.0) {
+                return 2;
+            }
+            if (d3 != 3.0) {
+                return 3;
+            }
+            if (d4 != 4.0 ){
+                return 4;
+            }
+            if (d5 != 5.0){
+                return 5;
+            }
+            if (d6 != 6.0 ){
+                return 6;
+            }
+            if (d7 != 7.0 ){
+                return 7;
+            }
+            if (d8 != 8.0 ){
+                return 8;
+            }
+            if (i1 != 101 ){
+                return 9;
+            }
+            if (i2 != 102 ){
+                return 10;
+            }
+            if (i3 != 103){
+                return 11;
+            }
+            if (i4 != 104) {
+                return 12;
+            }
+            if (i5 != 105) {
+                return 13;
+            }
+            return 0;
+        }
+        int main(void) {
+            return check_arguments(1.0, 2.0, 101, 3.0, 4.0, 102, 103, 104, 5.0, 6.0, 7.0, 105, 8.0);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [check_arguments]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d5
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d6
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d7
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i5
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── d8
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d1]
+            │       │   │       ╰── Constant Double [+1e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d2]
+            │       │   │       ╰── Constant Double [+2e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d3]
+            │       │   │       ╰── Constant Double [+3e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d4]
+            │       │   │       ╰── Constant Double [+4e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [4]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d5]
+            │       │   │       ╰── Constant Double [+5e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [5]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d6]
+            │       │   │       ╰── Constant Double [+6e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [6]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d7]
+            │       │   │       ╰── Constant Double [+7e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [7]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d8]
+            │       │   │       ╰── Constant Double [+8e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [8]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i1]
+            │       │   │       ╰── Constant Int [101]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [9]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i2]
+            │       │   │       ╰── Constant Int [102]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [10]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i3]
+            │       │   │       ╰── Constant Int [103]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [11]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i4]
+            │       │   │       ╰── Constant Int [104]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [12]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i5]
+            │       │   │       ╰── Constant Int [105]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [13]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── FunctionCall [check_arguments]
+                            ├── Constant Double [+1e0]
+                            ├── Constant Double [+2e0]
+                            ├── Constant Int [101]
+                            ├── Constant Double [+3e0]
+                            ├── Constant Double [+4e0]
+                            ├── Constant Int [102]
+                            ├── Constant Int [103]
+                            ├── Constant Int [104]
+                            ├── Constant Double [+5e0]
+                            ├── Constant Double [+6e0]
+                            ├── Constant Double [+7e0]
+                            ├── Constant Int [105]
+                            ╰── Constant Double [+8e0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_function_calls_double_and_int_params_recursive() {
+    let src = r#"
+        int fun(int i1, double d1, int i2, double d2, int i3, double d3,
+                int i4, double d4, int i5, double d5, int i6, double d6,
+                int i7, double d7, int i8, double d8, int i9, double d9) {
+            if (i1 != d9) {
+                int call1 = fun(i1 + 1, d1, i2 + 1, d2, i3 + 1, d3, i4 + 1, d4, i5 + 1, d5, i6 + 1, d6, i7 + 1, d7, i8 + 1, d8, i9 + 1, d9);
+                int call2 = fun(i1, d1 - 1, i2, d2 - 1, i3, d3 - 1, i4, d4 - 1, i5, d5 - 1, i6, d6 - 1, i7, d7 - 1, i8, d8 - 1, i9, d9 - 1);
+                if (call1) {
+                    return call1;
+                }
+                if (call2) {
+                    return call2;
+                }
+            }
+            if (i2 != i1 + 2) {
+                return 2;
+            }
+            if (i3 != i1 + 4) {
+                return 3;
+            }
+            if (i4 != i1 + 6) {
+                return 4;
+            }
+            if (i5 != i1 + 8) {
+                return 5;
+            }
+            if (i6 != i1 + 10) {
+                return 6;
+            }
+            if (i7 != i1 + 12) {
+                return 7;
+            }
+            if (i8 != i1 + 14) {
+                return 8;
+            }
+            if (i9 != i1 + 16) {
+                return 9;
+            }
+            if (d1 != d9 - 16) {
+                return 11;
+            }
+            if (d2 != d9 - 14) {
+                return 12;
+            }
+            if (d3 != d9 - 12) {
+                return 13;
+            }
+            if (d4 != d9 - 10) {
+                return 14;
+            }
+            if (d5 != d9 - 8) {
+                return 15;
+            }
+            if (d6 != d9 - 6) {
+                return 16;
+            }
+            if (d7 != d9 - 4) {
+                return 17;
+            }
+            if (d8 != d9 - 2) {
+                return 18;
+            }
+            return 0;
+        }
+        int main(void) {
+            return fun(1, 2.0, 3, 4.0, 5, 6.0, 7, 8.0, 9, 10.0, 11, 12.0, 13, 14.0, 15, 16.0, 17, 18.0);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [fun]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i5
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d5
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i6
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d6
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i7
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d7
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i8
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d8
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i9
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── d9
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i1]
+            │       │   │       ╰── Var [d9]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ├── VarDeclaration
+            │       │           │   ├── Name
+            │       │           │   │   ╰── call1
+            │       │           │   ├── Type
+            │       │           │   │   ╰── Int
+            │       │           │   ╰── Initializer
+            │       │           │       ╰── FunctionCall [fun]
+            │       │           │           ├── Binary [+]
+            │       │           │           │   ├── Var [i1]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [d1]
+            │       │           │           ├── Binary [+]
+            │       │           │           │   ├── Var [i2]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [d2]
+            │       │           │           ├── Binary [+]
+            │       │           │           │   ├── Var [i3]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [d3]
+            │       │           │           ├── Binary [+]
+            │       │           │           │   ├── Var [i4]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [d4]
+            │       │           │           ├── Binary [+]
+            │       │           │           │   ├── Var [i5]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [d5]
+            │       │           │           ├── Binary [+]
+            │       │           │           │   ├── Var [i6]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [d6]
+            │       │           │           ├── Binary [+]
+            │       │           │           │   ├── Var [i7]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [d7]
+            │       │           │           ├── Binary [+]
+            │       │           │           │   ├── Var [i8]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [d8]
+            │       │           │           ├── Binary [+]
+            │       │           │           │   ├── Var [i9]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ╰── Var [d9]
+            │       │           ├── VarDeclaration
+            │       │           │   ├── Name
+            │       │           │   │   ╰── call2
+            │       │           │   ├── Type
+            │       │           │   │   ╰── Int
+            │       │           │   ╰── Initializer
+            │       │           │       ╰── FunctionCall [fun]
+            │       │           │           ├── Var [i1]
+            │       │           │           ├── Binary [-]
+            │       │           │           │   ├── Var [d1]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [i2]
+            │       │           │           ├── Binary [-]
+            │       │           │           │   ├── Var [d2]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [i3]
+            │       │           │           ├── Binary [-]
+            │       │           │           │   ├── Var [d3]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [i4]
+            │       │           │           ├── Binary [-]
+            │       │           │           │   ├── Var [d4]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [i5]
+            │       │           │           ├── Binary [-]
+            │       │           │           │   ├── Var [d5]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [i6]
+            │       │           │           ├── Binary [-]
+            │       │           │           │   ├── Var [d6]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [i7]
+            │       │           │           ├── Binary [-]
+            │       │           │           │   ├── Var [d7]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [i8]
+            │       │           │           ├── Binary [-]
+            │       │           │           │   ├── Var [d8]
+            │       │           │           │   ╰── Constant Int [1]
+            │       │           │           ├── Var [i9]
+            │       │           │           ╰── Binary [-]
+            │       │           │               ├── Var [d9]
+            │       │           │               ╰── Constant Int [1]
+            │       │           ├── If
+            │       │           │   ├── Condition
+            │       │           │   │   ╰── Var [call1]
+            │       │           │   ╰── Then
+            │       │           │       ╰── Block
+            │       │           │           ╰── Return
+            │       │           │               ╰── Var [call1]
+            │       │           ╰── If
+            │       │               ├── Condition
+            │       │               │   ╰── Var [call2]
+            │       │               ╰── Then
+            │       │                   ╰── Block
+            │       │                       ╰── Return
+            │       │                           ╰── Var [call2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i2]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i1]
+            │       │   │           ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i3]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i1]
+            │       │   │           ╰── Constant Int [4]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i4]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i1]
+            │       │   │           ╰── Constant Int [6]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [4]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i5]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i1]
+            │       │   │           ╰── Constant Int [8]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [5]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i6]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i1]
+            │       │   │           ╰── Constant Int [10]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [6]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i7]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i1]
+            │       │   │           ╰── Constant Int [12]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [7]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i8]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i1]
+            │       │   │           ╰── Constant Int [14]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [8]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i9]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i1]
+            │       │   │           ╰── Constant Int [16]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [9]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d1]
+            │       │   │       ╰── Binary [-]
+            │       │   │           ├── Var [d9]
+            │       │   │           ╰── Constant Int [16]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [11]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d2]
+            │       │   │       ╰── Binary [-]
+            │       │   │           ├── Var [d9]
+            │       │   │           ╰── Constant Int [14]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [12]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d3]
+            │       │   │       ╰── Binary [-]
+            │       │   │           ├── Var [d9]
+            │       │   │           ╰── Constant Int [12]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [13]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d4]
+            │       │   │       ╰── Binary [-]
+            │       │   │           ├── Var [d9]
+            │       │   │           ╰── Constant Int [10]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [14]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d5]
+            │       │   │       ╰── Binary [-]
+            │       │   │           ├── Var [d9]
+            │       │   │           ╰── Constant Int [8]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [15]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d6]
+            │       │   │       ╰── Binary [-]
+            │       │   │           ├── Var [d9]
+            │       │   │           ╰── Constant Int [6]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [16]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d7]
+            │       │   │       ╰── Binary [-]
+            │       │   │           ├── Var [d9]
+            │       │   │           ╰── Constant Int [4]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [17]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d8]
+            │       │   │       ╰── Binary [-]
+            │       │   │           ├── Var [d9]
+            │       │   │           ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [18]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── FunctionCall [fun]
+                            ├── Constant Int [1]
+                            ├── Constant Double [+2e0]
+                            ├── Constant Int [3]
+                            ├── Constant Double [+4e0]
+                            ├── Constant Int [5]
+                            ├── Constant Double [+6e0]
+                            ├── Constant Int [7]
+                            ├── Constant Double [+8e0]
+                            ├── Constant Int [9]
+                            ├── Constant Double [+1e1]
+                            ├── Constant Int [11]
+                            ├── Constant Double [+1.2e1]
+                            ├── Constant Int [13]
+                            ├── Constant Double [+1.4e1]
+                            ├── Constant Int [15]
+                            ├── Constant Double [+1.6e1]
+                            ├── Constant Int [17]
+                            ╰── Constant Double [+1.8e1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_function_calls_double_parameters() {
+    let src = r#"
+        
+        int check_arguments(double a, double b, double c, double d, double e, double f, double g, double h);
+        int main(void) {
+            return check_arguments(1.0, 2.0, 3.0, 4.0, -1.0, -2.0, -3.0, -4.0);
+        }
+        int check_arguments(double a, double b, double c, double d, double e, double f, double g, double h) {
+            if (a != 1.0) {
+                return 1;
+            }
+            if (b != 2.0) {
+                return 2;
+            }
+            if (c != 3.0) {
+                return 3;
+            }
+            if (d != 4.0) {
+                return 4;
+            }
+            if (e != -1.0) {
+                return 5;
+            }
+            if (f != -2.0) {
+                return 6;
+            }
+            if (g != -3.0) {
+                return 7;
+            }
+            if (h != -4.0) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [check_arguments]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── h
+            │           ╰── Type
+            │               ╰── Double
+            ├── Function [main]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── FunctionCall [check_arguments]
+            │               ├── Constant Double [+1e0]
+            │               ├── Constant Double [+2e0]
+            │               ├── Constant Double [+3e0]
+            │               ├── Constant Double [+4e0]
+            │               ├── Unary [-]
+            │               │   ╰── Constant Double [+1e0]
+            │               ├── Unary [-]
+            │               │   ╰── Constant Double [+2e0]
+            │               ├── Unary [-]
+            │               │   ╰── Constant Double [+3e0]
+            │               ╰── Unary [-]
+            │                   ╰── Constant Double [+4e0]
+            ╰── Function [check_arguments]
+                ├── Parameters
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── b
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── c
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── e
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── f
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── g
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── h
+                │       ╰── Type
+                │           ╰── Double
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [a]
+                    │   │       ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Constant Double [+2e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [c]
+                    │   │       ╰── Constant Double [+3e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+4e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [e]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [f]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+2e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [g]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+3e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [h]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+4e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_function_calls_push_xmm() {
+    let src = r#"
+        int callee(double a, double b, double c, double d, double e, double f, double g,
+                   double h, double i, double j, double k) {
+            if (a != 0.) {
+                return 1;
+            }
+            if (b != 1.) {
+                return 2;
+            }
+            if (c != 2.) {
+                return 3;
+            }
+            if (d != 3.) {
+                return 4;
+            }
+            if (e != 4.) {
+                return 5;
+            }
+            if (f != 5.) {
+                return 6;
+            }
+            if (g != 6.) {
+                return 7;
+            }
+            if (h != 7.) {
+                return 8;
+            }
+            if (i != 8.) {
+                return 9;
+            }
+            if (j != 9.) {
+                return 10;
+            }
+            if (k != 10.) {
+                return 11;
+            }
+            return 0;
+        }
+        int target(int a, int b, int c, int d, int e) {
+            return callee(0., 1., 2., 3., 4., 5., e + 1., d + 3., c + 5., b + 7.,
+                          a + 9.);
+        }
+        int main(void) {
+            return target(1, 2, 3, 4, 5);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [callee]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── e
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── f
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── g
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── h
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── j
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── k
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [a]
+            │       │   │       ╰── Constant Double [+0e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [b]
+            │       │   │       ╰── Constant Double [+1e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [c]
+            │       │   │       ╰── Constant Double [+2e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [d]
+            │       │   │       ╰── Constant Double [+3e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [4]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [e]
+            │       │   │       ╰── Constant Double [+4e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [5]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [f]
+            │       │   │       ╰── Constant Double [+5e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [6]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [g]
+            │       │   │       ╰── Constant Double [+6e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [7]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [h]
+            │       │   │       ╰── Constant Double [+7e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [8]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Double [+8e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [9]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [j]
+            │       │   │       ╰── Constant Double [+9e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [10]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [k]
+            │       │   │       ╰── Constant Double [+1e1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [11]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [target]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── b
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── c
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── e
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── FunctionCall [callee]
+            │               ├── Constant Double [+0e0]
+            │               ├── Constant Double [+1e0]
+            │               ├── Constant Double [+2e0]
+            │               ├── Constant Double [+3e0]
+            │               ├── Constant Double [+4e0]
+            │               ├── Constant Double [+5e0]
+            │               ├── Binary [+]
+            │               │   ├── Var [e]
+            │               │   ╰── Constant Double [+1e0]
+            │               ├── Binary [+]
+            │               │   ├── Var [d]
+            │               │   ╰── Constant Double [+3e0]
+            │               ├── Binary [+]
+            │               │   ├── Var [c]
+            │               │   ╰── Constant Double [+5e0]
+            │               ├── Binary [+]
+            │               │   ├── Var [b]
+            │               │   ╰── Constant Double [+7e0]
+            │               ╰── Binary [+]
+            │                   ├── Var [a]
+            │                   ╰── Constant Double [+9e0]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── FunctionCall [target]
+                            ├── Constant Int [1]
+                            ├── Constant Int [2]
+                            ├── Constant Int [3]
+                            ├── Constant Int [4]
+                            ╰── Constant Int [5]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_function_calls_return_double() {
+    let src = r#"
+        
+        double d(void) {
+            return 1234.e75;
+        }
+        int main(void) {
+            double retval = d();
+            return retval == 1234.e75;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [d]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Constant Double [+1.234e78]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── retval
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [d]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Var [retval]
+                            ╰── Constant Double [+1.234e78]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_function_calls_standard_library_call() {
+    let src = r#"
+        double fma(double x, double y, double z);
+        double ldexp(double x, int exp);
+        int main(void) {
+            double fma_result = fma(5.0, 1E22, 4000000.0);
+            double ldexp_result = ldexp(92E73, 5);
+            if (fma_result != 50000000000000004194304.0) {
+                return 1;
+            }
+            if (ldexp_result != 2.944E76) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [fma]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── y
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── z
+            │           ╰── Type
+            │               ╰── Double
+            ├── Function [ldexp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── exp
+            │           ╰── Type
+            │               ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── fma_result
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [fma]
+                    │           ├── Constant Double [+5e0]
+                    │           ├── Constant Double [+1e22]
+                    │           ╰── Constant Double [+4e6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ldexp_result
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [ldexp]
+                    │           ├── Constant Double [+9.2e74]
+                    │           ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [fma_result]
+                    │   │       ╰── Constant Double [+5.0000000000000004e22]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ldexp_result]
+                    │   │       ╰── Constant Double [+2.944e76]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_function_calls_use_arg_after_fun_call() {
+    let src = r#"
+        double fun(double x) {
+            if (x > 2)
+                return x;
+            else {
+                double ret = fun(x + 2);
+                return ret + x;
+            }
+        }
+        int main(void) {
+            return fun(1.0);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [fun]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── x
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ╰── If
+            │           ├── Condition
+            │           │   ╰── Binary [>]
+            │           │       ├── Var [x]
+            │           │       ╰── Constant Int [2]
+            │           ├── Then
+            │           │   ╰── Return
+            │           │       ╰── Var [x]
+            │           ╰── Else
+            │               ╰── Block
+            │                   ├── VarDeclaration
+            │                   │   ├── Name
+            │                   │   │   ╰── ret
+            │                   │   ├── Type
+            │                   │   │   ╰── Double
+            │                   │   ╰── Initializer
+            │                   │       ╰── FunctionCall [fun]
+            │                   │           ╰── Binary [+]
+            │                   │               ├── Var [x]
+            │                   │               ╰── Constant Int [2]
+            │                   ╰── Return
+            │                       ╰── Binary [+]
+            │                           ├── Var [ret]
+            │                           ╰── Var [x]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── FunctionCall [fun]
+                            ╰── Constant Double [+1e0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_implicit_casts_common_type() {
+    let src = r#"
+        int lt(double d, long l) {
+            return d < l;
+        }
+        double tern_double_flag(double flag) {
+            return (double) (flag ? -30 : 10ul);
+        }
+        double tern_double_result(int flag) {
+            return flag ? 5.0 : 9223372036854777850ul;
+        }
+        int ten = 10;
+        int multiply(void) {
+            int i = 10.75 * ten;
+            return i == 107;
+        }
+        int main(void) {
+            if (lt(-9007199254751228.0, -9007199254751227l)) {
+                return 1;
+            }
+            if (tern_double_flag(20.0) != 18446744073709551586.0) {
+                return 2;
+            }
+            if (tern_double_flag(0.0) != 10.0) {
+                return 3;
+            }
+            if (tern_double_result(1) != 5.0) {
+                return 4;
+            }
+            if (tern_double_result(0) != 9223372036854777856.0) {
+                return 5;
+            }
+            if (!multiply()) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [lt]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── l
+            │   │       ╰── Type
+            │   │           ╰── Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [<]
+            │               ├── Var [d]
+            │               ╰── Var [l]
+            ├── Function [tern_double_flag]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── flag
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Cast
+            │               ├── Target
+            │               │   ╰── Double
+            │               ╰── Expression
+            │                   ╰── Conditional [?]
+            │                       ├── Var [flag]
+            │                       ├── Then
+            │                       │   ╰── Unary [-]
+            │                       │       ╰── Constant Int [30]
+            │                       ╰── Else
+            │                           ╰── Constant ULong [10]
+            ├── Function [tern_double_result]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── flag
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Conditional [?]
+            │               ├── Var [flag]
+            │               ├── Then
+            │               │   ╰── Constant Double [+5e0]
+            │               ╰── Else
+            │                   ╰── Constant ULong [9223372036854777850]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ten
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [10]
+            ├── Function [multiply]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Constant Double [+1.075e1]
+            │       │           ╰── Var [ten]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [i]
+            │               ╰── Constant Int [107]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── FunctionCall [lt]
+                    │   │       ├── Unary [-]
+                    │   │       │   ╰── Constant Double [+9.007199254751228e15]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Long [9007199254751227]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [tern_double_flag]
+                    │   │       │   ╰── Constant Double [+2e1]
+                    │   │       ╰── Constant Double [+1.8446744073709552e19]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [tern_double_flag]
+                    │   │       │   ╰── Constant Double [+0e0]
+                    │   │       ╰── Constant Double [+1e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [tern_double_result]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant Double [+5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [tern_double_result]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant Double [+9.223372036854778e18]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [multiply]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_implicit_casts_complex_arithmetic_common_type() {
+    let src = r#"
+        unsigned long ul = 10000ul;
+        int main(void) {
+            int i = -50;
+            double d = (ul + i) * 3.125;
+            return d == 31093.75;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul
+            │   ├── Type
+            │   │   ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Constant ULong [10000]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant Int [50]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Binary [*]
+                    │           ├── Binary [+]
+                    │           │   ├── Var [ul]
+                    │           │   ╰── Var [i]
+                    │           ╰── Constant Double [+3.125e0]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Var [d]
+                            ╰── Constant Double [+3.109375e4]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_implicit_casts_convert_for_assignment() {
+    let src = r#"
+        int check_args(long l, double d) {
+            return l == 2 && d == -6.0;
+        }
+        double return_double(void) {
+            return 18446744073709551586ul;
+        }
+        int check_assignment(double arg) {
+            int i = 0;
+            i = arg;
+            return i == 4;
+        }
+        int main(void) {
+            if (!check_args(2.4, -6)) {
+                return 1;
+            }
+            if (return_double() != 18446744073709551616.0) {
+                return 2;
+            }
+            if (!check_assignment(4.9)) {
+                return 3;
+            }
+            double d = 18446744073709551586ul;
+            if (d != 18446744073709551616.) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [check_args]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── l
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── d
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Binary [==]
+            │               │   ├── Var [l]
+            │               │   ╰── Constant Int [2]
+            │               ╰── Binary [==]
+            │                   ├── Var [d]
+            │                   ╰── Unary [-]
+            │                       ╰── Constant Double [+6e0]
+            ├── Function [return_double]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Constant ULong [18446744073709551586]
+            ├── Function [check_assignment]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── arg
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant Int [0]
+            │       ├── Assign [=]
+            │       │   ├── Var [i]
+            │       │   ╰── Var [arg]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [i]
+            │               ╰── Constant Int [4]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [check_args]
+                    │   │           ├── Constant Double [+2.4e0]
+                    │   │           ╰── Unary [-]
+                    │   │               ╰── Constant Int [6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [return_double]
+                    │   │       ╰── Constant Double [+1.8446744073709552e19]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [check_assignment]
+                    │   │           ╰── Constant Double [+4.9e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [18446744073709551586]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+1.8446744073709552e19]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_implicit_casts_static_initializers() {
+    let src = r#"
+        double d1 = 2147483647;
+        double d2 = 4294967295u;
+        double d3 = 4611686018427389440l;
+        double d4 = 4611686018427389955l;
+        double d5 = 9223372036854775810ul;
+        double d6 = 4611686018427389955ul;
+        double d7 = 9223372036854776832ul;
+        double uninitialized;
+        static int i = 4.9;
+        int unsigned u = 42949.672923E5;
+        long l = 4611686018427389440.;
+        unsigned long ul = 18446744073709549568.;
+        int main(void) {
+            if (d1 != 2147483647.) {
+                return 1;
+            }
+            if (d2 != 4294967295.) {
+                return 2;
+            }
+            if (d3 != 4611686018427389952.) {
+                return 3;
+            }
+            if (d4 != d3) {
+                return 4;
+            }
+            if (d5 != 9223372036854775808.) {
+                return 5;
+            }
+            if (d6 != d3) {
+                return 6;
+            }
+            if (d7 != d5) {
+                return 7;
+            }
+            if (uninitialized) {
+                return 8;
+            }
+            if (i != 4) {
+                return 9;
+            }
+            if (u != 4294967292u) {
+                return 10;
+            }
+            if (l != 4611686018427389952l) {
+                return 11;
+            }
+            if (ul != 18446744073709549568ul) {
+                return 12;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d1
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Int [2147483647]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d2
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant UInt [4294967295]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d3
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Long [4611686018427389440]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d4
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Long [4611686018427389955]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d5
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant ULong [9223372036854775810]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d6
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant ULong [4611686018427389955]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d7
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant ULong [9223372036854776832]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── uninitialized
+            │   ╰── Type
+            │       ╰── Double
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ├── Initializer
+            │   │   ╰── Constant Double [+4.9e0]
+            │   ╰── Static
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── u
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant Double [+4.2949672923e9]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant Double [+4.61168601842739e18]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul
+            │   ├── Type
+            │   │   ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Constant Double [+1.844674407370955e19]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d1]
+                    │   │       ╰── Constant Double [+2.147483647e9]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d2]
+                    │   │       ╰── Constant Double [+4.294967295e9]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d3]
+                    │   │       ╰── Constant Double [+4.61168601842739e18]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d4]
+                    │   │       ╰── Var [d3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d5]
+                    │   │       ╰── Constant Double [+9.223372036854776e18]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d6]
+                    │   │       ╰── Var [d3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d7]
+                    │   │       ╰── Var [d5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [uninitialized]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [u]
+                    │   │       ╰── Constant UInt [4294967292]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Constant Long [4611686018427389952]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [11]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant ULong [18446744073709549568]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [12]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_libraries_double_and_int_params_recursive() {
+    let src = r#"
+        int fun(int i1, double d1, int i2, double d2, int i3, double d3,
+                int i4, double d4, int i5, double d5, int i6, double d6,
+                int i7, double d7, int i8, double d8, int i9, double d9) {
+            if (i1 != d9) {
+                int call1 = fun(i1 + 1, d1, i2 + 1, d2, i3 + 1, d3, i4 + 1, d4, i5 + 1, d5, i6 + 1, d6, i7 + 1, d7, i8 + 1, d8, i9 + 1, d9);
+                int call2 = fun(i1, d1 - 1, i2, d2 - 1, i3, d3 - 1, i4, d4 - 1, i5, d5 - 1, i6, d6 - 1, i7, d7 - 1, i8, d8 - 1, i9, d9 - 1);
+                if (call1) {
+                    return call1;
+                }
+                if (call2) {
+                    return call2;
+                }
+            }
+            if (i2 != i1 + 2) {
+                return 2;
+            }
+            if (i3 != i1 + 4) {
+                return 3;
+            }
+            if (i4 != i1 + 6) {
+                return 4;
+            }
+            if (i5 != i1 + 8) {
+                return 5;
+            }
+            if (i6 != i1 + 10) {
+                return 6;
+            }
+            if (i7 != i1 + 12) {
+                return 7;
+            }
+            if (i8 != i1 + 14) {
+                return 8;
+            }
+            if (i9 != i1 + 16) {
+                return 9;
+            }
+            if (d1 != d9 - 16) {
+                return 11;
+            }
+            if (d2 != d9 - 14) {
+                return 12;
+            }
+            if (d3 != d9 - 12) {
+                return 13;
+            }
+            if (d4 != d9 - 10) {
+                return 14;
+            }
+            if (d5 != d9 - 8) {
+                return 15;
+            }
+            if (d6 != d9 - 6) {
+                return 16;
+            }
+            if (d7 != d9 - 4) {
+                return 17;
+            }
+            if (d8 != d9 - 2) {
+                return 18;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [fun]
+                ├── Parameters
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i1
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d1
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i2
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d2
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i3
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d3
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i4
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d4
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i5
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d5
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i6
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d6
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i7
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d7
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i8
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d8
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i9
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── d9
+                │       ╰── Type
+                │           ╰── Double
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i1]
+                    │   │       ╰── Var [d9]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ├── VarDeclaration
+                    │           │   ├── Name
+                    │           │   │   ╰── call1
+                    │           │   ├── Type
+                    │           │   │   ╰── Int
+                    │           │   ╰── Initializer
+                    │           │       ╰── FunctionCall [fun]
+                    │           │           ├── Binary [+]
+                    │           │           │   ├── Var [i1]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [d1]
+                    │           │           ├── Binary [+]
+                    │           │           │   ├── Var [i2]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [d2]
+                    │           │           ├── Binary [+]
+                    │           │           │   ├── Var [i3]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [d3]
+                    │           │           ├── Binary [+]
+                    │           │           │   ├── Var [i4]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [d4]
+                    │           │           ├── Binary [+]
+                    │           │           │   ├── Var [i5]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [d5]
+                    │           │           ├── Binary [+]
+                    │           │           │   ├── Var [i6]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [d6]
+                    │           │           ├── Binary [+]
+                    │           │           │   ├── Var [i7]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [d7]
+                    │           │           ├── Binary [+]
+                    │           │           │   ├── Var [i8]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [d8]
+                    │           │           ├── Binary [+]
+                    │           │           │   ├── Var [i9]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ╰── Var [d9]
+                    │           ├── VarDeclaration
+                    │           │   ├── Name
+                    │           │   │   ╰── call2
+                    │           │   ├── Type
+                    │           │   │   ╰── Int
+                    │           │   ╰── Initializer
+                    │           │       ╰── FunctionCall [fun]
+                    │           │           ├── Var [i1]
+                    │           │           ├── Binary [-]
+                    │           │           │   ├── Var [d1]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [i2]
+                    │           │           ├── Binary [-]
+                    │           │           │   ├── Var [d2]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [i3]
+                    │           │           ├── Binary [-]
+                    │           │           │   ├── Var [d3]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [i4]
+                    │           │           ├── Binary [-]
+                    │           │           │   ├── Var [d4]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [i5]
+                    │           │           ├── Binary [-]
+                    │           │           │   ├── Var [d5]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [i6]
+                    │           │           ├── Binary [-]
+                    │           │           │   ├── Var [d6]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [i7]
+                    │           │           ├── Binary [-]
+                    │           │           │   ├── Var [d7]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [i8]
+                    │           │           ├── Binary [-]
+                    │           │           │   ├── Var [d8]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ├── Var [i9]
+                    │           │           ╰── Binary [-]
+                    │           │               ├── Var [d9]
+                    │           │               ╰── Constant Int [1]
+                    │           ├── If
+                    │           │   ├── Condition
+                    │           │   │   ╰── Var [call1]
+                    │           │   ╰── Then
+                    │           │       ╰── Block
+                    │           │           ╰── Return
+                    │           │               ╰── Var [call1]
+                    │           ╰── If
+                    │               ├── Condition
+                    │               │   ╰── Var [call2]
+                    │               ╰── Then
+                    │                   ╰── Block
+                    │                       ╰── Return
+                    │                           ╰── Var [call2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i2]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i1]
+                    │   │           ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i3]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i1]
+                    │   │           ╰── Constant Int [4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i4]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i1]
+                    │   │           ╰── Constant Int [6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i5]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i1]
+                    │   │           ╰── Constant Int [8]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i6]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i1]
+                    │   │           ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i7]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i1]
+                    │   │           ╰── Constant Int [12]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i8]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i1]
+                    │   │           ╰── Constant Int [14]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i9]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i1]
+                    │   │           ╰── Constant Int [16]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d1]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [d9]
+                    │   │           ╰── Constant Int [16]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [11]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d2]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [d9]
+                    │   │           ╰── Constant Int [14]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [12]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d3]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [d9]
+                    │   │           ╰── Constant Int [12]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [13]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d4]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [d9]
+                    │   │           ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [14]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d5]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [d9]
+                    │   │           ╰── Constant Int [8]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [15]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d6]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [d9]
+                    │   │           ╰── Constant Int [6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [16]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d7]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [d9]
+                    │   │           ╰── Constant Int [4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [17]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d8]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [d9]
+                    │   │           ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [18]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_libraries_double_and_int_params_recursive_client() {
+    let src = r#"
+        int fun(int i1, double d1, int i2, double d2, int i3, double d3,
+                int i4, double d4, int i5, double d5, int i6, double d6,
+                int i7, double d7, int i8, double d8, int i9, double d9);
+        int main(void) {
+            double d = fun(1, 2.0, 3, 4.0, 5, 6.0, 7, 8.0, 9, 10.0, 11, 12.0, 13, 14.0, 15, 16.0, 17, 18.0);
+            return (d == 78.00);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [fun]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d5
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d6
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i7
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d7
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i8
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d8
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i9
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── d9
+            │           ╰── Type
+            │               ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [fun]
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Double [+2e0]
+                    │           ├── Constant Int [3]
+                    │           ├── Constant Double [+4e0]
+                    │           ├── Constant Int [5]
+                    │           ├── Constant Double [+6e0]
+                    │           ├── Constant Int [7]
+                    │           ├── Constant Double [+8e0]
+                    │           ├── Constant Int [9]
+                    │           ├── Constant Double [+1e1]
+                    │           ├── Constant Int [11]
+                    │           ├── Constant Double [+1.2e1]
+                    │           ├── Constant Int [13]
+                    │           ├── Constant Double [+1.4e1]
+                    │           ├── Constant Int [15]
+                    │           ├── Constant Double [+1.6e1]
+                    │           ├── Constant Int [17]
+                    │           ╰── Constant Double [+1.8e1]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Var [d]
+                            ╰── Constant Double [+7.8e1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_libraries_double_parameters() {
+    let src = r#"
+        int check_arguments(double a, double b, double c, double d, double e, double f, double g, double h) {
+            if (a != 1.0) {
+                return 1;
+            }
+            if (b != 2.0) {
+                return 2;
+            }
+            if (c != 3.0) {
+                return 3;
+            }
+            if (d != 4.0) {
+                return 4;
+            }
+            if (e != -1.0) {
+                return 5;
+            }
+            if (f != -2.0) {
+                return 6;
+            }
+            if (g != -3.0) {
+                return 7;
+            }
+            if (h != -4.0) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [check_arguments]
+                ├── Parameters
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── b
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── c
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── e
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── f
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── g
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── h
+                │       ╰── Type
+                │           ╰── Double
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [a]
+                    │   │       ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [b]
+                    │   │       ╰── Constant Double [+2e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [c]
+                    │   │       ╰── Constant Double [+3e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+4e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [e]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [f]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+2e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [g]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+3e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [h]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+4e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_libraries_double_parameters_client() {
+    let src = r#"
+        int check_arguments(double a, double b, double c, double d, double e, double f, double g, double h);
+        int main(void) {
+            return check_arguments(1.0, 2.0, 3.0, 4.0, -1.0, -2.0, -3.0, -4.0);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [check_arguments]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── h
+            │           ╰── Type
+            │               ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── FunctionCall [check_arguments]
+                            ├── Constant Double [+1e0]
+                            ├── Constant Double [+2e0]
+                            ├── Constant Double [+3e0]
+                            ├── Constant Double [+4e0]
+                            ├── Unary [-]
+                            │   ╰── Constant Double [+1e0]
+                            ├── Unary [-]
+                            │   ╰── Constant Double [+2e0]
+                            ├── Unary [-]
+                            │   ╰── Constant Double [+3e0]
+                            ╰── Unary [-]
+                                ╰── Constant Double [+4e0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_libraries_double_params_and_result() {
+    let src = r#"
+        double fmax(double x, double y);
+        double get_max(double a, double b, double c, double d,
+                       double e, double f, double g, double h,
+                       double i, double j, double k)
+        {
+            double max = fmax(
+                fmax(
+                    fmax(
+                        fmax(a, b),
+                        fmax(c, d)),
+                    fmax(
+                        fmax(e, f),
+                        fmax(g, h))),
+                fmax(i, fmax(j, k)));
+            return max;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [fmax]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── y
+            │           ╰── Type
+            │               ╰── Double
+            ╰── Function [get_max]
+                ├── Parameters
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── a
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── b
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── c
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── d
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── e
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── f
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── g
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── h
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── j
+                │   │   ╰── Type
+                │   │       ╰── Double
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── k
+                │       ╰── Type
+                │           ╰── Double
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── max
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [fmax]
+                    │           ├── FunctionCall [fmax]
+                    │           │   ├── FunctionCall [fmax]
+                    │           │   │   ├── FunctionCall [fmax]
+                    │           │   │   │   ├── Var [a]
+                    │           │   │   │   ╰── Var [b]
+                    │           │   │   ╰── FunctionCall [fmax]
+                    │           │   │       ├── Var [c]
+                    │           │   │       ╰── Var [d]
+                    │           │   ╰── FunctionCall [fmax]
+                    │           │       ├── FunctionCall [fmax]
+                    │           │       │   ├── Var [e]
+                    │           │       │   ╰── Var [f]
+                    │           │       ╰── FunctionCall [fmax]
+                    │           │           ├── Var [g]
+                    │           │           ╰── Var [h]
+                    │           ╰── FunctionCall [fmax]
+                    │               ├── Var [i]
+                    │               ╰── FunctionCall [fmax]
+                    │                   ├── Var [j]
+                    │                   ╰── Var [k]
+                    ╰── Return
+                        ╰── Var [max]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_libraries_double_params_and_result_client() {
+    let src = r#"
+        double get_max(double a, double b, double c, double d,
+                       double e, double f, double g, double h,
+                       double i, double j, double k);
+        int main(void)
+        {
+            double result = get_max(100.3, 200.1, 0.01, 1.00004e5, 55.555, -4., 6543.2,
+                                    9e9, 8e8, 7.6, 10e3 * 11e5);
+            return result == 10e3 * 11e5;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [get_max]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── c
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── e
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── f
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── g
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── h
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── j
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── k
+            │           ╰── Type
+            │               ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [get_max]
+                    │           ├── Constant Double [+1.003e2]
+                    │           ├── Constant Double [+2.001e2]
+                    │           ├── Constant Double [+1e-2]
+                    │           ├── Constant Double [+1.00004e5]
+                    │           ├── Constant Double [+5.5555e1]
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Double [+4e0]
+                    │           ├── Constant Double [+6.5432e3]
+                    │           ├── Constant Double [+9e9]
+                    │           ├── Constant Double [+8e8]
+                    │           ├── Constant Double [+7.6e0]
+                    │           ╰── Binary [*]
+                    │               ├── Constant Double [+1e4]
+                    │               ╰── Constant Double [+1.1e6]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Var [result]
+                            ╰── Binary [*]
+                                ├── Constant Double [+1e4]
+                                ╰── Constant Double [+1.1e6]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_libraries_extern_double() {
+    let src = r#"
+        double d = 1e20;
+    "#;
+    let expected = r#"
+        Program
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── d
+                ├── Type
+                │   ╰── Double
+                ╰── Initializer
+                    ╰── Constant Double [+1e20]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_libraries_extern_double_client() {
+    let src = r#"
+        
+        extern double d;
+        int main(void) {
+            return d == 1e20;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Extern
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Var [d]
+                            ╰── Constant Double [+1e20]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_libraries_use_arg_after_fun_call() {
+    let src = r#"
+        double fun(double x) {
+            if (x > 2)
+                return x;
+            else {
+                double ret = fun(x + 2);
+                return ret + x;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [fun]
+                ├── Parameters
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── x
+                │       ╰── Type
+                │           ╰── Double
+                ╰── Body
+                    ╰── If
+                        ├── Condition
+                        │   ╰── Binary [>]
+                        │       ├── Var [x]
+                        │       ╰── Constant Int [2]
+                        ├── Then
+                        │   ╰── Return
+                        │       ╰── Var [x]
+                        ╰── Else
+                            ╰── Block
+                                ├── VarDeclaration
+                                │   ├── Name
+                                │   │   ╰── ret
+                                │   ├── Type
+                                │   │   ╰── Double
+                                │   ╰── Initializer
+                                │       ╰── FunctionCall [fun]
+                                │           ╰── Binary [+]
+                                │               ├── Var [x]
+                                │               ╰── Constant Int [2]
+                                ╰── Return
+                                    ╰── Binary [+]
+                                        ├── Var [ret]
+                                        ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_libraries_use_arg_after_fun_call_client() {
+    let src = r#"
+        double fun(double x);
+        int main(void) {
+            return fun(1.0);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [fun]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── x
+            │           ╰── Type
+            │               ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── FunctionCall [fun]
+                            ╰── Constant Double [+1e0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_special_values_infinity() {
+    let src = r#"
+        double inf = 2e308;
+        double very_large = 1.79E308;
+        double zero = 0.0;
+        int main(void) {
+            if (inf != 11e330) {
+                return 1;
+            }
+            if (inf <= very_large) {
+                return 2;
+            }
+            if(very_large * 10.0 != inf) {
+                return 3;
+            }
+            if (1.0 / zero != inf) {
+                return 4;
+            }
+            double negated_inf = -inf;
+            double negated_inf2 = -1.0 / zero;
+            if (negated_inf >= -very_large) {
+                return 5;
+            }
+            if (negated_inf != negated_inf2) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── inf
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+inf]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── very_large
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+1.79e308]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── zero
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+0e0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [inf]
+                    │   │       ╰── Constant Double [+inf]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [<=]
+                    │   │       ├── Var [inf]
+                    │   │       ╰── Var [very_large]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [*]
+                    │   │       │   ├── Var [very_large]
+                    │   │       │   ╰── Constant Double [+1e1]
+                    │   │       ╰── Var [inf]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [/]
+                    │   │       │   ├── Constant Double [+1e0]
+                    │   │       │   ╰── Var [zero]
+                    │   │       ╰── Var [inf]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── negated_inf
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Var [inf]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── negated_inf2
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Binary [/]
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Double [+1e0]
+                    │           ╰── Var [zero]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [>=]
+                    │   │       ├── Var [negated_inf]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Var [very_large]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [negated_inf]
+                    │   │       ╰── Var [negated_inf2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_special_values_negative_zero() {
+    let src = r#"
+        double copysign(double x, double y);
+        double zero = 0.0;
+        int main(void) {
+            double negative_zero = -zero;
+            if (negative_zero != 0)
+                return 1;
+            if ( 1/negative_zero != -10e308 )
+                return 2;
+            if ( (-10)/negative_zero != 10e308)
+                return 3;
+            int fail = 0;
+            negative_zero && (fail = 1);
+            if (fail)
+                return 4;
+            if (negative_zero) {
+                return 5;
+            }
+            if (zero != -0.0) {
+                return 6;
+            }
+            double negated = copysign(4.0, -0.0);
+            double positive = copysign(-5.0, 0.0);
+            if (negated != -4.0) {
+                return 7;
+            }
+            if (positive != 5.0) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [copysign]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── y
+            │           ╰── Type
+            │               ╰── Double
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── zero
+            │   ├── Type
+            │   │   ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+0e0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── negative_zero
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Var [zero]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [negative_zero]
+                    │   │       ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [/]
+                    │   │       │   ├── Constant Int [1]
+                    │   │       │   ╰── Var [negative_zero]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+inf]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [/]
+                    │   │       │   ├── Unary [-]
+                    │   │       │   │   ╰── Constant Int [10]
+                    │   │       │   ╰── Var [negative_zero]
+                    │   │       ╰── Constant Double [+inf]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── fail
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Binary [&&]
+                    │   ├── Var [negative_zero]
+                    │   ╰── Assign [=]
+                    │       ├── Var [fail]
+                    │       ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [fail]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [negative_zero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [zero]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+0e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── negated
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [copysign]
+                    │           ├── Constant Double [+4e0]
+                    │           ╰── Unary [-]
+                    │               ╰── Constant Double [+0e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── positive
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [copysign]
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Double [+5e0]
+                    │           ╰── Constant Double [+0e0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [negated]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+4e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [positive]
+                    │   │       ╰── Constant Double [+5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_special_values_subnormal_not_zero() {
+    let src = r#"
+        int non_zero(double d) {
+            return !d;
+        }
+        double multiply_by_large_num(double d) {
+            return d * 2e20;
+        }
+        int main(void) {
+            double subnormal = 2.5e-320;
+            if (multiply_by_large_num(subnormal) != 4.99994433591341498562e-300) {
+                return 2;
+            }
+            return non_zero(subnormal);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [non_zero]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── d
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Unary [!]
+            │               ╰── Var [d]
+            ├── Function [multiply_by_large_num]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── d
+            │   │       ╰── Type
+            │   │           ╰── Double
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [*]
+            │               ├── Var [d]
+            │               ╰── Constant Double [+2e20]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── subnormal
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+2.5e-320]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [multiply_by_large_num]
+                    │   │       │   ╰── Var [subnormal]
+                    │   │       ╰── Constant Double [+4.999944335913415e-300]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── FunctionCall [non_zero]
+                            ╰── Var [subnormal]
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
