@@ -50,6 +50,7 @@ pub enum StaticInit {
     UInt(u32),
     Long(i64),
     ULong(u64),
+    Double(f64),
 }
 
 impl StaticInit {
@@ -59,7 +60,7 @@ impl StaticInit {
             Constant::UInt(v) => StaticInit::UInt(v),
             Constant::Long(v) => StaticInit::Long(v),
             Constant::ULong(v) => StaticInit::ULong(v),
-            Constant::Double(v) => todo!(),
+            Constant::Double(v) => StaticInit::Double(v),
         }
     }
 }

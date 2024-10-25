@@ -270,7 +270,11 @@ impl<T> InnerRef<T> for Option<Node<T>> {
 }
 
 impl Type {
-    pub(crate) fn size(&self) -> u8 {
+    pub fn is_int(&self) -> bool {
+        matches!(self, Type::Int | Type::UInt | Type::Long | Type::ULong)
+    }
+
+    pub fn size(&self) -> u8 {
         match self {
             Type::Int => 4,
             Type::UInt => 4,
@@ -281,7 +285,7 @@ impl Type {
         }
     }
 
-    pub(crate) fn singed(&self) -> bool {
+    pub fn singed(&self) -> bool {
         match self {
             Type::Int => true,
             Type::UInt => false,
@@ -301,6 +305,20 @@ impl Constant {
             Constant::Long(v) => *v as u64,
             Constant::ULong(v) => *v,
             Constant::Double(v) => *v as u64,
+        }
+    }
+
+    pub fn is_int(&self) -> bool {
+        self.ty().is_int()
+    }
+
+    pub fn ty(&self) -> Type {
+        match self {
+            Constant::Int(_) => Type::Int,
+            Constant::UInt(_) => Type::UInt,
+            Constant::Long(_) => Type::Long,
+            Constant::ULong(_) => Type::ULong,
+            Constant::Double(_) => Type::Double,
         }
     }
 }

@@ -89,7 +89,7 @@ impl TypeChecker {
                     Type::Long => InitialValue::Initial(StaticInit::Long(0)),
                     Type::UInt => InitialValue::Initial(StaticInit::UInt(0)),
                     Type::ULong => InitialValue::Initial(StaticInit::ULong(0)),
-                    Type::Double => todo!(),
+                    Type::Double => InitialValue::Initial(StaticInit::Double(0.0)),
                     Type::Function(_) => unreachable!(),
                 }
             };
@@ -126,29 +126,33 @@ impl TypeChecker {
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let mut initial_value = if let Some(init) = &decl.init {
-            if let Expression::Constant(c) = init.as_ref() {
-                let value = c.as_u64();
-                let static_init = match &decl.ty {
-                    Type::Int => StaticInit::Int(value as i32),
-                    Type::UInt => StaticInit::UInt(value as u32),
-                    Type::Long => StaticInit::Long(value as i64),
-                    Type::ULong => StaticInit::ULong(value),
-                    _ => {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Type,
-                            msg: "Invalid type of static declaration".into(),
-                            span: init.span,
-                        });
-                    }
-                };
-                InitialValue::Initial(static_init)
-            } else {
+            let Expression::Constant(constant) = init.as_ref() else {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
                     msg: "Non-constant initializer".into(),
                     span: init.span,
                 });
-            }
+            };
+            let static_init = match (constant, &decl.ty) {
+                (c, Type::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
+                (c, Type::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
+                (c, Type::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
+                (c, Type::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
+                (c, Type::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
+                (Constant::Double(value), Type::Int) => StaticInit::Int(*value as i32),
+                (Constant::Double(value), Type::UInt) => StaticInit::UInt(*value as u32),
+                (Constant::Double(value), Type::Long) => StaticInit::Long(*value as i64),
+                (Constant::Double(value), Type::ULong) => StaticInit::ULong(*value as u64),
+                (Constant::Double(value), Type::Double) => StaticInit::Double(*value),
+                _ => {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Invalid type of static declaration".into(),
+                        span: init.span,
+                    });
+                }
+            };
+            InitialValue::Initial(static_init)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             InitialValue::NoInitializer
         } else {
@@ -323,6 +327,15 @@ impl TypeChecker {
             }
             Statement::Switch { expr, body, .. } => {
                 let expr_ty = self.check_expression(expr)?;
+
+                if !expr_ty.is_int() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Switch statement requires an integer expression".to_owned(),
+                        span: expr.span,
+                    });
+                }
+
                 self.switch_stack.push_front(SwitchCases {
                     expr_ty,
                     values: vec![],
@@ -334,12 +347,15 @@ impl TypeChecker {
             }
             Statement::Case { value, body, label } => {
                 let switch_cases = self.switch_stack.front_mut().expect("Case without switch");
-                let Expression::Constant(constant) = value.as_ref() else {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "case label does not reduce to an integer constant".to_owned(),
-                        span: value.span,
-                    });
+                let constant = match value.as_ref() {
+                    Expression::Constant(constant) if constant.ty().is_int() => constant,
+                    _ => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "case label does not reduce to an integer constant".to_owned(),
+                            span: value.span,
+                        })
+                    }
                 };
                 let case_constant = constant.as_u64();
                 let case_value = match &switch_cases.expr_ty {
@@ -347,8 +363,7 @@ impl TypeChecker {
                     Type::UInt => Constant::UInt(case_constant as u32),
                     Type::Long => Constant::Long(case_constant as i64),
                     Type::ULong => Constant::ULong(case_constant),
-                    Type::Double => todo!(),
-                    Type::Function(_) => unreachable!(),
+                    Type::Double | Type::Function(_) => unreachable!(),
                 };
 
                 if switch_cases.values.iter().any(|(v, _)| *v == case_value) {
@@ -431,13 +446,7 @@ impl TypeChecker {
 
     fn check_expression(&mut self, expr: &Node<Expression>) -> Result<Type> {
         let ty = match expr.as_ref() {
-            Expression::Constant(c) => match c {
-                Constant::Int(_) => Type::Int,
-                Constant::Long(_) => Type::Long,
-                Constant::UInt(_) => Type::UInt,
-                Constant::ULong(_) => Type::ULong,
-                Constant::Double(_) => todo!(),
-            },
+            Expression::Constant(c) => c.ty(),
             Expression::Var(name) => {
                 let Some(data) = self.symbols.get(name) else {
                     return Err(CompilerError {
@@ -457,6 +466,13 @@ impl TypeChecker {
             }
             Expression::Unary { op, expr } => {
                 let operand_ty = self.check_expression(expr)?;
+                if matches!(op.as_ref(), UnaryOp::Complement) && !operand_ty.is_int() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Unary operator requires an integer type".to_string(),
+                        span: expr.span,
+                    });
+                }
                 match op.as_ref() {
                     UnaryOp::Not => Type::Int,
                     _ => operand_ty,
@@ -466,6 +482,29 @@ impl TypeChecker {
             Expression::Binary { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
                 let right_ty = self.check_expression(right)?;
+
+                match op.as_ref() {
+                    BinaryOp::Reminder
+                    | BinaryOp::ShiftRight
+                    | BinaryOp::ShiftLeft
+                    | BinaryOp::BinOr
+                    | BinaryOp::BinXor
+                    | BinaryOp::BinAnd => {
+                        if !left_ty.is_int() || !right_ty.is_int() {
+                            let span = if !left_ty.is_int() {
+                                left.span
+                            } else {
+                                right.span
+                            };
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Operator requires integer operands".to_string(),
+                                span,
+                            });
+                        }
+                    }
+                    _ => {}
+                };
 
                 match op.as_ref() {
                     BinaryOp::And | BinaryOp::Or => Type::Int,
@@ -490,6 +529,31 @@ impl TypeChecker {
             Expression::Assignment { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
                 let right_ty = self.check_expression(right)?;
+
+                match op.as_ref() {
+                    AssignOp::BitAndEqual
+                    | AssignOp::BitOrEqual
+                    | AssignOp::BitXorEqual
+                    | AssignOp::ShiftLeftEqual
+                    | AssignOp::ShiftRightEqual
+                    | AssignOp::ModEqual => {
+                        if !left_ty.is_int() || !right_ty.is_int() {
+                            let span = if !left_ty.is_int() {
+                                left.span
+                            } else {
+                                right.span
+                            };
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Assign compound operation requires integer operands"
+                                    .to_string(),
+                                span,
+                            });
+                        }
+                    }
+                    _ => {}
+                };
+
                 match op.as_ref() {
                     AssignOp::Equal | AssignOp::ShiftLeftEqual | AssignOp::ShiftRightEqual => {
                         self.cast_if_needed(right, &right_ty, &left_ty);
@@ -569,6 +633,8 @@ impl TypeChecker {
     fn common_type(ty1: &Type, ty2: &Type) -> Type {
         let result = if ty1 == ty2 {
             ty1
+        } else if matches!(ty1, Type::Double) || matches!(ty2, Type::Double) {
+            &Type::Double
         } else if ty1.size() == ty2.size() {
             if ty1.singed() {
                 ty2
