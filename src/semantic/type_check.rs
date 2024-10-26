@@ -636,7 +636,7 @@ impl TypeChecker {
         } else if matches!(ty1, Type::Double) || matches!(ty2, Type::Double) {
             &Type::Double
         } else if ty1.size() == ty2.size() {
-            if ty1.singed() {
+            if ty1.is_signed() {
                 ty2
             } else {
                 ty1

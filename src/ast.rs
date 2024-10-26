@@ -285,7 +285,7 @@ impl Type {
         }
     }
 
-    pub fn singed(&self) -> bool {
+    pub fn is_signed(&self) -> bool {
         match self {
             Type::Int => true,
             Type::UInt => false,

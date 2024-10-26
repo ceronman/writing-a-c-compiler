@@ -80,6 +80,22 @@ pub enum Instruction {
         src: Val,
         dst: Val,
     },
+    DoubleToInt {
+        src: Val,
+        dst: Val,
+    },
+    DoubleToUInt {
+        src: Val,
+        dst: Val,
+    },
+    IntToDouble {
+        src: Val,
+        dst: Val,
+    },
+    UIntToDouble {
+        src: Val,
+        dst: Val,
+    },
 }
 
 pub type Constant = ast::Constant;
@@ -587,7 +603,31 @@ impl TackyGenerator {
         } else {
             let dst = self.make_temp(target);
 
-            if target.size() == src_ty.size() {
+            if *src_ty == Type::Double {
+                if target.is_signed() {
+                    self.instructions.push(Instruction::DoubleToInt {
+                        src,
+                        dst: dst.clone(),
+                    });
+                } else {
+                    self.instructions.push(Instruction::DoubleToUInt {
+                        src,
+                        dst: dst.clone(),
+                    });
+                }
+            } else if *target == Type::Double {
+                if src_ty.is_signed() {
+                    self.instructions.push(Instruction::IntToDouble {
+                        src,
+                        dst: dst.clone(),
+                    });
+                } else {
+                    self.instructions.push(Instruction::UIntToDouble {
+                        src,
+                        dst: dst.clone(),
+                    });
+                }
+            } else if target.size() == src_ty.size() {
                 self.instructions.push(Instruction::Copy {
                     src,
                     dst: dst.clone(),
@@ -597,7 +637,7 @@ impl TackyGenerator {
                     src,
                     dst: dst.clone(),
                 });
-            } else if src_ty.singed() {
+            } else if src_ty.is_signed() {
                 self.instructions.push(Instruction::SignExtend {
                     src,
                     dst: dst.clone(),
@@ -686,7 +726,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                         Type::Long => StaticInit::Long(0),
                         Type::UInt => StaticInit::UInt(0),
                         Type::ULong => StaticInit::ULong(0),
-                        Type::Double => todo!(),
+                        Type::Double => StaticInit::Double(0.0),
                         Type::Function(_) => unreachable!(),
                     };
                     top_level.push(TopLevel::Variable(StaticVariable {

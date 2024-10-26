@@ -174,6 +174,31 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
                 write!(file, " = zero_extend ")?;
                 pp_val(file, src)?;
             }
+
+            tacky::Instruction::DoubleToInt { src, dst } => {
+                write!(file, "{indent}")?;
+                pp_val(file, dst)?;
+                write!(file, " = double_to_int ")?;
+                pp_val(file, src)?;
+            }
+            tacky::Instruction::DoubleToUInt { src, dst } => {
+                write!(file, "{indent}")?;
+                pp_val(file, dst)?;
+                write!(file, " = double_to_uint ")?;
+                pp_val(file, src)?;
+            }
+            tacky::Instruction::IntToDouble { src, dst } => {
+                write!(file, "{indent}")?;
+                pp_val(file, dst)?;
+                write!(file, " = int_to_double ")?;
+                pp_val(file, src)?;
+            }
+            tacky::Instruction::UIntToDouble { src, dst } => {
+                write!(file, "{indent}")?;
+                pp_val(file, dst)?;
+                write!(file, " = uint_to_double ")?;
+                pp_val(file, src)?;
+            }
         }
         writeln!(file)?;
     }

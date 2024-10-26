@@ -376,6 +376,11 @@ fn generate_function(function: &tacky::Function, semantic: &SemanticData) -> Fun
             tacky::Instruction::ZeroExtend { src, dst } => {
                 instructions.push(Instruction::MovZeroExtend(src.to_asm(), dst.to_asm()));
             }
+
+            tacky::Instruction::DoubleToInt { .. } => todo!(),
+            tacky::Instruction::DoubleToUInt { .. } => todo!(),
+            tacky::Instruction::IntToDouble { .. } => todo!(),
+            tacky::Instruction::UIntToDouble { .. } => todo!(),
         }
     }
 
