@@ -31,10 +31,19 @@ pub struct StaticVariable {
 }
 
 #[derive(Debug)]
+pub struct StaticConstant {
+    pub name: Symbol,
+    pub alignment: u8,
+    pub init: StaticInit,
+}
+
+#[derive(Debug)]
 pub enum Instruction {
     Mov(AsmType, Operand, Operand),
     Movsx(Operand, Operand),
     MovZeroExtend(Operand, Operand),
+    Cvttsd2si(Operand, Operand),
+    Cvtsi2sd(Operand, Operand),
     Unary(AsmType, UnaryOp, Operand),
     Binary(AsmType, BinaryOp, Operand, Operand),
     Cmp(AsmType, Operand, Operand),
@@ -60,6 +69,7 @@ pub enum UnaryOp {
     Not,
     Inc,
     Dec,
+    Shr,
 }
 
 #[derive(Debug)]
@@ -70,6 +80,7 @@ pub enum BinaryOp {
     And,
     Or,
     Xor,
+    DivDouble
 }
 
 #[derive(Debug, Clone)]
@@ -105,12 +116,23 @@ pub enum Reg {
     R10,
     R11,
     SP,
+    XMM0,
+    XMM1,
+    XMM2,
+    XMM3,
+    XMM4,
+    XMM5,
+    XMM6,
+    XMM7,
+    XMM14,
+    XMM15,
 }
 
 #[derive(Debug, Clone, Copy)]
 pub enum AsmType {
     Longword,
     Quadword,
+    Double
 }
 
 const ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
