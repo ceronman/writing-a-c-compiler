@@ -1,17 +1,26 @@
-pub mod ast;
+pub mod ir;
 
+use crate::asm::ir::{
+    AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
+    StaticVariable, TopLevel, UnaryOp,
+};
 use crate::ast::{Constant, Type};
 use crate::semantic::{Attributes, SemanticData, StaticInit};
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
-use crate::asm::ast::{AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticVariable, TopLevel, UnaryOp};
 
 const ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
 
 enum BackendSymbolData {
-    Obj { ty: AsmType, is_static: bool },
-    Fn { _defined: bool },
+    Obj {
+        ty: AsmType,
+        is_static: bool,
+        is_const: bool,
+    },
+    Fn {
+        _defined: bool,
+    },
 }
 
 type BackendSymbolTable = HashMap<Symbol, BackendSymbolData>;
@@ -54,9 +63,9 @@ impl SemanticData {
     }
 }
 
+// TODO: Maybe this is not necessary?
 struct Compiler {
     doubles: HashMap<u64, Symbol>,
-    double_counter: usize,
 }
 
 impl Compiler {
@@ -64,18 +73,50 @@ impl Compiler {
         let mut top_level = Vec::new();
         for element in &program.top_level {
             match element {
-                tacky::TopLevel::Function(f) => {
-                    top_level.push(TopLevel::Function(self.generate_function(f, &program.semantics)))
-                }
+                tacky::TopLevel::Function(f) => top_level.push(TopLevel::Function(
+                    self.generate_function(f, &program.semantics),
+                )),
                 tacky::TopLevel::Variable(v) => top_level.push(TopLevel::Variable(
                     self.generate_static_variable(v, &program.semantics),
                 )),
+                _ => {}
             }
         }
+
+        let mut backend_symbols = Self::make_backend_symbols(&program.semantics);
+
+        for (key, name) in &self.doubles {
+            top_level.push(TopLevel::Constant(StaticConstant {
+                name: name.clone(),
+                alignment: 8,
+                init: StaticInit::Double(f64::from_bits(*key)),
+            }));
+            backend_symbols.insert(
+                name.clone(),
+                BackendSymbolData::Obj {
+                    ty: AsmType::Double,
+                    is_static: true,
+                    is_const: true,
+                },
+            );
+        }
+
+        for tl in &mut top_level {
+            if let TopLevel::Function(function) = tl {
+                let stack_size =
+                    self.replace_pseudo_registers(&mut function.instructions, &backend_symbols);
+                self.fixup_instructions(function, stack_size);
+            }
+        }
+
         Program { top_level }
     }
 
-    fn generate_function(&mut self, function: &tacky::Function, semantic: &SemanticData) -> Function {
+    fn generate_function(
+        &mut self,
+        function: &tacky::Function,
+        semantic: &SemanticData,
+    ) -> Function {
         let mut instructions = Vec::new();
 
         for (i, param) in function.params.iter().cloned().enumerate() {
@@ -119,8 +160,16 @@ impl Compiler {
                     }
                     _ => {
                         let ty = semantic.val_asm_ty(src);
-                        instructions.push(Instruction::Mov(ty, self.generate_val(src), self.generate_val(dst)));
-                        instructions.push(Instruction::Unary(ty, op.to_asm(), self.generate_val(dst)));
+                        instructions.push(Instruction::Mov(
+                            ty,
+                            self.generate_val(src),
+                            self.generate_val(dst),
+                        ));
+                        instructions.push(Instruction::Unary(
+                            ty,
+                            op.to_asm(),
+                            self.generate_val(dst),
+                        ));
                     }
                 },
 
@@ -132,32 +181,64 @@ impl Compiler {
                 } => match op {
                     tacky::BinaryOp::Divide => {
                         let ty = semantic.val_asm_ty(src1);
-                        instructions.push(Instruction::Mov(ty, self.generate_val(src1), Reg::Ax.into()));
+                        instructions.push(Instruction::Mov(
+                            ty,
+                            self.generate_val(src1),
+                            Reg::Ax.into(),
+                        ));
                         if semantic.is_signed(src1) {
                             instructions.push(Instruction::Cdq(ty));
                             instructions.push(Instruction::Idiv(ty, self.generate_val(src2)));
                         } else {
-                            instructions.push(Instruction::Mov(ty, Operand::Imm(0), Reg::Dx.into()));
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                Operand::Imm(0),
+                                Reg::Dx.into(),
+                            ));
                             instructions.push(Instruction::Div(ty, self.generate_val(src2)));
                         }
-                        instructions.push(Instruction::Mov(ty, Reg::Ax.into(), self.generate_val(dst)));
+                        instructions.push(Instruction::Mov(
+                            ty,
+                            Reg::Ax.into(),
+                            self.generate_val(dst),
+                        ));
                     }
                     tacky::BinaryOp::Reminder => {
                         let ty = semantic.val_asm_ty(src1);
-                        instructions.push(Instruction::Mov(ty, self.generate_val(src1), Reg::Ax.into()));
+                        instructions.push(Instruction::Mov(
+                            ty,
+                            self.generate_val(src1),
+                            Reg::Ax.into(),
+                        ));
                         if semantic.is_signed(src1) {
                             instructions.push(Instruction::Cdq(ty));
                             instructions.push(Instruction::Idiv(ty, self.generate_val(src2)));
                         } else {
-                            instructions.push(Instruction::Mov(ty, Operand::Imm(0), Reg::Dx.into()));
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                Operand::Imm(0),
+                                Reg::Dx.into(),
+                            ));
                             instructions.push(Instruction::Div(ty, self.generate_val(src2)));
                         }
-                        instructions.push(Instruction::Mov(ty, Reg::Dx.into(), self.generate_val(dst)));
+                        instructions.push(Instruction::Mov(
+                            ty,
+                            Reg::Dx.into(),
+                            self.generate_val(dst),
+                        ));
                     }
                     tacky::BinaryOp::ShiftLeft => {
                         let ty = semantic.val_asm_ty(src1);
-                        instructions.push(Instruction::Mov(ty, self.generate_val(src1), self.generate_val(dst)));
-                        instructions.push(Instruction::Mov(ty, self.generate_val(src2), Reg::Cx.into()));
+                        instructions.push(Instruction::Mov(
+                            ty,
+                            self.generate_val(src1),
+                            self.generate_val(dst),
+                        ));
+                        instructions.push(Instruction::Mov(
+                            ty,
+                            self.generate_val(src2),
+                            Reg::Cx.into(),
+                        ));
                         if semantic.is_signed(src1) {
                             instructions.push(Instruction::Sal(ty, self.generate_val(dst)));
                         } else {
@@ -166,8 +247,16 @@ impl Compiler {
                     }
                     tacky::BinaryOp::ShiftRight => {
                         let ty = semantic.val_asm_ty(src1);
-                        instructions.push(Instruction::Mov(ty, self.generate_val(src1), self.generate_val(dst)));
-                        instructions.push(Instruction::Mov(ty, self.generate_val(src2), Reg::Cx.into()));
+                        instructions.push(Instruction::Mov(
+                            ty,
+                            self.generate_val(src1),
+                            self.generate_val(dst),
+                        ));
+                        instructions.push(Instruction::Mov(
+                            ty,
+                            self.generate_val(src2),
+                            Reg::Cx.into(),
+                        ));
                         if semantic.is_signed(src1) {
                             instructions.push(Instruction::Sar(ty, self.generate_val(dst)));
                         } else {
@@ -207,7 +296,11 @@ impl Compiler {
                     }
                     _ => {
                         let ty = semantic.val_asm_ty(src1);
-                        instructions.push(Instruction::Mov(ty, self.generate_val(src1), self.generate_val(dst)));
+                        instructions.push(Instruction::Mov(
+                            ty,
+                            self.generate_val(src1),
+                            self.generate_val(dst),
+                        ));
                         instructions.push(Instruction::Binary(
                             ty,
                             op.to_asm(),
@@ -250,7 +343,10 @@ impl Compiler {
                     self.generate_call(&mut instructions, semantic, name, args, dst);
                 }
                 tacky::Instruction::SignExtend { src, dst } => {
-                    instructions.push(Instruction::Movsx(self.generate_val(src), self.generate_val(dst)));
+                    instructions.push(Instruction::Movsx(
+                        self.generate_val(src),
+                        self.generate_val(dst),
+                    ));
                 }
                 tacky::Instruction::Truncate { src, dst } => {
                     instructions.push(Instruction::Mov(
@@ -260,7 +356,10 @@ impl Compiler {
                     ));
                 }
                 tacky::Instruction::ZeroExtend { src, dst } => {
-                    instructions.push(Instruction::MovZeroExtend(self.generate_val(src), self.generate_val(dst)));
+                    instructions.push(Instruction::MovZeroExtend(
+                        self.generate_val(src),
+                        self.generate_val(dst),
+                    ));
                 }
 
                 tacky::Instruction::DoubleToInt { .. } => todo!(),
@@ -270,11 +369,20 @@ impl Compiler {
             }
         }
 
+        Function {
+            name: function.name.clone(),
+            global: function.global,
+            instructions,
+        }
+    }
+
+    fn make_backend_symbols(semantic: &SemanticData) -> BackendSymbolTable {
         let mut backend_symbols = HashMap::new();
         for (symbol, data) in semantic.symbols.iter() {
             match data.attrs {
                 Attributes::Function { defined, .. } => {
-                    backend_symbols.insert(symbol.clone(), BackendSymbolData::Fn { _defined: defined });
+                    backend_symbols
+                        .insert(symbol.clone(), BackendSymbolData::Fn { _defined: defined });
                 }
                 Attributes::Static { .. } => {
                     backend_symbols.insert(
@@ -282,6 +390,7 @@ impl Compiler {
                         BackendSymbolData::Obj {
                             ty: semantic.symbol_asm_ty(symbol),
                             is_static: true,
+                            is_const: false,
                         },
                     );
                 }
@@ -291,20 +400,13 @@ impl Compiler {
                         BackendSymbolData::Obj {
                             ty: semantic.symbol_asm_ty(symbol),
                             is_static: false,
+                            is_const: false,
                         },
                     );
                 }
             }
         }
-
-        let stack_size = self.replace_pseudo_registers(&mut instructions, &backend_symbols);
-        let instructions = self.fixup_instructions(instructions, stack_size);
-
-        Function {
-            name: function.name.clone(),
-            global: function.global,
-            instructions,
-        }
+        backend_symbols
     }
 
     fn generate_static_variable(
@@ -358,7 +460,9 @@ impl Compiler {
         for val in stack_args.clone().rev() {
             let operand = self.generate_val(val);
             let ty = semantic.val_asm_ty(val);
-            if matches!(operand, Operand::Imm(_) | Operand::Reg(_)) || matches!(ty, AsmType::Quadword) {
+            if matches!(operand, Operand::Imm(_) | Operand::Reg(_))
+                || matches!(ty, AsmType::Quadword)
+            {
                 instructions.push(Instruction::Push(operand))
             } else {
                 instructions.push(Instruction::Mov(ty, operand, Reg::Ax.into()));
@@ -394,7 +498,12 @@ impl Compiler {
 
         let mut update_operand = |operand: &mut Operand| {
             if let Operand::Pseudo(name) = operand {
-                let Some(&BackendSymbolData::Obj { ty, is_static }) = symbols.get(name) else {
+                let Some(&BackendSymbolData::Obj {
+                    ty,
+                    is_static,
+                    is_const,
+                }) = symbols.get(name)
+                else {
                     panic!("Operand without symbol data")
                 };
                 let offset = if let Some(saved) = stack_vars.get(name).copied() {
@@ -410,7 +519,7 @@ impl Compiler {
                         AsmType::Quadword => {
                             stack_size += 8 + stack_size % 8;
                         }
-                        AsmType::Double => todo!()
+                        AsmType::Double => todo!(),
                     }
                     stack_vars.insert(name.clone(), stack_size);
                     stack_size
@@ -445,7 +554,8 @@ impl Compiler {
         stack_size
     }
 
-    fn fixup_instructions(&mut self, instructions: Vec<Instruction>, stack_size: i64) -> Vec<Instruction> {
+    fn fixup_instructions(&mut self, function: &mut Function, stack_size: i64) {
+        let instructions = std::mem::take(&mut function.instructions);
         let mut fixed = Vec::with_capacity(instructions.len() + 1);
 
         // Trick to align to the next multiple of 16 or same value if it's already there:
@@ -466,7 +576,7 @@ impl Compiler {
                             let value = match ty {
                                 AsmType::Longword => (v as i32) as i64,
                                 AsmType::Quadword => v,
-                                AsmType::Double => todo!()
+                                AsmType::Double => todo!(),
                             };
                             fixed.push(Instruction::Mov(ty, Operand::Imm(value), Reg::R10.into()));
                             Reg::R10.into()
@@ -500,42 +610,42 @@ impl Compiler {
                     }
                 }
                 Instruction::Binary(ty, op, left, right)
-                if matches!(
-                    op,
-                    BinaryOp::Add
-                        | BinaryOp::Sub
-                        | BinaryOp::Mul
-                        | BinaryOp::And
-                        | BinaryOp::Or
-                        | BinaryOp::Xor
-                ) =>
-                    {
-                        let left = if let Operand::Imm(v) = left {
-                            if v as u64 > i32::MAX as u64 {
-                                fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
-                                Reg::R10.into()
-                            } else {
-                                left
-                            }
-                        } else if left.is_mem() && right.is_mem() {
+                    if matches!(
+                        op,
+                        BinaryOp::Add
+                            | BinaryOp::Sub
+                            | BinaryOp::Mul
+                            | BinaryOp::And
+                            | BinaryOp::Or
+                            | BinaryOp::Xor
+                    ) =>
+                {
+                    let left = if let Operand::Imm(v) = left {
+                        if v as u64 > i32::MAX as u64 {
                             fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
                             Reg::R10.into()
                         } else {
                             left
-                        };
-                        if matches!(op, BinaryOp::Mul) && right.is_mem() {
-                            fixed.push(Instruction::Mov(ty, right.clone(), Reg::R11.into()));
-                            fixed.push(Instruction::Binary(
-                                ty,
-                                BinaryOp::Mul,
-                                left,
-                                Reg::R11.into(),
-                            ));
-                            fixed.push(Instruction::Mov(ty, Reg::R11.into(), right));
-                        } else {
-                            fixed.push(Instruction::Binary(ty, op, left, right));
                         }
+                    } else if left.is_mem() && right.is_mem() {
+                        fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
+                        Reg::R10.into()
+                    } else {
+                        left
+                    };
+                    if matches!(op, BinaryOp::Mul) && right.is_mem() {
+                        fixed.push(Instruction::Mov(ty, right.clone(), Reg::R11.into()));
+                        fixed.push(Instruction::Binary(
+                            ty,
+                            BinaryOp::Mul,
+                            left,
+                            Reg::R11.into(),
+                        ));
+                        fixed.push(Instruction::Mov(ty, Reg::R11.into(), right));
+                    } else {
+                        fixed.push(Instruction::Binary(ty, op, left, right));
                     }
+                }
                 Instruction::Cmp(ty, left, right) => {
                     let left = if let Operand::Imm(v) = left {
                         if v as u64 > i32::MAX as u64 {
@@ -587,7 +697,7 @@ impl Compiler {
                 other => fixed.push(other),
             }
         }
-        fixed
+        function.instructions = fixed
     }
 
     fn generate_val(&mut self, val: &tacky::Val) -> Operand {
@@ -608,7 +718,6 @@ impl Compiler {
                 } else {
                     Operand::Imm(value.as_u64() as i64)
                 }
-
             }
             tacky::Val::Var(name) => Operand::Pseudo(name.clone()),
         }
@@ -646,7 +755,6 @@ impl tacky::BinaryOp {
 pub fn generate(program: &tacky::Program) -> Program {
     let mut compiler = Compiler {
         doubles: HashMap::new(),
-        double_counter: 0,
     };
     compiler.generate(program)
 }

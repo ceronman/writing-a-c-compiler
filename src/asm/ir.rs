@@ -11,6 +11,7 @@ pub struct Program {
 pub enum TopLevel {
     Function(Function),
     Variable(StaticVariable),
+    Constant(StaticConstant),
 }
 
 #[derive(Debug)]
@@ -78,7 +79,7 @@ pub enum BinaryOp {
     And,
     Or,
     Xor,
-    DivDouble
+    DivDouble,
 }
 
 #[derive(Debug, Clone)]
@@ -130,7 +131,7 @@ pub enum Reg {
 pub enum AsmType {
     Longword,
     Quadword,
-    Double
+    Double,
 }
 
 #[derive(Debug)]
