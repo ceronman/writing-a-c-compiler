@@ -1,4 +1,4 @@
-use crate::asm::{
+use crate::asm::ast::{
     AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticVariable,
     TopLevel, UnaryOp,
 };
