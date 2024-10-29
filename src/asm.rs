@@ -203,7 +203,7 @@ struct Compiler {
 }
 
 impl Compiler {
-    pub fn generate(&mut self, program: &tacky::Program) -> Program {
+    fn generate(&mut self, program: &tacky::Program) -> Program {
         let mut top_level = Vec::new();
         for element in &program.top_level {
             match element {
@@ -528,6 +528,7 @@ impl Compiler {
     }
 
     fn replace_pseudo_registers(
+        &mut self,
         instructions: &mut Vec<Instruction>,
         symbols: &BackendSymbolTable,
     ) -> i64 {
@@ -552,6 +553,7 @@ impl Compiler {
                         AsmType::Quadword => {
                             stack_size += 8 + stack_size % 8;
                         }
+                        AsmType::Double => todo!()
                     }
                     stack_vars.insert(name.clone(), stack_size);
                     stack_size
@@ -586,7 +588,7 @@ impl Compiler {
         stack_size
     }
 
-    fn fixup_instructions(instructions: Vec<Instruction>, stack_size: i64) -> Vec<Instruction> {
+    fn fixup_instructions(&mut self, instructions: Vec<Instruction>, stack_size: i64) -> Vec<Instruction> {
         let mut fixed = Vec::with_capacity(instructions.len() + 1);
 
         // Trick to align to the next multiple of 16 or same value if it's already there:
@@ -607,6 +609,7 @@ impl Compiler {
                             let value = match ty {
                                 AsmType::Longword => (v as i32) as i64,
                                 AsmType::Quadword => v,
+                                AsmType::Double => todo!()
                             };
                             fixed.push(Instruction::Mov(ty, Operand::Imm(value), Reg::R10.into()));
                             Reg::R10.into()
@@ -731,7 +734,7 @@ impl Compiler {
     }
 
     fn generate_val(&mut self, val: &tacky::Val) -> Operand {
-        match self {
+        match val {
             tacky::Val::Constant(value) => {
                 if let Constant::Double(double) = value {
                     let key = double.to_bits();
@@ -781,4 +784,12 @@ impl tacky::BinaryOp {
             _ => unreachable!(), // Other operators do not have equivalent
         }
     }
+}
+
+pub fn generate(program: &tacky::Program) -> Program {
+    let mut compiler = Compiler {
+        doubles: HashMap::new(),
+        double_counter: 0,
+    };
+    compiler.generate(program)
 }
