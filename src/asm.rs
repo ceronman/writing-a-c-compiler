@@ -86,9 +86,12 @@ impl Compiler {
         let mut backend_symbols = Self::make_backend_symbols(&program.semantics);
 
         for (key, name) in &self.doubles {
+            // -0.0 is used to negate floats by using xorpd instruction.
+            // this requires 16 bit alignment. Hence, this hack.
+            let alignment = if *key == (-0.0_f64).to_bits() { 16 } else { 8 };
             top_level.push(TopLevel::Constant(StaticConstant {
                 name: name.clone(),
-                alignment: 8,
+                alignment,
                 init: StaticInit::Double(f64::from_bits(*key)),
             }));
             backend_symbols.insert(
@@ -144,171 +147,200 @@ impl Compiler {
                     instructions.push(Instruction::Ret);
                 }
 
-                tacky::Instruction::Unary { op, src, dst } => match op {
-                    tacky::UnaryOp::Not => {
-                        instructions.push(Instruction::Cmp(
-                            semantic.val_asm_ty(src),
-                            Operand::Imm(0),
-                            self.generate_val(src),
-                        ));
-                        instructions.push(Instruction::Mov(
-                            semantic.val_asm_ty(dst),
-                            Operand::Imm(0),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::SetCC(CondCode::E, self.generate_val(dst)));
+                tacky::Instruction::Unary { op, src, dst } => {
+                    let ty = semantic.val_asm_ty(src);
+                    let is_double = matches!(ty, AsmType::Double);
+                    match op {
+                        tacky::UnaryOp::Not => {
+                            instructions.push(Instruction::Cmp(
+                                ty,
+                                Operand::Imm(0),
+                                self.generate_val(src),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                semantic.val_asm_ty(dst),
+                                Operand::Imm(0),
+                                self.generate_val(dst),
+                            ));
+                            instructions
+                                .push(Instruction::SetCC(CondCode::E, self.generate_val(dst)));
+                        }
+                        tacky::UnaryOp::Negate if is_double => {
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                self.generate_val(src),
+                                self.generate_val(dst),
+                            ));
+                            let negative_zero = self.make_double_constant(-0.0);
+                            instructions.push(Instruction::Binary(
+                                ty,
+                                BinaryOp::Xor,
+                                negative_zero,
+                                self.generate_val(dst),
+                            ));
+                        }
+
+                        tacky::UnaryOp::Complement
+                        | tacky::UnaryOp::Negate
+                        | tacky::UnaryOp::Increment
+                        | tacky::UnaryOp::Decrement => {
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                self.generate_val(src),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Unary(
+                                ty,
+                                op.to_asm(),
+                                self.generate_val(dst),
+                            ));
+                        }
                     }
-                    _ => {
-                        let ty = semantic.val_asm_ty(src);
-                        instructions.push(Instruction::Mov(
-                            ty,
-                            self.generate_val(src),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::Unary(
-                            ty,
-                            op.to_asm(),
-                            self.generate_val(dst),
-                        ));
-                    }
-                },
+                }
 
                 tacky::Instruction::Binary {
                     op,
                     src1,
                     src2,
                     dst,
-                } => match op {
-                    tacky::BinaryOp::Divide => {
-                        let ty = semantic.val_asm_ty(src1);
-                        instructions.push(Instruction::Mov(
-                            ty,
-                            self.generate_val(src1),
-                            Reg::Ax.into(),
-                        ));
-                        if semantic.is_signed(src1) {
-                            instructions.push(Instruction::Cdq(ty));
-                            instructions.push(Instruction::Idiv(ty, self.generate_val(src2)));
-                        } else {
+                } => {
+                    let ty = semantic.val_asm_ty(src1);
+                    let is_double = matches!(ty, AsmType::Double);
+                    match op {
+                        tacky::BinaryOp::Divide if !is_double => {
                             instructions.push(Instruction::Mov(
                                 ty,
-                                Operand::Imm(0),
-                                Reg::Dx.into(),
+                                self.generate_val(src1),
+                                Reg::Ax.into(),
                             ));
-                            instructions.push(Instruction::Div(ty, self.generate_val(src2)));
-                        }
-                        instructions.push(Instruction::Mov(
-                            ty,
-                            Reg::Ax.into(),
-                            self.generate_val(dst),
-                        ));
-                    }
-                    tacky::BinaryOp::Reminder => {
-                        let ty = semantic.val_asm_ty(src1);
-                        instructions.push(Instruction::Mov(
-                            ty,
-                            self.generate_val(src1),
-                            Reg::Ax.into(),
-                        ));
-                        if semantic.is_signed(src1) {
-                            instructions.push(Instruction::Cdq(ty));
-                            instructions.push(Instruction::Idiv(ty, self.generate_val(src2)));
-                        } else {
+                            if semantic.is_signed(src1) {
+                                instructions.push(Instruction::Cdq(ty));
+                                instructions.push(Instruction::Idiv(ty, self.generate_val(src2)));
+                            } else {
+                                instructions.push(Instruction::Mov(
+                                    ty,
+                                    Operand::Imm(0),
+                                    Reg::Dx.into(),
+                                ));
+                                instructions.push(Instruction::Div(ty, self.generate_val(src2)));
+                            }
                             instructions.push(Instruction::Mov(
                                 ty,
-                                Operand::Imm(0),
-                                Reg::Dx.into(),
+                                Reg::Ax.into(),
+                                self.generate_val(dst),
                             ));
-                            instructions.push(Instruction::Div(ty, self.generate_val(src2)));
                         }
-                        instructions.push(Instruction::Mov(
-                            ty,
-                            Reg::Dx.into(),
-                            self.generate_val(dst),
-                        ));
-                    }
-                    tacky::BinaryOp::ShiftLeft => {
-                        let ty = semantic.val_asm_ty(src1);
-                        instructions.push(Instruction::Mov(
-                            ty,
-                            self.generate_val(src1),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::Mov(
-                            ty,
-                            self.generate_val(src2),
-                            Reg::Cx.into(),
-                        ));
-                        if semantic.is_signed(src1) {
-                            instructions.push(Instruction::Sal(ty, self.generate_val(dst)));
-                        } else {
-                            instructions.push(Instruction::Shl(ty, self.generate_val(dst)));
+                        tacky::BinaryOp::Reminder => {
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                self.generate_val(src1),
+                                Reg::Ax.into(),
+                            ));
+                            if semantic.is_signed(src1) {
+                                instructions.push(Instruction::Cdq(ty));
+                                instructions.push(Instruction::Idiv(ty, self.generate_val(src2)));
+                            } else {
+                                instructions.push(Instruction::Mov(
+                                    ty,
+                                    Operand::Imm(0),
+                                    Reg::Dx.into(),
+                                ));
+                                instructions.push(Instruction::Div(ty, self.generate_val(src2)));
+                            }
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                Reg::Dx.into(),
+                                self.generate_val(dst),
+                            ));
+                        }
+                        tacky::BinaryOp::ShiftLeft => {
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                self.generate_val(src1),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                self.generate_val(src2),
+                                Reg::Cx.into(),
+                            ));
+                            if semantic.is_signed(src1) {
+                                instructions.push(Instruction::Sal(ty, self.generate_val(dst)));
+                            } else {
+                                instructions.push(Instruction::Shl(ty, self.generate_val(dst)));
+                            }
+                        }
+                        tacky::BinaryOp::ShiftRight => {
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                self.generate_val(src1),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                self.generate_val(src2),
+                                Reg::Cx.into(),
+                            ));
+                            if semantic.is_signed(src1) {
+                                instructions.push(Instruction::Sar(ty, self.generate_val(dst)));
+                            } else {
+                                instructions.push(Instruction::Shr(ty, self.generate_val(dst)));
+                            }
+                        }
+                        tacky::BinaryOp::Equal
+                        | tacky::BinaryOp::NotEqual
+                        | tacky::BinaryOp::GreaterThan
+                        | tacky::BinaryOp::GreaterOrEqual
+                        | tacky::BinaryOp::LessThan
+                        | tacky::BinaryOp::LessOrEqual => {
+                            instructions.push(Instruction::Cmp(
+                                ty,
+                                self.generate_val(src2),
+                                self.generate_val(src1),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                semantic.val_asm_ty(dst),
+                                Operand::Imm(0),
+                                self.generate_val(dst),
+                            ));
+                            let cond = match (op, semantic.is_signed(src1)) {
+                                (tacky::BinaryOp::Equal, _) => CondCode::E,
+                                (tacky::BinaryOp::NotEqual, _) => CondCode::NE,
+                                (tacky::BinaryOp::GreaterThan, true) => CondCode::G,
+                                (tacky::BinaryOp::GreaterThan, false) => CondCode::A,
+                                (tacky::BinaryOp::GreaterOrEqual, true) => CondCode::GE,
+                                (tacky::BinaryOp::GreaterOrEqual, false) => CondCode::AE,
+                                (tacky::BinaryOp::LessThan, true) => CondCode::L,
+                                (tacky::BinaryOp::LessThan, false) => CondCode::B,
+                                (tacky::BinaryOp::LessOrEqual, true) => CondCode::LE,
+                                (tacky::BinaryOp::LessOrEqual, false) => CondCode::BE,
+                                _ => unreachable!(),
+                            };
+                            instructions.push(Instruction::SetCC(cond, self.generate_val(dst)));
+                        }
+
+                        tacky::BinaryOp::Add
+                        | tacky::BinaryOp::Subtract
+                        | tacky::BinaryOp::Multiply
+                        | tacky::BinaryOp::Divide // Covers only if double
+                        | tacky::BinaryOp::BinAnd
+                        | tacky::BinaryOp::BinOr
+                        | tacky::BinaryOp::BinXor => {
+                            let ty = semantic.val_asm_ty(src1);
+                            instructions.push(Instruction::Mov(
+                                ty,
+                                self.generate_val(src1),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                ty,
+                                op.to_asm(),
+                                self.generate_val(src2),
+                                self.generate_val(dst),
+                            ));
                         }
                     }
-                    tacky::BinaryOp::ShiftRight => {
-                        let ty = semantic.val_asm_ty(src1);
-                        instructions.push(Instruction::Mov(
-                            ty,
-                            self.generate_val(src1),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::Mov(
-                            ty,
-                            self.generate_val(src2),
-                            Reg::Cx.into(),
-                        ));
-                        if semantic.is_signed(src1) {
-                            instructions.push(Instruction::Sar(ty, self.generate_val(dst)));
-                        } else {
-                            instructions.push(Instruction::Shr(ty, self.generate_val(dst)));
-                        }
-                    }
-                    tacky::BinaryOp::Equal
-                    | tacky::BinaryOp::NotEqual
-                    | tacky::BinaryOp::GreaterThan
-                    | tacky::BinaryOp::GreaterOrEqual
-                    | tacky::BinaryOp::LessThan
-                    | tacky::BinaryOp::LessOrEqual => {
-                        instructions.push(Instruction::Cmp(
-                            semantic.val_asm_ty(src1),
-                            self.generate_val(src2),
-                            self.generate_val(src1),
-                        ));
-                        instructions.push(Instruction::Mov(
-                            semantic.val_asm_ty(dst),
-                            Operand::Imm(0),
-                            self.generate_val(dst),
-                        ));
-                        let cond = match (op, semantic.is_signed(src1)) {
-                            (tacky::BinaryOp::Equal, _) => CondCode::E,
-                            (tacky::BinaryOp::NotEqual, _) => CondCode::NE,
-                            (tacky::BinaryOp::GreaterThan, true) => CondCode::G,
-                            (tacky::BinaryOp::GreaterThan, false) => CondCode::A,
-                            (tacky::BinaryOp::GreaterOrEqual, true) => CondCode::GE,
-                            (tacky::BinaryOp::GreaterOrEqual, false) => CondCode::AE,
-                            (tacky::BinaryOp::LessThan, true) => CondCode::L,
-                            (tacky::BinaryOp::LessThan, false) => CondCode::B,
-                            (tacky::BinaryOp::LessOrEqual, true) => CondCode::LE,
-                            (tacky::BinaryOp::LessOrEqual, false) => CondCode::BE,
-                            _ => unreachable!(),
-                        };
-                        instructions.push(Instruction::SetCC(cond, self.generate_val(dst)));
-                    }
-                    _ => {
-                        let ty = semantic.val_asm_ty(src1);
-                        instructions.push(Instruction::Mov(
-                            ty,
-                            self.generate_val(src1),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::Binary(
-                            ty,
-                            op.to_asm(),
-                            self.generate_val(src2),
-                            self.generate_val(dst),
-                        ));
-                    }
-                },
+                }
 
                 tacky::Instruction::Jump { target } => {
                     instructions.push(Instruction::Jmp(target.clone()));
@@ -704,23 +736,27 @@ impl Compiler {
         match val {
             tacky::Val::Constant(value) => {
                 if let Constant::Double(double) = value {
-                    let key = double.to_bits();
-                    let existing_constant = self.doubles.get(&key);
-                    let name = match existing_constant {
-                        Some(name) => name.clone(),
-                        None => {
-                            let name = format!("$double_{}", self.doubles.len());
-                            self.doubles.insert(key, name.clone());
-                            name
-                        }
-                    };
-                    Operand::Data(name)
+                    self.make_double_constant(*double)
                 } else {
                     Operand::Imm(value.as_u64() as i64)
                 }
             }
             tacky::Val::Var(name) => Operand::Pseudo(name.clone()),
         }
+    }
+
+    fn make_double_constant(&mut self, value: f64) -> Operand {
+        let key = value.to_bits();
+        let existing_constant = self.doubles.get(&key);
+        let name = match existing_constant {
+            Some(name) => name.clone(),
+            None => {
+                let name = format!("$double_{}", self.doubles.len());
+                self.doubles.insert(key, name.clone());
+                name
+            }
+        };
+        Operand::Data(name)
     }
 }
 
@@ -746,8 +782,17 @@ impl tacky::BinaryOp {
             tacky::BinaryOp::BinAnd => BinaryOp::And,
             tacky::BinaryOp::BinOr => BinaryOp::Or,
             tacky::BinaryOp::BinXor => BinaryOp::Xor,
+            tacky::BinaryOp::Divide => BinaryOp::DivDouble,
 
-            _ => unreachable!(), // Other operators do not have equivalent
+            tacky::BinaryOp::Reminder
+            | tacky::BinaryOp::ShiftLeft
+            | tacky::BinaryOp::ShiftRight
+            | tacky::BinaryOp::Equal
+            | tacky::BinaryOp::NotEqual
+            | tacky::BinaryOp::LessThan
+            | tacky::BinaryOp::LessOrEqual
+            | tacky::BinaryOp::GreaterThan
+            | tacky::BinaryOp::GreaterOrEqual => unreachable!(),
         }
     }
 }
