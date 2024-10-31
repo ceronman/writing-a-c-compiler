@@ -56,7 +56,7 @@ impl SemanticData {
             tacky::Val::Var(name) => match self.symbol_ty(name) {
                 Type::Int | Type::Long => true,
                 Type::UInt | Type::ULong => false,
-                Type::Double => todo!(),
+                Type::Double => true,
                 Type::Function(_) => unreachable!(),
             },
         }
@@ -151,6 +151,26 @@ impl Compiler {
                     let ty = semantic.val_asm_ty(src);
                     let is_double = matches!(ty, AsmType::Double);
                     match op {
+                        tacky::UnaryOp::Not if is_double => {
+                            instructions.push(Instruction::Binary(
+                                AsmType::Double,
+                                BinaryOp::Xor,
+                                Reg::XMM0.into(),
+                                Reg::XMM0.into(),
+                            ));
+                            instructions.push(Instruction::Cmp(
+                                ty,
+                                Reg::XMM0.into(),
+                                self.generate_val(src),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                semantic.val_asm_ty(dst),
+                                Reg::XMM0.into(),
+                                self.generate_val(dst),
+                            ));
+                            instructions
+                                .push(Instruction::SetCC(CondCode::E, self.generate_val(dst)));
+                        }
                         tacky::UnaryOp::Not => {
                             instructions.push(Instruction::Cmp(
                                 ty,
@@ -303,17 +323,19 @@ impl Compiler {
                                 Operand::Imm(0),
                                 self.generate_val(dst),
                             ));
-                            let cond = match (op, semantic.is_signed(src1)) {
+                            
+                            let unsigned_or_double = !semantic.is_signed(src1) || matches!(ty, AsmType::Double);
+                            let cond = match (op, unsigned_or_double) {
                                 (tacky::BinaryOp::Equal, _) => CondCode::E,
                                 (tacky::BinaryOp::NotEqual, _) => CondCode::NE,
-                                (tacky::BinaryOp::GreaterThan, true) => CondCode::G,
-                                (tacky::BinaryOp::GreaterThan, false) => CondCode::A,
-                                (tacky::BinaryOp::GreaterOrEqual, true) => CondCode::GE,
-                                (tacky::BinaryOp::GreaterOrEqual, false) => CondCode::AE,
-                                (tacky::BinaryOp::LessThan, true) => CondCode::L,
-                                (tacky::BinaryOp::LessThan, false) => CondCode::B,
-                                (tacky::BinaryOp::LessOrEqual, true) => CondCode::LE,
-                                (tacky::BinaryOp::LessOrEqual, false) => CondCode::BE,
+                                (tacky::BinaryOp::GreaterThan, false) => CondCode::G,
+                                (tacky::BinaryOp::GreaterThan, true) => CondCode::A,
+                                (tacky::BinaryOp::GreaterOrEqual, false) => CondCode::GE,
+                                (tacky::BinaryOp::GreaterOrEqual, true) => CondCode::AE,
+                                (tacky::BinaryOp::LessThan, false) => CondCode::L,
+                                (tacky::BinaryOp::LessThan, true) => CondCode::B,
+                                (tacky::BinaryOp::LessOrEqual, false) => CondCode::LE,
+                                (tacky::BinaryOp::LessOrEqual, true) => CondCode::BE,
                                 _ => unreachable!(),
                             };
                             instructions.push(Instruction::SetCC(cond, self.generate_val(dst)));
@@ -346,19 +368,48 @@ impl Compiler {
                     instructions.push(Instruction::Jmp(target.clone()));
                 }
                 tacky::Instruction::JumpIfZero { cond, target } => {
-                    instructions.push(Instruction::Cmp(
-                        semantic.val_asm_ty(cond),
-                        Operand::Imm(0),
-                        self.generate_val(cond),
-                    ));
+                    if let AsmType::Double = semantic.val_asm_ty(cond) {
+                        instructions.push(Instruction::Binary(
+                            AsmType::Double,
+                            BinaryOp::Xor,
+                            Reg::XMM0.into(),
+                            Reg::XMM0.into(),
+                        ));
+                        instructions.push(Instruction::Cmp(
+                            semantic.val_asm_ty(cond),
+                            Reg::XMM0.into(),
+                            self.generate_val(cond),
+                        ));
+                    } else {
+                        instructions.push(Instruction::Cmp(
+                            semantic.val_asm_ty(cond),
+                            Operand::Imm(0),
+                            self.generate_val(cond),
+                        ));
+                    }
                     instructions.push(Instruction::JmpCC(CondCode::E, target.clone()));
                 }
                 tacky::Instruction::JumpIfNotZero { cond, target } => {
-                    instructions.push(Instruction::Cmp(
-                        semantic.val_asm_ty(cond),
-                        Operand::Imm(0),
-                        self.generate_val(cond),
-                    ));
+                    if let AsmType::Double = semantic.val_asm_ty(cond) {
+                        instructions.push(Instruction::Binary(
+                            AsmType::Double,
+                            BinaryOp::Xor,
+                            Reg::XMM0.into(),
+                            Reg::XMM0.into(),
+                        ));
+                        instructions.push(Instruction::Cmp(
+                            semantic.val_asm_ty(cond),
+                            Reg::XMM0.into(),
+                            self.generate_val(cond),
+                        ));
+                    }
+                    else {
+                        instructions.push(Instruction::Cmp(
+                            semantic.val_asm_ty(cond),
+                            Operand::Imm(0),
+                            self.generate_val(cond),
+                        ));
+                    }
                     instructions.push(Instruction::JmpCC(CondCode::NE, target.clone()));
                 }
                 tacky::Instruction::Copy { src, dst } => {
