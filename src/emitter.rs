@@ -254,8 +254,8 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 unreachable!("Should have been replaced in fixup instructions")
             }
 
-            Instruction::Cvttsd2si(_, _) => todo!(),
-            Instruction::Cvtsi2sd(_, _) => todo!(),
+            Instruction::Cvttsd2si(_, _, _) => todo!(),
+            Instruction::Cvtsi2sd(_, _, _) => todo!(),
         }
         writeln!(output)?;
     }

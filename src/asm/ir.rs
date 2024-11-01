@@ -41,8 +41,8 @@ pub enum Instruction {
     Mov(AsmType, Operand, Operand),
     Movsx(Operand, Operand),
     MovZeroExtend(Operand, Operand),
-    Cvttsd2si(Operand, Operand),
-    Cvtsi2sd(Operand, Operand),
+    Cvttsd2si(AsmType, Operand, Operand),
+    Cvtsi2sd(AsmType, Operand, Operand),
     Unary(AsmType, UnaryOp, Operand),
     Binary(AsmType, BinaryOp, Operand, Operand),
     Cmp(AsmType, Operand, Operand),
@@ -84,7 +84,7 @@ pub enum BinaryOp {
 
 #[derive(Debug, Clone)]
 pub enum Operand {
-    Imm(i64),
+    Imm(u64),
     Reg(Reg),
     Pseudo(Symbol),
     Data(Symbol),

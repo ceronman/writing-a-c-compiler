@@ -66,6 +66,7 @@ impl SemanticData {
 // TODO: Maybe this is not necessary?
 struct Compiler {
     doubles: HashMap<u64, Symbol>,
+    label_counter: u64,
 }
 
 impl Compiler {
@@ -445,10 +446,156 @@ impl Compiler {
                     ));
                 }
 
-                tacky::Instruction::DoubleToInt { .. } => todo!(),
-                tacky::Instruction::DoubleToUInt { .. } => todo!(),
-                tacky::Instruction::IntToDouble { .. } => todo!(),
-                tacky::Instruction::UIntToDouble { .. } => todo!(),
+                tacky::Instruction::DoubleToInt { src, dst } => {
+                    instructions.push(Instruction::Cvttsd2si(
+                        semantic.val_asm_ty(dst),
+                        self.generate_val(src),
+                        self.generate_val(dst),
+                    ));
+                },
+                tacky::Instruction::IntToDouble { src, dst } => {
+                    instructions.push(Instruction::Cvtsi2sd(
+                        semantic.val_asm_ty(src),
+                        self.generate_val(src),
+                        self.generate_val(dst),
+                    ));
+                },
+                tacky::Instruction::DoubleToUInt { src, dst } => {
+                    match semantic.val_asm_ty(dst) {
+                        AsmType::Longword => {
+                            instructions.push(Instruction::Cvttsd2si(
+                                AsmType::Quadword,
+                                self.generate_val(src),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Longword,
+                                Reg::Ax.into(),
+                                self.generate_val(dst),
+                            ));
+                        }
+                        AsmType::Quadword => {
+                            let upper_bound_u64 = (i64::MAX as u64) + 1;
+                            let upper_bound_f64 = upper_bound_u64 as f64;
+                            instructions.push(Instruction::Cmp(
+                                AsmType::Double,
+                                self.make_double_constant(upper_bound_f64),
+                                self.generate_val(src),
+                            ));
+                            let out_of_range_label = self.make_label("d2u_out_of_range");
+                            let end_label = self.make_label("d2u_end");
+                            instructions.push(Instruction::JmpCC(CondCode::AE, out_of_range_label.clone()));
+                            instructions.push(Instruction::Cvttsd2si(
+                                AsmType::Quadword,
+                                self.generate_val(src),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Jmp(end_label.clone()));
+                            instructions.push(Instruction::Label(out_of_range_label));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Double,
+                                self.generate_val(src),
+                                Reg::XMM14.into(),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Double,
+                                BinaryOp::Sub,
+                                self.make_double_constant(upper_bound_f64),
+                                Reg::XMM14.into()
+                            ));
+                            instructions.push(Instruction::Cvttsd2si(
+                                AsmType::Quadword,
+                                Reg::XMM14.into(),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Quadword,
+                                Operand::Imm(upper_bound_u64),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Quadword,
+                                BinaryOp::Add,
+                                Reg::Ax.into(),
+                                self.generate_val(dst)
+                            ));
+                            instructions.push(Instruction::Label(end_label));
+                        }
+                        AsmType::Double => unreachable!()
+                    }
+                },
+                tacky::Instruction::UIntToDouble { src, dst } => {
+                    match semantic.val_asm_ty(dst) {
+                        AsmType::Longword => {
+                            instructions.push(Instruction::MovZeroExtend(
+                                self.generate_val(src),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Cvtsi2sd(
+                                AsmType::Quadword,
+                                Reg::Ax.into(),
+                                self.generate_val(dst),
+                            ));
+                        }
+                        AsmType::Quadword => {
+                            instructions.push(Instruction::Cmp(
+                                AsmType::Quadword,
+                                Operand::Imm(0),
+                                self.generate_val(src),
+                            ));
+                            let out_of_range_label = self.make_label("u2d_out_of_range");
+                            let end_label = self.make_label("u2d_end");
+                            instructions.push(Instruction::JmpCC(CondCode::L, out_of_range_label.clone()));
+                            instructions.push(Instruction::Cvtsi2sd(
+                                AsmType::Quadword,
+                                self.generate_val(src),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Jmp(end_label.clone()));
+                            instructions.push(Instruction::Label(out_of_range_label));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Quadword,
+                                self.generate_val(src),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Quadword,
+                                Reg::Ax.into(),
+                                Reg::Dx.into(),
+                            ));
+                            instructions.push(Instruction::Unary(
+                                AsmType::Quadword,
+                                UnaryOp::Shr,
+                                Reg::Dx.into(),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Quadword,
+                                BinaryOp::And,
+                                Operand::Imm(1),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Quadword,
+                                BinaryOp::Or,
+                                Reg::Ax.into(),
+                                Reg::Dx.into(),
+                            ));
+                            instructions.push(Instruction::Cvtsi2sd(
+                                AsmType::Quadword,
+                                Reg::Dx.into(),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Double,
+                                BinaryOp::Add,
+                                self.generate_val(dst),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Label(end_label));
+                        }
+                        AsmType::Double => unreachable!()
+                    }
+                },
             }
         }
 
@@ -555,7 +702,7 @@ impl Compiler {
 
         instructions.push(Instruction::Call(name.clone()));
 
-        let bytes_to_remove = 8 * stack_args.count() as i64 + padding;
+        let bytes_to_remove = 8 * stack_args.count() as u64 + padding;
         if bytes_to_remove != 0 {
             instructions.push(Instruction::Binary(
                 AsmType::Quadword,
@@ -575,8 +722,8 @@ impl Compiler {
         &mut self,
         instructions: &mut Vec<Instruction>,
         symbols: &BackendSymbolTable,
-    ) -> i64 {
-        let mut stack_size = 0;
+    ) -> u64 {
+        let mut stack_size = 0u64;
         let mut stack_vars = HashMap::new();
 
         let mut update_operand = |operand: &mut Operand| {
@@ -607,7 +754,7 @@ impl Compiler {
                     stack_vars.insert(name.clone(), stack_size);
                     stack_size
                 };
-                *operand = Operand::Stack(-offset);
+                *operand = Operand::Stack(-(offset as i64));
             }
         };
 
@@ -637,17 +784,17 @@ impl Compiler {
         stack_size
     }
 
-    fn fixup_instructions(&mut self, function: &mut Function, stack_size: i64) {
+    fn fixup_instructions(&mut self, function: &mut Function, stack_size: u64) {
         let instructions = std::mem::take(&mut function.instructions);
         let mut fixed = Vec::with_capacity(instructions.len() + 1);
 
         // Trick to align to the next multiple of 16 or same value if it's already there:
         // https://math.stackexchange.com/a/291494
-        let stack_size = ((stack_size - 1) | 15) + 1;
+        let stack_size = ((stack_size as i64 - 1) | 15) + 1;
         fixed.push(Instruction::Binary(
             AsmType::Quadword,
             BinaryOp::Sub,
-            Operand::Imm(stack_size),
+            Operand::Imm(stack_size as u64),
             Reg::SP.into(),
         ));
 
@@ -655,9 +802,9 @@ impl Compiler {
             match instruction {
                 Instruction::Mov(ty, src, dst) => {
                     let src = if let Operand::Imm(v) = src {
-                        if v as u64 > i32::MAX as u64 {
+                        if v > i32::MAX as u64 {
                             let value = match ty {
-                                AsmType::Longword => (v as i32) as i64,
+                                AsmType::Longword => (v as i32) as u64,
                                 AsmType::Quadword => v,
                                 AsmType::Double => todo!(),
                             };
@@ -789,7 +936,7 @@ impl Compiler {
                 if let Constant::Double(double) = value {
                     self.make_double_constant(*double)
                 } else {
-                    Operand::Imm(value.as_u64() as i64)
+                    Operand::Imm(value.as_u64())
                 }
             }
             tacky::Val::Var(name) => Operand::Pseudo(name.clone()),
@@ -808,6 +955,12 @@ impl Compiler {
             }
         };
         Operand::Data(name)
+    }
+
+    fn make_label(&mut self, prefix: &str) -> Symbol {
+        let label = format!("{prefix}_{}", self.label_counter);
+        self.label_counter += 1;
+        label
     }
 }
 
@@ -851,6 +1004,7 @@ impl tacky::BinaryOp {
 pub fn generate(program: &tacky::Program) -> Program {
     let mut compiler = Compiler {
         doubles: HashMap::new(),
+        label_counter: 0,
     };
     compiler.generate(program)
 }
