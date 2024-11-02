@@ -10,7 +10,8 @@ use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
 
-const ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
+const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
+const DOUBLE_ARG_REGISTERS: [Reg; 8] = [Reg::XMM0, Reg::XMM1, Reg::XMM2, Reg::XMM3, Reg::XMM4, Reg::XMM5, Reg::XMM6, Reg::XMM7];
 
 enum BackendSymbolData {
     Obj {
@@ -30,7 +31,7 @@ impl SemanticData {
         match val {
             tacky::Val::Constant(Constant::Int(_) | Constant::UInt(_)) => AsmType::Longword,
             tacky::Val::Constant(Constant::Long(_) | Constant::ULong(_)) => AsmType::Quadword,
-            tacky::Val::Constant(Constant::Double(_)) => todo!(),
+            tacky::Val::Constant(Constant::Double(_)) => AsmType::Double,
             tacky::Val::Var(name) => self.symbol_asm_ty(name),
         }
     }
@@ -39,7 +40,7 @@ impl SemanticData {
         match self.symbol_ty(symbol) {
             Type::Int | Type::UInt => AsmType::Longword,
             Type::Long | Type::ULong => AsmType::Quadword,
-            Type::Double => todo!(),
+            Type::Double => AsmType::Double,
             Type::Function(_) => unreachable!(),
         }
     }
@@ -52,7 +53,7 @@ impl SemanticData {
         match val {
             tacky::Val::Constant(Constant::Int(_) | Constant::Long(_)) => true,
             tacky::Val::Constant(Constant::UInt(_) | Constant::ULong(_)) => false,
-            tacky::Val::Constant(Constant::Double(_)) => todo!(),
+            tacky::Val::Constant(Constant::Double(_)) => true,
             tacky::Val::Var(name) => match self.symbol_ty(name) {
                 Type::Int | Type::Long => true,
                 Type::UInt | Type::ULong => false,
@@ -61,6 +62,17 @@ impl SemanticData {
             },
         }
     }
+}
+
+struct TypedOperand {
+    operand: Operand,
+    ty: AsmType,
+}
+
+struct FnArgs {
+    int_reg_args: Vec<TypedOperand>,
+    double_reg_args: Vec<TypedOperand>,
+    stack_args: Vec<TypedOperand>,
 }
 
 // TODO: Maybe this is not necessary?
@@ -80,7 +92,6 @@ impl Compiler {
                 tacky::TopLevel::Variable(v) => top_level.push(TopLevel::Variable(
                     self.generate_static_variable(v, &program.semantics),
                 )),
-                _ => {}
             }
         }
 
@@ -122,19 +133,33 @@ impl Compiler {
         semantic: &SemanticData,
     ) -> Function {
         let mut instructions = Vec::new();
+        let args: Vec<tacky::Val> = function.params.iter().cloned().map(tacky::Val::Var).collect();
+        let FnArgs { int_reg_args, double_reg_args, stack_args } = self.classify_parameters(&args, semantic);
 
-        for (i, param) in function.params.iter().cloned().enumerate() {
-            let src = if i < ARG_REGISTERS.len() {
-                Operand::Reg(ARG_REGISTERS[i])
-            } else {
-                let offset = 16 + 8 * (i - ARG_REGISTERS.len());
-                Operand::Stack(offset as i64)
-            };
+        for (reg, TypedOperand { ty, operand}) in INT_ARG_REGISTERS.iter().zip(int_reg_args) {
             instructions.push(Instruction::Mov(
-                semantic.symbol_asm_ty(&param),
-                src,
-                Operand::Pseudo(param),
-            ))
+                ty,
+                Operand::Reg(*reg),
+                operand
+            ));
+        }
+
+        for (reg, TypedOperand { ty, operand}) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args) {
+            instructions.push(Instruction::Mov(
+                ty,
+                Operand::Reg(*reg),
+                operand
+            ));
+        }
+
+        let mut offset = 16;
+        for TypedOperand { ty, operand} in stack_args {
+            instructions.push(Instruction::Mov(
+                ty,
+                Operand::Stack(offset),
+                operand
+            ));
+            offset += 8;
         }
 
         for tacky_instruction in &function.body {
@@ -663,10 +688,12 @@ impl Compiler {
         args: &[tacky::Val],
         dst: &tacky::Val,
     ) {
-        let padding = if args.len() > 6 && args.len() % 2 != 0 {
-            8
-        } else {
+        let FnArgs { int_reg_args, double_reg_args, stack_args } = self.classify_parameters(args, semantic);
+
+        let padding = if stack_args.len() % 2 == 0 {
             0
+        } else {
+            8
         };
         if padding != 0 {
             instructions.push(Instruction::Binary(
@@ -676,22 +703,27 @@ impl Compiler {
                 Reg::SP.into(),
             ))
         }
+        let bytes_to_remove = 8 * stack_args.len() as u64 + padding;
 
-        let register_args = args.iter().take(6);
-        for (reg, val) in ARG_REGISTERS.iter().zip(register_args) {
+        for (reg, TypedOperand { ty, operand}) in INT_ARG_REGISTERS.iter().zip(int_reg_args) {
             instructions.push(Instruction::Mov(
-                semantic.val_asm_ty(val),
-                self.generate_val(val),
+                ty,
+                operand,
                 Operand::Reg(*reg),
             ));
         }
 
-        let stack_args = args.iter().skip(6);
-        for val in stack_args.clone().rev() {
-            let operand = self.generate_val(val);
-            let ty = semantic.val_asm_ty(val);
+        for (reg, TypedOperand { ty, operand}) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args) {
+            instructions.push(Instruction::Mov(
+                ty,
+                operand,
+                Operand::Reg(*reg),
+            ));
+        }
+
+        for TypedOperand { ty, operand} in stack_args.into_iter().rev() {
             if matches!(operand, Operand::Imm(_) | Operand::Reg(_))
-                || matches!(ty, AsmType::Quadword)
+                || matches!(ty, AsmType::Quadword | AsmType::Double)
             {
                 instructions.push(Instruction::Push(operand))
             } else {
@@ -702,7 +734,6 @@ impl Compiler {
 
         instructions.push(Instruction::Call(name.clone()));
 
-        let bytes_to_remove = 8 * stack_args.count() as u64 + padding;
         if bytes_to_remove != 0 {
             instructions.push(Instruction::Binary(
                 AsmType::Quadword,
@@ -711,11 +742,42 @@ impl Compiler {
                 Reg::SP.into(),
             ));
         }
+
+        let return_reg = match semantic.val_asm_ty(dst) {
+            AsmType::Longword | AsmType::Quadword => Reg::Ax,
+            AsmType::Double => Reg::XMM0
+        };
+
         instructions.push(Instruction::Mov(
             semantic.val_asm_ty(dst),
-            Reg::Ax.into(),
+            return_reg.into(),
             self.generate_val(dst),
         ));
+    }
+
+    fn classify_parameters(&mut self, values: &[tacky::Val], semantic: &SemanticData,) -> FnArgs {
+        let mut int_reg_args = Vec::new();
+        let mut double_reg_args = Vec::new();
+        let mut stack_args = Vec::new();
+
+        for value in values {
+            let operand = self.generate_val(value);
+            let ty = semantic.val_asm_ty(value);
+            let operand = TypedOperand{ operand, ty };
+            if let AsmType::Double = ty {
+                if double_reg_args.len() < DOUBLE_ARG_REGISTERS.len() {
+                    double_reg_args.push(operand);
+                }
+                else {
+                    stack_args.push(operand);
+                }
+            } else if int_reg_args.len() < INT_ARG_REGISTERS.len() {
+                int_reg_args.push(operand);
+            } else {
+                stack_args.push(operand);
+            }
+        }
+        FnArgs { int_reg_args, double_reg_args, stack_args }
     }
 
     fn replace_pseudo_registers(
@@ -746,10 +808,9 @@ impl Compiler {
                         AsmType::Longword => {
                             stack_size += 4;
                         }
-                        AsmType::Quadword => {
+                        AsmType::Quadword | AsmType::Double => {
                             stack_size += 8 + stack_size % 8;
                         }
-                        AsmType::Double => todo!(),
                     }
                     stack_vars.insert(name.clone(), stack_size);
                     stack_size
@@ -764,6 +825,8 @@ impl Compiler {
                 | Instruction::Movsx(src, dst)
                 | Instruction::MovZeroExtend(src, dst)
                 | Instruction::Binary(_, _, src, dst)
+                | Instruction::Cvttsd2si(_, src, dst)
+                | Instruction::Cvtsi2sd(_, src, dst)
                 | Instruction::Cmp(_, src, dst) => {
                     update_operand(src);
                     update_operand(dst);
@@ -777,7 +840,13 @@ impl Compiler {
                 | Instruction::Sar(_, src)
                 | Instruction::Shr(_, src)
                 | Instruction::SetCC(_, src) => update_operand(src),
-                _ => continue,
+
+                Instruction::Cdq(_)
+                | Instruction::Jmp(_)
+                | Instruction::JmpCC(_, _)
+                | Instruction::Label(_)
+                | Instruction::Call(_)
+                | Instruction::Ret => {}
             }
         }
 
