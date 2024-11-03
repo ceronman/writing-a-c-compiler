@@ -1,5 +1,6 @@
 pub mod ir;
 
+use crate::asm::ir::CondCode::A;
 use crate::asm::ir::{
     AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
     StaticVariable, TopLevel, UnaryOp,
@@ -11,7 +12,16 @@ use crate::tacky;
 use std::collections::HashMap;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
-const DOUBLE_ARG_REGISTERS: [Reg; 8] = [Reg::XMM0, Reg::XMM1, Reg::XMM2, Reg::XMM3, Reg::XMM4, Reg::XMM5, Reg::XMM6, Reg::XMM7];
+const DOUBLE_ARG_REGISTERS: [Reg; 8] = [
+    Reg::XMM0,
+    Reg::XMM1,
+    Reg::XMM2,
+    Reg::XMM3,
+    Reg::XMM4,
+    Reg::XMM5,
+    Reg::XMM6,
+    Reg::XMM7,
+];
 
 enum BackendSymbolData {
     Obj {
@@ -133,32 +143,30 @@ impl Compiler {
         semantic: &SemanticData,
     ) -> Function {
         let mut instructions = Vec::new();
-        let args: Vec<tacky::Val> = function.params.iter().cloned().map(tacky::Val::Var).collect();
-        let FnArgs { int_reg_args, double_reg_args, stack_args } = self.classify_parameters(&args, semantic);
+        let args: Vec<tacky::Val> = function
+            .params
+            .iter()
+            .cloned()
+            .map(tacky::Val::Var)
+            .collect();
+        let FnArgs {
+            int_reg_args,
+            double_reg_args,
+            stack_args,
+        } = self.classify_parameters(&args, semantic);
 
-        for (reg, TypedOperand { ty, operand}) in INT_ARG_REGISTERS.iter().zip(int_reg_args) {
-            instructions.push(Instruction::Mov(
-                ty,
-                Operand::Reg(*reg),
-                operand
-            ));
+        for (reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().zip(int_reg_args) {
+            instructions.push(Instruction::Mov(ty, Operand::Reg(*reg), operand));
         }
 
-        for (reg, TypedOperand { ty, operand}) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args) {
-            instructions.push(Instruction::Mov(
-                ty,
-                Operand::Reg(*reg),
-                operand
-            ));
+        for (reg, TypedOperand { ty, operand }) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args)
+        {
+            instructions.push(Instruction::Mov(ty, Operand::Reg(*reg), operand));
         }
 
         let mut offset = 16;
-        for TypedOperand { ty, operand} in stack_args {
-            instructions.push(Instruction::Mov(
-                ty,
-                Operand::Stack(offset),
-                operand
-            ));
+        for TypedOperand { ty, operand } in stack_args {
+            instructions.push(Instruction::Mov(ty, Operand::Stack(offset), operand));
             offset += 8;
         }
 
@@ -349,7 +357,7 @@ impl Compiler {
                                 Operand::Imm(0),
                                 self.generate_val(dst),
                             ));
-                            
+
                             let unsigned_or_double = !semantic.is_signed(src1) || matches!(ty, AsmType::Double);
                             let cond = match (op, unsigned_or_double) {
                                 (tacky::BinaryOp::Equal, _) => CondCode::E,
@@ -428,8 +436,7 @@ impl Compiler {
                             Reg::XMM0.into(),
                             self.generate_val(cond),
                         ));
-                    }
-                    else {
+                    } else {
                         instructions.push(Instruction::Cmp(
                             semantic.val_asm_ty(cond),
                             Operand::Imm(0),
@@ -477,149 +484,147 @@ impl Compiler {
                         self.generate_val(src),
                         self.generate_val(dst),
                     ));
-                },
+                }
                 tacky::Instruction::IntToDouble { src, dst } => {
                     instructions.push(Instruction::Cvtsi2sd(
                         semantic.val_asm_ty(src),
                         self.generate_val(src),
                         self.generate_val(dst),
                     ));
-                },
-                tacky::Instruction::DoubleToUInt { src, dst } => {
-                    match semantic.val_asm_ty(dst) {
-                        AsmType::Longword => {
-                            instructions.push(Instruction::Cvttsd2si(
-                                AsmType::Quadword,
-                                self.generate_val(src),
-                                Reg::Ax.into(),
-                            ));
-                            instructions.push(Instruction::Mov(
-                                AsmType::Longword,
-                                Reg::Ax.into(),
-                                self.generate_val(dst),
-                            ));
-                        }
-                        AsmType::Quadword => {
-                            let upper_bound_u64 = (i64::MAX as u64) + 1;
-                            let upper_bound_f64 = upper_bound_u64 as f64;
-                            instructions.push(Instruction::Cmp(
-                                AsmType::Double,
-                                self.make_double_constant(upper_bound_f64),
-                                self.generate_val(src),
-                            ));
-                            let out_of_range_label = self.make_label("d2u_out_of_range");
-                            let end_label = self.make_label("d2u_end");
-                            instructions.push(Instruction::JmpCC(CondCode::AE, out_of_range_label.clone()));
-                            instructions.push(Instruction::Cvttsd2si(
-                                AsmType::Quadword,
-                                self.generate_val(src),
-                                self.generate_val(dst),
-                            ));
-                            instructions.push(Instruction::Jmp(end_label.clone()));
-                            instructions.push(Instruction::Label(out_of_range_label));
-                            instructions.push(Instruction::Mov(
-                                AsmType::Double,
-                                self.generate_val(src),
-                                Reg::XMM14.into(),
-                            ));
-                            instructions.push(Instruction::Binary(
-                                AsmType::Double,
-                                BinaryOp::Sub,
-                                self.make_double_constant(upper_bound_f64),
-                                Reg::XMM14.into()
-                            ));
-                            instructions.push(Instruction::Cvttsd2si(
-                                AsmType::Quadword,
-                                Reg::XMM14.into(),
-                                self.generate_val(dst),
-                            ));
-                            instructions.push(Instruction::Mov(
-                                AsmType::Quadword,
-                                Operand::Imm(upper_bound_u64),
-                                Reg::Ax.into(),
-                            ));
-                            instructions.push(Instruction::Binary(
-                                AsmType::Quadword,
-                                BinaryOp::Add,
-                                Reg::Ax.into(),
-                                self.generate_val(dst)
-                            ));
-                            instructions.push(Instruction::Label(end_label));
-                        }
-                        AsmType::Double => unreachable!()
+                }
+                tacky::Instruction::DoubleToUInt { src, dst } => match semantic.val_asm_ty(dst) {
+                    AsmType::Longword => {
+                        instructions.push(Instruction::Cvttsd2si(
+                            AsmType::Quadword,
+                            self.generate_val(src),
+                            Reg::Ax.into(),
+                        ));
+                        instructions.push(Instruction::Mov(
+                            AsmType::Longword,
+                            Reg::Ax.into(),
+                            self.generate_val(dst),
+                        ));
                     }
-                },
-                tacky::Instruction::UIntToDouble { src, dst } => {
-                    match semantic.val_asm_ty(dst) {
-                        AsmType::Longword => {
-                            instructions.push(Instruction::MovZeroExtend(
-                                self.generate_val(src),
-                                Reg::Ax.into(),
-                            ));
-                            instructions.push(Instruction::Cvtsi2sd(
-                                AsmType::Quadword,
-                                Reg::Ax.into(),
-                                self.generate_val(dst),
-                            ));
-                        }
-                        AsmType::Quadword => {
-                            instructions.push(Instruction::Cmp(
-                                AsmType::Quadword,
-                                Operand::Imm(0),
-                                self.generate_val(src),
-                            ));
-                            let out_of_range_label = self.make_label("u2d_out_of_range");
-                            let end_label = self.make_label("u2d_end");
-                            instructions.push(Instruction::JmpCC(CondCode::L, out_of_range_label.clone()));
-                            instructions.push(Instruction::Cvtsi2sd(
-                                AsmType::Quadword,
-                                self.generate_val(src),
-                                self.generate_val(dst),
-                            ));
-                            instructions.push(Instruction::Jmp(end_label.clone()));
-                            instructions.push(Instruction::Label(out_of_range_label));
-                            instructions.push(Instruction::Mov(
-                                AsmType::Quadword,
-                                self.generate_val(src),
-                                Reg::Ax.into(),
-                            ));
-                            instructions.push(Instruction::Mov(
-                                AsmType::Quadword,
-                                Reg::Ax.into(),
-                                Reg::Dx.into(),
-                            ));
-                            instructions.push(Instruction::Unary(
-                                AsmType::Quadword,
-                                UnaryOp::Shr,
-                                Reg::Dx.into(),
-                            ));
-                            instructions.push(Instruction::Binary(
-                                AsmType::Quadword,
-                                BinaryOp::And,
-                                Operand::Imm(1),
-                                Reg::Ax.into(),
-                            ));
-                            instructions.push(Instruction::Binary(
-                                AsmType::Quadword,
-                                BinaryOp::Or,
-                                Reg::Ax.into(),
-                                Reg::Dx.into(),
-                            ));
-                            instructions.push(Instruction::Cvtsi2sd(
-                                AsmType::Quadword,
-                                Reg::Dx.into(),
-                                self.generate_val(dst),
-                            ));
-                            instructions.push(Instruction::Binary(
-                                AsmType::Double,
-                                BinaryOp::Add,
-                                self.generate_val(dst),
-                                self.generate_val(dst),
-                            ));
-                            instructions.push(Instruction::Label(end_label));
-                        }
-                        AsmType::Double => unreachable!()
+                    AsmType::Quadword => {
+                        let upper_bound_u64 = (i64::MAX as u64) + 1;
+                        let upper_bound_f64 = upper_bound_u64 as f64;
+                        instructions.push(Instruction::Cmp(
+                            AsmType::Double,
+                            self.make_double_constant(upper_bound_f64),
+                            self.generate_val(src),
+                        ));
+                        let out_of_range_label = self.make_label("d2u_out_of_range");
+                        let end_label = self.make_label("d2u_end");
+                        instructions
+                            .push(Instruction::JmpCC(CondCode::AE, out_of_range_label.clone()));
+                        instructions.push(Instruction::Cvttsd2si(
+                            AsmType::Quadword,
+                            self.generate_val(src),
+                            self.generate_val(dst),
+                        ));
+                        instructions.push(Instruction::Jmp(end_label.clone()));
+                        instructions.push(Instruction::Label(out_of_range_label));
+                        instructions.push(Instruction::Mov(
+                            AsmType::Double,
+                            self.generate_val(src),
+                            Reg::XMM14.into(),
+                        ));
+                        instructions.push(Instruction::Binary(
+                            AsmType::Double,
+                            BinaryOp::Sub,
+                            self.make_double_constant(upper_bound_f64),
+                            Reg::XMM14.into(),
+                        ));
+                        instructions.push(Instruction::Cvttsd2si(
+                            AsmType::Quadword,
+                            Reg::XMM14.into(),
+                            self.generate_val(dst),
+                        ));
+                        instructions.push(Instruction::Mov(
+                            AsmType::Quadword,
+                            Operand::Imm(upper_bound_u64),
+                            Reg::Ax.into(),
+                        ));
+                        instructions.push(Instruction::Binary(
+                            AsmType::Quadword,
+                            BinaryOp::Add,
+                            Reg::Ax.into(),
+                            self.generate_val(dst),
+                        ));
+                        instructions.push(Instruction::Label(end_label));
                     }
+                    AsmType::Double => unreachable!(),
+                },
+                tacky::Instruction::UIntToDouble { src, dst } => match semantic.val_asm_ty(dst) {
+                    AsmType::Longword => {
+                        instructions.push(Instruction::MovZeroExtend(
+                            self.generate_val(src),
+                            Reg::Ax.into(),
+                        ));
+                        instructions.push(Instruction::Cvtsi2sd(
+                            AsmType::Quadword,
+                            Reg::Ax.into(),
+                            self.generate_val(dst),
+                        ));
+                    }
+                    AsmType::Quadword => {
+                        instructions.push(Instruction::Cmp(
+                            AsmType::Quadword,
+                            Operand::Imm(0),
+                            self.generate_val(src),
+                        ));
+                        let out_of_range_label = self.make_label("u2d_out_of_range");
+                        let end_label = self.make_label("u2d_end");
+                        instructions
+                            .push(Instruction::JmpCC(CondCode::L, out_of_range_label.clone()));
+                        instructions.push(Instruction::Cvtsi2sd(
+                            AsmType::Quadword,
+                            self.generate_val(src),
+                            self.generate_val(dst),
+                        ));
+                        instructions.push(Instruction::Jmp(end_label.clone()));
+                        instructions.push(Instruction::Label(out_of_range_label));
+                        instructions.push(Instruction::Mov(
+                            AsmType::Quadword,
+                            self.generate_val(src),
+                            Reg::Ax.into(),
+                        ));
+                        instructions.push(Instruction::Mov(
+                            AsmType::Quadword,
+                            Reg::Ax.into(),
+                            Reg::Dx.into(),
+                        ));
+                        instructions.push(Instruction::Unary(
+                            AsmType::Quadword,
+                            UnaryOp::Shr,
+                            Reg::Dx.into(),
+                        ));
+                        instructions.push(Instruction::Binary(
+                            AsmType::Quadword,
+                            BinaryOp::And,
+                            Operand::Imm(1),
+                            Reg::Ax.into(),
+                        ));
+                        instructions.push(Instruction::Binary(
+                            AsmType::Quadword,
+                            BinaryOp::Or,
+                            Reg::Ax.into(),
+                            Reg::Dx.into(),
+                        ));
+                        instructions.push(Instruction::Cvtsi2sd(
+                            AsmType::Quadword,
+                            Reg::Dx.into(),
+                            self.generate_val(dst),
+                        ));
+                        instructions.push(Instruction::Binary(
+                            AsmType::Double,
+                            BinaryOp::Add,
+                            self.generate_val(dst),
+                            self.generate_val(dst),
+                        ));
+                        instructions.push(Instruction::Label(end_label));
+                    }
+                    AsmType::Double => unreachable!(),
                 },
             }
         }
@@ -688,13 +693,13 @@ impl Compiler {
         args: &[tacky::Val],
         dst: &tacky::Val,
     ) {
-        let FnArgs { int_reg_args, double_reg_args, stack_args } = self.classify_parameters(args, semantic);
+        let FnArgs {
+            int_reg_args,
+            double_reg_args,
+            stack_args,
+        } = self.classify_parameters(args, semantic);
 
-        let padding = if stack_args.len() % 2 == 0 {
-            0
-        } else {
-            8
-        };
+        let padding = if stack_args.len() % 2 == 0 { 0 } else { 8 };
         if padding != 0 {
             instructions.push(Instruction::Binary(
                 AsmType::Quadword,
@@ -705,23 +710,16 @@ impl Compiler {
         }
         let bytes_to_remove = 8 * stack_args.len() as u64 + padding;
 
-        for (reg, TypedOperand { ty, operand}) in INT_ARG_REGISTERS.iter().zip(int_reg_args) {
-            instructions.push(Instruction::Mov(
-                ty,
-                operand,
-                Operand::Reg(*reg),
-            ));
+        for (reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().zip(int_reg_args) {
+            instructions.push(Instruction::Mov(ty, operand, Operand::Reg(*reg)));
         }
 
-        for (reg, TypedOperand { ty, operand}) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args) {
-            instructions.push(Instruction::Mov(
-                ty,
-                operand,
-                Operand::Reg(*reg),
-            ));
+        for (reg, TypedOperand { ty, operand }) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args)
+        {
+            instructions.push(Instruction::Mov(ty, operand, Operand::Reg(*reg)));
         }
 
-        for TypedOperand { ty, operand} in stack_args.into_iter().rev() {
+        for TypedOperand { ty, operand } in stack_args.into_iter().rev() {
             if matches!(operand, Operand::Imm(_) | Operand::Reg(_))
                 || matches!(ty, AsmType::Quadword | AsmType::Double)
             {
@@ -745,7 +743,7 @@ impl Compiler {
 
         let return_reg = match semantic.val_asm_ty(dst) {
             AsmType::Longword | AsmType::Quadword => Reg::Ax,
-            AsmType::Double => Reg::XMM0
+            AsmType::Double => Reg::XMM0,
         };
 
         instructions.push(Instruction::Mov(
@@ -755,7 +753,7 @@ impl Compiler {
         ));
     }
 
-    fn classify_parameters(&mut self, values: &[tacky::Val], semantic: &SemanticData,) -> FnArgs {
+    fn classify_parameters(&mut self, values: &[tacky::Val], semantic: &SemanticData) -> FnArgs {
         let mut int_reg_args = Vec::new();
         let mut double_reg_args = Vec::new();
         let mut stack_args = Vec::new();
@@ -763,12 +761,11 @@ impl Compiler {
         for value in values {
             let operand = self.generate_val(value);
             let ty = semantic.val_asm_ty(value);
-            let operand = TypedOperand{ operand, ty };
+            let operand = TypedOperand { operand, ty };
             if let AsmType::Double = ty {
                 if double_reg_args.len() < DOUBLE_ARG_REGISTERS.len() {
                     double_reg_args.push(operand);
-                }
-                else {
+                } else {
                     stack_args.push(operand);
                 }
             } else if int_reg_args.len() < INT_ARG_REGISTERS.len() {
@@ -777,7 +774,11 @@ impl Compiler {
                 stack_args.push(operand);
             }
         }
-        FnArgs { int_reg_args, double_reg_args, stack_args }
+        FnArgs {
+            int_reg_args,
+            double_reg_args,
+            stack_args,
+        }
     }
 
     fn replace_pseudo_registers(
@@ -867,6 +868,22 @@ impl Compiler {
             Reg::SP.into(),
         ));
 
+        fn src_register(ty: AsmType) -> Reg {
+            if let AsmType::Double = ty {
+                Reg::XMM14
+            } else {
+                Reg::R10
+            }
+        }
+
+        fn dst_register(ty: AsmType) -> Reg {
+            if let AsmType::Double = ty {
+                Reg::XMM15
+            } else {
+                Reg::R11
+            }
+        }
+
         for instruction in instructions.into_iter() {
             match instruction {
                 Instruction::Mov(ty, src, dst) => {
@@ -875,7 +892,7 @@ impl Compiler {
                             let value = match ty {
                                 AsmType::Longword => (v as i32) as u64,
                                 AsmType::Quadword => v,
-                                AsmType::Double => todo!(),
+                                AsmType::Double => panic!("Immediate values, can't be double"),
                             };
                             fixed.push(Instruction::Mov(ty, Operand::Imm(value), Reg::R10.into()));
                             Reg::R10.into()
@@ -883,8 +900,9 @@ impl Compiler {
                             src
                         }
                     } else if src.is_mem() && dst.is_mem() {
-                        fixed.push(Instruction::Mov(ty, src, Reg::R10.into()));
-                        Reg::R10.into()
+                        let reg = src_register(ty);
+                        fixed.push(Instruction::Mov(ty, src, reg.into()));
+                        reg.into()
                     } else {
                         src
                     };
@@ -927,23 +945,35 @@ impl Compiler {
                             left
                         }
                     } else if left.is_mem() && right.is_mem() {
-                        fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
-                        Reg::R10.into()
+                        let src_reg = src_register(ty);
+                        fixed.push(Instruction::Mov(ty, left, src_reg.into()));
+                        src_reg.into()
                     } else {
                         left
                     };
-                    if matches!(op, BinaryOp::Mul) && right.is_mem() {
-                        fixed.push(Instruction::Mov(ty, right.clone(), Reg::R11.into()));
-                        fixed.push(Instruction::Binary(
-                            ty,
-                            BinaryOp::Mul,
-                            left,
-                            Reg::R11.into(),
-                        ));
-                        fixed.push(Instruction::Mov(ty, Reg::R11.into(), right));
+                    if matches!(op, BinaryOp::Mul)
+                        || matches!(ty, AsmType::Double) && right.is_mem()
+                    {
+                        let dst_reg = dst_register(ty);
+                        fixed.push(Instruction::Mov(ty, right.clone(), dst_reg.into()));
+                        fixed.push(Instruction::Binary(ty, BinaryOp::Mul, left, dst_reg.into()));
+                        fixed.push(Instruction::Mov(ty, dst_reg.into(), right));
                     } else {
                         fixed.push(Instruction::Binary(ty, op, left, right));
                     }
+                }
+                Instruction::Cmp(AsmType::Double, left, Operand::Stack(offset)) => {
+                    let dst_reg = dst_register(AsmType::Double);
+                    fixed.push(Instruction::Cvttsd2si(
+                        AsmType::Double,
+                        left,
+                        dst_reg.into(),
+                    ));
+                    fixed.push(Instruction::Mov(
+                        AsmType::Double,
+                        dst_reg.into(),
+                        Operand::Stack(offset),
+                    ));
                 }
                 Instruction::Cmp(ty, left, right) => {
                     let left = if let Operand::Imm(v) = left {
@@ -954,8 +984,9 @@ impl Compiler {
                             left
                         }
                     } else if left.is_mem() && right.is_mem() {
-                        fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
-                        Reg::R10.into()
+                        let src_reg = src_register(ty);
+                        fixed.push(Instruction::Mov(ty, left, src_reg.into()));
+                        src_reg.into()
                     } else {
                         left
                     };
@@ -974,7 +1005,7 @@ impl Compiler {
                     fixed.push(Instruction::Idiv(ty, Reg::R10.into()));
                 }
                 Instruction::Push(Operand::Imm(value)) => {
-                    let value = if value as u64 > i32::MAX as u64 {
+                    let value = if value > i32::MAX as u64 {
                         fixed.push(Instruction::Mov(
                             AsmType::Quadword,
                             Operand::Imm(value),
@@ -986,12 +1017,35 @@ impl Compiler {
                     };
                     fixed.push(Instruction::Push(value));
                 }
-                Instruction::MovZeroExtend(src, Operand::Reg(dst)) => {
-                    fixed.push(Instruction::Mov(AsmType::Longword, src, Operand::Reg(dst)));
+                Instruction::MovZeroExtend(src, Operand::Reg(reg)) => {
+                    fixed.push(Instruction::Mov(AsmType::Longword, src, Operand::Reg(reg)));
                 }
                 Instruction::MovZeroExtend(src, dst) => {
                     fixed.push(Instruction::Mov(AsmType::Longword, src, Reg::R11.into()));
                     fixed.push(Instruction::Mov(AsmType::Quadword, Reg::R11.into(), dst));
+                }
+                Instruction::Cvttsd2si(ty, src, Operand::Stack(offset)) => {
+                    fixed.push(Instruction::Cvttsd2si(ty, src, Reg::R11.into()));
+                    fixed.push(Instruction::Mov(
+                        ty,
+                        Reg::R11.into(),
+                        Operand::Stack(offset),
+                    ));
+                }
+                Instruction::Cvtsi2sd(ty, src, dst) => {
+                    let src = if let Operand::Imm(value) = src {
+                        fixed.push(Instruction::Mov(ty, src, src_register(ty).into()));
+                        src_register(ty).into()
+                    } else {
+                        src
+                    };
+                    if dst.is_mem() {
+                        let dst_reg = dst_register(AsmType::Double);
+                        fixed.push(Instruction::Cvtsi2sd(ty, src, dst_reg.into()));
+                        fixed.push(Instruction::Mov(ty, dst_reg.into(), dst));
+                    } else {
+                        fixed.push(Instruction::Cvtsi2sd(ty, src, dst));
+                    }
                 }
                 other => fixed.push(other),
             }
