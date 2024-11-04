@@ -1,6 +1,6 @@
 use crate::asm::ir::{
-    AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticVariable,
-    TopLevel, UnaryOp,
+    AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
+    StaticVariable, TopLevel, UnaryOp,
 };
 use crate::semantic::StaticInit;
 use crate::tempfile::TempPath;
@@ -21,7 +21,7 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
         match top_level {
             TopLevel::Function(function) => emit_function(output, function)?,
             TopLevel::Variable(variable) => emit_variable(output, variable)?,
-            TopLevel::Constant(variable) => todo!(),
+            TopLevel::Constant(constant) => emit_constant(output, constant)?,
         }
         if i < program.top_level.len() - 1 {
             writeln!(output)?;
@@ -50,7 +50,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "movl",
                     AsmType::Quadword => "movq",
-                    AsmType::Double => todo!(),
+                    AsmType::Double => "movsd",
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -61,17 +61,22 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match (op, ty) {
                     (UnaryOp::Neg, AsmType::Longword) => "negl",
                     (UnaryOp::Neg, AsmType::Quadword) => "negq",
+                    (UnaryOp::Neg, AsmType::Double) => "negsd",
 
                     (UnaryOp::Not, AsmType::Longword) => "notl",
                     (UnaryOp::Not, AsmType::Quadword) => "notq",
+                    (UnaryOp::Not, AsmType::Double) => unreachable!(),
 
                     (UnaryOp::Inc, AsmType::Longword) => "incl",
                     (UnaryOp::Inc, AsmType::Quadword) => "incq",
+                    (UnaryOp::Inc, AsmType::Double) => todo!(),
 
                     (UnaryOp::Dec, AsmType::Longword) => "decl",
                     (UnaryOp::Dec, AsmType::Quadword) => "decq",
+                    (UnaryOp::Dec, AsmType::Double) => todo!(),
 
-                    (_, _) => todo!(),
+                    (UnaryOp::Shr, AsmType::Quadword) => "shrq", // TODO produce shr instruction directly
+                    (UnaryOp::Shr, _) => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -80,18 +85,30 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match (op, ty) {
                     (BinaryOp::Add, AsmType::Longword) => "addl",
                     (BinaryOp::Add, AsmType::Quadword) => "addq",
+                    (BinaryOp::Add, AsmType::Double) => "addsd",
+
                     (BinaryOp::Sub, AsmType::Longword) => "subl",
                     (BinaryOp::Sub, AsmType::Quadword) => "subq",
+                    (BinaryOp::Sub, AsmType::Double) => "subsd",
+
                     (BinaryOp::Mul, AsmType::Longword) => "imull",
                     (BinaryOp::Mul, AsmType::Quadword) => "imulq",
+                    (BinaryOp::Mul, AsmType::Double) => "mulsd",
+
                     (BinaryOp::And, AsmType::Longword) => "andl",
                     (BinaryOp::And, AsmType::Quadword) => "andq",
+                    (BinaryOp::And, AsmType::Double) => unreachable!(),
+
                     (BinaryOp::Or, AsmType::Longword) => "orl",
                     (BinaryOp::Or, AsmType::Quadword) => "orq",
+                    (BinaryOp::Or, AsmType::Double) => unreachable!(),
+
                     (BinaryOp::Xor, AsmType::Longword) => "xorl",
                     (BinaryOp::Xor, AsmType::Quadword) => "xorq",
+                    (BinaryOp::Xor, AsmType::Double) => "xorpd",
 
-                    (_, _) => todo!(),
+                    (BinaryOp::DivDouble, AsmType::Double) => "divsd",
+                    (BinaryOp::DivDouble, _) => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, left, RegSize::from_ty(ty))?;
@@ -103,7 +120,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "sall",
                     AsmType::Quadword => "salq",
-                    AsmType::Double => todo!(),
+                    AsmType::Double => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
@@ -116,7 +133,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "shll",
                     AsmType::Quadword => "shlq",
-                    AsmType::Double => todo!(),
+                    AsmType::Double => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
@@ -129,7 +146,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "sarl",
                     AsmType::Quadword => "sarq",
-                    AsmType::Double => todo!(),
+                    AsmType::Double => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
@@ -141,7 +158,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "shrl",
                     AsmType::Quadword => "shrq",
-                    AsmType::Double => todo!(),
+                    AsmType::Double => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
@@ -153,7 +170,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "idivl",
                     AsmType::Quadword => "idivq",
-                    AsmType::Double => todo!(),
+                    AsmType::Double => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -163,7 +180,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "divl",
                     AsmType::Quadword => "divq",
-                    AsmType::Double => todo!(),
+                    AsmType::Double => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -173,7 +190,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "cdq",
                     AsmType::Quadword => "cqo",
-                    AsmType::Double => todo!(),
+                    AsmType::Double => unreachable!(),
                 };
                 emit_ins(output, op)?;
             }
@@ -191,7 +208,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "cmpl",
                     AsmType::Quadword => "cmpq",
-                    AsmType::Double => todo!(),
+                    AsmType::Double => "comisd",
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, left, RegSize::from_ty(ty))?;
@@ -254,8 +271,28 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 unreachable!("Should have been replaced in fixup instructions")
             }
 
-            Instruction::Cvttsd2si(_, _, _) => todo!(),
-            Instruction::Cvtsi2sd(_, _, _) => todo!(),
+            Instruction::Cvttsd2si(ty, src, dst) => {
+                let op = match ty {
+                    AsmType::Longword => "cvttsd2sil",
+                    AsmType::Quadword => "cvttsd2siq",
+                    AsmType::Double => unreachable!("Should never be called with double"),
+                };
+                emit_ins(output, op)?;
+                emit_operand(output, src, RegSize::Quad)?;
+                write!(output, ", ")?;
+                emit_operand(output, dst, RegSize::from_ty(ty))?;
+            }
+            Instruction::Cvtsi2sd(ty, src, dst) => {
+                let op = match ty {
+                    AsmType::Longword => "cvtsi2sdl",
+                    AsmType::Quadword => "cvtsi2sdq",
+                    AsmType::Double => unreachable!("Should never be called with double"),
+                };
+                emit_ins(output, op)?;
+                emit_operand(output, src, RegSize::from_ty(ty))?;
+                write!(output, ", ")?;
+                emit_operand(output, dst, RegSize::Quad)?;
+            }
         }
         writeln!(output)?;
     }
@@ -281,26 +318,52 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
         emit_ins(output, ".balign")?;
         writeln!(output, "{}", variable.alignment)?;
         writeln!(output, "_{name}:", name = variable.name)?;
-        match variable.init {
-            StaticInit::Int(v) => {
-                emit_ins(output, ".long")?;
-                writeln!(output, "{}", v)?;
-            }
-            StaticInit::UInt(v) => {
-                emit_ins(output, ".long")?;
-                writeln!(output, "{}", v)?;
-            }
-            StaticInit::Long(v) => {
-                emit_ins(output, ".quad")?;
-                writeln!(output, "{}", v)?;
-            }
-            StaticInit::ULong(v) => {
-                emit_ins(output, ".quad")?;
-                writeln!(output, "{}", v)?;
-            }
-            StaticInit::Double(_v) => todo!(),
-        }
+        emit_static_init(output, &variable.init)?;
     }
+    Ok(())
+}
+
+fn emit_static_init(output: &mut impl Write, init: &StaticInit) -> Result<()> {
+    match init {
+        StaticInit::Int(v) => {
+            emit_ins(output, ".long")?;
+            writeln!(output, "{}", v)?;
+        }
+        StaticInit::UInt(v) => {
+            emit_ins(output, ".long")?;
+            writeln!(output, "{}", v)?;
+        }
+        StaticInit::Long(v) => {
+            emit_ins(output, ".quad")?;
+            writeln!(output, "{}", v)?;
+        }
+        StaticInit::ULong(v) => {
+            emit_ins(output, ".quad")?;
+            writeln!(output, "{}", v)?;
+        }
+        StaticInit::Double(v) => {
+            emit_ins(output, ".quad")?;
+            writeln!(output, "{} ; {v}", v.to_bits())?;
+        }
+    };
+    Ok(())
+}
+
+fn emit_constant(output: &mut impl Write, constant: &StaticConstant) -> Result<()> {
+    match constant.alignment {
+        8 => {
+            writeln!(output, "\t.literal8")?;
+            writeln!(output, "\t.balign 8")?;
+            writeln!(output, "L{name}", name = constant.name)?;
+        }
+        16 => {
+            writeln!(output, "\t.literal16")?;
+            writeln!(output, "\t.balign 16")?;
+            writeln!(output, "L{name}", name = constant.name)?;
+            emit_static_init(output, &constant.init)?;
+        }
+        _ => panic!("Invalid alignment"), // TODO: Use enum instead of number?
+    };
     Ok(())
 }
 
@@ -319,7 +382,7 @@ impl RegSize {
         match ty {
             AsmType::Longword => RegSize::Long,
             AsmType::Quadword => RegSize::Quad,
-            AsmType::Double => todo!(),
+            AsmType::Double => RegSize::Quad,
         }
     }
 }
@@ -364,9 +427,16 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
 
         (Operand::Reg(Reg::SP), _) => write!(output, "%rsp"),
 
-        (Operand::Reg(_), RegSize::Byte) => todo!(),
-        (Operand::Reg(_), RegSize::Quad) => todo!(),
-        (Operand::Reg(_), RegSize::Long) => todo!(),
+        (Operand::Reg(Reg::XMM0), _) => write!(output, "%xmm0"),
+        (Operand::Reg(Reg::XMM1), _) => write!(output, "%xmm1"),
+        (Operand::Reg(Reg::XMM2), _) => write!(output, "%xmm2"),
+        (Operand::Reg(Reg::XMM3), _) => write!(output, "%xmm3"),
+        (Operand::Reg(Reg::XMM4), _) => write!(output, "%xmm4"),
+        (Operand::Reg(Reg::XMM5), _) => write!(output, "%xmm5"),
+        (Operand::Reg(Reg::XMM6), _) => write!(output, "%xmm6"),
+        (Operand::Reg(Reg::XMM7), _) => write!(output, "%xmm7"),
+        (Operand::Reg(Reg::XMM14), _) => write!(output, "%xmm14"),
+        (Operand::Reg(Reg::XMM15), _) => write!(output, "%xmm15"),
 
         (Operand::Imm(value), _) => write!(output, "${value}"),
         (Operand::Stack(offset), _) => write!(output, "{offset}(%rbp)"),
