@@ -1,6 +1,5 @@
 pub mod ir;
 
-use crate::asm::ir::CondCode::A;
 use crate::asm::ir::{
     AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
     StaticVariable, TopLevel, UnaryOp,
@@ -173,10 +172,14 @@ impl Compiler {
         for tacky_instruction in &function.body {
             match tacky_instruction {
                 tacky::Instruction::Return(val) => {
+                    let reg = match semantic.val_asm_ty(val) {
+                        AsmType::Double => Reg::XMM0,
+                        _ => Reg::Ax
+                    };
                     instructions.push(Instruction::Mov(
                         semantic.val_asm_ty(val),
                         self.generate_val(val),
-                        Reg::Ax.into(),
+                        reg.into(),
                     ));
                     instructions.push(Instruction::Ret);
                 }
@@ -185,6 +188,29 @@ impl Compiler {
                     let ty = semantic.val_asm_ty(src);
                     let is_double = matches!(ty, AsmType::Double);
                     match op {
+                        // tacky::UnaryOp::Increment if is_double => {
+                        //     let one = self.make_double_constant(1.0);
+                        //     instructions.push(Instruction::Mov(
+                        //         semantic.val_asm_ty(src),
+                        //         self.generate_val(src),
+                        //         Reg::XMM0.into(),
+                        //     ));
+                        //     instructions.push(Instruction::Binary(
+                        //         AsmType::Double,
+                        //         BinaryOp::Add,
+                        //         one,
+                        //         self.generate_val(src),
+                        //     ));
+                        // }
+                        // tacky::UnaryOp::Decrement if is_double => {
+                        //     let one = self.make_double_constant(1.0);
+                        //     instructions.push(Instruction::Binary(
+                        //         AsmType::Double,
+                        //         BinaryOp::Sub,
+                        //         one,
+                        //         self.generate_val(dst),
+                        //     ));
+                        // }
                         tacky::UnaryOp::Not if is_double => {
                             instructions.push(Instruction::Binary(
                                 AsmType::Double,
@@ -555,7 +581,7 @@ impl Compiler {
                     }
                     AsmType::Double => unreachable!(),
                 },
-                tacky::Instruction::UIntToDouble { src, dst } => match semantic.val_asm_ty(dst) {
+                tacky::Instruction::UIntToDouble { src, dst } => match semantic.val_asm_ty(src) {
                     AsmType::Longword => {
                         instructions.push(Instruction::MovZeroExtend(
                             self.generate_val(src),
@@ -802,7 +828,7 @@ impl Compiler {
                 let offset = if let Some(saved) = stack_vars.get(name).copied() {
                     saved
                 } else if is_static {
-                    *operand = Operand::Data(name.clone());
+                    *operand = Operand::Data(is_const, name.clone());
                     return;
                 } else {
                     match ty {
@@ -932,6 +958,7 @@ impl Compiler {
                         BinaryOp::Add
                             | BinaryOp::Sub
                             | BinaryOp::Mul
+                            | BinaryOp::DivDouble
                             | BinaryOp::And
                             | BinaryOp::Or
                             | BinaryOp::Xor
@@ -956,28 +983,33 @@ impl Compiler {
                     {
                         let dst_reg = dst_register(ty);
                         fixed.push(Instruction::Mov(ty, right.clone(), dst_reg.into()));
-                        fixed.push(Instruction::Binary(ty, BinaryOp::Mul, left, dst_reg.into()));
+                        fixed.push(Instruction::Binary(ty, op, left, dst_reg.into()));
                         fixed.push(Instruction::Mov(ty, dst_reg.into(), right));
                     } else {
                         fixed.push(Instruction::Binary(ty, op, left, right));
                     }
                 }
-                Instruction::Cmp(AsmType::Double, left, Operand::Stack(offset)) => {
-                    let dst_reg = dst_register(AsmType::Double);
-                    fixed.push(Instruction::Cvttsd2si(
+                Instruction::Cmp(AsmType::Double, left, right) => {
+                    let right = if let Operand::Reg(_) = right {
+                        right
+                    } else {
+                        let dst_reg = dst_register(AsmType::Double);
+                        fixed.push(Instruction::Mov(
+                            AsmType::Double,
+                            right,
+                            dst_reg.into(),
+                        ));
+                        dst_reg.into()
+                    };
+                    fixed.push(Instruction::Cmp(
                         AsmType::Double,
                         left,
-                        dst_reg.into(),
-                    ));
-                    fixed.push(Instruction::Mov(
-                        AsmType::Double,
-                        dst_reg.into(),
-                        Operand::Stack(offset),
+                        right,
                     ));
                 }
                 Instruction::Cmp(ty, left, right) => {
                     let left = if let Operand::Imm(v) = left {
-                        if v as u64 > i32::MAX as u64 {
+                        if v > i32::MAX as u64 {
                             fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
                             Reg::R10.into()
                         } else {
@@ -1033,7 +1065,7 @@ impl Compiler {
                     ));
                 }
                 Instruction::Cvtsi2sd(ty, src, dst) => {
-                    let src = if let Operand::Imm(value) = src {
+                    let src = if let Operand::Imm(_) = src {
                         fixed.push(Instruction::Mov(ty, src, src_register(ty).into()));
                         src_register(ty).into()
                     } else {
@@ -1042,7 +1074,7 @@ impl Compiler {
                     if dst.is_mem() {
                         let dst_reg = dst_register(AsmType::Double);
                         fixed.push(Instruction::Cvtsi2sd(ty, src, dst_reg.into()));
-                        fixed.push(Instruction::Mov(ty, dst_reg.into(), dst));
+                        fixed.push(Instruction::Mov(AsmType::Double, dst_reg.into(), dst));
                     } else {
                         fixed.push(Instruction::Cvtsi2sd(ty, src, dst));
                     }
@@ -1072,12 +1104,12 @@ impl Compiler {
         let name = match existing_constant {
             Some(name) => name.clone(),
             None => {
-                let name = format!("$double_{}", self.doubles.len());
+                let name = format!("_double_{}", self.doubles.len());
                 self.doubles.insert(key, name.clone());
                 name
             }
         };
-        Operand::Data(name)
+        Operand::Data(true, name)
     }
 
     fn make_label(&mut self, prefix: &str) -> Symbol {

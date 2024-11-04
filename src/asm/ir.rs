@@ -87,13 +87,13 @@ pub enum Operand {
     Imm(u64),
     Reg(Reg),
     Pseudo(Symbol),
-    Data(Symbol),
+    Data(bool, Symbol),
     Stack(i64),
 }
 
 impl Operand {
     pub(crate) fn is_mem(&self) -> bool {
-        matches!(self, Operand::Stack(_) | Operand::Data(_))
+        matches!(self, Operand::Stack(_) | Operand::Data(_, _))
     }
 }
 

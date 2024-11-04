@@ -67,13 +67,13 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     (UnaryOp::Not, AsmType::Quadword) => "notq",
                     (UnaryOp::Not, AsmType::Double) => unreachable!(),
 
-                    (UnaryOp::Inc, AsmType::Longword) => "incl",
+                    (UnaryOp::Inc, AsmType::Longword) => "incl", // TODO: Eliminate inc and dec completely?
                     (UnaryOp::Inc, AsmType::Quadword) => "incq",
-                    (UnaryOp::Inc, AsmType::Double) => todo!(),
+                    (UnaryOp::Inc, AsmType::Double) => unreachable!(),
 
                     (UnaryOp::Dec, AsmType::Longword) => "decl",
                     (UnaryOp::Dec, AsmType::Quadword) => "decq",
-                    (UnaryOp::Dec, AsmType::Double) => todo!(),
+                    (UnaryOp::Dec, AsmType::Double) => unreachable!(),
 
                     (UnaryOp::Shr, AsmType::Quadword) => "shrq", // TODO produce shr instruction directly
                     (UnaryOp::Shr, _) => unreachable!(),
@@ -275,7 +275,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "cvttsd2sil",
                     AsmType::Quadword => "cvttsd2siq",
-                    AsmType::Double => unreachable!("Should never be called with double"),
+                    AsmType::Double => panic!("Should never be called with double"),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::Quad)?;
@@ -343,7 +343,7 @@ fn emit_static_init(output: &mut impl Write, init: &StaticInit) -> Result<()> {
         }
         StaticInit::Double(v) => {
             emit_ins(output, ".quad")?;
-            writeln!(output, "{} ; {v}", v.to_bits())?;
+            writeln!(output, "{:#x} # {v}_f64", v.to_bits())?;
         }
     };
     Ok(())
@@ -354,13 +354,16 @@ fn emit_constant(output: &mut impl Write, constant: &StaticConstant) -> Result<(
         8 => {
             writeln!(output, "\t.literal8")?;
             writeln!(output, "\t.balign 8")?;
-            writeln!(output, "L{name}", name = constant.name)?;
+            writeln!(output, "L{name}:", name = constant.name)?;
+            emit_static_init(output, &constant.init)?;
         }
         16 => {
             writeln!(output, "\t.literal16")?;
             writeln!(output, "\t.balign 16")?;
-            writeln!(output, "L{name}", name = constant.name)?;
+            writeln!(output, "L{name}:", name = constant.name)?;
             emit_static_init(output, &constant.init)?;
+            emit_ins(output, ".quad")?;
+            writeln!(output, "0")?;
         }
         _ => panic!("Invalid alignment"), // TODO: Use enum instead of number?
     };
@@ -440,7 +443,8 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
 
         (Operand::Imm(value), _) => write!(output, "${value}"),
         (Operand::Stack(offset), _) => write!(output, "{offset}(%rbp)"),
-        (Operand::Data(name), _) => write!(output, "_{name}(%rip)"),
+        (Operand::Data(true, name), _) => write!(output, "L{name}(%rip)"),
+        (Operand::Data(_, name), _) => write!(output, "_{name}(%rip)"),
         (Operand::Pseudo(_), _) => unreachable!("Pseudo-registers should not appear here"),
     }
 }
