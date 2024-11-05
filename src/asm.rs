@@ -174,7 +174,7 @@ impl Compiler {
                 tacky::Instruction::Return(val) => {
                     let reg = match semantic.val_asm_ty(val) {
                         AsmType::Double => Reg::XMM0,
-                        _ => Reg::Ax
+                        _ => Reg::Ax,
                     };
                     instructions.push(Instruction::Mov(
                         semantic.val_asm_ty(val),
@@ -188,29 +188,34 @@ impl Compiler {
                     let ty = semantic.val_asm_ty(src);
                     let is_double = matches!(ty, AsmType::Double);
                     match op {
-                        // tacky::UnaryOp::Increment if is_double => {
-                        //     let one = self.make_double_constant(1.0);
-                        //     instructions.push(Instruction::Mov(
-                        //         semantic.val_asm_ty(src),
-                        //         self.generate_val(src),
-                        //         Reg::XMM0.into(),
-                        //     ));
-                        //     instructions.push(Instruction::Binary(
-                        //         AsmType::Double,
-                        //         BinaryOp::Add,
-                        //         one,
-                        //         self.generate_val(src),
-                        //     ));
-                        // }
-                        // tacky::UnaryOp::Decrement if is_double => {
-                        //     let one = self.make_double_constant(1.0);
-                        //     instructions.push(Instruction::Binary(
-                        //         AsmType::Double,
-                        //         BinaryOp::Sub,
-                        //         one,
-                        //         self.generate_val(dst),
-                        //     ));
-                        // }
+                        tacky::UnaryOp::Increment if is_double => {
+                            let one = self.make_double_constant(1.0);
+                            instructions.push(Instruction::Mov(
+                                semantic.val_asm_ty(src),
+                                self.generate_val(src),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Double,
+                                BinaryOp::Add,
+                                one,
+                                self.generate_val(dst),
+                            ));
+                        }
+                        tacky::UnaryOp::Decrement if is_double => {
+                            let one = self.make_double_constant(1.0);
+                            instructions.push(Instruction::Mov(
+                                semantic.val_asm_ty(src),
+                                self.generate_val(src),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Double,
+                                BinaryOp::Sub,
+                                one,
+                                self.generate_val(dst),
+                            ));
+                        }
                         tacky::UnaryOp::Not if is_double => {
                             instructions.push(Instruction::Binary(
                                 AsmType::Double,
@@ -220,12 +225,12 @@ impl Compiler {
                             ));
                             instructions.push(Instruction::Cmp(
                                 ty,
-                                Reg::XMM0.into(),
                                 self.generate_val(src),
+                                Reg::XMM0.into(),
                             ));
                             instructions.push(Instruction::Mov(
                                 semantic.val_asm_ty(dst),
-                                Reg::XMM0.into(),
+                                Operand::Imm(0),
                                 self.generate_val(dst),
                             ));
                             instructions
@@ -965,7 +970,7 @@ impl Compiler {
                     ) =>
                 {
                     let left = if let Operand::Imm(v) = left {
-                        if v as u64 > i32::MAX as u64 {
+                        if v > i32::MAX as u64 {
                             fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
                             Reg::R10.into()
                         } else {
@@ -994,18 +999,10 @@ impl Compiler {
                         right
                     } else {
                         let dst_reg = dst_register(AsmType::Double);
-                        fixed.push(Instruction::Mov(
-                            AsmType::Double,
-                            right,
-                            dst_reg.into(),
-                        ));
+                        fixed.push(Instruction::Mov(AsmType::Double, right, dst_reg.into()));
                         dst_reg.into()
                     };
-                    fixed.push(Instruction::Cmp(
-                        AsmType::Double,
-                        left,
-                        right,
-                    ));
+                    fixed.push(Instruction::Cmp(AsmType::Double, left, right));
                 }
                 Instruction::Cmp(ty, left, right) => {
                     let left = if let Operand::Imm(v) = left {
