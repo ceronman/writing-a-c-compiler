@@ -1,7 +1,6 @@
 use crate::semantic::StaticInit;
 use crate::symbol::Symbol;
 
-// TODO: Extract asm ast into a separate module.
 #[derive(Debug)]
 pub struct Program {
     pub top_level: Vec<TopLevel>,
@@ -66,9 +65,6 @@ pub enum Instruction {
 pub enum UnaryOp {
     Neg,
     Not,
-    Inc,
-    Dec,
-    Shr,
 }
 
 #[derive(Debug)]

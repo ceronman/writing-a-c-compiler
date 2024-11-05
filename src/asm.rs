@@ -84,7 +84,6 @@ struct FnArgs {
     stack_args: Vec<TypedOperand>,
 }
 
-// TODO: Maybe this is not necessary?
 struct Compiler {
     doubles: HashMap<u64, Symbol>,
     label_counter: u64,
@@ -188,29 +187,37 @@ impl Compiler {
                     let ty = semantic.val_asm_ty(src);
                     let is_double = matches!(ty, AsmType::Double);
                     match op {
-                        tacky::UnaryOp::Increment if is_double => {
-                            let one = self.make_double_constant(1.0);
+                        tacky::UnaryOp::Increment => {
+                            let one = if is_double {
+                                self.make_double_constant(1.0)
+                            } else {
+                                Operand::Imm(1)
+                            };
                             instructions.push(Instruction::Mov(
-                                semantic.val_asm_ty(src),
+                                ty,
                                 self.generate_val(src),
                                 self.generate_val(dst),
                             ));
                             instructions.push(Instruction::Binary(
-                                AsmType::Double,
+                                ty,
                                 BinaryOp::Add,
                                 one,
                                 self.generate_val(dst),
                             ));
                         }
-                        tacky::UnaryOp::Decrement if is_double => {
-                            let one = self.make_double_constant(1.0);
+                        tacky::UnaryOp::Decrement => {
+                            let one = if is_double {
+                                self.make_double_constant(1.0)
+                            } else {
+                                Operand::Imm(1)
+                            };
                             instructions.push(Instruction::Mov(
-                                semantic.val_asm_ty(src),
+                                ty,
                                 self.generate_val(src),
                                 self.generate_val(dst),
                             ));
                             instructions.push(Instruction::Binary(
-                                AsmType::Double,
+                                ty,
                                 BinaryOp::Sub,
                                 one,
                                 self.generate_val(dst),
@@ -265,10 +272,7 @@ impl Compiler {
                             ));
                         }
 
-                        tacky::UnaryOp::Complement
-                        | tacky::UnaryOp::Negate
-                        | tacky::UnaryOp::Increment
-                        | tacky::UnaryOp::Decrement => {
+                        tacky::UnaryOp::Complement | tacky::UnaryOp::Negate => {
                             instructions.push(Instruction::Mov(
                                 ty,
                                 self.generate_val(src),
@@ -625,11 +629,12 @@ impl Compiler {
                             Reg::Ax.into(),
                             Reg::Dx.into(),
                         ));
-                        instructions.push(Instruction::Unary(
+                        instructions.push(Instruction::Mov(
                             AsmType::Quadword,
-                            UnaryOp::Shr,
-                            Reg::Dx.into(),
+                            Operand::Imm(1),
+                            Reg::Cx.into(),
                         ));
+                        instructions.push(Instruction::Shr(AsmType::Quadword, Reg::Dx.into()));
                         instructions.push(Instruction::Binary(
                             AsmType::Quadword,
                             BinaryOp::And,
@@ -1121,10 +1126,9 @@ impl tacky::UnaryOp {
         match self {
             tacky::UnaryOp::Complement => UnaryOp::Not,
             tacky::UnaryOp::Negate => UnaryOp::Neg,
-            tacky::UnaryOp::Increment => UnaryOp::Inc,
-            tacky::UnaryOp::Decrement => UnaryOp::Dec,
-
-            tacky::UnaryOp::Not => unreachable!(), // `Not` does not have equivalent
+            tacky::UnaryOp::Increment | tacky::UnaryOp::Decrement | tacky::UnaryOp::Not => {
+                unreachable!()
+            }
         }
     }
 }

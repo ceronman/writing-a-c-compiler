@@ -66,17 +66,6 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     (UnaryOp::Not, AsmType::Longword) => "notl",
                     (UnaryOp::Not, AsmType::Quadword) => "notq",
                     (UnaryOp::Not, AsmType::Double) => unreachable!(),
-
-                    (UnaryOp::Inc, AsmType::Longword) => "incl", // TODO: Eliminate inc and dec completely?
-                    (UnaryOp::Inc, AsmType::Quadword) => "incq",
-                    (UnaryOp::Inc, AsmType::Double) => unreachable!(),
-
-                    (UnaryOp::Dec, AsmType::Longword) => "decl",
-                    (UnaryOp::Dec, AsmType::Quadword) => "decq",
-                    (UnaryOp::Dec, AsmType::Double) => unreachable!(),
-
-                    (UnaryOp::Shr, AsmType::Quadword) => "shrq", // TODO produce shr instruction directly
-                    (UnaryOp::Shr, _) => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
