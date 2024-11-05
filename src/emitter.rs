@@ -354,7 +354,7 @@ fn emit_constant(output: &mut impl Write, constant: &StaticConstant) -> Result<(
             emit_ins(output, ".quad")?;
             writeln!(output, "0")?;
         }
-        _ => panic!("Invalid alignment"), // TODO: Use enum instead of number?
+        _ => panic!("Invalid alignment"),
     };
     Ok(())
 }
