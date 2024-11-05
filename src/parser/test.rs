@@ -31401,6 +31401,178 @@ fn test_chapter_13_valid_extra_credit_incr_and_decr() {
 }
 
 #[test]
+fn test_chapter_13_valid_extra_credit_nan() {
+    let src = r#"
+        int double_isnan(double d);
+        int main(void) {
+            static double zero = 0.0;
+            double nan = 0.0 / zero;
+            if (nan < 0.0 || nan == 0.0 || nan > 0.0 || nan <= 0.0 || nan >= 0.0)
+                return 1;
+            if (1 > nan || 1 == nan || 1 > nan || 1 <= nan || 1 >= nan)
+                return 2;
+            if (nan == nan)
+                return 3;
+            if (!(nan != nan)) {
+                return 4;
+            }
+            if (!double_isnan(nan)) {
+                return 5;
+            }
+            if (!double_isnan(4 * nan)) {
+                return 6;
+            }
+            if (!double_isnan(22e2 / nan)) {
+                return 7;
+            }
+            if (!double_isnan(-nan)) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [double_isnan]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── d
+            │           ╰── Type
+            │               ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── zero
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ├── Initializer
+                    │   │   ╰── Constant Double [+0e0]
+                    │   ╰── Static
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── nan
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Binary [/]
+                    │           ├── Constant Double [+0e0]
+                    │           ╰── Var [zero]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [||]
+                    │   │       ├── Binary [||]
+                    │   │       │   ├── Binary [||]
+                    │   │       │   │   ├── Binary [||]
+                    │   │       │   │   │   ├── Binary [<]
+                    │   │       │   │   │   │   ├── Var [nan]
+                    │   │       │   │   │   │   ╰── Constant Double [+0e0]
+                    │   │       │   │   │   ╰── Binary [==]
+                    │   │       │   │   │       ├── Var [nan]
+                    │   │       │   │   │       ╰── Constant Double [+0e0]
+                    │   │       │   │   ╰── Binary [>]
+                    │   │       │   │       ├── Var [nan]
+                    │   │       │   │       ╰── Constant Double [+0e0]
+                    │   │       │   ╰── Binary [<=]
+                    │   │       │       ├── Var [nan]
+                    │   │       │       ╰── Constant Double [+0e0]
+                    │   │       ╰── Binary [>=]
+                    │   │           ├── Var [nan]
+                    │   │           ╰── Constant Double [+0e0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [||]
+                    │   │       ├── Binary [||]
+                    │   │       │   ├── Binary [||]
+                    │   │       │   │   ├── Binary [||]
+                    │   │       │   │   │   ├── Binary [>]
+                    │   │       │   │   │   │   ├── Constant Int [1]
+                    │   │       │   │   │   │   ╰── Var [nan]
+                    │   │       │   │   │   ╰── Binary [==]
+                    │   │       │   │   │       ├── Constant Int [1]
+                    │   │       │   │   │       ╰── Var [nan]
+                    │   │       │   │   ╰── Binary [>]
+                    │   │       │   │       ├── Constant Int [1]
+                    │   │       │   │       ╰── Var [nan]
+                    │   │       │   ╰── Binary [<=]
+                    │   │       │       ├── Constant Int [1]
+                    │   │       │       ╰── Var [nan]
+                    │   │       ╰── Binary [>=]
+                    │   │           ├── Constant Int [1]
+                    │   │           ╰── Var [nan]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [nan]
+                    │   │       ╰── Var [nan]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [!=]
+                    │   │           ├── Var [nan]
+                    │   │           ╰── Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [double_isnan]
+                    │   │           ╰── Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [double_isnan]
+                    │   │           ╰── Binary [*]
+                    │   │               ├── Constant Int [4]
+                    │   │               ╰── Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [double_isnan]
+                    │   │           ╰── Binary [/]
+                    │   │               ├── Constant Double [+2.2e3]
+                    │   │               ╰── Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [double_isnan]
+                    │   │           ╰── Unary [-]
+                    │   │               ╰── Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
 fn test_chapter_13_valid_floating_expressions_arithmetic_ops() {
     let src = r#"
         double point_one = 0.1;

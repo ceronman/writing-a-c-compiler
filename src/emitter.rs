@@ -220,6 +220,8 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     CondCode::AE => emit_ins(output, "jae")?,
                     CondCode::B => emit_ins(output, "jb")?,
                     CondCode::BE => emit_ins(output, "jbe")?,
+                    CondCode::P => emit_ins(output, "jp")?,
+                    CondCode::NP => emit_ins(output, "jnp")?,
                 }
                 emit_label(output, target)?;
             }
@@ -235,6 +237,8 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     CondCode::AE => emit_ins(output, "setae")?,
                     CondCode::B => emit_ins(output, "setb")?,
                     CondCode::BE => emit_ins(output, "setbe")?,
+                    CondCode::P => emit_ins(output, "setp")?,
+                    CondCode::NP => emit_ins(output, "setnp")?,
                 }
                 emit_operand(output, dst, RegSize::Byte)?;
             }

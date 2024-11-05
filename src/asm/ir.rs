@@ -142,4 +142,6 @@ pub enum CondCode {
     L,
     LE,
     NE,
+    P,
+    NP,
 }

@@ -17200,6 +17200,183 @@ fn test_chapter_13_valid_extra_credit_incr_and_decr() {
 }
 
 #[test]
+fn test_chapter_13_valid_extra_credit_nan() {
+    let src = r#"
+        int double_isnan(double d);
+        int main(void) {
+            static double zero = 0.0;
+            double nan = 0.0 / zero;
+            if (nan < 0.0 || nan == 0.0 || nan > 0.0 || nan <= 0.0 || nan >= 0.0)
+                return 1;
+            if (1 > nan || 1 == nan || 1 > nan || 1 <= nan || 1 >= nan)
+                return 2;
+            if (nan == nan)
+                return 3;
+            if (!(nan != nan)) {
+                return 4;
+            }
+            if (!double_isnan(nan)) {
+                return 5;
+            }
+            if (!double_isnan(4 * nan)) {
+                return 6;
+            }
+            if (!double_isnan(22e2 / nan)) {
+                return 7;
+            }
+            if (!double_isnan(-nan)) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = 0D / zero.1
+            nan.2 = tmp.0
+            tmp.1 = nan.2 < 0D
+            if tmp.1 jump or_true_0
+            tmp.4 = nan.2 == 0D
+            if tmp.4 jump or_true_0
+            tmp.3 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.3 = 1
+        
+          or_end_1:
+            if tmp.3 jump or_true_2
+            tmp.7 = nan.2 > 0D
+            if tmp.7 jump or_true_2
+            tmp.6 = 0
+            jump or_end_3
+        
+          or_true_2:
+            tmp.6 = 1
+        
+          or_end_3:
+            if tmp.6 jump or_true_4
+            tmp.10 = nan.2 <= 0D
+            if tmp.10 jump or_true_4
+            tmp.9 = 0
+            jump or_end_5
+        
+          or_true_4:
+            tmp.9 = 1
+        
+          or_end_5:
+            if tmp.9 jump or_true_6
+            tmp.13 = nan.2 >= 0D
+            if tmp.13 jump or_true_6
+            tmp.12 = 0
+            jump or_end_7
+        
+          or_true_6:
+            tmp.12 = 1
+        
+          or_end_7:
+            if !tmp.12 jump end_if_8
+            return 1
+        
+          end_if_8:
+            tmp.14 = int_to_double 1
+            tmp.15 = tmp.14 > nan.2
+            if tmp.15 jump or_true_10
+            tmp.18 = int_to_double 1
+            tmp.19 = tmp.18 == nan.2
+            if tmp.19 jump or_true_10
+            tmp.17 = 0
+            jump or_end_11
+        
+          or_true_10:
+            tmp.17 = 1
+        
+          or_end_11:
+            if tmp.17 jump or_true_12
+            tmp.22 = int_to_double 1
+            tmp.23 = tmp.22 > nan.2
+            if tmp.23 jump or_true_12
+            tmp.21 = 0
+            jump or_end_13
+        
+          or_true_12:
+            tmp.21 = 1
+        
+          or_end_13:
+            if tmp.21 jump or_true_14
+            tmp.26 = int_to_double 1
+            tmp.27 = tmp.26 <= nan.2
+            if tmp.27 jump or_true_14
+            tmp.25 = 0
+            jump or_end_15
+        
+          or_true_14:
+            tmp.25 = 1
+        
+          or_end_15:
+            if tmp.25 jump or_true_16
+            tmp.30 = int_to_double 1
+            tmp.31 = tmp.30 >= nan.2
+            if tmp.31 jump or_true_16
+            tmp.29 = 0
+            jump or_end_17
+        
+          or_true_16:
+            tmp.29 = 1
+        
+          or_end_17:
+            if !tmp.29 jump end_if_18
+            return 2
+        
+          end_if_18:
+            tmp.32 = nan.2 == nan.2
+            if !tmp.32 jump end_if_20
+            return 3
+        
+          end_if_20:
+            tmp.33 = nan.2 != nan.2
+            tmp.34 = ! tmp.33
+            if !tmp.34 jump end_if_22
+            return 4
+        
+          end_if_22:
+            tmp.35 = double_isnan(nan.2)
+            tmp.36 = ! tmp.35
+            if !tmp.36 jump end_if_24
+            return 5
+        
+          end_if_24:
+            tmp.37 = int_to_double 4
+            tmp.38 = tmp.37 * nan.2
+            tmp.39 = double_isnan(tmp.38)
+            tmp.40 = ! tmp.39
+            if !tmp.40 jump end_if_26
+            return 6
+        
+          end_if_26:
+            tmp.41 = 2200D / nan.2
+            tmp.42 = double_isnan(tmp.41)
+            tmp.43 = ! tmp.42
+            if !tmp.43 jump end_if_28
+            return 7
+        
+          end_if_28:
+            tmp.44 = - nan.2
+            tmp.45 = double_isnan(tmp.44)
+            tmp.46 = ! tmp.45
+            if !tmp.46 jump end_if_30
+            return 8
+        
+          end_if_30:
+            return 0
+            return 0
+        }
+        static zero.1: Double = 0D
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
 fn test_chapter_13_valid_floating_expressions_arithmetic_ops() {
     let src = r#"
         double point_one = 0.1;

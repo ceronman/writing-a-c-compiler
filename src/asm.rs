@@ -392,9 +392,9 @@ impl Compiler {
                                 Operand::Imm(0),
                                 self.generate_val(dst),
                             ));
-
-                            let unsigned_or_double = !semantic.is_signed(src1) || matches!(ty, AsmType::Double);
-                            let cond = match (op, unsigned_or_double) {
+                            let is_double = matches!(ty, AsmType::Double);
+                            let is_unsigned = !semantic.is_signed(src1);
+                            let cond = match (op, is_unsigned || is_double) {
                                 (tacky::BinaryOp::Equal, _) => CondCode::E,
                                 (tacky::BinaryOp::NotEqual, _) => CondCode::NE,
                                 (tacky::BinaryOp::GreaterThan, false) => CondCode::G,
@@ -407,7 +407,29 @@ impl Compiler {
                                 (tacky::BinaryOp::LessOrEqual, true) => CondCode::BE,
                                 _ => unreachable!(),
                             };
-                            instructions.push(Instruction::SetCC(cond, self.generate_val(dst)));
+                            // Handling NaN:
+                            match op {
+                                tacky::BinaryOp::NotEqual if is_double => {
+                                    // TODO: These moves are not necessary if using byte types.
+                                    instructions.push(Instruction::Mov(AsmType::Longword, Operand::Imm(0), Reg::Ax.into()));
+                                    instructions.push(Instruction::Mov(AsmType::Longword, Operand::Imm(0), Reg::Cx.into()));
+                                    instructions.push(Instruction::SetCC(cond, Reg::Ax.into()));
+                                    instructions.push(Instruction::SetCC(CondCode::P, Reg::Cx.into()));
+                                    instructions.push(Instruction::Binary(AsmType::Longword, BinaryOp::Or, Reg::Ax.into(), Reg::Cx.into()));
+                                    instructions.push(Instruction::Mov(AsmType::Longword, Reg::Cx.into(), self.generate_val(dst)));
+                                }
+                                _ if is_double => {
+                                    instructions.push(Instruction::Mov(AsmType::Longword, Operand::Imm(0), Reg::Ax.into()));
+                                    instructions.push(Instruction::Mov(AsmType::Longword, Operand::Imm(0), Reg::Cx.into()));
+                                    instructions.push(Instruction::SetCC(cond, Reg::Ax.into()));
+                                    instructions.push(Instruction::SetCC(CondCode::NP, Reg::Cx.into()));
+                                    instructions.push(Instruction::Binary(AsmType::Longword, BinaryOp::And, Reg::Ax.into(), Reg::Cx.into()));
+                                    instructions.push(Instruction::Mov(AsmType::Longword, Reg::Cx.into(), self.generate_val(dst)));
+                                }
+                                _ => {
+                                    instructions.push(Instruction::SetCC(cond, self.generate_val(dst)));
+                                }
+                            }
                         }
 
                         tacky::BinaryOp::Add

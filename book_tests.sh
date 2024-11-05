@@ -12,4 +12,5 @@ set -euxo pipefail
     --compound \
     --increment \
     --goto \
-    --switch
+    --switch \
+    --nan

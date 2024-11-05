@@ -28642,6 +28642,202 @@ fn test_chapter_13_valid_extra_credit_incr_and_decr() {
 }
 
 #[test]
+fn test_chapter_13_valid_extra_credit_nan() {
+    let src = r#"
+        int double_isnan(double d);
+        int main(void) {
+            static double zero = 0.0;
+            double nan = 0.0 / zero;
+            if (nan < 0.0 || nan == 0.0 || nan > 0.0 || nan <= 0.0 || nan >= 0.0)
+                return 1;
+            if (1 > nan || 1 == nan || 1 > nan || 1 <= nan || 1 >= nan)
+                return 2;
+            if (nan == nan)
+                return 3;
+            if (!(nan != nan)) {
+                return 4;
+            }
+            if (!double_isnan(nan)) {
+                return 5;
+            }
+            if (!double_isnan(4 * nan)) {
+                return 6;
+            }
+            if (!double_isnan(22e2 / nan)) {
+                return 7;
+            }
+            if (!double_isnan(-nan)) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Double,
+        Identifier,
+        CloseParen,
+        Semicolon,
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Static,
+        Double,
+        Identifier,
+        Equal,
+        DoubleConstant,
+        Semicolon,
+        Double,
+        Identifier,
+        Equal,
+        DoubleConstant,
+        Slash,
+        Identifier,
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        Less,
+        DoubleConstant,
+        PipePipe,
+        Identifier,
+        EqualEqual,
+        DoubleConstant,
+        PipePipe,
+        Identifier,
+        Greater,
+        DoubleConstant,
+        PipePipe,
+        Identifier,
+        LessEqual,
+        DoubleConstant,
+        PipePipe,
+        Identifier,
+        GreaterEqual,
+        DoubleConstant,
+        CloseParen,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        If,
+        OpenParen,
+        IntConstant(IntKind::Int),
+        Greater,
+        Identifier,
+        PipePipe,
+        IntConstant(IntKind::Int),
+        EqualEqual,
+        Identifier,
+        PipePipe,
+        IntConstant(IntKind::Int),
+        Greater,
+        Identifier,
+        PipePipe,
+        IntConstant(IntKind::Int),
+        LessEqual,
+        Identifier,
+        PipePipe,
+        IntConstant(IntKind::Int),
+        GreaterEqual,
+        Identifier,
+        CloseParen,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        EqualEqual,
+        Identifier,
+        CloseParen,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        If,
+        OpenParen,
+        Bang,
+        OpenParen,
+        Identifier,
+        BangEqual,
+        Identifier,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        IntConstant(IntKind::Int),
+        Star,
+        Identifier,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        DoubleConstant,
+        Slash,
+        Identifier,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        Minus,
+        Identifier,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
 fn test_chapter_13_valid_floating_expressions_arithmetic_ops() {
     let src = r#"
         double point_one = 0.1;
