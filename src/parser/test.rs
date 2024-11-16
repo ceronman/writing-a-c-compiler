@@ -36047,3 +36047,6110 @@ fn test_chapter_13_valid_special_values_subnormal_not_zero() {
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
+
+#[test]
+fn test_chapter_14_invalid_declarations_extra_credit_addr_of_label() {
+    let src = r#"
+        
+        int main(void) {
+            int x = 0;
+            lbl:
+            x = 1;
+            if (&lbl == 0) {
+                return 1;
+            }
+            goto lbl;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Label [lbl]
+                    │   ╰── Assign [=]
+                    │       ├── Var [x]
+                    │       ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [==]
+                    │   │       ├── AddressOf
+                    │   │       │   ╰── Var [lbl]
+                    │   │       ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── Goto [lbl]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_declarations_extra_credit_deref_label() {
+    let src = r#"
+        
+        int main(void) {
+            lbl:
+            *lbl;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Label [lbl]
+                    │   ╰── Dereference
+                    │       ╰── Var [lbl]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_parse_abstract_function_declarator() {
+    assert_error(
+        r#"
+        int main(void) {
+            (int (void)) 0;
+                //^^^^ Expected ')', but found 'void'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_14_invalid_parse_cast_to_declarator() {
+    assert_error(
+        r#"
+        int main(void)
+        {
+            return (int **a)(10);
+                        //^ Expected ')', but found 'a'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_14_invalid_parse_malformed_abstract_declarator() {
+    assert_error(
+        r#"
+        int main(void) {
+            (int (*)*) 10;
+                  //^ Expected ')', but found '*'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_14_invalid_parse_malformed_declarator() {
+    assert_error(
+        r#"
+        int main(void) {
+            int (*)* y;
+                //^ Expected identifier, but found ')'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_14_invalid_parse_malformed_function_declarator() {
+    assert_error(
+        r#"
+        int (foo(void))(void);
+          //^^^^^^^^^^^ Can't apply additional derivations to a function type
+        int main(void) {
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_14_invalid_parse_malformed_function_declarator_2() {
+    assert_error(
+        r#"
+        int foo((void));
+              //^ Expected type specifier
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_14_invalid_types_address_of_address() {
+    let src = r#"
+        int main(void) {
+            int x = 0;
+            int *y = &x;
+            int **z = &(&x);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── z
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Pointer
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── AddressOf
+                    │               ╰── Var [x]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_address_of_assignment() {
+    let src = r#"
+        int main(void) {
+            int x = 0;
+            int y = 0;
+            int *ptr = &(x = y);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Assign [=]
+                    │               ├── Var [x]
+                    │               ╰── Var [y]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_address_of_constant() {
+    let src = r#"
+        
+        int main(void) {
+            int *ptr = &10;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Constant Int [10]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_address_of_ternary() {
+    let src = r#"
+        int main(void) {
+            int x = 1;
+            int y = 2;
+            int z = 3;
+            int *ptr = &(x ? y : z);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── z
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Conditional [?]
+                    │               ├── Var [x]
+                    │               ├── Then
+                    │               │   ╰── Var [y]
+                    │               ╰── Else
+                    │                   ╰── Var [z]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_assign_int_to_pointer() {
+    let src = r#"
+        int main(void) {
+            int *x;
+            x = 10;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ╰── Type
+                    │       ╰── Pointer
+                    │           ╰── Int
+                    ├── Assign [=]
+                    │   ├── Var [x]
+                    │   ╰── Constant Int [10]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_assign_int_var_to_pointer() {
+    let src = r#"
+        int main(void)
+        {
+            int x = 0;
+            int *ptr = x;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── VarDeclaration
+                        ├── Name
+                        │   ╰── ptr
+                        ├── Type
+                        │   ╰── Pointer
+                        │       ╰── Int
+                        ╰── Initializer
+                            ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_assign_to_address() {
+    let src = r#"
+        int main(void)
+        {
+            int x = 0;
+            &x = 10;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Assign [=]
+                        ├── AddressOf
+                        │   ╰── Var [x]
+                        ╰── Constant Int [10]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_assign_wrong_pointer_type() {
+    let src = r#"
+        int main(void)
+        {
+            double *d = 0;
+            long *l = 0;
+            l = d;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Assign [=]
+                    │   ├── Var [l]
+                    │   ╰── Var [d]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_bad_null_pointer_constant() {
+    let src = r#"
+        int main(void)
+        {
+            int *x = 0.0;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+0e0]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_cast_double_to_pointer() {
+    let src = r#"
+        int main(void) {
+            double d = 0.0;
+            int *x = (int *) d;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+0e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Pointer
+                    │           │       ╰── Int
+                    │           ╰── Expression
+                    │               ╰── Var [d]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_cast_pointer_to_double() {
+    let src = r#"
+        int main(void) {
+            int *x;
+            double d = (double) x;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ╰── Type
+                    │       ╰── Pointer
+                    │           ╰── Int
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Double
+                    │           ╰── Expression
+                    │               ╰── Var [x]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_compare_mixed_pointer_types() {
+    let src = r#"
+        
+        int main(void) {
+            int *x = 0ul;
+            unsigned *y = 0ul;
+            return x == y;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [0]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Var [x]
+                            ╰── Var [y]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_compare_pointer_to_ulong() {
+    let src = r#"
+        
+        int main(void) {
+            int *ptr = 0ul;
+            unsigned long ul = 0ul;
+            return ptr == ul;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [0]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Var [ptr]
+                            ╰── Var [ul]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_complement_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            int *x = 0;
+            return (int) ~x;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Cast
+                            ├── Target
+                            │   ╰── Int
+                            ╰── Expression
+                                ╰── Unary [~]
+                                    ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_dereference_non_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            unsigned long l = 100ul;
+            return *l;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [100]
+                    ╰── Return
+                        ╰── Dereference
+                            ╰── Var [l]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_divide_pointer() {
+    let src = r#"
+        
+        int main(void)
+        {
+            int x = 10;
+            int *y = &x;
+            (y / 8);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── Binary [/]
+                    │   ├── Var [y]
+                    │   ╰── Constant Int [8]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_bitwise_and_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            long *ptr = 0;
+            10 & ptr;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Binary [&]
+                    │   ├── Constant Int [10]
+                    │   ╰── Var [ptr]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_bitwise_compound_assign_to_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            int x = 0;
+            int *ptr = &x;
+            ptr &= 0;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── Assign [&=]
+                    │   ├── Var [ptr]
+                    │   ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_bitwise_compound_assign_with_pointer() {
+    let src = r#"
+        int main(void) {
+            int *null = 0;
+            int x = 100;
+            x |= null;
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── null
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [100]
+                    ├── Assign [|=]
+                    │   ├── Var [x]
+                    │   ╰── Var [null]
+                    ╰── Return
+                        ╰── Constant Int [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_bitwise_lshift_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            int *ptr = 0;
+            int i = 1000;
+            i >> ptr;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [1000]
+                    ├── Binary [>>]
+                    │   ├── Var [i]
+                    │   ╰── Var [ptr]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_bitwise_or_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            int *x = 0;
+            int *y = 0;
+            x | y;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Binary [|]
+                    │   ├── Var [x]
+                    │   ╰── Var [y]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_bitwise_rshift_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            int *x = 0;
+            return (int) (x >> 10);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Cast
+                            ├── Target
+                            │   ╰── Int
+                            ╰── Expression
+                                ╰── Binary [>>]
+                                    ├── Var [x]
+                                    ╰── Constant Int [10]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_bitwise_xor_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            unsigned long *ptr = 0;
+            long l = 100;
+            ptr ^ l;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [100]
+                    ├── Binary [^]
+                    │   ├── Var [ptr]
+                    │   ╰── Var [l]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_compound_assign_thru_ptr_not_lval() {
+    let src = r#"
+        int main(void) {
+            int i = 100;
+            int *ptr = &i;
+            int *ptr2 = &(*ptr -= 10);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [i]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr2
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Assign [-=]
+                    │               ├── Dereference
+                    │               │   ╰── Var [ptr]
+                    │               ╰── Constant Int [10]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_compound_assignment_not_lval() {
+    let src = r#"
+        int main(void) {
+            int i = 100;
+            int *ptr = &(i += 200);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Assign [+=]
+                    │               ├── Var [i]
+                    │               ╰── Constant Int [200]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_compound_divide_pointer() {
+    let src = r#"
+        int main(void) {
+            int *x = 0;
+            int *y = 0;
+            x /= y;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Assign [/=]
+                    │   ├── Var [x]
+                    │   ╰── Var [y]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_compound_mod_pointer() {
+    let src = r#"
+        int main(void) {
+            int i = 10;
+            int *ptr = &i;
+            i %= ptr;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [i]
+                    ├── Assign [&=]
+                    │   ├── Var [i]
+                    │   ╰── Var [ptr]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_compound_multiply_pointer() {
+    let src = r#"
+        int main(void) {
+            int *x = 0;
+            x *= 2;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Assign [*=]
+                    │   ├── Var [x]
+                    │   ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_postfix_decr_not_lvalue() {
+    let src = r#"
+        int main(void) {
+            int i = 10;
+            int *ptr = &i--;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Postfix [--]
+                    │               ╰── Var [i]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_prefix_incr_not_lvalue() {
+    let src = r#"
+        int main(void) {
+            int i = 10;
+            int *ptr = &++i;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Unary [++]
+                    │               ╰── Var [i]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_extra_credit_switch_on_pointer() {
+    let src = r#"
+        int main(void) {
+            int *x = 0;
+            switch(x) {
+                case 0: return 0;
+                default: return 1;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Switch
+                        ├── Expression
+                        │   ╰── Var [x]
+                        ╰── Block
+                            ├── Case [0]
+                            │   ╰── Return
+                            │       ╰── Constant Int [0]
+                            ╰── Default
+                                ╰── Return
+                                    ╰── Constant Int [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_invalid_pointer_initializer() {
+    let src = r#"
+        int main(void)
+        {
+            int *ptr = 140732898195768ul;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [140732898195768]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_invalid_static_initializer() {
+    let src = r#"
+        
+        static int *x = 10;
+        int main(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Pointer
+            │   │       ╰── Int
+            │   ├── Initializer
+            │   │   ╰── Constant Int [10]
+            │   ╰── Static
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_multiply_pointers() {
+    let src = r#"
+        
+        int main(void) {
+            int *x = 0;
+            int *y = x;
+            (x * y);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Var [x]
+                    ├── Binary [*]
+                    │   ├── Var [x]
+                    │   ╰── Var [y]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_multiply_pointers_2() {
+    let src = r#"
+        
+        int main(void)
+        {
+            int *x = 0;
+            (0 * x);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Binary [*]
+                    │   ├── Constant Int [0]
+                    │   ╰── Var [x]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_negate_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            int *x = 0;
+            -x;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Unary [-]
+                    │   ╰── Var [x]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_pass_pointer_as_int() {
+    let src = r#"
+        int f(int i) {
+            return i;
+        }
+        int main(void) {
+            int x;
+            return f(&x);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [f]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Var [i]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ╰── Type
+                    │       ╰── Int
+                    ╰── Return
+                        ╰── FunctionCall [f]
+                            ╰── AddressOf
+                                ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_return_wrong_pointer_type() {
+    let src = r#"
+        int i;
+        long *return_long_pointer(void) {
+            return &i;
+        }
+        int main(void) {
+            long *l = return_long_pointer();
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ╰── Type
+            │       ╰── Int
+            ├── Function [return_long_pointer]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── AddressOf
+            │               ╰── Var [i]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [return_long_pointer]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_invalid_types_ternary_mixed_pointer_types() {
+    let src = r#"
+        int main(void) {
+            long *x = 0;
+            int *y = 0;
+            int *result = 1 ? x : y;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Conditional [?]
+                    │           ├── Constant Int [1]
+                    │           ├── Then
+                    │           │   ╰── Var [x]
+                    │           ╰── Else
+                    │               ╰── Var [y]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_casts_cast_between_pointer_types() {
+    let src = r#"
+        int check_null_ptr_cast(void) {
+            static long *long_ptr = 0;
+            double *dbl_ptr = (double *)long_ptr;
+            unsigned int *int_ptr = (unsigned int *)long_ptr;
+            int **ptr_ptr = (int **)long_ptr;
+            if (long_ptr) {
+                return 1;
+            }
+            if (dbl_ptr) {
+                return 2;
+            }
+            if (int_ptr) {
+                return 3;
+            }
+            if (ptr_ptr) {
+                return 4;
+            }
+            return 0;
+        }
+        int check_round_trip(void) {
+            long l = -1;
+            long *long_ptr = &l;
+            double *dbl_ptr = (double *)long_ptr;
+            long *other_long_ptr = (long *)dbl_ptr;
+            if (*other_long_ptr != -1) {
+                return 5;
+            }
+            return 0;
+        }
+        int main(void)
+        {
+            int result = check_null_ptr_cast();
+            if (result) {
+                return result;
+            }
+            result = check_round_trip();
+            return result;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [check_null_ptr_cast]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── long_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Long
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [0]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── dbl_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Double
+            │       │           ╰── Expression
+            │       │               ╰── Var [long_ptr]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── int_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Unsigned Int
+            │       │           ╰── Expression
+            │       │               ╰── Var [long_ptr]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Pointer
+            │       │   │           ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Pointer
+            │       │           │           ╰── Int
+            │       │           ╰── Expression
+            │       │               ╰── Var [long_ptr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [long_ptr]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [dbl_ptr]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [int_ptr]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [ptr_ptr]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [4]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [check_round_trip]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── l
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Unary [-]
+            │       │           ╰── Constant Int [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── long_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── AddressOf
+            │       │           ╰── Var [l]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── dbl_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Double
+            │       │           ╰── Expression
+            │       │               ╰── Var [long_ptr]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── other_long_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [dbl_ptr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Var [other_long_ptr]
+            │       │   │       ╰── Unary [-]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [5]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [check_null_ptr_cast]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [result]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [result]
+                    ├── Assign [=]
+                    │   ├── Var [result]
+                    │   ╰── FunctionCall [check_round_trip]
+                    ╰── Return
+                        ╰── Var [result]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_casts_null_pointer_conversion() {
+    let src = r#"
+        double *d = 0l;
+        int *i = 0ul;
+        int *i2 = 0u;
+        int expect_null_param(int *val)
+        {
+            return (val == 0ul);
+        }
+        long *return_null_ptr(void)
+        {
+            return 0;
+        }
+        int main(void)
+        {
+            int x = 10;
+            int *ptr = &x;
+            if (d) {
+                return 1;
+            }
+            if (i) {
+                return 2;
+            }
+            if (i2) {
+                return 3;
+            }
+            ptr = 0ul;
+            if (ptr) {
+                return 4;
+            }
+            int *y = 0;
+            if (y != 0)
+                return 5;
+            if (!expect_null_param(0)) {
+                return 6;
+            }
+            long *null_ptr = return_null_ptr();
+            if (null_ptr != 0) {
+                return 7;
+            }
+            ptr = &x;
+            int *ternary_result = 10 ? 0 : ptr;
+            if (ternary_result) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d
+            │   ├── Type
+            │   │   ╰── Pointer
+            │   │       ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Long [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Pointer
+            │   │       ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant ULong [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i2
+            │   ├── Type
+            │   │   ╰── Pointer
+            │   │       ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant UInt [0]
+            ├── Function [expect_null_param]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── val
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [val]
+            │               ╰── Constant ULong [0]
+            ├── Function [return_null_ptr]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [d]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [i]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [i2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── Assign [=]
+                    │   ├── Var [ptr]
+                    │   ╰── Constant ULong [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [y]
+                    │   │       ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [expect_null_param]
+                    │   │           ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── null_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [return_null_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [null_ptr]
+                    │   │       ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── Assign [=]
+                    │   ├── Var [ptr]
+                    │   ╰── AddressOf
+                    │       ╰── Var [x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ternary_result
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Conditional [?]
+                    │           ├── Constant Int [10]
+                    │           ├── Then
+                    │           │   ╰── Constant Int [0]
+                    │           ╰── Else
+                    │               ╰── Var [ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [ternary_result]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_casts_pointer_int_casts() {
+    let src = r#"
+        int i = 128;
+        long l = 128l;
+        int int_to_pointer(void) {
+            int *a = (int *) i;
+            int *b = (int *) l;
+            return a == b;
+        }
+        int pointer_to_int(void) {
+            static long l;
+            long *ptr = &l;
+            unsigned long ptr_as_long = (unsigned long) ptr;
+            return (ptr_as_long % 8 == 0);
+        }
+        int cast_long_round_trip(void) {
+            int *ptr = (int *) l;
+            long l2 = (long) ptr;
+            return (l == l2);
+        }
+        int cast_ulong_round_trip(void) {
+            long *ptr = &l;
+            unsigned long ptr_as_ulong = (unsigned long) ptr;
+            long *ptr2 = (long *) ptr_as_ulong;
+            return (ptr == ptr2);
+        }
+        int cast_int_round_trip(void) {
+            double *a = (double *)i;
+            int i2 = (int) a;
+            return (i2 == 128);
+        }
+        int main(void) {
+            if (!int_to_pointer()) {
+                return 1;
+            }
+            if (!pointer_to_int()) {
+                return 2;
+            }
+            if (!cast_long_round_trip()) {
+                return 3;
+            }
+            if (!cast_ulong_round_trip()) {
+                return 4;
+            }
+            if (!cast_int_round_trip()) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [128]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant Long [128]
+            ├── Function [int_to_pointer]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Int
+            │       │           ╰── Expression
+            │       │               ╰── Var [i]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Int
+            │       │           ╰── Expression
+            │       │               ╰── Var [l]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [a]
+            │               ╰── Var [b]
+            ├── Function [pointer_to_int]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── l
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── AddressOf
+            │       │           ╰── Var [l]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr_as_long
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Unsigned Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [ptr]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [%]
+            │               │   ├── Var [ptr_as_long]
+            │               │   ╰── Constant Int [8]
+            │               ╰── Constant Int [0]
+            ├── Function [cast_long_round_trip]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Int
+            │       │           ╰── Expression
+            │       │               ╰── Var [l]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── l2
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [ptr]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [l]
+            │               ╰── Var [l2]
+            ├── Function [cast_ulong_round_trip]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── AddressOf
+            │       │           ╰── Var [l]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr_as_ulong
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Unsigned Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [ptr]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr2
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [ptr_as_ulong]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [ptr]
+            │               ╰── Var [ptr2]
+            ├── Function [cast_int_round_trip]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Double
+            │       │           ╰── Expression
+            │       │               ╰── Var [i]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Int
+            │       │           ╰── Expression
+            │       │               ╰── Var [a]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Var [i2]
+            │               ╰── Constant Int [128]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [int_to_pointer]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [pointer_to_int]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [cast_long_round_trip]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [cast_ulong_round_trip]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [cast_int_round_trip]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_comparisons_compare_pointers() {
+    let src = r#"
+        int main(void) {
+            int a = 0;
+            int b;
+            int *a_ptr = &a;
+            int *a_ptr2 = &a;
+            int *b_ptr = &b;
+            if (a_ptr == b_ptr) {
+                return 1;
+            }
+            if (a_ptr != a_ptr2) {
+                return 2;
+            }
+            if (!(a_ptr == a_ptr2)) {
+                return 3;
+            }
+            if (!(a_ptr != b_ptr)) {
+                return 4;
+            }
+            *b_ptr = *a_ptr;
+            if (a_ptr == b_ptr) {
+                return 5;
+            }
+            b_ptr = a_ptr;
+            if (b_ptr != a_ptr) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ╰── Type
+                    │       ╰── Int
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a_ptr2
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [a]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [b]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [a_ptr]
+                    │   │       ╰── Var [b_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [a_ptr]
+                    │   │       ╰── Var [a_ptr2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [==]
+                    │   │           ├── Var [a_ptr]
+                    │   │           ╰── Var [a_ptr2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [!=]
+                    │   │           ├── Var [a_ptr]
+                    │   │           ╰── Var [b_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [b_ptr]
+                    │   ╰── Dereference
+                    │       ╰── Var [a_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [a_ptr]
+                    │   │       ╰── Var [b_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── Assign [=]
+                    │   ├── Var [b_ptr]
+                    │   ╰── Var [a_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [b_ptr]
+                    │   │       ╰── Var [a_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_comparisons_compare_to_null() {
+    let src = r#"
+        double *get_null_pointer(void) {
+            return 0;
+        }
+        int main(void)
+        {
+            double x;
+            double *null = get_null_pointer();
+            double *non_null = &x;
+            if (non_null == 0) {
+                return 1;
+            }
+            if (!(null == 0l)) {
+                return 2;
+            }
+            if (!(non_null != 0u)) {
+                return 3;
+            }
+            if (null != 0ul) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [get_null_pointer]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ╰── Type
+                    │       ╰── Double
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── null
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [get_null_pointer]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── non_null
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [non_null]
+                    │   │       ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [==]
+                    │   │           ├── Var [null]
+                    │   │           ╰── Constant Long [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [!=]
+                    │   │           ├── Var [non_null]
+                    │   │           ╰── Constant UInt [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [null]
+                    │   │       ╰── Constant ULong [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_comparisons_pointers_as_conditions() {
+    let src = r#"
+        long *get_null_pointer(void) {
+            return 0;
+        }
+        int main(void)
+        {
+            long x;
+            long *ptr = &x;
+            long *null_ptr = get_null_pointer();
+            if (5.0 && null_ptr) {
+                return 1;
+            }
+            int a = 0;
+            if (!(ptr || (a = 10))) {
+                return 2;
+            }
+            if (a != 0) {
+                return 3;
+            }
+            if (!ptr) {
+                return 4;
+            }
+            int j = ptr ? 1 : 2;
+            int k = null_ptr ? 3 : 4;
+            if (j != 1) {
+                return 5;
+            }
+            if (k != 4) {
+                return 6;
+            }
+            int i = 0;
+            while (ptr)
+            {
+                if (i >= 10) {
+                    ptr = 0;
+                    continue;
+                }
+                i = i + 1;
+            }
+            if (i != 10) {
+                return 7;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [get_null_pointer]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ╰── Type
+                    │       ╰── Long
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── null_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [get_null_pointer]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [&&]
+                    │   │       ├── Constant Double [+5e0]
+                    │   │       ╰── Var [null_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Binary [||]
+                    │   │           ├── Var [ptr]
+                    │   │           ╰── Assign [=]
+                    │   │               ├── Var [a]
+                    │   │               ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [a]
+                    │   │       ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── Var [ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── j
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Conditional [?]
+                    │           ├── Var [ptr]
+                    │           ├── Then
+                    │           │   ╰── Constant Int [1]
+                    │           ╰── Else
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── k
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Conditional [?]
+                    │           ├── Var [null_ptr]
+                    │           ├── Then
+                    │           │   ╰── Constant Int [3]
+                    │           ╰── Else
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [j]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [k]
+                    │   │       ╰── Constant Int [4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── While
+                    │   ├── Condition
+                    │   │   ╰── Var [ptr]
+                    │   ╰── Body
+                    │       ╰── Block
+                    │           ├── If
+                    │           │   ├── Condition
+                    │           │   │   ╰── Binary [>=]
+                    │           │   │       ├── Var [i]
+                    │           │   │       ╰── Constant Int [10]
+                    │           │   ╰── Then
+                    │           │       ╰── Block
+                    │           │           ├── Assign [=]
+                    │           │           │   ├── Var [ptr]
+                    │           │           │   ╰── Constant Int [0]
+                    │           │           ╰── Continue
+                    │           ╰── Assign [=]
+                    │               ├── Var [i]
+                    │               ╰── Binary [+]
+                    │                   ├── Var [i]
+                    │                   ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_declarators_abstract_declarators() {
+    let src = r#"
+        
+        int main(void) {
+            long int unsigned *x = 0;
+            if (x != (unsigned long (*)) 0)
+                return 1;
+            if (x != (long unsigned int ((((*))))) 0)
+                return 2;
+            double ***y = 0;
+            if (y != (double *(**)) 0)
+                return 3;
+            if (y != (double (***)) 0)
+                return 4;
+            if ((double (*(*(*)))) 0 != y)
+                return 5;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Cast
+                    │   │           ├── Target
+                    │   │           │   ╰── Pointer
+                    │   │           │       ╰── Unsigned Long
+                    │   │           ╰── Expression
+                    │   │               ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Cast
+                    │   │           ├── Target
+                    │   │           │   ╰── Pointer
+                    │   │           │       ╰── Unsigned Long
+                    │   │           ╰── Expression
+                    │   │               ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Pointer
+                    │   │           ╰── Pointer
+                    │   │               ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [y]
+                    │   │       ╰── Cast
+                    │   │           ├── Target
+                    │   │           │   ╰── Pointer
+                    │   │           │       ╰── Pointer
+                    │   │           │           ╰── Pointer
+                    │   │           │               ╰── Double
+                    │   │           ╰── Expression
+                    │   │               ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [y]
+                    │   │       ╰── Cast
+                    │   │           ├── Target
+                    │   │           │   ╰── Pointer
+                    │   │           │       ╰── Pointer
+                    │   │           │           ╰── Pointer
+                    │   │           │               ╰── Double
+                    │   │           ╰── Expression
+                    │   │               ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Cast
+                    │   │       │   ├── Target
+                    │   │       │   │   ╰── Pointer
+                    │   │       │   │       ╰── Pointer
+                    │   │       │   │           ╰── Pointer
+                    │   │       │   │               ╰── Double
+                    │   │       │   ╰── Expression
+                    │   │       │       ╰── Constant Int [0]
+                    │   │       ╰── Var [y]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_declarators_declarators() {
+    let src = r#"
+        int return_3(void);
+        int(return_3(void));
+        int(return_3)(void);
+        int((return_3))(void)
+        {
+            return 3;
+        }
+        long l = 100;
+        long *two_pointers(double val, double *ptr)
+        {
+            *ptr = val;
+            return &l;
+        }
+        long(*two_pointers(double val, double(*d)));
+        long *(two_pointers)(double val, double *(d));
+        long *(two_pointers)(double val, double(*(d)));
+        unsigned **pointers_to_pointers(int **p)
+        {
+            static unsigned u;
+            static unsigned *u_ptr;
+            u_ptr = &u;
+            u = **p;
+            return &u_ptr;
+        }
+        unsigned(**(pointers_to_pointers(int *(*p))));
+        unsigned *(*pointers_to_pointers(int(**p)));
+        unsigned(*(*((pointers_to_pointers)(int(*(*(p)))))));
+        int main(void)
+        {
+            int i = 0;
+            int(*i_ptr) = &i;
+            int(**ptr_to_iptr) = &i_ptr;
+            double(d1) = 0.0;
+            double d2 = 10.0;
+            double *(d_ptr) = &d1;
+            long(*(l_ptr));
+            unsigned *(*(ptr_to_uptr));
+            i = return_3();
+            if (i != 3)
+                return 1;
+            if (*i_ptr != 3) {
+                return 2;
+            }
+            l_ptr = two_pointers(d2, d_ptr);
+            if (l_ptr != &l) {
+                return 3;
+            }
+            if (*l_ptr != 100) {
+                return 4;
+            }
+            if (*d_ptr != 10.0) {
+                return 5;
+            }
+            if (d1 != 10.0) {
+                return 6;
+            }
+            ptr_to_uptr = pointers_to_pointers(ptr_to_iptr);
+            if (**ptr_to_uptr != 3) {
+                return 7;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [return_3]
+            ├── Function [return_3]
+            ├── Function [return_3]
+            ├── Function [return_3]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Constant Int [3]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant Int [100]
+            ├── Function [two_pointers]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── val
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Double
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Dereference
+            │       │   │   ╰── Var [ptr]
+            │       │   ╰── Var [val]
+            │       ╰── Return
+            │           ╰── AddressOf
+            │               ╰── Var [l]
+            ├── Function [two_pointers]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── val
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── d
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Double
+            ├── Function [two_pointers]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── val
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── d
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Double
+            ├── Function [two_pointers]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── val
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── d
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Double
+            ├── Function [pointers_to_pointers]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── p
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Pointer
+            │   │                   ╰── Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── u
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Int
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── u_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Unsigned Int
+            │       │   ╰── Static
+            │       ├── Assign [=]
+            │       │   ├── Var [u_ptr]
+            │       │   ╰── AddressOf
+            │       │       ╰── Var [u]
+            │       ├── Assign [=]
+            │       │   ├── Var [u]
+            │       │   ╰── Dereference
+            │       │       ╰── Dereference
+            │       │           ╰── Var [p]
+            │       ╰── Return
+            │           ╰── AddressOf
+            │               ╰── Var [u_ptr]
+            ├── Function [pointers_to_pointers]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── p
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Pointer
+            │                       ╰── Int
+            ├── Function [pointers_to_pointers]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── p
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Pointer
+            │                       ╰── Int
+            ├── Function [pointers_to_pointers]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── p
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Pointer
+            │                       ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [i]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr_to_iptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Pointer
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [i_ptr]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d1
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+0e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d2
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [d1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l_ptr
+                    │   ╰── Type
+                    │       ╰── Pointer
+                    │           ╰── Long
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr_to_uptr
+                    │   ╰── Type
+                    │       ╰── Pointer
+                    │           ╰── Pointer
+                    │               ╰── Unsigned Int
+                    ├── Assign [=]
+                    │   ├── Var [i]
+                    │   ╰── FunctionCall [return_3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [i_ptr]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── Assign [=]
+                    │   ├── Var [l_ptr]
+                    │   ╰── FunctionCall [two_pointers]
+                    │       ├── Var [d2]
+                    │       ╰── Var [d_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l_ptr]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Var [l]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [l_ptr]
+                    │   │       ╰── Constant Int [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [d_ptr]
+                    │   │       ╰── Constant Double [+1e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d1]
+                    │   │       ╰── Constant Double [+1e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── Assign [=]
+                    │   ├── Var [ptr_to_uptr]
+                    │   ╰── FunctionCall [pointers_to_pointers]
+                    │       ╰── Var [ptr_to_iptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [ptr_to_uptr]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_declarators_declare_pointer_in_for_loop() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            for (int *i = &x; i != 0; ) {
+                *i = 5;
+                i = 0;
+            }
+            return x;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Pointer
+                    │   │       │       ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── AddressOf
+                    │   │               ╰── Var [x]
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [0]
+                    │   ╰── Block
+                    │       ├── Assign [=]
+                    │       │   ├── Dereference
+                    │       │   │   ╰── Var [i]
+                    │       │   ╰── Constant Int [5]
+                    │       ╰── Assign [=]
+                    │           ├── Var [i]
+                    │           ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_dereference_address_of_dereference() {
+    let src = r#"
+        int main(void) {
+            int *null_ptr = 0;
+            if (&*null_ptr != 0)
+                return 1;
+            int **ptr_to_null = &null_ptr;
+            if (&**ptr_to_null)
+                return 2;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── null_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── AddressOf
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [null_ptr]
+                    │   │       ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr_to_null
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Pointer
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [null_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── AddressOf
+                    │   │       ╰── Dereference
+                    │   │           ╰── Dereference
+                    │   │               ╰── Var [ptr_to_null]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_dereference_dereference_expression_result() {
+    let src = r#"
+        int *return_pointer(void) {
+            static int var = 10;
+            return &var;
+        }
+        int one = 1;
+        int main(void) {
+            int val = 100;
+            int *ptr_var = &val;
+            if (*return_pointer() != 10) {
+                return 1;
+            }
+            if (*(one ? return_pointer() : ptr_var) != 10)
+                return 2;
+            if (*(one - 1 ? return_pointer() : ptr_var) != 100) {
+                return 3;
+            }
+            int *ptr_to_one = &one;
+            if (*(ptr_var = ptr_to_one) != 1) {
+                return 4;
+            }
+            *return_pointer() = 20;
+            *(one ? ptr_var : return_pointer()) = 30;
+            if (*return_pointer() != 20) {
+                return 5;
+            }
+            if (*ptr_var != 30) {
+                return 6;
+            }
+            if (one != 30) {
+                return 7;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [return_pointer]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── var
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [10]
+            │       │   ╰── Static
+            │       ╰── Return
+            │           ╰── AddressOf
+            │               ╰── Var [var]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── one
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [1]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── val
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr_var
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [val]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── FunctionCall [return_pointer]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Conditional [?]
+                    │   │       │       ├── Var [one]
+                    │   │       │       ├── Then
+                    │   │       │       │   ╰── FunctionCall [return_pointer]
+                    │   │       │       ╰── Else
+                    │   │       │           ╰── Var [ptr_var]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Conditional [?]
+                    │   │       │       ├── Binary [-]
+                    │   │       │       │   ├── Var [one]
+                    │   │       │       │   ╰── Constant Int [1]
+                    │   │       │       ├── Then
+                    │   │       │       │   ╰── FunctionCall [return_pointer]
+                    │   │       │       ╰── Else
+                    │   │       │           ╰── Var [ptr_var]
+                    │   │       ╰── Constant Int [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr_to_one
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [one]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Assign [=]
+                    │   │       │       ├── Var [ptr_var]
+                    │   │       │       ╰── Var [ptr_to_one]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── FunctionCall [return_pointer]
+                    │   ╰── Constant Int [20]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Conditional [?]
+                    │   │       ├── Var [one]
+                    │   │       ├── Then
+                    │   │       │   ╰── Var [ptr_var]
+                    │   │       ╰── Else
+                    │   │           ╰── FunctionCall [return_pointer]
+                    │   ╰── Constant Int [30]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── FunctionCall [return_pointer]
+                    │   │       ╰── Constant Int [20]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ptr_var]
+                    │   │       ╰── Constant Int [30]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [one]
+                    │   │       ╰── Constant Int [30]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_dereference_multilevel_indirection() {
+    let src = r#"
+        
+        int main(void) {
+            double d = 10.0;
+            double *d_ptr = &d;
+            double **d_ptr_ptr = &d_ptr;
+            double ***d_ptr_ptr_ptr = &d_ptr_ptr;
+            if (d != 10.0) {
+                return 1;
+            }
+            if (*d_ptr != 10.0) {
+                return 2;
+            }
+            if (**d_ptr_ptr != 10.0) {
+                return 3;
+            }
+            if (***d_ptr_ptr_ptr != 10.0) {
+                return 4;
+            }
+            if (&d != d_ptr) {
+                return 5;
+            }
+            if (*d_ptr_ptr != d_ptr) {
+                return 6;
+            }
+            if (**d_ptr_ptr_ptr != d_ptr) {
+                return 7;
+            }
+            ***d_ptr_ptr_ptr = 5.0;
+            if (d != 5.0) {
+                return 8;
+            }
+            if (*d_ptr != 5.0) {
+                return 9;
+            }
+            if (**d_ptr_ptr != 5.0) {
+                return 10;
+            }
+            if (***d_ptr_ptr_ptr != 5.0) {
+                return 11;
+            }
+            double d2 = 1.0;
+            double *d2_ptr = &d2;
+            double *d2_ptr2 = d2_ptr;
+            double **d2_ptr_ptr = &d2_ptr;
+            *d_ptr_ptr_ptr = d2_ptr_ptr;
+            if (**d_ptr_ptr_ptr != d2_ptr) {
+                return 12;
+            }
+            if (***d_ptr_ptr_ptr != 1.0) {
+                return 13;
+            }
+            if (d2_ptr_ptr == &d2_ptr2)
+                return 14;
+            d2_ptr = d_ptr;
+            if (**d_ptr_ptr_ptr != d_ptr) {
+                return 15;
+            }
+            if (*d2_ptr_ptr != d_ptr) {
+                return 16;
+            }
+            if (**d_ptr_ptr_ptr == d2_ptr2) {
+                return 17;
+            }
+            if (***d_ptr_ptr_ptr != 5.0) {
+                return 18;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [d]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d_ptr_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Pointer
+                    │   │           ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [d_ptr]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d_ptr_ptr_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Pointer
+                    │   │           ╰── Pointer
+                    │   │               ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [d_ptr_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+1e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [d_ptr]
+                    │   │       ╰── Constant Double [+1e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [d_ptr_ptr]
+                    │   │       ╰── Constant Double [+1e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Dereference
+                    │   │       │           ╰── Var [d_ptr_ptr_ptr]
+                    │   │       ╰── Constant Double [+1e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── AddressOf
+                    │   │       │   ╰── Var [d]
+                    │   │       ╰── Var [d_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [d_ptr_ptr]
+                    │   │       ╰── Var [d_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [d_ptr_ptr_ptr]
+                    │   │       ╰── Var [d_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Dereference
+                    │   │       ╰── Dereference
+                    │   │           ╰── Var [d_ptr_ptr_ptr]
+                    │   ╰── Constant Double [+5e0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [d_ptr]
+                    │   │       ╰── Constant Double [+5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [d_ptr_ptr]
+                    │   │       ╰── Constant Double [+5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Dereference
+                    │   │       │           ╰── Var [d_ptr_ptr_ptr]
+                    │   │       ╰── Constant Double [+5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [11]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d2
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d2_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [d2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d2_ptr2
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Var [d2_ptr]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d2_ptr_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Pointer
+                    │   │           ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [d2_ptr]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [d_ptr_ptr_ptr]
+                    │   ╰── Var [d2_ptr_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [d_ptr_ptr_ptr]
+                    │   │       ╰── Var [d2_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [12]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Dereference
+                    │   │       │           ╰── Var [d_ptr_ptr_ptr]
+                    │   │       ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [13]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [d2_ptr_ptr]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Var [d2_ptr2]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [14]
+                    ├── Assign [=]
+                    │   ├── Var [d2_ptr]
+                    │   ╰── Var [d_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [d_ptr_ptr_ptr]
+                    │   │       ╰── Var [d_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [15]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [d2_ptr_ptr]
+                    │   │       ╰── Var [d_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [16]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [d_ptr_ptr_ptr]
+                    │   │       ╰── Var [d2_ptr2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [17]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Dereference
+                    │   │       │           ╰── Var [d_ptr_ptr_ptr]
+                    │   │       ╰── Constant Double [+5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [18]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_dereference_read_through_pointers() {
+    let src = r#"
+        
+        int main(void) {
+            int i = -100;
+            unsigned long ul = 13835058055282163712ul;
+            double d = 3.5;
+            int *i_ptr = &i;
+            unsigned long *ul_ptr = &ul;
+            double *d_ptr = &d;
+            if (*i_ptr != -100) {
+                return 1;
+            }
+            if (*ul_ptr != 13835058055282163712ul) {
+                return 2;
+            }
+            if (*d_ptr != 3.5) {
+                return 3;
+            }
+            i = 12;
+            ul = 1000;
+            d = -000.001;
+            if (*i_ptr != 12) {
+                return 4;
+            }
+            if (*ul_ptr != 1000) {
+                return 5;
+            }
+            if (*d_ptr != -000.001) {
+                return 6;
+            }
+            int i2 = 1;
+            unsigned long ul2 = 144115196665790464ul;
+            double d2 = -33.3;
+            i_ptr = &i2;
+            ul_ptr = &ul2;
+            d_ptr = &d2;
+            if (*i_ptr != 1) {
+                return 7;
+            }
+            if (*ul_ptr != 144115196665790464ul) {
+                return 8;
+            }
+            if (*d_ptr != -33.3) {
+                return 9;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant Int [100]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [13835058055282163712]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+3.5e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [i]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [ul]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [d]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [i_ptr]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ul_ptr]
+                    │   │       ╰── Constant ULong [13835058055282163712]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [d_ptr]
+                    │   │       ╰── Constant Double [+3.5e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── Assign [=]
+                    │   ├── Var [i]
+                    │   ╰── Constant Int [12]
+                    ├── Assign [=]
+                    │   ├── Var [ul]
+                    │   ╰── Constant Int [1000]
+                    ├── Assign [=]
+                    │   ├── Var [d]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant Double [+1e-3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [i_ptr]
+                    │   │       ╰── Constant Int [12]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ul_ptr]
+                    │   │       ╰── Constant Int [1000]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [d_ptr]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+1e-3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i2
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul2
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [144115196665790464]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d2
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant Double [+3.33e1]
+                    ├── Assign [=]
+                    │   ├── Var [i_ptr]
+                    │   ╰── AddressOf
+                    │       ╰── Var [i2]
+                    ├── Assign [=]
+                    │   ├── Var [ul_ptr]
+                    │   ╰── AddressOf
+                    │       ╰── Var [ul2]
+                    ├── Assign [=]
+                    │   ├── Var [d_ptr]
+                    │   ╰── AddressOf
+                    │       ╰── Var [d2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [i_ptr]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ul_ptr]
+                    │   │       ╰── Constant ULong [144115196665790464]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [d_ptr]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Double [+3.33e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_dereference_simple() {
+    let src = r#"
+        int main(void) {
+            int x = 3;
+            int *ptr = &x;
+            return *ptr;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ╰── Return
+                        ╰── Dereference
+                            ╰── Var [ptr]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_dereference_static_var_indirection() {
+    let src = r#"
+        unsigned int w = 4294967295U;
+        int x = 10;
+        unsigned int y = 4294967295U;
+        double *dbl_ptr;
+        long modify_ptr(long *new_ptr) {
+            static long *p;
+            if (new_ptr)
+            {
+                p = new_ptr;
+            }
+            return *p;
+        }
+        int increment_ptr(void)
+        {
+            *dbl_ptr = *dbl_ptr + 5.0;
+            return 0;
+        }
+        int main(void) {
+            int *pointer_to_static = &x;
+            x = 20;
+            if (*pointer_to_static != 20) {
+                return 1;
+            }
+            *pointer_to_static = 100;
+            if (x != 100) {
+                return 2;
+            }
+            if (w != 4294967295U) {
+                return 3;
+            }
+            if (y != 4294967295U) {
+                return 4;
+            }
+            if (dbl_ptr) {
+                return 5;
+            }
+            long l = 1000l;
+            if (modify_ptr(&l) != 1000l) {
+                return 6;
+            }
+            l = -1;
+            if (modify_ptr(0) != l) {
+                return 7;
+            }
+            double d = 10.0;
+            dbl_ptr = &d;
+            increment_ptr();
+            if (*dbl_ptr != 15) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── w
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant UInt [4294967295]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [10]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── y
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant UInt [4294967295]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── dbl_ptr
+            │   ╰── Type
+            │       ╰── Pointer
+            │           ╰── Double
+            ├── Function [modify_ptr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── new_ptr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Long
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── p
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Long
+            │       │   ╰── Static
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [new_ptr]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Assign [=]
+            │       │               ├── Var [p]
+            │       │               ╰── Var [new_ptr]
+            │       ╰── Return
+            │           ╰── Dereference
+            │               ╰── Var [p]
+            ├── Function [increment_ptr]
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Dereference
+            │       │   │   ╰── Var [dbl_ptr]
+            │       │   ╰── Binary [+]
+            │       │       ├── Dereference
+            │       │       │   ╰── Var [dbl_ptr]
+            │       │       ╰── Constant Double [+5e0]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── pointer_to_static
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── Assign [=]
+                    │   ├── Var [x]
+                    │   ╰── Constant Int [20]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [pointer_to_static]
+                    │   │       ╰── Constant Int [20]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [pointer_to_static]
+                    │   ╰── Constant Int [100]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [w]
+                    │   │       ╰── Constant UInt [4294967295]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [y]
+                    │   │       ╰── Constant UInt [4294967295]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [dbl_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Long [1000]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [modify_ptr]
+                    │   │       │   ╰── AddressOf
+                    │   │       │       ╰── Var [l]
+                    │   │       ╰── Constant Long [1000]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── Assign [=]
+                    │   ├── Var [l]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [modify_ptr]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Var [l]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e1]
+                    ├── Assign [=]
+                    │   ├── Var [dbl_ptr]
+                    │   ╰── AddressOf
+                    │       ╰── Var [d]
+                    ├── FunctionCall [increment_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [dbl_ptr]
+                    │   │       ╰── Constant Int [15]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_dereference_update_through_pointers() {
+    let src = r#"
+        int main(void) {
+            unsigned int i = 2185232384u;
+            signed long l = 144115196665790464l;
+            double d = 1e50;
+            unsigned *i_ptr = &i;
+            long *l_ptr = &l;
+            double *d_ptr = &d;
+            *i_ptr = 10;
+            *l_ptr = -20;
+            *d_ptr = 30.1;
+            if (i != 10) {
+                return 1;
+            }
+            if (l != -20) {
+                return 2;
+            }
+            if (d != 30.1) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant UInt [2185232384]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Long [144115196665790464]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+1e50]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [i]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [l]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [d]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [i_ptr]
+                    │   ╰── Constant Int [10]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [l_ptr]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant Int [20]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [d_ptr]
+                    │   ╰── Constant Double [+3.01e1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [20]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+3.01e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_extra_credit_bitshift_dereferenced_ptrs() {
+    let src = r#"
+        unsigned int ui = 4294967295;
+        unsigned int *get_ui_ptr(void){
+            return &ui;
+        }
+        int shiftcount = 5;
+        int main(void) {
+            if ((*get_ui_ptr() << 2l) != 4294967292) {
+                return 1;
+            }
+            if ((*get_ui_ptr() >> 2) != 1073741823) {
+                return 2;
+            }
+            int *shiftcount_ptr = &shiftcount;
+            if ((1000000u >> *shiftcount_ptr) != 31250) {
+                return 3;
+            }
+            if ((1000000u << *shiftcount_ptr) != 32000000) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ui
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant Long [4294967295]
+            ├── Function [get_ui_ptr]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── AddressOf
+            │               ╰── Var [ui]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── shiftcount
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [5]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [<<]
+                    │   │       │   ├── Dereference
+                    │   │       │   │   ╰── FunctionCall [get_ui_ptr]
+                    │   │       │   ╰── Constant Long [2]
+                    │   │       ╰── Constant Long [4294967292]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [>>]
+                    │   │       │   ├── Dereference
+                    │   │       │   │   ╰── FunctionCall [get_ui_ptr]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [1073741823]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── shiftcount_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [shiftcount]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [>>]
+                    │   │       │   ├── Constant UInt [1000000]
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [shiftcount_ptr]
+                    │   │       ╰── Constant Int [31250]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [<<]
+                    │   │       │   ├── Constant UInt [1000000]
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [shiftcount_ptr]
+                    │   │       ╰── Constant Int [32000000]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_extra_credit_bitwise_ops_with_dereferenced_ptrs() {
+    let src = r#"
+        int main(void) {
+            unsigned int ui = -1u;
+            unsigned long ul = 9223372036854775808ul;
+            unsigned int *ui_ptr = &ui;
+            unsigned long *ul_ptr = &ul;
+            if ((*ui_ptr & *ul_ptr) != 0) {
+                return 1;
+            }
+            if ((*ui_ptr | *ul_ptr) != 9223372041149743103ul) {
+                return 2;
+            }
+            int i = -1;
+            signed int *i_ptr = &i;
+            if ((*i_ptr & ul) != *ul_ptr) {
+                return 3;
+            }
+            if ((*i_ptr | *ul_ptr) != i) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant UInt [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [9223372036854775808]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [ui]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [ul]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [&]
+                    │   │       │   ├── Dereference
+                    │   │       │   │   ╰── Var [ui_ptr]
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [ul_ptr]
+                    │   │       ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [|]
+                    │   │       │   ├── Dereference
+                    │   │       │   │   ╰── Var [ui_ptr]
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [ul_ptr]
+                    │   │       ╰── Constant ULong [9223372041149743103]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [i]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [&]
+                    │   │       │   ├── Dereference
+                    │   │       │   │   ╰── Var [i_ptr]
+                    │   │       │   ╰── Var [ul]
+                    │   │       ╰── Dereference
+                    │   │           ╰── Var [ul_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [|]
+                    │   │       │   ├── Dereference
+                    │   │       │   │   ╰── Var [i_ptr]
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [ul_ptr]
+                    │   │       ╰── Var [i]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_extra_credit_compound_assign_conversion() {
+    let src = r#"
+        int main(void) {
+            double d = 5.0;
+            double *d_ptr = &d;
+            *d_ptr *= 1000u;
+            if (d != 5000.0) {
+                return 1;
+            }
+            int i = -50;
+            int *i_ptr = &i;
+            *i_ptr %= 4294967200U;
+            if (*i_ptr != 46) {
+                return 2;
+            }
+            unsigned int ui = 4294967295U;
+            ui /= *d_ptr;
+            if (ui != 858993u) {
+                return 3;
+            }
+            i = -10;
+            unsigned long ul = 9223372036854775807ul;
+            unsigned long *ul_ptr = &ul;
+            *i_ptr -= *ul_ptr;
+            if (i != -9) {
+                return 4;
+            }
+            if (ul != 9223372036854775807ul) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+5e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [d]
+                    ├── Assign [*=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [d_ptr]
+                    │   ╰── Constant UInt [1000]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+5e3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant Int [50]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [i]
+                    ├── Assign [&=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [i_ptr]
+                    │   ╰── Constant UInt [4294967200]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [i_ptr]
+                    │   │       ╰── Constant Int [46]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant UInt [4294967295]
+                    ├── Assign [/=]
+                    │   ├── Var [ui]
+                    │   ╰── Dereference
+                    │       ╰── Var [d_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ui]
+                    │   │       ╰── Constant UInt [858993]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── Assign [=]
+                    │   ├── Var [i]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant ULong [9223372036854775807]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [ul]
+                    ├── Assign [-=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [i_ptr]
+                    │   ╰── Dereference
+                    │       ╰── Var [ul_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [9]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant ULong [9223372036854775807]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_extra_credit_compound_assign_through_pointer() {
+    let src = r#"
+        int main(void) {
+            int x = 10;
+            int *ptr = &x;
+            *ptr += 5;
+            if (x != 15) {
+                return 1;
+            }
+            if ((*ptr -= 12) != 3) {
+                return 2;
+            }
+            if (x != 3) {
+                return 3;
+            }
+            *ptr *= 6;
+            if (x != 18) {
+                return 4;
+            }
+            *ptr /= 9;
+            if (x != 2) {
+                return 5;
+            }
+            *ptr %= 3;
+            if (x != 2) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── Assign [+=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [ptr]
+                    │   ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [15]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Assign [-=]
+                    │   │       │   ├── Dereference
+                    │   │       │   │   ╰── Var [ptr]
+                    │   │       │   ╰── Constant Int [12]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── Assign [*=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [ptr]
+                    │   ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [18]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── Assign [/=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [ptr]
+                    │   ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── Assign [&=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [ptr]
+                    │   ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_extra_credit_compound_bitwise_dereferenced_ptrs() {
+    let src = r#"
+        unsigned long ul = 18446460386757245432ul;
+        int main(void) {
+            unsigned long *ul_ptr = &ul;
+            *ul_ptr &= -1000;
+            if (ul != 18446460386757244952ul ) {
+                return 1;
+            }
+            *ul_ptr |= 4294967040u;
+            if (ul != 18446460386824683288ul ) {
+                return 2;
+            }
+            int i = 123456;
+            unsigned int ui = 4042322160u;
+            long l = -252645136;
+            unsigned int *ui_ptr = &ui;
+            long *l_ptr = &l;
+            if (*ui_ptr ^= *l_ptr) {
+                return 3;
+            }
+            if (ui) {
+                return 4;
+            }
+            if (i != 123456) {
+                return 5;
+            }
+            if (l != -252645136) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ul
+            │   ├── Type
+            │   │   ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Constant ULong [18446460386757245432]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [ul]
+                    ├── Assign [&=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [ul_ptr]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant Int [1000]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant ULong [18446460386757244952]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── Assign [|=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [ul_ptr]
+                    │   ╰── Constant UInt [4294967040]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant ULong [18446460386824683288]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [123456]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui
+                    │   ├── Type
+                    │   │   ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Constant UInt [4042322160]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant Int [252645136]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ui_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [ui]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [l]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Assign [^=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ui_ptr]
+                    │   │       ╰── Dereference
+                    │   │           ╰── Var [l_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [ui]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [123456]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [l]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [252645136]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_extra_credit_eval_compound_lhs_once() {
+    let src = r#"
+        int i = 0;
+        int putchar(int c);
+        int *print_A(void) {
+            putchar(65);
+            return &i;
+        }
+        int main(void) {
+            *print_A() += 5;
+            if (i != 5) {
+                return 1;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [0]
+            ├── Function [putchar]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── c
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [print_A]
+            │   ╰── Body
+            │       ├── FunctionCall [putchar]
+            │       │   ╰── Constant Int [65]
+            │       ╰── Return
+            │           ╰── AddressOf
+            │               ╰── Var [i]
+            ╰── Function [main]
+                ╰── Body
+                    ├── Assign [+=]
+                    │   ├── Dereference
+                    │   │   ╰── FunctionCall [print_A]
+                    │   ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_extra_credit_incr_and_decr_through_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            int x = 10;
+            int *y = &x;
+            if (++*y != 11) {
+                return 1;
+            }
+            if (x != 11) {
+                return 2;
+            }
+            if (--*y != 10) {
+                return 3;
+            }
+            if (x != 10) {
+                return 4;
+            }
+            if ((*y)++ != 10) {
+                return 5;
+            }
+            if (x != 11) {
+                return 6;
+            }
+            if ((*y)-- != 11) {
+                return 7;
+            }
+            if (x != 10) {
+                return 8;
+            }
+            unsigned long ul = 0;
+            unsigned long *ul_ptr = &ul;
+            if ((*ul_ptr)--) {
+                return 9;
+            }
+            if (ul != 18446744073709551615UL) {
+                return 10;
+            }
+            double d = 0.0;
+            double *d_ptr = &d;
+            if (++(*d_ptr) != 1.0) {
+                return 11;
+            }
+            if (d != 1.0) {
+                return 12;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [++]
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [y]
+                    │   │       ╰── Constant Int [11]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [11]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [--]
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [y]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Postfix [++]
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [y]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [11]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Postfix [--]
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [y]
+                    │   │       ╰── Constant Int [11]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ul_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [ul]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Postfix [--]
+                    │   │       ╰── Dereference
+                    │   │           ╰── Var [ul_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ul]
+                    │   │       ╰── Constant ULong [18446744073709551615]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+0e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [d]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [++]
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Var [d_ptr]
+                    │   │       ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [11]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [d]
+                    │   │       ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [12]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_extra_credit_switch_dereferenced_pointer() {
+    let src = r#"
+        long l = 4294967300l;
+        long *get_ptr(void) {
+            return &l;
+        }
+        int main(void) {
+            switch (*get_ptr()) {
+                case 1:
+                    return 1;
+                case 4:
+                    return 2;
+                case 4294967300l:
+                    return 0;
+                case 18446744073709551600UL:
+                    return 3;
+                default:
+                    return 4;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── l
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant Long [4294967300]
+            ├── Function [get_ptr]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── AddressOf
+            │               ╰── Var [l]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Switch
+                        ├── Expression
+                        │   ╰── Dereference
+                        │       ╰── FunctionCall [get_ptr]
+                        ╰── Block
+                            ├── Case [1]
+                            │   ╰── Return
+                            │       ╰── Constant Int [1]
+                            ├── Case [4]
+                            │   ╰── Return
+                            │       ╰── Constant Int [2]
+                            ├── Case [4294967300]
+                            │   ╰── Return
+                            │       ╰── Constant Int [0]
+                            ├── Case [-16]
+                            │   ╰── Return
+                            │       ╰── Constant Int [3]
+                            ╰── Default
+                                ╰── Return
+                                    ╰── Constant Int [4]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_function_calls_address_of_argument() {
+    let src = r#"
+        int addr_of_arg(int a) {
+            int *ptr = &a;
+            *ptr = 10;
+            return a;
+        }
+        int main(void) {
+            int result = addr_of_arg(-20);
+            if (result != 10) {
+                return 1;
+            }
+            int var = 100;
+            result = addr_of_arg(var);
+            if (result != 10) {
+                return 2;
+            }
+            if (var != 100) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [addr_of_arg]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── a
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── AddressOf
+            │       │           ╰── Var [a]
+            │       ├── Assign [=]
+            │       │   ├── Dereference
+            │       │   │   ╰── Var [ptr]
+            │       │   ╰── Constant Int [10]
+            │       ╰── Return
+            │           ╰── Var [a]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [addr_of_arg]
+                    │           ╰── Unary [-]
+                    │               ╰── Constant Int [20]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [result]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── var
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [100]
+                    ├── Assign [=]
+                    │   ├── Var [result]
+                    │   ╰── FunctionCall [addr_of_arg]
+                    │       ╰── Var [var]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [result]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [var]
+                    │   │       ╰── Constant Int [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_function_calls_return_pointer() {
+    let src = r#"
+        
+        int *return_pointer(int *in) {
+            return in;
+        }
+        int main(void) {
+            int x = 10;
+            int *x_ptr = return_pointer(&x);
+            if (*x_ptr != 10)
+                return 1;
+            x = 100;
+            if (*x_ptr != 100)
+                return 2;
+            if (x_ptr != &x)
+                return 3;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [return_pointer]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── in
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Var [in]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [return_pointer]
+                    │           ╰── AddressOf
+                    │               ╰── Var [x]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [x_ptr]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [1]
+                    ├── Assign [=]
+                    │   ├── Var [x]
+                    │   ╰── Constant Int [100]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [x_ptr]
+                    │   │       ╰── Constant Int [100]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x_ptr]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Var [x]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_function_calls_update_value_through_pointer_parameter() {
+    let src = r#"
+        
+        int update_value(int *ptr) {
+            int old_val = *ptr;
+            *ptr = 10;
+            return old_val;
+        }
+        int main(void) {
+            int x = 20;
+            int result = update_value(&x);
+            if (result != 20) {
+                return 1;
+            }
+            if (x != 10) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [update_value]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── old_val
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Dereference
+            │       │           ╰── Var [ptr]
+            │       ├── Assign [=]
+            │       │   ├── Dereference
+            │       │   │   ╰── Var [ptr]
+            │       │   ╰── Constant Int [10]
+            │       ╰── Return
+            │           ╰── Var [old_val]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [20]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [update_value]
+                    │           ╰── AddressOf
+                    │               ╰── Var [x]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [result]
+                    │   │       ╰── Constant Int [20]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_libraries_global_pointer() {
+    let src = r#"
+        double *d_ptr;
+        int update_thru_ptr(double new_val) {
+            *d_ptr = new_val;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d_ptr
+            │   ╰── Type
+            │       ╰── Pointer
+            │           ╰── Double
+            ╰── Function [update_thru_ptr]
+                ├── Parameters
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── new_val
+                │       ╰── Type
+                │           ╰── Double
+                ╰── Body
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [d_ptr]
+                    │   ╰── Var [new_val]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_libraries_global_pointer_client() {
+    let src = r#"
+        extern double *d_ptr;
+        int update_thru_ptr(double new_val);
+        int main(void) {
+            double d = 0.0;
+            d_ptr = &d;
+            update_thru_ptr(10.0);
+            return (d == 10.0);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── d_ptr
+            │   ├── Type
+            │   │   ╰── Pointer
+            │   │       ╰── Double
+            │   ╰── Extern
+            ├── Function [update_thru_ptr]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── new_val
+            │           ╰── Type
+            │               ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── d
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Constant Double [+0e0]
+                    ├── Assign [=]
+                    │   ├── Var [d_ptr]
+                    │   ╰── AddressOf
+                    │       ╰── Var [d]
+                    ├── FunctionCall [update_thru_ptr]
+                    │   ╰── Constant Double [+1e1]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Var [d]
+                            ╰── Constant Double [+1e1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_libraries_static_pointer() {
+    let src = r#"
+        static long *long_ptr;
+        long *get_pointer(void) {
+            return long_ptr;
+        }
+        int set_pointer(long *new_ptr) {
+            long_ptr = new_ptr;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── long_ptr
+            │   ├── Type
+            │   │   ╰── Pointer
+            │   │       ╰── Long
+            │   ╰── Static
+            ├── Function [get_pointer]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Var [long_ptr]
+            ╰── Function [set_pointer]
+                ├── Parameters
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── new_ptr
+                │       ╰── Type
+                │           ╰── Pointer
+                │               ╰── Long
+                ╰── Body
+                    ├── Assign [=]
+                    │   ├── Var [long_ptr]
+                    │   ╰── Var [new_ptr]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_14_valid_libraries_static_pointer_client() {
+    let src = r#"
+        long *get_pointer(void);
+        int set_pointer(long *new_ptr);
+        static long private_long = 100l;
+        int main(void) {
+            long *initial_ptr = get_pointer();
+            if (initial_ptr) {
+                return 1;
+            }
+            set_pointer(&private_long);
+            long *new_ptr = get_pointer();
+            if (initial_ptr == new_ptr) {
+                return 2;
+            }
+            if (*new_ptr != 100l) {
+                return 3;
+            }
+            if (new_ptr != &private_long) {
+                return 4;
+            }
+            set_pointer(0);
+            if (get_pointer()) {
+                return 5;
+            }
+            if (new_ptr != &private_long) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [get_pointer]
+            ├── Function [set_pointer]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── new_ptr
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── private_long
+            │   ├── Type
+            │   │   ╰── Long
+            │   ├── Initializer
+            │   │   ╰── Constant Long [100]
+            │   ╰── Static
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── initial_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [get_pointer]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [initial_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── FunctionCall [set_pointer]
+                    │   ╰── AddressOf
+                    │       ╰── Var [private_long]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── new_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [get_pointer]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [==]
+                    │   │       ├── Var [initial_ptr]
+                    │   │       ╰── Var [new_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [new_ptr]
+                    │   │       ╰── Constant Long [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [new_ptr]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Var [private_long]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── FunctionCall [set_pointer]
+                    │   ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── FunctionCall [get_pointer]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [new_ptr]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Var [private_long]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}

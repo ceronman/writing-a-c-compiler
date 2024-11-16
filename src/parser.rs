@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod test;
 
-use crate::asm::ir::CondCode::P;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
     FunctionDeclaration, FunctionType, Identifier, Node, PostfixOp, Program, Statement,
@@ -49,6 +48,11 @@ enum Declarator {
 struct Param {
     ty: Node<Type>,
     declarator: Node<Declarator>,
+}
+
+enum AbstractDeclarator {
+    Pointer(Node<AbstractDeclarator>),
+    Base,
 }
 
 impl<'src> Parser<'src> {
@@ -725,10 +729,51 @@ impl<'src> Parser<'src> {
     }
 
     fn cast_expression(&mut self, begin: Span) -> Result<Node<Expression>> {
-        let target = self.type_specifier()?;
+        let base_ty = self.type_specifier()?;
+        let declarator = self.abstract_declarator()?;
         self.expect(TokenKind::CloseParen)?;
+        let target = Self::process_abstract_declaration(base_ty, declarator);
         let expr = self.expression_precedence(13, "expression")?;
         Ok(self.node(begin + expr.span, Expression::Cast { target, expr }))
+    }
+
+    fn abstract_declarator(&mut self) -> Result<Node<AbstractDeclarator>> {
+        let begin = self.current.span;
+        if self.matches(TokenKind::Star) {
+            let declarator = self.abstract_declarator()?;
+            Ok(self.node(
+                begin + declarator.span,
+                AbstractDeclarator::Pointer(declarator),
+            ))
+        } else if let TokenKind::OpenParen = self.current.kind {
+            self.direct_abstract_declarator()
+        } else {
+            Ok(self.node(begin, AbstractDeclarator::Base))
+        }
+    }
+
+    fn direct_abstract_declarator(&mut self) -> Result<Node<AbstractDeclarator>> {
+        let begin = self.expect(TokenKind::OpenParen)?.span;
+        let decl = self.abstract_declarator()?;
+        let end = self.expect(TokenKind::CloseParen)?.span;
+        Ok(self.node(begin + end, *decl.data))
+    }
+
+    fn process_abstract_declaration(
+        base_ty: Node<Type>,
+        declarator: Node<AbstractDeclarator>,
+    ) -> Node<Type> {
+        match *declarator.data {
+            AbstractDeclarator::Pointer(inner) => {
+                let derived_type = Node {
+                    id: declarator.id,
+                    span: declarator.span,
+                    data: Box::new(Type::Pointer(base_ty.data)),
+                };
+                Self::process_abstract_declaration(derived_type, inner)
+            }
+            AbstractDeclarator::Base => base_ty,
+        }
     }
 
     fn paren_expression(&mut self, begin: Span) -> Result<Node<Expression>> {

@@ -5,9 +5,11 @@ TEST_RUNNER=../writing-a-c-compiler-tests/test_compiler
 set -euxo pipefail
   cargo build
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler \
+    --latest-only \
+    --stage parse \
     --verbose \
     --failfast \
-    --chapter 13 \
+    --chapter 14 \
     --bitwise \
     --compound \
     --increment \
