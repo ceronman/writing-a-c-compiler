@@ -2,6 +2,7 @@
 mod test;
 
 use crate::ast;
+use crate::ast::Expression;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
 use crate::symbol::Symbol;
 
@@ -580,6 +581,9 @@ impl TackyGenerator {
                 let inner_ty = self.semantics.expr_type(inner).clone();
                 self.cast(result, &inner_ty, target)
             }
+
+            Expression::Dereference(_) => todo!(),
+            Expression::AddressOf(_) => todo!(),
         };
         self.cast_if_needed(result, expr, &expr_ty)
     }
@@ -728,6 +732,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                         Type::ULong => StaticInit::ULong(0),
                         Type::Double => StaticInit::Double(0.0),
                         Type::Function(_) => unreachable!(),
+                        Type::Pointer(_) => todo!(),
                     };
                     top_level.push(TopLevel::Variable(StaticVariable {
                         name: name.clone(),

@@ -51,6 +51,7 @@ impl SemanticData {
             Type::Long | Type::ULong => AsmType::Quadword,
             Type::Double => AsmType::Double,
             Type::Function(_) => unreachable!(),
+            Type::Pointer(_) => todo!(),
         }
     }
 
@@ -68,6 +69,7 @@ impl SemanticData {
                 Type::UInt | Type::ULong => false,
                 Type::Double => true,
                 Type::Function(_) => unreachable!(),
+                Type::Pointer(_) => todo!(),
             },
         }
     }

@@ -226,6 +226,11 @@ fn pp_type(file: &mut impl Write, ty: &ast::Type) -> Result<()> {
         ast::Type::ULong => write!(file, "Unsigned Long"),
         ast::Type::Function(_) => write!(file, "Function(...)"),
         ast::Type::Double => write!(file, "Double"),
+        ast::Type::Pointer(referenced) => {
+            write!(file, "Pointer(")?;
+            pp_type(file, referenced.as_ref())?;
+            write!(file, ")")
+        }
     }?;
     Ok(())
 }
@@ -510,6 +515,12 @@ impl PrettyAst {
                     Self::new("Expression", vec![Self::from_expression(expr)]),
                 ],
             ),
+            ast::Expression::AddressOf(expr) => {
+                Self::new("AddressOf", vec![Self::from_expression(expr)])
+            }
+            ast::Expression::Dereference(expr) => {
+                Self::new("Dereference", vec![Self::from_expression(expr)])
+            }
         }
     }
     fn from_block_item(item: &ast::BlockItem) -> PrettyAst {
@@ -546,6 +557,7 @@ impl PrettyAst {
                     Self::new("Params", f.params.iter().map(Self::from_type)),
                 ],
             ),
+            ast::Type::Pointer(t) => Self::new("Pointer", vec![Self::from_type(t.as_ref())]),
         }
     }
 

@@ -91,6 +91,7 @@ impl TypeChecker {
                     Type::ULong => InitialValue::Initial(StaticInit::ULong(0)),
                     Type::Double => InitialValue::Initial(StaticInit::Double(0.0)),
                     Type::Function(_) => unreachable!(),
+                    Type::Pointer(_) => todo!(),
                 }
             };
             if let Some(data) = self.symbols.get(&name) {
@@ -364,6 +365,7 @@ impl TypeChecker {
                     Type::Long => Constant::Long(case_constant as i64),
                     Type::ULong => Constant::ULong(case_constant),
                     Type::Double | Type::Function(_) => unreachable!(),
+                    Type::Pointer(_) => todo!(),
                 };
 
                 if switch_cases.values.iter().any(|(v, _)| *v == case_value) {
@@ -616,6 +618,9 @@ impl TypeChecker {
                 self.check_expression(expr)?;
                 *target.data.clone()
             }
+
+            Expression::Dereference(_) => todo!(),
+            Expression::AddressOf(_) => todo!(),
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)

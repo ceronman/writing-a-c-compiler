@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod test;
 
+use crate::asm::ir::CondCode::P;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
     FunctionDeclaration, FunctionType, Identifier, Node, PostfixOp, Program, Statement,
@@ -9,6 +10,7 @@ use crate::ast::{
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{IntKind, Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
+use std::fmt::Pointer;
 
 struct Parser<'src> {
     source: &'src str,
@@ -33,6 +35,20 @@ impl TokenKind {
                 | TokenKind::Signed
         )
     }
+}
+
+enum Declarator {
+    Identifier(Node<Identifier>),
+    Pointer(Node<Declarator>),
+    Function {
+        params: Vec<Param>,
+        declarator: Node<Declarator>,
+    },
+}
+
+struct Param {
+    ty: Node<Type>,
+    declarator: Node<Declarator>,
 }
 
 impl<'src> Parser<'src> {
@@ -81,32 +97,10 @@ impl<'src> Parser<'src> {
     fn declaration(&mut self) -> Result<Node<Declaration>> {
         let begin = self.current.span;
         let (ty, storage_class) = self.type_and_storage()?;
-        let name = self.identifier()?;
+        let declarator = self.parse_declarator()?;
+        let (name, ty, params) = Self::process_declarator(declarator, ty)?;
 
-        if self.matches(TokenKind::OpenParen) {
-            let (params, types) = if let TokenKind::Void = self.current.kind {
-                self.advance();
-                self.expect(TokenKind::CloseParen)?;
-                (vec![], vec![])
-            } else {
-                let mut params = Vec::new();
-                let mut types = Vec::new();
-                loop {
-                    types.push(*self.type_specifier()?.data);
-                    params.push(self.identifier()?);
-
-                    if self.matches(TokenKind::Comma) {
-                        continue;
-                    }
-                    self.expect(TokenKind::CloseParen)?;
-                    break;
-                }
-                (params, types)
-            };
-            let function_ty = FunctionType {
-                params: types,
-                ret: ty.data,
-            };
+        if let Type::Function(function_ty) = *ty.data {
             if let TokenKind::OpenBrace = self.current.kind {
                 let body = self.block()?;
                 Ok(self.node(
@@ -148,6 +142,117 @@ impl<'src> Parser<'src> {
                     storage_class,
                 }),
             ))
+        }
+    }
+
+    fn parse_declarator(&mut self) -> Result<Node<Declarator>> {
+        let begin = self.current.span;
+        if self.matches(TokenKind::Star) {
+            let referenced = self.parse_declarator()?;
+            Ok(self.node(begin + referenced.span, Declarator::Pointer(referenced)))
+        } else {
+            self.parse_direct_declarator()
+        }
+    }
+
+    fn parse_simple_declarator(&mut self) -> Result<Node<Declarator>> {
+        let begin = self.current.span;
+        if self.matches(TokenKind::OpenParen) {
+            let declarator = self.parse_declarator()?;
+            let end = self.expect(TokenKind::CloseParen)?.span;
+            Ok(self.node(begin + end, *declarator.data))
+        } else {
+            let identifier = self.identifier()?;
+            Ok(self.node(identifier.span, Declarator::Identifier(identifier)))
+        }
+    }
+
+    fn parse_direct_declarator(&mut self) -> Result<Node<Declarator>> {
+        let begin = self.current.span;
+        let simple = self.parse_simple_declarator()?;
+        let mut end = simple.span;
+        if self.matches(TokenKind::OpenParen) {
+            let mut params = Vec::new();
+            if self.matches(TokenKind::Void) {
+                self.expect(TokenKind::CloseParen)?;
+            } else {
+                loop {
+                    let param = self.parse_param()?;
+                    params.push(param);
+                    end = self.current.span;
+                    if self.matches(TokenKind::Comma) {
+                        continue;
+                    }
+                    self.expect(TokenKind::CloseParen)?;
+                    break;
+                }
+            }
+            Ok(self.node(
+                begin + end,
+                Declarator::Function {
+                    params,
+                    declarator: simple,
+                },
+            ))
+        } else {
+            Ok(simple)
+        }
+    }
+
+    fn parse_param(&mut self) -> Result<Param> {
+        let ty = self.type_specifier()?;
+        let declarator = self.parse_declarator()?;
+        Ok(Param { ty, declarator })
+    }
+
+    fn process_declarator(
+        declarator: Node<Declarator>,
+        base_type: Node<Type>,
+    ) -> Result<(Node<Identifier>, Node<Type>, Vec<Node<Identifier>>)> {
+        match *declarator.data {
+            Declarator::Identifier(name) => Ok((name, base_type, vec![])),
+            Declarator::Pointer(declarator) => {
+                let derived_type = Node {
+                    id: base_type.id,
+                    span: base_type.span,
+                    data: Box::new(Type::Pointer(base_type.data)),
+                };
+                Self::process_declarator(declarator, derived_type)
+            }
+            Declarator::Function { params, declarator } => {
+                let mut param_names = Vec::new();
+                let mut param_types = Vec::new();
+                if let Declarator::Identifier(name) = *declarator.data {
+                    for Param { ty, declarator } in params {
+                        let (param_name, param_type, _) = Self::process_declarator(declarator, ty)?;
+                        if let Type::Function(_) = param_type.as_ref() {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Parse,
+                                msg: "Function pointers in parameters are not supported".into(),
+                                span: param_type.span,
+                            });
+                        }
+                        param_names.push(param_name);
+                        param_types.push(*param_type.data);
+                    }
+                    let function_type = FunctionType {
+                        params: param_types,
+                        ret: base_type.data,
+                    };
+                    let derived_type = Node {
+                        id: base_type.id,
+                        span: base_type.span,
+                        data: Box::new(Type::Function(function_type)),
+                    };
+                    Ok((name, derived_type, param_names))
+                } else {
+                    Err(CompilerError {
+                        kind: ErrorKind::Parse,
+                        msg: "Can't apply additional derivations to a function type".into(),
+                        span: declarator.span,
+                    })
+                }
+            }
         }
     }
 
@@ -511,6 +616,8 @@ impl<'src> Parser<'src> {
                     self.var()?
                 }
             }
+            TokenKind::Star => self.dereference()?,
+            TokenKind::Ampersand => self.address_of()?,
             TokenKind::Minus
             | TokenKind::Tilde
             | TokenKind::Bang
@@ -628,6 +735,18 @@ impl<'src> Parser<'src> {
         let inner = self.expression()?;
         let end = self.expect(TokenKind::CloseParen)?.span;
         Ok(self.node(begin + end, *inner.data))
+    }
+
+    fn dereference(&mut self) -> Result<Node<Expression>> {
+        let op = self.expect(TokenKind::Star)?;
+        let expr = self.expression_precedence(13, "expression")?;
+        Ok(self.node(op.span + expr.span, Expression::Dereference(expr)))
+    }
+
+    fn address_of(&mut self) -> Result<Node<Expression>> {
+        let op = self.expect(TokenKind::Ampersand)?;
+        let expr = self.expression_precedence(13, "expression")?;
+        Ok(self.node(op.span + expr.span, Expression::AddressOf(expr)))
     }
 
     fn unary_expression(&mut self) -> Result<Node<Expression>> {

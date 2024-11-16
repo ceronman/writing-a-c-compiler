@@ -120,6 +120,8 @@ pub enum Expression {
         target: Node<Type>,
         expr: Node<Expression>,
     },
+    Dereference(Node<Expression>),
+    AddressOf(Node<Expression>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -150,6 +152,7 @@ pub enum Type {
     ULong,
     Double,
     Function(FunctionType),
+    Pointer(Box<Type>),
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -282,6 +285,7 @@ impl Type {
             Type::ULong => 8,
             Type::Double => 8,
             Type::Function(_) => panic!("Size of function type"),
+            Type::Pointer(_) => todo!(),
         }
     }
 
@@ -293,6 +297,7 @@ impl Type {
             Type::ULong => false,
             Type::Double => false,
             Type::Function(_) => panic!("Size of function type"),
+            Type::Pointer(_) => todo!(),
         }
     }
 }

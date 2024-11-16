@@ -302,6 +302,9 @@ impl Resolver {
             Expression::Cast { expr, .. } => {
                 self.resolve_expression(expr)?;
             }
+
+            Expression::Dereference(_) => todo!(),
+            Expression::AddressOf(_) => todo!(),
         }
         Ok(())
     }

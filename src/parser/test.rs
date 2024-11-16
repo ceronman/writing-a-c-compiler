@@ -19686,7 +19686,7 @@ fn test_chapter_11_invalid_parse_fun_name_long() {
         r#"
         
         int long(void) {
-              //^ Expected identifier, but found '('
+               //^^^^ Expected identifier, but found 'void'
             return 4;
         }
         int main(void){
