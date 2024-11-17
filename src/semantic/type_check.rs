@@ -90,8 +90,8 @@ impl TypeChecker {
                     Type::UInt => InitialValue::Initial(StaticInit::UInt(0)),
                     Type::ULong => InitialValue::Initial(StaticInit::ULong(0)),
                     Type::Double => InitialValue::Initial(StaticInit::Double(0.0)),
+                    Type::Pointer(_) => InitialValue::Initial(StaticInit::ULong(0)),
                     Type::Function(_) => unreachable!(),
-                    Type::Pointer(_) => todo!(),
                 }
             };
             if let Some(data) = self.symbols.get(&name) {
@@ -119,7 +119,7 @@ impl TypeChecker {
                 .insert(decl.name.symbol.clone(), SymbolData::local(decl.ty.clone()));
             if let Some(init) = &decl.init {
                 let init_ty = self.check_expression(init)?;
-                self.cast_if_needed(init, &init_ty, &decl.ty);
+                self.convert_by_assignment(init, &init_ty, &decl.ty)?;
             }
         }
         Ok(())
@@ -145,6 +145,10 @@ impl TypeChecker {
                 (Constant::Double(value), Type::Long) => StaticInit::Long(*value as i64),
                 (Constant::Double(value), Type::ULong) => StaticInit::ULong(*value as u64),
                 (Constant::Double(value), Type::Double) => StaticInit::Double(*value),
+                (
+                    Constant::Int(0) | Constant::Long(0) | Constant::UInt(0) | Constant::ULong(0),
+                    Type::Pointer(_),
+                ) => StaticInit::ULong(0),
                 _ => {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -310,7 +314,7 @@ impl TypeChecker {
         match stmt.as_ref() {
             Statement::Return(expr) => {
                 let expr_ty = self.check_expression(expr)?;
-                self.cast_if_needed(expr, &expr_ty, &function.ret);
+                self.convert_by_assignment(expr, &expr_ty, &function.ret)?;
             }
             Statement::Expression(expr) => {
                 self.check_expression(expr)?;
@@ -365,12 +369,12 @@ impl TypeChecker {
                     Type::Long => Constant::Long(case_constant as i64),
                     Type::ULong => Constant::ULong(case_constant),
                     Type::Double | Type::Function(_) => unreachable!(),
-                    Type::Pointer(_) => todo!(),
+                    Type::Pointer(_) => Constant::ULong(case_constant),
                 };
 
                 if switch_cases.values.iter().any(|(v, _)| *v == case_value) {
                     return Err(CompilerError {
-                        kind: ErrorKind::Resolve,
+                        kind: ErrorKind::Type,
                         msg: "duplicate case value".to_owned(),
                         span: value.span,
                     });
@@ -467,6 +471,15 @@ impl TypeChecker {
                 data.ty.clone()
             }
             Expression::Unary { op, expr } => {
+                if let UnaryOp::Increment | UnaryOp::Decrement = op.as_ref() {
+                    if !Self::is_lvalue(expr) {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Resolve,
+                            msg: "Expression is not assignable".to_owned(),
+                            span: expr.span,
+                        });
+                    }
+                }
                 let operand_ty = self.check_expression(expr)?;
                 if matches!(op.as_ref(), UnaryOp::Complement) && !operand_ty.is_int() {
                     return Err(CompilerError {
@@ -475,12 +488,28 @@ impl TypeChecker {
                         span: expr.span,
                     });
                 }
+                if matches!(op.as_ref(), UnaryOp::Negate) && operand_ty.is_pointer() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Unary operator requires an non-pointer type".to_string(),
+                        span: expr.span,
+                    });
+                }
                 match op.as_ref() {
                     UnaryOp::Not => Type::Int,
                     _ => operand_ty,
                 }
             }
-            Expression::Postfix { expr, .. } => self.check_expression(expr)?,
+            Expression::Postfix { expr, .. } => {
+                if !Self::is_lvalue(expr) {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Expression is not assignable".to_owned(),
+                        span: expr.span,
+                    });
+                }
+                self.check_expression(expr)?
+            }
             Expression::Binary { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
                 let right_ty = self.check_expression(right)?;
@@ -505,20 +534,42 @@ impl TypeChecker {
                             });
                         }
                     }
+                    BinaryOp::Multiply | BinaryOp::Divide if left_ty.is_pointer() => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Operator cannot be a pointer".to_string(),
+                            span: left.span,
+                        });
+                    }
+                    BinaryOp::Multiply | BinaryOp::Divide if right_ty.is_pointer() => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Operator cannot be a pointer".to_string(),
+                            span: right.span,
+                        });
+                    }
                     _ => {}
                 };
 
                 match op.as_ref() {
                     BinaryOp::And | BinaryOp::Or => Type::Int,
                     BinaryOp::ShiftRight | BinaryOp::ShiftLeft => left_ty,
+                    BinaryOp::Equal | BinaryOp::NotEqual => {
+                        let common = if left_ty.is_pointer() || right_ty.is_pointer() {
+                            self.common_pointer_type(left, &left_ty, right, &right_ty)?
+                        } else {
+                            Self::common_type(&left_ty, &right_ty)
+                        };
+                        self.cast_if_needed(left, &left_ty, &common);
+                        self.cast_if_needed(right, &right_ty, &common);
+                        Type::Int
+                    }
                     _ => {
                         let common = Self::common_type(&left_ty, &right_ty);
                         self.cast_if_needed(left, &left_ty, &common);
                         self.cast_if_needed(right, &right_ty, &common);
                         match op.as_ref() {
-                            BinaryOp::Equal
-                            | BinaryOp::NotEqual
-                            | BinaryOp::LessThan
+                            BinaryOp::LessThan
                             | BinaryOp::LessOrEqualThan
                             | BinaryOp::GreaterThan
                             | BinaryOp::GreaterOrEqualThan => Type::Int,
@@ -529,6 +580,13 @@ impl TypeChecker {
             }
 
             Expression::Assignment { left, right, op } => {
+                if !Self::is_lvalue(left) {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Expression is not assignable".to_owned(),
+                        span: left.span,
+                    });
+                }
                 let left_ty = self.check_expression(left)?;
                 let right_ty = self.check_expression(right)?;
 
@@ -553,11 +611,27 @@ impl TypeChecker {
                             });
                         }
                     }
+                    AssignOp::MulEqual | AssignOp::DivEqual => {
+                        if left_ty.is_pointer() || right_ty.is_pointer() {
+                            let span = if left_ty.is_pointer() {
+                                left.span
+                            } else {
+                                right.span
+                            };
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Assign compound operation cannot be used on pointer type"
+                                    .to_string(),
+                                span,
+                            });
+                        }
+                    }
                     _ => {}
                 };
 
                 match op.as_ref() {
-                    AssignOp::Equal | AssignOp::ShiftLeftEqual | AssignOp::ShiftRightEqual => {
+                    AssignOp::Equal => self.convert_by_assignment(right, &right_ty, &left_ty)?,
+                    AssignOp::ShiftLeftEqual | AssignOp::ShiftRightEqual => {
                         self.cast_if_needed(right, &right_ty, &left_ty);
                         left_ty
                     }
@@ -610,20 +684,90 @@ impl TypeChecker {
                 }
                 for (arg, param_ty) in args.iter().zip(&function_ty.params) {
                     let arg_ty = self.check_expression(arg)?;
-                    self.cast_if_needed(arg, &arg_ty, param_ty);
+                    self.convert_by_assignment(arg, &arg_ty, param_ty)?;
                 }
                 *function_ty.ret.clone()
             }
             Expression::Cast { target, expr } => {
-                self.check_expression(expr)?;
+                let ty = self.check_expression(expr)?;
+                if target.is_pointer() && ty.is_double() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Cannot cast a double to a pointer".to_string(),
+                        span: expr.span,
+                    });
+                }
+                if target.is_double() && ty.is_pointer() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Cannot cast a pointer to a double".to_string(),
+                        span: expr.span,
+                    });
+                }
                 *target.data.clone()
             }
-
-            Expression::Dereference(_) => todo!(),
-            Expression::AddressOf(_) => todo!(),
+            Expression::Dereference(inner) => {
+                let inner_ty = self.check_expression(inner)?;
+                match inner_ty {
+                    Type::Pointer(referenced) => *referenced.clone(),
+                    _ => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Cannot dereference a non-pointer".to_string(),
+                            span: expr.span,
+                        })
+                    }
+                }
+            }
+            Expression::AddressOf(inner) => {
+                if Self::is_lvalue(inner) {
+                    let inner_ty = self.check_expression(inner)?;
+                    Type::Pointer(inner_ty.clone().into())
+                } else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Can't take address of non-lvalue!".to_string(),
+                        span: expr.span,
+                    });
+                }
+            }
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)
+    }
+
+    fn is_lvalue(expr: &Expression) -> bool {
+        matches!(expr, Expression::Var(_) | Expression::Dereference(_))
+    }
+
+    fn is_null_constant(expr: &Expression) -> bool {
+        matches!(
+            expr,
+            Expression::Constant(
+                Constant::Int(0) | Constant::Long(0) | Constant::UInt(0) | Constant::ULong(0)
+            )
+        )
+    }
+
+    fn convert_by_assignment(
+        &mut self,
+        expr: &Node<Expression>,
+        ty: &Type,
+        target: &Type,
+    ) -> Result<Type> {
+        if ty == target {
+            Ok(ty.clone())
+        } else if ty.is_arithmetic() && target.is_arithmetic()
+            || Self::is_null_constant(expr) && target.is_pointer()
+        {
+            Ok(self.cast_if_needed(expr, ty, target))
+        } else {
+            Err(CompilerError {
+                kind: ErrorKind::Type,
+                msg: "Cannot convert type for assignment!".to_string(),
+                span: expr.span,
+            })
+        }
     }
 
     fn cast_if_needed(&mut self, expr: &Node<Expression>, ty: &Type, expected: &Type) -> Type {
@@ -652,6 +796,28 @@ impl TypeChecker {
             ty2
         };
         result.clone()
+    }
+
+    fn common_pointer_type(
+        &self,
+        e1: &Node<Expression>,
+        ty1: &Type,
+        e2: &Node<Expression>,
+        ty2: &Type,
+    ) -> Result<Type> {
+        if ty1 == ty2 {
+            Ok(ty1.clone())
+        } else if Self::is_null_constant(e1) {
+            Ok(ty2.clone())
+        } else if Self::is_null_constant(e2) {
+            Ok(ty1.clone())
+        } else {
+            Err(CompilerError {
+                kind: ErrorKind::Type,
+                msg: "Expressions have incompatible types".to_string(),
+                span: e1.span + e2.span,
+            })
+        }
     }
 }
 

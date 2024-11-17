@@ -277,6 +277,21 @@ impl Type {
         matches!(self, Type::Int | Type::UInt | Type::Long | Type::ULong)
     }
 
+    pub fn is_double(&self) -> bool {
+        matches!(self, Type::Double)
+    }
+
+    pub fn is_arithmetic(&self) -> bool {
+        matches!(
+            self,
+            Type::Int | Type::UInt | Type::Long | Type::ULong | Type::Double
+        )
+    }
+
+    pub fn is_pointer(&self) -> bool {
+        matches!(self, Type::Pointer(_))
+    }
+
     pub fn size(&self) -> u8 {
         match self {
             Type::Int => 4,
@@ -285,7 +300,7 @@ impl Type {
             Type::ULong => 8,
             Type::Double => 8,
             Type::Function(_) => panic!("Size of function type"),
-            Type::Pointer(_) => todo!(),
+            Type::Pointer(_) => 8,
         }
     }
 

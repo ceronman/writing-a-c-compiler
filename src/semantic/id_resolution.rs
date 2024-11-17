@@ -236,36 +236,13 @@ impl Resolver {
                 });
             }
             Expression::Assignment { left, right, .. } => {
-                if !matches!(left.as_ref(), Expression::Var(_)) {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Resolve,
-                        msg: "Expression is not assignable".to_owned(),
-                        span: left.span,
-                    });
-                }
                 self.resolve_expression(left)?;
                 self.resolve_expression(right)?;
             }
             Expression::Unary { expr: operand, op } => {
-                if let UnaryOp::Increment | UnaryOp::Decrement = op.as_ref() {
-                    if !matches!(operand.as_ref(), Expression::Var(_)) {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Resolve,
-                            msg: "Expression is not assignable".to_owned(),
-                            span: operand.span,
-                        });
-                    }
-                }
                 self.resolve_expression(operand)?;
             }
             Expression::Postfix { expr, .. } => {
-                if !matches!(expr.as_ref(), Expression::Var(_)) {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Resolve,
-                        msg: "Expression is not assignable".to_owned(),
-                        span: expr.span,
-                    });
-                }
                 self.resolve_expression(expr)?;
             }
             Expression::Binary { left, right, .. } => {
@@ -299,12 +276,11 @@ impl Resolver {
                     span: name.span,
                 });
             }
-            Expression::Cast { expr, .. } => {
+            Expression::Cast { expr, .. }
+            | Expression::Dereference(expr)
+            | Expression::AddressOf(expr) => {
                 self.resolve_expression(expr)?;
             }
-
-            Expression::Dereference(_) => todo!(),
-            Expression::AddressOf(_) => todo!(),
         }
         Ok(())
     }
