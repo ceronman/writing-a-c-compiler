@@ -13,12 +13,12 @@ cargo build --features test_gen
 #arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 14 --stage parse --bitwise --compound --increment --goto --switch --nan
 #rustfmt src/parser/test.rs
 #
-cp /dev/null src/semantic/test.rs
-arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 14 --stage validate --bitwise --compound --increment --goto --switch --nan
-rustfmt src/semantic/test.rs
+#cp /dev/null src/semantic/test.rs
+#arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 14 --stage validate --bitwise --compound --increment --goto --switch --nan
+#rustfmt src/semantic/test.rs
 #
-#cp /dev/null src/tacky/test.rs
-#arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 13 --stage tacky --bitwise --compound --increment --goto --switch --nan
-#rustfmt src/tacky/test.rs
+cp /dev/null src/tacky/test.rs
+arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 14 --stage tacky --bitwise --compound --increment --goto --switch --nan
+rustfmt src/tacky/test.rs
 
 cargo clean

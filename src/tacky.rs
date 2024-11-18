@@ -2,7 +2,6 @@
 mod test;
 
 use crate::ast;
-use crate::ast::Expression;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
 use crate::symbol::Symbol;
 
@@ -97,6 +96,18 @@ pub enum Instruction {
         src: Val,
         dst: Val,
     },
+    GetAddress {
+        src: Val,
+        dst: Val,
+    },
+    Load {
+        ptr: Val,
+        dst: Val,
+    },
+    Store {
+        src: Val,
+        ptr: Val,
+    },
 }
 
 pub type Constant = ast::Constant;
@@ -135,6 +146,12 @@ pub enum BinaryOp {
     LessOrEqual,
     GreaterThan,
     GreaterOrEqual,
+}
+
+#[derive(Debug)]
+enum ExprResult {
+    Operand(Val),
+    Dereference(Val),
 }
 
 struct TackyGenerator {
@@ -348,8 +365,22 @@ impl TackyGenerator {
             }
         }
     }
-
     fn emit_expr(&mut self, expr: &ast::Node<ast::Expression>) -> Val {
+        let expr_ty = self.semantics.expr_type(expr).clone();
+        match self.expression(expr) {
+            ExprResult::Operand(val) => self.cast_if_needed(val, expr, &expr_ty),
+            ExprResult::Dereference(ptr) => {
+                let dst = self.make_temp(&expr_ty);
+                self.instructions.push(Instruction::Load {
+                    ptr,
+                    dst: dst.clone(),
+                });
+                dst
+            }
+        }
+    }
+
+    fn expression(&mut self, expr: &ast::Node<ast::Expression>) -> ExprResult {
         let expr_ty = self.semantics.expr_type(expr).clone();
         let result = match expr.as_ref() {
             ast::Expression::Constant(value) => Val::Constant(value.clone()),
@@ -447,7 +478,7 @@ impl TackyGenerator {
                             dst: result.clone(),
                         });
                         self.instructions.push(Instruction::Label(end_label));
-                        return result;
+                        return ExprResult::Operand(result);
                     }
                     ast::BinaryOp::Or => {
                         let result = self.make_temp(&expr_ty);
@@ -475,7 +506,7 @@ impl TackyGenerator {
                             dst: result.clone(),
                         });
                         self.instructions.push(Instruction::Label(end_label));
-                        return result;
+                        return ExprResult::Operand(result);
                     }
                 };
                 let src2 = self.emit_expr(right);
@@ -490,9 +521,6 @@ impl TackyGenerator {
 
             ast::Expression::Var(name) => Val::Var(name.clone()),
             ast::Expression::Assignment { op, left, right } => {
-                let ast::Expression::Var(name) = left.as_ref() else {
-                    unreachable!()
-                };
                 let op = match op.as_ref() {
                     ast::AssignOp::Equal => None,
                     ast::AssignOp::AddEqual => Some(BinaryOp::Add),
@@ -506,8 +534,9 @@ impl TackyGenerator {
                     ast::AssignOp::ShiftLeftEqual => Some(BinaryOp::ShiftLeft),
                     ast::AssignOp::ShiftRightEqual => Some(BinaryOp::ShiftRight),
                 };
+                let lvalue = self.expression(left);
 
-                let result = if let Some(op) = op {
+                let rvalue = if let Some(op) = op {
                     let src1 = self.emit_expr(left);
                     let dst = self.make_temp(&expr_ty);
                     let src2 = self.emit_expr(right);
@@ -522,13 +551,24 @@ impl TackyGenerator {
                     self.emit_expr(right)
                 };
 
-                let result = self.cast_if_needed(result, expr, &expr_ty);
+                let rvalue = self.cast_if_needed(rvalue, expr, &expr_ty);
 
-                self.instructions.push(Instruction::Copy {
-                    src: result,
-                    dst: Val::Var(name.clone()),
-                });
-                Val::Var(name.clone())
+                match &lvalue {
+                    ExprResult::Operand(val) => {
+                        self.instructions.push(Instruction::Copy {
+                            src: rvalue,
+                            dst: val.clone(),
+                        });
+                        return lvalue;
+                    }
+                    ExprResult::Dereference(ptr) => {
+                        self.instructions.push(Instruction::Store {
+                            src: rvalue.clone(),
+                            ptr: ptr.clone(),
+                        });
+                        rvalue
+                    }
+                }
             }
 
             ast::Expression::Conditional {
@@ -582,10 +622,23 @@ impl TackyGenerator {
                 self.cast(result, &inner_ty, target)
             }
 
-            Expression::Dereference(_) => todo!(),
-            Expression::AddressOf(_) => todo!(),
+            ast::Expression::Dereference(inner) => {
+                let result = self.emit_expr(inner);
+                return ExprResult::Dereference(result);
+            }
+            ast::Expression::AddressOf(inner) => match self.expression(inner) {
+                ExprResult::Operand(val) => {
+                    let dst = self.make_temp(&expr_ty);
+                    self.instructions.push(Instruction::GetAddress {
+                        src: val,
+                        dst: dst.clone(),
+                    });
+                    dst
+                }
+                ExprResult::Dereference(ptr) => ptr,
+            },
         };
-        self.cast_if_needed(result, expr, &expr_ty)
+        ExprResult::Operand(result)
     }
 
     fn cast_if_needed(
@@ -731,8 +784,8 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                         Type::UInt => StaticInit::UInt(0),
                         Type::ULong => StaticInit::ULong(0),
                         Type::Double => StaticInit::Double(0.0),
+                        Type::Pointer(_) => StaticInit::ULong(0),
                         Type::Function(_) => unreachable!(),
-                        Type::Pointer(_) => todo!(),
                     };
                     top_level.push(TopLevel::Variable(StaticVariable {
                         name: name.clone(),

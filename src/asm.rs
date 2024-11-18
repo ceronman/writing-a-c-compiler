@@ -686,6 +686,9 @@ impl Compiler {
                     }
                     AsmType::Double => unreachable!(),
                 },
+                tacky::Instruction::GetAddress { .. } => todo!(),
+                tacky::Instruction::Load { .. } => todo!(),
+                tacky::Instruction::Store { .. } => todo!(),
             }
         }
 

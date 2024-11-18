@@ -199,6 +199,24 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
                 write!(file, " = uint_to_double ")?;
                 pp_val(file, src)?;
             }
+            tacky::Instruction::GetAddress { src, dst } => {
+                write!(file, "{indent}")?;
+                pp_val(file, dst)?;
+                write!(file, " = get_address ")?;
+                pp_val(file, src)?;
+            }
+            tacky::Instruction::Load { ptr, dst } => {
+                write!(file, "{indent}")?;
+                pp_val(file, dst)?;
+                write!(file, " = load ")?;
+                pp_val(file, ptr)?;
+            }
+            tacky::Instruction::Store { src, ptr } => {
+                write!(file, "{indent}")?;
+                pp_val(file, ptr)?;
+                write!(file, " = store ")?;
+                pp_val(file, src)?;
+            }
         }
         writeln!(file)?;
     }

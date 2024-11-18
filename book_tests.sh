@@ -6,7 +6,7 @@ set -euxo pipefail
   cargo build
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler \
     --latest-only \
-    --stage validate \
+    --stage tacky \
     --verbose \
     --failfast \
     --chapter 14 \
