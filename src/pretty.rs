@@ -1,7 +1,7 @@
-use crate::ast;
 use crate::parser;
 use crate::semantic;
 use crate::tacky;
+use crate::ast;
 
 use crate::semantic::StaticInit;
 use anyhow::Result;
@@ -293,6 +293,7 @@ pub fn annotate(src: &str, error: &crate::error::CompilerError) -> String {
     result
 }
 
+// TODO: Add support for including node ids (useful for debugging semantic data)
 struct PrettyAst {
     label: String,
     children: Vec<PrettyAst>,
@@ -490,24 +491,25 @@ impl PrettyAst {
             ast::Statement::Null => Self::new("Empty", vec![]),
         }
     }
-    fn from_expression(expression: &ast::Expression) -> PrettyAst {
-        match expression {
+    fn from_expression(expression: &ast::Node<ast::Expression>) -> PrettyAst {
+        let node = expression.id; 
+        match expression.as_ref() {
             ast::Expression::Constant(value) => Self::from_constant(value),
-            ast::Expression::Var(name) => Self::new(format!("Var [{name}]"), vec![]),
+            ast::Expression::Var(name) => Self::new(format!("({node}) Var [{name}]"), vec![]),
             ast::Expression::Unary { op, expr } => Self::new(
-                format!("Unary [{}]", Self::unary_op(op)),
+                format!("({node}) Unary [{}]", Self::unary_op(op)),
                 vec![Self::from_expression(expr)],
             ),
             ast::Expression::Postfix { op, expr } => Self::new(
-                format!("Postfix [{}]", Self::postfix_op(op)),
+                format!("({node}) Postfix [{}]", Self::postfix_op(op)),
                 vec![Self::from_expression(expr)],
             ),
             ast::Expression::Binary { op, left, right } => Self::new(
-                format!("Binary [{}]", Self::binary_op(op)),
+                format!("({node}) Binary [{}]", Self::binary_op(op)),
                 vec![Self::from_expression(left), Self::from_expression(right)],
             ),
             ast::Expression::Assignment { op, left, right } => Self::new(
-                format!("Assign [{}]", Self::assign_op(op)),
+                format!("({node}) Assign [{}]", Self::assign_op(op)),
                 vec![Self::from_expression(left), Self::from_expression(right)],
             ),
             ast::Expression::Conditional {
@@ -537,7 +539,7 @@ impl PrettyAst {
                 Self::new("AddressOf", vec![Self::from_expression(expr)])
             }
             ast::Expression::Dereference(expr) => {
-                Self::new("Dereference", vec![Self::from_expression(expr)])
+                Self::new(format!("({node}) Dereference"), vec![Self::from_expression(expr)])
             }
         }
     }

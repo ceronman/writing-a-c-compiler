@@ -51,7 +51,7 @@ impl SemanticData {
             Type::Long | Type::ULong => AsmType::Quadword,
             Type::Double => AsmType::Double,
             Type::Function(_) => unreachable!(),
-            Type::Pointer(_) => todo!(),
+            Type::Pointer(_) => AsmType::Quadword,
         }
     }
 
@@ -69,7 +69,7 @@ impl SemanticData {
                 Type::UInt | Type::ULong => false,
                 Type::Double => true,
                 Type::Function(_) => unreachable!(),
-                Type::Pointer(_) => todo!(),
+                Type::Pointer(_) => false,
             },
         }
     }
@@ -166,7 +166,7 @@ impl Compiler {
 
         let mut offset = 16;
         for TypedOperand { ty, operand } in stack_args {
-            instructions.push(Instruction::Mov(ty, Operand::Stack(offset), operand));
+            instructions.push(Instruction::Mov(ty, Operand::Memory(Reg::BP, offset), operand));
             offset += 8;
         }
 
@@ -686,9 +686,17 @@ impl Compiler {
                     }
                     AsmType::Double => unreachable!(),
                 },
-                tacky::Instruction::GetAddress { .. } => todo!(),
-                tacky::Instruction::Load { .. } => todo!(),
-                tacky::Instruction::Store { .. } => todo!(),
+                tacky::Instruction::GetAddress { src, dst } => {
+                    instructions.push(Instruction::Lea(self.generate_val(src), self.generate_val(dst)));
+                },
+                tacky::Instruction::Load { ptr, dst } => {
+                    instructions.push(Instruction::Mov(AsmType::Quadword, self.generate_val(ptr), Reg::Ax.into()));
+                    instructions.push(Instruction::Mov(semantic.val_asm_ty(dst), Operand::Memory(Reg::Ax, 0), self.generate_val(dst)));
+                },
+                tacky::Instruction::Store { src, ptr } => {
+                    instructions.push(Instruction::Mov(AsmType::Quadword, self.generate_val(ptr), Reg::Ax.into()));
+                    instructions.push(Instruction::Mov(semantic.val_asm_ty(src), self.generate_val(src), Operand::Memory(Reg::Ax, 0)));
+                },
             }
         }
 
@@ -879,7 +887,7 @@ impl Compiler {
                     stack_vars.insert(name.clone(), stack_size);
                     stack_size
                 };
-                *operand = Operand::Stack(-(offset as i64));
+                *operand = Operand::Memory(Reg::BP, -(offset as i64));
             }
         };
 
@@ -891,6 +899,7 @@ impl Compiler {
                 | Instruction::Binary(_, _, src, dst)
                 | Instruction::Cvttsd2si(_, src, dst)
                 | Instruction::Cvtsi2sd(_, src, dst)
+                | Instruction::Lea(src, dst)
                 | Instruction::Cmp(_, src, dst) => {
                     update_operand(src);
                     update_operand(dst);
@@ -1060,10 +1069,13 @@ impl Compiler {
                     };
                     fixed.push(Instruction::Cmp(ty, left, right));
                 }
-                Instruction::Idiv(ty, Operand::Imm(value))
-                | Instruction::Div(ty, Operand::Imm(value)) => {
+                Instruction::Idiv(ty, Operand::Imm(value)) => {
                     fixed.push(Instruction::Mov(ty, Operand::Imm(value), Reg::R10.into()));
                     fixed.push(Instruction::Idiv(ty, Reg::R10.into()));
+                }
+                Instruction::Div(ty, Operand::Imm(value)) => {
+                    fixed.push(Instruction::Mov(ty, Operand::Imm(value), Reg::R10.into()));
+                    fixed.push(Instruction::Div(ty, Reg::R10.into()));
                 }
                 Instruction::Push(Operand::Imm(value)) => {
                     let value = if value > i32::MAX as u64 {
@@ -1085,13 +1097,17 @@ impl Compiler {
                     fixed.push(Instruction::Mov(AsmType::Longword, src, Reg::R11.into()));
                     fixed.push(Instruction::Mov(AsmType::Quadword, Reg::R11.into(), dst));
                 }
-                Instruction::Cvttsd2si(ty, src, Operand::Stack(offset)) => {
+                Instruction::Cvttsd2si(ty, src, Operand::Memory(mem_reg, offset)) => {
                     fixed.push(Instruction::Cvttsd2si(ty, src, Reg::R11.into()));
                     fixed.push(Instruction::Mov(
                         ty,
                         Reg::R11.into(),
-                        Operand::Stack(offset),
+                        Operand::Memory(mem_reg, offset),
                     ));
+                }
+                Instruction::Lea(src, Operand::Memory(mem_reg, offset)) => {
+                    fixed.push(Instruction::Lea(src, Reg::R11.into()));
+                    fixed.push(Instruction::Mov(AsmType::Quadword, Reg::R11.into(), Operand::Memory(mem_reg, offset)));
                 }
                 Instruction::Cvtsi2sd(ty, src, dst) => {
                     let src = if let Operand::Imm(_) = src {

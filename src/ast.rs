@@ -311,8 +311,8 @@ impl Type {
             Type::Long => true,
             Type::ULong => false,
             Type::Double => false,
-            Type::Function(_) => panic!("Size of function type"),
-            Type::Pointer(_) => todo!(),
+            Type::Function(_) => panic!("Sign of function type"),
+            Type::Pointer(_) => false,
         }
     }
 }

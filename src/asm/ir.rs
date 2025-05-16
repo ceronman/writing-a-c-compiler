@@ -40,6 +40,7 @@ pub enum Instruction {
     Mov(AsmType, Operand, Operand),
     Movsx(Operand, Operand),
     MovZeroExtend(Operand, Operand),
+    Lea(Operand, Operand),
     Cvttsd2si(AsmType, Operand, Operand),
     Cvtsi2sd(AsmType, Operand, Operand),
     Unary(AsmType, UnaryOp, Operand),
@@ -84,12 +85,12 @@ pub enum Operand {
     Reg(Reg),
     Pseudo(Symbol),
     Data(bool, Symbol),
-    Stack(i64),
+    Memory(Reg, i64),
 }
 
 impl Operand {
     pub(crate) fn is_mem(&self) -> bool {
-        matches!(self, Operand::Stack(_) | Operand::Data(_, _))
+        matches!(self, Operand::Memory(_, _) | Operand::Data(_, _))
     }
 }
 
@@ -111,6 +112,7 @@ pub enum Reg {
     R10,
     R11,
     SP,
+    BP,
     XMM0,
     XMM1,
     XMM2,

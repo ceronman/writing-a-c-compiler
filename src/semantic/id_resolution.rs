@@ -1,6 +1,6 @@
 use crate::ast::{
     Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, InnerRef,
-    Node, Program, Statement, StorageClass, UnaryOp, VarDeclaration,
+    Node, Program, Statement, StorageClass, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
@@ -239,7 +239,7 @@ impl Resolver {
                 self.resolve_expression(left)?;
                 self.resolve_expression(right)?;
             }
-            Expression::Unary { expr: operand, op } => {
+            Expression::Unary { expr: operand, .. } => {
                 self.resolve_expression(operand)?;
             }
             Expression::Postfix { expr, .. } => {

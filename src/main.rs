@@ -86,6 +86,7 @@ fn main() -> Result<()> {
     let tacky = tacky::emit(&validated_ast, semantic_data);
     if let Flag::Tacky = options.flag {
         println!("{}", pp_tacky(&tacky)?);
+        println!("{:?}", tacky.semantics);
         return Ok(());
     }
 
@@ -139,7 +140,7 @@ fn parse_args() -> Options {
         _ => {
             eprintln!("Error: incorrect number of arguments");
             eprintln!("{}", args.join(" "));
-            eprintln!("Usage: compiler [ --lex | --parse | --codegen | --asm ] <FILENAME>");
+            eprintln!("Usage: compiler [ --lex | --parse | --validate | --semantic | --codegen | --emmit ] <FILENAME>");
             std::process::exit(1);
         }
     };

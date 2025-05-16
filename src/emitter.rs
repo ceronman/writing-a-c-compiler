@@ -263,7 +263,12 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
             Instruction::MovZeroExtend(_, _) => {
                 unreachable!("Should have been replaced in fixup instructions")
             }
-
+            Instruction::Lea(src, dst) => {
+                emit_ins(output, "leaq")?;
+                emit_operand(output, src, RegSize::Quad)?;
+                write!(output, ", ")?;
+                emit_operand(output, dst, RegSize::Quad)?;
+            },
             Instruction::Cvttsd2si(ty, src, dst) => {
                 let op = match ty {
                     AsmType::Longword => "cvttsd2sil",
@@ -422,6 +427,7 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
         (Operand::Reg(Reg::R11), RegSize::Quad) => write!(output, "%r11"),
 
         (Operand::Reg(Reg::SP), _) => write!(output, "%rsp"),
+        (Operand::Reg(Reg::BP), _) => write!(output, "%rbp"),
 
         (Operand::Reg(Reg::XMM0), _) => write!(output, "%xmm0"),
         (Operand::Reg(Reg::XMM1), _) => write!(output, "%xmm1"),
@@ -435,7 +441,12 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
         (Operand::Reg(Reg::XMM15), _) => write!(output, "%xmm15"),
 
         (Operand::Imm(value), _) => write!(output, "${value}"),
-        (Operand::Stack(offset), _) => write!(output, "{offset}(%rbp)"),
+        (Operand::Memory(reg, offset), _) => {
+            write!(output, "{offset}")?;
+            write!(output, "(")?;
+            emit_operand(output, &Operand::Reg(*reg), RegSize::Quad)?;
+            write!(output, ")")
+        },
         (Operand::Data(true, name), _) => write!(output, "L{name}(%rip)"),
         (Operand::Data(_, name), _) => write!(output, "_{name}(%rip)"),
         (Operand::Pseudo(_), _) => unreachable!("Pseudo-registers should not appear here"),

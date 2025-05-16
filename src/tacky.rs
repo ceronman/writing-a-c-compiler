@@ -375,7 +375,7 @@ impl TackyGenerator {
                     ptr,
                     dst: dst.clone(),
                 });
-                dst
+                self.cast_if_needed(dst, expr, &expr_ty)
             }
         }
     }
@@ -537,7 +537,18 @@ impl TackyGenerator {
                 let lvalue = self.expression(left);
 
                 let rvalue = if let Some(op) = op {
-                    let src1 = self.emit_expr(left);
+                    // TODO: This logic is repeated with emit_expr()
+                    let src1 = match &lvalue {
+                        ExprResult::Operand(val) => val.clone(),
+                        ExprResult::Dereference(ptr) => {
+                            let dst = self.make_temp(&expr_ty);
+                            self.instructions.push(Instruction::Load {
+                                ptr: ptr.clone(),
+                                dst: dst.clone(),
+                            });
+                            dst
+                        }
+                    };
                     let dst = self.make_temp(&expr_ty);
                     let src2 = self.emit_expr(right);
                     self.instructions.push(Instruction::Binary {
