@@ -1,7 +1,7 @@
+use crate::ast;
 use crate::parser;
 use crate::semantic;
 use crate::tacky;
-use crate::ast;
 
 use crate::semantic::StaticInit;
 use anyhow::Result;
@@ -492,7 +492,7 @@ impl PrettyAst {
         }
     }
     fn from_expression(expression: &ast::Node<ast::Expression>) -> PrettyAst {
-        let node = expression.id; 
+        let node = expression.id;
         match expression.as_ref() {
             ast::Expression::Constant(value) => Self::from_constant(value),
             ast::Expression::Var(name) => Self::new(format!("({node}) Var [{name}]"), vec![]),
@@ -526,7 +526,7 @@ impl PrettyAst {
             }
             ast::Expression::FunctionCall { name, args } => Self::new(
                 format!("FunctionCall [{}]", name.symbol),
-                args.iter().map(|arg| Self::from_expression(arg)),
+                args.iter().map(Self::from_expression),
             ),
             ast::Expression::Cast { target, expr } => Self::new(
                 "Cast",
@@ -538,9 +538,10 @@ impl PrettyAst {
             ast::Expression::AddressOf(expr) => {
                 Self::new("AddressOf", vec![Self::from_expression(expr)])
             }
-            ast::Expression::Dereference(expr) => {
-                Self::new(format!("({node}) Dereference"), vec![Self::from_expression(expr)])
-            }
+            ast::Expression::Dereference(expr) => Self::new(
+                format!("({node}) Dereference"),
+                vec![Self::from_expression(expr)],
+            ),
         }
     }
     fn from_block_item(item: &ast::BlockItem) -> PrettyAst {

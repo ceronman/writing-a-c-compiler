@@ -212,6 +212,7 @@ impl<'src> Parser<'src> {
         declarator: Node<Declarator>,
         base_type: Node<Type>,
     ) -> Result<(Node<Identifier>, Node<Type>, Vec<Node<Identifier>>)> {
+        // TODO make type less complex
         match *declarator.data {
             Declarator::Identifier(name) => Ok((name, base_type, vec![])),
             Declarator::Pointer(declarator) => {

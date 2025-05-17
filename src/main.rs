@@ -86,7 +86,7 @@ fn main() -> Result<()> {
     let tacky = tacky::emit(&validated_ast, semantic_data);
     if let Flag::Tacky = options.flag {
         println!("{}", pp_tacky(&tacky)?);
-        println!("{:?}", tacky.semantics);
+        println!("{:#?}", tacky.semantics);
         return Ok(());
     }
 

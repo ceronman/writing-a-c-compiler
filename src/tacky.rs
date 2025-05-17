@@ -385,8 +385,6 @@ impl TackyGenerator {
         let result = match expr.as_ref() {
             ast::Expression::Constant(value) => Val::Constant(value.clone()),
             ast::Expression::Unary { op, expr } => {
-                let val = self.emit_expr(expr);
-                let dst = self.make_temp(&expr_ty);
                 let tacky_op = match op.as_ref() {
                     ast::UnaryOp::Complement => UnaryOp::Complement,
                     ast::UnaryOp::Negate => UnaryOp::Negate,
@@ -394,21 +392,60 @@ impl TackyGenerator {
                     ast::UnaryOp::Increment => UnaryOp::Increment,
                     ast::UnaryOp::Decrement => UnaryOp::Decrement,
                 };
+
+                let lvalue = self.expression(expr);
+                // TODO: This logic is repeated with emit_expr()
+                let val = match &lvalue {
+                    ExprResult::Operand(val) => self.cast_if_needed(val.clone(), expr, &expr_ty),
+                    ExprResult::Dereference(ptr) => {
+                        let dst = self.make_temp(&expr_ty);
+                        self.instructions.push(Instruction::Load {
+                            ptr: ptr.clone(),
+                            dst: dst.clone(),
+                        });
+                        self.cast_if_needed(dst, expr, &expr_ty)
+                    }
+                };
+                let dst = self.make_temp(&expr_ty);
+
                 self.instructions.push(Instruction::Unary {
                     op: tacky_op,
                     src: val.clone(),
                     dst: dst.clone(),
                 });
                 if let ast::UnaryOp::Increment | ast::UnaryOp::Decrement = op.as_ref() {
-                    self.instructions.push(Instruction::Copy {
-                        src: dst.clone(),
-                        dst: val,
-                    })
+                    // TODO: This logic is repeated with emit_expr()
+                    match &lvalue {
+                        ExprResult::Operand(val) => {
+                            self.instructions.push(Instruction::Copy {
+                                src: dst.clone(),
+                                dst: val.clone(),
+                            });
+                        }
+                        ExprResult::Dereference(ptr) => {
+                            self.instructions.push(Instruction::Store {
+                                src: dst.clone(),
+                                ptr: ptr.clone(),
+                            });
+                        }
+                    }
                 }
                 dst
             }
             ast::Expression::Postfix { op, expr } => {
-                let val = self.emit_expr(expr);
+                let lvalue = self.expression(expr);
+                // TODO: This logic is repeated with emit_expr()
+                let val = match &lvalue {
+                    ExprResult::Operand(val) => self.cast_if_needed(val.clone(), expr, &expr_ty),
+                    ExprResult::Dereference(ptr) => {
+                        let dst = self.make_temp(&expr_ty);
+                        self.instructions.push(Instruction::Load {
+                            ptr: ptr.clone(),
+                            dst: dst.clone(),
+                        });
+                        self.cast_if_needed(dst, expr, &expr_ty)
+                    }
+                };
                 let dst = self.make_temp(&expr_ty);
                 self.instructions.push(Instruction::Copy {
                     src: val.clone(),
@@ -426,10 +463,22 @@ impl TackyGenerator {
                     src: val.clone(),
                     dst: decremented.clone(),
                 });
-                self.instructions.push(Instruction::Copy {
-                    src: decremented,
-                    dst: val,
-                });
+
+                // TODO: This logic is repeated with emit_expr()
+                match &lvalue {
+                    ExprResult::Operand(val) => {
+                        self.instructions.push(Instruction::Copy {
+                            src: decremented.clone(),
+                            dst: val.clone(),
+                        });
+                    }
+                    ExprResult::Dereference(ptr) => {
+                        self.instructions.push(Instruction::Store {
+                            src: decremented.clone(),
+                            ptr: ptr.clone(),
+                        });
+                    }
+                }
                 dst
             }
             ast::Expression::Binary { op, left, right } => {
@@ -537,9 +586,12 @@ impl TackyGenerator {
                 let lvalue = self.expression(left);
 
                 let rvalue = if let Some(op) = op {
+                    let left_ty = self.semantics.expr_type(left).clone();
                     // TODO: This logic is repeated with emit_expr()
                     let src1 = match &lvalue {
-                        ExprResult::Operand(val) => val.clone(),
+                        ExprResult::Operand(val) => {
+                            self.cast_if_needed(val.clone(), left, &left_ty)
+                        }
                         ExprResult::Dereference(ptr) => {
                             let dst = self.make_temp(&expr_ty);
                             self.instructions.push(Instruction::Load {

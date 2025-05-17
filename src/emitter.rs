@@ -268,7 +268,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 emit_operand(output, src, RegSize::Quad)?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::Quad)?;
-            },
+            }
             Instruction::Cvttsd2si(ty, src, dst) => {
                 let op = match ty {
                     AsmType::Longword => "cvttsd2sil",
@@ -446,7 +446,7 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
             write!(output, "(")?;
             emit_operand(output, &Operand::Reg(*reg), RegSize::Quad)?;
             write!(output, ")")
-        },
+        }
         (Operand::Data(true, name), _) => write!(output, "L{name}(%rip)"),
         (Operand::Data(_, name), _) => write!(output, "_{name}(%rip)"),
         (Operand::Pseudo(_), _) => unreachable!("Pseudo-registers should not appear here"),

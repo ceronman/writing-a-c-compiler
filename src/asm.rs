@@ -166,7 +166,11 @@ impl Compiler {
 
         let mut offset = 16;
         for TypedOperand { ty, operand } in stack_args {
-            instructions.push(Instruction::Mov(ty, Operand::Memory(Reg::BP, offset), operand));
+            instructions.push(Instruction::Mov(
+                ty,
+                Operand::Memory(Reg::BP, offset),
+                operand,
+            ));
             offset += 8;
         }
 
@@ -687,16 +691,35 @@ impl Compiler {
                     AsmType::Double => unreachable!(),
                 },
                 tacky::Instruction::GetAddress { src, dst } => {
-                    instructions.push(Instruction::Lea(self.generate_val(src), self.generate_val(dst)));
-                },
+                    instructions.push(Instruction::Lea(
+                        self.generate_val(src),
+                        self.generate_val(dst),
+                    ));
+                }
                 tacky::Instruction::Load { ptr, dst } => {
-                    instructions.push(Instruction::Mov(AsmType::Quadword, self.generate_val(ptr), Reg::Ax.into()));
-                    instructions.push(Instruction::Mov(semantic.val_asm_ty(dst), Operand::Memory(Reg::Ax, 0), self.generate_val(dst)));
-                },
+                    instructions.push(Instruction::Mov(
+                        AsmType::Quadword,
+                        self.generate_val(ptr),
+                        Reg::Ax.into(),
+                    ));
+                    instructions.push(Instruction::Mov(
+                        semantic.val_asm_ty(dst),
+                        Operand::Memory(Reg::Ax, 0),
+                        self.generate_val(dst),
+                    ));
+                }
                 tacky::Instruction::Store { src, ptr } => {
-                    instructions.push(Instruction::Mov(AsmType::Quadword, self.generate_val(ptr), Reg::Ax.into()));
-                    instructions.push(Instruction::Mov(semantic.val_asm_ty(src), self.generate_val(src), Operand::Memory(Reg::Ax, 0)));
-                },
+                    instructions.push(Instruction::Mov(
+                        AsmType::Quadword,
+                        self.generate_val(ptr),
+                        Reg::Ax.into(),
+                    ));
+                    instructions.push(Instruction::Mov(
+                        semantic.val_asm_ty(src),
+                        self.generate_val(src),
+                        Operand::Memory(Reg::Ax, 0),
+                    ));
+                }
             }
         }
 
@@ -1107,7 +1130,11 @@ impl Compiler {
                 }
                 Instruction::Lea(src, Operand::Memory(mem_reg, offset)) => {
                     fixed.push(Instruction::Lea(src, Reg::R11.into()));
-                    fixed.push(Instruction::Mov(AsmType::Quadword, Reg::R11.into(), Operand::Memory(mem_reg, offset)));
+                    fixed.push(Instruction::Mov(
+                        AsmType::Quadword,
+                        Reg::R11.into(),
+                        Operand::Memory(mem_reg, offset),
+                    ));
                 }
                 Instruction::Cvtsi2sd(ty, src, dst) => {
                     let src = if let Operand::Imm(_) = src {
