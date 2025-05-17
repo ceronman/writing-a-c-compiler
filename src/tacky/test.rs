@@ -1713,7 +1713,7 @@ fn test_chapter_5_valid_assign_val_in_initializer() {
     let expected = r#"
         global function main() { 
             a.0 = 5
-            a.0 = a.0
+            a.0 = 5
             return a.0
             return 0
         }
@@ -1733,7 +1733,7 @@ fn test_chapter_5_valid_assignment_in_initializer() {
     let expected = r#"
         global function main() { 
             a.0 = 0
-            b.1 = a.0
+            b.1 = 0
             return b.1
             return 0
         }
@@ -1924,17 +1924,17 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_chained() {
             x.6 = 0
             tmp.6 = - 7
             f.5 = tmp.6
-            tmp.5 = e.4 % f.5
+            tmp.5 = e.4 % tmp.6
             e.4 = tmp.5
-            tmp.4 = d.3 / e.4
+            tmp.4 = d.3 / tmp.5
             d.3 = tmp.4
-            tmp.3 = c.2 * d.3
+            tmp.3 = c.2 * tmp.4
             c.2 = tmp.3
-            tmp.2 = b.1 - c.2
+            tmp.2 = b.1 - tmp.3
             b.1 = tmp.2
-            tmp.1 = a.0 + b.1
+            tmp.1 = a.0 + tmp.2
             a.0 = tmp.1
-            x.6 = a.0
+            x.6 = tmp.1
             tmp.7 = a.0 == 2250
             if !tmp.7 jump and_false_0
             tmp.10 = b.1 == 2000
@@ -2124,7 +2124,7 @@ fn test_chapter_5_valid_extra_credit_compound_assignment_use_result() {
             x.0 = 1
             tmp.0 = x.0 + 3
             x.0 = tmp.0
-            y.1 = x.0
+            y.1 = tmp.0
             tmp.1 = x.0 == 4
             if !tmp.1 jump and_false_0
             tmp.4 = y.1 == 4
@@ -2323,22 +2323,22 @@ fn test_chapter_5_valid_extra_credit_compound_bitwise_chained() {
             j.8 = 0
             x.9 = 0
             j.8 = 1
-            tmp.6 = h.7 << j.8
+            tmp.6 = h.7 << 1
             h.7 = tmp.6
-            tmp.5 = g.6 >> h.7
+            tmp.5 = g.6 >> tmp.6
             g.6 = tmp.5
-            tmp.4 = f.5 + g.6
+            tmp.4 = f.5 + tmp.5
             f.5 = tmp.4
-            tmp.3 = e.4 ^ f.5
+            tmp.3 = e.4 ^ tmp.4
             e.4 = tmp.3
-            d.3 = e.4
-            tmp.2 = c.2 | d.3
+            d.3 = tmp.3
+            tmp.2 = c.2 | tmp.3
             c.2 = tmp.2
-            tmp.1 = b.1 * c.2
+            tmp.1 = b.1 * tmp.2
             b.1 = tmp.1
-            tmp.0 = a.0 & b.1
+            tmp.0 = a.0 & tmp.1
             a.0 = tmp.0
-            x.9 = a.0
+            x.9 = tmp.0
             tmp.7 = a.0 == 40
             if !tmp.7 jump and_false_0
             tmp.10 = b.1 == 21800
@@ -2999,7 +2999,7 @@ fn test_chapter_5_valid_mixed_precedence_assignment() {
             a.0 = 1
             b.1 = 0
             b.1 = a.0
-            tmp.0 = 3 * b.1
+            tmp.0 = 3 * a.0
             a.0 = tmp.0
             tmp.1 = a.0 + b.1
             return tmp.1
@@ -3023,7 +3023,7 @@ fn test_chapter_5_valid_non_short_circuit_or() {
             a.0 = 0
             if 0 jump or_true_0
             a.0 = 1
-            if a.0 jump or_true_0
+            if 1 jump or_true_0
             tmp.1 = 0
             jump or_end_1
         
@@ -3102,7 +3102,7 @@ fn test_chapter_5_valid_short_circuit_and_fail() {
             a.0 = 0
             if !0 jump and_false_0
             a.0 = 5
-            if !a.0 jump and_false_0
+            if !5 jump and_false_0
             tmp.1 = 1
             jump and_end_1
         
@@ -3131,7 +3131,7 @@ fn test_chapter_5_valid_short_circuit_or() {
             a.0 = 0
             if 1 jump or_true_0
             a.0 = 1
-            if a.0 jump or_true_0
+            if 1 jump or_true_0
             tmp.1 = 0
             jump or_end_1
         
@@ -3178,8 +3178,8 @@ fn test_chapter_5_valid_use_assignment_result() {
             a.0 = 1
             b.1 = 2
             b.1 = 4
-            a.0 = b.1
-            return a.0
+            a.0 = 4
+            return 4
             return 0
         }
     "#;
@@ -3327,12 +3327,12 @@ fn test_chapter_6_valid_extra_credit_bitwise_ternary() {
             tmp.0 = 1 ^ 1
             if !tmp.0 jump else_1
             result.0 = 4
-            tmp.1 = result.0
+            tmp.1 = 4
             jump end_if_0
         
           else_1:
             result.0 = 5
-            tmp.1 = result.0
+            tmp.1 = 5
         
           end_if_0:
             return result.0
@@ -3386,7 +3386,7 @@ fn test_chapter_6_valid_extra_credit_compound_if_expression() {
             a.0 = 0
             tmp.0 = a.0 + 1
             a.0 = tmp.0
-            if !a.0 jump end_if_0
+            if !tmp.0 jump end_if_0
             return a.0
         
           end_if_0:
@@ -3414,7 +3414,7 @@ fn test_chapter_6_valid_extra_credit_goto_after_declaration() {
             x.0 = 1
             jump post_declaration_0
             x.0 = 0
-            i.1 = x.0
+            i.1 = 0
         
           post_declaration_0:
             i.1 = 5
@@ -3679,10 +3679,10 @@ fn test_chapter_6_valid_extra_credit_lh_compound_assignment() {
             x.0 = 10
             tmp.0 = x.0 - 1
             x.0 = tmp.0
-            if !x.0 jump else_1
+            if !tmp.0 jump else_1
             tmp.2 = x.0 / 2
             x.0 = tmp.2
-            tmp.1 = x.0
+            tmp.1 = tmp.2
             jump end_if_0
         
           else_1:
@@ -3969,7 +3969,7 @@ fn test_chapter_6_valid_if_nested_3() {
         global function main() { 
             a.0 = 0
             a.0 = 1
-            if !a.0 jump end_if_0
+            if !1 jump end_if_0
             tmp.0 = a.0 == 1
             if !tmp.0 jump else_3
             a.0 = 3
@@ -4161,7 +4161,7 @@ fn test_chapter_6_valid_lh_assignment() {
             x.0 = 10
             y.1 = 0
             x.0 = 5
-            if !x.0 jump else_1
+            if !5 jump else_1
             tmp.0 = x.0
             jump end_if_0
         
@@ -4341,12 +4341,12 @@ fn test_chapter_6_valid_rh_assignment() {
             a.1 = 0
             if !flag.0 jump else_1
             a.1 = 1
-            tmp.0 = a.1
+            tmp.0 = 1
             jump end_if_0
         
           else_1:
             a.1 = 0
-            tmp.0 = a.1
+            tmp.0 = 0
         
           end_if_0:
             return a.1
@@ -4399,7 +4399,7 @@ fn test_chapter_6_valid_ternary_middle_assignment() {
             tmp.0 = a.0 != 2
             if !tmp.0 jump else_1
             a.0 = 2
-            tmp.1 = a.0
+            tmp.1 = 2
             jump end_if_0
         
           else_1:
@@ -4524,12 +4524,12 @@ fn test_chapter_6_valid_ternary_short_circuit() {
             b.1 = 0
             if !a.0 jump else_1
             b.1 = 1
-            tmp.0 = b.1
+            tmp.0 = 1
             jump end_if_0
         
           else_1:
             b.1 = 2
-            tmp.0 = b.1
+            tmp.0 = 2
         
           end_if_0:
             return b.1
@@ -4555,12 +4555,12 @@ fn test_chapter_6_valid_ternary_short_circuit_2() {
             b.1 = 0
             if !a.0 jump else_1
             b.1 = 1
-            tmp.0 = b.1
+            tmp.0 = 1
             jump end_if_0
         
           else_1:
             b.1 = 2
-            tmp.0 = b.1
+            tmp.0 = 2
         
           end_if_0:
             return b.1
@@ -4585,7 +4585,7 @@ fn test_chapter_7_valid_assign_to_self() {
         global function main() { 
             a.0 = 3
             a.1 = 4
-            a.1 = a.1
+            a.1 = 4
             return a.1
             return 0
         }
@@ -4608,7 +4608,7 @@ fn test_chapter_7_valid_assign_to_self_2() {
         global function main() { 
             a.0 = 3
             a.1 = 4
-            a.1 = a.1
+            a.1 = 4
             return a.0
             return 0
         }
@@ -4630,7 +4630,7 @@ fn test_chapter_7_valid_declaration_only() {
     let expected = r#"
         global function main() { 
             a.0 = 1
-            b.1 = a.0
+            b.1 = 1
             return a.0
             return 0
         }
@@ -5190,7 +5190,7 @@ fn test_chapter_8_valid_break_immediate() {
         
           continue_loop_0:
             a.0 = 1
-            if !a.0 jump break_loop_0
+            if !1 jump break_loop_0
             jump break_loop_0
             jump continue_loop_0
         
@@ -5353,7 +5353,7 @@ fn test_chapter_8_valid_do_while_break_immediate() {
         
           continue_loop_0:
             a.0 = 1
-            if a.0 jump start_loop_0
+            if 1 jump start_loop_0
         
           break_loop_0:
             return a.0
@@ -5397,7 +5397,7 @@ fn test_chapter_8_valid_empty_loop_body() {
           continue_loop_0:
             tmp.0 = i.0 - 5
             i.0 = tmp.0
-            tmp.1 = i.0 >= 256
+            tmp.1 = tmp.0 >= 256
             if tmp.1 jump start_loop_0
         
           break_loop_0:
@@ -5477,7 +5477,7 @@ fn test_chapter_8_valid_extra_credit_compound_assignment_controlling_expression(
           continue_loop_0:
             tmp.1 = i.0 - 1
             i.0 = tmp.1
-            if i.0 jump start_loop_0
+            if tmp.1 jump start_loop_0
         
           break_loop_0:
             tmp.2 = i.0 == 0
@@ -5603,7 +5603,7 @@ fn test_chapter_8_valid_extra_credit_duffs_device() {
           continue_loop_2:
             tmp.13 = iterations.1 - 1
             iterations.1 = tmp.13
-            tmp.14 = iterations.1 > 0
+            tmp.14 = tmp.13 > 0
             if tmp.14 jump start_loop_2
         
           break_loop_2:
@@ -6117,9 +6117,9 @@ fn test_chapter_8_valid_extra_credit_switch_assign_in_condition() {
         global function main() { 
             a.0 = 0
             a.0 = 1
-            tmp.0 = a.0 == 0
+            tmp.0 = 1 == 0
             if tmp.0 jump switch_0_case__1
-            tmp.1 = a.0 == 1
+            tmp.1 = 1 == 1
             if tmp.1 jump switch_0_case__2
             jump switch_0_default_3
             jump break_switch_0
@@ -6207,7 +6207,7 @@ fn test_chapter_8_valid_extra_credit_switch_decl() {
             if tmp.0 jump switch_0_case__1
             jump break_switch_0
             b.1 = 5
-            a.2 = b.1
+            a.2 = 5
         
           switch_0_case__1:
             a.2 = 4
@@ -6337,7 +6337,7 @@ fn test_chapter_8_valid_extra_credit_switch_default_not_last() {
     let expected = r#"
         global function main() { 
             a.0 = 7
-            b.1 = a.0
+            b.1 = 7
             tmp.0 = a.0 + b.1
             tmp.1 = tmp.0 == 2
             if tmp.1 jump switch_0_case__2
@@ -11261,7 +11261,7 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_int() {
             tmp.3 = tmp.2 + 2147483648L
             tmp.4 = truncate tmp.3
             i.0 = tmp.4
-            tmp.5 = truncate i.0
+            tmp.5 = truncate tmp.4
             tmp.6 = i.0 != 2147483628
             if !tmp.6 jump end_if_0
             return 1
@@ -11277,7 +11277,7 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_int() {
             tmp.9 = tmp.8 / tmp.10
             tmp.11 = truncate tmp.9
             b.1 = tmp.11
-            tmp.12 = truncate b.1
+            tmp.12 = truncate tmp.11
             if !b.1 jump end_if_4
             return 3
         
@@ -11297,7 +11297,7 @@ fn test_chapter_11_valid_extra_credit_compound_assign_to_int() {
             tmp.17 = tmp.16 * 10000L
             tmp.18 = truncate tmp.17
             c.2 = tmp.18
-            tmp.19 = truncate c.2
+            tmp.19 = truncate tmp.18
             tmp.20 = c.2 != 1539607552
             if !tmp.20 jump end_if_10
             return 6
@@ -11385,7 +11385,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
             tmp.4 = truncate 4L
             tmp.3 = x.0 >> tmp.4
             x.0 = tmp.3
-            tmp.5 = x.0 != 26214400
+            tmp.5 = tmp.3 != 26214400
             if !tmp.5 jump end_if_2
             return 2
         
@@ -11399,7 +11399,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
             tmp.8 = sign_extend 33
             tmp.7 = l.1 << tmp.8
             l.1 = tmp.7
-            tmp.9 = l.1 != 106042742538240L
+            tmp.9 = tmp.7 != 106042742538240L
             if !tmp.9 jump end_if_6
             return 4
         
@@ -11410,7 +11410,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitshift() {
             tmp.11 = l.1 >> tmp.12
             l.1 = tmp.11
             tmp.14 = - 103557365760L
-            tmp.13 = l.1 != tmp.14
+            tmp.13 = tmp.11 != tmp.14
             if !tmp.13 jump end_if_8
             return 5
         
@@ -11503,7 +11503,7 @@ fn test_chapter_11_valid_extra_credit_compound_bitwise() {
             tmp.17 = tmp.16 | 71777214294589695L
             tmp.18 = truncate tmp.17
             i.2 = tmp.18
-            tmp.19 = truncate i.2
+            tmp.19 = truncate tmp.18
             tmp.21 = - 2130771713
             tmp.22 = sign_extend tmp.21
             tmp.20 = tmp.19 != tmp.22
@@ -14303,7 +14303,7 @@ fn test_chapter_12_valid_extra_credit_compound_assign_uint() {
             tmp.2 = tmp.1 / tmp.3
             tmp.4 = truncate tmp.2
             x.0 = tmp.4
-            tmp.5 = truncate x.0
+            tmp.5 = truncate tmp.4
             tmp.6 = x.0 == 3865470567U
             return tmp.6
             return 0
@@ -14418,7 +14418,7 @@ fn test_chapter_12_valid_extra_credit_compound_bitwise() {
             tmp.10 = tmp.9 ^ l.3
             tmp.11 = truncate tmp.10
             ui.2 = tmp.11
-            tmp.12 = truncate ui.2
+            tmp.12 = truncate tmp.11
             if !tmp.12 jump end_if_4
             return 3
         
@@ -17045,7 +17045,7 @@ fn test_chapter_13_valid_extra_credit_compound_assign_implicit_cast() {
             tmp.4 = tmp.3 - 15000000000000000000D
             tmp.5 = double_to_uint tmp.4
             ul.1 = tmp.5
-            tmp.6 = double_to_uint ul.1
+            tmp.6 = double_to_uint tmp.5
             tmp.7 = ul.1 != 3446744073709551616UL
             if !tmp.7 jump end_if_2
             return 2
@@ -17056,7 +17056,7 @@ fn test_chapter_13_valid_extra_credit_compound_assign_implicit_cast() {
             tmp.9 = tmp.8 + 0.99999D
             tmp.10 = double_to_int tmp.9
             i.2 = tmp.10
-            tmp.11 = double_to_int i.2
+            tmp.11 = double_to_int tmp.10
             tmp.12 = i.2 != 10
             if !tmp.12 jump end_if_4
             return 3
@@ -19768,7 +19768,7 @@ fn test_chapter_13_valid_special_values_negative_zero() {
             fail.3 = 0
             if !negative_zero.2 jump and_false_6
             fail.3 = 1
-            if !fail.3 jump and_false_6
+            if !1 jump and_false_6
             tmp.12 = 1
             jump and_end_7
         
@@ -20468,7 +20468,7 @@ fn test_chapter_14_valid_comparisons_pointers_as_conditions() {
             a.3 = 0
             if ptr.1 jump or_true_4
             a.3 = 10
-            if a.3 jump or_true_4
+            if 10 jump or_true_4
             tmp.6 = 0
             jump or_end_5
         
@@ -20692,67 +20692,68 @@ fn test_chapter_14_valid_declarators_declarators() {
             u_ptr.10 = tmp.1
             tmp.2 = load p.8
             tmp.3 = load tmp.2
-            u.9 = tmp.3
-            tmp.4 = get_address u_ptr.10
-            return tmp.4
+            tmp.4 = tmp.3
+            u.9 = tmp.4
+            tmp.5 = get_address u_ptr.10
+            return tmp.5
             return 0
         }
         global function main() { 
             i.14 = 0
-            tmp.5 = get_address i.14
-            i_ptr.15 = tmp.5
-            tmp.6 = get_address i_ptr.15
-            ptr_to_iptr.16 = tmp.6
+            tmp.6 = get_address i.14
+            i_ptr.15 = tmp.6
+            tmp.7 = get_address i_ptr.15
+            ptr_to_iptr.16 = tmp.7
             d1.17 = 0D
             d2.18 = 10D
-            tmp.7 = get_address d1.17
-            d_ptr.19 = tmp.7
-            tmp.8 = return_3()
-            i.14 = tmp.8
-            tmp.9 = i.14 != 3
-            if !tmp.9 jump end_if_0
+            tmp.8 = get_address d1.17
+            d_ptr.19 = tmp.8
+            tmp.9 = return_3()
+            i.14 = tmp.9
+            tmp.10 = i.14 != 3
+            if !tmp.10 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.10 = load i_ptr.15
-            tmp.11 = tmp.10 != 3
-            if !tmp.11 jump end_if_2
+            tmp.11 = load i_ptr.15
+            tmp.12 = tmp.11 != 3
+            if !tmp.12 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.12 = two_pointers(d2.18, d_ptr.19)
-            l_ptr.20 = tmp.12
-            tmp.14 = get_address l
-            tmp.13 = l_ptr.20 != tmp.14
-            if !tmp.13 jump end_if_4
+            tmp.13 = two_pointers(d2.18, d_ptr.19)
+            l_ptr.20 = tmp.13
+            tmp.15 = get_address l
+            tmp.14 = l_ptr.20 != tmp.15
+            if !tmp.14 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.15 = load l_ptr.20
-            tmp.17 = sign_extend 100
-            tmp.16 = tmp.15 != tmp.17
-            if !tmp.16 jump end_if_6
+            tmp.16 = load l_ptr.20
+            tmp.18 = sign_extend 100
+            tmp.17 = tmp.16 != tmp.18
+            if !tmp.17 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.18 = load d_ptr.19
-            tmp.19 = tmp.18 != 10D
-            if !tmp.19 jump end_if_8
+            tmp.19 = load d_ptr.19
+            tmp.20 = tmp.19 != 10D
+            if !tmp.20 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.20 = d1.17 != 10D
-            if !tmp.20 jump end_if_10
+            tmp.21 = d1.17 != 10D
+            if !tmp.21 jump end_if_10
             return 6
         
           end_if_10:
-            tmp.21 = pointers_to_pointers(ptr_to_iptr.16)
-            ptr_to_uptr.21 = tmp.21
-            tmp.22 = load ptr_to_uptr.21
-            tmp.23 = load tmp.22
-            tmp.25 = 3
-            tmp.24 = tmp.23 != tmp.25
-            if !tmp.24 jump end_if_12
+            tmp.22 = pointers_to_pointers(ptr_to_iptr.16)
+            ptr_to_uptr.21 = tmp.22
+            tmp.23 = load ptr_to_uptr.21
+            tmp.24 = load tmp.23
+            tmp.26 = 3
+            tmp.25 = tmp.24 != tmp.26
+            if !tmp.25 jump end_if_12
             return 7
         
           end_if_12:
@@ -20928,7 +20929,7 @@ fn test_chapter_14_valid_dereference_dereference_expression_result() {
             tmp.14 = get_address one
             ptr_to_one.3 = tmp.14
             ptr_var.2 = ptr_to_one.3
-            tmp.15 = load ptr_var.2
+            tmp.15 = load ptr_to_one.3
             tmp.16 = tmp.15 != 1
             if !tmp.16 jump end_if_10
             return 4
@@ -21679,40 +21680,44 @@ fn test_chapter_14_valid_extra_credit_bitwise_ops_with_dereferenced_ptrs() {
             tmp.2 = get_address ul.1
             ul_ptr.3 = tmp.2
             tmp.3 = load ui_ptr.2
-            tmp.5 = load ul_ptr.3
-            tmp.4 = tmp.3 & tmp.5
-            tmp.7 = sign_extend 0
-            tmp.6 = tmp.4 != tmp.7
-            if !tmp.6 jump end_if_0
+            tmp.4 = zero_extend tmp.3
+            tmp.6 = load ul_ptr.3
+            tmp.5 = tmp.4 & tmp.6
+            tmp.8 = sign_extend 0
+            tmp.7 = tmp.5 != tmp.8
+            if !tmp.7 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.8 = load ui_ptr.2
-            tmp.10 = load ul_ptr.3
-            tmp.9 = tmp.8 | tmp.10
-            tmp.11 = tmp.9 != 9223372041149743103UL
-            if !tmp.11 jump end_if_2
+            tmp.9 = load ui_ptr.2
+            tmp.10 = zero_extend tmp.9
+            tmp.12 = load ul_ptr.3
+            tmp.11 = tmp.10 | tmp.12
+            tmp.13 = tmp.11 != 9223372041149743103UL
+            if !tmp.13 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.12 = - 1
-            i.4 = tmp.12
-            tmp.13 = get_address i.4
-            i_ptr.5 = tmp.13
-            tmp.14 = load i_ptr.5
-            tmp.15 = tmp.14 & ul.1
-            tmp.17 = load ul_ptr.3
-            tmp.16 = tmp.15 != tmp.17
-            if !tmp.16 jump end_if_4
+            tmp.14 = - 1
+            i.4 = tmp.14
+            tmp.15 = get_address i.4
+            i_ptr.5 = tmp.15
+            tmp.16 = load i_ptr.5
+            tmp.17 = sign_extend tmp.16
+            tmp.18 = tmp.17 & ul.1
+            tmp.20 = load ul_ptr.3
+            tmp.19 = tmp.18 != tmp.20
+            if !tmp.19 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.18 = load i_ptr.5
-            tmp.20 = load ul_ptr.3
-            tmp.19 = tmp.18 | tmp.20
-            tmp.22 = sign_extend i.4
-            tmp.21 = tmp.19 != tmp.22
-            if !tmp.21 jump end_if_6
+            tmp.21 = load i_ptr.5
+            tmp.22 = sign_extend tmp.21
+            tmp.24 = load ul_ptr.3
+            tmp.23 = tmp.22 | tmp.24
+            tmp.26 = sign_extend i.4
+            tmp.25 = tmp.23 != tmp.26
+            if !tmp.25 jump end_if_6
             return 4
         
           end_if_6:
@@ -21776,47 +21781,49 @@ fn test_chapter_14_valid_extra_credit_compound_assign_conversion() {
             tmp.6 = get_address i.2
             i_ptr.3 = tmp.6
             tmp.7 = load i_ptr.3
-            tmp.8 = tmp.7 % 4294967200U
-            tmp.9 = tmp.8
-            i_ptr.3 = store tmp.9
+            tmp.8 = tmp.7
+            tmp.9 = tmp.8 % 4294967200U
             tmp.10 = tmp.9
-            tmp.11 = load i_ptr.3
-            tmp.12 = tmp.11 != 46
-            if !tmp.12 jump end_if_2
+            i_ptr.3 = store tmp.10
+            tmp.11 = tmp.10
+            tmp.12 = load i_ptr.3
+            tmp.13 = tmp.12 != 46
+            if !tmp.13 jump end_if_2
             return 2
         
           end_if_2:
             ui.4 = 4294967295U
-            tmp.13 = uint_to_double ui.4
-            tmp.15 = load d_ptr.1
-            tmp.14 = tmp.13 / tmp.15
-            tmp.16 = double_to_uint tmp.14
-            ui.4 = tmp.16
-            tmp.17 = double_to_uint ui.4
-            tmp.18 = ui.4 != 858993U
-            if !tmp.18 jump end_if_4
+            tmp.14 = uint_to_double ui.4
+            tmp.16 = load d_ptr.1
+            tmp.15 = tmp.14 / tmp.16
+            tmp.17 = double_to_uint tmp.15
+            ui.4 = tmp.17
+            tmp.18 = double_to_uint tmp.17
+            tmp.19 = ui.4 != 858993U
+            if !tmp.19 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.19 = - 10
-            i.2 = tmp.19
+            tmp.20 = - 10
+            i.2 = tmp.20
             ul.5 = 9223372036854775807UL
-            tmp.20 = get_address ul.5
-            ul_ptr.6 = tmp.20
-            tmp.21 = load i_ptr.3
-            tmp.23 = load ul_ptr.6
-            tmp.22 = tmp.21 - tmp.23
-            tmp.24 = truncate tmp.22
-            i_ptr.3 = store tmp.24
-            tmp.25 = truncate tmp.24
-            tmp.27 = - 9
-            tmp.26 = i.2 != tmp.27
-            if !tmp.26 jump end_if_6
+            tmp.21 = get_address ul.5
+            ul_ptr.6 = tmp.21
+            tmp.22 = load i_ptr.3
+            tmp.23 = sign_extend tmp.22
+            tmp.25 = load ul_ptr.6
+            tmp.24 = tmp.23 - tmp.25
+            tmp.26 = truncate tmp.24
+            i_ptr.3 = store tmp.26
+            tmp.27 = truncate tmp.26
+            tmp.29 = - 9
+            tmp.28 = i.2 != tmp.29
+            if !tmp.28 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.28 = ul.5 != 9223372036854775807UL
-            if !tmp.28 jump end_if_8
+            tmp.30 = ul.5 != 9223372036854775807UL
+            if !tmp.30 jump end_if_8
             return 5
         
           end_if_8:
@@ -21982,12 +21989,13 @@ fn test_chapter_14_valid_extra_credit_compound_bitwise_dereferenced_ptrs() {
             tmp.13 = get_address l.3
             l_ptr.5 = tmp.13
             tmp.14 = load ui_ptr.4
-            tmp.16 = load l_ptr.5
-            tmp.15 = tmp.14 ^ tmp.16
-            tmp.17 = truncate tmp.15
-            ui_ptr.4 = store tmp.17
-            tmp.18 = truncate tmp.17
-            if !tmp.18 jump end_if_4
+            tmp.15 = zero_extend tmp.14
+            tmp.17 = load l_ptr.5
+            tmp.16 = tmp.15 ^ tmp.17
+            tmp.18 = truncate tmp.16
+            ui_ptr.4 = store tmp.18
+            tmp.19 = truncate tmp.18
+            if !tmp.19 jump end_if_4
             return 3
         
           end_if_4:
@@ -21995,15 +22003,15 @@ fn test_chapter_14_valid_extra_credit_compound_bitwise_dereferenced_ptrs() {
             return 4
         
           end_if_6:
-            tmp.19 = i.1 != 123456
-            if !tmp.19 jump end_if_8
+            tmp.20 = i.1 != 123456
+            if !tmp.20 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.21 = - 252645136
-            tmp.22 = sign_extend tmp.21
-            tmp.20 = l.3 != tmp.22
-            if !tmp.20 jump end_if_10
+            tmp.22 = - 252645136
+            tmp.23 = sign_extend tmp.22
+            tmp.21 = l.3 != tmp.23
+            if !tmp.21 jump end_if_10
             return 6
         
           end_if_10:
@@ -22041,12 +22049,11 @@ fn test_chapter_14_valid_extra_credit_eval_compound_lhs_once() {
         }
         global function main() { 
             tmp.2 = print_A()
-            tmp.3 = print_A()
-            tmp.4 = load tmp.3
-            tmp.5 = tmp.4 + 5
-            tmp.2 = store tmp.5
-            tmp.6 = i != 5
-            if !tmp.6 jump end_if_0
+            tmp.3 = load tmp.2
+            tmp.4 = tmp.3 + 5
+            tmp.2 = store tmp.4
+            tmp.5 = i != 5
+            if !tmp.5 jump end_if_0
             return 1
         
           end_if_0:
@@ -22115,7 +22122,7 @@ fn test_chapter_14_valid_extra_credit_incr_and_decr_through_pointer() {
             y.1 = tmp.0
             tmp.1 = load y.1
             tmp.2 = inc tmp.1
-            tmp.1 = tmp.2
+            y.1 = store tmp.2
             tmp.3 = tmp.2 != 11
             if !tmp.3 jump end_if_0
             return 1
@@ -22128,7 +22135,7 @@ fn test_chapter_14_valid_extra_credit_incr_and_decr_through_pointer() {
           end_if_2:
             tmp.5 = load y.1
             tmp.6 = dec tmp.5
-            tmp.5 = tmp.6
+            y.1 = store tmp.6
             tmp.7 = tmp.6 != 10
             if !tmp.7 jump end_if_4
             return 3
@@ -22142,7 +22149,7 @@ fn test_chapter_14_valid_extra_credit_incr_and_decr_through_pointer() {
             tmp.9 = load y.1
             tmp.10 = tmp.9
             tmp.11 = inc tmp.9
-            tmp.9 = tmp.11
+            y.1 = store tmp.11
             tmp.12 = tmp.10 != 10
             if !tmp.12 jump end_if_8
             return 5
@@ -22156,7 +22163,7 @@ fn test_chapter_14_valid_extra_credit_incr_and_decr_through_pointer() {
             tmp.14 = load y.1
             tmp.15 = tmp.14
             tmp.16 = dec tmp.14
-            tmp.14 = tmp.16
+            y.1 = store tmp.16
             tmp.17 = tmp.15 != 11
             if !tmp.17 jump end_if_12
             return 7
@@ -22174,7 +22181,7 @@ fn test_chapter_14_valid_extra_credit_incr_and_decr_through_pointer() {
             tmp.21 = load ul_ptr.3
             tmp.22 = tmp.21
             tmp.23 = dec tmp.21
-            tmp.21 = tmp.23
+            ul_ptr.3 = store tmp.23
             if !tmp.22 jump end_if_16
             return 9
         
@@ -22189,7 +22196,7 @@ fn test_chapter_14_valid_extra_credit_incr_and_decr_through_pointer() {
             d_ptr.5 = tmp.25
             tmp.26 = load d_ptr.5
             tmp.27 = inc tmp.26
-            tmp.26 = tmp.27
+            d_ptr.5 = store tmp.27
             tmp.28 = tmp.27 != 1D
             if !tmp.28 jump end_if_20
             return 11

@@ -492,24 +492,23 @@ impl PrettyAst {
         }
     }
     fn from_expression(expression: &ast::Node<ast::Expression>) -> PrettyAst {
-        let node = expression.id;
         match expression.as_ref() {
             ast::Expression::Constant(value) => Self::from_constant(value),
-            ast::Expression::Var(name) => Self::new(format!("({node}) Var [{name}]"), vec![]),
+            ast::Expression::Var(name) => Self::new(format!("Var [{name}]"), vec![]),
             ast::Expression::Unary { op, expr } => Self::new(
-                format!("({node}) Unary [{}]", Self::unary_op(op)),
+                format!("Unary [{}]", Self::unary_op(op)),
                 vec![Self::from_expression(expr)],
             ),
             ast::Expression::Postfix { op, expr } => Self::new(
-                format!("({node}) Postfix [{}]", Self::postfix_op(op)),
+                format!("Postfix [{}]", Self::postfix_op(op)),
                 vec![Self::from_expression(expr)],
             ),
             ast::Expression::Binary { op, left, right } => Self::new(
-                format!("({node}) Binary [{}]", Self::binary_op(op)),
+                format!("Binary [{}]", Self::binary_op(op)),
                 vec![Self::from_expression(left), Self::from_expression(right)],
             ),
             ast::Expression::Assignment { op, left, right } => Self::new(
-                format!("({node}) Assign [{}]", Self::assign_op(op)),
+                format!("Assign [{}]", Self::assign_op(op)),
                 vec![Self::from_expression(left), Self::from_expression(right)],
             ),
             ast::Expression::Conditional {
@@ -538,10 +537,9 @@ impl PrettyAst {
             ast::Expression::AddressOf(expr) => {
                 Self::new("AddressOf", vec![Self::from_expression(expr)])
             }
-            ast::Expression::Dereference(expr) => Self::new(
-                format!("({node}) Dereference"),
-                vec![Self::from_expression(expr)],
-            ),
+            ast::Expression::Dereference(expr) => {
+                Self::new("Dereference", vec![Self::from_expression(expr)])
+            }
         }
     }
     fn from_block_item(item: &ast::BlockItem) -> PrettyAst {
