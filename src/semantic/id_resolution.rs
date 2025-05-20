@@ -1,6 +1,6 @@
 use crate::ast::{
-    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, InnerRef,
-    Node, Program, Statement, StorageClass, VarDeclaration,
+    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier,
+    Initializer, InnerRef, Node, Program, Statement, StorageClass, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
@@ -92,6 +92,9 @@ impl Resolver {
             );
             decl.name.symbol = unique_name;
             if let Some(init) = &mut decl.init {
+                let Initializer::Single(init) = init.as_mut() else {
+                    todo!()
+                };
                 self.resolve_expression(init)?;
             }
         }
@@ -281,6 +284,7 @@ impl Resolver {
             | Expression::AddressOf(expr) => {
                 self.resolve_expression(expr)?;
             }
+            Expression::Subscript(_, _) => todo!(),
         }
         Ok(())
     }

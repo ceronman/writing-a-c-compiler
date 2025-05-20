@@ -186,6 +186,9 @@ impl TackyGenerator {
             return;
         }
         if let Some(init) = &decl.init {
+            let ast::Initializer::Single(init) = init.as_ref() else {
+                todo!()
+            };
             let result = self.emit_expr(init);
             self.instructions.push(Instruction::Copy {
                 src: result,
@@ -619,6 +622,7 @@ impl TackyGenerator {
                 }
                 ExprResult::Dereference(ptr) => ptr,
             },
+            ast::Expression::Subscript(_, _) => todo!(),
         };
         ExprResult::Operand(result)
     }
@@ -801,6 +805,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                         Type::Double => StaticInit::Double(0.0),
                         Type::Pointer(_) => StaticInit::ULong(0),
                         Type::Function(_) => unreachable!(),
+                        Type::Array(_, _) => todo!(),
                     };
                     top_level.push(TopLevel::Variable(StaticVariable {
                         name: name.clone(),

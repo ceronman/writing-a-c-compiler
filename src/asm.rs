@@ -52,6 +52,7 @@ impl SemanticData {
             Type::Double => AsmType::Double,
             Type::Function(_) => unreachable!(),
             Type::Pointer(_) => AsmType::Quadword,
+            Type::Array(_, _) => todo!(),
         }
     }
 
@@ -70,6 +71,7 @@ impl SemanticData {
                 Type::Double => true,
                 Type::Function(_) => unreachable!(),
                 Type::Pointer(_) => false,
+                Type::Array(_, _) => todo!(),
             },
         }
     }

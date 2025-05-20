@@ -1,10 +1,11 @@
 #[cfg(test)]
 mod test;
 
+use crate::asm::ir::CondCode::P;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
-    FunctionDeclaration, FunctionType, Identifier, Node, PostfixOp, Program, Statement,
-    StorageClass, Type, UnaryOp, VarDeclaration,
+    FunctionDeclaration, FunctionType, Identifier, Initializer, Node, PostfixOp, Program,
+    Statement, StorageClass, Type, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{IntKind, Lexer, Span, Token, TokenKind};
@@ -38,6 +39,10 @@ impl TokenKind {
 enum Declarator {
     Identifier(Node<Identifier>),
     Pointer(Node<Declarator>),
+    Array {
+        size: u64,
+        declarator: Node<Declarator>,
+    },
     Function {
         params: Vec<Param>,
         declarator: Node<Declarator>,
@@ -51,6 +56,7 @@ struct Param {
 
 enum AbstractDeclarator {
     Pointer(Node<AbstractDeclarator>),
+    Array(Node<AbstractDeclarator>, u64),
     Base,
 }
 
@@ -131,7 +137,7 @@ impl<'src> Parser<'src> {
             }
         } else {
             let init = if self.matches(TokenKind::Equal) {
-                Some(self.expression()?)
+                Some(self.initializer()?)
             } else {
                 None
             };
@@ -145,6 +151,32 @@ impl<'src> Parser<'src> {
                     storage_class,
                 }),
             ))
+        }
+    }
+
+    fn initializer(&mut self) -> Result<Node<Initializer>> {
+        let begin = self.current.span;
+        if self.matches(TokenKind::OpenBrace) {
+            let mut end;
+            let mut initializers = Vec::new();
+            loop {
+                let inner = self.initializer()?;
+                end = inner.span;
+                initializers.push(inner);
+                if self.matches(TokenKind::Comma) {
+                    if self.matches(TokenKind::CloseBrace) {
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+                self.expect(TokenKind::CloseBrace)?;
+                break;
+            }
+            Ok(self.node(begin + end, Initializer::Compound(initializers)))
+        } else {
+            let expr = self.expression()?;
+            Ok(self.node(expr.span, Initializer::Single(expr)))
         }
     }
 
@@ -197,9 +229,40 @@ impl<'src> Parser<'src> {
                     declarator: simple,
                 },
             ))
+        } else if self.matches(TokenKind::OpenBracket) {
+            let mut declarator = simple;
+            loop {
+                let size = self.parse_array_index()?;
+                end = self.current.span;
+                self.expect(TokenKind::CloseBracket)?;
+                declarator = self.node(begin + end, Declarator::Array { size, declarator });
+                if !self.matches(TokenKind::OpenBracket) {
+                    break;
+                }
+            }
+            Ok(declarator)
         } else {
             Ok(simple)
         }
+    }
+
+    fn parse_array_index(&mut self) -> Result<u64> {
+        let size_expr = self.expression()?;
+        let Expression::Constant(size_const) = size_expr.as_ref() else {
+            return Err(CompilerError {
+                kind: ErrorKind::Parse,
+                msg: "Array size should be a constant".into(),
+                span: size_expr.span,
+            });
+        };
+        if !size_const.is_int() {
+            return Err(CompilerError {
+                kind: ErrorKind::Parse,
+                msg: "Array size should be an integer constant".into(),
+                span: size_expr.span,
+            });
+        }
+        Ok(size_const.as_u64())
     }
 
     fn parse_param(&mut self) -> Result<Param> {
@@ -222,6 +285,17 @@ impl<'src> Parser<'src> {
                     data: Box::new(Type::Pointer(base_type.data)),
                 };
                 Self::process_declarator(declarator, derived_type)
+            }
+            Declarator::Array {
+                size,
+                declarator: inner,
+            } => {
+                let derived_type = Node {
+                    id: base_type.id,
+                    span: base_type.span,
+                    data: Box::new(Type::Array(base_type.data, size)),
+                };
+                Self::process_declarator(inner, derived_type)
             }
             Declarator::Function { params, declarator } => {
                 let mut param_names = Vec::new();
@@ -660,6 +734,17 @@ impl<'src> Parser<'src> {
                 continue;
             }
 
+            if self.matches(TokenKind::OpenBracket) {
+                let precedence = 14;
+                if precedence < min_precedence {
+                    break;
+                }
+                let index = self.expression()?;
+                let end = self.expect(TokenKind::CloseBracket)?.span;
+                expr = self.node(expr.span + end, Expression::Subscript(expr, index));
+                continue;
+            }
+
             let precedence = match self.current.kind {
                 TokenKind::Equal
                 | TokenKind::PlusEqual
@@ -745,7 +830,7 @@ impl<'src> Parser<'src> {
                 begin + declarator.span,
                 AbstractDeclarator::Pointer(declarator),
             ))
-        } else if let TokenKind::OpenParen = self.current.kind {
+        } else if let TokenKind::OpenParen | TokenKind::OpenBracket = self.current.kind {
             self.direct_abstract_declarator()
         } else {
             Ok(self.node(begin, AbstractDeclarator::Base))
@@ -753,10 +838,28 @@ impl<'src> Parser<'src> {
     }
 
     fn direct_abstract_declarator(&mut self) -> Result<Node<AbstractDeclarator>> {
-        let begin = self.expect(TokenKind::OpenParen)?.span;
-        let decl = self.abstract_declarator()?;
-        let end = self.expect(TokenKind::CloseParen)?.span;
-        Ok(self.node(begin + end, *decl.data))
+        // TODO: deduplicate
+        if self.current.kind == TokenKind::OpenParen {
+            let begin = self.expect(TokenKind::OpenParen)?.span;
+            let mut decl = self.abstract_declarator()?;
+            let mut end = self.expect(TokenKind::CloseParen)?.span;
+            while self.matches(TokenKind::OpenBracket) {
+                let size = self.parse_array_index()?;
+                end = self.expect(TokenKind::CloseBracket)?.span;
+                decl = self.node(begin + end, AbstractDeclarator::Array(decl, size));
+            }
+            Ok(self.node(begin + end, *decl.data))
+        } else {
+            let begin = self.current.span;
+            let mut end = begin;
+            let mut decl = self.node(begin, AbstractDeclarator::Base);
+            while self.matches(TokenKind::OpenBracket) {
+                let size = self.parse_array_index()?;
+                end = self.expect(TokenKind::CloseBracket)?.span;
+                decl = self.node(begin + end, AbstractDeclarator::Array(decl, size));
+            }
+            Ok(self.node(begin + end, *decl.data))
+        }
     }
 
     fn process_abstract_declaration(
@@ -769,6 +872,14 @@ impl<'src> Parser<'src> {
                     id: declarator.id,
                     span: declarator.span,
                     data: Box::new(Type::Pointer(base_ty.data)),
+                };
+                Self::process_abstract_declaration(derived_type, inner)
+            }
+            AbstractDeclarator::Array(inner, size) => {
+                let derived_type = Node {
+                    id: declarator.id,
+                    span: declarator.span,
+                    data: Box::new(Type::Array(base_ty.data, size)),
                 };
                 Self::process_abstract_declaration(derived_type, inner)
             }

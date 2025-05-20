@@ -1,7 +1,7 @@
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
-    FunctionDeclaration, FunctionType, InnerRef, Node, NodeId, Program, Statement, StorageClass,
-    Type, UnaryOp, VarDeclaration,
+    FunctionDeclaration, FunctionType, Initializer, InnerRef, Node, NodeId, Program, Statement,
+    StorageClass, Type, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::semantic::{
@@ -74,6 +74,9 @@ impl TypeChecker {
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
             let initial_value = if let Some(init) = &decl.init {
+                let Initializer::Single(init) = init.as_ref() else {
+                    todo!();
+                };
                 if let Expression::Constant(c) = init.as_ref() {
                     InitialValue::Initial(StaticInit::from_const(c))
                 } else {
@@ -92,6 +95,7 @@ impl TypeChecker {
                     Type::Double => InitialValue::Initial(StaticInit::Double(0.0)),
                     Type::Pointer(_) => InitialValue::Initial(StaticInit::ULong(0)),
                     Type::Function(_) => unreachable!(),
+                    Type::Array(_, _) => todo!(),
                 }
             };
             if let Some(data) = self.symbols.get(&name) {
@@ -118,6 +122,9 @@ impl TypeChecker {
             self.symbols
                 .insert(decl.name.symbol.clone(), SymbolData::local(decl.ty.clone()));
             if let Some(init) = &decl.init {
+                let Initializer::Single(init) = init.as_ref() else {
+                    todo!()
+                };
                 let init_ty = self.check_expression(init)?;
                 self.convert_by_assignment(init, &init_ty, &decl.ty)?;
             }
@@ -127,6 +134,9 @@ impl TypeChecker {
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let mut initial_value = if let Some(init) = &decl.init {
+            let Initializer::Single(init) = init.as_ref() else {
+                todo!()
+            };
             let Expression::Constant(constant) = init.as_ref() else {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
@@ -370,6 +380,7 @@ impl TypeChecker {
                     Type::ULong => Constant::ULong(case_constant),
                     Type::Double | Type::Function(_) => unreachable!(),
                     Type::Pointer(_) => Constant::ULong(case_constant),
+                    Type::Array(_, _) => todo!(),
                 };
 
                 if switch_cases.values.iter().any(|(v, _)| *v == case_value) {
@@ -731,6 +742,7 @@ impl TypeChecker {
                     });
                 }
             }
+            Expression::Subscript(_, _) => todo!(),
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)

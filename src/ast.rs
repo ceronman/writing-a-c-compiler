@@ -122,6 +122,7 @@ pub enum Expression {
     },
     Dereference(Node<Expression>),
     AddressOf(Node<Expression>),
+    Subscript(Node<Expression>, Node<Expression>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -153,6 +154,7 @@ pub enum Type {
     Double,
     Function(FunctionType),
     Pointer(Box<Type>),
+    Array(Box<Type>, u64),
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -164,7 +166,7 @@ pub struct FunctionType {
 #[derive(Debug)]
 pub struct VarDeclaration {
     pub name: Node<Identifier>,
-    pub init: Option<Node<Expression>>,
+    pub init: Option<Node<Initializer>>,
     pub ty: Type,
     pub storage_class: Option<Node<StorageClass>>,
 }
@@ -176,6 +178,12 @@ pub struct FunctionDeclaration {
     pub body: Option<Node<Block>>,
     pub ty: FunctionType,
     pub storage_class: Option<Node<StorageClass>>,
+}
+
+#[derive(Debug)]
+pub enum Initializer {
+    Single(Node<Expression>),
+    Compound(Vec<Node<Initializer>>),
 }
 
 #[derive(Debug)]
@@ -301,6 +309,7 @@ impl Type {
             Type::Double => 8,
             Type::Function(_) => panic!("Size of function type"),
             Type::Pointer(_) => 8,
+            Type::Array(ty, size) => todo!(),
         }
     }
 
@@ -313,6 +322,7 @@ impl Type {
             Type::Double => false,
             Type::Function(_) => panic!("Sign of function type"),
             Type::Pointer(_) => false,
+            Type::Array(_, _) => todo!(),
         }
     }
 }

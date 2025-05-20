@@ -249,6 +249,12 @@ fn pp_type(file: &mut impl Write, ty: &ast::Type) -> Result<()> {
             pp_type(file, referenced.as_ref())?;
             write!(file, ")")
         }
+        ast::Type::Array(inner, size) => {
+            write!(file, "Array(")?;
+            write!(file, "{size},")?;
+            pp_type(file, inner.as_ref())?;
+            write!(file, ")")
+        }
     }?;
     Ok(())
 }
@@ -363,7 +369,7 @@ impl PrettyAst {
             Self::new("Type", vec![Self::from_type(&declaration.ty)]),
         ];
         if let Some(init) = &declaration.init {
-            children.push(Self::new("Initializer", vec![Self::from_expression(init)]));
+            children.push(Self::new("Initializer", vec![Self::from_initializer(init)]));
         }
         if let Some(s) = &declaration.storage_class {
             match s.as_ref() {
@@ -376,6 +382,14 @@ impl PrettyAst {
             }
         }
         Self::new("VarDeclaration", children)
+    }
+    fn from_initializer(initializer: &ast::Node<ast::Initializer>) -> PrettyAst {
+        match initializer.as_ref() {
+            ast::Initializer::Single(expr) => Self::from_expression(expr),
+            ast::Initializer::Compound(elements) => {
+                Self::new("Compound", elements.iter().map(Self::from_initializer))
+            }
+        }
     }
     fn storage_class(storage: &Option<ast::Node<ast::StorageClass>>) -> &str {
         if let Some(s) = storage {
@@ -540,6 +554,10 @@ impl PrettyAst {
             ast::Expression::Dereference(expr) => {
                 Self::new("Dereference", vec![Self::from_expression(expr)])
             }
+            ast::Expression::Subscript(expr, index) => Self::new(
+                "Subscript",
+                vec![Self::from_expression(expr), Self::from_expression(index)],
+            ),
         }
     }
     fn from_block_item(item: &ast::BlockItem) -> PrettyAst {
@@ -577,6 +595,13 @@ impl PrettyAst {
                 ],
             ),
             ast::Type::Pointer(t) => Self::new("Pointer", vec![Self::from_type(t.as_ref())]),
+            ast::Type::Array(t, size) => Self::new(
+                "Array",
+                vec![
+                    Self::new(format!("{size}"), vec![]),
+                    Self::from_type(t.as_ref()),
+                ],
+            ),
         }
     }
 

@@ -42154,3 +42154,12927 @@ fn test_chapter_14_valid_libraries_static_pointer_client() {
     "#;
     assert_eq!(dump_ast(src), dedent(expected));
 }
+
+#[test]
+fn test_chapter_15_invalid_parse_array_of_functions() {
+    assert_error(
+        r#"
+        int foo[3](int a);
+                //^ Expected ';', but found '('
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_array_of_functions_2() {
+    assert_error(
+        r#"
+        
+        int (foo[3])(int a);
+          //^^^^^^^^ Can't apply additional derivations to a function type
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_double_declarator() {
+    assert_error(
+        r#"
+        int main(void) {
+            int x[2.0];
+                //^^^ Array size should be an integer constant
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_empty_initializer_list() {
+    assert_error(
+        r#"
+        int main(void) {
+            int arr[1] = {};
+                        //^ Expected expression, but found '}'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_malformed_abstract_array_declarator() {
+    assert_error(
+        r#"
+        int main(void) {
+            return (int[3] *)0;
+                         //^ Expected ')', but found '*'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_malformed_abstract_array_declarator_2() {
+    assert_error(
+        r#"
+        int main(void) {
+            return (int[3](*))0;
+                        //^ Expected ')', but found '('
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_malformed_array_declarator() {
+    assert_error(
+        r#"
+        int main(void) {
+            int foo[[10]];
+                  //^ Expected expression, but found '['
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_malformed_array_declarator_2() {
+    assert_error(
+        r#"
+        int main(void) {
+            int (*)(ptr_to_array[3]) = 0;
+                //^ Expected identifier, but found ')'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_malformed_array_declarator_3() {
+    assert_error(
+        r#"
+        int main(void) {
+            int [3] arr = {1, 2, 3};
+              //^ Expected identifier, but found '['
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_malformed_type_name() {
+    assert_error(
+        r#"
+        int main(void) {
+            int a = 4;
+            int *foo = &a;
+            int *bar[3] = (*[3]) foo;
+                          //^ Expected expression, but found '['
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_malformed_type_name_2() {
+    assert_error(
+        r#"
+        int main(void) {
+            int *ptr;
+            int *array_pointer[3] = ([3](*)) ptr;
+                                   //^ Expected expression, but found '['
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_mismatched_subscript() {
+    assert_error(
+        r#"
+        int main(void) {
+            int indices[3] = {1, 2, 3};
+            int vals[3] = {4, 5, 6};
+            return vals[indices[1];
+                                //^ Expected ']', but found ';'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_negative_array_dimension() {
+    assert_error(
+        r#"
+        int main(void)
+        {
+            int arr[-3];
+                  //^^ Array size should be a constant
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_parenthesized_array_of_functions() {
+    assert_error(
+        r#"
+        int(foo[3])(int a);
+         //^^^^^^^^ Can't apply additional derivations to a function type
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_return_array() {
+    assert_error(
+        r#"
+        
+        int foo(void)[3];
+                   //^ Expected ';', but found '['
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_unclosed_initializer() {
+    assert_error(
+        r#"
+        int main(void) {
+            int arr = {1, 2;
+                         //^ Expected '}', but found ';'
+            return arr[0];
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_unclosed_nested_initializer() {
+    assert_error(
+        r#"
+        int main(void) {
+            int arr[2][2] = {{ 1, 2}, {3, 4};
+                                          //^ Expected '}', but found ';'
+            return arr[0][0];
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_parse_unclosed_subscript() {
+    assert_error(
+        r#"
+        int main(void) {
+            int arr[] = {1, 2, 3};
+                  //^ Expected expression, but found ']'
+            return arr[1;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_chapter_15_invalid_types_add_two_pointers() {
+    let src = r#"
+        int main(void)
+        {
+            int *x = 0;
+            int *y = 0;
+            return (x + y == 0);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Binary [+]
+                            │   ├── Var [x]
+                            │   ╰── Var [y]
+                            ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_assign_incompatible_pointer_types() {
+    let src = r#"
+        int main(void) {
+            int four_element_array[4] = {1, 2, 3, 4};
+            int (*arr)[3] = &four_element_array;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── four_element_array
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 4
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ├── Constant Int [3]
+                    │           ╰── Constant Int [4]
+                    ╰── VarDeclaration
+                        ├── Name
+                        │   ╰── arr
+                        ├── Type
+                        │   ╰── Pointer
+                        │       ╰── Array
+                        │           ├── 3
+                        │           ╰── Int
+                        ╰── Initializer
+                            ╰── AddressOf
+                                ╰── Var [four_element_array]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_assign_to_array() {
+    let src = r#"
+        int main(void)
+        {
+            int arr[3] = {1, 2, 3};
+            int arr2[3] = {4, 5, 6};
+            arr = arr2;
+            return arr[0];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr2
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [4]
+                    │           ├── Constant Int [5]
+                    │           ╰── Constant Int [6]
+                    ├── Assign [=]
+                    │   ├── Var [arr]
+                    │   ╰── Var [arr2]
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [arr]
+                            ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_assign_to_array_2() {
+    let src = r#"
+        int main(void)
+        {
+            int dim2[1][2] = {{1, 2}};
+            int dim[2] = {3, 4};
+            dim2[0] = dim;
+            return dim[0];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── dim2
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 1
+                    │   │       ╰── Array
+                    │   │           ├── 2
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── Constant Int [1]
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── dim
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [3]
+                    │           ╰── Constant Int [4]
+                    ├── Assign [=]
+                    │   ├── Subscript
+                    │   │   ├── Var [dim2]
+                    │   │   ╰── Constant Int [0]
+                    │   ╰── Var [dim]
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [dim]
+                            ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_assign_to_array_3() {
+    let src = r#"
+        int main(void) {
+            int arr[3] = { 1, 2, 3};
+            int (*ptr_to_array)[3];
+            *ptr_to_array = arr;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr_to_array
+                    │   ╰── Type
+                    │       ╰── Pointer
+                    │           ╰── Array
+                    │               ├── 3
+                    │               ╰── Int
+                    ╰── Assign [=]
+                        ├── Dereference
+                        │   ╰── Var [ptr_to_array]
+                        ╰── Var [arr]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_bad_arg_type() {
+    let src = r#"
+        int foo(int **x) {
+            return x[0][0];
+        }
+        int main(void) {
+            int arr[1] = {10};
+            return foo(&arr);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [foo]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── x
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Pointer
+            │   │                   ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Subscript
+            │               ├── Subscript
+            │               │   ├── Var [x]
+            │               │   ╰── Constant Int [0]
+            │               ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 1
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Constant Int [10]
+                    ╰── Return
+                        ╰── FunctionCall [foo]
+                            ╰── AddressOf
+                                ╰── Var [arr]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_cast_to_array_type() {
+    let src = r#"
+        int main(void)
+        {
+            int arr[10];
+            return (int[10])arr;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ╰── Type
+                    │       ╰── Array
+                    │           ├── 10
+                    │           ╰── Int
+                    ╰── Return
+                        ╰── Cast
+                            ├── Target
+                            │   ╰── Array
+                            │       ├── 10
+                            │       ╰── Int
+                            ╰── Expression
+                                ╰── Var [arr]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_cast_to_array_type_2() {
+    let src = r#"
+        int main(void)
+        {
+            long arr[10];
+            return (int *[10])arr;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ╰── Type
+                    │       ╰── Array
+                    │           ├── 10
+                    │           ╰── Long
+                    ╰── Return
+                        ╰── Cast
+                            ├── Target
+                            │   ╰── Array
+                            │       ├── 10
+                            │       ╰── Pointer
+                            │           ╰── Int
+                            ╰── Expression
+                                ╰── Var [arr]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_cast_to_array_type_3() {
+    let src = r#"
+        int main(void)
+        {
+            long arr[6];
+            return ((long(([2])[3]))arr);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ╰── Type
+                    │       ╰── Array
+                    │           ├── 6
+                    │           ╰── Long
+                    ╰── Return
+                        ╰── Cast
+                            ├── Target
+                            │   ╰── Array
+                            │       ├── 2
+                            │       ╰── Array
+                            │           ├── 3
+                            │           ╰── Long
+                            ╰── Expression
+                                ╰── Var [arr]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_compare_different_pointer_types() {
+    let src = r#"
+        int main(void)
+        {
+            long x = 10;
+            long *ptr = &x + 1;
+            long(*array_ptr)[10] = (long (*)[10]) &x;
+            return array_ptr < ptr;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── AddressOf
+                    │           │   ╰── Var [x]
+                    │           ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── array_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 10
+                    │   │           ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Pointer
+                    │           │       ╰── Array
+                    │           │           ├── 10
+                    │           │           ╰── Long
+                    │           ╰── Expression
+                    │               ╰── AddressOf
+                    │                   ╰── Var [x]
+                    ╰── Return
+                        ╰── Binary [<]
+                            ├── Var [array_ptr]
+                            ╰── Var [ptr]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_compare_explicit_and_implict_addr() {
+    let src = r#"
+        int main(void)
+        {
+            int arr[10];
+            return arr == &arr;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ╰── Type
+                    │       ╰── Array
+                    │           ├── 10
+                    │           ╰── Int
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Var [arr]
+                            ╰── AddressOf
+                                ╰── Var [arr]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_compare_pointer_to_int() {
+    let src = r#"
+        int main(void)
+        {
+            long *l = 0;
+            return l <= 100ul;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── l
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Binary [<=]
+                            ├── Var [l]
+                            ╰── Constant ULong [100]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_compare_pointer_to_zero() {
+    let src = r#"
+        int main(void)
+        {
+            int *x = 0;
+            return x > 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Binary [>]
+                            ├── Var [x]
+                            ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_compound_initializer_for_scalar() {
+    let src = r#"
+        int main(void)
+        {
+            int x = {1, 2, 3};
+            return x;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_compound_initializer_for_static_scalar() {
+    let src = r#"
+        int main(void)
+        {
+            static int x = {1, 2, 3};
+            return x;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Compound
+                    │   │       ├── Constant Int [1]
+                    │   │       ├── Constant Int [2]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Static
+                    ╰── Return
+                        ╰── Var [x]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_compound_initializer_too_long_static() {
+    let src = r#"
+        int main(void) {
+            static int arr[3] = {1, 2, 3, 4};
+            return arr[2];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Compound
+                    │   │       ├── Constant Int [1]
+                    │   │       ├── Constant Int [2]
+                    │   │       ├── Constant Int [3]
+                    │   │       ╰── Constant Int [4]
+                    │   ╰── Static
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [arr]
+                            ╰── Constant Int [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_compound_inititializer_too_long() {
+    let src = r#"
+        int main(void) {
+            int arr[3] = {1, 2, 3, 4};
+            return arr[2];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ├── Constant Int [3]
+                    │           ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [arr]
+                            ╰── Constant Int [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_conflicting_array_declarations() {
+    let src = r#"
+        int arr[6];
+        int main(void) {
+            return arr[0];
+        }
+        int arr[5];
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── arr
+            │   ╰── Type
+            │       ╰── Array
+            │           ├── 6
+            │           ╰── Int
+            ├── Function [main]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Subscript
+            │               ├── Var [arr]
+            │               ╰── Constant Int [0]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── arr
+                ╰── Type
+                    ╰── Array
+                        ├── 5
+                        ╰── Int
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_conflicting_function_declarations() {
+    let src = r#"
+        int f(int arr[2][3]);
+        int f(int arr[2][4]);
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [f]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── arr
+            │           ╰── Type
+            │               ╰── Array
+            │                   ├── 2
+            │                   ╰── Array
+            │                       ├── 3
+            │                       ╰── Int
+            ╰── Function [f]
+                ╰── Parameters
+                    ╰── Param
+                        ├── Name
+                        │   ╰── arr
+                        ╰── Type
+                            ╰── Array
+                                ├── 2
+                                ╰── Array
+                                    ├── 4
+                                    ╰── Int
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_double_subscript() {
+    let src = r#"
+        int main(void) {
+            int arr[3] = {4, 5, 6};
+            return arr[2.0];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [4]
+                    │           ├── Constant Int [5]
+                    │           ╰── Constant Int [6]
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [arr]
+                            ╰── Constant Double [+2e0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_extra_credit_compound_add_double_to_pointer() {
+    let src = r#"
+        
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            int *elem = arr;
+            elem += 1.0;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── elem
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Var [arr]
+                    ├── Assign [+=]
+                    │   ├── Var [elem]
+                    │   ╰── Constant Double [+1e0]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_extra_credit_compound_add_two_pointers() {
+    let src = r#"
+        
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            int *elem0 = arr;
+            int *elem1 = arr + 1;
+            elem0 += elem1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── elem0
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Var [arr]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── elem1
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [arr]
+                    │           ╰── Constant Int [1]
+                    ├── Assign [+=]
+                    │   ├── Var [elem0]
+                    │   ╰── Var [elem1]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_extra_credit_compound_assign_to_array() {
+    let src = r#"
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            arr -= 1;
+            0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ├── Assign [-=]
+                    │   ├── Var [arr]
+                    │   ╰── Constant Int [1]
+                    ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_extra_credit_compound_assign_to_nested_array() {
+    let src = r#"
+        int main(void) {
+            long arr[2][2] = {{1, 2}, {3, 4}};
+            arr[1] += 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Array
+                    │   │           ├── 2
+                    │   │           ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Compound
+                    │           │   ├── Constant Int [1]
+                    │           │   ╰── Constant Int [2]
+                    │           ╰── Compound
+                    │               ├── Constant Int [3]
+                    │               ╰── Constant Int [4]
+                    ├── Assign [+=]
+                    │   ├── Subscript
+                    │   │   ├── Var [arr]
+                    │   │   ╰── Constant Int [1]
+                    │   ╰── Constant Int [1]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_extra_credit_compound_sub_pointer_from_int() {
+    let src = r#"
+        
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            int *elem = arr + 1;
+            int i = 0;
+            i -= elem;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── elem
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [arr]
+                    │           ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Assign [-=]
+                    │   ├── Var [i]
+                    │   ╰── Var [elem]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_extra_credit_postfix_incr_array() {
+    let src = r#"
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            arr++;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ├── Postfix [++]
+                    │   ╰── Var [arr]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_extra_credit_postfix_incr_nested_array() {
+    let src = r#"
+        int main(void) {
+            int arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
+            arr[2]++;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Array
+                    │   │           ├── 3
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Compound
+                    │           │   ├── Constant Int [1]
+                    │           │   ├── Constant Int [2]
+                    │           │   ╰── Constant Int [3]
+                    │           ╰── Compound
+                    │               ├── Constant Int [4]
+                    │               ├── Constant Int [5]
+                    │               ╰── Constant Int [6]
+                    ├── Postfix [++]
+                    │   ╰── Subscript
+                    │       ├── Var [arr]
+                    │       ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_extra_credit_prefix_decr_array() {
+    let src = r#"
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            --arr;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ├── Unary [--]
+                    │   ╰── Var [arr]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_extra_credit_prefix_decr_nested_array() {
+    let src = r#"
+        int main(void) {
+            int arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
+            --arr[2];
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Array
+                    │   │           ├── 3
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Compound
+                    │           │   ├── Constant Int [1]
+                    │           │   ├── Constant Int [2]
+                    │           │   ╰── Constant Int [3]
+                    │           ╰── Compound
+                    │               ├── Constant Int [4]
+                    │               ├── Constant Int [5]
+                    │               ╰── Constant Int [6]
+                    ├── Unary [--]
+                    │   ╰── Subscript
+                    │       ├── Var [arr]
+                    │       ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_extra_credit_switch_on_array() {
+    let src = r#"
+        
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            switch (arr) {
+                default:
+                    return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ├── Switch
+                    │   ├── Expression
+                    │   │   ╰── Var [arr]
+                    │   ╰── Block
+                    │       ╰── Default
+                    │           ╰── Return
+                    │               ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Constant Int [1]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_function_returns_array() {
+    let src = r#"
+        int(foo(void))[3][4];
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [foo]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_incompatible_elem_type_compound_init() {
+    let src = r#"
+        int main(void)
+        {
+            int *arr[3] = {0, 0, 1.0};
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ╰── VarDeclaration
+                        ├── Name
+                        │   ╰── arr
+                        ├── Type
+                        │   ╰── Array
+                        │       ├── 3
+                        │       ╰── Pointer
+                        │           ╰── Int
+                        ╰── Initializer
+                            ╰── Compound
+                                ├── Constant Int [0]
+                                ├── Constant Int [0]
+                                ╰── Constant Double [+1e0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_incompatible_elem_type_static_compound_init() {
+    let src = r#"
+        
+        int *arr[3] = {0, 0, 1.0};
+        int main(void)
+        {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Pointer
+            │   │           ╰── Int
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Constant Int [0]
+            │           ├── Constant Int [0]
+            │           ╰── Constant Double [+1e0]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_null_ptr_array_initializer() {
+    let src = r#"
+        int main(void)
+        {
+            int arr[1] = 0;
+            return arr[0];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 1
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [arr]
+                            ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_null_ptr_static_array_initializer() {
+    let src = r#"
+        int main(void)
+        {
+            static int arr[1] = 0;
+            return arr[0];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 1
+                    │   │       ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Constant Int [0]
+                    │   ╰── Static
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [arr]
+                            ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_scalar_initializer_for_array() {
+    let src = r#"
+        int main(void)
+        {
+            int arr[1] = 4;
+            return arr[0];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 1
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [arr]
+                            ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_scalar_initializer_for_static_array() {
+    let src = r#"
+        
+        double arr[3] = 1.0;
+        int main(void)
+        {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Double
+            │   ╰── Initializer
+            │       ╰── Constant Double [+1e0]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_static_non_const_array() {
+    let src = r#"
+        int foo(int p) {
+            static int arr[3] = { p, p + 1, 0};
+            return arr[2];
+        }
+        int main(void) {
+            return foo(5);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [foo]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── p
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Compound
+            │       │   │       ├── Var [p]
+            │       │   │       ├── Binary [+]
+            │       │   │       │   ├── Var [p]
+            │       │   │       │   ╰── Constant Int [1]
+            │       │   │       ╰── Constant Int [0]
+            │       │   ╰── Static
+            │       ╰── Return
+            │           ╰── Subscript
+            │               ├── Var [arr]
+            │               ╰── Constant Int [2]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── FunctionCall [foo]
+                            ╰── Constant Int [5]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_sub_different_pointer_types() {
+    let src = r#"
+        int main(void)
+        {
+            long x[10];
+            long *ptr = x;
+            unsigned long *ptr2 = (unsigned long *)ptr;
+            return ptr - ptr2;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ╰── Type
+                    │       ╰── Array
+                    │           ├── 10
+                    │           ╰── Long
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Var [x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr2
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Pointer
+                    │           │       ╰── Unsigned Long
+                    │           ╰── Expression
+                    │               ╰── Var [ptr]
+                    ╰── Return
+                        ╰── Binary [-]
+                            ├── Var [ptr]
+                            ╰── Var [ptr2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_sub_double_from_ptr() {
+    let src = r#"
+        int main(void)
+        {
+            int *y = 0;
+            return (y - 0.0 == 0.0);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Binary [-]
+                            │   ├── Var [y]
+                            │   ╰── Constant Double [+0e0]
+                            ╰── Constant Double [+0e0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_sub_ptr_from_int() {
+    let src = r#"
+        int main(void)
+        {
+            int *x = 0;
+            return 0 - x == 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Binary [-]
+                            │   ├── Constant Int [0]
+                            │   ╰── Var [x]
+                            ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_subscript_both_pointers() {
+    let src = r#"
+        int main(void)
+        {
+            int x = 10;
+            int *ptr = &x;
+            int *subscript = 0;
+            return ptr[subscript];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── subscript
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [ptr]
+                            ╰── Var [subscript]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_invalid_types_subscript_non_ptr() {
+    let src = r#"
+        int main(void) {
+            int a = 3;
+            return a[4];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [a]
+                            ╰── Constant Int [4]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_allocation_test_alignment() {
+    let src = r#"
+        int check_alignment(int *ptr) {
+            unsigned long addr = (unsigned long) ptr;
+            return (addr % 16 == 0);
+        }
+        int main(void)
+        {
+            int arr[5] = {0};
+            int arr2[7] = {0};
+            int arr3[2][2] = {{0}};
+            if (!check_alignment(arr)) {
+                return 1;
+            }
+            for (int i = 0; i < 5; i = i + 1)
+                arr[i] = i;
+            if (!check_alignment(arr2)) {
+                return 2;
+            }
+            for (int i = 0; i < 7; i = i + 1)
+                if (arr2[i])
+                    return 3;
+            for (int i = 0; i < 7; i = i + 1){
+                arr2[i] = -i;
+            }
+            if (!check_alignment((int *)arr3)) {
+                return 4;
+            }
+            for (int i = 0; i < 5; i = i + 1) {
+                if (arr[i] != i) {
+                    return 5;
+                }
+            }
+            for (int i = 0; i < 2; i = i + 1)
+                for (int j = 0; j < 2; j = j + 1)
+                    if (arr3[i][j] != 0)
+                        return 6;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [check_alignment]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── addr
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Long
+            │       │   ╰── Initializer
+            │       │       ╰── Cast
+            │       │           ├── Target
+            │       │           │   ╰── Unsigned Long
+            │       │           ╰── Expression
+            │       │               ╰── Var [ptr]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Binary [%]
+            │               │   ├── Var [addr]
+            │               │   ╰── Constant Int [16]
+            │               ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 5
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr2
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 7
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr3
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Array
+                    │   │           ├── 2
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [check_alignment]
+                    │   │           ╰── Var [arr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [5]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Assign [=]
+                    │       ├── Subscript
+                    │       │   ├── Var [arr]
+                    │       │   ╰── Var [i]
+                    │       ╰── Var [i]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [check_alignment]
+                    │   │           ╰── Var [arr2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [7]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── If
+                    │       ├── Condition
+                    │       │   ╰── Subscript
+                    │       │       ├── Var [arr2]
+                    │       │       ╰── Var [i]
+                    │       ╰── Then
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [7]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── Assign [=]
+                    │           ├── Subscript
+                    │           │   ├── Var [arr2]
+                    │           │   ╰── Var [i]
+                    │           ╰── Unary [-]
+                    │               ╰── Var [i]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [check_alignment]
+                    │   │           ╰── Cast
+                    │   │               ├── Target
+                    │   │               │   ╰── Pointer
+                    │   │               │       ╰── Int
+                    │   │               ╰── Expression
+                    │   │                   ╰── Var [arr3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [5]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── If
+                    │           ├── Condition
+                    │           │   ╰── Binary [!=]
+                    │           │       ├── Subscript
+                    │           │       │   ├── Var [arr]
+                    │           │       │   ╰── Var [i]
+                    │           │       ╰── Var [i]
+                    │           ╰── Then
+                    │               ╰── Block
+                    │                   ╰── Return
+                    │                       ╰── Constant Int [5]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [2]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── For
+                    │       ├── Init
+                    │       │   ╰── VarDeclaration
+                    │       │       ├── Name
+                    │       │       │   ╰── j
+                    │       │       ├── Type
+                    │       │       │   ╰── Int
+                    │       │       ╰── Initializer
+                    │       │           ╰── Constant Int [0]
+                    │       ├── Condition
+                    │       │   ╰── Binary [<]
+                    │       │       ├── Var [j]
+                    │       │       ╰── Constant Int [2]
+                    │       ├── Condition
+                    │       │   ╰── Assign [=]
+                    │       │       ├── Var [j]
+                    │       │       ╰── Binary [+]
+                    │       │           ├── Var [j]
+                    │       │           ╰── Constant Int [1]
+                    │       ╰── If
+                    │           ├── Condition
+                    │           │   ╰── Binary [!=]
+                    │           │       ├── Subscript
+                    │           │       │   ├── Subscript
+                    │           │       │   │   ├── Var [arr3]
+                    │           │       │   │   ╰── Var [i]
+                    │           │       │   ╰── Var [j]
+                    │           │       ╰── Constant Int [0]
+                    │           ╰── Then
+                    │               ╰── Return
+                    │                   ╰── Constant Int [6]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_casts_cast_array_of_pointers() {
+    let src = r#"
+        int main(void) {
+            int simple_array[2] = {1, 2};
+            int(*ptr_arr[3])[2] = {&simple_array, 0, &simple_array};
+            long *other_ptr = (long *)ptr_arr;
+            return (int(**)[2])other_ptr == ptr_arr;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── simple_array
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr_arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Pointer
+                    │   │           ╰── Array
+                    │   │               ├── 2
+                    │   │               ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── AddressOf
+                    │           │   ╰── Var [simple_array]
+                    │           ├── Constant Int [0]
+                    │           ╰── AddressOf
+                    │               ╰── Var [simple_array]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── other_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Pointer
+                    │           │       ╰── Long
+                    │           ╰── Expression
+                    │               ╰── Var [ptr_arr]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Cast
+                            │   ├── Target
+                            │   │   ╰── Pointer
+                            │   │       ╰── Pointer
+                            │   │           ╰── Array
+                            │   │               ├── 2
+                            │   │               ╰── Int
+                            │   ╰── Expression
+                            │       ╰── Var [other_ptr]
+                            ╰── Var [ptr_arr]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_casts_implicit_and_explicit_conversions() {
+    let src = r#"
+        int main(void) {
+            long arr[4] = {-1,-2,-3,-4};
+            if (arr != (long *) arr) {
+                return 1;
+            }
+            if ((long (*)[4]) arr != &arr) {
+                return 2;
+            }
+            unsigned long *unsigned_arr = (unsigned long *)arr;
+            if (unsigned_arr[0] != 18446744073709551615UL) {
+                return 3;
+            }
+            if (unsigned_arr[3] != 18446744073709551612UL) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 4
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Int [1]
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Int [2]
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Int [3]
+                    │           ╰── Unary [-]
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [arr]
+                    │   │       ╰── Cast
+                    │   │           ├── Target
+                    │   │           │   ╰── Pointer
+                    │   │           │       ╰── Long
+                    │   │           ╰── Expression
+                    │   │               ╰── Var [arr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Cast
+                    │   │       │   ├── Target
+                    │   │       │   │   ╰── Pointer
+                    │   │       │   │       ╰── Array
+                    │   │       │   │           ├── 4
+                    │   │       │   │           ╰── Long
+                    │   │       │   ╰── Expression
+                    │   │       │       ╰── Var [arr]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Var [arr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── unsigned_arr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Pointer
+                    │           │       ╰── Unsigned Long
+                    │           ╰── Expression
+                    │               ╰── Var [arr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [unsigned_arr]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant ULong [18446744073709551615]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [unsigned_arr]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant ULong [18446744073709551612]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_casts_multi_dim_casts() {
+    let src = r#"
+        int main(void) {
+            int multi_dim[2][3] = {{0, 1, 2}, {3, 4, 5}};
+            int (*array_pointer)[2][3] = &multi_dim;
+            int (*row_pointer)[3] = (int (*)[3]) array_pointer;
+            if (row_pointer != multi_dim) {
+                return 1;
+            }
+            row_pointer = row_pointer + 1;
+            if (row_pointer[0][1] != 4) {
+                return 2;
+            }
+            int *elem_ptr = (int *) row_pointer;
+            if (*elem_ptr != 3 ){
+                return 3;
+            }
+            elem_ptr = elem_ptr + 2;
+            if (*elem_ptr != 5) {
+                return 4;
+            }
+            row_pointer = row_pointer - 1;
+            if ((int (*)[2][3]) row_pointer != array_pointer) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── multi_dim
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Array
+                    │   │           ├── 3
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Compound
+                    │           │   ├── Constant Int [0]
+                    │           │   ├── Constant Int [1]
+                    │           │   ╰── Constant Int [2]
+                    │           ╰── Compound
+                    │               ├── Constant Int [3]
+                    │               ├── Constant Int [4]
+                    │               ╰── Constant Int [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── array_pointer
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 2
+                    │   │           ╰── Array
+                    │   │               ├── 3
+                    │   │               ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [multi_dim]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── row_pointer
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 3
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Pointer
+                    │           │       ╰── Array
+                    │           │           ├── 3
+                    │           │           ╰── Int
+                    │           ╰── Expression
+                    │               ╰── Var [array_pointer]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [row_pointer]
+                    │   │       ╰── Var [multi_dim]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── Assign [=]
+                    │   ├── Var [row_pointer]
+                    │   ╰── Binary [+]
+                    │       ├── Var [row_pointer]
+                    │       ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [row_pointer]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── elem_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Cast
+                    │           ├── Target
+                    │           │   ╰── Pointer
+                    │           │       ╰── Int
+                    │           ╰── Expression
+                    │               ╰── Var [row_pointer]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [elem_ptr]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── Assign [=]
+                    │   ├── Var [elem_ptr]
+                    │   ╰── Binary [+]
+                    │       ├── Var [elem_ptr]
+                    │       ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [elem_ptr]
+                    │   │       ╰── Constant Int [5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── Assign [=]
+                    │   ├── Var [row_pointer]
+                    │   ╰── Binary [-]
+                    │       ├── Var [row_pointer]
+                    │       ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Cast
+                    │   │       │   ├── Target
+                    │   │       │   │   ╰── Pointer
+                    │   │       │   │       ╰── Array
+                    │   │       │   │           ├── 2
+                    │   │       │   │           ╰── Array
+                    │   │       │   │               ├── 3
+                    │   │       │   │               ╰── Int
+                    │   │       │   ╰── Expression
+                    │   │       │       ╰── Var [row_pointer]
+                    │   │       ╰── Var [array_pointer]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_declarators_array_as_argument() {
+    let src = r#"
+        int array_param(int a[5]) {
+            a[4] = 0;
+            return 0;
+        }
+        int nested_array_param(int a[2][3]) {
+            a[1][1] = 1;
+            return 0;
+        }
+        int array_param(int a[2]);
+        int nested_array_param(int (*a)[3]);
+        int main(void) {
+            int array_param(int a[6]);
+            int nested_array_param(int a[5][3]);
+            int arr[8] = {8, 7, 6, 5, 4, 3, 2, 1};
+            array_param(arr);
+            if (arr[4]) {
+                return 1;
+            }
+            for (int i = 0; i < 8; i = i + 1) {
+                if (i != 4 && arr[i] != 8 - i)
+                    return 2;
+            }
+            int nested_arr[4][3] = { {-1, -1, -1}, {-2, -2, -2}, {-3, -3, -3}, {-4, -4, -4}};
+            nested_array_param(nested_arr);
+            if (nested_arr[1][1] != 1) {
+                return 3;
+            }
+            for (int i = 0; i < 4; i = i + 1) {
+                int expected = -1 - i;
+                for (int j = 0; j < 3; j = j + 1) {
+                    if ((i != 1 || j != 1) &&
+                        (nested_arr[i][j] != expected)) {
+                            return 4;
+                    }
+                }
+            }
+            return 0;
+        }
+        int array_param(int *a);
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [array_param]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── a
+            │   │       ╰── Type
+            │   │           ╰── Array
+            │   │               ├── 5
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Var [a]
+            │       │   │   ╰── Constant Int [4]
+            │       │   ╰── Constant Int [0]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [nested_array_param]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── a
+            │   │       ╰── Type
+            │   │           ╰── Array
+            │   │               ├── 2
+            │   │               ╰── Array
+            │   │                   ├── 3
+            │   │                   ╰── Int
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Subscript
+            │       │   │   │   ├── Var [a]
+            │       │   │   │   ╰── Constant Int [1]
+            │       │   │   ╰── Constant Int [1]
+            │       │   ╰── Constant Int [1]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [array_param]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── a
+            │           ╰── Type
+            │               ╰── Array
+            │                   ├── 2
+            │                   ╰── Int
+            ├── Function [nested_array_param]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── a
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Array
+            │                       ├── 3
+            │                       ╰── Int
+            ├── Function [main]
+            │   ╰── Body
+            │       ├── Function [array_param]
+            │       │   ╰── Parameters
+            │       │       ╰── Param
+            │       │           ├── Name
+            │       │           │   ╰── a
+            │       │           ╰── Type
+            │       │               ╰── Array
+            │       │                   ├── 6
+            │       │                   ╰── Int
+            │       ├── Function [nested_array_param]
+            │       │   ╰── Parameters
+            │       │       ╰── Param
+            │       │           ├── Name
+            │       │           │   ╰── a
+            │       │           ╰── Type
+            │       │               ╰── Array
+            │       │                   ├── 5
+            │       │                   ╰── Array
+            │       │                       ├── 3
+            │       │                       ╰── Int
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 8
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [8]
+            │       │           ├── Constant Int [7]
+            │       │           ├── Constant Int [6]
+            │       │           ├── Constant Int [5]
+            │       │           ├── Constant Int [4]
+            │       │           ├── Constant Int [3]
+            │       │           ├── Constant Int [2]
+            │       │           ╰── Constant Int [1]
+            │       ├── FunctionCall [array_param]
+            │       │   ╰── Var [arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Subscript
+            │       │   │       ├── Var [arr]
+            │       │   │       ╰── Constant Int [4]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [1]
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [8]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ╰── If
+            │       │           ├── Condition
+            │       │           │   ╰── Binary [&&]
+            │       │           │       ├── Binary [!=]
+            │       │           │       │   ├── Var [i]
+            │       │           │       │   ╰── Constant Int [4]
+            │       │           │       ╰── Binary [!=]
+            │       │           │           ├── Subscript
+            │       │           │           │   ├── Var [arr]
+            │       │           │           │   ╰── Var [i]
+            │       │           │           ╰── Binary [-]
+            │       │           │               ├── Constant Int [8]
+            │       │           │               ╰── Var [i]
+            │       │           ╰── Then
+            │       │               ╰── Return
+            │       │                   ╰── Constant Int [2]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nested_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 4
+            │       │   │       ╰── Array
+            │       │   │           ├── 3
+            │       │   │           ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ├── Unary [-]
+            │       │           │   │   ╰── Constant Int [1]
+            │       │           │   ├── Unary [-]
+            │       │           │   │   ╰── Constant Int [1]
+            │       │           │   ╰── Unary [-]
+            │       │           │       ╰── Constant Int [1]
+            │       │           ├── Compound
+            │       │           │   ├── Unary [-]
+            │       │           │   │   ╰── Constant Int [2]
+            │       │           │   ├── Unary [-]
+            │       │           │   │   ╰── Constant Int [2]
+            │       │           │   ╰── Unary [-]
+            │       │           │       ╰── Constant Int [2]
+            │       │           ├── Compound
+            │       │           │   ├── Unary [-]
+            │       │           │   │   ╰── Constant Int [3]
+            │       │           │   ├── Unary [-]
+            │       │           │   │   ╰── Constant Int [3]
+            │       │           │   ╰── Unary [-]
+            │       │           │       ╰── Constant Int [3]
+            │       │           ╰── Compound
+            │       │               ├── Unary [-]
+            │       │               │   ╰── Constant Int [4]
+            │       │               ├── Unary [-]
+            │       │               │   ╰── Constant Int [4]
+            │       │               ╰── Unary [-]
+            │       │                   ╰── Constant Int [4]
+            │       ├── FunctionCall [nested_array_param]
+            │       │   ╰── Var [nested_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Subscript
+            │       │   │       │   │   ├── Var [nested_arr]
+            │       │   │       │   │   ╰── Constant Int [1]
+            │       │   │       │   ╰── Constant Int [1]
+            │       │   │       ╰── Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [4]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ├── VarDeclaration
+            │       │       │   ├── Name
+            │       │       │   │   ╰── expected
+            │       │       │   ├── Type
+            │       │       │   │   ╰── Int
+            │       │       │   ╰── Initializer
+            │       │       │       ╰── Binary [-]
+            │       │       │           ├── Unary [-]
+            │       │       │           │   ╰── Constant Int [1]
+            │       │       │           ╰── Var [i]
+            │       │       ╰── For
+            │       │           ├── Init
+            │       │           │   ╰── VarDeclaration
+            │       │           │       ├── Name
+            │       │           │       │   ╰── j
+            │       │           │       ├── Type
+            │       │           │       │   ╰── Int
+            │       │           │       ╰── Initializer
+            │       │           │           ╰── Constant Int [0]
+            │       │           ├── Condition
+            │       │           │   ╰── Binary [<]
+            │       │           │       ├── Var [j]
+            │       │           │       ╰── Constant Int [3]
+            │       │           ├── Condition
+            │       │           │   ╰── Assign [=]
+            │       │           │       ├── Var [j]
+            │       │           │       ╰── Binary [+]
+            │       │           │           ├── Var [j]
+            │       │           │           ╰── Constant Int [1]
+            │       │           ╰── Block
+            │       │               ╰── If
+            │       │                   ├── Condition
+            │       │                   │   ╰── Binary [&&]
+            │       │                   │       ├── Binary [||]
+            │       │                   │       │   ├── Binary [!=]
+            │       │                   │       │   │   ├── Var [i]
+            │       │                   │       │   │   ╰── Constant Int [1]
+            │       │                   │       │   ╰── Binary [!=]
+            │       │                   │       │       ├── Var [j]
+            │       │                   │       │       ╰── Constant Int [1]
+            │       │                   │       ╰── Binary [!=]
+            │       │                   │           ├── Subscript
+            │       │                   │           │   ├── Subscript
+            │       │                   │           │   │   ├── Var [nested_arr]
+            │       │                   │           │   │   ╰── Var [i]
+            │       │                   │           │   ╰── Var [j]
+            │       │                   │           ╰── Var [expected]
+            │       │                   ╰── Then
+            │       │                       ╰── Block
+            │       │                           ╰── Return
+            │       │                               ╰── Constant Int [4]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [array_param]
+                ╰── Parameters
+                    ╰── Param
+                        ├── Name
+                        │   ╰── a
+                        ╰── Type
+                            ╰── Pointer
+                                ╰── Int
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_declarators_big_array() {
+    let src = r#"
+        extern int x[4294967297L][100000000];
+        int main(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 4294967297
+            │   │       ╰── Array
+            │   │           ├── 100000000
+            │   │           ╰── Int
+            │   ╰── Extern
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_declarators_equivalent_declarators() {
+    let src = r#"
+        long int(arr)[4] = {1, 2, 3, 4};
+        int long arr[4ul];
+        int (*ptr_to_arr)[3][6l];
+        int((*(ptr_to_arr))[3l])[6u] = 0;
+        int *array_of_pointers[3] = {0, 0, 0};
+        int test_arr(void) {
+            for (int i = 0; i < 4; i = i + 1) {
+                if (arr[i] != i + 1) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+        int test_ptr_to_arr(void) {
+            if (ptr_to_arr) {
+                return 2;
+            }
+            static int nested_arr[3][6];
+            ptr_to_arr = &nested_arr;
+            ptr_to_arr[0][2][4] = 100;
+            if (nested_arr[2][4] != 100) {
+                return 3;
+            }
+            return 0;
+        }
+        int test_array_of_pointers(int *ptr) {
+            extern int *((array_of_pointers)[3]);
+            for (int i = 0; i < 3; i = i + 1) {
+                if (array_of_pointers[i])
+                    return 4;
+                array_of_pointers[i] = ptr;
+            }
+            array_of_pointers[2][0] = 11;
+            if (*ptr != 11) {
+                return 5;
+            }
+            for (int i = 0; i < 3; i = i + 1) {
+                if (array_of_pointers[i][0] != 11) {
+                    return 6;
+                }
+            }
+            return 0;
+        }
+        int main(void)
+        {
+            int check = test_arr();
+            if (check) {
+                return check;
+            }
+            check = test_ptr_to_arr();
+            if (check) {
+                return check;
+            }
+            int x = 0;
+            check = test_array_of_pointers(&x);
+            if (check) {
+                return check;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 4
+            │   │       ╰── Long
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Constant Int [1]
+            │           ├── Constant Int [2]
+            │           ├── Constant Int [3]
+            │           ╰── Constant Int [4]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── arr
+            │   ╰── Type
+            │       ╰── Array
+            │           ├── 4
+            │           ╰── Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ptr_to_arr
+            │   ╰── Type
+            │       ╰── Pointer
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Array
+            │                   ├── 6
+            │                   ╰── Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ptr_to_arr
+            │   ├── Type
+            │   │   ╰── Pointer
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Array
+            │   │               ├── 6
+            │   │               ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── array_of_pointers
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Pointer
+            │   │           ╰── Int
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Constant Int [0]
+            │           ├── Constant Int [0]
+            │           ╰── Constant Int [0]
+            ├── Function [test_arr]
+            │   ╰── Body
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [4]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ╰── If
+            │       │           ├── Condition
+            │       │           │   ╰── Binary [!=]
+            │       │           │       ├── Subscript
+            │       │           │       │   ├── Var [arr]
+            │       │           │       │   ╰── Var [i]
+            │       │           │       ╰── Binary [+]
+            │       │           │           ├── Var [i]
+            │       │           │           ╰── Constant Int [1]
+            │       │           ╰── Then
+            │       │               ╰── Block
+            │       │                   ╰── Return
+            │       │                       ╰── Constant Int [1]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [test_ptr_to_arr]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [ptr_to_arr]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nested_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Array
+            │       │   │           ├── 6
+            │       │   │           ╰── Int
+            │       │   ╰── Static
+            │       ├── Assign [=]
+            │       │   ├── Var [ptr_to_arr]
+            │       │   ╰── AddressOf
+            │       │       ╰── Var [nested_arr]
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Subscript
+            │       │   │   │   ├── Subscript
+            │       │   │   │   │   ├── Var [ptr_to_arr]
+            │       │   │   │   │   ╰── Constant Int [0]
+            │       │   │   │   ╰── Constant Int [2]
+            │       │   │   ╰── Constant Int [4]
+            │       │   ╰── Constant Int [100]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Subscript
+            │       │   │       │   │   ├── Var [nested_arr]
+            │       │   │       │   │   ╰── Constant Int [2]
+            │       │   │       │   ╰── Constant Int [4]
+            │       │   │       ╰── Constant Int [100]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [test_array_of_pointers]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── array_of_pointers
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Pointer
+            │       │   │           ╰── Int
+            │       │   ╰── Extern
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [3]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ├── If
+            │       │       │   ├── Condition
+            │       │       │   │   ╰── Subscript
+            │       │       │   │       ├── Var [array_of_pointers]
+            │       │       │   │       ╰── Var [i]
+            │       │       │   ╰── Then
+            │       │       │       ╰── Return
+            │       │       │           ╰── Constant Int [4]
+            │       │       ╰── Assign [=]
+            │       │           ├── Subscript
+            │       │           │   ├── Var [array_of_pointers]
+            │       │           │   ╰── Var [i]
+            │       │           ╰── Var [ptr]
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Subscript
+            │       │   │   │   ├── Var [array_of_pointers]
+            │       │   │   │   ╰── Constant Int [2]
+            │       │   │   ╰── Constant Int [0]
+            │       │   ╰── Constant Int [11]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Var [ptr]
+            │       │   │       ╰── Constant Int [11]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [5]
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [3]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ╰── If
+            │       │           ├── Condition
+            │       │           │   ╰── Binary [!=]
+            │       │           │       ├── Subscript
+            │       │           │       │   ├── Subscript
+            │       │           │       │   │   ├── Var [array_of_pointers]
+            │       │           │       │   │   ╰── Var [i]
+            │       │           │       │   ╰── Constant Int [0]
+            │       │           │       ╰── Constant Int [11]
+            │       │           ╰── Then
+            │       │               ╰── Block
+            │       │                   ╰── Return
+            │       │                       ╰── Constant Int [6]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── check
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [test_arr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [test_ptr_to_arr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [test_array_of_pointers]
+                    │       ╰── AddressOf
+                    │           ╰── Var [x]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_declarators_for_loop_array() {
+    let src = r#"
+        
+        int main(void) {
+            int counter = 0;
+            for (int i[3] = {1, 2, 3}; counter < 3; counter = counter + 1){
+                if (i[counter] != counter + 1) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── counter
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Array
+                    │   │       │       ├── 3
+                    │   │       │       ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Compound
+                    │   │               ├── Constant Int [1]
+                    │   │               ├── Constant Int [2]
+                    │   │               ╰── Constant Int [3]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [counter]
+                    │   │       ╰── Constant Int [3]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [counter]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [counter]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── If
+                    │           ├── Condition
+                    │           │   ╰── Binary [!=]
+                    │           │       ├── Subscript
+                    │           │       │   ├── Var [i]
+                    │           │       │   ╰── Var [counter]
+                    │           │       ╰── Binary [+]
+                    │           │           ├── Var [counter]
+                    │           │           ╰── Constant Int [1]
+                    │           ╰── Then
+                    │               ╰── Block
+                    │                   ╰── Return
+                    │                       ╰── Constant Int [1]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_declarators_return_nested_array() {
+    let src = r#"
+        int arr[3] = {1, 1, 1};
+        int (*foo(int x, int y))[3] {
+            arr[1] = x;
+            arr[2] = y;
+            return &arr;
+        }
+        int main(void) {
+            int (*arr)[3] = foo(2, 3);
+            if (arr[0][0] != 1) {
+                return 1;
+            }
+            if (arr[0][1] != 2) {
+                return 2;
+            }
+            if (arr[0][2] != 3) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Int
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Constant Int [1]
+            │           ├── Constant Int [1]
+            │           ╰── Constant Int [1]
+            ├── Function [foo]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── x
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── y
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Var [arr]
+            │       │   │   ╰── Constant Int [1]
+            │       │   ╰── Var [x]
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Var [arr]
+            │       │   │   ╰── Constant Int [2]
+            │       │   ╰── Var [y]
+            │       ╰── Return
+            │           ╰── AddressOf
+            │               ╰── Var [arr]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 3
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [foo]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [arr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [arr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [arr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_bitwise_subscript() {
+    let src = r#"
+        
+        int main(void) {
+            int arr[6] = {-10, 10, -11, 11, -12, 12};
+            if ((arr[0] & arr[5]) != 4) {
+                return 1;
+            }
+            if ((arr[1] | arr[4]) != -2) {
+                return 2;
+            }
+            if ((arr[2] ^ arr[3]) != -2) {
+                return 3;
+            }
+            arr[0] = 2041302511;
+            if ((arr[0] >> arr[1]) != 1993459) {
+                return 4;
+            }
+            if ((arr[5] << 3 ) != 96) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 6
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Int [10]
+                    │           ├── Constant Int [10]
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Int [11]
+                    │           ├── Constant Int [11]
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Int [12]
+                    │           ╰── Constant Int [12]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [&]
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [arr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Subscript
+                    │   │       │       ├── Var [arr]
+                    │   │       │       ╰── Constant Int [5]
+                    │   │       ╰── Constant Int [4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [|]
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [arr]
+                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   ╰── Subscript
+                    │   │       │       ├── Var [arr]
+                    │   │       │       ╰── Constant Int [4]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [^]
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [arr]
+                    │   │       │   │   ╰── Constant Int [2]
+                    │   │       │   ╰── Subscript
+                    │   │       │       ├── Var [arr]
+                    │   │       │       ╰── Constant Int [3]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── Assign [=]
+                    │   ├── Subscript
+                    │   │   ├── Var [arr]
+                    │   │   ╰── Constant Int [0]
+                    │   ╰── Constant Int [2041302511]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [>>]
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [arr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Subscript
+                    │   │       │       ├── Var [arr]
+                    │   │       │       ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [1993459]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [<<]
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [arr]
+                    │   │       │   │   ╰── Constant Int [5]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant Int [96]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_assign_and_increment() {
+    let src = r#"
+        
+        int main(void) {
+            int arr[4] = {-1, -2, -3, -4};
+            int *ptr = arr;
+            int idx = 2;
+            if ((ptr++[idx++] *= 3) != -9) {
+                return 1;
+            }
+            if (*ptr != -2) {
+                return 2;
+            }
+            if (idx != 3) {
+                return 3;
+            }
+            idx--;
+            if ((--ptr)[3] += 4) {
+                return 4;
+            }
+            if (arr[0] != -1 || arr[1] != -2 || arr[2] != -9 || arr[3] != 0) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 4
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Int [1]
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Int [2]
+                    │           ├── Unary [-]
+                    │           │   ╰── Constant Int [3]
+                    │           ╰── Unary [-]
+                    │               ╰── Constant Int [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Var [arr]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── idx
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Assign [*=]
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Postfix [++]
+                    │   │       │   │   │   ╰── Var [ptr]
+                    │   │       │   │   ╰── Postfix [++]
+                    │   │       │   │       ╰── Var [idx]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [9]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [idx]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── Postfix [--]
+                    │   ╰── Var [idx]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Assign [+=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Unary [--]
+                    │   │       │   │   ╰── Var [ptr]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant Int [4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [||]
+                    │   │       ├── Binary [||]
+                    │   │       │   ├── Binary [||]
+                    │   │       │   │   ├── Binary [!=]
+                    │   │       │   │   │   ├── Subscript
+                    │   │       │   │   │   │   ├── Var [arr]
+                    │   │       │   │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   │   ╰── Unary [-]
+                    │   │       │   │   │       ╰── Constant Int [1]
+                    │   │       │   │   ╰── Binary [!=]
+                    │   │       │   │       ├── Subscript
+                    │   │       │   │       │   ├── Var [arr]
+                    │   │       │   │       │   ╰── Constant Int [1]
+                    │   │       │   │       ╰── Unary [-]
+                    │   │       │   │           ╰── Constant Int [2]
+                    │   │       │   ╰── Binary [!=]
+                    │   │       │       ├── Subscript
+                    │   │       │       │   ├── Var [arr]
+                    │   │       │       │   ╰── Constant Int [2]
+                    │   │       │       ╰── Unary [-]
+                    │   │       │           ╰── Constant Int [9]
+                    │   │       ╰── Binary [!=]
+                    │   │           ├── Subscript
+                    │   │           │   ├── Var [arr]
+                    │   │           │   ╰── Constant Int [3]
+                    │   │           ╰── Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_assign_array_of_pointers() {
+    let src = r#"
+        
+        int main(void) {
+            static int (*array_of_pointers[3])[4] = {0, 0, 0};
+            int array1[4] = {100, 101, 102, 103};
+            int nested_array[2][4] = {
+                {200, 201, 202, 203},
+                {300, 301, 302, 303}
+            };
+            array_of_pointers[0] = &array1;
+            array_of_pointers[1] = &nested_array[0];
+            array_of_pointers[2] = &nested_array[1];
+            array_of_pointers[0] += 1;
+            if (array_of_pointers[0][-1][3] != 103) {
+                return 1;
+            }
+            array_of_pointers[1] += 1;
+            array_of_pointers[2] -= 1;
+            if (array_of_pointers[1][0][3] != 303) {
+                return 2;
+            }
+            if (array_of_pointers[2][0][3] != 203) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── array_of_pointers
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Pointer
+                    │   │           ╰── Array
+                    │   │               ├── 4
+                    │   │               ╰── Int
+                    │   ├── Initializer
+                    │   │   ╰── Compound
+                    │   │       ├── Constant Int [0]
+                    │   │       ├── Constant Int [0]
+                    │   │       ╰── Constant Int [0]
+                    │   ╰── Static
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── array1
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 4
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [100]
+                    │           ├── Constant Int [101]
+                    │           ├── Constant Int [102]
+                    │           ╰── Constant Int [103]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── nested_array
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Array
+                    │   │           ├── 4
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Compound
+                    │           │   ├── Constant Int [200]
+                    │           │   ├── Constant Int [201]
+                    │           │   ├── Constant Int [202]
+                    │           │   ╰── Constant Int [203]
+                    │           ╰── Compound
+                    │               ├── Constant Int [300]
+                    │               ├── Constant Int [301]
+                    │               ├── Constant Int [302]
+                    │               ╰── Constant Int [303]
+                    ├── Assign [=]
+                    │   ├── Subscript
+                    │   │   ├── Var [array_of_pointers]
+                    │   │   ╰── Constant Int [0]
+                    │   ╰── AddressOf
+                    │       ╰── Var [array1]
+                    ├── Assign [=]
+                    │   ├── Subscript
+                    │   │   ├── Var [array_of_pointers]
+                    │   │   ╰── Constant Int [1]
+                    │   ╰── AddressOf
+                    │       ╰── Subscript
+                    │           ├── Var [nested_array]
+                    │           ╰── Constant Int [0]
+                    ├── Assign [=]
+                    │   ├── Subscript
+                    │   │   ├── Var [array_of_pointers]
+                    │   │   ╰── Constant Int [2]
+                    │   ╰── AddressOf
+                    │       ╰── Subscript
+                    │           ├── Var [nested_array]
+                    │           ╰── Constant Int [1]
+                    ├── Assign [+=]
+                    │   ├── Subscript
+                    │   │   ├── Var [array_of_pointers]
+                    │   │   ╰── Constant Int [0]
+                    │   ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [array_of_pointers]
+                    │   │       │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── Unary [-]
+                    │   │       │   │       ╰── Constant Int [1]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant Int [103]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── Assign [+=]
+                    │   ├── Subscript
+                    │   │   ├── Var [array_of_pointers]
+                    │   │   ╰── Constant Int [1]
+                    │   ╰── Constant Int [1]
+                    ├── Assign [-=]
+                    │   ├── Subscript
+                    │   │   ├── Var [array_of_pointers]
+                    │   │   ╰── Constant Int [2]
+                    │   ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [array_of_pointers]
+                    │   │       │   │   │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant Int [303]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [array_of_pointers]
+                    │   │       │   │   │   ╰── Constant Int [2]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant Int [203]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_assign_to_nested_subscript() {
+    let src = r#"
+        long long_nested_arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
+        double dbl_nested_arr[3][2] = {{100.0, 101.0}, {102.0, 103.0}, {104.0, 105.0}};
+        unsigned unsigned_index = 10;
+        int main(void) {
+            if ((long_nested_arr[1][unsigned_index - 8] *= -1) != -6) {
+                return 1;
+            }
+            if (long_nested_arr[1][2] != -6) {
+                return 2;
+            }
+            for (int i = 0; i < 2; i += 1) {
+                for (int j = 0; j < 3; j += 1) {
+                    if (i == 1 && j == 2) {
+                        break;
+                    }
+                    long expected = i * 3 + j + 1;
+                    if (long_nested_arr[i][j] != expected) {
+                        return 3;
+                    }
+                }
+            }
+            if ((dbl_nested_arr[1][1] += 100.0) != 203.0) {
+                return 4;
+            }
+            for (int i = 0; i < 3; i += 1) {
+                for (int j = 0; j < 2; j += 1) {
+                    if (i == 1 && j == 1) {
+                        continue;
+                    }
+                    int expected = 100 + i * 2 + j;
+                    if (dbl_nested_arr[i][j] != expected) {
+                        return 5;
+                    }
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── long_nested_arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 2
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Long
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Compound
+            │           │   ├── Constant Int [1]
+            │           │   ├── Constant Int [2]
+            │           │   ╰── Constant Int [3]
+            │           ╰── Compound
+            │               ├── Constant Int [4]
+            │               ├── Constant Int [5]
+            │               ╰── Constant Int [6]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── dbl_nested_arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Compound
+            │           │   ├── Constant Double [+1e2]
+            │           │   ╰── Constant Double [+1.01e2]
+            │           ├── Compound
+            │           │   ├── Constant Double [+1.02e2]
+            │           │   ╰── Constant Double [+1.03e2]
+            │           ╰── Compound
+            │               ├── Constant Double [+1.04e2]
+            │               ╰── Constant Double [+1.05e2]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── unsigned_index
+            │   ├── Type
+            │   │   ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [10]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Assign [*=]
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [long_nested_arr]
+                    │   │       │   │   │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── Binary [-]
+                    │   │       │   │       ├── Var [unsigned_index]
+                    │   │       │   │       ╰── Constant Int [8]
+                    │   │       │   ╰── Unary [-]
+                    │   │       │       ╰── Constant Int [1]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [long_nested_arr]
+                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [2]
+                    │   ├── Condition
+                    │   │   ╰── Assign [+=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── For
+                    │           ├── Init
+                    │           │   ╰── VarDeclaration
+                    │           │       ├── Name
+                    │           │       │   ╰── j
+                    │           │       ├── Type
+                    │           │       │   ╰── Int
+                    │           │       ╰── Initializer
+                    │           │           ╰── Constant Int [0]
+                    │           ├── Condition
+                    │           │   ╰── Binary [<]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Constant Int [3]
+                    │           ├── Condition
+                    │           │   ╰── Assign [+=]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Constant Int [1]
+                    │           ╰── Block
+                    │               ├── If
+                    │               │   ├── Condition
+                    │               │   │   ╰── Binary [&&]
+                    │               │   │       ├── Binary [==]
+                    │               │   │       │   ├── Var [i]
+                    │               │   │       │   ╰── Constant Int [1]
+                    │               │   │       ╰── Binary [==]
+                    │               │   │           ├── Var [j]
+                    │               │   │           ╰── Constant Int [2]
+                    │               │   ╰── Then
+                    │               │       ╰── Block
+                    │               │           ╰── Break
+                    │               ├── VarDeclaration
+                    │               │   ├── Name
+                    │               │   │   ╰── expected
+                    │               │   ├── Type
+                    │               │   │   ╰── Long
+                    │               │   ╰── Initializer
+                    │               │       ╰── Binary [+]
+                    │               │           ├── Binary [+]
+                    │               │           │   ├── Binary [*]
+                    │               │           │   │   ├── Var [i]
+                    │               │           │   │   ╰── Constant Int [3]
+                    │               │           │   ╰── Var [j]
+                    │               │           ╰── Constant Int [1]
+                    │               ╰── If
+                    │                   ├── Condition
+                    │                   │   ╰── Binary [!=]
+                    │                   │       ├── Subscript
+                    │                   │       │   ├── Subscript
+                    │                   │       │   │   ├── Var [long_nested_arr]
+                    │                   │       │   │   ╰── Var [i]
+                    │                   │       │   ╰── Var [j]
+                    │                   │       ╰── Var [expected]
+                    │                   ╰── Then
+                    │                       ╰── Block
+                    │                           ╰── Return
+                    │                               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Assign [+=]
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [dbl_nested_arr]
+                    │   │       │   │   │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   ╰── Constant Double [+1e2]
+                    │   │       ╰── Constant Double [+2.03e2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [3]
+                    │   ├── Condition
+                    │   │   ╰── Assign [+=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── For
+                    │           ├── Init
+                    │           │   ╰── VarDeclaration
+                    │           │       ├── Name
+                    │           │       │   ╰── j
+                    │           │       ├── Type
+                    │           │       │   ╰── Int
+                    │           │       ╰── Initializer
+                    │           │           ╰── Constant Int [0]
+                    │           ├── Condition
+                    │           │   ╰── Binary [<]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Constant Int [2]
+                    │           ├── Condition
+                    │           │   ╰── Assign [+=]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Constant Int [1]
+                    │           ╰── Block
+                    │               ├── If
+                    │               │   ├── Condition
+                    │               │   │   ╰── Binary [&&]
+                    │               │   │       ├── Binary [==]
+                    │               │   │       │   ├── Var [i]
+                    │               │   │       │   ╰── Constant Int [1]
+                    │               │   │       ╰── Binary [==]
+                    │               │   │           ├── Var [j]
+                    │               │   │           ╰── Constant Int [1]
+                    │               │   ╰── Then
+                    │               │       ╰── Block
+                    │               │           ╰── Continue
+                    │               ├── VarDeclaration
+                    │               │   ├── Name
+                    │               │   │   ╰── expected
+                    │               │   ├── Type
+                    │               │   │   ╰── Int
+                    │               │   ╰── Initializer
+                    │               │       ╰── Binary [+]
+                    │               │           ├── Binary [+]
+                    │               │           │   ├── Constant Int [100]
+                    │               │           │   ╰── Binary [*]
+                    │               │           │       ├── Var [i]
+                    │               │           │       ╰── Constant Int [2]
+                    │               │           ╰── Var [j]
+                    │               ╰── If
+                    │                   ├── Condition
+                    │                   │   ╰── Binary [!=]
+                    │                   │       ├── Subscript
+                    │                   │       │   ├── Subscript
+                    │                   │       │   │   ├── Var [dbl_nested_arr]
+                    │                   │       │   │   ╰── Var [i]
+                    │                   │       │   ╰── Var [j]
+                    │                   │       ╰── Var [expected]
+                    │                   ╰── Then
+                    │                       ╰── Block
+                    │                           ╰── Return
+                    │                               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_assign_to_subscripted_val() {
+    let src = r#"
+        unsigned unsigned_arr[4] = {4294967295U, 4294967294U, 4294967293U, 4294967292U};
+        int idx = 2;
+        long long_idx = 1;
+        int main(void) {
+            long_idx = -long_idx;
+            unsigned_arr[1] += 2;
+            if (unsigned_arr[1]) {
+                return 1;
+            }
+            unsigned_arr[idx] -= 10.0;
+            if (unsigned_arr[idx] != 4294967283U) {
+                return 2;
+            }
+            unsigned *unsigned_ptr = unsigned_arr + 4;
+            unsigned_ptr[long_idx] /= 10;
+            if (unsigned_arr[3] != 429496729U) {
+                return 3;
+            }
+            unsigned_ptr[long_idx *= 2] *= unsigned_arr[0];
+            if (unsigned_arr[2] != 13) {
+                return 4;
+            }
+            if ((unsigned_arr[idx + long_idx] %= 10) != 5) {
+                return 5;
+            }
+            if (unsigned_arr[0] != 5u) {
+                return 6;
+            }
+            if (unsigned_arr[1]) {
+                return 7;
+            }
+            if (unsigned_arr[2] != 13) {
+                return 8;
+            }
+            if (unsigned_arr[3] != 429496729U) {
+                return 9;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── unsigned_arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 4
+            │   │       ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Constant UInt [4294967295]
+            │           ├── Constant UInt [4294967294]
+            │           ├── Constant UInt [4294967293]
+            │           ╰── Constant UInt [4294967292]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── idx
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [2]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── long_idx
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant Int [1]
+            ╰── Function [main]
+                ╰── Body
+                    ├── Assign [=]
+                    │   ├── Var [long_idx]
+                    │   ╰── Unary [-]
+                    │       ╰── Var [long_idx]
+                    ├── Assign [+=]
+                    │   ├── Subscript
+                    │   │   ├── Var [unsigned_arr]
+                    │   │   ╰── Constant Int [1]
+                    │   ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Subscript
+                    │   │       ├── Var [unsigned_arr]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── Assign [-=]
+                    │   ├── Subscript
+                    │   │   ├── Var [unsigned_arr]
+                    │   │   ╰── Var [idx]
+                    │   ╰── Constant Double [+1e1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [unsigned_arr]
+                    │   │       │   ╰── Var [idx]
+                    │   │       ╰── Constant UInt [4294967283]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── unsigned_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [unsigned_arr]
+                    │           ╰── Constant Int [4]
+                    ├── Assign [/=]
+                    │   ├── Subscript
+                    │   │   ├── Var [unsigned_ptr]
+                    │   │   ╰── Var [long_idx]
+                    │   ╰── Constant Int [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [unsigned_arr]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant UInt [429496729]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── Assign [*=]
+                    │   ├── Subscript
+                    │   │   ├── Var [unsigned_ptr]
+                    │   │   ╰── Assign [*=]
+                    │   │       ├── Var [long_idx]
+                    │   │       ╰── Constant Int [2]
+                    │   ╰── Subscript
+                    │       ├── Var [unsigned_arr]
+                    │       ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [unsigned_arr]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [13]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Assign [&=]
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [unsigned_arr]
+                    │   │       │   │   ╰── Binary [+]
+                    │   │       │   │       ├── Var [idx]
+                    │   │       │   │       ╰── Var [long_idx]
+                    │   │       │   ╰── Constant Int [10]
+                    │   │       ╰── Constant Int [5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [unsigned_arr]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant UInt [5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Subscript
+                    │   │       ├── Var [unsigned_arr]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [unsigned_arr]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [13]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [unsigned_arr]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant UInt [429496729]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_bitwise_subscript() {
+    let src = r#"
+        
+        int main(void) {
+            unsigned long arr[4] = {
+                2147483648l,
+                18446744069414584320ul,
+                9223372036854775808ul,
+                1085102592571150095l
+            };
+            arr[1] &= arr[3];
+            if (arr[1] != 1085102592318504960 ) {
+                return 1;
+            }
+            arr[0] |= arr[1];
+            if (arr[0] != 1085102594465988608ul) {
+                return 2;
+            }
+            arr[2] ^= arr[3];
+            if (arr[2] != 10308474629425925903ul) {
+                return 3;
+            }
+            arr[3] >>= 25;
+            if (arr[3] != 32338577287l) {
+                return 4;
+            }
+            arr[1] <<= 12;
+            if (arr[1] != 17361640446303928320ul) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 4
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Long [2147483648]
+                    │           ├── Constant ULong [18446744069414584320]
+                    │           ├── Constant ULong [9223372036854775808]
+                    │           ╰── Constant Long [1085102592571150095]
+                    ├── Assign [&=]
+                    │   ├── Subscript
+                    │   │   ├── Var [arr]
+                    │   │   ╰── Constant Int [1]
+                    │   ╰── Subscript
+                    │       ├── Var [arr]
+                    │       ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant Long [1085102592318504960]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── Assign [|=]
+                    │   ├── Subscript
+                    │   │   ├── Var [arr]
+                    │   │   ╰── Constant Int [0]
+                    │   ╰── Subscript
+                    │       ├── Var [arr]
+                    │       ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant ULong [1085102594465988608]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── Assign [^=]
+                    │   ├── Subscript
+                    │   │   ├── Var [arr]
+                    │   │   ╰── Constant Int [2]
+                    │   ╰── Subscript
+                    │       ├── Var [arr]
+                    │       ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant ULong [10308474629425925903]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── Assign [>>=]
+                    │   ├── Subscript
+                    │   │   ├── Var [arr]
+                    │   │   ╰── Constant Int [3]
+                    │   ╰── Constant Int [25]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant Long [32338577287]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── Assign [<<=]
+                    │   ├── Subscript
+                    │   │   ├── Var [arr]
+                    │   │   ╰── Constant Int [1]
+                    │   ╰── Constant Int [12]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant ULong [17361640446303928320]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_lval_evaluated_once() {
+    let src = r#"
+        int get_call_count(void) {
+            static int count = 0;
+            count += 1;
+            return count;
+        }
+        int main(void) {
+            int arr[4] = {10, 11, 12, 13};
+            if (arr[get_call_count()] != 11) {
+                return 1;
+            }
+            int *end_ptr = arr + 4;
+            if ((end_ptr - 1)[-get_call_count()] != 11) {
+                return 2;
+            }
+            if (get_call_count() != 3) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [get_call_count]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── count
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [0]
+            │       │   ╰── Static
+            │       ├── Assign [+=]
+            │       │   ├── Var [count]
+            │       │   ╰── Constant Int [1]
+            │       ╰── Return
+            │           ╰── Var [count]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 4
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [10]
+                    │           ├── Constant Int [11]
+                    │           ├── Constant Int [12]
+                    │           ╰── Constant Int [13]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── FunctionCall [get_call_count]
+                    │   │       ╰── Constant Int [11]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── end_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [arr]
+                    │           ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Binary [-]
+                    │   │       │   │   ├── Var [end_ptr]
+                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   ╰── Unary [-]
+                    │   │       │       ╰── FunctionCall [get_call_count]
+                    │   │       ╰── Constant Int [11]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [get_call_count]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_nested_pointer_assignment() {
+    let src = r#"
+        static long nested_arr[3][4][5] = {{{10, 9, 8}, {1, 2}}, {{100, 99, 98}}};
+        int main(void) {
+            long(*outer_ptr)[4][5] = nested_arr;
+            outer_ptr += 1;
+            if (outer_ptr != nested_arr + 1) {
+                return 1;
+            }
+            if (outer_ptr[0][0][0] != 100) {
+                return 2;
+            }
+            long(*inner_ptr)[5] =
+                nested_arr[0] + 4;
+            inner_ptr -= 3;
+            if (inner_ptr[0][1] != 2) {
+                return 3;
+            }
+            unsigned long idx = nested_arr[0][0][0] - 9;
+            if ((inner_ptr += idx) != &nested_arr[0][2]) {
+                return 4;
+            }
+            if ((inner_ptr[-2][1] != 9)) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── nested_arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Array
+            │   │           ├── 4
+            │   │           ╰── Array
+            │   │               ├── 5
+            │   │               ╰── Long
+            │   ├── Initializer
+            │   │   ╰── Compound
+            │   │       ├── Compound
+            │   │       │   ├── Compound
+            │   │       │   │   ├── Constant Int [10]
+            │   │       │   │   ├── Constant Int [9]
+            │   │       │   │   ╰── Constant Int [8]
+            │   │       │   ╰── Compound
+            │   │       │       ├── Constant Int [1]
+            │   │       │       ╰── Constant Int [2]
+            │   │       ╰── Compound
+            │   │           ╰── Compound
+            │   │               ├── Constant Int [100]
+            │   │               ├── Constant Int [99]
+            │   │               ╰── Constant Int [98]
+            │   ╰── Static
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── outer_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 4
+                    │   │           ╰── Array
+                    │   │               ├── 5
+                    │   │               ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Var [nested_arr]
+                    ├── Assign [+=]
+                    │   ├── Var [outer_ptr]
+                    │   ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [outer_ptr]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [nested_arr]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [outer_ptr]
+                    │   │       │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant Int [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── inner_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 5
+                    │   │           ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Subscript
+                    │           │   ├── Var [nested_arr]
+                    │           │   ╰── Constant Int [0]
+                    │           ╰── Constant Int [4]
+                    ├── Assign [-=]
+                    │   ├── Var [inner_ptr]
+                    │   ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [inner_ptr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── idx
+                    │   ├── Type
+                    │   │   ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [-]
+                    │           ├── Subscript
+                    │           │   ├── Subscript
+                    │           │   │   ├── Subscript
+                    │           │   │   │   ├── Var [nested_arr]
+                    │           │   │   │   ╰── Constant Int [0]
+                    │           │   │   ╰── Constant Int [0]
+                    │           │   ╰── Constant Int [0]
+                    │           ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Assign [+=]
+                    │   │       │   ├── Var [inner_ptr]
+                    │   │       │   ╰── Var [idx]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Subscript
+                    │   │               ├── Subscript
+                    │   │               │   ├── Var [nested_arr]
+                    │   │               │   ╰── Constant Int [0]
+                    │   │               ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [inner_ptr]
+                    │   │       │   │   ╰── Unary [-]
+                    │   │       │   │       ╰── Constant Int [2]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [9]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_pointer_assignment() {
+    let src = r#"
+        int i = 4;
+        int int_array(void) {
+            int arr[6] = {1, 2, 3, 4, 5, 6};
+            int *ptr = arr;
+            if (*(ptr += 5) != 6) {
+                return 1;
+            }
+            if (ptr[0] != 6) {
+                 return 2;
+            }
+            if (ptr != arr + 5) {
+                return 3;
+            }
+            if (*(ptr -=3) != 3) {
+                return 4;
+            }
+            if (ptr[0] != 3) {
+                return 5;
+            }
+            if (ptr != arr + 2) {
+                return 6;
+            }
+            if ((ptr += i - 1) != arr + 5) {
+                return 7;
+            }
+            if (*ptr != 6) {
+                return 8;
+            }
+            if ((ptr -= (4294967295U + i)) != arr + 2) {
+                return 9;
+            }
+            if (*ptr != 3) {
+                return 10;
+            }
+            long l = 9223372036854775807l;
+            if ((ptr += l - 9223372036854775806l) != arr + 3) {
+                return 11;
+            }
+            if (*ptr != 4) {
+                return 12;
+            }
+            return 0;
+        }
+        int double_array(void) {
+            static double arr[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+            double *ptr = arr;
+            if (*(ptr += 5) != 6) {
+                return 1;
+            }
+            if (ptr[0] != 6) {
+                 return 2;
+            }
+            if (ptr != arr + 5) {
+                return 3;
+            }
+            if (*(ptr -=3) != 3) {
+                return 4;
+            }
+            if (ptr[0] != 3) {
+                return 5;
+            }
+            if (ptr != arr + 2) {
+                return 6;
+            }
+            if ((ptr += i - 1) != arr + 5) {
+                return 7;
+            }
+            if (*ptr != 6) {
+                return 8;
+            }
+            if ((ptr -= (4294967295U + i)) != arr + 2) {
+                return 9;
+            }
+            if (*ptr != 3) {
+                return 10;
+            }
+            long l = 9223372036854775807l;
+            if ((ptr += l - 9223372036854775806l) != arr + 3) {
+                return 11;
+            }
+            if (*ptr != 4) {
+                return 12;
+            }
+            return 0;
+        }
+        int main(void) {
+            int result;
+            if ((result = int_array())) {
+                return result;
+            }
+            if ((result = double_array())) {
+                return result + 12;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [4]
+            ├── Function [int_array]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 6
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [1]
+            │       │           ├── Constant Int [2]
+            │       │           ├── Constant Int [3]
+            │       │           ├── Constant Int [4]
+            │       │           ├── Constant Int [5]
+            │       │           ╰── Constant Int [6]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Var [arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Assign [+=]
+            │       │   │       │       ├── Var [ptr]
+            │       │   │       │       ╰── Constant Int [5]
+            │       │   │       ╰── Constant Int [6]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [ptr]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant Int [6]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [ptr]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [5]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Assign [-=]
+            │       │   │       │       ├── Var [ptr]
+            │       │   │       │       ╰── Constant Int [3]
+            │       │   │       ╰── Constant Int [3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [4]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [ptr]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant Int [3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [5]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [ptr]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [6]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Assign [+=]
+            │       │   │       │   ├── Var [ptr]
+            │       │   │       │   ╰── Binary [-]
+            │       │   │       │       ├── Var [i]
+            │       │   │       │       ╰── Constant Int [1]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [5]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [7]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Var [ptr]
+            │       │   │       ╰── Constant Int [6]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [8]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Assign [-=]
+            │       │   │       │   ├── Var [ptr]
+            │       │   │       │   ╰── Binary [+]
+            │       │   │       │       ├── Constant UInt [4294967295]
+            │       │   │       │       ╰── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [9]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Var [ptr]
+            │       │   │       ╰── Constant Int [3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [10]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── l
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Constant Long [9223372036854775807]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Assign [+=]
+            │       │   │       │   ├── Var [ptr]
+            │       │   │       │   ╰── Binary [-]
+            │       │   │       │       ├── Var [l]
+            │       │   │       │       ╰── Constant Long [9223372036854775806]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [11]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Var [ptr]
+            │       │   │       ╰── Constant Int [4]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [12]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [double_array]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 6
+            │       │   │       ╰── Double
+            │       │   ├── Initializer
+            │       │   │   ╰── Compound
+            │       │   │       ├── Constant Double [+1e0]
+            │       │   │       ├── Constant Double [+2e0]
+            │       │   │       ├── Constant Double [+3e0]
+            │       │   │       ├── Constant Double [+4e0]
+            │       │   │       ├── Constant Double [+5e0]
+            │       │   │       ╰── Constant Double [+6e0]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Var [arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Assign [+=]
+            │       │   │       │       ├── Var [ptr]
+            │       │   │       │       ╰── Constant Int [5]
+            │       │   │       ╰── Constant Int [6]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [ptr]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant Int [6]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [ptr]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [5]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Assign [-=]
+            │       │   │       │       ├── Var [ptr]
+            │       │   │       │       ╰── Constant Int [3]
+            │       │   │       ╰── Constant Int [3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [4]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [ptr]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant Int [3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [5]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [ptr]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [6]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Assign [+=]
+            │       │   │       │   ├── Var [ptr]
+            │       │   │       │   ╰── Binary [-]
+            │       │   │       │       ├── Var [i]
+            │       │   │       │       ╰── Constant Int [1]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [5]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [7]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Var [ptr]
+            │       │   │       ╰── Constant Int [6]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [8]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Assign [-=]
+            │       │   │       │   ├── Var [ptr]
+            │       │   │       │   ╰── Binary [+]
+            │       │   │       │       ├── Constant UInt [4294967295]
+            │       │   │       │       ╰── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [9]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Var [ptr]
+            │       │   │       ╰── Constant Int [3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [10]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── l
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Constant Long [9223372036854775807]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Assign [+=]
+            │       │   │       │   ├── Var [ptr]
+            │       │   │       │   ╰── Binary [-]
+            │       │   │       │       ├── Var [l]
+            │       │   │       │       ╰── Constant Long [9223372036854775806]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [11]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Dereference
+            │       │   │       │   ╰── Var [ptr]
+            │       │   │       ╰── Constant Int [4]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [12]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ╰── Type
+                    │       ╰── Int
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [result]
+                    │   │       ╰── FunctionCall [int_array]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [result]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [result]
+                    │   │       ╰── FunctionCall [double_array]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Binary [+]
+                    │                   ├── Var [result]
+                    │                   ╰── Constant Int [12]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_incr_and_decr_nested_pointers() {
+    let src = r#"
+        
+        int main(void) {
+            long arr[2][3][4] = {
+                {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}},
+                {{13, 14, 15, 16}, {17, 18, 19, 20}, {21, 22, 23, 24}}};
+            long (*outer_ptr)[3][4] = arr + 1;
+            if (outer_ptr-- != &arr[1]) {
+                return 1;
+            }
+            if (outer_ptr[0][1] != arr[0][1]) {
+                return 2;
+            }
+            if ((++outer_ptr)[0][2][3] != 24) {
+                return 3;
+            }
+            if (outer_ptr[0][2][3] != 24) {
+                return 4;
+            }
+            long (*inner_ptr)[4] = arr[0] + 1;
+            if (inner_ptr++[0][2] != 7) {
+                return 5;
+            }
+            if (inner_ptr[0][2] != 11) {
+                return 6;
+            }
+            if ((--inner_ptr)[0][1] != 6) {
+                return 7;
+            }
+            long *scalar_ptr = arr[1][2];
+            if (scalar_ptr--[2] != 23) {
+                return 8;
+            }
+            if (scalar_ptr[2] != 22) {
+                return 9;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Array
+                    │   │           ├── 3
+                    │   │           ╰── Array
+                    │   │               ├── 4
+                    │   │               ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Compound
+                    │           │   ├── Compound
+                    │           │   │   ├── Constant Int [1]
+                    │           │   │   ├── Constant Int [2]
+                    │           │   │   ├── Constant Int [3]
+                    │           │   │   ╰── Constant Int [4]
+                    │           │   ├── Compound
+                    │           │   │   ├── Constant Int [5]
+                    │           │   │   ├── Constant Int [6]
+                    │           │   │   ├── Constant Int [7]
+                    │           │   │   ╰── Constant Int [8]
+                    │           │   ╰── Compound
+                    │           │       ├── Constant Int [9]
+                    │           │       ├── Constant Int [10]
+                    │           │       ├── Constant Int [11]
+                    │           │       ╰── Constant Int [12]
+                    │           ╰── Compound
+                    │               ├── Compound
+                    │               │   ├── Constant Int [13]
+                    │               │   ├── Constant Int [14]
+                    │               │   ├── Constant Int [15]
+                    │               │   ╰── Constant Int [16]
+                    │               ├── Compound
+                    │               │   ├── Constant Int [17]
+                    │               │   ├── Constant Int [18]
+                    │               │   ├── Constant Int [19]
+                    │               │   ╰── Constant Int [20]
+                    │               ╰── Compound
+                    │                   ├── Constant Int [21]
+                    │                   ├── Constant Int [22]
+                    │                   ├── Constant Int [23]
+                    │                   ╰── Constant Int [24]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── outer_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 3
+                    │   │           ╰── Array
+                    │   │               ├── 4
+                    │   │               ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [arr]
+                    │           ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Postfix [--]
+                    │   │       │   ╰── Var [outer_ptr]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Subscript
+                    │   │               ├── Var [arr]
+                    │   │               ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [outer_ptr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Subscript
+                    │   │           ├── Subscript
+                    │   │           │   ├── Var [arr]
+                    │   │           │   ╰── Constant Int [0]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Unary [++]
+                    │   │       │   │   │   │   ╰── Var [outer_ptr]
+                    │   │       │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── Constant Int [2]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant Int [24]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [outer_ptr]
+                    │   │       │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── Constant Int [2]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant Int [24]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── inner_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 4
+                    │   │           ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Subscript
+                    │           │   ├── Var [arr]
+                    │           │   ╰── Constant Int [0]
+                    │           ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Postfix [++]
+                    │   │       │   │   │   ╰── Var [inner_ptr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [7]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [inner_ptr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [11]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Unary [--]
+                    │   │       │   │   │   ╰── Var [inner_ptr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── scalar_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Subscript
+                    │           ├── Subscript
+                    │           │   ├── Var [arr]
+                    │           │   ╰── Constant Int [1]
+                    │           ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Postfix [--]
+                    │   │       │   │   ╰── Var [scalar_ptr]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [23]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [scalar_ptr]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [22]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_incr_and_decr_pointers() {
+    let src = r#"
+        
+        int main(void) {
+            double x[3] = {0.0, 1.0, 2.0};
+            double *ptr = x;
+            if (++ptr != x + 1) {
+                return 1;
+            }
+            if (*ptr != 1.0) {
+                return 2;
+            }
+            if (ptr++ != x + 1) {
+                return 3;
+            }
+            if (ptr != x + 2) {
+                return 4;
+            }
+            if (*ptr != 2.0) {
+                return 5;
+            }
+            if (--ptr != x + 1) {
+                return 6;
+            }
+            if (*ptr != 1.0) {
+                return 7;
+            }
+            if (ptr-- != x + 1) {
+                return 8;
+            }
+            if (*ptr != 0.0) {
+                return 9;
+            }
+            if (ptr != x) {
+                return 10;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Double [+0e0]
+                    │           ├── Constant Double [+1e0]
+                    │           ╰── Constant Double [+2e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Var [x]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [++]
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [x]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Postfix [++]
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [x]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ptr]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [x]
+                    │   │           ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Constant Double [+2e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [--]
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [x]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Constant Double [+1e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Postfix [--]
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [x]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Constant Double [+0e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ptr]
+                    │   │       ╰── Var [x]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [10]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_incr_decr_subscripted_vals() {
+    let src = r#"
+        int i = 2;
+        int j = 1;
+        int k = 0;
+        int main(void) {
+            int arr[3][2][2] = {
+                {{1, 2}, {3, 4}}, {{5, 6}, {7, 8}}, {{9, 10}, {11, 12}}};
+            if (arr[i][j][k]++ != 11) {
+                return 1;
+            }
+            if (arr[i][j][k] != 12) {
+                return 2;
+            }
+            if (++arr[--i][j--][++k] != 9) {
+                return 3;
+            }
+            if (arr[i][j][k] != 6) {
+                return 4;
+            }
+            if (--arr[i][j][k] != 5) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── i
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [2]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── j
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [1]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── k
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Array
+                    │   │           ├── 2
+                    │   │           ╰── Array
+                    │   │               ├── 2
+                    │   │               ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Compound
+                    │           │   ├── Compound
+                    │           │   │   ├── Constant Int [1]
+                    │           │   │   ╰── Constant Int [2]
+                    │           │   ╰── Compound
+                    │           │       ├── Constant Int [3]
+                    │           │       ╰── Constant Int [4]
+                    │           ├── Compound
+                    │           │   ├── Compound
+                    │           │   │   ├── Constant Int [5]
+                    │           │   │   ╰── Constant Int [6]
+                    │           │   ╰── Compound
+                    │           │       ├── Constant Int [7]
+                    │           │       ╰── Constant Int [8]
+                    │           ╰── Compound
+                    │               ├── Compound
+                    │               │   ├── Constant Int [9]
+                    │               │   ╰── Constant Int [10]
+                    │               ╰── Compound
+                    │                   ├── Constant Int [11]
+                    │                   ╰── Constant Int [12]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Postfix [++]
+                    │   │       │   ╰── Subscript
+                    │   │       │       ├── Subscript
+                    │   │       │       │   ├── Subscript
+                    │   │       │       │   │   ├── Var [arr]
+                    │   │       │       │   │   ╰── Var [i]
+                    │   │       │       │   ╰── Var [j]
+                    │   │       │       ╰── Var [k]
+                    │   │       ╰── Constant Int [11]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [arr]
+                    │   │       │   │   │   ╰── Var [i]
+                    │   │       │   │   ╰── Var [j]
+                    │   │       │   ╰── Var [k]
+                    │   │       ╰── Constant Int [12]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [++]
+                    │   │       │   ╰── Subscript
+                    │   │       │       ├── Subscript
+                    │   │       │       │   ├── Subscript
+                    │   │       │       │   │   ├── Var [arr]
+                    │   │       │       │   │   ╰── Unary [--]
+                    │   │       │       │   │       ╰── Var [i]
+                    │   │       │       │   ╰── Postfix [--]
+                    │   │       │       │       ╰── Var [j]
+                    │   │       │       ╰── Unary [++]
+                    │   │       │           ╰── Var [k]
+                    │   │       ╰── Constant Int [9]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [arr]
+                    │   │       │   │   │   ╰── Var [i]
+                    │   │       │   │   ╰── Var [j]
+                    │   │       │   ╰── Var [k]
+                    │   │       ╰── Constant Int [6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Unary [--]
+                    │   │       │   ╰── Subscript
+                    │   │       │       ├── Subscript
+                    │   │       │       │   ├── Subscript
+                    │   │       │       │   │   ├── Var [arr]
+                    │   │       │       │   │   ╰── Var [i]
+                    │   │       │       │   ╰── Var [j]
+                    │   │       │       ╰── Var [k]
+                    │   │       ╰── Constant Int [5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_postfix_prefix_precedence() {
+    let src = r#"
+        
+        int idx = 3;
+        int main(void) {
+            int arr[5] = {1, 2, 3, 4, 5};
+            int *ptr = arr + 1;
+            int result = ++ptr--[idx];
+            if (result != 6) {
+                return 1;
+            }
+            if (*ptr != 1) {
+                return 2;
+            }
+            if (ptr != arr) {
+                return 3;
+            }
+            if (*ptr++ != 1) {
+                return 4;
+            }
+            if (*ptr != 2) {
+                return 5;
+            }
+            for (int i = 0; i < 4; i++) {
+                if (arr[i] != i + 1) {
+                    return 6;
+                }
+            }
+            if (arr[4] != 6) {
+                return 7;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── idx
+            │   ├── Type
+            │   │   ╰── Int
+            │   ╰── Initializer
+            │       ╰── Constant Int [3]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 5
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ├── Constant Int [3]
+                    │           ├── Constant Int [4]
+                    │           ╰── Constant Int [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [arr]
+                    │           ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Unary [++]
+                    │           ╰── Subscript
+                    │               ├── Postfix [--]
+                    │               │   ╰── Var [ptr]
+                    │               ╰── Var [idx]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [result]
+                    │   │       ╰── Constant Int [6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [ptr]
+                    │   │       ╰── Var [arr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Postfix [++]
+                    │   │       │       ╰── Var [ptr]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Var [ptr]
+                    │   │       ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [4]
+                    │   ├── Condition
+                    │   │   ╰── Postfix [++]
+                    │   │       ╰── Var [i]
+                    │   ╰── Block
+                    │       ╰── If
+                    │           ├── Condition
+                    │           │   ╰── Binary [!=]
+                    │           │       ├── Subscript
+                    │           │       │   ├── Var [arr]
+                    │           │       │   ╰── Var [i]
+                    │           │       ╰── Binary [+]
+                    │           │           ├── Var [i]
+                    │           │           ╰── Constant Int [1]
+                    │           ╰── Then
+                    │               ╰── Block
+                    │                   ╰── Return
+                    │                       ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── Constant Int [4]
+                    │   │       ╰── Constant Int [6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_initialization_automatic() {
+    let src = r#"
+        int test_simple(void) {
+            unsigned long arr[3] = {18446744073709551615UL, 9223372036854775807UL,
+                                    100ul};
+            return (arr[0] == 18446744073709551615UL &&
+                    arr[1] == 9223372036854775807UL && arr[2] == 100ul);
+        }
+        int test_partial(void) {
+            double arr[5] = {1.0, 123e4};
+            return (arr[0] == 1.0 && arr[1] == 123e4 && !arr[2] && !arr[3] && !arr[4]);
+        }
+        int test_non_constant(long negative_7billion, int *ptr) {
+            *ptr = 1;
+            extern int three(void);
+            long var = negative_7billion * three();
+            long arr[5] = {
+                negative_7billion,
+                three() * 7l,
+                -(long)*ptr,
+                var + (negative_7billion ? 2 : 3)
+            };
+            return (arr[0] == -7000000000 && arr[1] == 21l && arr[2] == -1l &&
+                    arr[3] == -20999999998l && arr[4] == 0l);
+        }
+        int three(void) {
+            return 3;
+        }
+        long global_one = 1l;
+        int test_type_conversion(int *ptr) {
+            *ptr = -100;
+            unsigned long arr[4] = {
+                3458764513821589504.0,
+                *ptr,
+                (unsigned int)18446744073709551615UL,
+                -global_one
+            };
+            return (arr[0] == 3458764513821589504ul &&
+                    arr[1] == 18446744073709551516ul && arr[2] == 4294967295U &&
+                    arr[3] == 18446744073709551615UL);
+        }
+        int test_preserve_stack(void) {
+            int i = -1;
+            int arr[3] = {global_one * 2l, global_one + three()};
+            unsigned int u = 2684366905;
+            if (i != -1) {
+                return 0;
+            }
+            if (u != 2684366905) {
+                return 0;
+            }
+            return (arr[0] == 2 && arr[1] == 4 && !arr[2]);
+        }
+        int main(void) {
+            if (!test_simple()) {
+                return 1;
+            }
+            if (!test_partial()) {
+                return 2;
+            }
+            long negative_seven_billion = -7000000000l;
+            int i = 0;
+            if (!test_non_constant(negative_seven_billion, &i)) {
+                return 3;
+            }
+            if (!test_type_conversion(&i)) {
+                return 4;
+            }
+            if (!test_preserve_stack()) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [test_simple]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Unsigned Long
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant ULong [18446744073709551615]
+            │       │           ├── Constant ULong [9223372036854775807]
+            │       │           ╰── Constant ULong [100]
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Binary [&&]
+            │               │   ├── Binary [==]
+            │               │   │   ├── Subscript
+            │               │   │   │   ├── Var [arr]
+            │               │   │   │   ╰── Constant Int [0]
+            │               │   │   ╰── Constant ULong [18446744073709551615]
+            │               │   ╰── Binary [==]
+            │               │       ├── Subscript
+            │               │       │   ├── Var [arr]
+            │               │       │   ╰── Constant Int [1]
+            │               │       ╰── Constant ULong [9223372036854775807]
+            │               ╰── Binary [==]
+            │                   ├── Subscript
+            │                   │   ├── Var [arr]
+            │                   │   ╰── Constant Int [2]
+            │                   ╰── Constant ULong [100]
+            ├── Function [test_partial]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 5
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Double [+1e0]
+            │       │           ╰── Constant Double [+1.23e6]
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Binary [&&]
+            │               │   ├── Binary [&&]
+            │               │   │   ├── Binary [&&]
+            │               │   │   │   ├── Binary [==]
+            │               │   │   │   │   ├── Subscript
+            │               │   │   │   │   │   ├── Var [arr]
+            │               │   │   │   │   │   ╰── Constant Int [0]
+            │               │   │   │   │   ╰── Constant Double [+1e0]
+            │               │   │   │   ╰── Binary [==]
+            │               │   │   │       ├── Subscript
+            │               │   │   │       │   ├── Var [arr]
+            │               │   │   │       │   ╰── Constant Int [1]
+            │               │   │   │       ╰── Constant Double [+1.23e6]
+            │               │   │   ╰── Unary [!]
+            │               │   │       ╰── Subscript
+            │               │   │           ├── Var [arr]
+            │               │   │           ╰── Constant Int [2]
+            │               │   ╰── Unary [!]
+            │               │       ╰── Subscript
+            │               │           ├── Var [arr]
+            │               │           ╰── Constant Int [3]
+            │               ╰── Unary [!]
+            │                   ╰── Subscript
+            │                       ├── Var [arr]
+            │                       ╰── Constant Int [4]
+            ├── Function [test_non_constant]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── negative_7billion
+            │   │   │   ╰── Type
+            │   │   │       ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Dereference
+            │       │   │   ╰── Var [ptr]
+            │       │   ╰── Constant Int [1]
+            │       ├── Function [extern three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── var
+            │       │   ├── Type
+            │       │   │   ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [*]
+            │       │           ├── Var [negative_7billion]
+            │       │           ╰── FunctionCall [three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 5
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Var [negative_7billion]
+            │       │           ├── Binary [*]
+            │       │           │   ├── FunctionCall [three]
+            │       │           │   ╰── Constant Long [7]
+            │       │           ├── Unary [-]
+            │       │           │   ╰── Cast
+            │       │           │       ├── Target
+            │       │           │       │   ╰── Long
+            │       │           │       ╰── Expression
+            │       │           │           ╰── Dereference
+            │       │           │               ╰── Var [ptr]
+            │       │           ╰── Binary [+]
+            │       │               ├── Var [var]
+            │       │               ╰── Conditional [?]
+            │       │                   ├── Var [negative_7billion]
+            │       │                   ├── Then
+            │       │                   │   ╰── Constant Int [2]
+            │       │                   ╰── Else
+            │       │                       ╰── Constant Int [3]
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Binary [&&]
+            │               │   ├── Binary [&&]
+            │               │   │   ├── Binary [&&]
+            │               │   │   │   ├── Binary [==]
+            │               │   │   │   │   ├── Subscript
+            │               │   │   │   │   │   ├── Var [arr]
+            │               │   │   │   │   │   ╰── Constant Int [0]
+            │               │   │   │   │   ╰── Unary [-]
+            │               │   │   │   │       ╰── Constant Long [7000000000]
+            │               │   │   │   ╰── Binary [==]
+            │               │   │   │       ├── Subscript
+            │               │   │   │       │   ├── Var [arr]
+            │               │   │   │       │   ╰── Constant Int [1]
+            │               │   │   │       ╰── Constant Long [21]
+            │               │   │   ╰── Binary [==]
+            │               │   │       ├── Subscript
+            │               │   │       │   ├── Var [arr]
+            │               │   │       │   ╰── Constant Int [2]
+            │               │   │       ╰── Unary [-]
+            │               │   │           ╰── Constant Long [1]
+            │               │   ╰── Binary [==]
+            │               │       ├── Subscript
+            │               │       │   ├── Var [arr]
+            │               │       │   ╰── Constant Int [3]
+            │               │       ╰── Unary [-]
+            │               │           ╰── Constant Long [20999999998]
+            │               ╰── Binary [==]
+            │                   ├── Subscript
+            │                   │   ├── Var [arr]
+            │                   │   ╰── Constant Int [4]
+            │                   ╰── Constant Long [0]
+            ├── Function [three]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Constant Int [3]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── global_one
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant Long [1]
+            ├── Function [test_type_conversion]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Dereference
+            │       │   │   ╰── Var [ptr]
+            │       │   ╰── Unary [-]
+            │       │       ╰── Constant Int [100]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 4
+            │       │   │       ╰── Unsigned Long
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Double [+3.4587645138215895e18]
+            │       │           ├── Dereference
+            │       │           │   ╰── Var [ptr]
+            │       │           ├── Cast
+            │       │           │   ├── Target
+            │       │           │   │   ╰── Unsigned Int
+            │       │           │   ╰── Expression
+            │       │           │       ╰── Constant ULong [18446744073709551615]
+            │       │           ╰── Unary [-]
+            │       │               ╰── Var [global_one]
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Binary [&&]
+            │               │   ├── Binary [&&]
+            │               │   │   ├── Binary [==]
+            │               │   │   │   ├── Subscript
+            │               │   │   │   │   ├── Var [arr]
+            │               │   │   │   │   ╰── Constant Int [0]
+            │               │   │   │   ╰── Constant ULong [3458764513821589504]
+            │               │   │   ╰── Binary [==]
+            │               │   │       ├── Subscript
+            │               │   │       │   ├── Var [arr]
+            │               │   │       │   ╰── Constant Int [1]
+            │               │   │       ╰── Constant ULong [18446744073709551516]
+            │               │   ╰── Binary [==]
+            │               │       ├── Subscript
+            │               │       │   ├── Var [arr]
+            │               │       │   ╰── Constant Int [2]
+            │               │       ╰── Constant UInt [4294967295]
+            │               ╰── Binary [==]
+            │                   ├── Subscript
+            │                   │   ├── Var [arr]
+            │                   │   ╰── Constant Int [3]
+            │                   ╰── Constant ULong [18446744073709551615]
+            ├── Function [test_preserve_stack]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Unary [-]
+            │       │           ╰── Constant Int [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Binary [*]
+            │       │           │   ├── Var [global_one]
+            │       │           │   ╰── Constant Long [2]
+            │       │           ╰── Binary [+]
+            │       │               ├── Var [global_one]
+            │       │               ╰── FunctionCall [three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── u
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant Long [2684366905]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Unary [-]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [u]
+            │       │   │       ╰── Constant Long [2684366905]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [0]
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Binary [&&]
+            │               │   ├── Binary [==]
+            │               │   │   ├── Subscript
+            │               │   │   │   ├── Var [arr]
+            │               │   │   │   ╰── Constant Int [0]
+            │               │   │   ╰── Constant Int [2]
+            │               │   ╰── Binary [==]
+            │               │       ├── Subscript
+            │               │       │   ├── Var [arr]
+            │               │       │   ╰── Constant Int [1]
+            │               │       ╰── Constant Int [4]
+            │               ╰── Unary [!]
+            │                   ╰── Subscript
+            │                       ├── Var [arr]
+            │                       ╰── Constant Int [2]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_simple]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_partial]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── negative_seven_billion
+                    │   ├── Type
+                    │   │   ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Unary [-]
+                    │           ╰── Constant Long [7000000000]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_non_constant]
+                    │   │           ├── Var [negative_seven_billion]
+                    │   │           ╰── AddressOf
+                    │   │               ╰── Var [i]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_type_conversion]
+                    │   │           ╰── AddressOf
+                    │   │               ╰── Var [i]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_preserve_stack]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_initialization_automatic_nested() {
+    let src = r#"
+        int test_simple(void) {
+            int arr[3][3] = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+            for (int i = 0; i < 3; i = i + 1) {
+                for (int j = 0; j < 3; j = j + 1) {
+                    if (arr[i][j] != i * 3 + j + 1) {
+                        return 0;
+                    }
+                }
+            }
+            return 1;
+        }
+        int test_partial(void) {
+            int first_half_only[4][2][6] = {
+                {{1, 2, 3}},
+                {{4, 5, 6}}
+            };
+            int expected = 1;
+            for (int i = 0; i < 4; i = i + 1) {
+                for (int j = 0; j < 2; j = j + 1) {
+                    for (int k = 0; k < 6; k = k + 1) {
+                        int val = first_half_only[i][j][k];
+                        if (i > 1 || j > 0 || k > 2 ) {
+                            if (val) {
+                                return 0;
+                            }
+                        } else {
+                            if (val != expected) {
+                                return 0;
+                            }
+                            expected = expected + 1;
+                        }
+                    }
+                }
+            }
+            return 1;
+        }
+        int test_non_constant_and_type_conversion(void) {
+            extern unsigned int three(void);
+            static int x = 2000;
+            int negative_four = -4;
+            int *ptr = &negative_four;
+            double arr[3][2] = {
+                { x, x / *ptr },
+                { three() }
+            };
+            if (arr[0][0] != 2000.0 || arr[0][1] != -500.0 || arr[1][0] != 3.0) {
+                return 0;
+            }
+            if (arr[1][1] || arr[2][0] || arr[2][1]) {
+                return 0;
+            }
+            return 1;
+        }
+        unsigned int three(void) {
+            return 3u;
+        }
+        long one = 1l;
+        int test_preserve_stack(void) {
+            int i = -1;
+            int arr[3][1] = { {one * 2l}, {one + three()} };
+            unsigned int u = 2684366905;
+            if (i != -1) {
+                return 0;
+            }
+            if (u != 2684366905) {
+                return 0;
+            }
+            if ( arr[0][0] != 2 || arr[1][0] != 4 || arr[2][0] != 0 ) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_simple()) {
+                return 1;
+            }
+            if (!test_partial()) {
+                return 2;
+            }
+            if (!test_non_constant_and_type_conversion()) {
+                return 3;
+            }
+            if (!test_preserve_stack()) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [test_simple]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Array
+            │       │   │           ├── 3
+            │       │   │           ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ├── Constant Int [1]
+            │       │           │   ├── Constant Int [2]
+            │       │           │   ╰── Constant Int [3]
+            │       │           ├── Compound
+            │       │           │   ├── Constant Int [4]
+            │       │           │   ├── Constant Int [5]
+            │       │           │   ╰── Constant Int [6]
+            │       │           ╰── Compound
+            │       │               ├── Constant Int [7]
+            │       │               ├── Constant Int [8]
+            │       │               ╰── Constant Int [9]
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [3]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ╰── For
+            │       │           ├── Init
+            │       │           │   ╰── VarDeclaration
+            │       │           │       ├── Name
+            │       │           │       │   ╰── j
+            │       │           │       ├── Type
+            │       │           │       │   ╰── Int
+            │       │           │       ╰── Initializer
+            │       │           │           ╰── Constant Int [0]
+            │       │           ├── Condition
+            │       │           │   ╰── Binary [<]
+            │       │           │       ├── Var [j]
+            │       │           │       ╰── Constant Int [3]
+            │       │           ├── Condition
+            │       │           │   ╰── Assign [=]
+            │       │           │       ├── Var [j]
+            │       │           │       ╰── Binary [+]
+            │       │           │           ├── Var [j]
+            │       │           │           ╰── Constant Int [1]
+            │       │           ╰── Block
+            │       │               ╰── If
+            │       │                   ├── Condition
+            │       │                   │   ╰── Binary [!=]
+            │       │                   │       ├── Subscript
+            │       │                   │       │   ├── Subscript
+            │       │                   │       │   │   ├── Var [arr]
+            │       │                   │       │   │   ╰── Var [i]
+            │       │                   │       │   ╰── Var [j]
+            │       │                   │       ╰── Binary [+]
+            │       │                   │           ├── Binary [+]
+            │       │                   │           │   ├── Binary [*]
+            │       │                   │           │   │   ├── Var [i]
+            │       │                   │           │   │   ╰── Constant Int [3]
+            │       │                   │           │   ╰── Var [j]
+            │       │                   │           ╰── Constant Int [1]
+            │       │                   ╰── Then
+            │       │                       ╰── Block
+            │       │                           ╰── Return
+            │       │                               ╰── Constant Int [0]
+            │       ╰── Return
+            │           ╰── Constant Int [1]
+            ├── Function [test_partial]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── first_half_only
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 4
+            │       │   │       ╰── Array
+            │       │   │           ├── 2
+            │       │   │           ╰── Array
+            │       │   │               ├── 6
+            │       │   │               ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ╰── Compound
+            │       │           │       ├── Constant Int [1]
+            │       │           │       ├── Constant Int [2]
+            │       │           │       ╰── Constant Int [3]
+            │       │           ╰── Compound
+            │       │               ╰── Compound
+            │       │                   ├── Constant Int [4]
+            │       │                   ├── Constant Int [5]
+            │       │                   ╰── Constant Int [6]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── expected
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant Int [1]
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [4]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ╰── For
+            │       │           ├── Init
+            │       │           │   ╰── VarDeclaration
+            │       │           │       ├── Name
+            │       │           │       │   ╰── j
+            │       │           │       ├── Type
+            │       │           │       │   ╰── Int
+            │       │           │       ╰── Initializer
+            │       │           │           ╰── Constant Int [0]
+            │       │           ├── Condition
+            │       │           │   ╰── Binary [<]
+            │       │           │       ├── Var [j]
+            │       │           │       ╰── Constant Int [2]
+            │       │           ├── Condition
+            │       │           │   ╰── Assign [=]
+            │       │           │       ├── Var [j]
+            │       │           │       ╰── Binary [+]
+            │       │           │           ├── Var [j]
+            │       │           │           ╰── Constant Int [1]
+            │       │           ╰── Block
+            │       │               ╰── For
+            │       │                   ├── Init
+            │       │                   │   ╰── VarDeclaration
+            │       │                   │       ├── Name
+            │       │                   │       │   ╰── k
+            │       │                   │       ├── Type
+            │       │                   │       │   ╰── Int
+            │       │                   │       ╰── Initializer
+            │       │                   │           ╰── Constant Int [0]
+            │       │                   ├── Condition
+            │       │                   │   ╰── Binary [<]
+            │       │                   │       ├── Var [k]
+            │       │                   │       ╰── Constant Int [6]
+            │       │                   ├── Condition
+            │       │                   │   ╰── Assign [=]
+            │       │                   │       ├── Var [k]
+            │       │                   │       ╰── Binary [+]
+            │       │                   │           ├── Var [k]
+            │       │                   │           ╰── Constant Int [1]
+            │       │                   ╰── Block
+            │       │                       ├── VarDeclaration
+            │       │                       │   ├── Name
+            │       │                       │   │   ╰── val
+            │       │                       │   ├── Type
+            │       │                       │   │   ╰── Int
+            │       │                       │   ╰── Initializer
+            │       │                       │       ╰── Subscript
+            │       │                       │           ├── Subscript
+            │       │                       │           │   ├── Subscript
+            │       │                       │           │   │   ├── Var [first_half_only]
+            │       │                       │           │   │   ╰── Var [i]
+            │       │                       │           │   ╰── Var [j]
+            │       │                       │           ╰── Var [k]
+            │       │                       ╰── If
+            │       │                           ├── Condition
+            │       │                           │   ╰── Binary [||]
+            │       │                           │       ├── Binary [||]
+            │       │                           │       │   ├── Binary [>]
+            │       │                           │       │   │   ├── Var [i]
+            │       │                           │       │   │   ╰── Constant Int [1]
+            │       │                           │       │   ╰── Binary [>]
+            │       │                           │       │       ├── Var [j]
+            │       │                           │       │       ╰── Constant Int [0]
+            │       │                           │       ╰── Binary [>]
+            │       │                           │           ├── Var [k]
+            │       │                           │           ╰── Constant Int [2]
+            │       │                           ├── Then
+            │       │                           │   ╰── Block
+            │       │                           │       ╰── If
+            │       │                           │           ├── Condition
+            │       │                           │           │   ╰── Var [val]
+            │       │                           │           ╰── Then
+            │       │                           │               ╰── Block
+            │       │                           │                   ╰── Return
+            │       │                           │                       ╰── Constant Int [0]
+            │       │                           ╰── Else
+            │       │                               ╰── Block
+            │       │                                   ├── If
+            │       │                                   │   ├── Condition
+            │       │                                   │   │   ╰── Binary [!=]
+            │       │                                   │   │       ├── Var [val]
+            │       │                                   │   │       ╰── Var [expected]
+            │       │                                   │   ╰── Then
+            │       │                                   │       ╰── Block
+            │       │                                   │           ╰── Return
+            │       │                                   │               ╰── Constant Int [0]
+            │       │                                   ╰── Assign [=]
+            │       │                                       ├── Var [expected]
+            │       │                                       ╰── Binary [+]
+            │       │                                           ├── Var [expected]
+            │       │                                           ╰── Constant Int [1]
+            │       ╰── Return
+            │           ╰── Constant Int [1]
+            ├── Function [test_non_constant_and_type_conversion]
+            │   ╰── Body
+            │       ├── Function [extern three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [2000]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── negative_four
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Unary [-]
+            │       │           ╰── Constant Int [4]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── AddressOf
+            │       │           ╰── Var [negative_four]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Array
+            │       │   │           ├── 2
+            │       │   │           ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ├── Var [x]
+            │       │           │   ╰── Binary [/]
+            │       │           │       ├── Var [x]
+            │       │           │       ╰── Dereference
+            │       │           │           ╰── Var [ptr]
+            │       │           ╰── Compound
+            │       │               ╰── FunctionCall [three]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [||]
+            │       │   │       ├── Binary [||]
+            │       │   │       │   ├── Binary [!=]
+            │       │   │       │   │   ├── Subscript
+            │       │   │       │   │   │   ├── Subscript
+            │       │   │       │   │   │   │   ├── Var [arr]
+            │       │   │       │   │   │   │   ╰── Constant Int [0]
+            │       │   │       │   │   │   ╰── Constant Int [0]
+            │       │   │       │   │   ╰── Constant Double [+2e3]
+            │       │   │       │   ╰── Binary [!=]
+            │       │   │       │       ├── Subscript
+            │       │   │       │       │   ├── Subscript
+            │       │   │       │       │   │   ├── Var [arr]
+            │       │   │       │       │   │   ╰── Constant Int [0]
+            │       │   │       │       │   ╰── Constant Int [1]
+            │       │   │       │       ╰── Unary [-]
+            │       │   │       │           ╰── Constant Double [+5e2]
+            │       │   │       ╰── Binary [!=]
+            │       │   │           ├── Subscript
+            │       │   │           │   ├── Subscript
+            │       │   │           │   │   ├── Var [arr]
+            │       │   │           │   │   ╰── Constant Int [1]
+            │       │   │           │   ╰── Constant Int [0]
+            │       │   │           ╰── Constant Double [+3e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [||]
+            │       │   │       ├── Binary [||]
+            │       │   │       │   ├── Subscript
+            │       │   │       │   │   ├── Subscript
+            │       │   │       │   │   │   ├── Var [arr]
+            │       │   │       │   │   │   ╰── Constant Int [1]
+            │       │   │       │   │   ╰── Constant Int [1]
+            │       │   │       │   ╰── Subscript
+            │       │   │       │       ├── Subscript
+            │       │   │       │       │   ├── Var [arr]
+            │       │   │       │       │   ╰── Constant Int [2]
+            │       │   │       │       ╰── Constant Int [0]
+            │       │   │       ╰── Subscript
+            │       │   │           ├── Subscript
+            │       │   │           │   ├── Var [arr]
+            │       │   │           │   ╰── Constant Int [2]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [0]
+            │       ╰── Return
+            │           ╰── Constant Int [1]
+            ├── Function [three]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Constant UInt [3]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── one
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── Constant Long [1]
+            ├── Function [test_preserve_stack]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Unary [-]
+            │       │           ╰── Constant Int [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Array
+            │       │   │           ├── 1
+            │       │   │           ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ╰── Binary [*]
+            │       │           │       ├── Var [one]
+            │       │           │       ╰── Constant Long [2]
+            │       │           ╰── Compound
+            │       │               ╰── Binary [+]
+            │       │                   ├── Var [one]
+            │       │                   ╰── FunctionCall [three]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── u
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Constant Long [2684366905]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Unary [-]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [u]
+            │       │   │       ╰── Constant Long [2684366905]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [||]
+            │       │   │       ├── Binary [||]
+            │       │   │       │   ├── Binary [!=]
+            │       │   │       │   │   ├── Subscript
+            │       │   │       │   │   │   ├── Subscript
+            │       │   │       │   │   │   │   ├── Var [arr]
+            │       │   │       │   │   │   │   ╰── Constant Int [0]
+            │       │   │       │   │   │   ╰── Constant Int [0]
+            │       │   │       │   │   ╰── Constant Int [2]
+            │       │   │       │   ╰── Binary [!=]
+            │       │   │       │       ├── Subscript
+            │       │   │       │       │   ├── Subscript
+            │       │   │       │       │   │   ├── Var [arr]
+            │       │   │       │       │   │   ╰── Constant Int [1]
+            │       │   │       │       │   ╰── Constant Int [0]
+            │       │   │       │       ╰── Constant Int [4]
+            │       │   │       ╰── Binary [!=]
+            │       │   │           ├── Subscript
+            │       │   │           │   ├── Subscript
+            │       │   │           │   │   ├── Var [arr]
+            │       │   │           │   │   ╰── Constant Int [2]
+            │       │   │           │   ╰── Constant Int [0]
+            │       │   │           ╰── Constant Int [0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [0]
+            │       ╰── Return
+            │           ╰── Constant Int [1]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_simple]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_partial]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_non_constant_and_type_conversion]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_preserve_stack]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_initialization_static() {
+    let src = r#"
+        double double_arr[3] = {1.0, 2.0, 3.0};
+        int check_double_arr(double *arr) {
+            if (arr[0] != 1.0) {
+                return 1;
+            }
+            if (arr[1] != 2.0) {
+                return 2;
+            }
+            if (arr[2] != 3.0) {
+                return 3;
+            }
+            return 0;
+        }
+        unsigned uint_arr[5] = {
+            1u,
+            0u,
+            2147497230u,
+        };
+        int check_uint_arr(unsigned *arr) {
+            if (arr[0] != 1u) {
+                return 4;
+            }
+            if (arr[1]) {
+                return 5;
+            }
+            if (arr[2] != 2147497230u) {
+                return 6;
+            }
+            if (arr[3] || arr[4]) {
+                return 7;
+            }
+            return 0;
+        }
+        long long_arr[1000];
+        int check_long_arr(long *arr) {
+            for (int i = 0; i < 1000; i = i + 1) {
+                if (arr[i]) {
+                    return 8;
+                }
+            }
+            return 0;
+        }
+        unsigned long ulong_arr[4] = {
+            100.0, 11, 12345l, 4294967295U
+        };
+        int check_ulong_arr(unsigned long *arr) {
+            if (arr[0] != 100ul) {
+                return 9;
+            }
+            if (arr[1] != 11ul) {
+                return 10;
+            }
+            if (arr[2] != 12345ul) {
+                return 11;
+            }
+            if (arr[3] != 4294967295Ul) {
+                return 12;
+            }
+            return 0;
+        }
+        int test_global(void) {
+            int check = check_double_arr(double_arr);
+            if (check) {
+                return check;
+            }
+            check = check_uint_arr(uint_arr);
+            if (check) {
+                return check;
+            }
+            check = check_long_arr(long_arr);
+            if (check) {
+                return check;
+            }
+            check = check_ulong_arr(ulong_arr);
+            if (check) {
+                return check;
+            }
+            return 0;
+        }
+        int test_local(void) {
+            double local_double_arr[3] = {1.0, 2.0, 3.0};
+            static unsigned local_uint_arr[5] = {
+                1u,
+                0u,
+                2147497230u,
+            };
+            static long local_long_arr[1000];
+            static unsigned long local_ulong_arr[4] = {
+                100.0, 11, 12345l, 4294967295U
+            };
+            int check = check_double_arr(local_double_arr);
+            if (check) {
+                return 100 + check;
+            }
+            check = check_uint_arr(local_uint_arr);
+            if (check) {
+                return 100 + check;
+            }
+            check = check_long_arr(local_long_arr);
+            if (check) {
+                return 100 + check;
+            }
+            check = check_ulong_arr(local_ulong_arr);
+            if (check) {
+                return 100 + check;
+            }
+            return 0;
+        }
+        int main(void) {
+            int check = test_global();
+            if (check) {
+                return check;
+            }
+            return test_local();
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── double_arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Double
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Constant Double [+1e0]
+            │           ├── Constant Double [+2e0]
+            │           ╰── Constant Double [+3e0]
+            ├── Function [check_double_arr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── arr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Double
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant Double [+1e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [1]
+            │       │   │       ╰── Constant Double [+2e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [2]
+            │       │   │       ╰── Constant Double [+3e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── uint_arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 5
+            │   │       ╰── Unsigned Int
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Constant UInt [1]
+            │           ├── Constant UInt [0]
+            │           ╰── Constant UInt [2147497230]
+            ├── Function [check_uint_arr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── arr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Unsigned Int
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant UInt [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [4]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Subscript
+            │       │   │       ├── Var [arr]
+            │       │   │       ╰── Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [5]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [2]
+            │       │   │       ╰── Constant UInt [2147497230]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [6]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [||]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [3]
+            │       │   │       ╰── Subscript
+            │       │   │           ├── Var [arr]
+            │       │   │           ╰── Constant Int [4]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [7]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── long_arr
+            │   ╰── Type
+            │       ╰── Array
+            │           ├── 1000
+            │           ╰── Long
+            ├── Function [check_long_arr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── arr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Long
+            │   ╰── Body
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [1000]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ╰── If
+            │       │           ├── Condition
+            │       │           │   ╰── Subscript
+            │       │           │       ├── Var [arr]
+            │       │           │       ╰── Var [i]
+            │       │           ╰── Then
+            │       │               ╰── Block
+            │       │                   ╰── Return
+            │       │                       ╰── Constant Int [8]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ulong_arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 4
+            │   │       ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Constant Double [+1e2]
+            │           ├── Constant Int [11]
+            │           ├── Constant Long [12345]
+            │           ╰── Constant UInt [4294967295]
+            ├── Function [check_ulong_arr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── arr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Unsigned Long
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant ULong [100]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [9]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [1]
+            │       │   │       ╰── Constant ULong [11]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [10]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [2]
+            │       │   │       ╰── Constant ULong [12345]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [11]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [3]
+            │       │   │       ╰── Constant ULong [4294967295]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [12]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [test_global]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── check
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── FunctionCall [check_double_arr]
+            │       │           ╰── Var [double_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Var [check]
+            │       ├── Assign [=]
+            │       │   ├── Var [check]
+            │       │   ╰── FunctionCall [check_uint_arr]
+            │       │       ╰── Var [uint_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Var [check]
+            │       ├── Assign [=]
+            │       │   ├── Var [check]
+            │       │   ╰── FunctionCall [check_long_arr]
+            │       │       ╰── Var [long_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Var [check]
+            │       ├── Assign [=]
+            │       │   ├── Var [check]
+            │       │   ╰── FunctionCall [check_ulong_arr]
+            │       │       ╰── Var [ulong_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Var [check]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [test_local]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── local_double_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Double [+1e0]
+            │       │           ├── Constant Double [+2e0]
+            │       │           ╰── Constant Double [+3e0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── local_uint_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 5
+            │       │   │       ╰── Unsigned Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Compound
+            │       │   │       ├── Constant UInt [1]
+            │       │   │       ├── Constant UInt [0]
+            │       │   │       ╰── Constant UInt [2147497230]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── local_long_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 1000
+            │       │   │       ╰── Long
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── local_ulong_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 4
+            │       │   │       ╰── Unsigned Long
+            │       │   ├── Initializer
+            │       │   │   ╰── Compound
+            │       │   │       ├── Constant Double [+1e2]
+            │       │   │       ├── Constant Int [11]
+            │       │   │       ├── Constant Long [12345]
+            │       │   │       ╰── Constant UInt [4294967295]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── check
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── FunctionCall [check_double_arr]
+            │       │           ╰── Var [local_double_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Binary [+]
+            │       │                   ├── Constant Int [100]
+            │       │                   ╰── Var [check]
+            │       ├── Assign [=]
+            │       │   ├── Var [check]
+            │       │   ╰── FunctionCall [check_uint_arr]
+            │       │       ╰── Var [local_uint_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Binary [+]
+            │       │                   ├── Constant Int [100]
+            │       │                   ╰── Var [check]
+            │       ├── Assign [=]
+            │       │   ├── Var [check]
+            │       │   ╰── FunctionCall [check_long_arr]
+            │       │       ╰── Var [local_long_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Binary [+]
+            │       │                   ├── Constant Int [100]
+            │       │                   ╰── Var [check]
+            │       ├── Assign [=]
+            │       │   ├── Var [check]
+            │       │   ╰── FunctionCall [check_ulong_arr]
+            │       │       ╰── Var [local_ulong_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Binary [+]
+            │       │                   ├── Constant Int [100]
+            │       │                   ╰── Var [check]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── check
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [test_global]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ╰── Return
+                        ╰── FunctionCall [test_local]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_initialization_static_nested() {
+    let src = r#"
+        double double_arr[2][2] = {{1.1, 2.2}, {3.3, 4.4}};
+        int check_double_arr(double (*arr)[2]) {
+            if (arr[0][0] != 1.1) {
+                return 1;
+            }
+            if (arr[0][1] != 2.2) {
+                return 2;
+            }
+            if (arr[1][0] != 3.3) {
+                return 3;
+            }
+            if (arr[1][1] != 4.4) {
+                return 4;
+            }
+            return 0;
+        }
+        long long_arr[30][50][40];
+        int check_long_arr(long (*arr)[50][40]) {
+            for (int i = 0; i < 30; i = i + 1) {
+                for (int j = 0; j < 50; j = j + 1) {
+                    for (int k = 0; k < 40; k = k + 1) {
+                        if (arr[i][j][k]) {
+                            return 5;
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+        unsigned long ulong_arr[4][6][2] = {
+            {{
+                 1000.3,
+             },
+             {12u}},
+            {{2}}};
+        int check_ulong_arr(unsigned long (*arr)[6][2]) {
+            for (int i = 0; i < 4; i = i + 1) {
+                for (int j = 0; j < 6; j = j + 1) {
+                    for (int k = 0; k < 2; k = k + 1) {
+                        int val = arr[i][j][k];
+                        if (i == 0 && j == 0 && k == 0) {
+                            if (val != 1000ul) {
+                                return 6;
+                            }
+                        } else if (i == 0 && j == 1 && k == 0) {
+                            if (val != 12ul) {
+                                return 7;
+                            }
+                        } else if (i == 1 && j == 0 && k == 0) {
+                            if (val != 2ul) {
+                                return 8;
+                            }
+                        } else {
+                            if (val) {
+                                return 9;
+                            }
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+        int test_global(void) {
+            int check = check_double_arr(double_arr);
+            if (check) {
+                return check;
+            }
+            check = check_long_arr(long_arr);
+            if (check) {
+                return check;
+            }
+            check = check_ulong_arr(ulong_arr);
+            if (check) {
+                return check;
+            }
+            return 0;
+        }
+        int test_local(void) {
+            static double local_double_arr[2][2] = {{1.1, 2.2}, {3.3, 4.4}};
+            int check = check_double_arr(local_double_arr);
+            if (check) {
+                return 100 + check;
+            }
+            static long local_long_arr[30][50][40];
+            check = check_long_arr(local_long_arr);
+            if (check) {
+                return 100 + check;
+            }
+            static unsigned long local_ulong_arr[4][6][2] = {
+                {{
+                    1000.3,
+                },
+                {12u}},
+                {{2}}};
+            check = check_ulong_arr(local_ulong_arr);
+            if (check) {
+                return 100 + check;
+            }
+            return 0;
+        }
+        int main(void) {
+            int check = test_global();
+            if (check) {
+                return check;
+            }
+            return test_local();
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── double_arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 2
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Compound
+            │           │   ├── Constant Double [+1.1e0]
+            │           │   ╰── Constant Double [+2.2e0]
+            │           ╰── Compound
+            │               ├── Constant Double [+3.3e0]
+            │               ╰── Constant Double [+4.4e0]
+            ├── Function [check_double_arr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── arr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Array
+            │   │                   ├── 2
+            │   │                   ╰── Double
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Subscript
+            │       │   │       │   │   ├── Var [arr]
+            │       │   │       │   │   ╰── Constant Int [0]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant Double [+1.1e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Subscript
+            │       │   │       │   │   ├── Var [arr]
+            │       │   │       │   │   ╰── Constant Int [0]
+            │       │   │       │   ╰── Constant Int [1]
+            │       │   │       ╰── Constant Double [+2.2e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Subscript
+            │       │   │       │   │   ├── Var [arr]
+            │       │   │       │   │   ╰── Constant Int [1]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant Double [+3.3e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Subscript
+            │       │   │       │   │   ├── Var [arr]
+            │       │   │       │   │   ╰── Constant Int [1]
+            │       │   │       │   ╰── Constant Int [1]
+            │       │   │       ╰── Constant Double [+4.4e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [4]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── long_arr
+            │   ╰── Type
+            │       ╰── Array
+            │           ├── 30
+            │           ╰── Array
+            │               ├── 50
+            │               ╰── Array
+            │                   ├── 40
+            │                   ╰── Long
+            ├── Function [check_long_arr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── arr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Array
+            │   │                   ├── 50
+            │   │                   ╰── Array
+            │   │                       ├── 40
+            │   │                       ╰── Long
+            │   ╰── Body
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [30]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ╰── For
+            │       │           ├── Init
+            │       │           │   ╰── VarDeclaration
+            │       │           │       ├── Name
+            │       │           │       │   ╰── j
+            │       │           │       ├── Type
+            │       │           │       │   ╰── Int
+            │       │           │       ╰── Initializer
+            │       │           │           ╰── Constant Int [0]
+            │       │           ├── Condition
+            │       │           │   ╰── Binary [<]
+            │       │           │       ├── Var [j]
+            │       │           │       ╰── Constant Int [50]
+            │       │           ├── Condition
+            │       │           │   ╰── Assign [=]
+            │       │           │       ├── Var [j]
+            │       │           │       ╰── Binary [+]
+            │       │           │           ├── Var [j]
+            │       │           │           ╰── Constant Int [1]
+            │       │           ╰── Block
+            │       │               ╰── For
+            │       │                   ├── Init
+            │       │                   │   ╰── VarDeclaration
+            │       │                   │       ├── Name
+            │       │                   │       │   ╰── k
+            │       │                   │       ├── Type
+            │       │                   │       │   ╰── Int
+            │       │                   │       ╰── Initializer
+            │       │                   │           ╰── Constant Int [0]
+            │       │                   ├── Condition
+            │       │                   │   ╰── Binary [<]
+            │       │                   │       ├── Var [k]
+            │       │                   │       ╰── Constant Int [40]
+            │       │                   ├── Condition
+            │       │                   │   ╰── Assign [=]
+            │       │                   │       ├── Var [k]
+            │       │                   │       ╰── Binary [+]
+            │       │                   │           ├── Var [k]
+            │       │                   │           ╰── Constant Int [1]
+            │       │                   ╰── Block
+            │       │                       ╰── If
+            │       │                           ├── Condition
+            │       │                           │   ╰── Subscript
+            │       │                           │       ├── Subscript
+            │       │                           │       │   ├── Subscript
+            │       │                           │       │   │   ├── Var [arr]
+            │       │                           │       │   │   ╰── Var [i]
+            │       │                           │       │   ╰── Var [j]
+            │       │                           │       ╰── Var [k]
+            │       │                           ╰── Then
+            │       │                               ╰── Block
+            │       │                                   ╰── Return
+            │       │                                       ╰── Constant Int [5]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── ulong_arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 4
+            │   │       ╰── Array
+            │   │           ├── 6
+            │   │           ╰── Array
+            │   │               ├── 2
+            │   │               ╰── Unsigned Long
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Compound
+            │           │   ├── Compound
+            │           │   │   ╰── Constant Double [+1.0003e3]
+            │           │   ╰── Compound
+            │           │       ╰── Constant UInt [12]
+            │           ╰── Compound
+            │               ╰── Compound
+            │                   ╰── Constant Int [2]
+            ├── Function [check_ulong_arr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── arr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Array
+            │   │                   ├── 6
+            │   │                   ╰── Array
+            │   │                       ├── 2
+            │   │                       ╰── Unsigned Long
+            │   ╰── Body
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [4]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ╰── For
+            │       │           ├── Init
+            │       │           │   ╰── VarDeclaration
+            │       │           │       ├── Name
+            │       │           │       │   ╰── j
+            │       │           │       ├── Type
+            │       │           │       │   ╰── Int
+            │       │           │       ╰── Initializer
+            │       │           │           ╰── Constant Int [0]
+            │       │           ├── Condition
+            │       │           │   ╰── Binary [<]
+            │       │           │       ├── Var [j]
+            │       │           │       ╰── Constant Int [6]
+            │       │           ├── Condition
+            │       │           │   ╰── Assign [=]
+            │       │           │       ├── Var [j]
+            │       │           │       ╰── Binary [+]
+            │       │           │           ├── Var [j]
+            │       │           │           ╰── Constant Int [1]
+            │       │           ╰── Block
+            │       │               ╰── For
+            │       │                   ├── Init
+            │       │                   │   ╰── VarDeclaration
+            │       │                   │       ├── Name
+            │       │                   │       │   ╰── k
+            │       │                   │       ├── Type
+            │       │                   │       │   ╰── Int
+            │       │                   │       ╰── Initializer
+            │       │                   │           ╰── Constant Int [0]
+            │       │                   ├── Condition
+            │       │                   │   ╰── Binary [<]
+            │       │                   │       ├── Var [k]
+            │       │                   │       ╰── Constant Int [2]
+            │       │                   ├── Condition
+            │       │                   │   ╰── Assign [=]
+            │       │                   │       ├── Var [k]
+            │       │                   │       ╰── Binary [+]
+            │       │                   │           ├── Var [k]
+            │       │                   │           ╰── Constant Int [1]
+            │       │                   ╰── Block
+            │       │                       ├── VarDeclaration
+            │       │                       │   ├── Name
+            │       │                       │   │   ╰── val
+            │       │                       │   ├── Type
+            │       │                       │   │   ╰── Int
+            │       │                       │   ╰── Initializer
+            │       │                       │       ╰── Subscript
+            │       │                       │           ├── Subscript
+            │       │                       │           │   ├── Subscript
+            │       │                       │           │   │   ├── Var [arr]
+            │       │                       │           │   │   ╰── Var [i]
+            │       │                       │           │   ╰── Var [j]
+            │       │                       │           ╰── Var [k]
+            │       │                       ╰── If
+            │       │                           ├── Condition
+            │       │                           │   ╰── Binary [&&]
+            │       │                           │       ├── Binary [&&]
+            │       │                           │       │   ├── Binary [==]
+            │       │                           │       │   │   ├── Var [i]
+            │       │                           │       │   │   ╰── Constant Int [0]
+            │       │                           │       │   ╰── Binary [==]
+            │       │                           │       │       ├── Var [j]
+            │       │                           │       │       ╰── Constant Int [0]
+            │       │                           │       ╰── Binary [==]
+            │       │                           │           ├── Var [k]
+            │       │                           │           ╰── Constant Int [0]
+            │       │                           ├── Then
+            │       │                           │   ╰── Block
+            │       │                           │       ╰── If
+            │       │                           │           ├── Condition
+            │       │                           │           │   ╰── Binary [!=]
+            │       │                           │           │       ├── Var [val]
+            │       │                           │           │       ╰── Constant ULong [1000]
+            │       │                           │           ╰── Then
+            │       │                           │               ╰── Block
+            │       │                           │                   ╰── Return
+            │       │                           │                       ╰── Constant Int [6]
+            │       │                           ╰── Else
+            │       │                               ╰── If
+            │       │                                   ├── Condition
+            │       │                                   │   ╰── Binary [&&]
+            │       │                                   │       ├── Binary [&&]
+            │       │                                   │       │   ├── Binary [==]
+            │       │                                   │       │   │   ├── Var [i]
+            │       │                                   │       │   │   ╰── Constant Int [0]
+            │       │                                   │       │   ╰── Binary [==]
+            │       │                                   │       │       ├── Var [j]
+            │       │                                   │       │       ╰── Constant Int [1]
+            │       │                                   │       ╰── Binary [==]
+            │       │                                   │           ├── Var [k]
+            │       │                                   │           ╰── Constant Int [0]
+            │       │                                   ├── Then
+            │       │                                   │   ╰── Block
+            │       │                                   │       ╰── If
+            │       │                                   │           ├── Condition
+            │       │                                   │           │   ╰── Binary [!=]
+            │       │                                   │           │       ├── Var [val]
+            │       │                                   │           │       ╰── Constant ULong [12]
+            │       │                                   │           ╰── Then
+            │       │                                   │               ╰── Block
+            │       │                                   │                   ╰── Return
+            │       │                                   │                       ╰── Constant Int [7]
+            │       │                                   ╰── Else
+            │       │                                       ╰── If
+            │       │                                           ├── Condition
+            │       │                                           │   ╰── Binary [&&]
+            │       │                                           │       ├── Binary [&&]
+            │       │                                           │       │   ├── Binary [==]
+            │       │                                           │       │   │   ├── Var [i]
+            │       │                                           │       │   │   ╰── Constant Int [1]
+            │       │                                           │       │   ╰── Binary [==]
+            │       │                                           │       │       ├── Var [j]
+            │       │                                           │       │       ╰── Constant Int [0]
+            │       │                                           │       ╰── Binary [==]
+            │       │                                           │           ├── Var [k]
+            │       │                                           │           ╰── Constant Int [0]
+            │       │                                           ├── Then
+            │       │                                           │   ╰── Block
+            │       │                                           │       ╰── If
+            │       │                                           │           ├── Condition
+            │       │                                           │           │   ╰── Binary [!=]
+            │       │                                           │           │       ├── Var [val]
+            │       │                                           │           │       ╰── Constant ULong [2]
+            │       │                                           │           ╰── Then
+            │       │                                           │               ╰── Block
+            │       │                                           │                   ╰── Return
+            │       │                                           │                       ╰── Constant Int [8]
+            │       │                                           ╰── Else
+            │       │                                               ╰── Block
+            │       │                                                   ╰── If
+            │       │                                                       ├── Condition
+            │       │                                                       │   ╰── Var [val]
+            │       │                                                       ╰── Then
+            │       │                                                           ╰── Block
+            │       │                                                               ╰── Return
+            │       │                                                                   ╰── Constant Int [9]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [test_global]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── check
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── FunctionCall [check_double_arr]
+            │       │           ╰── Var [double_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Var [check]
+            │       ├── Assign [=]
+            │       │   ├── Var [check]
+            │       │   ╰── FunctionCall [check_long_arr]
+            │       │       ╰── Var [long_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Var [check]
+            │       ├── Assign [=]
+            │       │   ├── Var [check]
+            │       │   ╰── FunctionCall [check_ulong_arr]
+            │       │       ╰── Var [ulong_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Var [check]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [test_local]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── local_double_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 2
+            │       │   │       ╰── Array
+            │       │   │           ├── 2
+            │       │   │           ╰── Double
+            │       │   ├── Initializer
+            │       │   │   ╰── Compound
+            │       │   │       ├── Compound
+            │       │   │       │   ├── Constant Double [+1.1e0]
+            │       │   │       │   ╰── Constant Double [+2.2e0]
+            │       │   │       ╰── Compound
+            │       │   │           ├── Constant Double [+3.3e0]
+            │       │   │           ╰── Constant Double [+4.4e0]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── check
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── FunctionCall [check_double_arr]
+            │       │           ╰── Var [local_double_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Binary [+]
+            │       │                   ├── Constant Int [100]
+            │       │                   ╰── Var [check]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── local_long_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 30
+            │       │   │       ╰── Array
+            │       │   │           ├── 50
+            │       │   │           ╰── Array
+            │       │   │               ├── 40
+            │       │   │               ╰── Long
+            │       │   ╰── Static
+            │       ├── Assign [=]
+            │       │   ├── Var [check]
+            │       │   ╰── FunctionCall [check_long_arr]
+            │       │       ╰── Var [local_long_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Binary [+]
+            │       │                   ├── Constant Int [100]
+            │       │                   ╰── Var [check]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── local_ulong_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 4
+            │       │   │       ╰── Array
+            │       │   │           ├── 6
+            │       │   │           ╰── Array
+            │       │   │               ├── 2
+            │       │   │               ╰── Unsigned Long
+            │       │   ├── Initializer
+            │       │   │   ╰── Compound
+            │       │   │       ├── Compound
+            │       │   │       │   ├── Compound
+            │       │   │       │   │   ╰── Constant Double [+1.0003e3]
+            │       │   │       │   ╰── Compound
+            │       │   │       │       ╰── Constant UInt [12]
+            │       │   │       ╰── Compound
+            │       │   │           ╰── Compound
+            │       │   │               ╰── Constant Int [2]
+            │       │   ╰── Static
+            │       ├── Assign [=]
+            │       │   ├── Var [check]
+            │       │   ╰── FunctionCall [check_ulong_arr]
+            │       │       ╰── Var [local_ulong_arr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Var [check]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Binary [+]
+            │       │                   ├── Constant Int [100]
+            │       │                   ╰── Var [check]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── check
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [test_global]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ╰── Return
+                        ╰── FunctionCall [test_local]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_initialization_trailing_comma_initializer() {
+    let src = r#"
+        int foo(int a, int b, int c);
+        int main(void) {
+            int arr[3] = {
+                1,
+                2,
+                3,
+            };
+            return arr[2];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [foo]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── a
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── b
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── c
+            │           ╰── Type
+            │               ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [arr]
+                            ╰── Constant Int [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_global_array() {
+    let src = r#"
+        long arr[4] = {1, 2, 3, 4};
+        int double_each_element(void) {
+            for (int i = 0; i < 4; i = i + 1) {
+                arr[i] = arr[i] * 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 4
+            │   │       ╰── Long
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Constant Int [1]
+            │           ├── Constant Int [2]
+            │           ├── Constant Int [3]
+            │           ╰── Constant Int [4]
+            ╰── Function [double_each_element]
+                ╰── Body
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [4]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── Assign [=]
+                    │           ├── Subscript
+                    │           │   ├── Var [arr]
+                    │           │   ╰── Var [i]
+                    │           ╰── Binary [*]
+                    │               ├── Subscript
+                    │               │   ├── Var [arr]
+                    │               │   ╰── Var [i]
+                    │               ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_global_array_client() {
+    let src = r#"
+        
+        extern long arr[4];
+        int double_each_element(void);
+        int main(void) {
+            for (int i = 0; i < 4; i = i + 1) {
+                if (arr[i] != i + 1) {
+                    return i + 1;
+                }
+            }
+            double_each_element();
+            for (int i = 0; i < 4; i = i + 1) {
+                if (arr[i] != (i + 1) * 2) {
+                    return i + 5;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 4
+            │   │       ╰── Long
+            │   ╰── Extern
+            ├── Function [double_each_element]
+            ╰── Function [main]
+                ╰── Body
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [4]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── If
+                    │           ├── Condition
+                    │           │   ╰── Binary [!=]
+                    │           │       ├── Subscript
+                    │           │       │   ├── Var [arr]
+                    │           │       │   ╰── Var [i]
+                    │           │       ╰── Binary [+]
+                    │           │           ├── Var [i]
+                    │           │           ╰── Constant Int [1]
+                    │           ╰── Then
+                    │               ╰── Block
+                    │                   ╰── Return
+                    │                       ╰── Binary [+]
+                    │                           ├── Var [i]
+                    │                           ╰── Constant Int [1]
+                    ├── FunctionCall [double_each_element]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [4]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── If
+                    │           ├── Condition
+                    │           │   ╰── Binary [!=]
+                    │           │       ├── Subscript
+                    │           │       │   ├── Var [arr]
+                    │           │       │   ╰── Var [i]
+                    │           │       ╰── Binary [*]
+                    │           │           ├── Binary [+]
+                    │           │           │   ├── Var [i]
+                    │           │           │   ╰── Constant Int [1]
+                    │           │           ╰── Constant Int [2]
+                    │           ╰── Then
+                    │               ╰── Block
+                    │                   ╰── Return
+                    │                       ╰── Binary [+]
+                    │                           ├── Var [i]
+                    │                           ╰── Constant Int [5]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_return_pointer_to_array() {
+    let src = r#"
+        
+        long (*return_row(long (*arr)[3][4], int idx))[4] {
+            return arr[idx];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [return_row]
+                ├── Parameters
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── arr
+                │   │   ╰── Type
+                │   │       ╰── Pointer
+                │   │           ╰── Array
+                │   │               ├── 3
+                │   │               ╰── Array
+                │   │                   ├── 4
+                │   │                   ╰── Long
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── idx
+                │       ╰── Type
+                │           ╰── Int
+                ╰── Body
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [arr]
+                            ╰── Var [idx]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_return_pointer_to_array_client() {
+    let src = r#"
+        
+        long (*return_row(long (*arr)[3][4], int idx))[4];
+        int main(void) {
+            long nested_array[2][3][4] = {
+                {{0}},
+                {{-12, -13, -14, -15}, {-16}}
+            };
+            long (*row_pointer)[4] = return_row(nested_array, 1);
+            for (int i = 0; i < 3; i = i + 1) {
+                for (int j = 0; j < 4; j = j + 1) {
+                    if (row_pointer[i][j] != nested_array[1][i][j]) {
+                        return 1;
+                    }
+                }
+            }
+            row_pointer[2][1] = 100;
+            if (nested_array[1][2][1] != 100) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [return_row]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Array
+            │       │               ├── 3
+            │       │               ╰── Array
+            │       │                   ├── 4
+            │       │                   ╰── Long
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── idx
+            │           ╰── Type
+            │               ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── nested_array
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Array
+                    │   │           ├── 3
+                    │   │           ╰── Array
+                    │   │               ├── 4
+                    │   │               ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Compound
+                    │           │   ╰── Compound
+                    │           │       ╰── Constant Int [0]
+                    │           ╰── Compound
+                    │               ├── Compound
+                    │               │   ├── Unary [-]
+                    │               │   │   ╰── Constant Int [12]
+                    │               │   ├── Unary [-]
+                    │               │   │   ╰── Constant Int [13]
+                    │               │   ├── Unary [-]
+                    │               │   │   ╰── Constant Int [14]
+                    │               │   ╰── Unary [-]
+                    │               │       ╰── Constant Int [15]
+                    │               ╰── Compound
+                    │                   ╰── Unary [-]
+                    │                       ╰── Constant Int [16]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── row_pointer
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 4
+                    │   │           ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [return_row]
+                    │           ├── Var [nested_array]
+                    │           ╰── Constant Int [1]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [3]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── For
+                    │           ├── Init
+                    │           │   ╰── VarDeclaration
+                    │           │       ├── Name
+                    │           │       │   ╰── j
+                    │           │       ├── Type
+                    │           │       │   ╰── Int
+                    │           │       ╰── Initializer
+                    │           │           ╰── Constant Int [0]
+                    │           ├── Condition
+                    │           │   ╰── Binary [<]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Constant Int [4]
+                    │           ├── Condition
+                    │           │   ╰── Assign [=]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Binary [+]
+                    │           │           ├── Var [j]
+                    │           │           ╰── Constant Int [1]
+                    │           ╰── Block
+                    │               ╰── If
+                    │                   ├── Condition
+                    │                   │   ╰── Binary [!=]
+                    │                   │       ├── Subscript
+                    │                   │       │   ├── Subscript
+                    │                   │       │   │   ├── Var [row_pointer]
+                    │                   │       │   │   ╰── Var [i]
+                    │                   │       │   ╰── Var [j]
+                    │                   │       ╰── Subscript
+                    │                   │           ├── Subscript
+                    │                   │           │   ├── Subscript
+                    │                   │           │   │   ├── Var [nested_array]
+                    │                   │           │   │   ╰── Constant Int [1]
+                    │                   │           │   ╰── Var [i]
+                    │                   │           ╰── Var [j]
+                    │                   ╰── Then
+                    │                       ╰── Block
+                    │                           ╰── Return
+                    │                               ╰── Constant Int [1]
+                    ├── Assign [=]
+                    │   ├── Subscript
+                    │   │   ├── Subscript
+                    │   │   │   ├── Var [row_pointer]
+                    │   │   │   ╰── Constant Int [2]
+                    │   │   ╰── Constant Int [1]
+                    │   ╰── Constant Int [100]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [nested_array]
+                    │   │       │   │   │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── Constant Int [2]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_set_array_val() {
+    let src = r#"
+        int set_nth_element(double *arr, int idx) {
+            for (int i = 0; i < 5; i = i + 1) {
+                if (arr[i]) {
+                    return 1;
+                }
+            }
+            arr[idx] = 8;
+            return 0;
+        }
+        int set_nested_element(int (*arr)[2], int i, int j) {
+            for (int x = 0; x < 3; x = x + 1) {
+                for (int y = 0; y < 2; y = y + 1) {
+                    int expected = -10 + 2*x + y;
+                    if (arr[x][y] != expected) {
+                        return 4;
+                    }
+                }
+            }
+            arr[i][j] = 10;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [set_nth_element]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── arr
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Double
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── idx
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [<]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Constant Int [5]
+            │       │   ├── Condition
+            │       │   │   ╰── Assign [=]
+            │       │   │       ├── Var [i]
+            │       │   │       ╰── Binary [+]
+            │       │   │           ├── Var [i]
+            │       │   │           ╰── Constant Int [1]
+            │       │   ╰── Block
+            │       │       ╰── If
+            │       │           ├── Condition
+            │       │           │   ╰── Subscript
+            │       │           │       ├── Var [arr]
+            │       │           │       ╰── Var [i]
+            │       │           ╰── Then
+            │       │               ╰── Block
+            │       │                   ╰── Return
+            │       │                       ╰── Constant Int [1]
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Var [arr]
+            │       │   │   ╰── Var [idx]
+            │       │   ╰── Constant Int [8]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [set_nested_element]
+                ├── Parameters
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── arr
+                │   │   ╰── Type
+                │   │       ╰── Pointer
+                │   │           ╰── Array
+                │   │               ├── 2
+                │   │               ╰── Int
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── i
+                │   │   ╰── Type
+                │   │       ╰── Int
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── j
+                │       ╰── Type
+                │           ╰── Int
+                ╰── Body
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── x
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Constant Int [3]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [x]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [x]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── For
+                    │           ├── Init
+                    │           │   ╰── VarDeclaration
+                    │           │       ├── Name
+                    │           │       │   ╰── y
+                    │           │       ├── Type
+                    │           │       │   ╰── Int
+                    │           │       ╰── Initializer
+                    │           │           ╰── Constant Int [0]
+                    │           ├── Condition
+                    │           │   ╰── Binary [<]
+                    │           │       ├── Var [y]
+                    │           │       ╰── Constant Int [2]
+                    │           ├── Condition
+                    │           │   ╰── Assign [=]
+                    │           │       ├── Var [y]
+                    │           │       ╰── Binary [+]
+                    │           │           ├── Var [y]
+                    │           │           ╰── Constant Int [1]
+                    │           ╰── Block
+                    │               ├── VarDeclaration
+                    │               │   ├── Name
+                    │               │   │   ╰── expected
+                    │               │   ├── Type
+                    │               │   │   ╰── Int
+                    │               │   ╰── Initializer
+                    │               │       ╰── Binary [+]
+                    │               │           ├── Binary [+]
+                    │               │           │   ├── Unary [-]
+                    │               │           │   │   ╰── Constant Int [10]
+                    │               │           │   ╰── Binary [*]
+                    │               │           │       ├── Constant Int [2]
+                    │               │           │       ╰── Var [x]
+                    │               │           ╰── Var [y]
+                    │               ╰── If
+                    │                   ├── Condition
+                    │                   │   ╰── Binary [!=]
+                    │                   │       ├── Subscript
+                    │                   │       │   ├── Subscript
+                    │                   │       │   │   ├── Var [arr]
+                    │                   │       │   │   ╰── Var [x]
+                    │                   │       │   ╰── Var [y]
+                    │                   │       ╰── Var [expected]
+                    │                   ╰── Then
+                    │                       ╰── Block
+                    │                           ╰── Return
+                    │                               ╰── Constant Int [4]
+                    ├── Assign [=]
+                    │   ├── Subscript
+                    │   │   ├── Subscript
+                    │   │   │   ├── Var [arr]
+                    │   │   │   ╰── Var [i]
+                    │   │   ╰── Var [j]
+                    │   ╰── Constant Int [10]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_set_array_val_client() {
+    let src = r#"
+        int set_nth_element(double *arr, int idx);
+        int set_nested_element(int (*arr)[2], int i, int j);
+        int main(void) {
+            double arr[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
+            int check = set_nth_element(arr, 4);
+            if (check) {
+                return check;
+            }
+            for (int i = 0; i < 4; i = i + 1) {
+                if (arr[i] != 0) {
+                    return 2;
+                }
+            }
+            if (arr[4] != 8)
+                return 3;
+            int nested_arr[3][2] = {{-10, -9}, {-8, -7}, {-6, -5}};
+            check = set_nested_element(nested_arr, 2, 1);
+            if (check) {
+                return check;
+            }
+            for (int i = 0; i < 3; i = i + 1) {
+                for (int j = 0; j < 2; j = j + 1) {
+                    if (i == 2 && j == 1) {
+                        if (nested_arr[i][j] != 10) {
+                            return 5;
+                        }
+                    } else {
+                        int expected = -10 + 2 * i + j;
+                        if (nested_arr[i][j] != expected) {
+                            return 6;
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [set_nth_element]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── idx
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [set_nested_element]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Array
+            │       │               ├── 2
+            │       │               ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── j
+            │           ╰── Type
+            │               ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 5
+                    │   │       ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Double [+0e0]
+                    │           ├── Constant Double [+0e0]
+                    │           ├── Constant Double [+0e0]
+                    │           ├── Constant Double [+0e0]
+                    │           ╰── Constant Double [+0e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── check
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [set_nth_element]
+                    │           ├── Var [arr]
+                    │           ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [4]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── If
+                    │           ├── Condition
+                    │           │   ╰── Binary [!=]
+                    │           │       ├── Subscript
+                    │           │       │   ├── Var [arr]
+                    │           │       │   ╰── Var [i]
+                    │           │       ╰── Constant Int [0]
+                    │           ╰── Then
+                    │               ╰── Block
+                    │                   ╰── Return
+                    │                       ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── Constant Int [4]
+                    │   │       ╰── Constant Int [8]
+                    │   ╰── Then
+                    │       ╰── Return
+                    │           ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── nested_arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Array
+                    │   │           ├── 2
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Compound
+                    │           │   ├── Unary [-]
+                    │           │   │   ╰── Constant Int [10]
+                    │           │   ╰── Unary [-]
+                    │           │       ╰── Constant Int [9]
+                    │           ├── Compound
+                    │           │   ├── Unary [-]
+                    │           │   │   ╰── Constant Int [8]
+                    │           │   ╰── Unary [-]
+                    │           │       ╰── Constant Int [7]
+                    │           ╰── Compound
+                    │               ├── Unary [-]
+                    │               │   ╰── Constant Int [6]
+                    │               ╰── Unary [-]
+                    │                   ╰── Constant Int [5]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [set_nested_element]
+                    │       ├── Var [nested_arr]
+                    │       ├── Constant Int [2]
+                    │       ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [3]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── For
+                    │           ├── Init
+                    │           │   ╰── VarDeclaration
+                    │           │       ├── Name
+                    │           │       │   ╰── j
+                    │           │       ├── Type
+                    │           │       │   ╰── Int
+                    │           │       ╰── Initializer
+                    │           │           ╰── Constant Int [0]
+                    │           ├── Condition
+                    │           │   ╰── Binary [<]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Constant Int [2]
+                    │           ├── Condition
+                    │           │   ╰── Assign [=]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Binary [+]
+                    │           │           ├── Var [j]
+                    │           │           ╰── Constant Int [1]
+                    │           ╰── Block
+                    │               ╰── If
+                    │                   ├── Condition
+                    │                   │   ╰── Binary [&&]
+                    │                   │       ├── Binary [==]
+                    │                   │       │   ├── Var [i]
+                    │                   │       │   ╰── Constant Int [2]
+                    │                   │       ╰── Binary [==]
+                    │                   │           ├── Var [j]
+                    │                   │           ╰── Constant Int [1]
+                    │                   ├── Then
+                    │                   │   ╰── Block
+                    │                   │       ╰── If
+                    │                   │           ├── Condition
+                    │                   │           │   ╰── Binary [!=]
+                    │                   │           │       ├── Subscript
+                    │                   │           │       │   ├── Subscript
+                    │                   │           │       │   │   ├── Var [nested_arr]
+                    │                   │           │       │   │   ╰── Var [i]
+                    │                   │           │       │   ╰── Var [j]
+                    │                   │           │       ╰── Constant Int [10]
+                    │                   │           ╰── Then
+                    │                   │               ╰── Block
+                    │                   │                   ╰── Return
+                    │                   │                       ╰── Constant Int [5]
+                    │                   ╰── Else
+                    │                       ╰── Block
+                    │                           ├── VarDeclaration
+                    │                           │   ├── Name
+                    │                           │   │   ╰── expected
+                    │                           │   ├── Type
+                    │                           │   │   ╰── Int
+                    │                           │   ╰── Initializer
+                    │                           │       ╰── Binary [+]
+                    │                           │           ├── Binary [+]
+                    │                           │           │   ├── Unary [-]
+                    │                           │           │   │   ╰── Constant Int [10]
+                    │                           │           │   ╰── Binary [*]
+                    │                           │           │       ├── Constant Int [2]
+                    │                           │           │       ╰── Var [i]
+                    │                           │           ╰── Var [j]
+                    │                           ╰── If
+                    │                               ├── Condition
+                    │                               │   ╰── Binary [!=]
+                    │                               │       ├── Subscript
+                    │                               │       │   ├── Subscript
+                    │                               │       │   │   ├── Var [nested_arr]
+                    │                               │       │   │   ╰── Var [i]
+                    │                               │       │   ╰── Var [j]
+                    │                               │       ╰── Var [expected]
+                    │                               ╰── Then
+                    │                                   ╰── Block
+                    │                                       ╰── Return
+                    │                                           ╰── Constant Int [6]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_pointer_arithmetic_add_dereference_and_assign() {
+    let src = r#"
+        int main(void) {
+            int arr[2] = {1, 2};
+            *arr = 3;
+            *(arr + 1) = 4;
+            if (arr[0] != 3) {
+                return 1;
+            }
+            if (arr[1] != 4) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ╰── Constant Int [2]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Var [arr]
+                    │   ╰── Constant Int [3]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Binary [+]
+                    │   │       ├── Var [arr]
+                    │   │       ╰── Constant Int [1]
+                    │   ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_pointer_arithmetic_compare() {
+    let src = r#"
+        unsigned long gt(unsigned long *a, unsigned long *b) {
+            return a > b;
+        }
+        unsigned long lt(unsigned long *a, unsigned long *b) {
+            return a < b;
+        }
+        unsigned long ge(unsigned long *a, unsigned long *b) {
+            return a >= b;
+        }
+        unsigned long le(unsigned long *a, unsigned long *b) {
+            return a <= b;
+        }
+        unsigned long gt_nested(unsigned long (*a)[5], unsigned long (*b)[5]) {
+            return a > b;
+        }
+        unsigned long ge_nested(unsigned long (*a)[5], unsigned long (*b)[5]) {
+            return a >= b;
+        }
+        int main(void)
+        {
+            unsigned long arr[5];
+            unsigned long *elem_1 = arr + 1;
+            unsigned long *elem_4 = arr + 4;
+            if (gt(elem_1, elem_4)) {
+                return 1;
+            }
+            if (!(lt(elem_1, elem_4))) {
+                return 2;
+            }
+            if (!(ge(elem_1, elem_1))) {
+                return 3;
+            }
+            if (le(elem_4, elem_1)) {
+                return 4;
+            }
+            unsigned long *one_past_the_end = arr + 5;
+            if (!(gt(one_past_the_end, elem_4))) {
+                return 5;
+            }
+            if (one_past_the_end != elem_4 + 1) {
+                return 6;
+            }
+            unsigned long nested_arr[4][5];
+            unsigned long *elem_3_2 = *(nested_arr + 3) + 2;
+            unsigned long *elem_3_3 = *(nested_arr + 3) + 3;
+            if (lt(elem_3_3, elem_3_2)) {
+                return 7;
+            }
+            if (!ge(elem_3_3, elem_3_2)) {
+                return 8;
+            }
+            unsigned long (*subarray_0)[5] = nested_arr;
+            unsigned long (*subarray_3)[5] = nested_arr + 3;
+            unsigned long (*subarray_one_past_the_end)[5] = nested_arr + 4;
+            if (ge_nested(subarray_0, subarray_3)){
+                return 9;
+            }
+            if (!(gt_nested(subarray_one_past_the_end, subarray_3))) {
+                return 10;
+            }
+            if (subarray_3 != subarray_one_past_the_end - 1) {
+                return 11;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [gt]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── b
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [>]
+            │               ├── Var [a]
+            │               ╰── Var [b]
+            ├── Function [lt]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── b
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [<]
+            │               ├── Var [a]
+            │               ╰── Var [b]
+            ├── Function [ge]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── b
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [>=]
+            │               ├── Var [a]
+            │               ╰── Var [b]
+            ├── Function [le]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── b
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [<=]
+            │               ├── Var [a]
+            │               ╰── Var [b]
+            ├── Function [gt_nested]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Array
+            │   │   │               ├── 5
+            │   │   │               ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── b
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Array
+            │   │                   ├── 5
+            │   │                   ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [>]
+            │               ├── Var [a]
+            │               ╰── Var [b]
+            ├── Function [ge_nested]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Array
+            │   │   │               ├── 5
+            │   │   │               ╰── Unsigned Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── b
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Array
+            │   │                   ├── 5
+            │   │                   ╰── Unsigned Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [>=]
+            │               ├── Var [a]
+            │               ╰── Var [b]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ╰── Type
+                    │       ╰── Array
+                    │           ├── 5
+                    │           ╰── Unsigned Long
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── elem_1
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [arr]
+                    │           ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── elem_4
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [arr]
+                    │           ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── FunctionCall [gt]
+                    │   │       ├── Var [elem_1]
+                    │   │       ╰── Var [elem_4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [lt]
+                    │   │           ├── Var [elem_1]
+                    │   │           ╰── Var [elem_4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [ge]
+                    │   │           ├── Var [elem_1]
+                    │   │           ╰── Var [elem_1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── FunctionCall [le]
+                    │   │       ├── Var [elem_4]
+                    │   │       ╰── Var [elem_1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── one_past_the_end
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [arr]
+                    │           ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [gt]
+                    │   │           ├── Var [one_past_the_end]
+                    │   │           ╰── Var [elem_4]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [one_past_the_end]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [elem_4]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── nested_arr
+                    │   ╰── Type
+                    │       ╰── Array
+                    │           ├── 4
+                    │           ╰── Array
+                    │               ├── 5
+                    │               ╰── Unsigned Long
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── elem_3_2
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Dereference
+                    │           │   ╰── Binary [+]
+                    │           │       ├── Var [nested_arr]
+                    │           │       ╰── Constant Int [3]
+                    │           ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── elem_3_3
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Dereference
+                    │           │   ╰── Binary [+]
+                    │           │       ├── Var [nested_arr]
+                    │           │       ╰── Constant Int [3]
+                    │           ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── FunctionCall [lt]
+                    │   │       ├── Var [elem_3_3]
+                    │   │       ╰── Var [elem_3_2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [ge]
+                    │   │           ├── Var [elem_3_3]
+                    │   │           ╰── Var [elem_3_2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── subarray_0
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 5
+                    │   │           ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Var [nested_arr]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── subarray_3
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 5
+                    │   │           ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [nested_arr]
+                    │           ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── subarray_one_past_the_end
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Array
+                    │   │           ├── 5
+                    │   │           ╰── Unsigned Long
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [nested_arr]
+                    │           ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── FunctionCall [ge_nested]
+                    │   │       ├── Var [subarray_0]
+                    │   │       ╰── Var [subarray_3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [gt_nested]
+                    │   │           ├── Var [subarray_one_past_the_end]
+                    │   │           ╰── Var [subarray_3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [subarray_3]
+                    │   │       ╰── Binary [-]
+                    │   │           ├── Var [subarray_one_past_the_end]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [11]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
+    let src = r#"
+        int test_add_constant_to_pointer(void) {
+            long long_arr[12] = {0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 13};
+            long *ptr = long_arr + 10;
+            return *ptr == 13;
+        }
+        int test_add_negative_index(void) {
+            unsigned unsigned_arr[12] = {0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 42};
+            unsigned *end_ptr = unsigned_arr + 12;
+            unsigned *ptr = end_ptr + -10;
+            return *ptr == 2;
+        }
+        int test_add_pointer_to_int(void) {
+            int int_arr[5] = {0, 98, 99};
+            int *ptr1 = int_arr + 2;
+            int *ptr2 = 2 + int_arr;
+            return (ptr1 == ptr2 && *ptr2 == 99);
+        }
+        int test_add_different_index_types(void) {
+            double double_arr[11] = {0, 0, 0, 0, 0, 6.0};
+            double *ptr1 = double_arr + 5;
+            double *ptr2 = double_arr + 5l;
+            double *ptr3 = double_arr + 5u;
+            double *ptr4 = double_arr + 5ul;
+            return (ptr1 == ptr2 && ptr1 == ptr3 && ptr1 == ptr4 && *ptr4 == 6.0);
+        }
+        int test_add_complex_expressions(void) {
+            static int flag;
+            int i = -2;
+            int *small_int_ptr = &i;
+            extern int return_one(void);
+            extern int *get_elem1_ptr(int *arr);
+            extern int *get_elem2_ptr(int *arr);
+            static int arr[4] = {1, 2, 3, 4};
+            int *ptr = return_one() + (*small_int_ptr) +
+                       (flag ? get_elem1_ptr(arr) : get_elem2_ptr(arr));
+            return (ptr == arr + 1 && *ptr == 2);
+        }
+        int return_one(void) {
+            return 1;
+        }
+        int *get_elem1_ptr(int *arr) {
+            return arr + 1;
+        }
+        int *get_elem2_ptr(int *arr) {
+            return arr + 2;
+        }
+        int test_add_multi_dimensional(void) {
+            static int index = 2;
+            int nested_arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+            int(*row_pointer)[3] = nested_arr + index;
+            return **row_pointer == 7;
+        }
+        int test_add_to_subarray_pointer(void) {
+            static int index = 2;
+            int nested_arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+            int *row1 = *(nested_arr + 1);
+            int *elem_ptr = row1 + index;
+            return *elem_ptr == 6;
+        }
+        int test_subtract_from_pointer(void) {
+            long long_arr[5] = {10, 9, 8, 7, 6};
+            long *one_past_the_end = long_arr + 5;
+            static int index = 3;
+            long *subtraction_result = one_past_the_end - index;
+            return *subtraction_result == 8;
+        }
+        int test_subtract_negative_index(void) {
+            unsigned arr[5] = {100, 101, 102, 103, 104};
+            unsigned *ptr = arr - (-3);
+            return *ptr == 103;
+        }
+        int test_subtract_different_index_types(void) {
+            double double_arr[11] = {0, 0, 0, 0, 0, 0, 6.0};
+            double *end_ptr = double_arr + 11;
+            double *ptr1 = end_ptr - 5;
+            double *ptr2 = end_ptr - 5l;
+            double *ptr3 = end_ptr - 5u;
+            double *ptr4 = end_ptr - 5ul;
+            return (ptr1 == ptr2 && ptr1 == ptr3 && ptr1 == ptr4 && *ptr4 == 6.0);
+        }
+        int test_subtract_complex_expressions(void) {
+            static int flag = 1;
+            static int four = 4;
+            static int arr[4] = {1, 2, 3, 4};
+            int *ptr = (flag ? get_elem1_ptr(arr) : get_elem2_ptr(arr)) - (four / -2);
+            return (*ptr == 4);
+        }
+        int test_subtract_multi_dimensional(void) {
+            static int index = 1;
+            int nested_arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+            int(*last_row_pointer)[3] = nested_arr + 2;
+            int(*row_pointer)[3] = last_row_pointer - index;
+            return (**row_pointer == 4);
+        }
+        int main(void) {
+            if (!test_add_constant_to_pointer()) {
+                return 1;
+            }
+            if (!test_add_negative_index()) {
+                return 2;
+            }
+            if (!test_add_pointer_to_int()) {
+                return 3;
+            }
+            if (!test_add_different_index_types()) {
+                return 4;
+            }
+            if (!test_add_complex_expressions()) {
+                return 5;
+            }
+            if (!test_add_multi_dimensional()) {
+                return 6;
+            }
+            if (!test_add_to_subarray_pointer()) {
+                return 7;
+            }
+            if (!test_subtract_from_pointer()) {
+                return 8;
+            }
+            if (!test_subtract_negative_index()) {
+                return 9;
+            }
+            if (!test_subtract_different_index_types()) {
+                return 10;
+            }
+            if (!test_subtract_complex_expressions()) {
+                return 11;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [test_add_constant_to_pointer]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── long_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 12
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [3]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ╰── Constant Int [13]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [long_arr]
+            │       │           ╰── Constant Int [10]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Dereference
+            │               │   ╰── Var [ptr]
+            │               ╰── Constant Int [13]
+            ├── Function [test_add_negative_index]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── unsigned_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 12
+            │       │   │       ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [2]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ╰── Constant Int [42]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── end_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [unsigned_arr]
+            │       │           ╰── Constant Int [12]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [end_ptr]
+            │       │           ╰── Unary [-]
+            │       │               ╰── Constant Int [10]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Dereference
+            │               │   ╰── Var [ptr]
+            │               ╰── Constant Int [2]
+            ├── Function [test_add_pointer_to_int]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── int_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 5
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [98]
+            │       │           ╰── Constant Int [99]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr1
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [int_arr]
+            │       │           ╰── Constant Int [2]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr2
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Constant Int [2]
+            │       │           ╰── Var [int_arr]
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Binary [==]
+            │               │   ├── Var [ptr1]
+            │               │   ╰── Var [ptr2]
+            │               ╰── Binary [==]
+            │                   ├── Dereference
+            │                   │   ╰── Var [ptr2]
+            │                   ╰── Constant Int [99]
+            ├── Function [test_add_different_index_types]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── double_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 11
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ╰── Constant Double [+6e0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr1
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [double_arr]
+            │       │           ╰── Constant Int [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr2
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [double_arr]
+            │       │           ╰── Constant Long [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr3
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [double_arr]
+            │       │           ╰── Constant UInt [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr4
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [double_arr]
+            │       │           ╰── Constant ULong [5]
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Binary [&&]
+            │               │   ├── Binary [&&]
+            │               │   │   ├── Binary [==]
+            │               │   │   │   ├── Var [ptr1]
+            │               │   │   │   ╰── Var [ptr2]
+            │               │   │   ╰── Binary [==]
+            │               │   │       ├── Var [ptr1]
+            │               │   │       ╰── Var [ptr3]
+            │               │   ╰── Binary [==]
+            │               │       ├── Var [ptr1]
+            │               │       ╰── Var [ptr4]
+            │               ╰── Binary [==]
+            │                   ├── Dereference
+            │                   │   ╰── Var [ptr4]
+            │                   ╰── Constant Double [+6e0]
+            ├── Function [test_add_complex_expressions]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── flag
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── i
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Unary [-]
+            │       │           ╰── Constant Int [2]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── small_int_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── AddressOf
+            │       │           ╰── Var [i]
+            │       ├── Function [extern return_one]
+            │       ├── Function [extern get_elem1_ptr]
+            │       │   ╰── Parameters
+            │       │       ╰── Param
+            │       │           ├── Name
+            │       │           │   ╰── arr
+            │       │           ╰── Type
+            │       │               ╰── Pointer
+            │       │                   ╰── Int
+            │       ├── Function [extern get_elem2_ptr]
+            │       │   ╰── Parameters
+            │       │       ╰── Param
+            │       │           ├── Name
+            │       │           │   ╰── arr
+            │       │           ╰── Type
+            │       │               ╰── Pointer
+            │       │                   ╰── Int
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 4
+            │       │   │       ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Compound
+            │       │   │       ├── Constant Int [1]
+            │       │   │       ├── Constant Int [2]
+            │       │   │       ├── Constant Int [3]
+            │       │   │       ╰── Constant Int [4]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Binary [+]
+            │       │           │   ├── FunctionCall [return_one]
+            │       │           │   ╰── Dereference
+            │       │           │       ╰── Var [small_int_ptr]
+            │       │           ╰── Conditional [?]
+            │       │               ├── Var [flag]
+            │       │               ├── Then
+            │       │               │   ╰── FunctionCall [get_elem1_ptr]
+            │       │               │       ╰── Var [arr]
+            │       │               ╰── Else
+            │       │                   ╰── FunctionCall [get_elem2_ptr]
+            │       │                       ╰── Var [arr]
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Binary [==]
+            │               │   ├── Var [ptr]
+            │               │   ╰── Binary [+]
+            │               │       ├── Var [arr]
+            │               │       ╰── Constant Int [1]
+            │               ╰── Binary [==]
+            │                   ├── Dereference
+            │                   │   ╰── Var [ptr]
+            │                   ╰── Constant Int [2]
+            ├── Function [return_one]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Constant Int [1]
+            ├── Function [get_elem1_ptr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── arr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [+]
+            │               ├── Var [arr]
+            │               ╰── Constant Int [1]
+            ├── Function [get_elem2_ptr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── arr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [+]
+            │               ├── Var [arr]
+            │               ╰── Constant Int [2]
+            ├── Function [test_add_multi_dimensional]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── index
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [2]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nested_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Array
+            │       │   │           ├── 3
+            │       │   │           ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ├── Constant Int [1]
+            │       │           │   ├── Constant Int [2]
+            │       │           │   ╰── Constant Int [3]
+            │       │           ├── Compound
+            │       │           │   ├── Constant Int [4]
+            │       │           │   ├── Constant Int [5]
+            │       │           │   ╰── Constant Int [6]
+            │       │           ╰── Compound
+            │       │               ├── Constant Int [7]
+            │       │               ├── Constant Int [8]
+            │       │               ╰── Constant Int [9]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── row_pointer
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Array
+            │       │   │           ├── 3
+            │       │   │           ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [nested_arr]
+            │       │           ╰── Var [index]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Dereference
+            │               │   ╰── Dereference
+            │               │       ╰── Var [row_pointer]
+            │               ╰── Constant Int [7]
+            ├── Function [test_add_to_subarray_pointer]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── index
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [2]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nested_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Array
+            │       │   │           ├── 3
+            │       │   │           ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ├── Constant Int [1]
+            │       │           │   ├── Constant Int [2]
+            │       │           │   ╰── Constant Int [3]
+            │       │           ├── Compound
+            │       │           │   ├── Constant Int [4]
+            │       │           │   ├── Constant Int [5]
+            │       │           │   ╰── Constant Int [6]
+            │       │           ╰── Compound
+            │       │               ├── Constant Int [7]
+            │       │               ├── Constant Int [8]
+            │       │               ╰── Constant Int [9]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── row1
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Dereference
+            │       │           ╰── Binary [+]
+            │       │               ├── Var [nested_arr]
+            │       │               ╰── Constant Int [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── elem_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [row1]
+            │       │           ╰── Var [index]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Dereference
+            │               │   ╰── Var [elem_ptr]
+            │               ╰── Constant Int [6]
+            ├── Function [test_subtract_from_pointer]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── long_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 5
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [10]
+            │       │           ├── Constant Int [9]
+            │       │           ├── Constant Int [8]
+            │       │           ├── Constant Int [7]
+            │       │           ╰── Constant Int [6]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── one_past_the_end
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [long_arr]
+            │       │           ╰── Constant Int [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── index
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [3]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── subtraction_result
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [one_past_the_end]
+            │       │           ╰── Var [index]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Dereference
+            │               │   ╰── Var [subtraction_result]
+            │               ╰── Constant Int [8]
+            ├── Function [test_subtract_negative_index]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 5
+            │       │   │       ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [100]
+            │       │           ├── Constant Int [101]
+            │       │           ├── Constant Int [102]
+            │       │           ├── Constant Int [103]
+            │       │           ╰── Constant Int [104]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [arr]
+            │       │           ╰── Unary [-]
+            │       │               ╰── Constant Int [3]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Dereference
+            │               │   ╰── Var [ptr]
+            │               ╰── Constant Int [103]
+            ├── Function [test_subtract_different_index_types]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── double_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 11
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ├── Constant Int [0]
+            │       │           ╰── Constant Double [+6e0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── end_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [double_arr]
+            │       │           ╰── Constant Int [11]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr1
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [end_ptr]
+            │       │           ╰── Constant Int [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr2
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [end_ptr]
+            │       │           ╰── Constant Long [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr3
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [end_ptr]
+            │       │           ╰── Constant UInt [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr4
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Double
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [end_ptr]
+            │       │           ╰── Constant ULong [5]
+            │       ╰── Return
+            │           ╰── Binary [&&]
+            │               ├── Binary [&&]
+            │               │   ├── Binary [&&]
+            │               │   │   ├── Binary [==]
+            │               │   │   │   ├── Var [ptr1]
+            │               │   │   │   ╰── Var [ptr2]
+            │               │   │   ╰── Binary [==]
+            │               │   │       ├── Var [ptr1]
+            │               │   │       ╰── Var [ptr3]
+            │               │   ╰── Binary [==]
+            │               │       ├── Var [ptr1]
+            │               │       ╰── Var [ptr4]
+            │               ╰── Binary [==]
+            │                   ├── Dereference
+            │                   │   ╰── Var [ptr4]
+            │                   ╰── Constant Double [+6e0]
+            ├── Function [test_subtract_complex_expressions]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── flag
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [1]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── four
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [4]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 4
+            │       │   │       ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Compound
+            │       │   │       ├── Constant Int [1]
+            │       │   │       ├── Constant Int [2]
+            │       │   │       ├── Constant Int [3]
+            │       │   │       ╰── Constant Int [4]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Conditional [?]
+            │       │           │   ├── Var [flag]
+            │       │           │   ├── Then
+            │       │           │   │   ╰── FunctionCall [get_elem1_ptr]
+            │       │           │   │       ╰── Var [arr]
+            │       │           │   ╰── Else
+            │       │           │       ╰── FunctionCall [get_elem2_ptr]
+            │       │           │           ╰── Var [arr]
+            │       │           ╰── Binary [/]
+            │       │               ├── Var [four]
+            │       │               ╰── Unary [-]
+            │       │                   ╰── Constant Int [2]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Dereference
+            │               │   ╰── Var [ptr]
+            │               ╰── Constant Int [4]
+            ├── Function [test_subtract_multi_dimensional]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── index
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [1]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── nested_arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Array
+            │       │   │           ├── 3
+            │       │   │           ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ├── Constant Int [1]
+            │       │           │   ├── Constant Int [2]
+            │       │           │   ╰── Constant Int [3]
+            │       │           ├── Compound
+            │       │           │   ├── Constant Int [4]
+            │       │           │   ├── Constant Int [5]
+            │       │           │   ╰── Constant Int [6]
+            │       │           ╰── Compound
+            │       │               ├── Constant Int [7]
+            │       │               ├── Constant Int [8]
+            │       │               ╰── Constant Int [9]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── last_row_pointer
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Array
+            │       │   │           ├── 3
+            │       │   │           ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [+]
+            │       │           ├── Var [nested_arr]
+            │       │           ╰── Constant Int [2]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── row_pointer
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Array
+            │       │   │           ├── 3
+            │       │   │           ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Binary [-]
+            │       │           ├── Var [last_row_pointer]
+            │       │           ╰── Var [index]
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Dereference
+            │               │   ╰── Dereference
+            │               │       ╰── Var [row_pointer]
+            │               ╰── Constant Int [4]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_add_constant_to_pointer]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_add_negative_index]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_add_pointer_to_int]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_add_different_index_types]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_add_complex_expressions]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_add_multi_dimensional]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_add_to_subarray_pointer]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_subtract_from_pointer]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_subtract_negative_index]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_subtract_different_index_types]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [test_subtract_complex_expressions]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [11]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_pointer_arithmetic_pointer_diff() {
+    let src = r#"
+        int get_ptr_diff(int *ptr1, int *ptr2) {
+            return (ptr2 - ptr1);
+        }
+        int get_long_ptr_diff(long *ptr1, long *ptr2) {
+            return (ptr2 - ptr1);
+        }
+        int get_multidim_ptr_diff(double (*ptr1)[3][5], double (*ptr2)[3][5]) {
+            return (ptr2 - ptr1);
+        }
+        int get_multidim_ptr_diff_2(double (*ptr1)[5], double (*ptr2)[5]) {
+            return (ptr2 - ptr1);
+        }
+        int main(void) {
+            int arr[5] = {5, 4, 3, 2, 1};
+            int *end_of_array = arr + 5;
+            if (get_ptr_diff(arr, end_of_array) != 5) {
+                return 1;
+            }
+            long long_arr[8];
+            if (get_long_ptr_diff(long_arr + 3, long_arr) != -3) {
+                return 2;
+            }
+            static double multidim[6][7][3][5];
+            if (get_multidim_ptr_diff(multidim[2] + 1, multidim[2] + 4) != 3) {
+                return 3;
+            }
+            if (get_multidim_ptr_diff_2(multidim[2][2] + 2, multidim[2][2]) != -2) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [get_ptr_diff]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ptr1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr2
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [-]
+            │               ├── Var [ptr2]
+            │               ╰── Var [ptr1]
+            ├── Function [get_long_ptr_diff]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ptr1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr2
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Long
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [-]
+            │               ├── Var [ptr2]
+            │               ╰── Var [ptr1]
+            ├── Function [get_multidim_ptr_diff]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ptr1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Array
+            │   │   │               ├── 3
+            │   │   │               ╰── Array
+            │   │   │                   ├── 5
+            │   │   │                   ╰── Double
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr2
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Array
+            │   │                   ├── 3
+            │   │                   ╰── Array
+            │   │                       ├── 5
+            │   │                       ╰── Double
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [-]
+            │               ├── Var [ptr2]
+            │               ╰── Var [ptr1]
+            ├── Function [get_multidim_ptr_diff_2]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── ptr1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Array
+            │   │   │               ├── 5
+            │   │   │               ╰── Double
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr2
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Array
+            │   │                   ├── 5
+            │   │                   ╰── Double
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [-]
+            │               ├── Var [ptr2]
+            │               ╰── Var [ptr1]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 5
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [5]
+                    │           ├── Constant Int [4]
+                    │           ├── Constant Int [3]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── end_of_array
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Var [arr]
+                    │           ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [get_ptr_diff]
+                    │   │       │   ├── Var [arr]
+                    │   │       │   ╰── Var [end_of_array]
+                    │   │       ╰── Constant Int [5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── long_arr
+                    │   ╰── Type
+                    │       ╰── Array
+                    │           ├── 8
+                    │           ╰── Long
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [get_long_ptr_diff]
+                    │   │       │   ├── Binary [+]
+                    │   │       │   │   ├── Var [long_arr]
+                    │   │       │   │   ╰── Constant Int [3]
+                    │   │       │   ╰── Var [long_arr]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── multidim
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 6
+                    │   │       ╰── Array
+                    │   │           ├── 7
+                    │   │           ╰── Array
+                    │   │               ├── 3
+                    │   │               ╰── Array
+                    │   │                   ├── 5
+                    │   │                   ╰── Double
+                    │   ╰── Static
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [get_multidim_ptr_diff]
+                    │   │       │   ├── Binary [+]
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [multidim]
+                    │   │       │   │   │   ╰── Constant Int [2]
+                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   ╰── Binary [+]
+                    │   │       │       ├── Subscript
+                    │   │       │       │   ├── Var [multidim]
+                    │   │       │       │   ╰── Constant Int [2]
+                    │   │       │       ╰── Constant Int [4]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── FunctionCall [get_multidim_ptr_diff_2]
+                    │   │       │   ├── Binary [+]
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Subscript
+                    │   │       │   │   │   │   ├── Var [multidim]
+                    │   │       │   │   │   │   ╰── Constant Int [2]
+                    │   │       │   │   │   ╰── Constant Int [2]
+                    │   │       │   │   ╰── Constant Int [2]
+                    │   │       │   ╰── Subscript
+                    │   │       │       ├── Subscript
+                    │   │       │       │   ├── Var [multidim]
+                    │   │       │       │   ╰── Constant Int [2]
+                    │   │       │       ╰── Constant Int [2]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_addition_subscript_equivalence() {
+    let src = r#"
+        int main(void)
+        {
+            unsigned long x[300][5];
+            for (int i = 0; i < 300; i = i + 1) {
+                for (int j = 0; j < 5; j = j + 1) {
+                    x[i][j] = i * 5 + j;
+                }
+            }
+            if (*(*(x + 20) + 3) != x[20][3]) {
+                return 1;
+            }
+            if (&(*(*(x + 290) + 3)) != &x[290][3]) {
+                return 2;
+            }
+            for (int i = 0; i < 300; i = i + 1) {
+                for (int j = 0; j < 5; j = j + 1) {
+                    if (*(*(x + i) + j) != x[i][j]) {
+                        return 3;
+                    }
+                }
+            }
+            *(*(x + 275) + 4) = 22000ul;
+            if (x[275][4] != 22000ul) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ╰── Type
+                    │       ╰── Array
+                    │           ├── 300
+                    │           ╰── Array
+                    │               ├── 5
+                    │               ╰── Unsigned Long
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [300]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── For
+                    │           ├── Init
+                    │           │   ╰── VarDeclaration
+                    │           │       ├── Name
+                    │           │       │   ╰── j
+                    │           │       ├── Type
+                    │           │       │   ╰── Int
+                    │           │       ╰── Initializer
+                    │           │           ╰── Constant Int [0]
+                    │           ├── Condition
+                    │           │   ╰── Binary [<]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Constant Int [5]
+                    │           ├── Condition
+                    │           │   ╰── Assign [=]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Binary [+]
+                    │           │           ├── Var [j]
+                    │           │           ╰── Constant Int [1]
+                    │           ╰── Block
+                    │               ╰── Assign [=]
+                    │                   ├── Subscript
+                    │                   │   ├── Subscript
+                    │                   │   │   ├── Var [x]
+                    │                   │   │   ╰── Var [i]
+                    │                   │   ╰── Var [j]
+                    │                   ╰── Binary [+]
+                    │                       ├── Binary [*]
+                    │                       │   ├── Var [i]
+                    │                       │   ╰── Constant Int [5]
+                    │                       ╰── Var [j]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Binary [+]
+                    │   │       │       ├── Dereference
+                    │   │       │       │   ╰── Binary [+]
+                    │   │       │       │       ├── Var [x]
+                    │   │       │       │       ╰── Constant Int [20]
+                    │   │       │       ╰── Constant Int [3]
+                    │   │       ╰── Subscript
+                    │   │           ├── Subscript
+                    │   │           │   ├── Var [x]
+                    │   │           │   ╰── Constant Int [20]
+                    │   │           ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── AddressOf
+                    │   │       │   ╰── Dereference
+                    │   │       │       ╰── Binary [+]
+                    │   │       │           ├── Dereference
+                    │   │       │           │   ╰── Binary [+]
+                    │   │       │           │       ├── Var [x]
+                    │   │       │           │       ╰── Constant Int [290]
+                    │   │       │           ╰── Constant Int [3]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Subscript
+                    │   │               ├── Subscript
+                    │   │               │   ├── Var [x]
+                    │   │               │   ╰── Constant Int [290]
+                    │   │               ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── Binary [<]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Constant Int [300]
+                    │   ├── Condition
+                    │   │   ╰── Assign [=]
+                    │   │       ├── Var [i]
+                    │   │       ╰── Binary [+]
+                    │   │           ├── Var [i]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── For
+                    │           ├── Init
+                    │           │   ╰── VarDeclaration
+                    │           │       ├── Name
+                    │           │       │   ╰── j
+                    │           │       ├── Type
+                    │           │       │   ╰── Int
+                    │           │       ╰── Initializer
+                    │           │           ╰── Constant Int [0]
+                    │           ├── Condition
+                    │           │   ╰── Binary [<]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Constant Int [5]
+                    │           ├── Condition
+                    │           │   ╰── Assign [=]
+                    │           │       ├── Var [j]
+                    │           │       ╰── Binary [+]
+                    │           │           ├── Var [j]
+                    │           │           ╰── Constant Int [1]
+                    │           ╰── Block
+                    │               ╰── If
+                    │                   ├── Condition
+                    │                   │   ╰── Binary [!=]
+                    │                   │       ├── Dereference
+                    │                   │       │   ╰── Binary [+]
+                    │                   │       │       ├── Dereference
+                    │                   │       │       │   ╰── Binary [+]
+                    │                   │       │       │       ├── Var [x]
+                    │                   │       │       │       ╰── Var [i]
+                    │                   │       │       ╰── Var [j]
+                    │                   │       ╰── Subscript
+                    │                   │           ├── Subscript
+                    │                   │           │   ├── Var [x]
+                    │                   │           │   ╰── Var [i]
+                    │                   │           ╰── Var [j]
+                    │                   ╰── Then
+                    │                       ╰── Block
+                    │                           ╰── Return
+                    │                               ╰── Constant Int [3]
+                    ├── Assign [=]
+                    │   ├── Dereference
+                    │   │   ╰── Binary [+]
+                    │   │       ├── Dereference
+                    │   │       │   ╰── Binary [+]
+                    │   │       │       ├── Var [x]
+                    │   │       │       ╰── Constant Int [275]
+                    │   │       ╰── Constant Int [4]
+                    │   ╰── Constant ULong [22000]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [x]
+                    │   │       │   │   ╰── Constant Int [275]
+                    │   │       │   ╰── Constant Int [4]
+                    │   │       ╰── Constant ULong [22000]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_array_of_pointers_to_arrays() {
+    let src = r#"
+        int main(void) {
+            int x = 0;
+            int y = 1;
+            int z = 2;
+            int *arr[3] = { &x, &y, &z };
+            int *arr2[3] = {&z, &y, &x};
+            int *(*array_of_pointers[3])[3] = {&arr, &arr2, &arr};
+            if (array_of_pointers[0] != (int *(*)[3]) arr) {
+                return 1;
+            }
+            if (array_of_pointers[1] != (int *(*)[3]) arr2) {
+                return 2;
+            }
+            if (array_of_pointers[2] != (int *(*)[3]) arr) {
+                return 3;
+            }
+            if (array_of_pointers[1][0][0] != &z) {
+                return 4;
+            }
+            if (array_of_pointers[1][0][1] != &y) {
+                return 5;
+            }
+            if (array_of_pointers[2][0][2][0] != 2) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── z
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Pointer
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── AddressOf
+                    │           │   ╰── Var [x]
+                    │           ├── AddressOf
+                    │           │   ╰── Var [y]
+                    │           ╰── AddressOf
+                    │               ╰── Var [z]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr2
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Pointer
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── AddressOf
+                    │           │   ╰── Var [z]
+                    │           ├── AddressOf
+                    │           │   ╰── Var [y]
+                    │           ╰── AddressOf
+                    │               ╰── Var [x]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── array_of_pointers
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Pointer
+                    │   │           ╰── Array
+                    │   │               ├── 3
+                    │   │               ╰── Pointer
+                    │   │                   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── AddressOf
+                    │           │   ╰── Var [arr]
+                    │           ├── AddressOf
+                    │           │   ╰── Var [arr2]
+                    │           ╰── AddressOf
+                    │               ╰── Var [arr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [array_of_pointers]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Cast
+                    │   │           ├── Target
+                    │   │           │   ╰── Pointer
+                    │   │           │       ╰── Array
+                    │   │           │           ├── 3
+                    │   │           │           ╰── Pointer
+                    │   │           │               ╰── Int
+                    │   │           ╰── Expression
+                    │   │               ╰── Var [arr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [array_of_pointers]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Cast
+                    │   │           ├── Target
+                    │   │           │   ╰── Pointer
+                    │   │           │       ╰── Array
+                    │   │           │           ├── 3
+                    │   │           │           ╰── Pointer
+                    │   │           │               ╰── Int
+                    │   │           ╰── Expression
+                    │   │               ╰── Var [arr2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [array_of_pointers]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Cast
+                    │   │           ├── Target
+                    │   │           │   ╰── Pointer
+                    │   │           │       ╰── Array
+                    │   │           │           ├── 3
+                    │   │           │           ╰── Pointer
+                    │   │           │               ╰── Int
+                    │   │           ╰── Expression
+                    │   │               ╰── Var [arr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [array_of_pointers]
+                    │   │       │   │   │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Var [z]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Var [array_of_pointers]
+                    │   │       │   │   │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Var [y]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── Subscript
+                    │   │       │   │   │   │   ├── Var [array_of_pointers]
+                    │   │       │   │   │   │   ╰── Constant Int [2]
+                    │   │       │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── Constant Int [2]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_complex_operands() {
+    let src = r#"
+        int assign_in_index(int idx) {
+            int arr[3] = {1, 2, 3};
+            int val = arr[idx = idx + 2];
+            if (idx != 1) {
+                return 1;
+            }
+            if (val != 2) {
+                return 2;
+            }
+            return 0;
+        }
+        int static_index(void) {
+            static int index = 0;
+            int retval = index;
+            index = index + 1;
+            return retval;
+        }
+        int funcall_in_index(void) {
+            int arr[3] = {1, 2, 3};
+            int v1 = arr[static_index()];
+            int v2 = arr[static_index()];
+            if (v1 != 1) {
+                return 3;
+            }
+            if (v2 != 2) {
+                return 4;
+            }
+            return 0;
+        }
+        int subscript_inception(long *arr, int *a, int b){
+            return arr[a[b]];
+        }
+        int check_subscript_inception(void) {
+            long arr[4] = {4, 3, 2, 1};
+            int indices[2] = {1, 2};
+            if (subscript_inception(arr, indices, 1) != 2) {
+                return 5;
+            }
+            if (subscript_inception(arr, indices, 0) != 3) {
+                return 6;
+            }
+            return 0;
+        }
+        int *get_array(void) {
+            static int arr[3];
+            return arr;
+        }
+        int subscript_function_result(void){
+            get_array()[2] = 1;
+            if (get_array()[2] != 1) {
+                return 7;
+            }
+            return 0;
+        }
+        int negate_subscript(int *arr, int idx, int expected) {
+            if (arr[-idx] != expected) {
+                return 8;
+            }
+            return 0;
+        }
+        int main(void) {
+            int check = assign_in_index(-1);
+            if (check) {
+                return check;
+            }
+            check = funcall_in_index();
+            if (check) {
+                return check;
+            }
+            check = check_subscript_inception();
+            if (check) {
+                return check;
+            }
+            check = subscript_function_result();
+            if (check) {
+                return check;
+            }
+            int arr[3] = {0, 1, 2};
+            check = negate_subscript(arr + 2, 2, 0);
+            if (check) {
+                return check;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [assign_in_index]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── idx
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [1]
+            │       │           ├── Constant Int [2]
+            │       │           ╰── Constant Int [3]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── val
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Subscript
+            │       │           ├── Var [arr]
+            │       │           ╰── Assign [=]
+            │       │               ├── Var [idx]
+            │       │               ╰── Binary [+]
+            │       │                   ├── Var [idx]
+            │       │                   ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [idx]
+            │       │   │       ╰── Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [val]
+            │       │   │       ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [static_index]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── index
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── Constant Int [0]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── retval
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Var [index]
+            │       ├── Assign [=]
+            │       │   ├── Var [index]
+            │       │   ╰── Binary [+]
+            │       │       ├── Var [index]
+            │       │       ╰── Constant Int [1]
+            │       ╰── Return
+            │           ╰── Var [retval]
+            ├── Function [funcall_in_index]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [1]
+            │       │           ├── Constant Int [2]
+            │       │           ╰── Constant Int [3]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── v1
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Subscript
+            │       │           ├── Var [arr]
+            │       │           ╰── FunctionCall [static_index]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── v2
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Subscript
+            │       │           ├── Var [arr]
+            │       │           ╰── FunctionCall [static_index]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [v1]
+            │       │   │       ╰── Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [v2]
+            │       │   │       ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [4]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [subscript_inception]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── arr
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Long
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── a
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── b
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Subscript
+            │               ├── Var [arr]
+            │               ╰── Subscript
+            │                   ├── Var [a]
+            │                   ╰── Var [b]
+            ├── Function [check_subscript_inception]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 4
+            │       │   │       ╰── Long
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [4]
+            │       │           ├── Constant Int [3]
+            │       │           ├── Constant Int [2]
+            │       │           ╰── Constant Int [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── indices
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 2
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Constant Int [1]
+            │       │           ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── FunctionCall [subscript_inception]
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ├── Var [indices]
+            │       │   │       │   ╰── Constant Int [1]
+            │       │   │       ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [5]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── FunctionCall [subscript_inception]
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ├── Var [indices]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant Int [3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [6]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [get_array]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Int
+            │       │   ╰── Static
+            │       ╰── Return
+            │           ╰── Var [arr]
+            ├── Function [subscript_function_result]
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── FunctionCall [get_array]
+            │       │   │   ╰── Constant Int [2]
+            │       │   ╰── Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── FunctionCall [get_array]
+            │       │   │       │   ╰── Constant Int [2]
+            │       │   │       ╰── Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [7]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [negate_subscript]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── arr
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── idx
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Unary [-]
+            │       │   │       │       ╰── Var [idx]
+            │       │   │       ╰── Var [expected]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [8]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── check
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [assign_in_index]
+                    │           ╰── Unary [-]
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [funcall_in_index]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [check_subscript_inception]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [subscript_function_result]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [1]
+                    │           ╰── Constant Int [2]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [negate_subscript]
+                    │       ├── Binary [+]
+                    │       │   ├── Var [arr]
+                    │       │   ╰── Constant Int [2]
+                    │       ├── Constant Int [2]
+                    │       ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_simple() {
+    let src = r#"
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            return arr[2];
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Subscript
+                            ├── Var [arr]
+                            ╰── Constant Int [2]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_simple_subscripts() {
+    let src = r#"
+        int integer_types(unsigned *arr, unsigned expected) {
+            unsigned val1 = arr[5];
+            unsigned val2 = arr[5u];
+            unsigned val3 = arr[5l];
+            unsigned val4 = arr[5ul];
+            if (val1 != expected) {
+                return 1;
+            }
+            if (val2 != expected) {
+                return 2;
+            }
+            if (val3 != expected) {
+                return 3;
+            }
+            if (val4 != expected) {
+                return 4;
+            }
+            return 0;
+        }
+        int reverse_subscript(long *arr, long expected) {
+            if (arr[3] != expected) {
+                return 5;
+            }
+            if (3[arr] != expected) {
+                return 6;
+            }
+            if (&3[arr] != &arr[3]) {
+                return 7;
+            }
+            return 0;
+        }
+        static double static_array[3] = {0.1, 0.2, 0.3};
+        int subscript_static(void) {
+            if (static_array[0] != 0.1) {
+                return 8;
+            }
+            if (static_array[1] != 0.2) {
+                return 9;
+            }
+            if (static_array[2] != 0.3) {
+                return 10;
+            }
+            return 0;
+        }
+        int update_element(int *arr, int expected) {
+            arr[10] = arr[10] * 2;
+            if (arr[10] != expected) {
+                return 11;
+            }
+            return 0;
+        }
+        int *increment_static_element(void) {
+            static int arr[4];
+            arr[3] = arr[3] + 1;
+            return arr;
+        }
+        int check_increment_static_element(void) {
+            int *arr1 = increment_static_element();
+            if (arr1[3] != 1) {
+                return 12;
+            }
+            if (arr1[0] || arr1[1] || arr1[2]) {
+                return 13;
+            }
+            int *arr2 = increment_static_element();
+            if (arr1 != arr2) {
+                return 14;
+            }
+            if (arr1[3] != 2) {
+                return 15;
+            }
+            return 0;
+        }
+        int main(void) {
+            unsigned int unsigned_arr[6] = {0, 0, 0, 0, 0, 7u};
+            int check = integer_types(unsigned_arr, 7u);
+            if (check) {
+                return check;
+            }
+            long int long_arr[4] = {100, 102, 104, 106};
+            check = reverse_subscript(long_arr, 106);
+            if (check) {
+                return check;
+            }
+            check = subscript_static();
+            if (check) {
+                return check;
+            }
+            int int_arr[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15};
+            check = update_element(int_arr, 30);
+            if (check) {
+                return check;
+            }
+            check = check_increment_static_element();
+            if (check) {
+                return check;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [integer_types]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── arr
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Unsigned Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Unsigned Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── val1
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Subscript
+            │       │           ├── Var [arr]
+            │       │           ╰── Constant Int [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── val2
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Subscript
+            │       │           ├── Var [arr]
+            │       │           ╰── Constant UInt [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── val3
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Subscript
+            │       │           ├── Var [arr]
+            │       │           ╰── Constant Long [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── val4
+            │       │   ├── Type
+            │       │   │   ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── Subscript
+            │       │           ├── Var [arr]
+            │       │           ╰── Constant ULong [5]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [val1]
+            │       │   │       ╰── Var [expected]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [val2]
+            │       │   │       ╰── Var [expected]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [val3]
+            │       │   │       ╰── Var [expected]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [val4]
+            │       │   │       ╰── Var [expected]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [4]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [reverse_subscript]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── arr
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Long
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Long
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [3]
+            │       │   │       ╰── Var [expected]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [5]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Constant Int [3]
+            │       │   │       │   ╰── Var [arr]
+            │       │   │       ╰── Var [expected]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [6]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── AddressOf
+            │       │   │       │   ╰── Subscript
+            │       │   │       │       ├── Constant Int [3]
+            │       │   │       │       ╰── Var [arr]
+            │       │   │       ╰── AddressOf
+            │       │   │           ╰── Subscript
+            │       │   │               ├── Var [arr]
+            │       │   │               ╰── Constant Int [3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [7]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── static_array
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Double
+            │   ├── Initializer
+            │   │   ╰── Compound
+            │   │       ├── Constant Double [+1e-1]
+            │   │       ├── Constant Double [+2e-1]
+            │   │       ╰── Constant Double [+3e-1]
+            │   ╰── Static
+            ├── Function [subscript_static]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [static_array]
+            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       ╰── Constant Double [+1e-1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [8]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [static_array]
+            │       │   │       │   ╰── Constant Int [1]
+            │       │   │       ╰── Constant Double [+2e-1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [9]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [static_array]
+            │       │   │       │   ╰── Constant Int [2]
+            │       │   │       ╰── Constant Double [+3e-1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [10]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [update_element]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── arr
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Var [arr]
+            │       │   │   ╰── Constant Int [10]
+            │       │   ╰── Binary [*]
+            │       │       ├── Subscript
+            │       │       │   ├── Var [arr]
+            │       │       │   ╰── Constant Int [10]
+            │       │       ╰── Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr]
+            │       │   │       │   ╰── Constant Int [10]
+            │       │   │       ╰── Var [expected]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [11]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [increment_static_element]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 4
+            │       │   │       ╰── Int
+            │       │   ╰── Static
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Var [arr]
+            │       │   │   ╰── Constant Int [3]
+            │       │   ╰── Binary [+]
+            │       │       ├── Subscript
+            │       │       │   ├── Var [arr]
+            │       │       │   ╰── Constant Int [3]
+            │       │       ╰── Constant Int [1]
+            │       ╰── Return
+            │           ╰── Var [arr]
+            ├── Function [check_increment_static_element]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr1
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── FunctionCall [increment_static_element]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr1]
+            │       │   │       │   ╰── Constant Int [3]
+            │       │   │       ╰── Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [12]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [||]
+            │       │   │       ├── Binary [||]
+            │       │   │       │   ├── Subscript
+            │       │   │       │   │   ├── Var [arr1]
+            │       │   │       │   │   ╰── Constant Int [0]
+            │       │   │       │   ╰── Subscript
+            │       │   │       │       ├── Var [arr1]
+            │       │   │       │       ╰── Constant Int [1]
+            │       │   │       ╰── Subscript
+            │       │   │           ├── Var [arr1]
+            │       │   │           ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [13]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr2
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Int
+            │       │   ╰── Initializer
+            │       │       ╰── FunctionCall [increment_static_element]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Var [arr1]
+            │       │   │       ╰── Var [arr2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [14]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── Binary [!=]
+            │       │   │       ├── Subscript
+            │       │   │       │   ├── Var [arr1]
+            │       │   │       │   ╰── Constant Int [3]
+            │       │   │       ╰── Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── Constant Int [15]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── unsigned_arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 6
+                    │   │       ╰── Unsigned Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ╰── Constant UInt [7]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── check
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [integer_types]
+                    │           ├── Var [unsigned_arr]
+                    │           ╰── Constant UInt [7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── long_arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 4
+                    │   │       ╰── Long
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [100]
+                    │           ├── Constant Int [102]
+                    │           ├── Constant Int [104]
+                    │           ╰── Constant Int [106]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [reverse_subscript]
+                    │       ├── Var [long_arr]
+                    │       ╰── Constant Int [106]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [subscript_static]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── int_arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 11
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ├── Constant Int [0]
+                    │           ╰── Constant Int [15]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [update_element]
+                    │       ├── Var [int_arr]
+                    │       ╰── Constant Int [30]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ├── Assign [=]
+                    │   ├── Var [check]
+                    │   ╰── FunctionCall [check_increment_static_element]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Var [check]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Var [check]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_subscript_nested() {
+    let src = r#"
+        int read_nested(int nested_arr[2][3], int i, int j, int expected) {
+            return (nested_arr[i][j] == expected);
+        }
+        int write_nested(int nested_arr[2][3], int i, int j, int new_val) {
+            nested_arr[i][j] = new_val;
+            return 0;
+        }
+        int read_nested_negated(int (*nested_arr)[3], int i, int j, int expected) {
+            return (nested_arr[-i][j] == expected);
+        }
+        int get_nested_addr(int nested_arr[2][3], int i, int j, int *expected) {
+            return &nested_arr[i][j] == expected;
+        }
+        static int nested_arr[4][3][5] = {
+            {{1, 2}, {3}},
+            {{4}, {5}}
+        };
+        int read_static_nested(int i, int j, int k, int expected) {
+            return nested_arr[i][j][k] == expected;
+        }
+        int (*get_array(void))[3][5] {
+            return nested_arr;
+        }
+        int write_nested_complex(int i, int j, int k, int val) {
+            get_array()[i][j][k] = val;
+            return 0;
+        }
+        int *get_subarray(int nested[2][3], int i) {
+            return nested[i];
+        }
+        int main(void) {
+            int nested_arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
+            if (!read_nested(nested_arr, 1, 2, 6)) {
+                return 1;
+            }
+            write_nested(nested_arr, 1, 2, -1);
+            if (nested_arr[1][2] != -1) {
+                return 2;
+            }
+            if (!read_nested_negated(nested_arr + 2, 2, 0, 1)) {
+                return 3;
+            }
+            int *ptr = (nested_arr[0]) + 1;
+            if (!get_nested_addr(nested_arr, 0, 1, ptr)) {
+                return 4;
+            }
+            if (!read_static_nested(1, 1, 0, 5)) {
+                return 5;
+            }
+            write_nested_complex(0, 2, 3, 111);
+            if (get_array()[0][2][3] != 111) {
+                return 6;
+            }
+            int *row_1 = get_subarray(nested_arr, 1);
+            if (row_1 + 1 != &nested_arr[1][1]) {
+                return 7;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [read_nested]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── nested_arr
+            │   │   │   ╰── Type
+            │   │   │       ╰── Array
+            │   │   │           ├── 2
+            │   │   │           ╰── Array
+            │   │   │               ├── 3
+            │   │   │               ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── j
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Subscript
+            │               │   ├── Subscript
+            │               │   │   ├── Var [nested_arr]
+            │               │   │   ╰── Var [i]
+            │               │   ╰── Var [j]
+            │               ╰── Var [expected]
+            ├── Function [write_nested]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── nested_arr
+            │   │   │   ╰── Type
+            │   │   │       ╰── Array
+            │   │   │           ├── 2
+            │   │   │           ╰── Array
+            │   │   │               ├── 3
+            │   │   │               ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── j
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── new_val
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Subscript
+            │       │   │   │   ├── Var [nested_arr]
+            │       │   │   │   ╰── Var [i]
+            │       │   │   ╰── Var [j]
+            │       │   ╰── Var [new_val]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [read_nested_negated]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── nested_arr
+            │   │   │   ╰── Type
+            │   │   │       ╰── Pointer
+            │   │   │           ╰── Array
+            │   │   │               ├── 3
+            │   │   │               ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── j
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Subscript
+            │               │   ├── Subscript
+            │               │   │   ├── Var [nested_arr]
+            │               │   │   ╰── Unary [-]
+            │               │   │       ╰── Var [i]
+            │               │   ╰── Var [j]
+            │               ╰── Var [expected]
+            ├── Function [get_nested_addr]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── nested_arr
+            │   │   │   ╰── Type
+            │   │   │       ╰── Array
+            │   │   │           ├── 2
+            │   │   │           ╰── Array
+            │   │   │               ├── 3
+            │   │   │               ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── j
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── AddressOf
+            │               │   ╰── Subscript
+            │               │       ├── Subscript
+            │               │       │   ├── Var [nested_arr]
+            │               │       │   ╰── Var [i]
+            │               │       ╰── Var [j]
+            │               ╰── Var [expected]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── nested_arr
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 4
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Array
+            │   │               ├── 5
+            │   │               ╰── Int
+            │   ├── Initializer
+            │   │   ╰── Compound
+            │   │       ├── Compound
+            │   │       │   ├── Compound
+            │   │       │   │   ├── Constant Int [1]
+            │   │       │   │   ╰── Constant Int [2]
+            │   │       │   ╰── Compound
+            │   │       │       ╰── Constant Int [3]
+            │   │       ╰── Compound
+            │   │           ├── Compound
+            │   │           │   ╰── Constant Int [4]
+            │   │           ╰── Compound
+            │   │               ╰── Constant Int [5]
+            │   ╰── Static
+            ├── Function [read_static_nested]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── j
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── k
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── expected
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Binary [==]
+            │               ├── Subscript
+            │               │   ├── Subscript
+            │               │   │   ├── Subscript
+            │               │   │   │   ├── Var [nested_arr]
+            │               │   │   │   ╰── Var [i]
+            │               │   │   ╰── Var [j]
+            │               │   ╰── Var [k]
+            │               ╰── Var [expected]
+            ├── Function [get_array]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Var [nested_arr]
+            ├── Function [write_nested_complex]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── j
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── k
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── val
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── Assign [=]
+            │       │   ├── Subscript
+            │       │   │   ├── Subscript
+            │       │   │   │   ├── Subscript
+            │       │   │   │   │   ├── FunctionCall [get_array]
+            │       │   │   │   │   ╰── Var [i]
+            │       │   │   │   ╰── Var [j]
+            │       │   │   ╰── Var [k]
+            │       │   ╰── Var [val]
+            │       ╰── Return
+            │           ╰── Constant Int [0]
+            ├── Function [get_subarray]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── nested
+            │   │   │   ╰── Type
+            │   │   │       ╰── Array
+            │   │   │           ├── 2
+            │   │   │           ╰── Array
+            │   │   │               ├── 3
+            │   │   │               ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Subscript
+            │               ├── Var [nested]
+            │               ╰── Var [i]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── nested_arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 2
+                    │   │       ╰── Array
+                    │   │           ├── 3
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Compound
+                    │           │   ├── Constant Int [1]
+                    │           │   ├── Constant Int [2]
+                    │           │   ╰── Constant Int [3]
+                    │           ╰── Compound
+                    │               ├── Constant Int [4]
+                    │               ├── Constant Int [5]
+                    │               ╰── Constant Int [6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [read_nested]
+                    │   │           ├── Var [nested_arr]
+                    │   │           ├── Constant Int [1]
+                    │   │           ├── Constant Int [2]
+                    │   │           ╰── Constant Int [6]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── FunctionCall [write_nested]
+                    │   ├── Var [nested_arr]
+                    │   ├── Constant Int [1]
+                    │   ├── Constant Int [2]
+                    │   ╰── Unary [-]
+                    │       ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [nested_arr]
+                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   ╰── Constant Int [2]
+                    │   │       ╰── Unary [-]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [read_nested_negated]
+                    │   │           ├── Binary [+]
+                    │   │           │   ├── Var [nested_arr]
+                    │   │           │   ╰── Constant Int [2]
+                    │   │           ├── Constant Int [2]
+                    │   │           ├── Constant Int [0]
+                    │   │           ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Binary [+]
+                    │           ├── Subscript
+                    │           │   ├── Var [nested_arr]
+                    │           │   ╰── Constant Int [0]
+                    │           ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [get_nested_addr]
+                    │   │           ├── Var [nested_arr]
+                    │   │           ├── Constant Int [0]
+                    │   │           ├── Constant Int [1]
+                    │   │           ╰── Var [ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Unary [!]
+                    │   │       ╰── FunctionCall [read_static_nested]
+                    │   │           ├── Constant Int [1]
+                    │   │           ├── Constant Int [1]
+                    │   │           ├── Constant Int [0]
+                    │   │           ╰── Constant Int [5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [5]
+                    ├── FunctionCall [write_nested_complex]
+                    │   ├── Constant Int [0]
+                    │   ├── Constant Int [2]
+                    │   ├── Constant Int [3]
+                    │   ╰── Constant Int [111]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Subscript
+                    │   │       │   │   │   ├── FunctionCall [get_array]
+                    │   │       │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── Constant Int [2]
+                    │   │       │   ╰── Constant Int [3]
+                    │   │       ╰── Constant Int [111]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── row_1
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [get_subarray]
+                    │           ├── Var [nested_arr]
+                    │           ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Binary [+]
+                    │   │       │   ├── Var [row_1]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── AddressOf
+                    │   │           ╰── Subscript
+                    │   │               ├── Subscript
+                    │   │               │   ├── Var [nested_arr]
+                    │   │               │   ╰── Constant Int [1]
+                    │   │               ╰── Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [7]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_subscript_pointer() {
+    let src = r#"
+        int subscript_pointer_to_pointer(int **x) {
+            return x[0][0];
+        }
+        int main(void) {
+            int a = 3;
+            int *ptr = &a;
+            if (ptr[0] != 3) {
+                return 1;
+            }
+            int **ptr_ptr = &ptr;
+            if (ptr_ptr[0][0] != 3) {
+                return 2;
+            }
+            int dereferenced = subscript_pointer_to_pointer(ptr_ptr);
+            if (dereferenced != 3) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [subscript_pointer_to_pointer]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── x
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Pointer
+            │   │                   ╰── Int
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── Subscript
+            │               ├── Subscript
+            │               │   ├── Var [x]
+            │               │   ╰── Constant Int [0]
+            │               ╰── Constant Int [0]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [a]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Var [ptr]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Pointer
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── AddressOf
+                    │           ╰── Var [ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Subscript
+                    │   │       │   ├── Subscript
+                    │   │       │   │   ├── Var [ptr_ptr]
+                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   ╰── Constant Int [0]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── dereferenced
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── FunctionCall [subscript_pointer_to_pointer]
+                    │           ╰── Var [ptr_ptr]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── Binary [!=]
+                    │   │       ├── Var [dereferenced]
+                    │   │       ╰── Constant Int [3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_subscript_precedence() {
+    let src = r#"
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            return (-arr[2] == -3);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── Constant Int [1]
+                    │           ├── Constant Int [2]
+                    │           ╰── Constant Int [3]
+                    ╰── Return
+                        ╰── Binary [==]
+                            ├── Unary [-]
+                            │   ╰── Subscript
+                            │       ├── Var [arr]
+                            │       ╰── Constant Int [2]
+                            ╰── Unary [-]
+                                ╰── Constant Int [3]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
