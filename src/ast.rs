@@ -300,6 +300,10 @@ impl Type {
         matches!(self, Type::Pointer(_))
     }
 
+    pub fn is_array(&self) -> bool {
+        matches!(self, Type::Array(_, _))
+    }
+
     pub fn size(&self) -> u8 {
         match self {
             Type::Int => 4,

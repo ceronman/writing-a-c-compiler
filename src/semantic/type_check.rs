@@ -122,14 +122,39 @@ impl TypeChecker {
             self.symbols
                 .insert(decl.name.symbol.clone(), SymbolData::local(decl.ty.clone()));
             if let Some(init) = &decl.init {
-                let Initializer::Single(init) = init.as_ref() else {
-                    todo!()
-                };
-                let init_ty = self.check_expression(init)?;
-                self.convert_by_assignment(init, &init_ty, &decl.ty)?;
+                self.check_initializer(init, &decl.ty)?;
             }
         }
         Ok(())
+    }
+
+    fn check_initializer(&mut self, init: &Node<Initializer>, target: &Type) -> Result<Type> {
+        match init.as_ref() {
+            Initializer::Single(expr) => {
+                let init_ty = self.check_and_convert_expr(expr)?;
+                self.convert_by_assignment(expr, &init_ty, target)
+            }
+            Initializer::Compound(initializers) => {
+                let Type::Array(inner_ty, size) = target else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Cannot initialize a scalar value with a compound initializer".into(),
+                        span: init.span,
+                    });
+                };
+                if initializers.len() as u64 > *size {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Wrong number of element in the initializer".into(),
+                        span: init.span,
+                    });
+                }
+                for inner_innit in initializers {
+                    self.check_initializer(inner_innit, inner_ty)?;
+                }
+                Ok(target.clone())
+            }
+        }
     }
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
@@ -236,7 +261,25 @@ impl TypeChecker {
         top_level: bool,
     ) -> Result<()> {
         let name = decl.name.symbol.clone();
-        let this_ty = Type::Function(decl.ty.clone());
+        let mut this_ty = decl.ty.clone();
+
+        if this_ty.ret.is_array() {
+            // TODO: Make this error point to the span of the actual return type
+            return Err(CompilerError {
+                kind: ErrorKind::Type,
+                msg: "A function cannot return array".into(),
+                span: decl.name.span,
+            });
+        }
+
+        // Replace array params with pointers
+        for param in &mut this_ty.params {
+            if let Type::Array(inner, _) = param {
+                *param = Type::Pointer(inner.clone());
+            }
+        }
+
+        let this_ty = Type::Function(this_ty);
         let has_body = decl.body.is_some();
         let mut already_defined = false;
         let is_static = matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
@@ -323,25 +366,25 @@ impl TypeChecker {
     fn check_statement(&mut self, function: &FunctionType, stmt: &Node<Statement>) -> Result<()> {
         match stmt.as_ref() {
             Statement::Return(expr) => {
-                let expr_ty = self.check_expression(expr)?;
+                let expr_ty = self.check_and_convert_expr(expr)?;
                 self.convert_by_assignment(expr, &expr_ty, &function.ret)?;
             }
             Statement::Expression(expr) => {
-                self.check_expression(expr)?;
+                self.check_and_convert_expr(expr)?;
             }
             Statement::If {
                 cond,
                 then_stmt,
                 else_stmt,
             } => {
-                self.check_expression(cond)?;
+                self.check_and_convert_expr(cond)?;
                 self.check_statement(function, then_stmt)?;
                 if let Some(else_stmt) = else_stmt {
                     self.check_statement(function, else_stmt)?;
                 }
             }
             Statement::Switch { expr, body, .. } => {
-                let expr_ty = self.check_expression(expr)?;
+                let expr_ty = self.check_and_convert_expr(expr)?;
 
                 if !expr_ty.is_int() {
                     return Err(CompilerError {
@@ -411,7 +454,7 @@ impl TypeChecker {
             | Statement::DoWhile {
                 cond: expr, body, ..
             } => {
-                self.check_expression(expr)?;
+                self.check_and_convert_expr(expr)?;
                 self.check_statement(function, body)?;
             }
             Statement::Labeled { body, .. } => self.check_statement(function, body)?,
@@ -436,15 +479,15 @@ impl TypeChecker {
                         self.check_local_var_declaration(d)?
                     }
                     ForInit::Expr(e) => {
-                        self.check_expression(e)?;
+                        self.check_and_convert_expr(e)?;
                     }
                     ForInit::None => {}
                 }
                 if let Some(cond) = cond {
-                    self.check_expression(cond)?;
+                    self.check_and_convert_expr(cond)?;
                 }
                 if let Some(post) = post {
-                    self.check_expression(post)?;
+                    self.check_and_convert_expr(post)?;
                 }
                 self.check_statement(function, body)?;
             }
@@ -458,6 +501,18 @@ impl TypeChecker {
         match decl.as_ref() {
             Declaration::Var(d) => self.check_local_var_declaration(d),
             Declaration::Function(d) => self.check_function_declaration(d, false),
+        }
+    }
+
+    fn check_and_convert_expr(&mut self, expr: &Node<Expression>) -> Result<Type> {
+        let ty = self.check_expression(expr)?;
+        if let Type::Array(inner, size) = ty {
+            // Pointer decay
+            let pointer_ty = Type::Pointer(inner);
+            self.expression_types.insert(expr.id, pointer_ty.clone());
+            Ok(pointer_ty)
+        } else {
+            Ok(ty)
         }
     }
 
@@ -491,7 +546,7 @@ impl TypeChecker {
                         });
                     }
                 }
-                let operand_ty = self.check_expression(expr)?;
+                let operand_ty = self.check_and_convert_expr(expr)?;
                 if matches!(op.as_ref(), UnaryOp::Complement) && !operand_ty.is_int() {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -519,11 +574,11 @@ impl TypeChecker {
                         span: expr.span,
                     });
                 }
-                self.check_expression(expr)?
+                self.check_and_convert_expr(expr)?
             }
             Expression::Binary { left, right, op } => {
-                let left_ty = self.check_expression(left)?;
-                let right_ty = self.check_expression(right)?;
+                let left_ty = self.check_and_convert_expr(left)?;
+                let right_ty = self.check_and_convert_expr(right)?;
 
                 match op.as_ref() {
                     BinaryOp::Reminder
@@ -545,19 +600,66 @@ impl TypeChecker {
                             });
                         }
                     }
-                    BinaryOp::Multiply | BinaryOp::Divide if left_ty.is_pointer() => {
+                    BinaryOp::Multiply | BinaryOp::Divide if !left_ty.is_arithmetic() => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
-                            msg: "Operator cannot be a pointer".to_string(),
+                            msg: "Operator is invalid".to_string(),
                             span: left.span,
                         });
                     }
-                    BinaryOp::Multiply | BinaryOp::Divide if right_ty.is_pointer() => {
+                    BinaryOp::Multiply | BinaryOp::Divide if !right_ty.is_arithmetic() => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
-                            msg: "Operator cannot be a pointer".to_string(),
+                            msg: "Operator is invalid".to_string(),
                             span: right.span,
                         });
+                    }
+                    BinaryOp::Add if left_ty.is_pointer() && !right_ty.is_int() => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Operator is invalid".to_string(),
+                            span: right.span,
+                        });
+                    }
+                    BinaryOp::Add if right_ty.is_pointer() && !left_ty.is_int() => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Operator is invalid".to_string(),
+                            span: left.span,
+                        });
+                    }
+                    BinaryOp::Subtract if left_ty.is_pointer() && !(right_ty.is_int() || right_ty.is_pointer()) => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Operator is invalid".to_string(),
+                            span: right.span,
+                        });
+                    }
+                    BinaryOp::LessThan
+                    | BinaryOp::LessOrEqualThan
+                    | BinaryOp::GreaterThan
+                    | BinaryOp::GreaterOrEqualThan if !left_ty.is_arithmetic() || !left_ty.is_arithmetic() => {
+                        let Type::Pointer(left_inner) = left_ty.clone() else {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Operator is invalid".to_string(),
+                                span: left.span,
+                            });
+                        };
+                        let Type::Pointer(right_inner) = right_ty.clone() else {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Operator is invalid".to_string(),
+                                span: right.span,
+                            });
+                        };
+                        if left_inner != right_inner {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Operator is invalid".to_string(),
+                                span: right.span,
+                            });
+                        }
                     }
                     _ => {}
                 };
@@ -575,6 +677,15 @@ impl TypeChecker {
                         self.cast_if_needed(right, &right_ty, &common);
                         Type::Int
                     }
+                    BinaryOp::Subtract if left_ty.is_pointer() && right_ty.is_pointer() => {
+                        Type::Long
+                    }
+                    BinaryOp::Add | BinaryOp::Subtract if left_ty.is_pointer() && right_ty.is_int() => {
+                        left_ty
+                    }
+                    BinaryOp::Add if left_ty.is_int() && right_ty.is_pointer() => {
+                        right_ty
+                    }
                     _ => {
                         let common = Self::common_type(&left_ty, &right_ty);
                         self.cast_if_needed(left, &left_ty, &common);
@@ -591,6 +702,15 @@ impl TypeChecker {
             }
 
             Expression::Assignment { left, right, op } => {
+                let left_ty = self.check_expression(left)?;
+                if left_ty.is_array() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Array is not assignable".to_owned(),
+                        span: left.span,
+                    });
+                }
+
                 if !Self::is_lvalue(left) {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -598,8 +718,7 @@ impl TypeChecker {
                         span: left.span,
                     });
                 }
-                let left_ty = self.check_expression(left)?;
-                let right_ty = self.check_expression(right)?;
+                let right_ty = self.check_and_convert_expr(right)?;
 
                 match op.as_ref() {
                     AssignOp::BitAndEqual
@@ -661,9 +780,9 @@ impl TypeChecker {
                 then_expr,
                 else_expr,
             } => {
-                self.check_expression(cond)?;
-                let then_ty = self.check_expression(then_expr)?;
-                let else_ty = self.check_expression(else_expr)?;
+                self.check_and_convert_expr(cond)?;
+                let then_ty = self.check_and_convert_expr(then_expr)?;
+                let else_ty = self.check_and_convert_expr(else_expr)?;
                 let common = Self::common_type(&then_ty, &else_ty);
                 self.cast_if_needed(then_expr, &then_ty, &common);
                 self.cast_if_needed(else_expr, &else_ty, &common);
@@ -694,13 +813,13 @@ impl TypeChecker {
                     });
                 }
                 for (arg, param_ty) in args.iter().zip(&function_ty.params) {
-                    let arg_ty = self.check_expression(arg)?;
+                    let arg_ty = self.check_and_convert_expr(arg)?;
                     self.convert_by_assignment(arg, &arg_ty, param_ty)?;
                 }
                 *function_ty.ret.clone()
             }
             Expression::Cast { target, expr } => {
-                let ty = self.check_expression(expr)?;
+                let ty = self.check_and_convert_expr(expr)?;
                 if target.is_pointer() && ty.is_double() {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -715,10 +834,17 @@ impl TypeChecker {
                         span: expr.span,
                     });
                 }
+                if target.is_array() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Cannot cast to an array type".to_string(),
+                        span: expr.span,
+                    });
+                }
                 *target.data.clone()
             }
             Expression::Dereference(inner) => {
-                let inner_ty = self.check_expression(inner)?;
+                let inner_ty = self.check_and_convert_expr(inner)?;
                 match inner_ty {
                     Type::Pointer(referenced) => *referenced.clone(),
                     _ => {
@@ -742,14 +868,35 @@ impl TypeChecker {
                     });
                 }
             }
-            Expression::Subscript(_, _) => todo!(),
+            Expression::Subscript(expr1, expr2) => {
+                let ty1 = self.check_and_convert_expr(expr1)?;
+                let ty2 = self.check_and_convert_expr(expr2)?;
+                match (&ty1, &ty2) {
+                    (Type::Pointer(referenced), _) if ty2.is_int() => {
+                        *referenced.clone()
+                    }
+                    (_, Type::Pointer(referenced)) if ty1.is_int() => {
+                        *referenced.clone()
+                    }
+                    _ => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Subscript requires integer and pointer types".to_string(),
+                            span: expr.span,
+                        })
+                    }
+                }
+            },
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)
     }
 
     fn is_lvalue(expr: &Expression) -> bool {
-        matches!(expr, Expression::Var(_) | Expression::Dereference(_))
+        matches!(expr,
+            Expression::Var(_)
+            | Expression::Dereference(_)
+            | Expression::Subscript(_, _))
     }
 
     fn is_null_constant(expr: &Expression) -> bool {

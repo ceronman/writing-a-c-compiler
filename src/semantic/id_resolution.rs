@@ -5,6 +5,7 @@ use crate::ast::{
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
 use std::collections::{HashMap, VecDeque};
+use std::ptr::addr_of_mut;
 
 #[derive(Default)]
 struct Resolver {
@@ -92,13 +93,22 @@ impl Resolver {
             );
             decl.name.symbol = unique_name;
             if let Some(init) = &mut decl.init {
-                let Initializer::Single(init) = init.as_mut() else {
-                    todo!()
-                };
-                self.resolve_expression(init)?;
+                self.resolve_initializer(init)?;
             }
         }
         Ok(())
+    }
+    
+    fn resolve_initializer(&mut self, init: &mut Node<Initializer>) -> Result<()> {
+        match init.as_mut() {
+            Initializer::Single(expr) => self.resolve_expression(expr),
+            Initializer::Compound(initializers) => {
+                for initializer in initializers {
+                    self.resolve_initializer(initializer)?;
+                }
+                Ok(())
+            }
+        }
     }
 
     fn resolve_function_declaration(&mut self, decl: &mut FunctionDeclaration) -> Result<()> {
@@ -284,7 +294,10 @@ impl Resolver {
             | Expression::AddressOf(expr) => {
                 self.resolve_expression(expr)?;
             }
-            Expression::Subscript(_, _) => todo!(),
+            Expression::Subscript(expr1, expr2) => {
+                self.resolve_expression(expr1)?;
+                self.resolve_expression(expr2)?;
+            },
         }
         Ok(())
     }
