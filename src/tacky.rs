@@ -786,7 +786,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
         if let Attributes::Static {
             initial_value,
             global,
-        } = symbol_data.attrs
+        } = symbol_data.attrs.clone()
         {
             let ty = symbol_data.ty.clone();
             match initial_value {
@@ -794,7 +794,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                     name: name.clone(),
                     ty,
                     global,
-                    init,
+                    init: init[0].clone(), // FIXME
                 })),
                 InitialValue::Tentative => {
                     let init = match &ty {

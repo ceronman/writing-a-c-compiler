@@ -74,29 +74,9 @@ impl TypeChecker {
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
             let initial_value = if let Some(init) = &decl.init {
-                let Initializer::Single(init) = init.as_ref() else {
-                    todo!();
-                };
-                if let Expression::Constant(c) = init.as_ref() {
-                    InitialValue::Initial(StaticInit::from_const(c))
-                } else {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: format!("Non-constant initializer on local static variable '{name}'"),
-                        span: init.span,
-                    });
-                }
+                InitialValue::Initial(self.check_static_initializer(init, &decl.ty)?)
             } else {
-                match decl.ty {
-                    Type::Int => InitialValue::Initial(StaticInit::Int(0)),
-                    Type::Long => InitialValue::Initial(StaticInit::Long(0)),
-                    Type::UInt => InitialValue::Initial(StaticInit::UInt(0)),
-                    Type::ULong => InitialValue::Initial(StaticInit::ULong(0)),
-                    Type::Double => InitialValue::Initial(StaticInit::Double(0.0)),
-                    Type::Pointer(_) => InitialValue::Initial(StaticInit::ULong(0)),
-                    Type::Function(_) => unreachable!(),
-                    Type::Array(_, _) => todo!(),
-                }
+                InitialValue::single(StaticInit::ZeroInit(decl.ty.size()))
             };
             if let Some(data) = self.symbols.get(&name) {
                 if data.ty != decl.ty {
@@ -127,6 +107,72 @@ impl TypeChecker {
         }
         Ok(())
     }
+    
+    fn check_static_initializer(&mut self, init: &Node<Initializer>, target: &Type) -> Result<Vec<StaticInit>> {
+        match init.as_ref() {
+            Initializer::Single(expr) => {
+                if let Expression::Constant(c) = expr.as_ref() {
+                    let static_init = match (c,target) {
+                        (c, Type::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
+                        (c, Type::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
+                        (c, Type::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
+                        (c, Type::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
+                        (c, Type::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
+                        (Constant::Double(value), Type::Int) => StaticInit::Int(*value as i32),
+                        (Constant::Double(value), Type::UInt) => StaticInit::UInt(*value as u32),
+                        (Constant::Double(value), Type::Long) => StaticInit::Long(*value as i64),
+                        (Constant::Double(value), Type::ULong) => StaticInit::ULong(*value as u64),
+                        (Constant::Double(value), Type::Double) => StaticInit::Double(*value),
+                        (
+                            Constant::Int(0) | Constant::Long(0) | Constant::UInt(0) | Constant::ULong(0),
+                            Type::Pointer(_),
+                        ) => StaticInit::ULong(0),
+                        _ => {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Invalid type of static declaration".into(),
+                                span: init.span,
+                            });
+                        }
+                    };
+                    Ok(vec![static_init])
+                } else {
+                    Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Non-constant initializer on local static variable".to_string(),
+                        span: init.span,
+                    })
+                }
+            }
+            Initializer::Compound(initializers) => {
+                let Type::Array(inner_ty, size) = target else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Cannot initialize a scalar value with a compound initializer".into(),
+                        span: init.span,
+                    });
+                };
+                let size = *size as usize;
+                if initializers.len() > size {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Wrong number of element in the initializer".into(),
+                        span: init.span,
+                    });
+                }
+                let mut static_inits = Vec::with_capacity(size);
+                for initializer in initializers {
+                    let inner_inits = self.check_static_initializer(initializer, inner_ty)?;
+                    static_inits.extend(inner_inits);
+                }
+                let padding = (size - initializers.len()) * inner_ty.size();
+                if padding > 0 {
+                    static_inits.push(StaticInit::ZeroInit(padding));
+                }
+                Ok(static_inits)
+            }
+        }
+    }
 
     fn check_initializer(&mut self, init: &Node<Initializer>, target: &Type) -> Result<Type> {
         match init.as_ref() {
@@ -142,7 +188,7 @@ impl TypeChecker {
                         span: init.span,
                     });
                 };
-                if initializers.len() as u64 > *size {
+                if initializers.len() > *size {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Wrong number of element in the initializer".into(),
@@ -159,40 +205,7 @@ impl TypeChecker {
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let mut initial_value = if let Some(init) = &decl.init {
-            let Initializer::Single(init) = init.as_ref() else {
-                todo!()
-            };
-            let Expression::Constant(constant) = init.as_ref() else {
-                return Err(CompilerError {
-                    kind: ErrorKind::Type,
-                    msg: "Non-constant initializer".into(),
-                    span: init.span,
-                });
-            };
-            let static_init = match (constant, &decl.ty) {
-                (c, Type::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
-                (c, Type::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
-                (c, Type::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
-                (c, Type::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
-                (c, Type::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
-                (Constant::Double(value), Type::Int) => StaticInit::Int(*value as i32),
-                (Constant::Double(value), Type::UInt) => StaticInit::UInt(*value as u32),
-                (Constant::Double(value), Type::Long) => StaticInit::Long(*value as i64),
-                (Constant::Double(value), Type::ULong) => StaticInit::ULong(*value as u64),
-                (Constant::Double(value), Type::Double) => StaticInit::Double(*value),
-                (
-                    Constant::Int(0) | Constant::Long(0) | Constant::UInt(0) | Constant::ULong(0),
-                    Type::Pointer(_),
-                ) => StaticInit::ULong(0),
-                _ => {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Invalid type of static declaration".into(),
-                        span: init.span,
-                    });
-                }
-            };
-            InitialValue::Initial(static_init)
+            InitialValue::Initial(self.check_static_initializer(init, &decl.ty)?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             InitialValue::NoInitializer
         } else {
@@ -236,12 +249,12 @@ impl TypeChecker {
                         span: decl.name.span,
                     });
                 }
-                (InitialValue::Initial(_), _) => *old_initial,
+                (InitialValue::Initial(_), _) => old_initial.clone(),
                 (
                     InitialValue::Tentative,
                     InitialValue::NoInitializer | InitialValue::Tentative,
                 ) => InitialValue::Tentative,
-                _ => initial_value,
+                (_, initial_value) => initial_value,
             };
         }
         let data = SymbolData {

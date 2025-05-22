@@ -37,20 +37,27 @@ pub enum Attributes {
     Local,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub enum InitialValue {
     Tentative,
-    Initial(StaticInit),
+    Initial(Vec<StaticInit>),
     NoInitializer,
 }
 
-#[derive(Clone, Copy, Debug)]
+impl InitialValue {
+    pub fn single(init: StaticInit) -> InitialValue {
+        InitialValue::Initial(vec![init])
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum StaticInit {
     Int(i32),
     UInt(u32),
     Long(i64),
     ULong(u64),
     Double(f64),
+    ZeroInit(usize)
 }
 
 impl StaticInit {

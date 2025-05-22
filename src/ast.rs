@@ -154,7 +154,7 @@ pub enum Type {
     Double,
     Function(FunctionType),
     Pointer(Box<Type>),
-    Array(Box<Type>, u64),
+    Array(Box<Type>, usize),
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -304,7 +304,7 @@ impl Type {
         matches!(self, Type::Array(_, _))
     }
 
-    pub fn size(&self) -> u8 {
+    pub fn size(&self) -> usize {
         match self {
             Type::Int => 4,
             Type::UInt => 4,
@@ -313,7 +313,7 @@ impl Type {
             Type::Double => 8,
             Type::Function(_) => panic!("Size of function type"),
             Type::Pointer(_) => 8,
-            Type::Array(ty, size) => todo!(),
+            Type::Array(ty, size) => ty.size() * size,
         }
     }
 
@@ -326,7 +326,7 @@ impl Type {
             Type::Double => false,
             Type::Function(_) => panic!("Sign of function type"),
             Type::Pointer(_) => false,
-            Type::Array(_, _) => todo!(),
+            Type::Array(_, _) => panic!("Arrays don't have sign"),
         }
     }
 }

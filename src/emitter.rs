@@ -343,6 +343,7 @@ fn emit_static_init(output: &mut impl Write, init: &StaticInit) -> Result<()> {
             emit_ins(output, ".quad")?;
             writeln!(output, "{:#x} # {v}_f64", v.to_bits())?;
         }
+        StaticInit::ZeroInit(_) => todo!(),
     };
     Ok(())
 }

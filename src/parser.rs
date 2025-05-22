@@ -40,7 +40,7 @@ enum Declarator {
     Identifier(Node<Identifier>),
     Pointer(Node<Declarator>),
     Array {
-        size: u64,
+        size: usize,
         declarator: Node<Declarator>,
     },
     Function {
@@ -56,7 +56,7 @@ struct Param {
 
 enum AbstractDeclarator {
     Pointer(Node<AbstractDeclarator>),
-    Array(Node<AbstractDeclarator>, u64),
+    Array(Node<AbstractDeclarator>, usize),
     Base,
 }
 
@@ -246,7 +246,7 @@ impl<'src> Parser<'src> {
         }
     }
 
-    fn parse_array_index(&mut self) -> Result<u64> {
+    fn parse_array_index(&mut self) -> Result<usize> {
         let size_expr = self.expression()?;
         let Expression::Constant(size_const) = size_expr.as_ref() else {
             return Err(CompilerError {
@@ -262,7 +262,7 @@ impl<'src> Parser<'src> {
                 span: size_expr.span,
             });
         }
-        Ok(size_const.as_u64())
+        Ok(size_const.as_u64() as usize)
     }
 
     fn parse_param(&mut self) -> Result<Param> {
