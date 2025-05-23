@@ -98,7 +98,7 @@ impl Resolver {
         }
         Ok(())
     }
-    
+
     fn resolve_initializer(&mut self, init: &mut Node<Initializer>) -> Result<()> {
         match init.as_mut() {
             Initializer::Single(expr) => self.resolve_expression(expr),
@@ -297,7 +297,7 @@ impl Resolver {
             Expression::Subscript(expr1, expr2) => {
                 self.resolve_expression(expr1)?;
                 self.resolve_expression(expr2)?;
-            },
+            }
         }
         Ok(())
     }

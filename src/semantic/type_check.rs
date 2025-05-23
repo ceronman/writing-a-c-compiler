@@ -107,12 +107,16 @@ impl TypeChecker {
         }
         Ok(())
     }
-    
-    fn check_static_initializer(&mut self, init: &Node<Initializer>, target: &Type) -> Result<Vec<StaticInit>> {
+
+    fn check_static_initializer(
+        &mut self,
+        init: &Node<Initializer>,
+        target: &Type,
+    ) -> Result<Vec<StaticInit>> {
         match init.as_ref() {
             Initializer::Single(expr) => {
                 if let Expression::Constant(c) = expr.as_ref() {
-                    let static_init = match (c,target) {
+                    let static_init = match (c, target) {
                         (c, Type::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
                         (c, Type::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
                         (c, Type::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
@@ -124,7 +128,10 @@ impl TypeChecker {
                         (Constant::Double(value), Type::ULong) => StaticInit::ULong(*value as u64),
                         (Constant::Double(value), Type::Double) => StaticInit::Double(*value),
                         (
-                            Constant::Int(0) | Constant::Long(0) | Constant::UInt(0) | Constant::ULong(0),
+                            Constant::Int(0)
+                            | Constant::Long(0)
+                            | Constant::UInt(0)
+                            | Constant::ULong(0),
                             Type::Pointer(_),
                         ) => StaticInit::ULong(0),
                         _ => {
@@ -550,7 +557,15 @@ impl TypeChecker {
                 data.ty.clone()
             }
             Expression::Unary { op, expr } => {
+                let operand_ty = self.check_expression(expr)?;
                 if let UnaryOp::Increment | UnaryOp::Decrement = op.as_ref() {
+                    if operand_ty.is_array() {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Array is not assignable".to_owned(),
+                            span: expr.span,
+                        });
+                    }
                     if !Self::is_lvalue(expr) {
                         return Err(CompilerError {
                             kind: ErrorKind::Resolve,
@@ -559,7 +574,6 @@ impl TypeChecker {
                         });
                     }
                 }
-                let operand_ty = self.check_and_convert_expr(expr)?;
                 if matches!(op.as_ref(), UnaryOp::Complement) && !operand_ty.is_int() {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -580,6 +594,14 @@ impl TypeChecker {
                 }
             }
             Expression::Postfix { expr, .. } => {
+                let operand_ty = self.check_expression(expr)?;
+                if operand_ty.is_array() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Array is not assignable".to_owned(),
+                        span: expr.span,
+                    });
+                }
                 if !Self::is_lvalue(expr) {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -587,7 +609,7 @@ impl TypeChecker {
                         span: expr.span,
                     });
                 }
-                self.check_and_convert_expr(expr)?
+                operand_ty
             }
             Expression::Binary { left, right, op } => {
                 let left_ty = self.check_and_convert_expr(left)?;
@@ -641,17 +663,38 @@ impl TypeChecker {
                             span: left.span,
                         });
                     }
-                    BinaryOp::Subtract if left_ty.is_pointer() && !(right_ty.is_int() || right_ty.is_pointer()) => {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Type,
-                            msg: "Operator is invalid".to_string(),
-                            span: right.span,
-                        });
-                    }
+                    BinaryOp::Subtract => match (&left_ty, &right_ty) {
+                        (Type::Pointer(left_inner), Type::Pointer(right_inner)) => {
+                            if left_inner != right_inner {
+                                return Err(CompilerError {
+                                    kind: ErrorKind::Type,
+                                    msg: "Invalid pointer operator type".to_string(),
+                                    span: right.span,
+                                });
+                            }
+                        }
+                        (left_ty, Type::Pointer(_)) if left_ty.is_int() => {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Cannot substract a pointer from an int".to_string(),
+                                span: right.span,
+                            });
+                        }
+                        (Type::Pointer(_), _) if !right_ty.is_int() => {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Operator is invalid".to_string(),
+                                span: right.span,
+                            });
+                        }
+                        _ => {}
+                    },
                     BinaryOp::LessThan
                     | BinaryOp::LessOrEqualThan
                     | BinaryOp::GreaterThan
-                    | BinaryOp::GreaterOrEqualThan if !left_ty.is_arithmetic() || !left_ty.is_arithmetic() => {
+                    | BinaryOp::GreaterOrEqualThan
+                        if !left_ty.is_arithmetic() || !left_ty.is_arithmetic() =>
+                    {
                         let Type::Pointer(left_inner) = left_ty.clone() else {
                             return Err(CompilerError {
                                 kind: ErrorKind::Type,
@@ -693,12 +736,12 @@ impl TypeChecker {
                     BinaryOp::Subtract if left_ty.is_pointer() && right_ty.is_pointer() => {
                         Type::Long
                     }
-                    BinaryOp::Add | BinaryOp::Subtract if left_ty.is_pointer() && right_ty.is_int() => {
+                    BinaryOp::Add | BinaryOp::Subtract
+                        if left_ty.is_pointer() && right_ty.is_int() =>
+                    {
                         left_ty
                     }
-                    BinaryOp::Add if left_ty.is_int() && right_ty.is_pointer() => {
-                        right_ty
-                    }
+                    BinaryOp::Add if left_ty.is_int() && right_ty.is_pointer() => right_ty,
                     _ => {
                         let common = Self::common_type(&left_ty, &right_ty);
                         self.cast_if_needed(left, &left_ty, &common);
@@ -768,6 +811,24 @@ impl TypeChecker {
                                 span,
                             });
                         }
+                    }
+                    AssignOp::AddEqual | AssignOp::SubEqual
+                        if left_ty.is_pointer() && !right_ty.is_int() =>
+                    {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Assign compound operation on a pointer requires integer operand"
+                                .to_string(),
+                            span: right.span,
+                        });
+                    }
+
+                    AssignOp::AddEqual | AssignOp::SubEqual if right_ty.is_pointer() => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Assign compound operator cannot be a pointer type".to_string(),
+                            span: right.span,
+                        });
                     }
                     _ => {}
                 };
@@ -885,12 +946,8 @@ impl TypeChecker {
                 let ty1 = self.check_and_convert_expr(expr1)?;
                 let ty2 = self.check_and_convert_expr(expr2)?;
                 match (&ty1, &ty2) {
-                    (Type::Pointer(referenced), _) if ty2.is_int() => {
-                        *referenced.clone()
-                    }
-                    (_, Type::Pointer(referenced)) if ty1.is_int() => {
-                        *referenced.clone()
-                    }
+                    (Type::Pointer(referenced), _) if ty2.is_int() => *referenced.clone(),
+                    (_, Type::Pointer(referenced)) if ty1.is_int() => *referenced.clone(),
                     _ => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
@@ -899,17 +956,17 @@ impl TypeChecker {
                         })
                     }
                 }
-            },
+            }
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)
     }
 
     fn is_lvalue(expr: &Expression) -> bool {
-        matches!(expr,
-            Expression::Var(_)
-            | Expression::Dereference(_)
-            | Expression::Subscript(_, _))
+        matches!(
+            expr,
+            Expression::Var(_) | Expression::Dereference(_) | Expression::Subscript(_, _)
+        )
     }
 
     fn is_null_constant(expr: &Expression) -> bool {

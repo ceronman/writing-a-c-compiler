@@ -57,7 +57,7 @@ pub enum StaticInit {
     Long(i64),
     ULong(u64),
     Double(f64),
-    ZeroInit(usize)
+    ZeroInit(usize),
 }
 
 impl StaticInit {
