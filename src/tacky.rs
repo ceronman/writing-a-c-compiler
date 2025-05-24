@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod test;
 
+use std::mem::ManuallyDrop;
 use crate::ast;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
 use crate::symbol::Symbol;
@@ -30,7 +31,7 @@ pub struct StaticVariable {
     pub name: Symbol,
     pub global: bool,
     pub ty: ast::Type,
-    pub init: StaticInit,
+    pub init: Vec<StaticInit>,
 }
 
 #[derive(Debug, Clone)]
@@ -108,6 +109,17 @@ pub enum Instruction {
         src: Val,
         ptr: Val,
     },
+    AddPtr {
+        ptr: Val,
+        index: Val,
+        scale: usize,
+        dst: Val,
+    },
+    CopyToOffset {
+        src: Val,
+        dst: Symbol,
+        offset: i64,
+    }
 }
 
 pub type Constant = ast::Constant;
@@ -437,8 +449,64 @@ impl TackyGenerator {
                 let src1 = self.emit_expr(left);
                 let dst = self.make_temp(&expr_ty);
                 let op = match op.as_ref() {
-                    ast::BinaryOp::Add => BinaryOp::Add,
-                    ast::BinaryOp::Subtract => BinaryOp::Subtract,
+                    ast::BinaryOp::Add => {
+                        let left_ty = self.semantics.expr_type(left);
+                        if left_ty.is_pointer() {
+                            let ptr = src1;
+                            let index = self.emit_expr(right);
+                            let scale = expr_ty.size();
+                            self.instructions.push(Instruction::AddPtr {
+                                ptr,
+                                index,
+                                scale,
+                                dst: dst.clone(),
+                            });
+                            return ExprResult::Operand(dst)
+                        } else {
+                            BinaryOp::Add
+                        }
+                    },
+                    ast::BinaryOp::Subtract => {
+                        let left_ty = self.semantics.expr_type(left).clone();
+                        let right_ty = self.semantics.expr_type(right).clone();
+                        if left_ty.is_pointer() && right_ty.is_pointer() {
+                            let src2 = self.emit_expr(right);
+                            let diff = self.make_temp(&left_ty);
+                            self.instructions.push(Instruction::Binary {
+                                op: BinaryOp::Subtract,
+                                src1,
+                                src2,
+                                dst: diff.clone(),
+                            });
+                            let size = Val::Constant(Constant::Long(left_ty.size() as i64));
+                            self.instructions.push(Instruction::Binary {
+                                op: BinaryOp::Divide,
+                                src1: diff,
+                                src2: size,
+                                dst: dst.clone(),
+                            });
+                            return ExprResult::Operand(dst)
+                        } else if left_ty.is_pointer() {
+                            let ptr = src1;
+                            let index = self.emit_expr(right);
+                            let negated = self.make_temp(&expr_ty);
+                            self.instructions.push(Instruction::Unary {
+                                op: UnaryOp::Negate,
+                                src: index,
+                                dst: negated.clone(),
+                            });
+                            let scale = expr_ty.size();
+                            self.instructions.push(Instruction::AddPtr {
+                                ptr,
+                                index: negated,
+                                scale,
+                                dst: dst.clone(),
+                            });
+                            return ExprResult::Operand(dst)
+                        } else {
+                            BinaryOp::Subtract
+                        }
+                    },
                     ast::BinaryOp::Multiply => BinaryOp::Multiply,
                     ast::BinaryOp::Divide => BinaryOp::Divide,
                     ast::BinaryOp::Reminder => BinaryOp::Reminder,
@@ -794,7 +862,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                     name: name.clone(),
                     ty,
                     global,
-                    init: init[0].clone(), // FIXME
+                    init,
                 })),
                 InitialValue::Tentative => {
                     let init = match &ty {
@@ -811,7 +879,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                         name: name.clone(),
                         ty,
                         global,
-                        init,
+                        init: vec![init],
                     }))
                 }
                 InitialValue::NoInitializer => continue,

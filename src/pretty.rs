@@ -48,13 +48,25 @@ fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -
     write!(file, ": ")?;
     pp_type(file, &variable.ty)?;
     write!(file, " = ")?;
-    match variable.init {
+    write!(file, "[ ")?;
+    for (i, init) in variable.init.iter().enumerate() {
+        pp_initializer(file, init)?;
+        if i != variable.init.len() - 1 {
+            write!(file, ", ")?;
+        }
+    }
+    write!(file, "] ")?;
+    Ok(())
+}
+
+fn pp_initializer(file: &mut impl Write, init: &StaticInit) -> Result<()> {
+    match init {
         StaticInit::Int(v) => writeln!(file, "{v}")?,
         StaticInit::Long(v) => writeln!(file, "{v}L")?,
         StaticInit::UInt(v) => writeln!(file, "{v}U")?,
         StaticInit::ULong(v) => writeln!(file, "{v}UL")?,
         StaticInit::Double(v) => writeln!(file, "{v}D")?,
-        StaticInit::ZeroInit(_) => todo!(),
+        StaticInit::ZeroInit(size) => writeln!(file, "zero[{size}]")?,
     }
     Ok(())
 }
@@ -218,6 +230,8 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
                 write!(file, " = store ")?;
                 pp_val(file, src)?;
             }
+            tacky::Instruction::AddPtr { .. } => todo!(),
+            tacky::Instruction::CopyToOffset { .. } => todo!()
         }
         writeln!(file)?;
     }

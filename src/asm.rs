@@ -722,6 +722,8 @@ impl Compiler {
                         Operand::Memory(Reg::Ax, 0),
                     ));
                 }
+                tacky::Instruction::AddPtr { .. } => todo!(),
+                tacky::Instruction::CopyToOffset { .. } => todo!()
             }
         }
 
@@ -773,7 +775,7 @@ impl Compiler {
         StaticVariable {
             name: var.name.clone(),
             global: var.global,
-            init: var.init.clone(),
+            init: var.init[0].clone(), // FIXME
             alignment: match semantic.symbol_asm_ty(&var.name) {
                 AsmType::Longword => 4,
                 AsmType::Quadword | AsmType::Double => 8,

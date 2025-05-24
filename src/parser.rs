@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod test;
 
-use crate::asm::ir::CondCode::P;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
     FunctionDeclaration, FunctionType, Identifier, Initializer, Node, PostfixOp, Program,
