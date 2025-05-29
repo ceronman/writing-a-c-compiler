@@ -3,6 +3,8 @@ mod test;
 
 use std::mem::ManuallyDrop;
 use crate::ast;
+use crate::ast::{Initializer, Node};
+use crate::lexer::Span;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
 use crate::symbol::Symbol;
 
@@ -198,15 +200,66 @@ impl TackyGenerator {
             return;
         }
         if let Some(init) = &decl.init {
-            let ast::Initializer::Single(init) = init.as_ref() else {
-                todo!()
-            };
-            let result = self.emit_expr(init);
-            self.instructions.push(Instruction::Copy {
-                src: result,
-                dst: Val::Var(decl.name.symbol.clone()),
-            });
+            if let Initializer::Single(expr) = init.as_ref() {
+                let result = self.emit_expr(expr);
+                self.instructions.push(Instruction::Copy {
+                    src: result,
+                    dst: Val::Var(decl.name.symbol.clone()),
+                });
+            } else {
+                self.emit_initializer(0, &decl.name.symbol, init, &decl.ty);
+            }
         }
+    }
+
+    fn emit_initializer(&mut self, offset: usize, name: &Symbol, initializer: &Initializer, ty: &Type) {
+        match initializer {
+            Initializer::Single(init) => {
+                let result = self.emit_expr(init);
+                self.instructions.push(Instruction::CopyToOffset {
+                    src: result,
+                    dst: name.clone(),
+                    offset: offset as i64,
+                });
+            }
+            Initializer::Compound(initializers) => {
+                let Type::Array(inner, len) = ty else {
+                    panic!("Compound initializer used with non-array type")
+                };
+                for i in 0..*len {
+                    let size = inner.size();
+                    if let Some(initializer) = initializers.get(i) {
+                        self.emit_initializer(offset + i * size, name, initializer, inner)
+                    } else {
+                        self.emit_zero_initializer(offset + i * size, name, inner)
+                    }
+                }
+            }
+        }
+    }
+
+    fn emit_zero_initializer(&mut self, offset: usize, name: &Symbol, ty: &Type) {
+        let constant = match ty {
+            Type::Int => Constant::Int(0),
+            Type::UInt => Constant::UInt(0),
+            Type::Long => Constant::Long(0),
+            Type::ULong => Constant::ULong(0),
+            Type::Double => Constant::Double(0.0),
+            Type::Function(_) => panic!("Zero initializer for function type"),
+            Type::Pointer(_) => panic!("Zero initializer for pointer type"),
+            Type::Array(inner, size) => {
+                let ty_size = inner.size();
+                for i in 0..*size {
+                    self.emit_zero_initializer(offset + i * ty_size, name, inner)
+                }
+                return
+            }
+        };
+        self.instructions.push(Instruction::CopyToOffset {
+            src: Val::Constant(constant),
+            dst: name.clone(),
+            offset: offset as i64,
+        });
     }
 
     fn emit_statement(&mut self, stmt: &ast::Statement) {
@@ -690,7 +743,28 @@ impl TackyGenerator {
                 }
                 ExprResult::Dereference(ptr) => ptr,
             },
-            ast::Expression::Subscript(_, _) => todo!(),
+            ast::Expression::Subscript(expr1, expr2) => {
+                let ty1 = self.semantics.expr_type(expr1).clone();
+                let dst = self.make_temp(&expr_ty);
+                let val1 = self.emit_expr(expr1);
+                let val2 = self.emit_expr(expr2);
+                // Semantic check ensures only a pointer and ints are supported
+                // it also converts the type array to a pointer
+                let (ptr, index) = if ty1.is_pointer() {
+                    (val1, val2)
+                } else {
+                    (val2, val1)
+                };
+                let scale = expr_ty.size();
+                self.instructions.push(Instruction::AddPtr {
+                    ptr,
+                    index,
+                    scale,
+                    dst: dst.clone(),
+                });
+                return ExprResult::Dereference(dst)
+
+            },
         };
         ExprResult::Operand(result)
     }
@@ -865,16 +939,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                     init,
                 })),
                 InitialValue::Tentative => {
-                    let init = match &ty {
-                        Type::Int => StaticInit::Int(0),
-                        Type::Long => StaticInit::Long(0),
-                        Type::UInt => StaticInit::UInt(0),
-                        Type::ULong => StaticInit::ULong(0),
-                        Type::Double => StaticInit::Double(0.0),
-                        Type::Pointer(_) => StaticInit::ULong(0),
-                        Type::Function(_) => unreachable!(),
-                        Type::Array(_, _) => todo!(),
-                    };
+                    let init = StaticInit::ZeroInit(ty.size());
                     top_level.push(TopLevel::Variable(StaticVariable {
                         name: name.clone(),
                         ty,

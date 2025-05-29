@@ -9556,7 +9556,7 @@ fn test_chapter_10_valid_extra_credit_label_file_scope_var_same_name() {
             return x
             return 0
         }
-        static global x: Int = 0
+        static global x: Int = zero[4]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9719,7 +9719,7 @@ fn test_chapter_10_valid_extra_credit_switch_on_extern() {
             return 0
             return 0
         }
-        static global x: Int = 0
+        static global x: Int = zero[4]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -9916,7 +9916,7 @@ fn test_chapter_10_valid_libraries_external_tentative_var() {
             return x
             return 0
         }
-        static global x: Int = 0
+        static global x: Int = zero[4]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10393,7 +10393,7 @@ fn test_chapter_10_valid_libraries_internal_linkage_var_client() {
             return 0
             return 0
         }
-        static x: Int = 0
+        static x: Int = zero[4]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10587,8 +10587,8 @@ fn test_chapter_10_valid_shadow_static_local_var() {
             return 0
             return 0
         }
-        static global i: Int = 0
-        static i.2: Int = 0
+        static global i: Int = zero[4]
+        static i.2: Int = zero[4]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10688,7 +10688,7 @@ fn test_chapter_10_valid_static_local_uninitialized() {
             return ret.1
             return 0
         }
-        static x.0: Int = 0
+        static x.0: Int = zero[4]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -10814,7 +10814,7 @@ fn test_chapter_10_valid_tentative_definition() {
             return foo
             return 0
         }
-        static global foo: Int = 0
+        static global foo: Int = zero[4]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -11859,8 +11859,8 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
             return 0
             return 0
         }
-        static global i: Int = 0
-        static global l: Long = 0L
+        static global i: Int = zero[4]
+        static global l: Long = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -12511,8 +12511,8 @@ fn test_chapter_11_valid_long_expressions_arithmetic_ops() {
             return 0
             return 0
         }
-        static global a: Long = 0L
-        static global b: Long = 0L
+        static global a: Long = zero[8]
+        static global b: Long = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -12662,8 +12662,8 @@ fn test_chapter_11_valid_long_expressions_comparisons() {
             return 0
             return 0
         }
-        static global l: Long = 0L
-        static global l2: Long = 0L
+        static global l: Long = zero[8]
+        static global l2: Long = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -13507,7 +13507,7 @@ fn test_chapter_11_valid_long_expressions_type_specifiers() {
             return 0
             return 0
         }
-        static a: Long = 0L
+        static a: Long = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -15656,10 +15656,10 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_ops() {
             return 0
             return 0
         }
-        static global ui_a: Unsigned Int = 0U
-        static global ui_b: Unsigned Int = 0U
-        static global ul_a: Unsigned Long = 0UL
-        static global ul_b: Unsigned Long = 0UL
+        static global ui_a: Unsigned Int = zero[4]
+        static global ui_b: Unsigned Int = zero[4]
+        static global ul_a: Unsigned Long = zero[8]
+        static global ul_b: Unsigned Long = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -15744,10 +15744,10 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
             return 0
             return 0
         }
-        static global ui_a: Unsigned Int = 0U
-        static global ui_b: Unsigned Int = 0U
-        static global ul_a: Unsigned Long = 0UL
-        static global ul_b: Unsigned Long = 0UL
+        static global ui_a: Unsigned Int = zero[4]
+        static global ui_b: Unsigned Int = zero[4]
+        static global ul_a: Unsigned Long = zero[8]
+        static global ul_b: Unsigned Long = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -16202,8 +16202,8 @@ fn test_chapter_12_valid_unsigned_expressions_static_variables() {
             return 0
         }
         static x: Unsigned Long = 9223372036854775803UL
-        static global zero_int: Unsigned Int = 0U
-        static global zero_long: Unsigned Long = 0UL
+        static global zero_int: Unsigned Int = zero[4]
+        static global zero_long: Unsigned Long = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -19114,7 +19114,7 @@ fn test_chapter_13_valid_implicit_casts_static_initializers() {
         static global l: Long = 4611686018427389952L
         static global u: Unsigned Int = 4294967292U
         static global ul: Unsigned Long = 18446744073709549568UL
-        static global uninitialized: Double = 0D
+        static global uninitialized: Double = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -19961,7 +19961,7 @@ fn test_chapter_14_valid_casts_cast_between_pointer_types() {
             return result.8
             return 0
         }
-        static long_ptr.0: Pointer(Long) = 0
+        static long_ptr.0: Pointer(Long) = 0UL
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -20236,7 +20236,7 @@ fn test_chapter_14_valid_casts_pointer_int_casts() {
         }
         static global i: Int = 128
         static global l: Long = 128L
-        static l.2: Long = 0L
+        static l.2: Long = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -20761,8 +20761,8 @@ fn test_chapter_14_valid_declarators_declarators() {
             return 0
         }
         static global l: Long = 100L
-        static u.9: Unsigned Int = 0U
-        static u_ptr.10: Pointer(Unsigned Int) = 0UL
+        static u.9: Unsigned Int = zero[4]
+        static u_ptr.10: Pointer(Unsigned Int) = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -21492,8 +21492,8 @@ fn test_chapter_14_valid_dereference_static_var_indirection() {
             return 0
             return 0
         }
-        static global dbl_ptr: Pointer(Double) = 0UL
-        static p.1: Pointer(Long) = 0UL
+        static global dbl_ptr: Pointer(Double) = zero[8]
+        static p.1: Pointer(Long) = zero[8]
         static global w: Unsigned Int = 4294967295U
         static global x: Int = 10
         static global y: Unsigned Int = 4294967295U
@@ -22462,7 +22462,7 @@ fn test_chapter_14_valid_libraries_global_pointer() {
             return 0
             return 0
         }
-        static global d_ptr: Pointer(Double) = 0UL
+        static global d_ptr: Pointer(Double) = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -22515,7 +22515,7 @@ fn test_chapter_14_valid_libraries_static_pointer() {
             return 0
             return 0
         }
-        static long_ptr: Pointer(Long) = 0UL
+        static long_ptr: Pointer(Long) = zero[8]
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }
@@ -22598,6 +22598,7167 @@ fn test_chapter_14_valid_libraries_static_pointer_client() {
             return 0
         }
         static private_long: Long = 100L
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_allocation_test_alignment() {
+    let src = r#"
+        int check_alignment(int *ptr) {
+            unsigned long addr = (unsigned long) ptr;
+            return (addr % 16 == 0);
+        }
+        int main(void)
+        {
+            int arr[5] = {0};
+            int arr2[7] = {0};
+            int arr3[2][2] = {{0}};
+            if (!check_alignment(arr)) {
+                return 1;
+            }
+            for (int i = 0; i < 5; i = i + 1)
+                arr[i] = i;
+            if (!check_alignment(arr2)) {
+                return 2;
+            }
+            for (int i = 0; i < 7; i = i + 1)
+                if (arr2[i])
+                    return 3;
+            for (int i = 0; i < 7; i = i + 1){
+                arr2[i] = -i;
+            }
+            if (!check_alignment((int *)arr3)) {
+                return 4;
+            }
+            for (int i = 0; i < 5; i = i + 1) {
+                if (arr[i] != i) {
+                    return 5;
+                }
+            }
+            for (int i = 0; i < 2; i = i + 1)
+                for (int j = 0; j < 2; j = j + 1)
+                    if (arr3[i][j] != 0)
+                        return 6;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function check_alignment(ptr.0) { 
+            tmp.0 = ptr.0
+            addr.1 = tmp.0
+            tmp.2 = sign_extend 16
+            tmp.1 = addr.1 % tmp.2
+            tmp.4 = sign_extend 0
+            tmp.3 = tmp.1 == tmp.4
+            return tmp.3
+            return 0
+        }
+        global function main() { 
+            copy_to_offset(dst=arr.2, 0, offset=0)
+            copy_to_offset(dst=arr.2, 0, offset=4)
+            copy_to_offset(dst=arr.2, 0, offset=8)
+            copy_to_offset(dst=arr.2, 0, offset=12)
+            copy_to_offset(dst=arr.2, 0, offset=16)
+            copy_to_offset(dst=arr2.3, 0, offset=0)
+            copy_to_offset(dst=arr2.3, 0, offset=4)
+            copy_to_offset(dst=arr2.3, 0, offset=8)
+            copy_to_offset(dst=arr2.3, 0, offset=12)
+            copy_to_offset(dst=arr2.3, 0, offset=16)
+            copy_to_offset(dst=arr2.3, 0, offset=20)
+            copy_to_offset(dst=arr2.3, 0, offset=24)
+            copy_to_offset(dst=arr3.4, 0, offset=0)
+            copy_to_offset(dst=arr3.4, 0, offset=4)
+            copy_to_offset(dst=arr3.4, 0, offset=8)
+            copy_to_offset(dst=arr3.4, 0, offset=12)
+            tmp.5 = check_alignment(arr.2)
+            tmp.6 = ! tmp.5
+            if !tmp.6 jump end_if_0
+            return 1
+        
+          end_if_0:
+            i.5 = 0
+        
+          start_loop_0:
+            tmp.7 = i.5 < 5
+            if !tmp.7 jump break_loop_0
+            tmp.8 = add_ptr(arr.2, index=i.5, scale=4)
+            tmp.8 = store i.5
+        
+          continue_loop_0:
+            tmp.9 = i.5 + 1
+            i.5 = tmp.9
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.10 = check_alignment(arr2.3)
+            tmp.11 = ! tmp.10
+            if !tmp.11 jump end_if_2
+            return 2
+        
+          end_if_2:
+            i.6 = 0
+        
+          start_loop_1:
+            tmp.12 = i.6 < 7
+            if !tmp.12 jump break_loop_1
+            tmp.13 = add_ptr(arr2.3, index=i.6, scale=4)
+            tmp.14 = load tmp.13
+            if !tmp.14 jump end_if_4
+            return 3
+        
+          end_if_4:
+        
+          continue_loop_1:
+            tmp.15 = i.6 + 1
+            i.6 = tmp.15
+            jump start_loop_1
+        
+          break_loop_1:
+            i.7 = 0
+        
+          start_loop_2:
+            tmp.16 = i.7 < 7
+            if !tmp.16 jump break_loop_2
+            tmp.17 = add_ptr(arr2.3, index=i.7, scale=4)
+            tmp.18 = - i.7
+            tmp.17 = store tmp.18
+        
+          continue_loop_2:
+            tmp.19 = i.7 + 1
+            i.7 = tmp.19
+            jump start_loop_2
+        
+          break_loop_2:
+            tmp.20 = arr3.4
+            tmp.21 = check_alignment(tmp.20)
+            tmp.22 = ! tmp.21
+            if !tmp.22 jump end_if_6
+            return 4
+        
+          end_if_6:
+            i.8 = 0
+        
+          start_loop_3:
+            tmp.23 = i.8 < 5
+            if !tmp.23 jump break_loop_3
+            tmp.24 = add_ptr(arr.2, index=i.8, scale=4)
+            tmp.25 = load tmp.24
+            tmp.26 = tmp.25 != i.8
+            if !tmp.26 jump end_if_8
+            return 5
+        
+          end_if_8:
+        
+          continue_loop_3:
+            tmp.27 = i.8 + 1
+            i.8 = tmp.27
+            jump start_loop_3
+        
+          break_loop_3:
+            i.9 = 0
+        
+          start_loop_4:
+            tmp.28 = i.9 < 2
+            if !tmp.28 jump break_loop_4
+            j.10 = 0
+        
+          start_loop_5:
+            tmp.29 = j.10 < 2
+            if !tmp.29 jump break_loop_5
+            tmp.31 = add_ptr(arr3.4, index=i.9, scale=8)
+            tmp.32 = load tmp.31
+            tmp.30 = add_ptr(tmp.32, index=j.10, scale=4)
+            tmp.33 = load tmp.30
+            tmp.34 = tmp.33 != 0
+            if !tmp.34 jump end_if_10
+            return 6
+        
+          end_if_10:
+        
+          continue_loop_5:
+            tmp.35 = j.10 + 1
+            j.10 = tmp.35
+            jump start_loop_5
+        
+          break_loop_5:
+        
+          continue_loop_4:
+            tmp.36 = i.9 + 1
+            i.9 = tmp.36
+            jump start_loop_4
+        
+          break_loop_4:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_casts_cast_array_of_pointers() {
+    let src = r#"
+        int main(void) {
+            int simple_array[2] = {1, 2};
+            int(*ptr_arr[3])[2] = {&simple_array, 0, &simple_array};
+            long *other_ptr = (long *)ptr_arr;
+            return (int(**)[2])other_ptr == ptr_arr;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=simple_array.0, 1, offset=0)
+            copy_to_offset(dst=simple_array.0, 2, offset=4)
+            tmp.0 = get_address simple_array.0
+            copy_to_offset(dst=ptr_arr.1, tmp.0, offset=0)
+            tmp.1 = sign_extend 0
+            copy_to_offset(dst=ptr_arr.1, tmp.1, offset=8)
+            tmp.2 = get_address simple_array.0
+            copy_to_offset(dst=ptr_arr.1, tmp.2, offset=16)
+            tmp.3 = ptr_arr.1
+            other_ptr.2 = tmp.3
+            tmp.4 = other_ptr.2
+            tmp.5 = tmp.4 == ptr_arr.1
+            return tmp.5
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_casts_implicit_and_explicit_conversions() {
+    let src = r#"
+        int main(void) {
+            long arr[4] = {-1,-2,-3,-4};
+            if (arr != (long *) arr) {
+                return 1;
+            }
+            if ((long (*)[4]) arr != &arr) {
+                return 2;
+            }
+            unsigned long *unsigned_arr = (unsigned long *)arr;
+            if (unsigned_arr[0] != 18446744073709551615UL) {
+                return 3;
+            }
+            if (unsigned_arr[3] != 18446744073709551612UL) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = - 1
+            tmp.1 = sign_extend tmp.0
+            copy_to_offset(dst=arr.0, tmp.1, offset=0)
+            tmp.2 = - 2
+            tmp.3 = sign_extend tmp.2
+            copy_to_offset(dst=arr.0, tmp.3, offset=8)
+            tmp.4 = - 3
+            tmp.5 = sign_extend tmp.4
+            copy_to_offset(dst=arr.0, tmp.5, offset=16)
+            tmp.6 = - 4
+            tmp.7 = sign_extend tmp.6
+            copy_to_offset(dst=arr.0, tmp.7, offset=24)
+            tmp.8 = arr.0 != arr.0
+            if !tmp.8 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.9 = arr.0
+            tmp.11 = get_address arr.0
+            tmp.10 = tmp.9 != tmp.11
+            if !tmp.10 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.12 = arr.0
+            unsigned_arr.1 = tmp.12
+            tmp.13 = add_ptr(unsigned_arr.1, index=0, scale=8)
+            tmp.14 = load tmp.13
+            tmp.15 = tmp.14 != 18446744073709551615UL
+            if !tmp.15 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.16 = add_ptr(unsigned_arr.1, index=3, scale=8)
+            tmp.17 = load tmp.16
+            tmp.18 = tmp.17 != 18446744073709551612UL
+            if !tmp.18 jump end_if_6
+            return 4
+        
+          end_if_6:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_casts_multi_dim_casts() {
+    let src = r#"
+        int main(void) {
+            int multi_dim[2][3] = {{0, 1, 2}, {3, 4, 5}};
+            int (*array_pointer)[2][3] = &multi_dim;
+            int (*row_pointer)[3] = (int (*)[3]) array_pointer;
+            if (row_pointer != multi_dim) {
+                return 1;
+            }
+            row_pointer = row_pointer + 1;
+            if (row_pointer[0][1] != 4) {
+                return 2;
+            }
+            int *elem_ptr = (int *) row_pointer;
+            if (*elem_ptr != 3 ){
+                return 3;
+            }
+            elem_ptr = elem_ptr + 2;
+            if (*elem_ptr != 5) {
+                return 4;
+            }
+            row_pointer = row_pointer - 1;
+            if ((int (*)[2][3]) row_pointer != array_pointer) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=multi_dim.0, 0, offset=0)
+            copy_to_offset(dst=multi_dim.0, 1, offset=4)
+            copy_to_offset(dst=multi_dim.0, 2, offset=8)
+            copy_to_offset(dst=multi_dim.0, 3, offset=12)
+            copy_to_offset(dst=multi_dim.0, 4, offset=16)
+            copy_to_offset(dst=multi_dim.0, 5, offset=20)
+            tmp.0 = get_address multi_dim.0
+            array_pointer.1 = tmp.0
+            tmp.1 = array_pointer.1
+            row_pointer.2 = tmp.1
+            tmp.2 = row_pointer.2 != multi_dim.0
+            if !tmp.2 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.3 = add_ptr(row_pointer.2, index=1, scale=8)
+            row_pointer.2 = tmp.3
+            tmp.5 = add_ptr(row_pointer.2, index=0, scale=8)
+            tmp.6 = load tmp.5
+            tmp.4 = add_ptr(tmp.6, index=1, scale=4)
+            tmp.7 = load tmp.4
+            tmp.8 = tmp.7 != 4
+            if !tmp.8 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.9 = row_pointer.2
+            elem_ptr.3 = tmp.9
+            tmp.10 = load elem_ptr.3
+            tmp.11 = tmp.10 != 3
+            if !tmp.11 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.12 = add_ptr(elem_ptr.3, index=2, scale=8)
+            elem_ptr.3 = tmp.12
+            tmp.13 = load elem_ptr.3
+            tmp.14 = tmp.13 != 5
+            if !tmp.14 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.16 = - 1
+            tmp.15 = add_ptr(row_pointer.2, index=tmp.16, scale=8)
+            row_pointer.2 = tmp.15
+            tmp.17 = row_pointer.2
+            tmp.18 = tmp.17 != array_pointer.1
+            if !tmp.18 jump end_if_8
+            return 5
+        
+          end_if_8:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_declarators_array_as_argument() {
+    let src = r#"
+        int array_param(int a[5]) {
+            a[4] = 0;
+            return 0;
+        }
+        int nested_array_param(int a[2][3]) {
+            a[1][1] = 1;
+            return 0;
+        }
+        int array_param(int a[2]);
+        int nested_array_param(int (*a)[3]);
+        int main(void) {
+            int array_param(int a[6]);
+            int nested_array_param(int a[5][3]);
+            int arr[8] = {8, 7, 6, 5, 4, 3, 2, 1};
+            array_param(arr);
+            if (arr[4]) {
+                return 1;
+            }
+            for (int i = 0; i < 8; i = i + 1) {
+                if (i != 4 && arr[i] != 8 - i)
+                    return 2;
+            }
+            int nested_arr[4][3] = { {-1, -1, -1}, {-2, -2, -2}, {-3, -3, -3}, {-4, -4, -4}};
+            nested_array_param(nested_arr);
+            if (nested_arr[1][1] != 1) {
+                return 3;
+            }
+            for (int i = 0; i < 4; i = i + 1) {
+                int expected = -1 - i;
+                for (int j = 0; j < 3; j = j + 1) {
+                    if ((i != 1 || j != 1) &&
+                        (nested_arr[i][j] != expected)) {
+                            return 4;
+                    }
+                }
+            }
+            return 0;
+        }
+        int array_param(int *a);
+    "#;
+    let expected = r#"
+        global function array_param(a.0) { 
+            tmp.0 = add_ptr(a.0, index=4, scale=4)
+            tmp.0 = store 0
+            return 0
+            return 0
+        }
+        global function nested_array_param(a.1) { 
+            tmp.2 = add_ptr(a.1, index=1, scale=8)
+            tmp.3 = load tmp.2
+            tmp.1 = add_ptr(tmp.3, index=1, scale=4)
+            tmp.1 = store 1
+            return 0
+            return 0
+        }
+        global function main() { 
+            copy_to_offset(dst=arr.6, 8, offset=0)
+            copy_to_offset(dst=arr.6, 7, offset=4)
+            copy_to_offset(dst=arr.6, 6, offset=8)
+            copy_to_offset(dst=arr.6, 5, offset=12)
+            copy_to_offset(dst=arr.6, 4, offset=16)
+            copy_to_offset(dst=arr.6, 3, offset=20)
+            copy_to_offset(dst=arr.6, 2, offset=24)
+            copy_to_offset(dst=arr.6, 1, offset=28)
+            tmp.4 = array_param(arr.6)
+            tmp.5 = add_ptr(arr.6, index=4, scale=4)
+            tmp.6 = load tmp.5
+            if !tmp.6 jump end_if_0
+            return 1
+        
+          end_if_0:
+            i.7 = 0
+        
+          start_loop_0:
+            tmp.7 = i.7 < 8
+            if !tmp.7 jump break_loop_0
+            tmp.8 = i.7 != 4
+            if !tmp.8 jump and_false_2
+            tmp.11 = add_ptr(arr.6, index=i.7, scale=4)
+            tmp.12 = load tmp.11
+            tmp.14 = 8 - i.7
+            tmp.13 = tmp.12 != tmp.14
+            if !tmp.13 jump and_false_2
+            tmp.10 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.10 = 0
+        
+          and_end_3:
+            if !tmp.10 jump end_if_4
+            return 2
+        
+          end_if_4:
+        
+          continue_loop_0:
+            tmp.15 = i.7 + 1
+            i.7 = tmp.15
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.16 = - 1
+            copy_to_offset(dst=nested_arr.8, tmp.16, offset=0)
+            tmp.17 = - 1
+            copy_to_offset(dst=nested_arr.8, tmp.17, offset=4)
+            tmp.18 = - 1
+            copy_to_offset(dst=nested_arr.8, tmp.18, offset=8)
+            tmp.19 = - 2
+            copy_to_offset(dst=nested_arr.8, tmp.19, offset=12)
+            tmp.20 = - 2
+            copy_to_offset(dst=nested_arr.8, tmp.20, offset=16)
+            tmp.21 = - 2
+            copy_to_offset(dst=nested_arr.8, tmp.21, offset=20)
+            tmp.22 = - 3
+            copy_to_offset(dst=nested_arr.8, tmp.22, offset=24)
+            tmp.23 = - 3
+            copy_to_offset(dst=nested_arr.8, tmp.23, offset=28)
+            tmp.24 = - 3
+            copy_to_offset(dst=nested_arr.8, tmp.24, offset=32)
+            tmp.25 = - 4
+            copy_to_offset(dst=nested_arr.8, tmp.25, offset=36)
+            tmp.26 = - 4
+            copy_to_offset(dst=nested_arr.8, tmp.26, offset=40)
+            tmp.27 = - 4
+            copy_to_offset(dst=nested_arr.8, tmp.27, offset=44)
+            tmp.28 = nested_array_param(nested_arr.8)
+            tmp.30 = add_ptr(nested_arr.8, index=1, scale=8)
+            tmp.31 = load tmp.30
+            tmp.29 = add_ptr(tmp.31, index=1, scale=4)
+            tmp.32 = load tmp.29
+            tmp.33 = tmp.32 != 1
+            if !tmp.33 jump end_if_6
+            return 3
+        
+          end_if_6:
+            i.9 = 0
+        
+          start_loop_1:
+            tmp.34 = i.9 < 4
+            if !tmp.34 jump break_loop_1
+            tmp.35 = - 1
+            tmp.36 = tmp.35 - i.9
+            expected.10 = tmp.36
+            j.11 = 0
+        
+          start_loop_2:
+            tmp.37 = j.11 < 3
+            if !tmp.37 jump break_loop_2
+            tmp.38 = i.9 != 1
+            if tmp.38 jump or_true_8
+            tmp.41 = j.11 != 1
+            if tmp.41 jump or_true_8
+            tmp.40 = 0
+            jump or_end_9
+        
+          or_true_8:
+            tmp.40 = 1
+        
+          or_end_9:
+            if !tmp.40 jump and_false_10
+            tmp.45 = add_ptr(nested_arr.8, index=i.9, scale=8)
+            tmp.46 = load tmp.45
+            tmp.44 = add_ptr(tmp.46, index=j.11, scale=4)
+            tmp.47 = load tmp.44
+            tmp.48 = tmp.47 != expected.10
+            if !tmp.48 jump and_false_10
+            tmp.43 = 1
+            jump and_end_11
+        
+          and_false_10:
+            tmp.43 = 0
+        
+          and_end_11:
+            if !tmp.43 jump end_if_12
+            return 4
+        
+          end_if_12:
+        
+          continue_loop_2:
+            tmp.49 = j.11 + 1
+            j.11 = tmp.49
+            jump start_loop_2
+        
+          break_loop_2:
+        
+          continue_loop_1:
+            tmp.50 = i.9 + 1
+            i.9 = tmp.50
+            jump start_loop_1
+        
+          break_loop_1:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_declarators_big_array() {
+    let src = r#"
+        extern int x[4294967297L][100000000];
+        int main(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_declarators_equivalent_declarators() {
+    let src = r#"
+        long int(arr)[4] = {1, 2, 3, 4};
+        int long arr[4ul];
+        int (*ptr_to_arr)[3][6l];
+        int((*(ptr_to_arr))[3l])[6u] = 0;
+        int *array_of_pointers[3] = {0, 0, 0};
+        int test_arr(void) {
+            for (int i = 0; i < 4; i = i + 1) {
+                if (arr[i] != i + 1) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+        int test_ptr_to_arr(void) {
+            if (ptr_to_arr) {
+                return 2;
+            }
+            static int nested_arr[3][6];
+            ptr_to_arr = &nested_arr;
+            ptr_to_arr[0][2][4] = 100;
+            if (nested_arr[2][4] != 100) {
+                return 3;
+            }
+            return 0;
+        }
+        int test_array_of_pointers(int *ptr) {
+            extern int *((array_of_pointers)[3]);
+            for (int i = 0; i < 3; i = i + 1) {
+                if (array_of_pointers[i])
+                    return 4;
+                array_of_pointers[i] = ptr;
+            }
+            array_of_pointers[2][0] = 11;
+            if (*ptr != 11) {
+                return 5;
+            }
+            for (int i = 0; i < 3; i = i + 1) {
+                if (array_of_pointers[i][0] != 11) {
+                    return 6;
+                }
+            }
+            return 0;
+        }
+        int main(void)
+        {
+            int check = test_arr();
+            if (check) {
+                return check;
+            }
+            check = test_ptr_to_arr();
+            if (check) {
+                return check;
+            }
+            int x = 0;
+            check = test_array_of_pointers(&x);
+            if (check) {
+                return check;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function test_arr() { 
+            i.0 = 0
+        
+          start_loop_0:
+            tmp.0 = i.0 < 4
+            if !tmp.0 jump break_loop_0
+            tmp.1 = add_ptr(arr, index=i.0, scale=8)
+            tmp.2 = load tmp.1
+            tmp.4 = i.0 + 1
+            tmp.5 = sign_extend tmp.4
+            tmp.3 = tmp.2 != tmp.5
+            if !tmp.3 jump end_if_0
+            return 1
+        
+          end_if_0:
+        
+          continue_loop_0:
+            tmp.6 = i.0 + 1
+            i.0 = tmp.6
+            jump start_loop_0
+        
+          break_loop_0:
+            return 0
+            return 0
+        }
+        global function test_ptr_to_arr() { 
+            if !ptr_to_arr jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.7 = get_address nested_arr.1
+            ptr_to_arr = tmp.7
+            tmp.10 = add_ptr(ptr_to_arr, index=0, scale=8)
+            tmp.11 = load tmp.10
+            tmp.9 = add_ptr(tmp.11, index=2, scale=8)
+            tmp.12 = load tmp.9
+            tmp.8 = add_ptr(tmp.12, index=4, scale=4)
+            tmp.8 = store 100
+            tmp.14 = add_ptr(nested_arr.1, index=2, scale=8)
+            tmp.15 = load tmp.14
+            tmp.13 = add_ptr(tmp.15, index=4, scale=4)
+            tmp.16 = load tmp.13
+            tmp.17 = tmp.16 != 100
+            if !tmp.17 jump end_if_4
+            return 3
+        
+          end_if_4:
+            return 0
+            return 0
+        }
+        global function test_array_of_pointers(ptr.2) { 
+            i.4 = 0
+        
+          start_loop_1:
+            tmp.18 = i.4 < 3
+            if !tmp.18 jump break_loop_1
+            tmp.19 = add_ptr(array_of_pointers, index=i.4, scale=8)
+            tmp.20 = load tmp.19
+            if !tmp.20 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.21 = add_ptr(array_of_pointers, index=i.4, scale=8)
+            tmp.21 = store ptr.2
+        
+          continue_loop_1:
+            tmp.22 = i.4 + 1
+            i.4 = tmp.22
+            jump start_loop_1
+        
+          break_loop_1:
+            tmp.24 = add_ptr(array_of_pointers, index=2, scale=8)
+            tmp.25 = load tmp.24
+            tmp.23 = add_ptr(tmp.25, index=0, scale=4)
+            tmp.23 = store 11
+            tmp.26 = load ptr.2
+            tmp.27 = tmp.26 != 11
+            if !tmp.27 jump end_if_8
+            return 5
+        
+          end_if_8:
+            i.5 = 0
+        
+          start_loop_2:
+            tmp.28 = i.5 < 3
+            if !tmp.28 jump break_loop_2
+            tmp.30 = add_ptr(array_of_pointers, index=i.5, scale=8)
+            tmp.31 = load tmp.30
+            tmp.29 = add_ptr(tmp.31, index=0, scale=4)
+            tmp.32 = load tmp.29
+            tmp.33 = tmp.32 != 11
+            if !tmp.33 jump end_if_10
+            return 6
+        
+          end_if_10:
+        
+          continue_loop_2:
+            tmp.34 = i.5 + 1
+            i.5 = tmp.34
+            jump start_loop_2
+        
+          break_loop_2:
+            return 0
+            return 0
+        }
+        global function main() { 
+            tmp.35 = test_arr()
+            check.6 = tmp.35
+            if !check.6 jump end_if_12
+            return check.6
+        
+          end_if_12:
+            tmp.36 = test_ptr_to_arr()
+            check.6 = tmp.36
+            if !check.6 jump end_if_14
+            return check.6
+        
+          end_if_14:
+            x.7 = 0
+            tmp.37 = get_address x.7
+            tmp.38 = test_array_of_pointers(tmp.37)
+            check.6 = tmp.38
+            if !check.6 jump end_if_16
+            return check.6
+        
+          end_if_16:
+            return 0
+            return 0
+        }
+        static global arr: Array(4,Long) = [ 1L, 2L, 3L, 4L]
+        static global array_of_pointers: Array(3,Pointer(Int)) = [ 0UL, 0UL, 0UL]
+        static nested_arr.1: Array(3,Array(6,Int)) = zero[72]
+        static global ptr_to_arr: Pointer(Array(3,Array(6,Int))) = 0UL
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_declarators_for_loop_array() {
+    let src = r#"
+        
+        int main(void) {
+            int counter = 0;
+            for (int i[3] = {1, 2, 3}; counter < 3; counter = counter + 1){
+                if (i[counter] != counter + 1) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            counter.0 = 0
+            copy_to_offset(dst=i.1, 1, offset=0)
+            copy_to_offset(dst=i.1, 2, offset=4)
+            copy_to_offset(dst=i.1, 3, offset=8)
+        
+          start_loop_0:
+            tmp.0 = counter.0 < 3
+            if !tmp.0 jump break_loop_0
+            tmp.1 = add_ptr(i.1, index=counter.0, scale=4)
+            tmp.2 = load tmp.1
+            tmp.4 = counter.0 + 1
+            tmp.3 = tmp.2 != tmp.4
+            if !tmp.3 jump end_if_0
+            return 1
+        
+          end_if_0:
+        
+          continue_loop_0:
+            tmp.5 = counter.0 + 1
+            counter.0 = tmp.5
+            jump start_loop_0
+        
+          break_loop_0:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_declarators_return_nested_array() {
+    let src = r#"
+        int arr[3] = {1, 1, 1};
+        int (*foo(int x, int y))[3] {
+            arr[1] = x;
+            arr[2] = y;
+            return &arr;
+        }
+        int main(void) {
+            int (*arr)[3] = foo(2, 3);
+            if (arr[0][0] != 1) {
+                return 1;
+            }
+            if (arr[0][1] != 2) {
+                return 2;
+            }
+            if (arr[0][2] != 3) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function foo(x.0, y.1) { 
+            tmp.0 = add_ptr(arr, index=1, scale=4)
+            tmp.0 = store x.0
+            tmp.1 = add_ptr(arr, index=2, scale=4)
+            tmp.1 = store y.1
+            tmp.2 = get_address arr
+            return tmp.2
+            return 0
+        }
+        global function main() { 
+            tmp.3 = foo(2, 3)
+            arr.2 = tmp.3
+            tmp.5 = add_ptr(arr.2, index=0, scale=8)
+            tmp.6 = load tmp.5
+            tmp.4 = add_ptr(tmp.6, index=0, scale=4)
+            tmp.7 = load tmp.4
+            tmp.8 = tmp.7 != 1
+            if !tmp.8 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.10 = add_ptr(arr.2, index=0, scale=8)
+            tmp.11 = load tmp.10
+            tmp.9 = add_ptr(tmp.11, index=1, scale=4)
+            tmp.12 = load tmp.9
+            tmp.13 = tmp.12 != 2
+            if !tmp.13 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.15 = add_ptr(arr.2, index=0, scale=8)
+            tmp.16 = load tmp.15
+            tmp.14 = add_ptr(tmp.16, index=2, scale=4)
+            tmp.17 = load tmp.14
+            tmp.18 = tmp.17 != 3
+            if !tmp.18 jump end_if_4
+            return 3
+        
+          end_if_4:
+            return 0
+            return 0
+        }
+        static global arr: Array(3,Int) = [ 1, 1, 1]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_bitwise_subscript() {
+    let src = r#"
+        
+        int main(void) {
+            int arr[6] = {-10, 10, -11, 11, -12, 12};
+            if ((arr[0] & arr[5]) != 4) {
+                return 1;
+            }
+            if ((arr[1] | arr[4]) != -2) {
+                return 2;
+            }
+            if ((arr[2] ^ arr[3]) != -2) {
+                return 3;
+            }
+            arr[0] = 2041302511;
+            if ((arr[0] >> arr[1]) != 1993459) {
+                return 4;
+            }
+            if ((arr[5] << 3 ) != 96) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = - 10
+            copy_to_offset(dst=arr.0, tmp.0, offset=0)
+            copy_to_offset(dst=arr.0, 10, offset=4)
+            tmp.1 = - 11
+            copy_to_offset(dst=arr.0, tmp.1, offset=8)
+            copy_to_offset(dst=arr.0, 11, offset=12)
+            tmp.2 = - 12
+            copy_to_offset(dst=arr.0, tmp.2, offset=16)
+            copy_to_offset(dst=arr.0, 12, offset=20)
+            tmp.3 = add_ptr(arr.0, index=0, scale=4)
+            tmp.4 = load tmp.3
+            tmp.6 = add_ptr(arr.0, index=5, scale=4)
+            tmp.7 = load tmp.6
+            tmp.5 = tmp.4 & tmp.7
+            tmp.8 = tmp.5 != 4
+            if !tmp.8 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.9 = add_ptr(arr.0, index=1, scale=4)
+            tmp.10 = load tmp.9
+            tmp.12 = add_ptr(arr.0, index=4, scale=4)
+            tmp.13 = load tmp.12
+            tmp.11 = tmp.10 | tmp.13
+            tmp.15 = - 2
+            tmp.14 = tmp.11 != tmp.15
+            if !tmp.14 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.16 = add_ptr(arr.0, index=2, scale=4)
+            tmp.17 = load tmp.16
+            tmp.19 = add_ptr(arr.0, index=3, scale=4)
+            tmp.20 = load tmp.19
+            tmp.18 = tmp.17 ^ tmp.20
+            tmp.22 = - 2
+            tmp.21 = tmp.18 != tmp.22
+            if !tmp.21 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.23 = add_ptr(arr.0, index=0, scale=4)
+            tmp.23 = store 2041302511
+            tmp.24 = add_ptr(arr.0, index=0, scale=4)
+            tmp.25 = load tmp.24
+            tmp.27 = add_ptr(arr.0, index=1, scale=4)
+            tmp.28 = load tmp.27
+            tmp.26 = tmp.25 >> tmp.28
+            tmp.29 = tmp.26 != 1993459
+            if !tmp.29 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.30 = add_ptr(arr.0, index=5, scale=4)
+            tmp.31 = load tmp.30
+            tmp.32 = tmp.31 << 3
+            tmp.33 = tmp.32 != 96
+            if !tmp.33 jump end_if_8
+            return 5
+        
+          end_if_8:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_assign_and_increment() {
+    let src = r#"
+        
+        int main(void) {
+            int arr[4] = {-1, -2, -3, -4};
+            int *ptr = arr;
+            int idx = 2;
+            if ((ptr++[idx++] *= 3) != -9) {
+                return 1;
+            }
+            if (*ptr != -2) {
+                return 2;
+            }
+            if (idx != 3) {
+                return 3;
+            }
+            idx--;
+            if ((--ptr)[3] += 4) {
+                return 4;
+            }
+            if (arr[0] != -1 || arr[1] != -2 || arr[2] != -9 || arr[3] != 0) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = - 1
+            copy_to_offset(dst=arr.0, tmp.0, offset=0)
+            tmp.1 = - 2
+            copy_to_offset(dst=arr.0, tmp.1, offset=4)
+            tmp.2 = - 3
+            copy_to_offset(dst=arr.0, tmp.2, offset=8)
+            tmp.3 = - 4
+            copy_to_offset(dst=arr.0, tmp.3, offset=12)
+            ptr.1 = arr.0
+            idx.2 = 2
+            tmp.5 = ptr.1
+            tmp.6 = inc ptr.1
+            ptr.1 = tmp.6
+            tmp.7 = idx.2
+            tmp.8 = inc idx.2
+            idx.2 = tmp.8
+            tmp.4 = add_ptr(tmp.5, index=tmp.7, scale=4)
+            tmp.9 = load tmp.4
+            tmp.10 = tmp.9 * 3
+            tmp.4 = store tmp.10
+            tmp.12 = - 9
+            tmp.11 = tmp.10 != tmp.12
+            if !tmp.11 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.13 = load ptr.1
+            tmp.15 = - 2
+            tmp.14 = tmp.13 != tmp.15
+            if !tmp.14 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.16 = idx.2 != 3
+            if !tmp.16 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.17 = idx.2
+            tmp.18 = dec idx.2
+            idx.2 = tmp.18
+            tmp.20 = dec ptr.1
+            ptr.1 = tmp.20
+            tmp.19 = add_ptr(tmp.20, index=3, scale=4)
+            tmp.21 = load tmp.19
+            tmp.22 = tmp.21 + 4
+            tmp.19 = store tmp.22
+            if !tmp.22 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.23 = add_ptr(arr.0, index=0, scale=4)
+            tmp.24 = load tmp.23
+            tmp.26 = - 1
+            tmp.25 = tmp.24 != tmp.26
+            if tmp.25 jump or_true_8
+            tmp.29 = add_ptr(arr.0, index=1, scale=4)
+            tmp.30 = load tmp.29
+            tmp.32 = - 2
+            tmp.31 = tmp.30 != tmp.32
+            if tmp.31 jump or_true_8
+            tmp.28 = 0
+            jump or_end_9
+        
+          or_true_8:
+            tmp.28 = 1
+        
+          or_end_9:
+            if tmp.28 jump or_true_10
+            tmp.35 = add_ptr(arr.0, index=2, scale=4)
+            tmp.36 = load tmp.35
+            tmp.38 = - 9
+            tmp.37 = tmp.36 != tmp.38
+            if tmp.37 jump or_true_10
+            tmp.34 = 0
+            jump or_end_11
+        
+          or_true_10:
+            tmp.34 = 1
+        
+          or_end_11:
+            if tmp.34 jump or_true_12
+            tmp.41 = add_ptr(arr.0, index=3, scale=4)
+            tmp.42 = load tmp.41
+            tmp.43 = tmp.42 != 0
+            if tmp.43 jump or_true_12
+            tmp.40 = 0
+            jump or_end_13
+        
+          or_true_12:
+            tmp.40 = 1
+        
+          or_end_13:
+            if !tmp.40 jump end_if_14
+            return 5
+        
+          end_if_14:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_assign_array_of_pointers() {
+    let src = r#"
+        
+        int main(void) {
+            static int (*array_of_pointers[3])[4] = {0, 0, 0};
+            int array1[4] = {100, 101, 102, 103};
+            int nested_array[2][4] = {
+                {200, 201, 202, 203},
+                {300, 301, 302, 303}
+            };
+            array_of_pointers[0] = &array1;
+            array_of_pointers[1] = &nested_array[0];
+            array_of_pointers[2] = &nested_array[1];
+            array_of_pointers[0] += 1;
+            if (array_of_pointers[0][-1][3] != 103) {
+                return 1;
+            }
+            array_of_pointers[1] += 1;
+            array_of_pointers[2] -= 1;
+            if (array_of_pointers[1][0][3] != 303) {
+                return 2;
+            }
+            if (array_of_pointers[2][0][3] != 203) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=array1.1, 100, offset=0)
+            copy_to_offset(dst=array1.1, 101, offset=4)
+            copy_to_offset(dst=array1.1, 102, offset=8)
+            copy_to_offset(dst=array1.1, 103, offset=12)
+            copy_to_offset(dst=nested_array.2, 200, offset=0)
+            copy_to_offset(dst=nested_array.2, 201, offset=4)
+            copy_to_offset(dst=nested_array.2, 202, offset=8)
+            copy_to_offset(dst=nested_array.2, 203, offset=12)
+            copy_to_offset(dst=nested_array.2, 300, offset=16)
+            copy_to_offset(dst=nested_array.2, 301, offset=20)
+            copy_to_offset(dst=nested_array.2, 302, offset=24)
+            copy_to_offset(dst=nested_array.2, 303, offset=28)
+            tmp.0 = add_ptr(array_of_pointers.0, index=0, scale=8)
+            tmp.1 = get_address array1.1
+            tmp.0 = store tmp.1
+            tmp.2 = add_ptr(array_of_pointers.0, index=1, scale=8)
+            tmp.3 = add_ptr(nested_array.2, index=0, scale=16)
+            tmp.2 = store tmp.3
+            tmp.4 = add_ptr(array_of_pointers.0, index=2, scale=8)
+            tmp.5 = add_ptr(nested_array.2, index=1, scale=16)
+            tmp.4 = store tmp.5
+            tmp.6 = add_ptr(array_of_pointers.0, index=0, scale=8)
+            tmp.7 = load tmp.6
+            tmp.9 = sign_extend 1
+            tmp.8 = tmp.7 + tmp.9
+            tmp.6 = store tmp.8
+            tmp.12 = add_ptr(array_of_pointers.0, index=0, scale=8)
+            tmp.13 = load tmp.12
+            tmp.14 = - 1
+            tmp.11 = add_ptr(tmp.13, index=tmp.14, scale=8)
+            tmp.15 = load tmp.11
+            tmp.10 = add_ptr(tmp.15, index=3, scale=4)
+            tmp.16 = load tmp.10
+            tmp.17 = tmp.16 != 103
+            if !tmp.17 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.18 = add_ptr(array_of_pointers.0, index=1, scale=8)
+            tmp.19 = load tmp.18
+            tmp.21 = sign_extend 1
+            tmp.20 = tmp.19 + tmp.21
+            tmp.18 = store tmp.20
+            tmp.22 = add_ptr(array_of_pointers.0, index=2, scale=8)
+            tmp.23 = load tmp.22
+            tmp.25 = sign_extend 1
+            tmp.24 = tmp.23 - tmp.25
+            tmp.22 = store tmp.24
+            tmp.28 = add_ptr(array_of_pointers.0, index=1, scale=8)
+            tmp.29 = load tmp.28
+            tmp.27 = add_ptr(tmp.29, index=0, scale=8)
+            tmp.30 = load tmp.27
+            tmp.26 = add_ptr(tmp.30, index=3, scale=4)
+            tmp.31 = load tmp.26
+            tmp.32 = tmp.31 != 303
+            if !tmp.32 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.35 = add_ptr(array_of_pointers.0, index=2, scale=8)
+            tmp.36 = load tmp.35
+            tmp.34 = add_ptr(tmp.36, index=0, scale=8)
+            tmp.37 = load tmp.34
+            tmp.33 = add_ptr(tmp.37, index=3, scale=4)
+            tmp.38 = load tmp.33
+            tmp.39 = tmp.38 != 203
+            if !tmp.39 jump end_if_4
+            return 3
+        
+          end_if_4:
+            return 0
+            return 0
+        }
+        static array_of_pointers.0: Array(3,Pointer(Array(4,Int))) = [ 0UL, 0UL, 0UL]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_assign_to_nested_subscript() {
+    let src = r#"
+        long long_nested_arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
+        double dbl_nested_arr[3][2] = {{100.0, 101.0}, {102.0, 103.0}, {104.0, 105.0}};
+        unsigned unsigned_index = 10;
+        int main(void) {
+            if ((long_nested_arr[1][unsigned_index - 8] *= -1) != -6) {
+                return 1;
+            }
+            if (long_nested_arr[1][2] != -6) {
+                return 2;
+            }
+            for (int i = 0; i < 2; i += 1) {
+                for (int j = 0; j < 3; j += 1) {
+                    if (i == 1 && j == 2) {
+                        break;
+                    }
+                    long expected = i * 3 + j + 1;
+                    if (long_nested_arr[i][j] != expected) {
+                        return 3;
+                    }
+                }
+            }
+            if ((dbl_nested_arr[1][1] += 100.0) != 203.0) {
+                return 4;
+            }
+            for (int i = 0; i < 3; i += 1) {
+                for (int j = 0; j < 2; j += 1) {
+                    if (i == 1 && j == 1) {
+                        continue;
+                    }
+                    int expected = 100 + i * 2 + j;
+                    if (dbl_nested_arr[i][j] != expected) {
+                        return 5;
+                    }
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.1 = add_ptr(long_nested_arr, index=1, scale=8)
+            tmp.2 = load tmp.1
+            tmp.4 = 8
+            tmp.3 = unsigned_index - tmp.4
+            tmp.0 = add_ptr(tmp.2, index=tmp.3, scale=8)
+            tmp.5 = load tmp.0
+            tmp.7 = - 1
+            tmp.8 = sign_extend tmp.7
+            tmp.6 = tmp.5 * tmp.8
+            tmp.0 = store tmp.6
+            tmp.10 = - 6
+            tmp.11 = sign_extend tmp.10
+            tmp.9 = tmp.6 != tmp.11
+            if !tmp.9 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.13 = add_ptr(long_nested_arr, index=1, scale=8)
+            tmp.14 = load tmp.13
+            tmp.12 = add_ptr(tmp.14, index=2, scale=8)
+            tmp.15 = load tmp.12
+            tmp.17 = - 6
+            tmp.18 = sign_extend tmp.17
+            tmp.16 = tmp.15 != tmp.18
+            if !tmp.16 jump end_if_2
+            return 2
+        
+          end_if_2:
+            i.0 = 0
+        
+          start_loop_0:
+            tmp.19 = i.0 < 2
+            if !tmp.19 jump break_loop_0
+            j.1 = 0
+        
+          start_loop_1:
+            tmp.20 = j.1 < 3
+            if !tmp.20 jump break_loop_1
+            tmp.21 = i.0 == 1
+            if !tmp.21 jump and_false_4
+            tmp.24 = j.1 == 2
+            if !tmp.24 jump and_false_4
+            tmp.23 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.23 = 0
+        
+          and_end_5:
+            if !tmp.23 jump end_if_6
+            jump break_loop_1
+        
+          end_if_6:
+            tmp.25 = i.0 * 3
+            tmp.26 = tmp.25 + j.1
+            tmp.27 = tmp.26 + 1
+            tmp.28 = sign_extend tmp.27
+            expected.2 = tmp.28
+            tmp.30 = add_ptr(long_nested_arr, index=i.0, scale=8)
+            tmp.31 = load tmp.30
+            tmp.29 = add_ptr(tmp.31, index=j.1, scale=8)
+            tmp.32 = load tmp.29
+            tmp.33 = tmp.32 != expected.2
+            if !tmp.33 jump end_if_8
+            return 3
+        
+          end_if_8:
+        
+          continue_loop_1:
+            tmp.34 = j.1 + 1
+            j.1 = tmp.34
+            jump start_loop_1
+        
+          break_loop_1:
+        
+          continue_loop_0:
+            tmp.35 = i.0 + 1
+            i.0 = tmp.35
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.37 = add_ptr(dbl_nested_arr, index=1, scale=8)
+            tmp.38 = load tmp.37
+            tmp.36 = add_ptr(tmp.38, index=1, scale=8)
+            tmp.39 = load tmp.36
+            tmp.40 = tmp.39 + 100D
+            tmp.36 = store tmp.40
+            tmp.41 = tmp.40 != 203D
+            if !tmp.41 jump end_if_10
+            return 4
+        
+          end_if_10:
+            i.3 = 0
+        
+          start_loop_2:
+            tmp.42 = i.3 < 3
+            if !tmp.42 jump break_loop_2
+            j.4 = 0
+        
+          start_loop_3:
+            tmp.43 = j.4 < 2
+            if !tmp.43 jump break_loop_3
+            tmp.44 = i.3 == 1
+            if !tmp.44 jump and_false_12
+            tmp.47 = j.4 == 1
+            if !tmp.47 jump and_false_12
+            tmp.46 = 1
+            jump and_end_13
+        
+          and_false_12:
+            tmp.46 = 0
+        
+          and_end_13:
+            if !tmp.46 jump end_if_14
+            jump continue_loop_3
+        
+          end_if_14:
+            tmp.49 = i.3 * 2
+            tmp.48 = 100 + tmp.49
+            tmp.50 = tmp.48 + j.4
+            expected.5 = tmp.50
+            tmp.52 = add_ptr(dbl_nested_arr, index=i.3, scale=8)
+            tmp.53 = load tmp.52
+            tmp.51 = add_ptr(tmp.53, index=j.4, scale=8)
+            tmp.54 = load tmp.51
+            tmp.56 = int_to_double expected.5
+            tmp.55 = tmp.54 != tmp.56
+            if !tmp.55 jump end_if_16
+            return 5
+        
+          end_if_16:
+        
+          continue_loop_3:
+            tmp.57 = j.4 + 1
+            j.4 = tmp.57
+            jump start_loop_3
+        
+          break_loop_3:
+        
+          continue_loop_2:
+            tmp.58 = i.3 + 1
+            i.3 = tmp.58
+            jump start_loop_2
+        
+          break_loop_2:
+            return 0
+            return 0
+        }
+        static global dbl_nested_arr: Array(3,Array(2,Double)) = [ 100D, 101D, 102D, 103D, 104D, 105D]
+        static global long_nested_arr: Array(2,Array(3,Long)) = [ 1L, 2L, 3L, 4L, 5L, 6L]
+        static global unsigned_index: Unsigned Int = 10U
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_assign_to_subscripted_val() {
+    let src = r#"
+        unsigned unsigned_arr[4] = {4294967295U, 4294967294U, 4294967293U, 4294967292U};
+        int idx = 2;
+        long long_idx = 1;
+        int main(void) {
+            long_idx = -long_idx;
+            unsigned_arr[1] += 2;
+            if (unsigned_arr[1]) {
+                return 1;
+            }
+            unsigned_arr[idx] -= 10.0;
+            if (unsigned_arr[idx] != 4294967283U) {
+                return 2;
+            }
+            unsigned *unsigned_ptr = unsigned_arr + 4;
+            unsigned_ptr[long_idx] /= 10;
+            if (unsigned_arr[3] != 429496729U) {
+                return 3;
+            }
+            unsigned_ptr[long_idx *= 2] *= unsigned_arr[0];
+            if (unsigned_arr[2] != 13) {
+                return 4;
+            }
+            if ((unsigned_arr[idx + long_idx] %= 10) != 5) {
+                return 5;
+            }
+            if (unsigned_arr[0] != 5u) {
+                return 6;
+            }
+            if (unsigned_arr[1]) {
+                return 7;
+            }
+            if (unsigned_arr[2] != 13) {
+                return 8;
+            }
+            if (unsigned_arr[3] != 429496729U) {
+                return 9;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = - long_idx
+            long_idx = tmp.0
+            tmp.1 = add_ptr(unsigned_arr, index=1, scale=4)
+            tmp.2 = load tmp.1
+            tmp.4 = 2
+            tmp.3 = tmp.2 + tmp.4
+            tmp.1 = store tmp.3
+            tmp.5 = add_ptr(unsigned_arr, index=1, scale=4)
+            tmp.6 = load tmp.5
+            if !tmp.6 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.7 = add_ptr(unsigned_arr, index=idx, scale=4)
+            tmp.8 = load tmp.7
+            tmp.9 = uint_to_double tmp.8
+            tmp.10 = tmp.9 - 10D
+            tmp.11 = double_to_uint tmp.10
+            tmp.7 = store tmp.11
+            tmp.12 = double_to_uint tmp.11
+            tmp.13 = add_ptr(unsigned_arr, index=idx, scale=4)
+            tmp.14 = load tmp.13
+            tmp.15 = tmp.14 != 4294967283U
+            if !tmp.15 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.16 = add_ptr(unsigned_arr, index=4, scale=8)
+            unsigned_ptr.0 = tmp.16
+            tmp.17 = add_ptr(unsigned_ptr.0, index=long_idx, scale=4)
+            tmp.18 = load tmp.17
+            tmp.20 = 10
+            tmp.19 = tmp.18 / tmp.20
+            tmp.17 = store tmp.19
+            tmp.21 = add_ptr(unsigned_arr, index=3, scale=4)
+            tmp.22 = load tmp.21
+            tmp.23 = tmp.22 != 429496729U
+            if !tmp.23 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.26 = sign_extend 2
+            tmp.25 = long_idx * tmp.26
+            long_idx = tmp.25
+            tmp.24 = add_ptr(unsigned_ptr.0, index=tmp.25, scale=4)
+            tmp.27 = load tmp.24
+            tmp.29 = add_ptr(unsigned_arr, index=0, scale=4)
+            tmp.30 = load tmp.29
+            tmp.28 = tmp.27 * tmp.30
+            tmp.24 = store tmp.28
+            tmp.31 = add_ptr(unsigned_arr, index=2, scale=4)
+            tmp.32 = load tmp.31
+            tmp.34 = 13
+            tmp.33 = tmp.32 != tmp.34
+            if !tmp.33 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.36 = sign_extend idx
+            tmp.37 = tmp.36 + long_idx
+            tmp.35 = add_ptr(unsigned_arr, index=tmp.37, scale=4)
+            tmp.38 = load tmp.35
+            tmp.40 = 10
+            tmp.39 = tmp.38 % tmp.40
+            tmp.35 = store tmp.39
+            tmp.42 = 5
+            tmp.41 = tmp.39 != tmp.42
+            if !tmp.41 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.43 = add_ptr(unsigned_arr, index=0, scale=4)
+            tmp.44 = load tmp.43
+            tmp.45 = tmp.44 != 5U
+            if !tmp.45 jump end_if_10
+            return 6
+        
+          end_if_10:
+            tmp.46 = add_ptr(unsigned_arr, index=1, scale=4)
+            tmp.47 = load tmp.46
+            if !tmp.47 jump end_if_12
+            return 7
+        
+          end_if_12:
+            tmp.48 = add_ptr(unsigned_arr, index=2, scale=4)
+            tmp.49 = load tmp.48
+            tmp.51 = 13
+            tmp.50 = tmp.49 != tmp.51
+            if !tmp.50 jump end_if_14
+            return 8
+        
+          end_if_14:
+            tmp.52 = add_ptr(unsigned_arr, index=3, scale=4)
+            tmp.53 = load tmp.52
+            tmp.54 = tmp.53 != 429496729U
+            if !tmp.54 jump end_if_16
+            return 9
+        
+          end_if_16:
+            return 0
+            return 0
+        }
+        static global idx: Int = 2
+        static global long_idx: Long = 1L
+        static global unsigned_arr: Array(4,Unsigned Int) = [ 4294967295U, 4294967294U, 4294967293U, 4294967292U]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_bitwise_subscript() {
+    let src = r#"
+        
+        int main(void) {
+            unsigned long arr[4] = {
+                2147483648l,
+                18446744069414584320ul,
+                9223372036854775808ul,
+                1085102592571150095l
+            };
+            arr[1] &= arr[3];
+            if (arr[1] != 1085102592318504960 ) {
+                return 1;
+            }
+            arr[0] |= arr[1];
+            if (arr[0] != 1085102594465988608ul) {
+                return 2;
+            }
+            arr[2] ^= arr[3];
+            if (arr[2] != 10308474629425925903ul) {
+                return 3;
+            }
+            arr[3] >>= 25;
+            if (arr[3] != 32338577287l) {
+                return 4;
+            }
+            arr[1] <<= 12;
+            if (arr[1] != 17361640446303928320ul) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = 2147483648L
+            copy_to_offset(dst=arr.0, tmp.0, offset=0)
+            copy_to_offset(dst=arr.0, 18446744069414584320UL, offset=8)
+            copy_to_offset(dst=arr.0, 9223372036854775808UL, offset=16)
+            tmp.1 = 1085102592571150095L
+            copy_to_offset(dst=arr.0, tmp.1, offset=24)
+            tmp.2 = add_ptr(arr.0, index=1, scale=8)
+            tmp.3 = load tmp.2
+            tmp.5 = add_ptr(arr.0, index=3, scale=8)
+            tmp.6 = load tmp.5
+            tmp.4 = tmp.3 & tmp.6
+            tmp.2 = store tmp.4
+            tmp.7 = add_ptr(arr.0, index=1, scale=8)
+            tmp.8 = load tmp.7
+            tmp.10 = 1085102592318504960L
+            tmp.9 = tmp.8 != tmp.10
+            if !tmp.9 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.11 = add_ptr(arr.0, index=0, scale=8)
+            tmp.12 = load tmp.11
+            tmp.14 = add_ptr(arr.0, index=1, scale=8)
+            tmp.15 = load tmp.14
+            tmp.13 = tmp.12 | tmp.15
+            tmp.11 = store tmp.13
+            tmp.16 = add_ptr(arr.0, index=0, scale=8)
+            tmp.17 = load tmp.16
+            tmp.18 = tmp.17 != 1085102594465988608UL
+            if !tmp.18 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.19 = add_ptr(arr.0, index=2, scale=8)
+            tmp.20 = load tmp.19
+            tmp.22 = add_ptr(arr.0, index=3, scale=8)
+            tmp.23 = load tmp.22
+            tmp.21 = tmp.20 ^ tmp.23
+            tmp.19 = store tmp.21
+            tmp.24 = add_ptr(arr.0, index=2, scale=8)
+            tmp.25 = load tmp.24
+            tmp.26 = tmp.25 != 10308474629425925903UL
+            if !tmp.26 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.27 = add_ptr(arr.0, index=3, scale=8)
+            tmp.28 = load tmp.27
+            tmp.30 = sign_extend 25
+            tmp.29 = tmp.28 >> tmp.30
+            tmp.27 = store tmp.29
+            tmp.31 = add_ptr(arr.0, index=3, scale=8)
+            tmp.32 = load tmp.31
+            tmp.34 = 32338577287L
+            tmp.33 = tmp.32 != tmp.34
+            if !tmp.33 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.35 = add_ptr(arr.0, index=1, scale=8)
+            tmp.36 = load tmp.35
+            tmp.38 = sign_extend 12
+            tmp.37 = tmp.36 << tmp.38
+            tmp.35 = store tmp.37
+            tmp.39 = add_ptr(arr.0, index=1, scale=8)
+            tmp.40 = load tmp.39
+            tmp.41 = tmp.40 != 17361640446303928320UL
+            if !tmp.41 jump end_if_8
+            return 5
+        
+          end_if_8:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_lval_evaluated_once() {
+    let src = r#"
+        int get_call_count(void) {
+            static int count = 0;
+            count += 1;
+            return count;
+        }
+        int main(void) {
+            int arr[4] = {10, 11, 12, 13};
+            if (arr[get_call_count()] != 11) {
+                return 1;
+            }
+            int *end_ptr = arr + 4;
+            if ((end_ptr - 1)[-get_call_count()] != 11) {
+                return 2;
+            }
+            if (get_call_count() != 3) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function get_call_count() { 
+            tmp.0 = count.0 + 1
+            count.0 = tmp.0
+            return count.0
+            return 0
+        }
+        global function main() { 
+            copy_to_offset(dst=arr.1, 10, offset=0)
+            copy_to_offset(dst=arr.1, 11, offset=4)
+            copy_to_offset(dst=arr.1, 12, offset=8)
+            copy_to_offset(dst=arr.1, 13, offset=12)
+            tmp.2 = get_call_count()
+            tmp.1 = add_ptr(arr.1, index=tmp.2, scale=4)
+            tmp.3 = load tmp.1
+            tmp.4 = tmp.3 != 11
+            if !tmp.4 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.5 = add_ptr(arr.1, index=4, scale=8)
+            end_ptr.2 = tmp.5
+            tmp.8 = - 1
+            tmp.7 = add_ptr(end_ptr.2, index=tmp.8, scale=8)
+            tmp.9 = get_call_count()
+            tmp.10 = - tmp.9
+            tmp.6 = add_ptr(tmp.7, index=tmp.10, scale=4)
+            tmp.11 = load tmp.6
+            tmp.12 = tmp.11 != 11
+            if !tmp.12 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.13 = get_call_count()
+            tmp.14 = tmp.13 != 3
+            if !tmp.14 jump end_if_4
+            return 3
+        
+          end_if_4:
+            return 0
+            return 0
+        }
+        static count.0: Int = 0
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_nested_pointer_assignment() {
+    let src = r#"
+        static long nested_arr[3][4][5] = {{{10, 9, 8}, {1, 2}}, {{100, 99, 98}}};
+        int main(void) {
+            long(*outer_ptr)[4][5] = nested_arr;
+            outer_ptr += 1;
+            if (outer_ptr != nested_arr + 1) {
+                return 1;
+            }
+            if (outer_ptr[0][0][0] != 100) {
+                return 2;
+            }
+            long(*inner_ptr)[5] =
+                nested_arr[0] + 4;
+            inner_ptr -= 3;
+            if (inner_ptr[0][1] != 2) {
+                return 3;
+            }
+            unsigned long idx = nested_arr[0][0][0] - 9;
+            if ((inner_ptr += idx) != &nested_arr[0][2]) {
+                return 4;
+            }
+            if ((inner_ptr[-2][1] != 9)) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            outer_ptr.0 = nested_arr
+            tmp.1 = sign_extend 1
+            tmp.0 = outer_ptr.0 + tmp.1
+            outer_ptr.0 = tmp.0
+            tmp.3 = add_ptr(nested_arr, index=1, scale=8)
+            tmp.2 = outer_ptr.0 != tmp.3
+            if !tmp.2 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.6 = add_ptr(outer_ptr.0, index=0, scale=8)
+            tmp.7 = load tmp.6
+            tmp.5 = add_ptr(tmp.7, index=0, scale=8)
+            tmp.8 = load tmp.5
+            tmp.4 = add_ptr(tmp.8, index=0, scale=8)
+            tmp.9 = load tmp.4
+            tmp.11 = sign_extend 100
+            tmp.10 = tmp.9 != tmp.11
+            if !tmp.10 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.12 = add_ptr(nested_arr, index=0, scale=8)
+            tmp.13 = load tmp.12
+            tmp.14 = add_ptr(tmp.13, index=4, scale=8)
+            inner_ptr.1 = tmp.14
+            tmp.16 = sign_extend 3
+            tmp.15 = inner_ptr.1 - tmp.16
+            inner_ptr.1 = tmp.15
+            tmp.18 = add_ptr(inner_ptr.1, index=0, scale=8)
+            tmp.19 = load tmp.18
+            tmp.17 = add_ptr(tmp.19, index=1, scale=8)
+            tmp.20 = load tmp.17
+            tmp.22 = sign_extend 2
+            tmp.21 = tmp.20 != tmp.22
+            if !tmp.21 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.25 = add_ptr(nested_arr, index=0, scale=8)
+            tmp.26 = load tmp.25
+            tmp.24 = add_ptr(tmp.26, index=0, scale=8)
+            tmp.27 = load tmp.24
+            tmp.23 = add_ptr(tmp.27, index=0, scale=8)
+            tmp.28 = load tmp.23
+            tmp.30 = sign_extend 9
+            tmp.29 = tmp.28 - tmp.30
+            tmp.31 = tmp.29
+            idx.2 = tmp.31
+            tmp.33 = idx.2
+            tmp.32 = inner_ptr.1 + tmp.33
+            inner_ptr.1 = tmp.32
+            tmp.36 = add_ptr(nested_arr, index=0, scale=8)
+            tmp.37 = load tmp.36
+            tmp.35 = add_ptr(tmp.37, index=2, scale=40)
+            tmp.34 = tmp.32 != tmp.35
+            if !tmp.34 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.40 = - 2
+            tmp.39 = add_ptr(inner_ptr.1, index=tmp.40, scale=8)
+            tmp.41 = load tmp.39
+            tmp.38 = add_ptr(tmp.41, index=1, scale=8)
+            tmp.42 = load tmp.38
+            tmp.44 = sign_extend 9
+            tmp.43 = tmp.42 != tmp.44
+            if !tmp.43 jump end_if_8
+            return 5
+        
+          end_if_8:
+            return 0
+            return 0
+        }
+        static nested_arr: Array(3,Array(4,Array(5,Long))) = [ 10L, 9L, 8L, zero[16], 1L, 2L, zero[24], zero[80], 100L, 99L, 98L, zero[16], zero[120], zero[160]]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_compound_pointer_assignment() {
+    let src = r#"
+        int i = 4;
+        int int_array(void) {
+            int arr[6] = {1, 2, 3, 4, 5, 6};
+            int *ptr = arr;
+            if (*(ptr += 5) != 6) {
+                return 1;
+            }
+            if (ptr[0] != 6) {
+                 return 2;
+            }
+            if (ptr != arr + 5) {
+                return 3;
+            }
+            if (*(ptr -=3) != 3) {
+                return 4;
+            }
+            if (ptr[0] != 3) {
+                return 5;
+            }
+            if (ptr != arr + 2) {
+                return 6;
+            }
+            if ((ptr += i - 1) != arr + 5) {
+                return 7;
+            }
+            if (*ptr != 6) {
+                return 8;
+            }
+            if ((ptr -= (4294967295U + i)) != arr + 2) {
+                return 9;
+            }
+            if (*ptr != 3) {
+                return 10;
+            }
+            long l = 9223372036854775807l;
+            if ((ptr += l - 9223372036854775806l) != arr + 3) {
+                return 11;
+            }
+            if (*ptr != 4) {
+                return 12;
+            }
+            return 0;
+        }
+        int double_array(void) {
+            static double arr[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+            double *ptr = arr;
+            if (*(ptr += 5) != 6) {
+                return 1;
+            }
+            if (ptr[0] != 6) {
+                 return 2;
+            }
+            if (ptr != arr + 5) {
+                return 3;
+            }
+            if (*(ptr -=3) != 3) {
+                return 4;
+            }
+            if (ptr[0] != 3) {
+                return 5;
+            }
+            if (ptr != arr + 2) {
+                return 6;
+            }
+            if ((ptr += i - 1) != arr + 5) {
+                return 7;
+            }
+            if (*ptr != 6) {
+                return 8;
+            }
+            if ((ptr -= (4294967295U + i)) != arr + 2) {
+                return 9;
+            }
+            if (*ptr != 3) {
+                return 10;
+            }
+            long l = 9223372036854775807l;
+            if ((ptr += l - 9223372036854775806l) != arr + 3) {
+                return 11;
+            }
+            if (*ptr != 4) {
+                return 12;
+            }
+            return 0;
+        }
+        int main(void) {
+            int result;
+            if ((result = int_array())) {
+                return result;
+            }
+            if ((result = double_array())) {
+                return result + 12;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function int_array() { 
+            copy_to_offset(dst=arr.0, 1, offset=0)
+            copy_to_offset(dst=arr.0, 2, offset=4)
+            copy_to_offset(dst=arr.0, 3, offset=8)
+            copy_to_offset(dst=arr.0, 4, offset=12)
+            copy_to_offset(dst=arr.0, 5, offset=16)
+            copy_to_offset(dst=arr.0, 6, offset=20)
+            ptr.1 = arr.0
+            tmp.1 = sign_extend 5
+            tmp.0 = ptr.1 + tmp.1
+            ptr.1 = tmp.0
+            tmp.2 = load tmp.0
+            tmp.3 = tmp.2 != 6
+            if !tmp.3 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.4 = add_ptr(ptr.1, index=0, scale=4)
+            tmp.5 = load tmp.4
+            tmp.6 = tmp.5 != 6
+            if !tmp.6 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.8 = add_ptr(arr.0, index=5, scale=8)
+            tmp.7 = ptr.1 != tmp.8
+            if !tmp.7 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.10 = sign_extend 3
+            tmp.9 = ptr.1 - tmp.10
+            ptr.1 = tmp.9
+            tmp.11 = load tmp.9
+            tmp.12 = tmp.11 != 3
+            if !tmp.12 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.13 = add_ptr(ptr.1, index=0, scale=4)
+            tmp.14 = load tmp.13
+            tmp.15 = tmp.14 != 3
+            if !tmp.15 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.17 = add_ptr(arr.0, index=2, scale=8)
+            tmp.16 = ptr.1 != tmp.17
+            if !tmp.16 jump end_if_10
+            return 6
+        
+          end_if_10:
+            tmp.19 = i - 1
+            tmp.20 = sign_extend tmp.19
+            tmp.18 = ptr.1 + tmp.20
+            ptr.1 = tmp.18
+            tmp.22 = add_ptr(arr.0, index=5, scale=8)
+            tmp.21 = tmp.18 != tmp.22
+            if !tmp.21 jump end_if_12
+            return 7
+        
+          end_if_12:
+            tmp.23 = load ptr.1
+            tmp.24 = tmp.23 != 6
+            if !tmp.24 jump end_if_14
+            return 8
+        
+          end_if_14:
+            tmp.27 = i
+            tmp.26 = 4294967295U + tmp.27
+            tmp.28 = zero_extend tmp.26
+            tmp.25 = ptr.1 - tmp.28
+            ptr.1 = tmp.25
+            tmp.30 = add_ptr(arr.0, index=2, scale=8)
+            tmp.29 = tmp.25 != tmp.30
+            if !tmp.29 jump end_if_16
+            return 9
+        
+          end_if_16:
+            tmp.31 = load ptr.1
+            tmp.32 = tmp.31 != 3
+            if !tmp.32 jump end_if_18
+            return 10
+        
+          end_if_18:
+            l.2 = 9223372036854775807L
+            tmp.34 = l.2 - 9223372036854775806L
+            tmp.35 = tmp.34
+            tmp.33 = ptr.1 + tmp.35
+            ptr.1 = tmp.33
+            tmp.37 = add_ptr(arr.0, index=3, scale=8)
+            tmp.36 = tmp.33 != tmp.37
+            if !tmp.36 jump end_if_20
+            return 11
+        
+          end_if_20:
+            tmp.38 = load ptr.1
+            tmp.39 = tmp.38 != 4
+            if !tmp.39 jump end_if_22
+            return 12
+        
+          end_if_22:
+            return 0
+            return 0
+        }
+        global function double_array() { 
+            ptr.4 = arr.3
+            tmp.41 = sign_extend 5
+            tmp.40 = ptr.4 + tmp.41
+            ptr.4 = tmp.40
+            tmp.42 = load tmp.40
+            tmp.44 = int_to_double 6
+            tmp.43 = tmp.42 != tmp.44
+            if !tmp.43 jump end_if_24
+            return 1
+        
+          end_if_24:
+            tmp.45 = add_ptr(ptr.4, index=0, scale=8)
+            tmp.46 = load tmp.45
+            tmp.48 = int_to_double 6
+            tmp.47 = tmp.46 != tmp.48
+            if !tmp.47 jump end_if_26
+            return 2
+        
+          end_if_26:
+            tmp.50 = add_ptr(arr.3, index=5, scale=8)
+            tmp.49 = ptr.4 != tmp.50
+            if !tmp.49 jump end_if_28
+            return 3
+        
+          end_if_28:
+            tmp.52 = sign_extend 3
+            tmp.51 = ptr.4 - tmp.52
+            ptr.4 = tmp.51
+            tmp.53 = load tmp.51
+            tmp.55 = int_to_double 3
+            tmp.54 = tmp.53 != tmp.55
+            if !tmp.54 jump end_if_30
+            return 4
+        
+          end_if_30:
+            tmp.56 = add_ptr(ptr.4, index=0, scale=8)
+            tmp.57 = load tmp.56
+            tmp.59 = int_to_double 3
+            tmp.58 = tmp.57 != tmp.59
+            if !tmp.58 jump end_if_32
+            return 5
+        
+          end_if_32:
+            tmp.61 = add_ptr(arr.3, index=2, scale=8)
+            tmp.60 = ptr.4 != tmp.61
+            if !tmp.60 jump end_if_34
+            return 6
+        
+          end_if_34:
+            tmp.63 = i - 1
+            tmp.64 = sign_extend tmp.63
+            tmp.62 = ptr.4 + tmp.64
+            ptr.4 = tmp.62
+            tmp.66 = add_ptr(arr.3, index=5, scale=8)
+            tmp.65 = tmp.62 != tmp.66
+            if !tmp.65 jump end_if_36
+            return 7
+        
+          end_if_36:
+            tmp.67 = load ptr.4
+            tmp.69 = int_to_double 6
+            tmp.68 = tmp.67 != tmp.69
+            if !tmp.68 jump end_if_38
+            return 8
+        
+          end_if_38:
+            tmp.72 = i
+            tmp.71 = 4294967295U + tmp.72
+            tmp.73 = zero_extend tmp.71
+            tmp.70 = ptr.4 - tmp.73
+            ptr.4 = tmp.70
+            tmp.75 = add_ptr(arr.3, index=2, scale=8)
+            tmp.74 = tmp.70 != tmp.75
+            if !tmp.74 jump end_if_40
+            return 9
+        
+          end_if_40:
+            tmp.76 = load ptr.4
+            tmp.78 = int_to_double 3
+            tmp.77 = tmp.76 != tmp.78
+            if !tmp.77 jump end_if_42
+            return 10
+        
+          end_if_42:
+            l.5 = 9223372036854775807L
+            tmp.80 = l.5 - 9223372036854775806L
+            tmp.81 = tmp.80
+            tmp.79 = ptr.4 + tmp.81
+            ptr.4 = tmp.79
+            tmp.83 = add_ptr(arr.3, index=3, scale=8)
+            tmp.82 = tmp.79 != tmp.83
+            if !tmp.82 jump end_if_44
+            return 11
+        
+          end_if_44:
+            tmp.84 = load ptr.4
+            tmp.86 = int_to_double 4
+            tmp.85 = tmp.84 != tmp.86
+            if !tmp.85 jump end_if_46
+            return 12
+        
+          end_if_46:
+            return 0
+            return 0
+        }
+        global function main() { 
+            tmp.87 = int_array()
+            result.6 = tmp.87
+            if !tmp.87 jump end_if_48
+            return result.6
+        
+          end_if_48:
+            tmp.88 = double_array()
+            result.6 = tmp.88
+            if !tmp.88 jump end_if_50
+            tmp.89 = result.6 + 12
+            return tmp.89
+        
+          end_if_50:
+            return 0
+            return 0
+        }
+        static arr.3: Array(6,Double) = [ 1D, 2D, 3D, 4D, 5D, 6D]
+        static global i: Int = 4
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_incr_and_decr_nested_pointers() {
+    let src = r#"
+        
+        int main(void) {
+            long arr[2][3][4] = {
+                {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}},
+                {{13, 14, 15, 16}, {17, 18, 19, 20}, {21, 22, 23, 24}}};
+            long (*outer_ptr)[3][4] = arr + 1;
+            if (outer_ptr-- != &arr[1]) {
+                return 1;
+            }
+            if (outer_ptr[0][1] != arr[0][1]) {
+                return 2;
+            }
+            if ((++outer_ptr)[0][2][3] != 24) {
+                return 3;
+            }
+            if (outer_ptr[0][2][3] != 24) {
+                return 4;
+            }
+            long (*inner_ptr)[4] = arr[0] + 1;
+            if (inner_ptr++[0][2] != 7) {
+                return 5;
+            }
+            if (inner_ptr[0][2] != 11) {
+                return 6;
+            }
+            if ((--inner_ptr)[0][1] != 6) {
+                return 7;
+            }
+            long *scalar_ptr = arr[1][2];
+            if (scalar_ptr--[2] != 23) {
+                return 8;
+            }
+            if (scalar_ptr[2] != 22) {
+                return 9;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = sign_extend 1
+            copy_to_offset(dst=arr.0, tmp.0, offset=0)
+            tmp.1 = sign_extend 2
+            copy_to_offset(dst=arr.0, tmp.1, offset=8)
+            tmp.2 = sign_extend 3
+            copy_to_offset(dst=arr.0, tmp.2, offset=16)
+            tmp.3 = sign_extend 4
+            copy_to_offset(dst=arr.0, tmp.3, offset=24)
+            tmp.4 = sign_extend 5
+            copy_to_offset(dst=arr.0, tmp.4, offset=32)
+            tmp.5 = sign_extend 6
+            copy_to_offset(dst=arr.0, tmp.5, offset=40)
+            tmp.6 = sign_extend 7
+            copy_to_offset(dst=arr.0, tmp.6, offset=48)
+            tmp.7 = sign_extend 8
+            copy_to_offset(dst=arr.0, tmp.7, offset=56)
+            tmp.8 = sign_extend 9
+            copy_to_offset(dst=arr.0, tmp.8, offset=64)
+            tmp.9 = sign_extend 10
+            copy_to_offset(dst=arr.0, tmp.9, offset=72)
+            tmp.10 = sign_extend 11
+            copy_to_offset(dst=arr.0, tmp.10, offset=80)
+            tmp.11 = sign_extend 12
+            copy_to_offset(dst=arr.0, tmp.11, offset=88)
+            tmp.12 = sign_extend 13
+            copy_to_offset(dst=arr.0, tmp.12, offset=96)
+            tmp.13 = sign_extend 14
+            copy_to_offset(dst=arr.0, tmp.13, offset=104)
+            tmp.14 = sign_extend 15
+            copy_to_offset(dst=arr.0, tmp.14, offset=112)
+            tmp.15 = sign_extend 16
+            copy_to_offset(dst=arr.0, tmp.15, offset=120)
+            tmp.16 = sign_extend 17
+            copy_to_offset(dst=arr.0, tmp.16, offset=128)
+            tmp.17 = sign_extend 18
+            copy_to_offset(dst=arr.0, tmp.17, offset=136)
+            tmp.18 = sign_extend 19
+            copy_to_offset(dst=arr.0, tmp.18, offset=144)
+            tmp.19 = sign_extend 20
+            copy_to_offset(dst=arr.0, tmp.19, offset=152)
+            tmp.20 = sign_extend 21
+            copy_to_offset(dst=arr.0, tmp.20, offset=160)
+            tmp.21 = sign_extend 22
+            copy_to_offset(dst=arr.0, tmp.21, offset=168)
+            tmp.22 = sign_extend 23
+            copy_to_offset(dst=arr.0, tmp.22, offset=176)
+            tmp.23 = sign_extend 24
+            copy_to_offset(dst=arr.0, tmp.23, offset=184)
+            tmp.24 = add_ptr(arr.0, index=1, scale=8)
+            outer_ptr.1 = tmp.24
+            tmp.25 = outer_ptr.1
+            tmp.26 = dec outer_ptr.1
+            outer_ptr.1 = tmp.26
+            tmp.28 = add_ptr(arr.0, index=1, scale=96)
+            tmp.27 = tmp.25 != tmp.28
+            if !tmp.27 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.30 = add_ptr(outer_ptr.1, index=0, scale=8)
+            tmp.31 = load tmp.30
+            tmp.29 = add_ptr(tmp.31, index=1, scale=8)
+            tmp.32 = load tmp.29
+            tmp.35 = add_ptr(arr.0, index=0, scale=8)
+            tmp.36 = load tmp.35
+            tmp.34 = add_ptr(tmp.36, index=1, scale=8)
+            tmp.37 = load tmp.34
+            tmp.33 = tmp.32 != tmp.37
+            if !tmp.33 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.41 = inc outer_ptr.1
+            outer_ptr.1 = tmp.41
+            tmp.40 = add_ptr(tmp.41, index=0, scale=8)
+            tmp.42 = load tmp.40
+            tmp.39 = add_ptr(tmp.42, index=2, scale=8)
+            tmp.43 = load tmp.39
+            tmp.38 = add_ptr(tmp.43, index=3, scale=8)
+            tmp.44 = load tmp.38
+            tmp.46 = sign_extend 24
+            tmp.45 = tmp.44 != tmp.46
+            if !tmp.45 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.49 = add_ptr(outer_ptr.1, index=0, scale=8)
+            tmp.50 = load tmp.49
+            tmp.48 = add_ptr(tmp.50, index=2, scale=8)
+            tmp.51 = load tmp.48
+            tmp.47 = add_ptr(tmp.51, index=3, scale=8)
+            tmp.52 = load tmp.47
+            tmp.54 = sign_extend 24
+            tmp.53 = tmp.52 != tmp.54
+            if !tmp.53 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.55 = add_ptr(arr.0, index=0, scale=8)
+            tmp.56 = load tmp.55
+            tmp.57 = add_ptr(tmp.56, index=1, scale=8)
+            inner_ptr.2 = tmp.57
+            tmp.60 = inner_ptr.2
+            tmp.61 = inc inner_ptr.2
+            inner_ptr.2 = tmp.61
+            tmp.59 = add_ptr(tmp.60, index=0, scale=8)
+            tmp.62 = load tmp.59
+            tmp.58 = add_ptr(tmp.62, index=2, scale=8)
+            tmp.63 = load tmp.58
+            tmp.65 = sign_extend 7
+            tmp.64 = tmp.63 != tmp.65
+            if !tmp.64 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.67 = add_ptr(inner_ptr.2, index=0, scale=8)
+            tmp.68 = load tmp.67
+            tmp.66 = add_ptr(tmp.68, index=2, scale=8)
+            tmp.69 = load tmp.66
+            tmp.71 = sign_extend 11
+            tmp.70 = tmp.69 != tmp.71
+            if !tmp.70 jump end_if_10
+            return 6
+        
+          end_if_10:
+            tmp.74 = dec inner_ptr.2
+            inner_ptr.2 = tmp.74
+            tmp.73 = add_ptr(tmp.74, index=0, scale=8)
+            tmp.75 = load tmp.73
+            tmp.72 = add_ptr(tmp.75, index=1, scale=8)
+            tmp.76 = load tmp.72
+            tmp.78 = sign_extend 6
+            tmp.77 = tmp.76 != tmp.78
+            if !tmp.77 jump end_if_12
+            return 7
+        
+          end_if_12:
+            tmp.80 = add_ptr(arr.0, index=1, scale=8)
+            tmp.81 = load tmp.80
+            tmp.79 = add_ptr(tmp.81, index=2, scale=8)
+            tmp.82 = load tmp.79
+            scalar_ptr.3 = tmp.82
+            tmp.84 = scalar_ptr.3
+            tmp.85 = dec scalar_ptr.3
+            scalar_ptr.3 = tmp.85
+            tmp.83 = add_ptr(tmp.84, index=2, scale=8)
+            tmp.86 = load tmp.83
+            tmp.88 = sign_extend 23
+            tmp.87 = tmp.86 != tmp.88
+            if !tmp.87 jump end_if_14
+            return 8
+        
+          end_if_14:
+            tmp.89 = add_ptr(scalar_ptr.3, index=2, scale=8)
+            tmp.90 = load tmp.89
+            tmp.92 = sign_extend 22
+            tmp.91 = tmp.90 != tmp.92
+            if !tmp.91 jump end_if_16
+            return 9
+        
+          end_if_16:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_incr_and_decr_pointers() {
+    let src = r#"
+        
+        int main(void) {
+            double x[3] = {0.0, 1.0, 2.0};
+            double *ptr = x;
+            if (++ptr != x + 1) {
+                return 1;
+            }
+            if (*ptr != 1.0) {
+                return 2;
+            }
+            if (ptr++ != x + 1) {
+                return 3;
+            }
+            if (ptr != x + 2) {
+                return 4;
+            }
+            if (*ptr != 2.0) {
+                return 5;
+            }
+            if (--ptr != x + 1) {
+                return 6;
+            }
+            if (*ptr != 1.0) {
+                return 7;
+            }
+            if (ptr-- != x + 1) {
+                return 8;
+            }
+            if (*ptr != 0.0) {
+                return 9;
+            }
+            if (ptr != x) {
+                return 10;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=x.0, 0D, offset=0)
+            copy_to_offset(dst=x.0, 1D, offset=8)
+            copy_to_offset(dst=x.0, 2D, offset=16)
+            ptr.1 = x.0
+            tmp.0 = inc ptr.1
+            ptr.1 = tmp.0
+            tmp.2 = add_ptr(x.0, index=1, scale=8)
+            tmp.1 = tmp.0 != tmp.2
+            if !tmp.1 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.3 = load ptr.1
+            tmp.4 = tmp.3 != 1D
+            if !tmp.4 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.5 = ptr.1
+            tmp.6 = inc ptr.1
+            ptr.1 = tmp.6
+            tmp.8 = add_ptr(x.0, index=1, scale=8)
+            tmp.7 = tmp.5 != tmp.8
+            if !tmp.7 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.10 = add_ptr(x.0, index=2, scale=8)
+            tmp.9 = ptr.1 != tmp.10
+            if !tmp.9 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.11 = load ptr.1
+            tmp.12 = tmp.11 != 2D
+            if !tmp.12 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.13 = dec ptr.1
+            ptr.1 = tmp.13
+            tmp.15 = add_ptr(x.0, index=1, scale=8)
+            tmp.14 = tmp.13 != tmp.15
+            if !tmp.14 jump end_if_10
+            return 6
+        
+          end_if_10:
+            tmp.16 = load ptr.1
+            tmp.17 = tmp.16 != 1D
+            if !tmp.17 jump end_if_12
+            return 7
+        
+          end_if_12:
+            tmp.18 = ptr.1
+            tmp.19 = dec ptr.1
+            ptr.1 = tmp.19
+            tmp.21 = add_ptr(x.0, index=1, scale=8)
+            tmp.20 = tmp.18 != tmp.21
+            if !tmp.20 jump end_if_14
+            return 8
+        
+          end_if_14:
+            tmp.22 = load ptr.1
+            tmp.23 = tmp.22 != 0D
+            if !tmp.23 jump end_if_16
+            return 9
+        
+          end_if_16:
+            tmp.24 = ptr.1 != x.0
+            if !tmp.24 jump end_if_18
+            return 10
+        
+          end_if_18:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_incr_decr_subscripted_vals() {
+    let src = r#"
+        int i = 2;
+        int j = 1;
+        int k = 0;
+        int main(void) {
+            int arr[3][2][2] = {
+                {{1, 2}, {3, 4}}, {{5, 6}, {7, 8}}, {{9, 10}, {11, 12}}};
+            if (arr[i][j][k]++ != 11) {
+                return 1;
+            }
+            if (arr[i][j][k] != 12) {
+                return 2;
+            }
+            if (++arr[--i][j--][++k] != 9) {
+                return 3;
+            }
+            if (arr[i][j][k] != 6) {
+                return 4;
+            }
+            if (--arr[i][j][k] != 5) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=arr.0, 1, offset=0)
+            copy_to_offset(dst=arr.0, 2, offset=4)
+            copy_to_offset(dst=arr.0, 3, offset=8)
+            copy_to_offset(dst=arr.0, 4, offset=12)
+            copy_to_offset(dst=arr.0, 5, offset=16)
+            copy_to_offset(dst=arr.0, 6, offset=20)
+            copy_to_offset(dst=arr.0, 7, offset=24)
+            copy_to_offset(dst=arr.0, 8, offset=28)
+            copy_to_offset(dst=arr.0, 9, offset=32)
+            copy_to_offset(dst=arr.0, 10, offset=36)
+            copy_to_offset(dst=arr.0, 11, offset=40)
+            copy_to_offset(dst=arr.0, 12, offset=44)
+            tmp.2 = add_ptr(arr.0, index=i, scale=8)
+            tmp.3 = load tmp.2
+            tmp.1 = add_ptr(tmp.3, index=j, scale=8)
+            tmp.4 = load tmp.1
+            tmp.0 = add_ptr(tmp.4, index=k, scale=4)
+            tmp.5 = load tmp.0
+            tmp.6 = tmp.5
+            tmp.7 = inc tmp.5
+            tmp.0 = store tmp.7
+            tmp.8 = tmp.6 != 11
+            if !tmp.8 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.11 = add_ptr(arr.0, index=i, scale=8)
+            tmp.12 = load tmp.11
+            tmp.10 = add_ptr(tmp.12, index=j, scale=8)
+            tmp.13 = load tmp.10
+            tmp.9 = add_ptr(tmp.13, index=k, scale=4)
+            tmp.14 = load tmp.9
+            tmp.15 = tmp.14 != 12
+            if !tmp.15 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.19 = dec i
+            i = tmp.19
+            tmp.18 = add_ptr(arr.0, index=tmp.19, scale=8)
+            tmp.20 = load tmp.18
+            tmp.21 = j
+            tmp.22 = dec j
+            j = tmp.22
+            tmp.17 = add_ptr(tmp.20, index=tmp.21, scale=8)
+            tmp.23 = load tmp.17
+            tmp.24 = inc k
+            k = tmp.24
+            tmp.16 = add_ptr(tmp.23, index=tmp.24, scale=4)
+            tmp.25 = load tmp.16
+            tmp.26 = inc tmp.25
+            tmp.16 = store tmp.26
+            tmp.27 = tmp.26 != 9
+            if !tmp.27 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.30 = add_ptr(arr.0, index=i, scale=8)
+            tmp.31 = load tmp.30
+            tmp.29 = add_ptr(tmp.31, index=j, scale=8)
+            tmp.32 = load tmp.29
+            tmp.28 = add_ptr(tmp.32, index=k, scale=4)
+            tmp.33 = load tmp.28
+            tmp.34 = tmp.33 != 6
+            if !tmp.34 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.37 = add_ptr(arr.0, index=i, scale=8)
+            tmp.38 = load tmp.37
+            tmp.36 = add_ptr(tmp.38, index=j, scale=8)
+            tmp.39 = load tmp.36
+            tmp.35 = add_ptr(tmp.39, index=k, scale=4)
+            tmp.40 = load tmp.35
+            tmp.41 = dec tmp.40
+            tmp.35 = store tmp.41
+            tmp.42 = tmp.41 != 5
+            if !tmp.42 jump end_if_8
+            return 5
+        
+          end_if_8:
+            return 0
+            return 0
+        }
+        static global i: Int = 2
+        static global j: Int = 1
+        static global k: Int = 0
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_extra_credit_postfix_prefix_precedence() {
+    let src = r#"
+        
+        int idx = 3;
+        int main(void) {
+            int arr[5] = {1, 2, 3, 4, 5};
+            int *ptr = arr + 1;
+            int result = ++ptr--[idx];
+            if (result != 6) {
+                return 1;
+            }
+            if (*ptr != 1) {
+                return 2;
+            }
+            if (ptr != arr) {
+                return 3;
+            }
+            if (*ptr++ != 1) {
+                return 4;
+            }
+            if (*ptr != 2) {
+                return 5;
+            }
+            for (int i = 0; i < 4; i++) {
+                if (arr[i] != i + 1) {
+                    return 6;
+                }
+            }
+            if (arr[4] != 6) {
+                return 7;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=arr.0, 1, offset=0)
+            copy_to_offset(dst=arr.0, 2, offset=4)
+            copy_to_offset(dst=arr.0, 3, offset=8)
+            copy_to_offset(dst=arr.0, 4, offset=12)
+            copy_to_offset(dst=arr.0, 5, offset=16)
+            tmp.0 = add_ptr(arr.0, index=1, scale=8)
+            ptr.1 = tmp.0
+            tmp.2 = ptr.1
+            tmp.3 = dec ptr.1
+            ptr.1 = tmp.3
+            tmp.1 = add_ptr(tmp.2, index=idx, scale=4)
+            tmp.4 = load tmp.1
+            tmp.5 = inc tmp.4
+            tmp.1 = store tmp.5
+            result.2 = tmp.5
+            tmp.6 = result.2 != 6
+            if !tmp.6 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.7 = load ptr.1
+            tmp.8 = tmp.7 != 1
+            if !tmp.8 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.9 = ptr.1 != arr.0
+            if !tmp.9 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.10 = ptr.1
+            tmp.11 = inc ptr.1
+            ptr.1 = tmp.11
+            tmp.12 = load tmp.10
+            tmp.13 = tmp.12 != 1
+            if !tmp.13 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.14 = load ptr.1
+            tmp.15 = tmp.14 != 2
+            if !tmp.15 jump end_if_8
+            return 5
+        
+          end_if_8:
+            i.3 = 0
+        
+          start_loop_0:
+            tmp.16 = i.3 < 4
+            if !tmp.16 jump break_loop_0
+            tmp.17 = add_ptr(arr.0, index=i.3, scale=4)
+            tmp.18 = load tmp.17
+            tmp.20 = i.3 + 1
+            tmp.19 = tmp.18 != tmp.20
+            if !tmp.19 jump end_if_10
+            return 6
+        
+          end_if_10:
+        
+          continue_loop_0:
+            tmp.21 = i.3
+            tmp.22 = inc i.3
+            i.3 = tmp.22
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.23 = add_ptr(arr.0, index=4, scale=4)
+            tmp.24 = load tmp.23
+            tmp.25 = tmp.24 != 6
+            if !tmp.25 jump end_if_12
+            return 7
+        
+          end_if_12:
+            return 0
+            return 0
+        }
+        static global idx: Int = 3
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_initialization_automatic() {
+    let src = r#"
+        int test_simple(void) {
+            unsigned long arr[3] = {18446744073709551615UL, 9223372036854775807UL,
+                                    100ul};
+            return (arr[0] == 18446744073709551615UL &&
+                    arr[1] == 9223372036854775807UL && arr[2] == 100ul);
+        }
+        int test_partial(void) {
+            double arr[5] = {1.0, 123e4};
+            return (arr[0] == 1.0 && arr[1] == 123e4 && !arr[2] && !arr[3] && !arr[4]);
+        }
+        int test_non_constant(long negative_7billion, int *ptr) {
+            *ptr = 1;
+            extern int three(void);
+            long var = negative_7billion * three();
+            long arr[5] = {
+                negative_7billion,
+                three() * 7l,
+                -(long)*ptr,
+                var + (negative_7billion ? 2 : 3)
+            };
+            return (arr[0] == -7000000000 && arr[1] == 21l && arr[2] == -1l &&
+                    arr[3] == -20999999998l && arr[4] == 0l);
+        }
+        int three(void) {
+            return 3;
+        }
+        long global_one = 1l;
+        int test_type_conversion(int *ptr) {
+            *ptr = -100;
+            unsigned long arr[4] = {
+                3458764513821589504.0,
+                *ptr,
+                (unsigned int)18446744073709551615UL,
+                -global_one
+            };
+            return (arr[0] == 3458764513821589504ul &&
+                    arr[1] == 18446744073709551516ul && arr[2] == 4294967295U &&
+                    arr[3] == 18446744073709551615UL);
+        }
+        int test_preserve_stack(void) {
+            int i = -1;
+            int arr[3] = {global_one * 2l, global_one + three()};
+            unsigned int u = 2684366905;
+            if (i != -1) {
+                return 0;
+            }
+            if (u != 2684366905) {
+                return 0;
+            }
+            return (arr[0] == 2 && arr[1] == 4 && !arr[2]);
+        }
+        int main(void) {
+            if (!test_simple()) {
+                return 1;
+            }
+            if (!test_partial()) {
+                return 2;
+            }
+            long negative_seven_billion = -7000000000l;
+            int i = 0;
+            if (!test_non_constant(negative_seven_billion, &i)) {
+                return 3;
+            }
+            if (!test_type_conversion(&i)) {
+                return 4;
+            }
+            if (!test_preserve_stack()) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function test_simple() { 
+            copy_to_offset(dst=arr.0, 18446744073709551615UL, offset=0)
+            copy_to_offset(dst=arr.0, 9223372036854775807UL, offset=8)
+            copy_to_offset(dst=arr.0, 100UL, offset=16)
+            tmp.0 = add_ptr(arr.0, index=0, scale=8)
+            tmp.1 = load tmp.0
+            tmp.2 = tmp.1 == 18446744073709551615UL
+            if !tmp.2 jump and_false_0
+            tmp.5 = add_ptr(arr.0, index=1, scale=8)
+            tmp.6 = load tmp.5
+            tmp.7 = tmp.6 == 9223372036854775807UL
+            if !tmp.7 jump and_false_0
+            tmp.4 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.4 = 0
+        
+          and_end_1:
+            if !tmp.4 jump and_false_2
+            tmp.10 = add_ptr(arr.0, index=2, scale=8)
+            tmp.11 = load tmp.10
+            tmp.12 = tmp.11 == 100UL
+            if !tmp.12 jump and_false_2
+            tmp.9 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.9 = 0
+        
+          and_end_3:
+            return tmp.9
+            return 0
+        }
+        global function test_partial() { 
+            copy_to_offset(dst=arr.1, 1D, offset=0)
+            copy_to_offset(dst=arr.1, 1230000D, offset=8)
+            copy_to_offset(dst=arr.1, 0D, offset=16)
+            copy_to_offset(dst=arr.1, 0D, offset=24)
+            copy_to_offset(dst=arr.1, 0D, offset=32)
+            tmp.13 = add_ptr(arr.1, index=0, scale=8)
+            tmp.14 = load tmp.13
+            tmp.15 = tmp.14 == 1D
+            if !tmp.15 jump and_false_4
+            tmp.18 = add_ptr(arr.1, index=1, scale=8)
+            tmp.19 = load tmp.18
+            tmp.20 = tmp.19 == 1230000D
+            if !tmp.20 jump and_false_4
+            tmp.17 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.17 = 0
+        
+          and_end_5:
+            if !tmp.17 jump and_false_6
+            tmp.23 = add_ptr(arr.1, index=2, scale=8)
+            tmp.24 = load tmp.23
+            tmp.25 = ! tmp.24
+            if !tmp.25 jump and_false_6
+            tmp.22 = 1
+            jump and_end_7
+        
+          and_false_6:
+            tmp.22 = 0
+        
+          and_end_7:
+            if !tmp.22 jump and_false_8
+            tmp.28 = add_ptr(arr.1, index=3, scale=8)
+            tmp.29 = load tmp.28
+            tmp.30 = ! tmp.29
+            if !tmp.30 jump and_false_8
+            tmp.27 = 1
+            jump and_end_9
+        
+          and_false_8:
+            tmp.27 = 0
+        
+          and_end_9:
+            if !tmp.27 jump and_false_10
+            tmp.33 = add_ptr(arr.1, index=4, scale=8)
+            tmp.34 = load tmp.33
+            tmp.35 = ! tmp.34
+            if !tmp.35 jump and_false_10
+            tmp.32 = 1
+            jump and_end_11
+        
+          and_false_10:
+            tmp.32 = 0
+        
+          and_end_11:
+            return tmp.32
+            return 0
+        }
+        global function test_non_constant(negative_7billion.2, ptr.3) { 
+            ptr.3 = store 1
+            tmp.37 = three()
+            tmp.38 = sign_extend tmp.37
+            tmp.36 = negative_7billion.2 * tmp.38
+            var.4 = tmp.36
+            copy_to_offset(dst=arr.5, negative_7billion.2, offset=0)
+            tmp.39 = three()
+            tmp.40 = sign_extend tmp.39
+            tmp.41 = tmp.40 * 7L
+            copy_to_offset(dst=arr.5, tmp.41, offset=8)
+            tmp.42 = load ptr.3
+            tmp.43 = sign_extend tmp.42
+            tmp.44 = - tmp.43
+            copy_to_offset(dst=arr.5, tmp.44, offset=16)
+            if !negative_7billion.2 jump else_13
+            tmp.46 = 2
+            jump end_if_12
+        
+          else_13:
+            tmp.46 = 3
+        
+          end_if_12:
+            tmp.47 = sign_extend tmp.46
+            tmp.45 = var.4 + tmp.47
+            copy_to_offset(dst=arr.5, tmp.45, offset=24)
+            copy_to_offset(dst=arr.5, 0L, offset=32)
+            tmp.48 = add_ptr(arr.5, index=0, scale=8)
+            tmp.49 = load tmp.48
+            tmp.51 = - 7000000000L
+            tmp.50 = tmp.49 == tmp.51
+            if !tmp.50 jump and_false_14
+            tmp.54 = add_ptr(arr.5, index=1, scale=8)
+            tmp.55 = load tmp.54
+            tmp.56 = tmp.55 == 21L
+            if !tmp.56 jump and_false_14
+            tmp.53 = 1
+            jump and_end_15
+        
+          and_false_14:
+            tmp.53 = 0
+        
+          and_end_15:
+            if !tmp.53 jump and_false_16
+            tmp.59 = add_ptr(arr.5, index=2, scale=8)
+            tmp.60 = load tmp.59
+            tmp.62 = - 1L
+            tmp.61 = tmp.60 == tmp.62
+            if !tmp.61 jump and_false_16
+            tmp.58 = 1
+            jump and_end_17
+        
+          and_false_16:
+            tmp.58 = 0
+        
+          and_end_17:
+            if !tmp.58 jump and_false_18
+            tmp.65 = add_ptr(arr.5, index=3, scale=8)
+            tmp.66 = load tmp.65
+            tmp.68 = - 20999999998L
+            tmp.67 = tmp.66 == tmp.68
+            if !tmp.67 jump and_false_18
+            tmp.64 = 1
+            jump and_end_19
+        
+          and_false_18:
+            tmp.64 = 0
+        
+          and_end_19:
+            if !tmp.64 jump and_false_20
+            tmp.71 = add_ptr(arr.5, index=4, scale=8)
+            tmp.72 = load tmp.71
+            tmp.73 = tmp.72 == 0L
+            if !tmp.73 jump and_false_20
+            tmp.70 = 1
+            jump and_end_21
+        
+          and_false_20:
+            tmp.70 = 0
+        
+          and_end_21:
+            return tmp.70
+            return 0
+        }
+        global function three() { 
+            return 3
+            return 0
+        }
+        global function test_type_conversion(ptr.6) { 
+            tmp.74 = - 100
+            ptr.6 = store tmp.74
+            tmp.75 = double_to_uint 3458764513821589500D
+            copy_to_offset(dst=arr.7, tmp.75, offset=0)
+            tmp.76 = load ptr.6
+            tmp.77 = sign_extend tmp.76
+            copy_to_offset(dst=arr.7, tmp.77, offset=8)
+            tmp.78 = truncate 18446744073709551615UL
+            tmp.79 = zero_extend tmp.78
+            copy_to_offset(dst=arr.7, tmp.79, offset=16)
+            tmp.80 = - global_one
+            tmp.81 = tmp.80
+            copy_to_offset(dst=arr.7, tmp.81, offset=24)
+            tmp.82 = add_ptr(arr.7, index=0, scale=8)
+            tmp.83 = load tmp.82
+            tmp.84 = tmp.83 == 3458764513821589504UL
+            if !tmp.84 jump and_false_22
+            tmp.87 = add_ptr(arr.7, index=1, scale=8)
+            tmp.88 = load tmp.87
+            tmp.89 = tmp.88 == 18446744073709551516UL
+            if !tmp.89 jump and_false_22
+            tmp.86 = 1
+            jump and_end_23
+        
+          and_false_22:
+            tmp.86 = 0
+        
+          and_end_23:
+            if !tmp.86 jump and_false_24
+            tmp.92 = add_ptr(arr.7, index=2, scale=8)
+            tmp.93 = load tmp.92
+            tmp.95 = zero_extend 4294967295U
+            tmp.94 = tmp.93 == tmp.95
+            if !tmp.94 jump and_false_24
+            tmp.91 = 1
+            jump and_end_25
+        
+          and_false_24:
+            tmp.91 = 0
+        
+          and_end_25:
+            if !tmp.91 jump and_false_26
+            tmp.98 = add_ptr(arr.7, index=3, scale=8)
+            tmp.99 = load tmp.98
+            tmp.100 = tmp.99 == 18446744073709551615UL
+            if !tmp.100 jump and_false_26
+            tmp.97 = 1
+            jump and_end_27
+        
+          and_false_26:
+            tmp.97 = 0
+        
+          and_end_27:
+            return tmp.97
+            return 0
+        }
+        global function test_preserve_stack() { 
+            tmp.101 = - 1
+            i.8 = tmp.101
+            tmp.102 = global_one * 2L
+            tmp.103 = truncate tmp.102
+            copy_to_offset(dst=arr.9, tmp.103, offset=0)
+            tmp.105 = three()
+            tmp.106 = sign_extend tmp.105
+            tmp.104 = global_one + tmp.106
+            tmp.107 = truncate tmp.104
+            copy_to_offset(dst=arr.9, tmp.107, offset=4)
+            copy_to_offset(dst=arr.9, 0, offset=8)
+            tmp.108 = truncate 2684366905L
+            u.10 = tmp.108
+            tmp.110 = - 1
+            tmp.109 = i.8 != tmp.110
+            if !tmp.109 jump end_if_28
+            return 0
+        
+          end_if_28:
+            tmp.111 = zero_extend u.10
+            tmp.112 = tmp.111 != 2684366905L
+            if !tmp.112 jump end_if_30
+            return 0
+        
+          end_if_30:
+            tmp.113 = add_ptr(arr.9, index=0, scale=4)
+            tmp.114 = load tmp.113
+            tmp.115 = tmp.114 == 2
+            if !tmp.115 jump and_false_32
+            tmp.118 = add_ptr(arr.9, index=1, scale=4)
+            tmp.119 = load tmp.118
+            tmp.120 = tmp.119 == 4
+            if !tmp.120 jump and_false_32
+            tmp.117 = 1
+            jump and_end_33
+        
+          and_false_32:
+            tmp.117 = 0
+        
+          and_end_33:
+            if !tmp.117 jump and_false_34
+            tmp.123 = add_ptr(arr.9, index=2, scale=4)
+            tmp.124 = load tmp.123
+            tmp.125 = ! tmp.124
+            if !tmp.125 jump and_false_34
+            tmp.122 = 1
+            jump and_end_35
+        
+          and_false_34:
+            tmp.122 = 0
+        
+          and_end_35:
+            return tmp.122
+            return 0
+        }
+        global function main() { 
+            tmp.126 = test_simple()
+            tmp.127 = ! tmp.126
+            if !tmp.127 jump end_if_36
+            return 1
+        
+          end_if_36:
+            tmp.128 = test_partial()
+            tmp.129 = ! tmp.128
+            if !tmp.129 jump end_if_38
+            return 2
+        
+          end_if_38:
+            tmp.130 = - 7000000000L
+            negative_seven_billion.11 = tmp.130
+            i.12 = 0
+            tmp.131 = get_address i.12
+            tmp.132 = test_non_constant(negative_seven_billion.11, tmp.131)
+            tmp.133 = ! tmp.132
+            if !tmp.133 jump end_if_40
+            return 3
+        
+          end_if_40:
+            tmp.134 = get_address i.12
+            tmp.135 = test_type_conversion(tmp.134)
+            tmp.136 = ! tmp.135
+            if !tmp.136 jump end_if_42
+            return 4
+        
+          end_if_42:
+            tmp.137 = test_preserve_stack()
+            tmp.138 = ! tmp.137
+            if !tmp.138 jump end_if_44
+            return 5
+        
+          end_if_44:
+            return 0
+            return 0
+        }
+        static global global_one: Long = 1L
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_initialization_automatic_nested() {
+    let src = r#"
+        int test_simple(void) {
+            int arr[3][3] = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+            for (int i = 0; i < 3; i = i + 1) {
+                for (int j = 0; j < 3; j = j + 1) {
+                    if (arr[i][j] != i * 3 + j + 1) {
+                        return 0;
+                    }
+                }
+            }
+            return 1;
+        }
+        int test_partial(void) {
+            int first_half_only[4][2][6] = {
+                {{1, 2, 3}},
+                {{4, 5, 6}}
+            };
+            int expected = 1;
+            for (int i = 0; i < 4; i = i + 1) {
+                for (int j = 0; j < 2; j = j + 1) {
+                    for (int k = 0; k < 6; k = k + 1) {
+                        int val = first_half_only[i][j][k];
+                        if (i > 1 || j > 0 || k > 2 ) {
+                            if (val) {
+                                return 0;
+                            }
+                        } else {
+                            if (val != expected) {
+                                return 0;
+                            }
+                            expected = expected + 1;
+                        }
+                    }
+                }
+            }
+            return 1;
+        }
+        int test_non_constant_and_type_conversion(void) {
+            extern unsigned int three(void);
+            static int x = 2000;
+            int negative_four = -4;
+            int *ptr = &negative_four;
+            double arr[3][2] = {
+                { x, x / *ptr },
+                { three() }
+            };
+            if (arr[0][0] != 2000.0 || arr[0][1] != -500.0 || arr[1][0] != 3.0) {
+                return 0;
+            }
+            if (arr[1][1] || arr[2][0] || arr[2][1]) {
+                return 0;
+            }
+            return 1;
+        }
+        unsigned int three(void) {
+            return 3u;
+        }
+        long one = 1l;
+        int test_preserve_stack(void) {
+            int i = -1;
+            int arr[3][1] = { {one * 2l}, {one + three()} };
+            unsigned int u = 2684366905;
+            if (i != -1) {
+                return 0;
+            }
+            if (u != 2684366905) {
+                return 0;
+            }
+            if ( arr[0][0] != 2 || arr[1][0] != 4 || arr[2][0] != 0 ) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_simple()) {
+                return 1;
+            }
+            if (!test_partial()) {
+                return 2;
+            }
+            if (!test_non_constant_and_type_conversion()) {
+                return 3;
+            }
+            if (!test_preserve_stack()) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function test_simple() { 
+            copy_to_offset(dst=arr.0, 1, offset=0)
+            copy_to_offset(dst=arr.0, 2, offset=4)
+            copy_to_offset(dst=arr.0, 3, offset=8)
+            copy_to_offset(dst=arr.0, 4, offset=12)
+            copy_to_offset(dst=arr.0, 5, offset=16)
+            copy_to_offset(dst=arr.0, 6, offset=20)
+            copy_to_offset(dst=arr.0, 7, offset=24)
+            copy_to_offset(dst=arr.0, 8, offset=28)
+            copy_to_offset(dst=arr.0, 9, offset=32)
+            i.1 = 0
+        
+          start_loop_0:
+            tmp.0 = i.1 < 3
+            if !tmp.0 jump break_loop_0
+            j.2 = 0
+        
+          start_loop_1:
+            tmp.1 = j.2 < 3
+            if !tmp.1 jump break_loop_1
+            tmp.3 = add_ptr(arr.0, index=i.1, scale=8)
+            tmp.4 = load tmp.3
+            tmp.2 = add_ptr(tmp.4, index=j.2, scale=4)
+            tmp.5 = load tmp.2
+            tmp.7 = i.1 * 3
+            tmp.8 = tmp.7 + j.2
+            tmp.9 = tmp.8 + 1
+            tmp.6 = tmp.5 != tmp.9
+            if !tmp.6 jump end_if_0
+            return 0
+        
+          end_if_0:
+        
+          continue_loop_1:
+            tmp.10 = j.2 + 1
+            j.2 = tmp.10
+            jump start_loop_1
+        
+          break_loop_1:
+        
+          continue_loop_0:
+            tmp.11 = i.1 + 1
+            i.1 = tmp.11
+            jump start_loop_0
+        
+          break_loop_0:
+            return 1
+            return 0
+        }
+        global function test_partial() { 
+            copy_to_offset(dst=first_half_only.3, 1, offset=0)
+            copy_to_offset(dst=first_half_only.3, 2, offset=4)
+            copy_to_offset(dst=first_half_only.3, 3, offset=8)
+            copy_to_offset(dst=first_half_only.3, 0, offset=12)
+            copy_to_offset(dst=first_half_only.3, 0, offset=16)
+            copy_to_offset(dst=first_half_only.3, 0, offset=20)
+            copy_to_offset(dst=first_half_only.3, 0, offset=24)
+            copy_to_offset(dst=first_half_only.3, 0, offset=28)
+            copy_to_offset(dst=first_half_only.3, 0, offset=32)
+            copy_to_offset(dst=first_half_only.3, 0, offset=36)
+            copy_to_offset(dst=first_half_only.3, 0, offset=40)
+            copy_to_offset(dst=first_half_only.3, 0, offset=44)
+            copy_to_offset(dst=first_half_only.3, 4, offset=48)
+            copy_to_offset(dst=first_half_only.3, 5, offset=52)
+            copy_to_offset(dst=first_half_only.3, 6, offset=56)
+            copy_to_offset(dst=first_half_only.3, 0, offset=60)
+            copy_to_offset(dst=first_half_only.3, 0, offset=64)
+            copy_to_offset(dst=first_half_only.3, 0, offset=68)
+            copy_to_offset(dst=first_half_only.3, 0, offset=72)
+            copy_to_offset(dst=first_half_only.3, 0, offset=76)
+            copy_to_offset(dst=first_half_only.3, 0, offset=80)
+            copy_to_offset(dst=first_half_only.3, 0, offset=84)
+            copy_to_offset(dst=first_half_only.3, 0, offset=88)
+            copy_to_offset(dst=first_half_only.3, 0, offset=92)
+            copy_to_offset(dst=first_half_only.3, 0, offset=96)
+            copy_to_offset(dst=first_half_only.3, 0, offset=100)
+            copy_to_offset(dst=first_half_only.3, 0, offset=104)
+            copy_to_offset(dst=first_half_only.3, 0, offset=108)
+            copy_to_offset(dst=first_half_only.3, 0, offset=112)
+            copy_to_offset(dst=first_half_only.3, 0, offset=116)
+            copy_to_offset(dst=first_half_only.3, 0, offset=120)
+            copy_to_offset(dst=first_half_only.3, 0, offset=124)
+            copy_to_offset(dst=first_half_only.3, 0, offset=128)
+            copy_to_offset(dst=first_half_only.3, 0, offset=132)
+            copy_to_offset(dst=first_half_only.3, 0, offset=136)
+            copy_to_offset(dst=first_half_only.3, 0, offset=140)
+            copy_to_offset(dst=first_half_only.3, 0, offset=144)
+            copy_to_offset(dst=first_half_only.3, 0, offset=148)
+            copy_to_offset(dst=first_half_only.3, 0, offset=152)
+            copy_to_offset(dst=first_half_only.3, 0, offset=156)
+            copy_to_offset(dst=first_half_only.3, 0, offset=160)
+            copy_to_offset(dst=first_half_only.3, 0, offset=164)
+            copy_to_offset(dst=first_half_only.3, 0, offset=168)
+            copy_to_offset(dst=first_half_only.3, 0, offset=172)
+            copy_to_offset(dst=first_half_only.3, 0, offset=176)
+            copy_to_offset(dst=first_half_only.3, 0, offset=180)
+            copy_to_offset(dst=first_half_only.3, 0, offset=184)
+            copy_to_offset(dst=first_half_only.3, 0, offset=188)
+            expected.4 = 1
+            i.5 = 0
+        
+          start_loop_2:
+            tmp.12 = i.5 < 4
+            if !tmp.12 jump break_loop_2
+            j.6 = 0
+        
+          start_loop_3:
+            tmp.13 = j.6 < 2
+            if !tmp.13 jump break_loop_3
+            k.7 = 0
+        
+          start_loop_4:
+            tmp.14 = k.7 < 6
+            if !tmp.14 jump break_loop_4
+            tmp.17 = add_ptr(first_half_only.3, index=i.5, scale=8)
+            tmp.18 = load tmp.17
+            tmp.16 = add_ptr(tmp.18, index=j.6, scale=8)
+            tmp.19 = load tmp.16
+            tmp.15 = add_ptr(tmp.19, index=k.7, scale=4)
+            tmp.20 = load tmp.15
+            val.8 = tmp.20
+            tmp.21 = i.5 > 1
+            if tmp.21 jump or_true_2
+            tmp.24 = j.6 > 0
+            if tmp.24 jump or_true_2
+            tmp.23 = 0
+            jump or_end_3
+        
+          or_true_2:
+            tmp.23 = 1
+        
+          or_end_3:
+            if tmp.23 jump or_true_4
+            tmp.27 = k.7 > 2
+            if tmp.27 jump or_true_4
+            tmp.26 = 0
+            jump or_end_5
+        
+          or_true_4:
+            tmp.26 = 1
+        
+          or_end_5:
+            if !tmp.26 jump else_7
+            if !val.8 jump end_if_8
+            return 0
+        
+          end_if_8:
+            jump end_if_6
+        
+          else_7:
+            tmp.28 = val.8 != expected.4
+            if !tmp.28 jump end_if_10
+            return 0
+        
+          end_if_10:
+            tmp.29 = expected.4 + 1
+            expected.4 = tmp.29
+        
+          end_if_6:
+        
+          continue_loop_4:
+            tmp.30 = k.7 + 1
+            k.7 = tmp.30
+            jump start_loop_4
+        
+          break_loop_4:
+        
+          continue_loop_3:
+            tmp.31 = j.6 + 1
+            j.6 = tmp.31
+            jump start_loop_3
+        
+          break_loop_3:
+        
+          continue_loop_2:
+            tmp.32 = i.5 + 1
+            i.5 = tmp.32
+            jump start_loop_2
+        
+          break_loop_2:
+            return 1
+            return 0
+        }
+        global function test_non_constant_and_type_conversion() { 
+            tmp.33 = - 4
+            negative_four.10 = tmp.33
+            tmp.34 = get_address negative_four.10
+            ptr.11 = tmp.34
+            tmp.35 = int_to_double x.9
+            copy_to_offset(dst=arr.12, tmp.35, offset=0)
+            tmp.37 = load ptr.11
+            tmp.36 = x.9 / tmp.37
+            tmp.38 = int_to_double tmp.36
+            copy_to_offset(dst=arr.12, tmp.38, offset=8)
+            tmp.39 = three()
+            tmp.40 = uint_to_double tmp.39
+            copy_to_offset(dst=arr.12, tmp.40, offset=16)
+            copy_to_offset(dst=arr.12, 0D, offset=24)
+            copy_to_offset(dst=arr.12, 0D, offset=32)
+            copy_to_offset(dst=arr.12, 0D, offset=40)
+            tmp.42 = add_ptr(arr.12, index=0, scale=8)
+            tmp.43 = load tmp.42
+            tmp.41 = add_ptr(tmp.43, index=0, scale=8)
+            tmp.44 = load tmp.41
+            tmp.45 = tmp.44 != 2000D
+            if tmp.45 jump or_true_12
+            tmp.49 = add_ptr(arr.12, index=0, scale=8)
+            tmp.50 = load tmp.49
+            tmp.48 = add_ptr(tmp.50, index=1, scale=8)
+            tmp.51 = load tmp.48
+            tmp.53 = - 500D
+            tmp.52 = tmp.51 != tmp.53
+            if tmp.52 jump or_true_12
+            tmp.47 = 0
+            jump or_end_13
+        
+          or_true_12:
+            tmp.47 = 1
+        
+          or_end_13:
+            if tmp.47 jump or_true_14
+            tmp.57 = add_ptr(arr.12, index=1, scale=8)
+            tmp.58 = load tmp.57
+            tmp.56 = add_ptr(tmp.58, index=0, scale=8)
+            tmp.59 = load tmp.56
+            tmp.60 = tmp.59 != 3D
+            if tmp.60 jump or_true_14
+            tmp.55 = 0
+            jump or_end_15
+        
+          or_true_14:
+            tmp.55 = 1
+        
+          or_end_15:
+            if !tmp.55 jump end_if_16
+            return 0
+        
+          end_if_16:
+            tmp.62 = add_ptr(arr.12, index=1, scale=8)
+            tmp.63 = load tmp.62
+            tmp.61 = add_ptr(tmp.63, index=1, scale=8)
+            tmp.64 = load tmp.61
+            if tmp.64 jump or_true_18
+            tmp.68 = add_ptr(arr.12, index=2, scale=8)
+            tmp.69 = load tmp.68
+            tmp.67 = add_ptr(tmp.69, index=0, scale=8)
+            tmp.70 = load tmp.67
+            if tmp.70 jump or_true_18
+            tmp.66 = 0
+            jump or_end_19
+        
+          or_true_18:
+            tmp.66 = 1
+        
+          or_end_19:
+            if tmp.66 jump or_true_20
+            tmp.74 = add_ptr(arr.12, index=2, scale=8)
+            tmp.75 = load tmp.74
+            tmp.73 = add_ptr(tmp.75, index=1, scale=8)
+            tmp.76 = load tmp.73
+            if tmp.76 jump or_true_20
+            tmp.72 = 0
+            jump or_end_21
+        
+          or_true_20:
+            tmp.72 = 1
+        
+          or_end_21:
+            if !tmp.72 jump end_if_22
+            return 0
+        
+          end_if_22:
+            return 1
+            return 0
+        }
+        global function three() { 
+            return 3U
+            return 0
+        }
+        global function test_preserve_stack() { 
+            tmp.77 = - 1
+            i.13 = tmp.77
+            tmp.78 = one * 2L
+            tmp.79 = truncate tmp.78
+            copy_to_offset(dst=arr.14, tmp.79, offset=0)
+            tmp.81 = three()
+            tmp.82 = zero_extend tmp.81
+            tmp.80 = one + tmp.82
+            tmp.83 = truncate tmp.80
+            copy_to_offset(dst=arr.14, tmp.83, offset=4)
+            copy_to_offset(dst=arr.14, 0, offset=8)
+            tmp.84 = truncate 2684366905L
+            u.15 = tmp.84
+            tmp.86 = - 1
+            tmp.85 = i.13 != tmp.86
+            if !tmp.85 jump end_if_24
+            return 0
+        
+          end_if_24:
+            tmp.87 = zero_extend u.15
+            tmp.88 = tmp.87 != 2684366905L
+            if !tmp.88 jump end_if_26
+            return 0
+        
+          end_if_26:
+            tmp.90 = add_ptr(arr.14, index=0, scale=8)
+            tmp.91 = load tmp.90
+            tmp.89 = add_ptr(tmp.91, index=0, scale=4)
+            tmp.92 = load tmp.89
+            tmp.93 = tmp.92 != 2
+            if tmp.93 jump or_true_28
+            tmp.97 = add_ptr(arr.14, index=1, scale=8)
+            tmp.98 = load tmp.97
+            tmp.96 = add_ptr(tmp.98, index=0, scale=4)
+            tmp.99 = load tmp.96
+            tmp.100 = tmp.99 != 4
+            if tmp.100 jump or_true_28
+            tmp.95 = 0
+            jump or_end_29
+        
+          or_true_28:
+            tmp.95 = 1
+        
+          or_end_29:
+            if tmp.95 jump or_true_30
+            tmp.104 = add_ptr(arr.14, index=2, scale=8)
+            tmp.105 = load tmp.104
+            tmp.103 = add_ptr(tmp.105, index=0, scale=4)
+            tmp.106 = load tmp.103
+            tmp.107 = tmp.106 != 0
+            if tmp.107 jump or_true_30
+            tmp.102 = 0
+            jump or_end_31
+        
+          or_true_30:
+            tmp.102 = 1
+        
+          or_end_31:
+            if !tmp.102 jump end_if_32
+            return 0
+        
+          end_if_32:
+            return 1
+            return 0
+        }
+        global function main() { 
+            tmp.108 = test_simple()
+            tmp.109 = ! tmp.108
+            if !tmp.109 jump end_if_34
+            return 1
+        
+          end_if_34:
+            tmp.110 = test_partial()
+            tmp.111 = ! tmp.110
+            if !tmp.111 jump end_if_36
+            return 2
+        
+          end_if_36:
+            tmp.112 = test_non_constant_and_type_conversion()
+            tmp.113 = ! tmp.112
+            if !tmp.113 jump end_if_38
+            return 3
+        
+          end_if_38:
+            tmp.114 = test_preserve_stack()
+            tmp.115 = ! tmp.114
+            if !tmp.115 jump end_if_40
+            return 4
+        
+          end_if_40:
+            return 0
+            return 0
+        }
+        static global one: Long = 1L
+        static x.9: Int = 2000
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_initialization_static() {
+    let src = r#"
+        double double_arr[3] = {1.0, 2.0, 3.0};
+        int check_double_arr(double *arr) {
+            if (arr[0] != 1.0) {
+                return 1;
+            }
+            if (arr[1] != 2.0) {
+                return 2;
+            }
+            if (arr[2] != 3.0) {
+                return 3;
+            }
+            return 0;
+        }
+        unsigned uint_arr[5] = {
+            1u,
+            0u,
+            2147497230u,
+        };
+        int check_uint_arr(unsigned *arr) {
+            if (arr[0] != 1u) {
+                return 4;
+            }
+            if (arr[1]) {
+                return 5;
+            }
+            if (arr[2] != 2147497230u) {
+                return 6;
+            }
+            if (arr[3] || arr[4]) {
+                return 7;
+            }
+            return 0;
+        }
+        long long_arr[1000];
+        int check_long_arr(long *arr) {
+            for (int i = 0; i < 1000; i = i + 1) {
+                if (arr[i]) {
+                    return 8;
+                }
+            }
+            return 0;
+        }
+        unsigned long ulong_arr[4] = {
+            100.0, 11, 12345l, 4294967295U
+        };
+        int check_ulong_arr(unsigned long *arr) {
+            if (arr[0] != 100ul) {
+                return 9;
+            }
+            if (arr[1] != 11ul) {
+                return 10;
+            }
+            if (arr[2] != 12345ul) {
+                return 11;
+            }
+            if (arr[3] != 4294967295Ul) {
+                return 12;
+            }
+            return 0;
+        }
+        int test_global(void) {
+            int check = check_double_arr(double_arr);
+            if (check) {
+                return check;
+            }
+            check = check_uint_arr(uint_arr);
+            if (check) {
+                return check;
+            }
+            check = check_long_arr(long_arr);
+            if (check) {
+                return check;
+            }
+            check = check_ulong_arr(ulong_arr);
+            if (check) {
+                return check;
+            }
+            return 0;
+        }
+        int test_local(void) {
+            double local_double_arr[3] = {1.0, 2.0, 3.0};
+            static unsigned local_uint_arr[5] = {
+                1u,
+                0u,
+                2147497230u,
+            };
+            static long local_long_arr[1000];
+            static unsigned long local_ulong_arr[4] = {
+                100.0, 11, 12345l, 4294967295U
+            };
+            int check = check_double_arr(local_double_arr);
+            if (check) {
+                return 100 + check;
+            }
+            check = check_uint_arr(local_uint_arr);
+            if (check) {
+                return 100 + check;
+            }
+            check = check_long_arr(local_long_arr);
+            if (check) {
+                return 100 + check;
+            }
+            check = check_ulong_arr(local_ulong_arr);
+            if (check) {
+                return 100 + check;
+            }
+            return 0;
+        }
+        int main(void) {
+            int check = test_global();
+            if (check) {
+                return check;
+            }
+            return test_local();
+        }
+    "#;
+    let expected = r#"
+        global function check_double_arr(arr.0) { 
+            tmp.0 = add_ptr(arr.0, index=0, scale=8)
+            tmp.1 = load tmp.0
+            tmp.2 = tmp.1 != 1D
+            if !tmp.2 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.3 = add_ptr(arr.0, index=1, scale=8)
+            tmp.4 = load tmp.3
+            tmp.5 = tmp.4 != 2D
+            if !tmp.5 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.6 = add_ptr(arr.0, index=2, scale=8)
+            tmp.7 = load tmp.6
+            tmp.8 = tmp.7 != 3D
+            if !tmp.8 jump end_if_4
+            return 3
+        
+          end_if_4:
+            return 0
+            return 0
+        }
+        global function check_uint_arr(arr.1) { 
+            tmp.9 = add_ptr(arr.1, index=0, scale=4)
+            tmp.10 = load tmp.9
+            tmp.11 = tmp.10 != 1U
+            if !tmp.11 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.12 = add_ptr(arr.1, index=1, scale=4)
+            tmp.13 = load tmp.12
+            if !tmp.13 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.14 = add_ptr(arr.1, index=2, scale=4)
+            tmp.15 = load tmp.14
+            tmp.16 = tmp.15 != 2147497230U
+            if !tmp.16 jump end_if_10
+            return 6
+        
+          end_if_10:
+            tmp.17 = add_ptr(arr.1, index=3, scale=4)
+            tmp.18 = load tmp.17
+            if tmp.18 jump or_true_12
+            tmp.21 = add_ptr(arr.1, index=4, scale=4)
+            tmp.22 = load tmp.21
+            if tmp.22 jump or_true_12
+            tmp.20 = 0
+            jump or_end_13
+        
+          or_true_12:
+            tmp.20 = 1
+        
+          or_end_13:
+            if !tmp.20 jump end_if_14
+            return 7
+        
+          end_if_14:
+            return 0
+            return 0
+        }
+        global function check_long_arr(arr.2) { 
+            i.3 = 0
+        
+          start_loop_0:
+            tmp.23 = i.3 < 1000
+            if !tmp.23 jump break_loop_0
+            tmp.24 = add_ptr(arr.2, index=i.3, scale=8)
+            tmp.25 = load tmp.24
+            if !tmp.25 jump end_if_16
+            return 8
+        
+          end_if_16:
+        
+          continue_loop_0:
+            tmp.26 = i.3 + 1
+            i.3 = tmp.26
+            jump start_loop_0
+        
+          break_loop_0:
+            return 0
+            return 0
+        }
+        global function check_ulong_arr(arr.4) { 
+            tmp.27 = add_ptr(arr.4, index=0, scale=8)
+            tmp.28 = load tmp.27
+            tmp.29 = tmp.28 != 100UL
+            if !tmp.29 jump end_if_18
+            return 9
+        
+          end_if_18:
+            tmp.30 = add_ptr(arr.4, index=1, scale=8)
+            tmp.31 = load tmp.30
+            tmp.32 = tmp.31 != 11UL
+            if !tmp.32 jump end_if_20
+            return 10
+        
+          end_if_20:
+            tmp.33 = add_ptr(arr.4, index=2, scale=8)
+            tmp.34 = load tmp.33
+            tmp.35 = tmp.34 != 12345UL
+            if !tmp.35 jump end_if_22
+            return 11
+        
+          end_if_22:
+            tmp.36 = add_ptr(arr.4, index=3, scale=8)
+            tmp.37 = load tmp.36
+            tmp.38 = tmp.37 != 4294967295UL
+            if !tmp.38 jump end_if_24
+            return 12
+        
+          end_if_24:
+            return 0
+            return 0
+        }
+        global function test_global() { 
+            tmp.39 = check_double_arr(double_arr)
+            check.5 = tmp.39
+            if !check.5 jump end_if_26
+            return check.5
+        
+          end_if_26:
+            tmp.40 = check_uint_arr(uint_arr)
+            check.5 = tmp.40
+            if !check.5 jump end_if_28
+            return check.5
+        
+          end_if_28:
+            tmp.41 = check_long_arr(long_arr)
+            check.5 = tmp.41
+            if !check.5 jump end_if_30
+            return check.5
+        
+          end_if_30:
+            tmp.42 = check_ulong_arr(ulong_arr)
+            check.5 = tmp.42
+            if !check.5 jump end_if_32
+            return check.5
+        
+          end_if_32:
+            return 0
+            return 0
+        }
+        global function test_local() { 
+            copy_to_offset(dst=local_double_arr.6, 1D, offset=0)
+            copy_to_offset(dst=local_double_arr.6, 2D, offset=8)
+            copy_to_offset(dst=local_double_arr.6, 3D, offset=16)
+            tmp.43 = check_double_arr(local_double_arr.6)
+            check.10 = tmp.43
+            if !check.10 jump end_if_34
+            tmp.44 = 100 + check.10
+            return tmp.44
+        
+          end_if_34:
+            tmp.45 = check_uint_arr(local_uint_arr.7)
+            check.10 = tmp.45
+            if !check.10 jump end_if_36
+            tmp.46 = 100 + check.10
+            return tmp.46
+        
+          end_if_36:
+            tmp.47 = check_long_arr(local_long_arr.8)
+            check.10 = tmp.47
+            if !check.10 jump end_if_38
+            tmp.48 = 100 + check.10
+            return tmp.48
+        
+          end_if_38:
+            tmp.49 = check_ulong_arr(local_ulong_arr.9)
+            check.10 = tmp.49
+            if !check.10 jump end_if_40
+            tmp.50 = 100 + check.10
+            return tmp.50
+        
+          end_if_40:
+            return 0
+            return 0
+        }
+        global function main() { 
+            tmp.51 = test_global()
+            check.11 = tmp.51
+            if !check.11 jump end_if_42
+            return check.11
+        
+          end_if_42:
+            tmp.52 = test_local()
+            return tmp.52
+            return 0
+        }
+        static global double_arr: Array(3,Double) = [ 1D, 2D, 3D]
+        static local_long_arr.8: Array(1000,Long) = zero[8000]
+        static local_uint_arr.7: Array(5,Unsigned Int) = [ 1U, 0U, 2147497230U, zero[8]]
+        static local_ulong_arr.9: Array(4,Unsigned Long) = [ 100UL, 11UL, 12345UL, 4294967295UL]
+        static global long_arr: Array(1000,Long) = zero[8000]
+        static global uint_arr: Array(5,Unsigned Int) = [ 1U, 0U, 2147497230U, zero[8]]
+        static global ulong_arr: Array(4,Unsigned Long) = [ 100UL, 11UL, 12345UL, 4294967295UL]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_initialization_static_nested() {
+    let src = r#"
+        double double_arr[2][2] = {{1.1, 2.2}, {3.3, 4.4}};
+        int check_double_arr(double (*arr)[2]) {
+            if (arr[0][0] != 1.1) {
+                return 1;
+            }
+            if (arr[0][1] != 2.2) {
+                return 2;
+            }
+            if (arr[1][0] != 3.3) {
+                return 3;
+            }
+            if (arr[1][1] != 4.4) {
+                return 4;
+            }
+            return 0;
+        }
+        long long_arr[30][50][40];
+        int check_long_arr(long (*arr)[50][40]) {
+            for (int i = 0; i < 30; i = i + 1) {
+                for (int j = 0; j < 50; j = j + 1) {
+                    for (int k = 0; k < 40; k = k + 1) {
+                        if (arr[i][j][k]) {
+                            return 5;
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+        unsigned long ulong_arr[4][6][2] = {
+            {{
+                 1000.3,
+             },
+             {12u}},
+            {{2}}};
+        int check_ulong_arr(unsigned long (*arr)[6][2]) {
+            for (int i = 0; i < 4; i = i + 1) {
+                for (int j = 0; j < 6; j = j + 1) {
+                    for (int k = 0; k < 2; k = k + 1) {
+                        int val = arr[i][j][k];
+                        if (i == 0 && j == 0 && k == 0) {
+                            if (val != 1000ul) {
+                                return 6;
+                            }
+                        } else if (i == 0 && j == 1 && k == 0) {
+                            if (val != 12ul) {
+                                return 7;
+                            }
+                        } else if (i == 1 && j == 0 && k == 0) {
+                            if (val != 2ul) {
+                                return 8;
+                            }
+                        } else {
+                            if (val) {
+                                return 9;
+                            }
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+        int test_global(void) {
+            int check = check_double_arr(double_arr);
+            if (check) {
+                return check;
+            }
+            check = check_long_arr(long_arr);
+            if (check) {
+                return check;
+            }
+            check = check_ulong_arr(ulong_arr);
+            if (check) {
+                return check;
+            }
+            return 0;
+        }
+        int test_local(void) {
+            static double local_double_arr[2][2] = {{1.1, 2.2}, {3.3, 4.4}};
+            int check = check_double_arr(local_double_arr);
+            if (check) {
+                return 100 + check;
+            }
+            static long local_long_arr[30][50][40];
+            check = check_long_arr(local_long_arr);
+            if (check) {
+                return 100 + check;
+            }
+            static unsigned long local_ulong_arr[4][6][2] = {
+                {{
+                    1000.3,
+                },
+                {12u}},
+                {{2}}};
+            check = check_ulong_arr(local_ulong_arr);
+            if (check) {
+                return 100 + check;
+            }
+            return 0;
+        }
+        int main(void) {
+            int check = test_global();
+            if (check) {
+                return check;
+            }
+            return test_local();
+        }
+    "#;
+    let expected = r#"
+        global function check_double_arr(arr.0) { 
+            tmp.1 = add_ptr(arr.0, index=0, scale=8)
+            tmp.2 = load tmp.1
+            tmp.0 = add_ptr(tmp.2, index=0, scale=8)
+            tmp.3 = load tmp.0
+            tmp.4 = tmp.3 != 1.1D
+            if !tmp.4 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.6 = add_ptr(arr.0, index=0, scale=8)
+            tmp.7 = load tmp.6
+            tmp.5 = add_ptr(tmp.7, index=1, scale=8)
+            tmp.8 = load tmp.5
+            tmp.9 = tmp.8 != 2.2D
+            if !tmp.9 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.11 = add_ptr(arr.0, index=1, scale=8)
+            tmp.12 = load tmp.11
+            tmp.10 = add_ptr(tmp.12, index=0, scale=8)
+            tmp.13 = load tmp.10
+            tmp.14 = tmp.13 != 3.3D
+            if !tmp.14 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.16 = add_ptr(arr.0, index=1, scale=8)
+            tmp.17 = load tmp.16
+            tmp.15 = add_ptr(tmp.17, index=1, scale=8)
+            tmp.18 = load tmp.15
+            tmp.19 = tmp.18 != 4.4D
+            if !tmp.19 jump end_if_6
+            return 4
+        
+          end_if_6:
+            return 0
+            return 0
+        }
+        global function check_long_arr(arr.1) { 
+            i.2 = 0
+        
+          start_loop_0:
+            tmp.20 = i.2 < 30
+            if !tmp.20 jump break_loop_0
+            j.3 = 0
+        
+          start_loop_1:
+            tmp.21 = j.3 < 50
+            if !tmp.21 jump break_loop_1
+            k.4 = 0
+        
+          start_loop_2:
+            tmp.22 = k.4 < 40
+            if !tmp.22 jump break_loop_2
+            tmp.25 = add_ptr(arr.1, index=i.2, scale=8)
+            tmp.26 = load tmp.25
+            tmp.24 = add_ptr(tmp.26, index=j.3, scale=8)
+            tmp.27 = load tmp.24
+            tmp.23 = add_ptr(tmp.27, index=k.4, scale=8)
+            tmp.28 = load tmp.23
+            if !tmp.28 jump end_if_8
+            return 5
+        
+          end_if_8:
+        
+          continue_loop_2:
+            tmp.29 = k.4 + 1
+            k.4 = tmp.29
+            jump start_loop_2
+        
+          break_loop_2:
+        
+          continue_loop_1:
+            tmp.30 = j.3 + 1
+            j.3 = tmp.30
+            jump start_loop_1
+        
+          break_loop_1:
+        
+          continue_loop_0:
+            tmp.31 = i.2 + 1
+            i.2 = tmp.31
+            jump start_loop_0
+        
+          break_loop_0:
+            return 0
+            return 0
+        }
+        global function check_ulong_arr(arr.5) { 
+            i.6 = 0
+        
+          start_loop_3:
+            tmp.32 = i.6 < 4
+            if !tmp.32 jump break_loop_3
+            j.7 = 0
+        
+          start_loop_4:
+            tmp.33 = j.7 < 6
+            if !tmp.33 jump break_loop_4
+            k.8 = 0
+        
+          start_loop_5:
+            tmp.34 = k.8 < 2
+            if !tmp.34 jump break_loop_5
+            tmp.37 = add_ptr(arr.5, index=i.6, scale=8)
+            tmp.38 = load tmp.37
+            tmp.36 = add_ptr(tmp.38, index=j.7, scale=8)
+            tmp.39 = load tmp.36
+            tmp.35 = add_ptr(tmp.39, index=k.8, scale=8)
+            tmp.40 = load tmp.35
+            tmp.41 = truncate tmp.40
+            val.9 = tmp.41
+            tmp.42 = i.6 == 0
+            if !tmp.42 jump and_false_10
+            tmp.45 = j.7 == 0
+            if !tmp.45 jump and_false_10
+            tmp.44 = 1
+            jump and_end_11
+        
+          and_false_10:
+            tmp.44 = 0
+        
+          and_end_11:
+            if !tmp.44 jump and_false_12
+            tmp.48 = k.8 == 0
+            if !tmp.48 jump and_false_12
+            tmp.47 = 1
+            jump and_end_13
+        
+          and_false_12:
+            tmp.47 = 0
+        
+          and_end_13:
+            if !tmp.47 jump else_15
+            tmp.49 = sign_extend val.9
+            tmp.50 = tmp.49 != 1000UL
+            if !tmp.50 jump end_if_16
+            return 6
+        
+          end_if_16:
+            jump end_if_14
+        
+          else_15:
+            tmp.51 = i.6 == 0
+            if !tmp.51 jump and_false_18
+            tmp.54 = j.7 == 1
+            if !tmp.54 jump and_false_18
+            tmp.53 = 1
+            jump and_end_19
+        
+          and_false_18:
+            tmp.53 = 0
+        
+          and_end_19:
+            if !tmp.53 jump and_false_20
+            tmp.57 = k.8 == 0
+            if !tmp.57 jump and_false_20
+            tmp.56 = 1
+            jump and_end_21
+        
+          and_false_20:
+            tmp.56 = 0
+        
+          and_end_21:
+            if !tmp.56 jump else_23
+            tmp.58 = sign_extend val.9
+            tmp.59 = tmp.58 != 12UL
+            if !tmp.59 jump end_if_24
+            return 7
+        
+          end_if_24:
+            jump end_if_22
+        
+          else_23:
+            tmp.60 = i.6 == 1
+            if !tmp.60 jump and_false_26
+            tmp.63 = j.7 == 0
+            if !tmp.63 jump and_false_26
+            tmp.62 = 1
+            jump and_end_27
+        
+          and_false_26:
+            tmp.62 = 0
+        
+          and_end_27:
+            if !tmp.62 jump and_false_28
+            tmp.66 = k.8 == 0
+            if !tmp.66 jump and_false_28
+            tmp.65 = 1
+            jump and_end_29
+        
+          and_false_28:
+            tmp.65 = 0
+        
+          and_end_29:
+            if !tmp.65 jump else_31
+            tmp.67 = sign_extend val.9
+            tmp.68 = tmp.67 != 2UL
+            if !tmp.68 jump end_if_32
+            return 8
+        
+          end_if_32:
+            jump end_if_30
+        
+          else_31:
+            if !val.9 jump end_if_34
+            return 9
+        
+          end_if_34:
+        
+          end_if_30:
+        
+          end_if_22:
+        
+          end_if_14:
+        
+          continue_loop_5:
+            tmp.69 = k.8 + 1
+            k.8 = tmp.69
+            jump start_loop_5
+        
+          break_loop_5:
+        
+          continue_loop_4:
+            tmp.70 = j.7 + 1
+            j.7 = tmp.70
+            jump start_loop_4
+        
+          break_loop_4:
+        
+          continue_loop_3:
+            tmp.71 = i.6 + 1
+            i.6 = tmp.71
+            jump start_loop_3
+        
+          break_loop_3:
+            return 0
+            return 0
+        }
+        global function test_global() { 
+            tmp.72 = check_double_arr(double_arr)
+            check.10 = tmp.72
+            if !check.10 jump end_if_36
+            return check.10
+        
+          end_if_36:
+            tmp.73 = check_long_arr(long_arr)
+            check.10 = tmp.73
+            if !check.10 jump end_if_38
+            return check.10
+        
+          end_if_38:
+            tmp.74 = check_ulong_arr(ulong_arr)
+            check.10 = tmp.74
+            if !check.10 jump end_if_40
+            return check.10
+        
+          end_if_40:
+            return 0
+            return 0
+        }
+        global function test_local() { 
+            tmp.75 = check_double_arr(local_double_arr.11)
+            check.12 = tmp.75
+            if !check.12 jump end_if_42
+            tmp.76 = 100 + check.12
+            return tmp.76
+        
+          end_if_42:
+            tmp.77 = check_long_arr(local_long_arr.13)
+            check.12 = tmp.77
+            if !check.12 jump end_if_44
+            tmp.78 = 100 + check.12
+            return tmp.78
+        
+          end_if_44:
+            tmp.79 = check_ulong_arr(local_ulong_arr.14)
+            check.12 = tmp.79
+            if !check.12 jump end_if_46
+            tmp.80 = 100 + check.12
+            return tmp.80
+        
+          end_if_46:
+            return 0
+            return 0
+        }
+        global function main() { 
+            tmp.81 = test_global()
+            check.15 = tmp.81
+            if !check.15 jump end_if_48
+            return check.15
+        
+          end_if_48:
+            tmp.82 = test_local()
+            return tmp.82
+            return 0
+        }
+        static global double_arr: Array(2,Array(2,Double)) = [ 1.1D, 2.2D, 3.3D, 4.4D]
+        static local_double_arr.11: Array(2,Array(2,Double)) = [ 1.1D, 2.2D, 3.3D, 4.4D]
+        static local_long_arr.13: Array(30,Array(50,Array(40,Long))) = zero[480000]
+        static local_ulong_arr.14: Array(4,Array(6,Array(2,Unsigned Long))) = [ 1000UL, zero[8], 12UL, zero[8], zero[64], 2UL, zero[8], zero[80], zero[192]]
+        static global long_arr: Array(30,Array(50,Array(40,Long))) = zero[480000]
+        static global ulong_arr: Array(4,Array(6,Array(2,Unsigned Long))) = [ 1000UL, zero[8], 12UL, zero[8], zero[64], 2UL, zero[8], zero[80], zero[192]]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_initialization_trailing_comma_initializer() {
+    let src = r#"
+        int foo(int a, int b, int c);
+        int main(void) {
+            int arr[3] = {
+                1,
+                2,
+                3,
+            };
+            return arr[2];
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=arr.3, 1, offset=0)
+            copy_to_offset(dst=arr.3, 2, offset=4)
+            copy_to_offset(dst=arr.3, 3, offset=8)
+            tmp.0 = add_ptr(arr.3, index=2, scale=4)
+            tmp.1 = load tmp.0
+            return tmp.1
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_global_array() {
+    let src = r#"
+        long arr[4] = {1, 2, 3, 4};
+        int double_each_element(void) {
+            for (int i = 0; i < 4; i = i + 1) {
+                arr[i] = arr[i] * 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function double_each_element() { 
+            i.0 = 0
+        
+          start_loop_0:
+            tmp.0 = i.0 < 4
+            if !tmp.0 jump break_loop_0
+            tmp.1 = add_ptr(arr, index=i.0, scale=8)
+            tmp.2 = add_ptr(arr, index=i.0, scale=8)
+            tmp.3 = load tmp.2
+            tmp.5 = sign_extend 2
+            tmp.4 = tmp.3 * tmp.5
+            tmp.1 = store tmp.4
+        
+          continue_loop_0:
+            tmp.6 = i.0 + 1
+            i.0 = tmp.6
+            jump start_loop_0
+        
+          break_loop_0:
+            return 0
+            return 0
+        }
+        static global arr: Array(4,Long) = [ 1L, 2L, 3L, 4L]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_global_array_client() {
+    let src = r#"
+        
+        extern long arr[4];
+        int double_each_element(void);
+        int main(void) {
+            for (int i = 0; i < 4; i = i + 1) {
+                if (arr[i] != i + 1) {
+                    return i + 1;
+                }
+            }
+            double_each_element();
+            for (int i = 0; i < 4; i = i + 1) {
+                if (arr[i] != (i + 1) * 2) {
+                    return i + 5;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            i.0 = 0
+        
+          start_loop_0:
+            tmp.0 = i.0 < 4
+            if !tmp.0 jump break_loop_0
+            tmp.1 = add_ptr(arr, index=i.0, scale=8)
+            tmp.2 = load tmp.1
+            tmp.4 = i.0 + 1
+            tmp.5 = sign_extend tmp.4
+            tmp.3 = tmp.2 != tmp.5
+            if !tmp.3 jump end_if_0
+            tmp.6 = i.0 + 1
+            return tmp.6
+        
+          end_if_0:
+        
+          continue_loop_0:
+            tmp.7 = i.0 + 1
+            i.0 = tmp.7
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.8 = double_each_element()
+            i.1 = 0
+        
+          start_loop_1:
+            tmp.9 = i.1 < 4
+            if !tmp.9 jump break_loop_1
+            tmp.10 = add_ptr(arr, index=i.1, scale=8)
+            tmp.11 = load tmp.10
+            tmp.13 = i.1 + 1
+            tmp.14 = tmp.13 * 2
+            tmp.15 = sign_extend tmp.14
+            tmp.12 = tmp.11 != tmp.15
+            if !tmp.12 jump end_if_2
+            tmp.16 = i.1 + 5
+            return tmp.16
+        
+          end_if_2:
+        
+          continue_loop_1:
+            tmp.17 = i.1 + 1
+            i.1 = tmp.17
+            jump start_loop_1
+        
+          break_loop_1:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_return_pointer_to_array() {
+    let src = r#"
+        
+        long (*return_row(long (*arr)[3][4], int idx))[4] {
+            return arr[idx];
+        }
+    "#;
+    let expected = r#"
+        global function return_row(arr.0, idx.1) { 
+            tmp.0 = add_ptr(arr.0, index=idx.1, scale=8)
+            tmp.1 = load tmp.0
+            return tmp.1
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_return_pointer_to_array_client() {
+    let src = r#"
+        
+        long (*return_row(long (*arr)[3][4], int idx))[4];
+        int main(void) {
+            long nested_array[2][3][4] = {
+                {{0}},
+                {{-12, -13, -14, -15}, {-16}}
+            };
+            long (*row_pointer)[4] = return_row(nested_array, 1);
+            for (int i = 0; i < 3; i = i + 1) {
+                for (int j = 0; j < 4; j = j + 1) {
+                    if (row_pointer[i][j] != nested_array[1][i][j]) {
+                        return 1;
+                    }
+                }
+            }
+            row_pointer[2][1] = 100;
+            if (nested_array[1][2][1] != 100) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = sign_extend 0
+            copy_to_offset(dst=nested_array.2, tmp.0, offset=0)
+            copy_to_offset(dst=nested_array.2, 0L, offset=8)
+            copy_to_offset(dst=nested_array.2, 0L, offset=16)
+            copy_to_offset(dst=nested_array.2, 0L, offset=24)
+            copy_to_offset(dst=nested_array.2, 0L, offset=32)
+            copy_to_offset(dst=nested_array.2, 0L, offset=40)
+            copy_to_offset(dst=nested_array.2, 0L, offset=48)
+            copy_to_offset(dst=nested_array.2, 0L, offset=56)
+            copy_to_offset(dst=nested_array.2, 0L, offset=64)
+            copy_to_offset(dst=nested_array.2, 0L, offset=72)
+            copy_to_offset(dst=nested_array.2, 0L, offset=80)
+            copy_to_offset(dst=nested_array.2, 0L, offset=88)
+            tmp.1 = - 12
+            tmp.2 = sign_extend tmp.1
+            copy_to_offset(dst=nested_array.2, tmp.2, offset=96)
+            tmp.3 = - 13
+            tmp.4 = sign_extend tmp.3
+            copy_to_offset(dst=nested_array.2, tmp.4, offset=104)
+            tmp.5 = - 14
+            tmp.6 = sign_extend tmp.5
+            copy_to_offset(dst=nested_array.2, tmp.6, offset=112)
+            tmp.7 = - 15
+            tmp.8 = sign_extend tmp.7
+            copy_to_offset(dst=nested_array.2, tmp.8, offset=120)
+            tmp.9 = - 16
+            tmp.10 = sign_extend tmp.9
+            copy_to_offset(dst=nested_array.2, tmp.10, offset=128)
+            copy_to_offset(dst=nested_array.2, 0L, offset=136)
+            copy_to_offset(dst=nested_array.2, 0L, offset=144)
+            copy_to_offset(dst=nested_array.2, 0L, offset=152)
+            copy_to_offset(dst=nested_array.2, 0L, offset=160)
+            copy_to_offset(dst=nested_array.2, 0L, offset=168)
+            copy_to_offset(dst=nested_array.2, 0L, offset=176)
+            copy_to_offset(dst=nested_array.2, 0L, offset=184)
+            tmp.11 = return_row(nested_array.2, 1)
+            row_pointer.3 = tmp.11
+            i.4 = 0
+        
+          start_loop_0:
+            tmp.12 = i.4 < 3
+            if !tmp.12 jump break_loop_0
+            j.5 = 0
+        
+          start_loop_1:
+            tmp.13 = j.5 < 4
+            if !tmp.13 jump break_loop_1
+            tmp.15 = add_ptr(row_pointer.3, index=i.4, scale=8)
+            tmp.16 = load tmp.15
+            tmp.14 = add_ptr(tmp.16, index=j.5, scale=8)
+            tmp.17 = load tmp.14
+            tmp.21 = add_ptr(nested_array.2, index=1, scale=8)
+            tmp.22 = load tmp.21
+            tmp.20 = add_ptr(tmp.22, index=i.4, scale=8)
+            tmp.23 = load tmp.20
+            tmp.19 = add_ptr(tmp.23, index=j.5, scale=8)
+            tmp.24 = load tmp.19
+            tmp.18 = tmp.17 != tmp.24
+            if !tmp.18 jump end_if_0
+            return 1
+        
+          end_if_0:
+        
+          continue_loop_1:
+            tmp.25 = j.5 + 1
+            j.5 = tmp.25
+            jump start_loop_1
+        
+          break_loop_1:
+        
+          continue_loop_0:
+            tmp.26 = i.4 + 1
+            i.4 = tmp.26
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.28 = add_ptr(row_pointer.3, index=2, scale=8)
+            tmp.29 = load tmp.28
+            tmp.27 = add_ptr(tmp.29, index=1, scale=8)
+            tmp.30 = sign_extend 100
+            tmp.27 = store tmp.30
+            tmp.33 = add_ptr(nested_array.2, index=1, scale=8)
+            tmp.34 = load tmp.33
+            tmp.32 = add_ptr(tmp.34, index=2, scale=8)
+            tmp.35 = load tmp.32
+            tmp.31 = add_ptr(tmp.35, index=1, scale=8)
+            tmp.36 = load tmp.31
+            tmp.38 = sign_extend 100
+            tmp.37 = tmp.36 != tmp.38
+            if !tmp.37 jump end_if_2
+            return 2
+        
+          end_if_2:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_set_array_val() {
+    let src = r#"
+        int set_nth_element(double *arr, int idx) {
+            for (int i = 0; i < 5; i = i + 1) {
+                if (arr[i]) {
+                    return 1;
+                }
+            }
+            arr[idx] = 8;
+            return 0;
+        }
+        int set_nested_element(int (*arr)[2], int i, int j) {
+            for (int x = 0; x < 3; x = x + 1) {
+                for (int y = 0; y < 2; y = y + 1) {
+                    int expected = -10 + 2*x + y;
+                    if (arr[x][y] != expected) {
+                        return 4;
+                    }
+                }
+            }
+            arr[i][j] = 10;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function set_nth_element(arr.0, idx.1) { 
+            i.2 = 0
+        
+          start_loop_0:
+            tmp.0 = i.2 < 5
+            if !tmp.0 jump break_loop_0
+            tmp.1 = add_ptr(arr.0, index=i.2, scale=8)
+            tmp.2 = load tmp.1
+            if !tmp.2 jump end_if_0
+            return 1
+        
+          end_if_0:
+        
+          continue_loop_0:
+            tmp.3 = i.2 + 1
+            i.2 = tmp.3
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.4 = add_ptr(arr.0, index=idx.1, scale=8)
+            tmp.5 = int_to_double 8
+            tmp.4 = store tmp.5
+            return 0
+            return 0
+        }
+        global function set_nested_element(arr.3, i.4, j.5) { 
+            x.6 = 0
+        
+          start_loop_1:
+            tmp.6 = x.6 < 3
+            if !tmp.6 jump break_loop_1
+            y.7 = 0
+        
+          start_loop_2:
+            tmp.7 = y.7 < 2
+            if !tmp.7 jump break_loop_2
+            tmp.8 = - 10
+            tmp.10 = 2 * x.6
+            tmp.9 = tmp.8 + tmp.10
+            tmp.11 = tmp.9 + y.7
+            expected.8 = tmp.11
+            tmp.13 = add_ptr(arr.3, index=x.6, scale=8)
+            tmp.14 = load tmp.13
+            tmp.12 = add_ptr(tmp.14, index=y.7, scale=4)
+            tmp.15 = load tmp.12
+            tmp.16 = tmp.15 != expected.8
+            if !tmp.16 jump end_if_2
+            return 4
+        
+          end_if_2:
+        
+          continue_loop_2:
+            tmp.17 = y.7 + 1
+            y.7 = tmp.17
+            jump start_loop_2
+        
+          break_loop_2:
+        
+          continue_loop_1:
+            tmp.18 = x.6 + 1
+            x.6 = tmp.18
+            jump start_loop_1
+        
+          break_loop_1:
+            tmp.20 = add_ptr(arr.3, index=i.4, scale=8)
+            tmp.21 = load tmp.20
+            tmp.19 = add_ptr(tmp.21, index=j.5, scale=4)
+            tmp.19 = store 10
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_libraries_set_array_val_client() {
+    let src = r#"
+        int set_nth_element(double *arr, int idx);
+        int set_nested_element(int (*arr)[2], int i, int j);
+        int main(void) {
+            double arr[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
+            int check = set_nth_element(arr, 4);
+            if (check) {
+                return check;
+            }
+            for (int i = 0; i < 4; i = i + 1) {
+                if (arr[i] != 0) {
+                    return 2;
+                }
+            }
+            if (arr[4] != 8)
+                return 3;
+            int nested_arr[3][2] = {{-10, -9}, {-8, -7}, {-6, -5}};
+            check = set_nested_element(nested_arr, 2, 1);
+            if (check) {
+                return check;
+            }
+            for (int i = 0; i < 3; i = i + 1) {
+                for (int j = 0; j < 2; j = j + 1) {
+                    if (i == 2 && j == 1) {
+                        if (nested_arr[i][j] != 10) {
+                            return 5;
+                        }
+                    } else {
+                        int expected = -10 + 2 * i + j;
+                        if (nested_arr[i][j] != expected) {
+                            return 6;
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=arr.5, 0D, offset=0)
+            copy_to_offset(dst=arr.5, 0D, offset=8)
+            copy_to_offset(dst=arr.5, 0D, offset=16)
+            copy_to_offset(dst=arr.5, 0D, offset=24)
+            copy_to_offset(dst=arr.5, 0D, offset=32)
+            tmp.0 = set_nth_element(arr.5, 4)
+            check.6 = tmp.0
+            if !check.6 jump end_if_0
+            return check.6
+        
+          end_if_0:
+            i.7 = 0
+        
+          start_loop_0:
+            tmp.1 = i.7 < 4
+            if !tmp.1 jump break_loop_0
+            tmp.2 = add_ptr(arr.5, index=i.7, scale=8)
+            tmp.3 = load tmp.2
+            tmp.5 = int_to_double 0
+            tmp.4 = tmp.3 != tmp.5
+            if !tmp.4 jump end_if_2
+            return 2
+        
+          end_if_2:
+        
+          continue_loop_0:
+            tmp.6 = i.7 + 1
+            i.7 = tmp.6
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.7 = add_ptr(arr.5, index=4, scale=8)
+            tmp.8 = load tmp.7
+            tmp.10 = int_to_double 8
+            tmp.9 = tmp.8 != tmp.10
+            if !tmp.9 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.11 = - 10
+            copy_to_offset(dst=nested_arr.8, tmp.11, offset=0)
+            tmp.12 = - 9
+            copy_to_offset(dst=nested_arr.8, tmp.12, offset=4)
+            tmp.13 = - 8
+            copy_to_offset(dst=nested_arr.8, tmp.13, offset=8)
+            tmp.14 = - 7
+            copy_to_offset(dst=nested_arr.8, tmp.14, offset=12)
+            tmp.15 = - 6
+            copy_to_offset(dst=nested_arr.8, tmp.15, offset=16)
+            tmp.16 = - 5
+            copy_to_offset(dst=nested_arr.8, tmp.16, offset=20)
+            tmp.17 = set_nested_element(nested_arr.8, 2, 1)
+            check.6 = tmp.17
+            if !check.6 jump end_if_6
+            return check.6
+        
+          end_if_6:
+            i.9 = 0
+        
+          start_loop_1:
+            tmp.18 = i.9 < 3
+            if !tmp.18 jump break_loop_1
+            j.10 = 0
+        
+          start_loop_2:
+            tmp.19 = j.10 < 2
+            if !tmp.19 jump break_loop_2
+            tmp.20 = i.9 == 2
+            if !tmp.20 jump and_false_8
+            tmp.23 = j.10 == 1
+            if !tmp.23 jump and_false_8
+            tmp.22 = 1
+            jump and_end_9
+        
+          and_false_8:
+            tmp.22 = 0
+        
+          and_end_9:
+            if !tmp.22 jump else_11
+            tmp.25 = add_ptr(nested_arr.8, index=i.9, scale=8)
+            tmp.26 = load tmp.25
+            tmp.24 = add_ptr(tmp.26, index=j.10, scale=4)
+            tmp.27 = load tmp.24
+            tmp.28 = tmp.27 != 10
+            if !tmp.28 jump end_if_12
+            return 5
+        
+          end_if_12:
+            jump end_if_10
+        
+          else_11:
+            tmp.29 = - 10
+            tmp.31 = 2 * i.9
+            tmp.30 = tmp.29 + tmp.31
+            tmp.32 = tmp.30 + j.10
+            expected.11 = tmp.32
+            tmp.34 = add_ptr(nested_arr.8, index=i.9, scale=8)
+            tmp.35 = load tmp.34
+            tmp.33 = add_ptr(tmp.35, index=j.10, scale=4)
+            tmp.36 = load tmp.33
+            tmp.37 = tmp.36 != expected.11
+            if !tmp.37 jump end_if_14
+            return 6
+        
+          end_if_14:
+        
+          end_if_10:
+        
+          continue_loop_2:
+            tmp.38 = j.10 + 1
+            j.10 = tmp.38
+            jump start_loop_2
+        
+          break_loop_2:
+        
+          continue_loop_1:
+            tmp.39 = i.9 + 1
+            i.9 = tmp.39
+            jump start_loop_1
+        
+          break_loop_1:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_pointer_arithmetic_add_dereference_and_assign() {
+    let src = r#"
+        int main(void) {
+            int arr[2] = {1, 2};
+            *arr = 3;
+            *(arr + 1) = 4;
+            if (arr[0] != 3) {
+                return 1;
+            }
+            if (arr[1] != 4) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=arr.0, 1, offset=0)
+            copy_to_offset(dst=arr.0, 2, offset=4)
+            arr.0 = store 3
+            tmp.0 = add_ptr(arr.0, index=1, scale=8)
+            tmp.0 = store 4
+            tmp.1 = add_ptr(arr.0, index=0, scale=4)
+            tmp.2 = load tmp.1
+            tmp.3 = tmp.2 != 3
+            if !tmp.3 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.4 = add_ptr(arr.0, index=1, scale=4)
+            tmp.5 = load tmp.4
+            tmp.6 = tmp.5 != 4
+            if !tmp.6 jump end_if_2
+            return 2
+        
+          end_if_2:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_pointer_arithmetic_compare() {
+    let src = r#"
+        unsigned long gt(unsigned long *a, unsigned long *b) {
+            return a > b;
+        }
+        unsigned long lt(unsigned long *a, unsigned long *b) {
+            return a < b;
+        }
+        unsigned long ge(unsigned long *a, unsigned long *b) {
+            return a >= b;
+        }
+        unsigned long le(unsigned long *a, unsigned long *b) {
+            return a <= b;
+        }
+        unsigned long gt_nested(unsigned long (*a)[5], unsigned long (*b)[5]) {
+            return a > b;
+        }
+        unsigned long ge_nested(unsigned long (*a)[5], unsigned long (*b)[5]) {
+            return a >= b;
+        }
+        int main(void)
+        {
+            unsigned long arr[5];
+            unsigned long *elem_1 = arr + 1;
+            unsigned long *elem_4 = arr + 4;
+            if (gt(elem_1, elem_4)) {
+                return 1;
+            }
+            if (!(lt(elem_1, elem_4))) {
+                return 2;
+            }
+            if (!(ge(elem_1, elem_1))) {
+                return 3;
+            }
+            if (le(elem_4, elem_1)) {
+                return 4;
+            }
+            unsigned long *one_past_the_end = arr + 5;
+            if (!(gt(one_past_the_end, elem_4))) {
+                return 5;
+            }
+            if (one_past_the_end != elem_4 + 1) {
+                return 6;
+            }
+            unsigned long nested_arr[4][5];
+            unsigned long *elem_3_2 = *(nested_arr + 3) + 2;
+            unsigned long *elem_3_3 = *(nested_arr + 3) + 3;
+            if (lt(elem_3_3, elem_3_2)) {
+                return 7;
+            }
+            if (!ge(elem_3_3, elem_3_2)) {
+                return 8;
+            }
+            unsigned long (*subarray_0)[5] = nested_arr;
+            unsigned long (*subarray_3)[5] = nested_arr + 3;
+            unsigned long (*subarray_one_past_the_end)[5] = nested_arr + 4;
+            if (ge_nested(subarray_0, subarray_3)){
+                return 9;
+            }
+            if (!(gt_nested(subarray_one_past_the_end, subarray_3))) {
+                return 10;
+            }
+            if (subarray_3 != subarray_one_past_the_end - 1) {
+                return 11;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function gt(a.0, b.1) { 
+            tmp.0 = a.0 > b.1
+            tmp.1 = sign_extend tmp.0
+            return tmp.1
+            return 0
+        }
+        global function lt(a.2, b.3) { 
+            tmp.2 = a.2 < b.3
+            tmp.3 = sign_extend tmp.2
+            return tmp.3
+            return 0
+        }
+        global function ge(a.4, b.5) { 
+            tmp.4 = a.4 >= b.5
+            tmp.5 = sign_extend tmp.4
+            return tmp.5
+            return 0
+        }
+        global function le(a.6, b.7) { 
+            tmp.6 = a.6 <= b.7
+            tmp.7 = sign_extend tmp.6
+            return tmp.7
+            return 0
+        }
+        global function gt_nested(a.8, b.9) { 
+            tmp.8 = a.8 > b.9
+            tmp.9 = sign_extend tmp.8
+            return tmp.9
+            return 0
+        }
+        global function ge_nested(a.10, b.11) { 
+            tmp.10 = a.10 >= b.11
+            tmp.11 = sign_extend tmp.10
+            return tmp.11
+            return 0
+        }
+        global function main() { 
+            tmp.12 = add_ptr(arr.12, index=1, scale=8)
+            elem_1.13 = tmp.12
+            tmp.13 = add_ptr(arr.12, index=4, scale=8)
+            elem_4.14 = tmp.13
+            tmp.14 = gt(elem_1.13, elem_4.14)
+            if !tmp.14 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.15 = lt(elem_1.13, elem_4.14)
+            tmp.16 = ! tmp.15
+            if !tmp.16 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.17 = ge(elem_1.13, elem_1.13)
+            tmp.18 = ! tmp.17
+            if !tmp.18 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.19 = le(elem_4.14, elem_1.13)
+            if !tmp.19 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.20 = add_ptr(arr.12, index=5, scale=8)
+            one_past_the_end.15 = tmp.20
+            tmp.21 = gt(one_past_the_end.15, elem_4.14)
+            tmp.22 = ! tmp.21
+            if !tmp.22 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.24 = add_ptr(elem_4.14, index=1, scale=8)
+            tmp.23 = one_past_the_end.15 != tmp.24
+            if !tmp.23 jump end_if_10
+            return 6
+        
+          end_if_10:
+            tmp.25 = add_ptr(nested_arr.16, index=3, scale=8)
+            tmp.26 = load tmp.25
+            tmp.27 = add_ptr(tmp.26, index=2, scale=8)
+            elem_3_2.17 = tmp.27
+            tmp.28 = add_ptr(nested_arr.16, index=3, scale=8)
+            tmp.29 = load tmp.28
+            tmp.30 = add_ptr(tmp.29, index=3, scale=8)
+            elem_3_3.18 = tmp.30
+            tmp.31 = lt(elem_3_3.18, elem_3_2.17)
+            if !tmp.31 jump end_if_12
+            return 7
+        
+          end_if_12:
+            tmp.32 = ge(elem_3_3.18, elem_3_2.17)
+            tmp.33 = ! tmp.32
+            if !tmp.33 jump end_if_14
+            return 8
+        
+          end_if_14:
+            subarray_0.19 = nested_arr.16
+            tmp.34 = add_ptr(nested_arr.16, index=3, scale=8)
+            subarray_3.20 = tmp.34
+            tmp.35 = add_ptr(nested_arr.16, index=4, scale=8)
+            subarray_one_past_the_end.21 = tmp.35
+            tmp.36 = ge_nested(subarray_0.19, subarray_3.20)
+            if !tmp.36 jump end_if_16
+            return 9
+        
+          end_if_16:
+            tmp.37 = gt_nested(subarray_one_past_the_end.21, subarray_3.20)
+            tmp.38 = ! tmp.37
+            if !tmp.38 jump end_if_18
+            return 10
+        
+          end_if_18:
+            tmp.41 = - 1
+            tmp.40 = add_ptr(subarray_one_past_the_end.21, index=tmp.41, scale=8)
+            tmp.39 = subarray_3.20 != tmp.40
+            if !tmp.39 jump end_if_20
+            return 11
+        
+          end_if_20:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
+    let src = r#"
+        int test_add_constant_to_pointer(void) {
+            long long_arr[12] = {0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 13};
+            long *ptr = long_arr + 10;
+            return *ptr == 13;
+        }
+        int test_add_negative_index(void) {
+            unsigned unsigned_arr[12] = {0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 42};
+            unsigned *end_ptr = unsigned_arr + 12;
+            unsigned *ptr = end_ptr + -10;
+            return *ptr == 2;
+        }
+        int test_add_pointer_to_int(void) {
+            int int_arr[5] = {0, 98, 99};
+            int *ptr1 = int_arr + 2;
+            int *ptr2 = 2 + int_arr;
+            return (ptr1 == ptr2 && *ptr2 == 99);
+        }
+        int test_add_different_index_types(void) {
+            double double_arr[11] = {0, 0, 0, 0, 0, 6.0};
+            double *ptr1 = double_arr + 5;
+            double *ptr2 = double_arr + 5l;
+            double *ptr3 = double_arr + 5u;
+            double *ptr4 = double_arr + 5ul;
+            return (ptr1 == ptr2 && ptr1 == ptr3 && ptr1 == ptr4 && *ptr4 == 6.0);
+        }
+        int test_add_complex_expressions(void) {
+            static int flag;
+            int i = -2;
+            int *small_int_ptr = &i;
+            extern int return_one(void);
+            extern int *get_elem1_ptr(int *arr);
+            extern int *get_elem2_ptr(int *arr);
+            static int arr[4] = {1, 2, 3, 4};
+            int *ptr = return_one() + (*small_int_ptr) +
+                       (flag ? get_elem1_ptr(arr) : get_elem2_ptr(arr));
+            return (ptr == arr + 1 && *ptr == 2);
+        }
+        int return_one(void) {
+            return 1;
+        }
+        int *get_elem1_ptr(int *arr) {
+            return arr + 1;
+        }
+        int *get_elem2_ptr(int *arr) {
+            return arr + 2;
+        }
+        int test_add_multi_dimensional(void) {
+            static int index = 2;
+            int nested_arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+            int(*row_pointer)[3] = nested_arr + index;
+            return **row_pointer == 7;
+        }
+        int test_add_to_subarray_pointer(void) {
+            static int index = 2;
+            int nested_arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+            int *row1 = *(nested_arr + 1);
+            int *elem_ptr = row1 + index;
+            return *elem_ptr == 6;
+        }
+        int test_subtract_from_pointer(void) {
+            long long_arr[5] = {10, 9, 8, 7, 6};
+            long *one_past_the_end = long_arr + 5;
+            static int index = 3;
+            long *subtraction_result = one_past_the_end - index;
+            return *subtraction_result == 8;
+        }
+        int test_subtract_negative_index(void) {
+            unsigned arr[5] = {100, 101, 102, 103, 104};
+            unsigned *ptr = arr - (-3);
+            return *ptr == 103;
+        }
+        int test_subtract_different_index_types(void) {
+            double double_arr[11] = {0, 0, 0, 0, 0, 0, 6.0};
+            double *end_ptr = double_arr + 11;
+            double *ptr1 = end_ptr - 5;
+            double *ptr2 = end_ptr - 5l;
+            double *ptr3 = end_ptr - 5u;
+            double *ptr4 = end_ptr - 5ul;
+            return (ptr1 == ptr2 && ptr1 == ptr3 && ptr1 == ptr4 && *ptr4 == 6.0);
+        }
+        int test_subtract_complex_expressions(void) {
+            static int flag = 1;
+            static int four = 4;
+            static int arr[4] = {1, 2, 3, 4};
+            int *ptr = (flag ? get_elem1_ptr(arr) : get_elem2_ptr(arr)) - (four / -2);
+            return (*ptr == 4);
+        }
+        int test_subtract_multi_dimensional(void) {
+            static int index = 1;
+            int nested_arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+            int(*last_row_pointer)[3] = nested_arr + 2;
+            int(*row_pointer)[3] = last_row_pointer - index;
+            return (**row_pointer == 4);
+        }
+        int main(void) {
+            if (!test_add_constant_to_pointer()) {
+                return 1;
+            }
+            if (!test_add_negative_index()) {
+                return 2;
+            }
+            if (!test_add_pointer_to_int()) {
+                return 3;
+            }
+            if (!test_add_different_index_types()) {
+                return 4;
+            }
+            if (!test_add_complex_expressions()) {
+                return 5;
+            }
+            if (!test_add_multi_dimensional()) {
+                return 6;
+            }
+            if (!test_add_to_subarray_pointer()) {
+                return 7;
+            }
+            if (!test_subtract_from_pointer()) {
+                return 8;
+            }
+            if (!test_subtract_negative_index()) {
+                return 9;
+            }
+            if (!test_subtract_different_index_types()) {
+                return 10;
+            }
+            if (!test_subtract_complex_expressions()) {
+                return 11;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function test_add_constant_to_pointer() { 
+            tmp.0 = sign_extend 0
+            copy_to_offset(dst=long_arr.0, tmp.0, offset=0)
+            tmp.1 = sign_extend 0
+            copy_to_offset(dst=long_arr.0, tmp.1, offset=8)
+            tmp.2 = sign_extend 3
+            copy_to_offset(dst=long_arr.0, tmp.2, offset=16)
+            tmp.3 = sign_extend 0
+            copy_to_offset(dst=long_arr.0, tmp.3, offset=24)
+            tmp.4 = sign_extend 0
+            copy_to_offset(dst=long_arr.0, tmp.4, offset=32)
+            tmp.5 = sign_extend 0
+            copy_to_offset(dst=long_arr.0, tmp.5, offset=40)
+            tmp.6 = sign_extend 0
+            copy_to_offset(dst=long_arr.0, tmp.6, offset=48)
+            tmp.7 = sign_extend 0
+            copy_to_offset(dst=long_arr.0, tmp.7, offset=56)
+            tmp.8 = sign_extend 0
+            copy_to_offset(dst=long_arr.0, tmp.8, offset=64)
+            tmp.9 = sign_extend 0
+            copy_to_offset(dst=long_arr.0, tmp.9, offset=72)
+            tmp.10 = sign_extend 13
+            copy_to_offset(dst=long_arr.0, tmp.10, offset=80)
+            copy_to_offset(dst=long_arr.0, 0L, offset=88)
+            tmp.11 = add_ptr(long_arr.0, index=10, scale=8)
+            ptr.1 = tmp.11
+            tmp.12 = load ptr.1
+            tmp.14 = sign_extend 13
+            tmp.13 = tmp.12 == tmp.14
+            return tmp.13
+            return 0
+        }
+        global function test_add_negative_index() { 
+            tmp.15 = 0
+            copy_to_offset(dst=unsigned_arr.2, tmp.15, offset=0)
+            tmp.16 = 0
+            copy_to_offset(dst=unsigned_arr.2, tmp.16, offset=4)
+            tmp.17 = 2
+            copy_to_offset(dst=unsigned_arr.2, tmp.17, offset=8)
+            tmp.18 = 0
+            copy_to_offset(dst=unsigned_arr.2, tmp.18, offset=12)
+            tmp.19 = 0
+            copy_to_offset(dst=unsigned_arr.2, tmp.19, offset=16)
+            tmp.20 = 0
+            copy_to_offset(dst=unsigned_arr.2, tmp.20, offset=20)
+            tmp.21 = 0
+            copy_to_offset(dst=unsigned_arr.2, tmp.21, offset=24)
+            tmp.22 = 0
+            copy_to_offset(dst=unsigned_arr.2, tmp.22, offset=28)
+            tmp.23 = 0
+            copy_to_offset(dst=unsigned_arr.2, tmp.23, offset=32)
+            tmp.24 = 0
+            copy_to_offset(dst=unsigned_arr.2, tmp.24, offset=36)
+            tmp.25 = 42
+            copy_to_offset(dst=unsigned_arr.2, tmp.25, offset=40)
+            copy_to_offset(dst=unsigned_arr.2, 0U, offset=44)
+            tmp.26 = add_ptr(unsigned_arr.2, index=12, scale=8)
+            end_ptr.3 = tmp.26
+            tmp.28 = - 10
+            tmp.27 = add_ptr(end_ptr.3, index=tmp.28, scale=8)
+            ptr.4 = tmp.27
+            tmp.29 = load ptr.4
+            tmp.31 = 2
+            tmp.30 = tmp.29 == tmp.31
+            return tmp.30
+            return 0
+        }
+        global function test_add_pointer_to_int() { 
+            copy_to_offset(dst=int_arr.5, 0, offset=0)
+            copy_to_offset(dst=int_arr.5, 98, offset=4)
+            copy_to_offset(dst=int_arr.5, 99, offset=8)
+            copy_to_offset(dst=int_arr.5, 0, offset=12)
+            copy_to_offset(dst=int_arr.5, 0, offset=16)
+            tmp.32 = add_ptr(int_arr.5, index=2, scale=8)
+            ptr1.6 = tmp.32
+            tmp.33 = 2 + int_arr.5
+            ptr2.7 = tmp.33
+            tmp.34 = ptr1.6 == ptr2.7
+            if !tmp.34 jump and_false_0
+            tmp.37 = load ptr2.7
+            tmp.38 = tmp.37 == 99
+            if !tmp.38 jump and_false_0
+            tmp.36 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.36 = 0
+        
+          and_end_1:
+            return tmp.36
+            return 0
+        }
+        global function test_add_different_index_types() { 
+            tmp.39 = int_to_double 0
+            copy_to_offset(dst=double_arr.8, tmp.39, offset=0)
+            tmp.40 = int_to_double 0
+            copy_to_offset(dst=double_arr.8, tmp.40, offset=8)
+            tmp.41 = int_to_double 0
+            copy_to_offset(dst=double_arr.8, tmp.41, offset=16)
+            tmp.42 = int_to_double 0
+            copy_to_offset(dst=double_arr.8, tmp.42, offset=24)
+            tmp.43 = int_to_double 0
+            copy_to_offset(dst=double_arr.8, tmp.43, offset=32)
+            copy_to_offset(dst=double_arr.8, 6D, offset=40)
+            copy_to_offset(dst=double_arr.8, 0D, offset=48)
+            copy_to_offset(dst=double_arr.8, 0D, offset=56)
+            copy_to_offset(dst=double_arr.8, 0D, offset=64)
+            copy_to_offset(dst=double_arr.8, 0D, offset=72)
+            copy_to_offset(dst=double_arr.8, 0D, offset=80)
+            tmp.44 = add_ptr(double_arr.8, index=5, scale=8)
+            ptr1.9 = tmp.44
+            tmp.45 = add_ptr(double_arr.8, index=5L, scale=8)
+            ptr2.10 = tmp.45
+            tmp.46 = add_ptr(double_arr.8, index=5U, scale=8)
+            ptr3.11 = tmp.46
+            tmp.47 = add_ptr(double_arr.8, index=5UL, scale=8)
+            ptr4.12 = tmp.47
+            tmp.48 = ptr1.9 == ptr2.10
+            if !tmp.48 jump and_false_2
+            tmp.51 = ptr1.9 == ptr3.11
+            if !tmp.51 jump and_false_2
+            tmp.50 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.50 = 0
+        
+          and_end_3:
+            if !tmp.50 jump and_false_4
+            tmp.54 = ptr1.9 == ptr4.12
+            if !tmp.54 jump and_false_4
+            tmp.53 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.53 = 0
+        
+          and_end_5:
+            if !tmp.53 jump and_false_6
+            tmp.57 = load ptr4.12
+            tmp.58 = tmp.57 == 6D
+            if !tmp.58 jump and_false_6
+            tmp.56 = 1
+            jump and_end_7
+        
+          and_false_6:
+            tmp.56 = 0
+        
+          and_end_7:
+            return tmp.56
+            return 0
+        }
+        global function test_add_complex_expressions() { 
+            tmp.59 = - 2
+            i.14 = tmp.59
+            tmp.60 = get_address i.14
+            small_int_ptr.15 = tmp.60
+            tmp.61 = return_one()
+            tmp.63 = load small_int_ptr.15
+            tmp.62 = tmp.61 + tmp.63
+            if !flag.13 jump else_9
+            tmp.66 = get_elem1_ptr(arr.18)
+            tmp.65 = tmp.66
+            jump end_if_8
+        
+          else_9:
+            tmp.67 = get_elem2_ptr(arr.18)
+            tmp.65 = tmp.67
+        
+          end_if_8:
+            tmp.64 = tmp.62 + tmp.65
+            ptr.19 = tmp.64
+            tmp.69 = add_ptr(arr.18, index=1, scale=8)
+            tmp.68 = ptr.19 == tmp.69
+            if !tmp.68 jump and_false_10
+            tmp.72 = load ptr.19
+            tmp.73 = tmp.72 == 2
+            if !tmp.73 jump and_false_10
+            tmp.71 = 1
+            jump and_end_11
+        
+          and_false_10:
+            tmp.71 = 0
+        
+          and_end_11:
+            return tmp.71
+            return 0
+        }
+        global function return_one() { 
+            return 1
+            return 0
+        }
+        global function get_elem1_ptr(arr.20) { 
+            tmp.74 = add_ptr(arr.20, index=1, scale=8)
+            return tmp.74
+            return 0
+        }
+        global function get_elem2_ptr(arr.21) { 
+            tmp.75 = add_ptr(arr.21, index=2, scale=8)
+            return tmp.75
+            return 0
+        }
+        global function test_add_multi_dimensional() { 
+            copy_to_offset(dst=nested_arr.23, 1, offset=0)
+            copy_to_offset(dst=nested_arr.23, 2, offset=4)
+            copy_to_offset(dst=nested_arr.23, 3, offset=8)
+            copy_to_offset(dst=nested_arr.23, 4, offset=12)
+            copy_to_offset(dst=nested_arr.23, 5, offset=16)
+            copy_to_offset(dst=nested_arr.23, 6, offset=20)
+            copy_to_offset(dst=nested_arr.23, 7, offset=24)
+            copy_to_offset(dst=nested_arr.23, 8, offset=28)
+            copy_to_offset(dst=nested_arr.23, 9, offset=32)
+            tmp.76 = add_ptr(nested_arr.23, index=index.22, scale=8)
+            row_pointer.24 = tmp.76
+            tmp.77 = load row_pointer.24
+            tmp.78 = load tmp.77
+            tmp.79 = tmp.78 == 7
+            return tmp.79
+            return 0
+        }
+        global function test_add_to_subarray_pointer() { 
+            copy_to_offset(dst=nested_arr.26, 1, offset=0)
+            copy_to_offset(dst=nested_arr.26, 2, offset=4)
+            copy_to_offset(dst=nested_arr.26, 3, offset=8)
+            copy_to_offset(dst=nested_arr.26, 4, offset=12)
+            copy_to_offset(dst=nested_arr.26, 5, offset=16)
+            copy_to_offset(dst=nested_arr.26, 6, offset=20)
+            copy_to_offset(dst=nested_arr.26, 7, offset=24)
+            copy_to_offset(dst=nested_arr.26, 8, offset=28)
+            copy_to_offset(dst=nested_arr.26, 9, offset=32)
+            tmp.80 = add_ptr(nested_arr.26, index=1, scale=8)
+            tmp.81 = load tmp.80
+            row1.27 = tmp.81
+            tmp.82 = add_ptr(row1.27, index=index.25, scale=8)
+            elem_ptr.28 = tmp.82
+            tmp.83 = load elem_ptr.28
+            tmp.84 = tmp.83 == 6
+            return tmp.84
+            return 0
+        }
+        global function test_subtract_from_pointer() { 
+            tmp.85 = sign_extend 10
+            copy_to_offset(dst=long_arr.29, tmp.85, offset=0)
+            tmp.86 = sign_extend 9
+            copy_to_offset(dst=long_arr.29, tmp.86, offset=8)
+            tmp.87 = sign_extend 8
+            copy_to_offset(dst=long_arr.29, tmp.87, offset=16)
+            tmp.88 = sign_extend 7
+            copy_to_offset(dst=long_arr.29, tmp.88, offset=24)
+            tmp.89 = sign_extend 6
+            copy_to_offset(dst=long_arr.29, tmp.89, offset=32)
+            tmp.90 = add_ptr(long_arr.29, index=5, scale=8)
+            one_past_the_end.30 = tmp.90
+            tmp.92 = - index.31
+            tmp.91 = add_ptr(one_past_the_end.30, index=tmp.92, scale=8)
+            subtraction_result.32 = tmp.91
+            tmp.93 = load subtraction_result.32
+            tmp.95 = sign_extend 8
+            tmp.94 = tmp.93 == tmp.95
+            return tmp.94
+            return 0
+        }
+        global function test_subtract_negative_index() { 
+            tmp.96 = 100
+            copy_to_offset(dst=arr.33, tmp.96, offset=0)
+            tmp.97 = 101
+            copy_to_offset(dst=arr.33, tmp.97, offset=4)
+            tmp.98 = 102
+            copy_to_offset(dst=arr.33, tmp.98, offset=8)
+            tmp.99 = 103
+            copy_to_offset(dst=arr.33, tmp.99, offset=12)
+            tmp.100 = 104
+            copy_to_offset(dst=arr.33, tmp.100, offset=16)
+            tmp.102 = - 3
+            tmp.103 = - tmp.102
+            tmp.101 = add_ptr(arr.33, index=tmp.103, scale=8)
+            ptr.34 = tmp.101
+            tmp.104 = load ptr.34
+            tmp.106 = 103
+            tmp.105 = tmp.104 == tmp.106
+            return tmp.105
+            return 0
+        }
+        global function test_subtract_different_index_types() { 
+            tmp.107 = int_to_double 0
+            copy_to_offset(dst=double_arr.35, tmp.107, offset=0)
+            tmp.108 = int_to_double 0
+            copy_to_offset(dst=double_arr.35, tmp.108, offset=8)
+            tmp.109 = int_to_double 0
+            copy_to_offset(dst=double_arr.35, tmp.109, offset=16)
+            tmp.110 = int_to_double 0
+            copy_to_offset(dst=double_arr.35, tmp.110, offset=24)
+            tmp.111 = int_to_double 0
+            copy_to_offset(dst=double_arr.35, tmp.111, offset=32)
+            tmp.112 = int_to_double 0
+            copy_to_offset(dst=double_arr.35, tmp.112, offset=40)
+            copy_to_offset(dst=double_arr.35, 6D, offset=48)
+            copy_to_offset(dst=double_arr.35, 0D, offset=56)
+            copy_to_offset(dst=double_arr.35, 0D, offset=64)
+            copy_to_offset(dst=double_arr.35, 0D, offset=72)
+            copy_to_offset(dst=double_arr.35, 0D, offset=80)
+            tmp.113 = add_ptr(double_arr.35, index=11, scale=8)
+            end_ptr.36 = tmp.113
+            tmp.115 = - 5
+            tmp.114 = add_ptr(end_ptr.36, index=tmp.115, scale=8)
+            ptr1.37 = tmp.114
+            tmp.117 = - 5L
+            tmp.116 = add_ptr(end_ptr.36, index=tmp.117, scale=8)
+            ptr2.38 = tmp.116
+            tmp.119 = - 5U
+            tmp.118 = add_ptr(end_ptr.36, index=tmp.119, scale=8)
+            ptr3.39 = tmp.118
+            tmp.121 = - 5UL
+            tmp.120 = add_ptr(end_ptr.36, index=tmp.121, scale=8)
+            ptr4.40 = tmp.120
+            tmp.122 = ptr1.37 == ptr2.38
+            if !tmp.122 jump and_false_12
+            tmp.125 = ptr1.37 == ptr3.39
+            if !tmp.125 jump and_false_12
+            tmp.124 = 1
+            jump and_end_13
+        
+          and_false_12:
+            tmp.124 = 0
+        
+          and_end_13:
+            if !tmp.124 jump and_false_14
+            tmp.128 = ptr1.37 == ptr4.40
+            if !tmp.128 jump and_false_14
+            tmp.127 = 1
+            jump and_end_15
+        
+          and_false_14:
+            tmp.127 = 0
+        
+          and_end_15:
+            if !tmp.127 jump and_false_16
+            tmp.131 = load ptr4.40
+            tmp.132 = tmp.131 == 6D
+            if !tmp.132 jump and_false_16
+            tmp.130 = 1
+            jump and_end_17
+        
+          and_false_16:
+            tmp.130 = 0
+        
+          and_end_17:
+            return tmp.130
+            return 0
+        }
+        global function test_subtract_complex_expressions() { 
+            if !flag.41 jump else_19
+            tmp.134 = get_elem1_ptr(arr.43)
+            tmp.133 = tmp.134
+            jump end_if_18
+        
+          else_19:
+            tmp.135 = get_elem2_ptr(arr.43)
+            tmp.133 = tmp.135
+        
+          end_if_18:
+            tmp.138 = - 2
+            tmp.137 = four.42 / tmp.138
+            tmp.139 = - tmp.137
+            tmp.136 = add_ptr(tmp.133, index=tmp.139, scale=8)
+            ptr.44 = tmp.136
+            tmp.140 = load ptr.44
+            tmp.141 = tmp.140 == 4
+            return tmp.141
+            return 0
+        }
+        global function test_subtract_multi_dimensional() { 
+            copy_to_offset(dst=nested_arr.46, 1, offset=0)
+            copy_to_offset(dst=nested_arr.46, 2, offset=4)
+            copy_to_offset(dst=nested_arr.46, 3, offset=8)
+            copy_to_offset(dst=nested_arr.46, 4, offset=12)
+            copy_to_offset(dst=nested_arr.46, 5, offset=16)
+            copy_to_offset(dst=nested_arr.46, 6, offset=20)
+            copy_to_offset(dst=nested_arr.46, 7, offset=24)
+            copy_to_offset(dst=nested_arr.46, 8, offset=28)
+            copy_to_offset(dst=nested_arr.46, 9, offset=32)
+            tmp.142 = add_ptr(nested_arr.46, index=2, scale=8)
+            last_row_pointer.47 = tmp.142
+            tmp.144 = - index.45
+            tmp.143 = add_ptr(last_row_pointer.47, index=tmp.144, scale=8)
+            row_pointer.48 = tmp.143
+            tmp.145 = load row_pointer.48
+            tmp.146 = load tmp.145
+            tmp.147 = tmp.146 == 4
+            return tmp.147
+            return 0
+        }
+        global function main() { 
+            tmp.148 = test_add_constant_to_pointer()
+            tmp.149 = ! tmp.148
+            if !tmp.149 jump end_if_20
+            return 1
+        
+          end_if_20:
+            tmp.150 = test_add_negative_index()
+            tmp.151 = ! tmp.150
+            if !tmp.151 jump end_if_22
+            return 2
+        
+          end_if_22:
+            tmp.152 = test_add_pointer_to_int()
+            tmp.153 = ! tmp.152
+            if !tmp.153 jump end_if_24
+            return 3
+        
+          end_if_24:
+            tmp.154 = test_add_different_index_types()
+            tmp.155 = ! tmp.154
+            if !tmp.155 jump end_if_26
+            return 4
+        
+          end_if_26:
+            tmp.156 = test_add_complex_expressions()
+            tmp.157 = ! tmp.156
+            if !tmp.157 jump end_if_28
+            return 5
+        
+          end_if_28:
+            tmp.158 = test_add_multi_dimensional()
+            tmp.159 = ! tmp.158
+            if !tmp.159 jump end_if_30
+            return 6
+        
+          end_if_30:
+            tmp.160 = test_add_to_subarray_pointer()
+            tmp.161 = ! tmp.160
+            if !tmp.161 jump end_if_32
+            return 7
+        
+          end_if_32:
+            tmp.162 = test_subtract_from_pointer()
+            tmp.163 = ! tmp.162
+            if !tmp.163 jump end_if_34
+            return 8
+        
+          end_if_34:
+            tmp.164 = test_subtract_negative_index()
+            tmp.165 = ! tmp.164
+            if !tmp.165 jump end_if_36
+            return 9
+        
+          end_if_36:
+            tmp.166 = test_subtract_different_index_types()
+            tmp.167 = ! tmp.166
+            if !tmp.167 jump end_if_38
+            return 10
+        
+          end_if_38:
+            tmp.168 = test_subtract_complex_expressions()
+            tmp.169 = ! tmp.168
+            if !tmp.169 jump end_if_40
+            return 11
+        
+          end_if_40:
+            return 0
+            return 0
+        }
+        static arr.18: Array(4,Int) = [ 1, 2, 3, 4]
+        static arr.43: Array(4,Int) = [ 1, 2, 3, 4]
+        static flag.13: Int = zero[4]
+        static flag.41: Int = 1
+        static four.42: Int = 4
+        static index.22: Int = 2
+        static index.25: Int = 2
+        static index.31: Int = 3
+        static index.45: Int = 1
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_pointer_arithmetic_pointer_diff() {
+    let src = r#"
+        int get_ptr_diff(int *ptr1, int *ptr2) {
+            return (ptr2 - ptr1);
+        }
+        int get_long_ptr_diff(long *ptr1, long *ptr2) {
+            return (ptr2 - ptr1);
+        }
+        int get_multidim_ptr_diff(double (*ptr1)[3][5], double (*ptr2)[3][5]) {
+            return (ptr2 - ptr1);
+        }
+        int get_multidim_ptr_diff_2(double (*ptr1)[5], double (*ptr2)[5]) {
+            return (ptr2 - ptr1);
+        }
+        int main(void) {
+            int arr[5] = {5, 4, 3, 2, 1};
+            int *end_of_array = arr + 5;
+            if (get_ptr_diff(arr, end_of_array) != 5) {
+                return 1;
+            }
+            long long_arr[8];
+            if (get_long_ptr_diff(long_arr + 3, long_arr) != -3) {
+                return 2;
+            }
+            static double multidim[6][7][3][5];
+            if (get_multidim_ptr_diff(multidim[2] + 1, multidim[2] + 4) != 3) {
+                return 3;
+            }
+            if (get_multidim_ptr_diff_2(multidim[2][2] + 2, multidim[2][2]) != -2) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function get_ptr_diff(ptr1.0, ptr2.1) { 
+            tmp.1 = ptr2.1 - ptr1.0
+            tmp.0 = tmp.1 / 8L
+            tmp.2 = truncate tmp.0
+            return tmp.2
+            return 0
+        }
+        global function get_long_ptr_diff(ptr1.2, ptr2.3) { 
+            tmp.4 = ptr2.3 - ptr1.2
+            tmp.3 = tmp.4 / 8L
+            tmp.5 = truncate tmp.3
+            return tmp.5
+            return 0
+        }
+        global function get_multidim_ptr_diff(ptr1.4, ptr2.5) { 
+            tmp.7 = ptr2.5 - ptr1.4
+            tmp.6 = tmp.7 / 8L
+            tmp.8 = truncate tmp.6
+            return tmp.8
+            return 0
+        }
+        global function get_multidim_ptr_diff_2(ptr1.6, ptr2.7) { 
+            tmp.10 = ptr2.7 - ptr1.6
+            tmp.9 = tmp.10 / 8L
+            tmp.11 = truncate tmp.9
+            return tmp.11
+            return 0
+        }
+        global function main() { 
+            copy_to_offset(dst=arr.8, 5, offset=0)
+            copy_to_offset(dst=arr.8, 4, offset=4)
+            copy_to_offset(dst=arr.8, 3, offset=8)
+            copy_to_offset(dst=arr.8, 2, offset=12)
+            copy_to_offset(dst=arr.8, 1, offset=16)
+            tmp.12 = add_ptr(arr.8, index=5, scale=8)
+            end_of_array.9 = tmp.12
+            tmp.13 = get_ptr_diff(arr.8, end_of_array.9)
+            tmp.14 = tmp.13 != 5
+            if !tmp.14 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.15 = add_ptr(long_arr.10, index=3, scale=8)
+            tmp.16 = get_long_ptr_diff(tmp.15, long_arr.10)
+            tmp.18 = - 3
+            tmp.17 = tmp.16 != tmp.18
+            if !tmp.17 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.19 = add_ptr(multidim.11, index=2, scale=8)
+            tmp.20 = load tmp.19
+            tmp.21 = add_ptr(tmp.20, index=1, scale=8)
+            tmp.22 = add_ptr(multidim.11, index=2, scale=8)
+            tmp.23 = load tmp.22
+            tmp.24 = add_ptr(tmp.23, index=4, scale=8)
+            tmp.25 = get_multidim_ptr_diff(tmp.21, tmp.24)
+            tmp.26 = tmp.25 != 3
+            if !tmp.26 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.28 = add_ptr(multidim.11, index=2, scale=8)
+            tmp.29 = load tmp.28
+            tmp.27 = add_ptr(tmp.29, index=2, scale=8)
+            tmp.30 = load tmp.27
+            tmp.31 = add_ptr(tmp.30, index=2, scale=8)
+            tmp.33 = add_ptr(multidim.11, index=2, scale=8)
+            tmp.34 = load tmp.33
+            tmp.32 = add_ptr(tmp.34, index=2, scale=8)
+            tmp.35 = load tmp.32
+            tmp.36 = get_multidim_ptr_diff_2(tmp.31, tmp.35)
+            tmp.38 = - 2
+            tmp.37 = tmp.36 != tmp.38
+            if !tmp.37 jump end_if_6
+            return 4
+        
+          end_if_6:
+            return 0
+            return 0
+        }
+        static multidim.11: Array(6,Array(7,Array(3,Array(5,Double)))) = zero[5040]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_addition_subscript_equivalence() {
+    let src = r#"
+        int main(void)
+        {
+            unsigned long x[300][5];
+            for (int i = 0; i < 300; i = i + 1) {
+                for (int j = 0; j < 5; j = j + 1) {
+                    x[i][j] = i * 5 + j;
+                }
+            }
+            if (*(*(x + 20) + 3) != x[20][3]) {
+                return 1;
+            }
+            if (&(*(*(x + 290) + 3)) != &x[290][3]) {
+                return 2;
+            }
+            for (int i = 0; i < 300; i = i + 1) {
+                for (int j = 0; j < 5; j = j + 1) {
+                    if (*(*(x + i) + j) != x[i][j]) {
+                        return 3;
+                    }
+                }
+            }
+            *(*(x + 275) + 4) = 22000ul;
+            if (x[275][4] != 22000ul) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            i.1 = 0
+        
+          start_loop_0:
+            tmp.0 = i.1 < 300
+            if !tmp.0 jump break_loop_0
+            j.2 = 0
+        
+          start_loop_1:
+            tmp.1 = j.2 < 5
+            if !tmp.1 jump break_loop_1
+            tmp.3 = add_ptr(x.0, index=i.1, scale=8)
+            tmp.4 = load tmp.3
+            tmp.2 = add_ptr(tmp.4, index=j.2, scale=8)
+            tmp.5 = i.1 * 5
+            tmp.6 = tmp.5 + j.2
+            tmp.7 = sign_extend tmp.6
+            tmp.2 = store tmp.7
+        
+          continue_loop_1:
+            tmp.8 = j.2 + 1
+            j.2 = tmp.8
+            jump start_loop_1
+        
+          break_loop_1:
+        
+          continue_loop_0:
+            tmp.9 = i.1 + 1
+            i.1 = tmp.9
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.10 = add_ptr(x.0, index=20, scale=8)
+            tmp.11 = load tmp.10
+            tmp.12 = add_ptr(tmp.11, index=3, scale=8)
+            tmp.13 = load tmp.12
+            tmp.16 = add_ptr(x.0, index=20, scale=8)
+            tmp.17 = load tmp.16
+            tmp.15 = add_ptr(tmp.17, index=3, scale=8)
+            tmp.18 = load tmp.15
+            tmp.14 = tmp.13 != tmp.18
+            if !tmp.14 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.19 = add_ptr(x.0, index=290, scale=8)
+            tmp.20 = load tmp.19
+            tmp.21 = add_ptr(tmp.20, index=3, scale=8)
+            tmp.24 = add_ptr(x.0, index=290, scale=8)
+            tmp.25 = load tmp.24
+            tmp.23 = add_ptr(tmp.25, index=3, scale=8)
+            tmp.22 = tmp.21 != tmp.23
+            if !tmp.22 jump end_if_2
+            return 2
+        
+          end_if_2:
+            i.3 = 0
+        
+          start_loop_2:
+            tmp.26 = i.3 < 300
+            if !tmp.26 jump break_loop_2
+            j.4 = 0
+        
+          start_loop_3:
+            tmp.27 = j.4 < 5
+            if !tmp.27 jump break_loop_3
+            tmp.28 = add_ptr(x.0, index=i.3, scale=8)
+            tmp.29 = load tmp.28
+            tmp.30 = add_ptr(tmp.29, index=j.4, scale=8)
+            tmp.31 = load tmp.30
+            tmp.34 = add_ptr(x.0, index=i.3, scale=8)
+            tmp.35 = load tmp.34
+            tmp.33 = add_ptr(tmp.35, index=j.4, scale=8)
+            tmp.36 = load tmp.33
+            tmp.32 = tmp.31 != tmp.36
+            if !tmp.32 jump end_if_4
+            return 3
+        
+          end_if_4:
+        
+          continue_loop_3:
+            tmp.37 = j.4 + 1
+            j.4 = tmp.37
+            jump start_loop_3
+        
+          break_loop_3:
+        
+          continue_loop_2:
+            tmp.38 = i.3 + 1
+            i.3 = tmp.38
+            jump start_loop_2
+        
+          break_loop_2:
+            tmp.39 = add_ptr(x.0, index=275, scale=8)
+            tmp.40 = load tmp.39
+            tmp.41 = add_ptr(tmp.40, index=4, scale=8)
+            tmp.41 = store 22000UL
+            tmp.43 = add_ptr(x.0, index=275, scale=8)
+            tmp.44 = load tmp.43
+            tmp.42 = add_ptr(tmp.44, index=4, scale=8)
+            tmp.45 = load tmp.42
+            tmp.46 = tmp.45 != 22000UL
+            if !tmp.46 jump end_if_6
+            return 4
+        
+          end_if_6:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_array_of_pointers_to_arrays() {
+    let src = r#"
+        int main(void) {
+            int x = 0;
+            int y = 1;
+            int z = 2;
+            int *arr[3] = { &x, &y, &z };
+            int *arr2[3] = {&z, &y, &x};
+            int *(*array_of_pointers[3])[3] = {&arr, &arr2, &arr};
+            if (array_of_pointers[0] != (int *(*)[3]) arr) {
+                return 1;
+            }
+            if (array_of_pointers[1] != (int *(*)[3]) arr2) {
+                return 2;
+            }
+            if (array_of_pointers[2] != (int *(*)[3]) arr) {
+                return 3;
+            }
+            if (array_of_pointers[1][0][0] != &z) {
+                return 4;
+            }
+            if (array_of_pointers[1][0][1] != &y) {
+                return 5;
+            }
+            if (array_of_pointers[2][0][2][0] != 2) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            x.0 = 0
+            y.1 = 1
+            z.2 = 2
+            tmp.0 = get_address x.0
+            copy_to_offset(dst=arr.3, tmp.0, offset=0)
+            tmp.1 = get_address y.1
+            copy_to_offset(dst=arr.3, tmp.1, offset=8)
+            tmp.2 = get_address z.2
+            copy_to_offset(dst=arr.3, tmp.2, offset=16)
+            tmp.3 = get_address z.2
+            copy_to_offset(dst=arr2.4, tmp.3, offset=0)
+            tmp.4 = get_address y.1
+            copy_to_offset(dst=arr2.4, tmp.4, offset=8)
+            tmp.5 = get_address x.0
+            copy_to_offset(dst=arr2.4, tmp.5, offset=16)
+            tmp.6 = get_address arr.3
+            copy_to_offset(dst=array_of_pointers.5, tmp.6, offset=0)
+            tmp.7 = get_address arr2.4
+            copy_to_offset(dst=array_of_pointers.5, tmp.7, offset=8)
+            tmp.8 = get_address arr.3
+            copy_to_offset(dst=array_of_pointers.5, tmp.8, offset=16)
+            tmp.9 = add_ptr(array_of_pointers.5, index=0, scale=8)
+            tmp.10 = load tmp.9
+            tmp.12 = arr.3
+            tmp.11 = tmp.10 != tmp.12
+            if !tmp.11 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.13 = add_ptr(array_of_pointers.5, index=1, scale=8)
+            tmp.14 = load tmp.13
+            tmp.16 = arr2.4
+            tmp.15 = tmp.14 != tmp.16
+            if !tmp.15 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.17 = add_ptr(array_of_pointers.5, index=2, scale=8)
+            tmp.18 = load tmp.17
+            tmp.20 = arr.3
+            tmp.19 = tmp.18 != tmp.20
+            if !tmp.19 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.23 = add_ptr(array_of_pointers.5, index=1, scale=8)
+            tmp.24 = load tmp.23
+            tmp.22 = add_ptr(tmp.24, index=0, scale=8)
+            tmp.25 = load tmp.22
+            tmp.21 = add_ptr(tmp.25, index=0, scale=8)
+            tmp.26 = load tmp.21
+            tmp.28 = get_address z.2
+            tmp.27 = tmp.26 != tmp.28
+            if !tmp.27 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.31 = add_ptr(array_of_pointers.5, index=1, scale=8)
+            tmp.32 = load tmp.31
+            tmp.30 = add_ptr(tmp.32, index=0, scale=8)
+            tmp.33 = load tmp.30
+            tmp.29 = add_ptr(tmp.33, index=1, scale=8)
+            tmp.34 = load tmp.29
+            tmp.36 = get_address y.1
+            tmp.35 = tmp.34 != tmp.36
+            if !tmp.35 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.40 = add_ptr(array_of_pointers.5, index=2, scale=8)
+            tmp.41 = load tmp.40
+            tmp.39 = add_ptr(tmp.41, index=0, scale=8)
+            tmp.42 = load tmp.39
+            tmp.38 = add_ptr(tmp.42, index=2, scale=8)
+            tmp.43 = load tmp.38
+            tmp.37 = add_ptr(tmp.43, index=0, scale=4)
+            tmp.44 = load tmp.37
+            tmp.45 = tmp.44 != 2
+            if !tmp.45 jump end_if_10
+            return 6
+        
+          end_if_10:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_complex_operands() {
+    let src = r#"
+        int assign_in_index(int idx) {
+            int arr[3] = {1, 2, 3};
+            int val = arr[idx = idx + 2];
+            if (idx != 1) {
+                return 1;
+            }
+            if (val != 2) {
+                return 2;
+            }
+            return 0;
+        }
+        int static_index(void) {
+            static int index = 0;
+            int retval = index;
+            index = index + 1;
+            return retval;
+        }
+        int funcall_in_index(void) {
+            int arr[3] = {1, 2, 3};
+            int v1 = arr[static_index()];
+            int v2 = arr[static_index()];
+            if (v1 != 1) {
+                return 3;
+            }
+            if (v2 != 2) {
+                return 4;
+            }
+            return 0;
+        }
+        int subscript_inception(long *arr, int *a, int b){
+            return arr[a[b]];
+        }
+        int check_subscript_inception(void) {
+            long arr[4] = {4, 3, 2, 1};
+            int indices[2] = {1, 2};
+            if (subscript_inception(arr, indices, 1) != 2) {
+                return 5;
+            }
+            if (subscript_inception(arr, indices, 0) != 3) {
+                return 6;
+            }
+            return 0;
+        }
+        int *get_array(void) {
+            static int arr[3];
+            return arr;
+        }
+        int subscript_function_result(void){
+            get_array()[2] = 1;
+            if (get_array()[2] != 1) {
+                return 7;
+            }
+            return 0;
+        }
+        int negate_subscript(int *arr, int idx, int expected) {
+            if (arr[-idx] != expected) {
+                return 8;
+            }
+            return 0;
+        }
+        int main(void) {
+            int check = assign_in_index(-1);
+            if (check) {
+                return check;
+            }
+            check = funcall_in_index();
+            if (check) {
+                return check;
+            }
+            check = check_subscript_inception();
+            if (check) {
+                return check;
+            }
+            check = subscript_function_result();
+            if (check) {
+                return check;
+            }
+            int arr[3] = {0, 1, 2};
+            check = negate_subscript(arr + 2, 2, 0);
+            if (check) {
+                return check;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function assign_in_index(idx.0) { 
+            copy_to_offset(dst=arr.1, 1, offset=0)
+            copy_to_offset(dst=arr.1, 2, offset=4)
+            copy_to_offset(dst=arr.1, 3, offset=8)
+            tmp.1 = idx.0 + 2
+            idx.0 = tmp.1
+            tmp.0 = add_ptr(arr.1, index=tmp.1, scale=4)
+            tmp.2 = load tmp.0
+            val.2 = tmp.2
+            tmp.3 = idx.0 != 1
+            if !tmp.3 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.4 = val.2 != 2
+            if !tmp.4 jump end_if_2
+            return 2
+        
+          end_if_2:
+            return 0
+            return 0
+        }
+        global function static_index() { 
+            retval.4 = index.3
+            tmp.5 = index.3 + 1
+            index.3 = tmp.5
+            return retval.4
+            return 0
+        }
+        global function funcall_in_index() { 
+            copy_to_offset(dst=arr.5, 1, offset=0)
+            copy_to_offset(dst=arr.5, 2, offset=4)
+            copy_to_offset(dst=arr.5, 3, offset=8)
+            tmp.7 = static_index()
+            tmp.6 = add_ptr(arr.5, index=tmp.7, scale=4)
+            tmp.8 = load tmp.6
+            v1.6 = tmp.8
+            tmp.10 = static_index()
+            tmp.9 = add_ptr(arr.5, index=tmp.10, scale=4)
+            tmp.11 = load tmp.9
+            v2.7 = tmp.11
+            tmp.12 = v1.6 != 1
+            if !tmp.12 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.13 = v2.7 != 2
+            if !tmp.13 jump end_if_6
+            return 4
+        
+          end_if_6:
+            return 0
+            return 0
+        }
+        global function subscript_inception(arr.8, a.9, b.10) { 
+            tmp.15 = add_ptr(a.9, index=b.10, scale=4)
+            tmp.16 = load tmp.15
+            tmp.14 = add_ptr(arr.8, index=tmp.16, scale=8)
+            tmp.17 = load tmp.14
+            tmp.18 = truncate tmp.17
+            return tmp.18
+            return 0
+        }
+        global function check_subscript_inception() { 
+            tmp.19 = sign_extend 4
+            copy_to_offset(dst=arr.11, tmp.19, offset=0)
+            tmp.20 = sign_extend 3
+            copy_to_offset(dst=arr.11, tmp.20, offset=8)
+            tmp.21 = sign_extend 2
+            copy_to_offset(dst=arr.11, tmp.21, offset=16)
+            tmp.22 = sign_extend 1
+            copy_to_offset(dst=arr.11, tmp.22, offset=24)
+            copy_to_offset(dst=indices.12, 1, offset=0)
+            copy_to_offset(dst=indices.12, 2, offset=4)
+            tmp.23 = subscript_inception(arr.11, indices.12, 1)
+            tmp.24 = tmp.23 != 2
+            if !tmp.24 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.25 = subscript_inception(arr.11, indices.12, 0)
+            tmp.26 = tmp.25 != 3
+            if !tmp.26 jump end_if_10
+            return 6
+        
+          end_if_10:
+            return 0
+            return 0
+        }
+        global function get_array() { 
+            return arr.13
+            return 0
+        }
+        global function subscript_function_result() { 
+            tmp.28 = get_array()
+            tmp.27 = add_ptr(tmp.28, index=2, scale=4)
+            tmp.27 = store 1
+            tmp.30 = get_array()
+            tmp.29 = add_ptr(tmp.30, index=2, scale=4)
+            tmp.31 = load tmp.29
+            tmp.32 = tmp.31 != 1
+            if !tmp.32 jump end_if_12
+            return 7
+        
+          end_if_12:
+            return 0
+            return 0
+        }
+        global function negate_subscript(arr.14, idx.15, expected.16) { 
+            tmp.34 = - idx.15
+            tmp.33 = add_ptr(arr.14, index=tmp.34, scale=4)
+            tmp.35 = load tmp.33
+            tmp.36 = tmp.35 != expected.16
+            if !tmp.36 jump end_if_14
+            return 8
+        
+          end_if_14:
+            return 0
+            return 0
+        }
+        global function main() { 
+            tmp.37 = - 1
+            tmp.38 = assign_in_index(tmp.37)
+            check.17 = tmp.38
+            if !check.17 jump end_if_16
+            return check.17
+        
+          end_if_16:
+            tmp.39 = funcall_in_index()
+            check.17 = tmp.39
+            if !check.17 jump end_if_18
+            return check.17
+        
+          end_if_18:
+            tmp.40 = check_subscript_inception()
+            check.17 = tmp.40
+            if !check.17 jump end_if_20
+            return check.17
+        
+          end_if_20:
+            tmp.41 = subscript_function_result()
+            check.17 = tmp.41
+            if !check.17 jump end_if_22
+            return check.17
+        
+          end_if_22:
+            copy_to_offset(dst=arr.18, 0, offset=0)
+            copy_to_offset(dst=arr.18, 1, offset=4)
+            copy_to_offset(dst=arr.18, 2, offset=8)
+            tmp.42 = add_ptr(arr.18, index=2, scale=8)
+            tmp.43 = negate_subscript(tmp.42, 2, 0)
+            check.17 = tmp.43
+            if !check.17 jump end_if_24
+            return check.17
+        
+          end_if_24:
+            return 0
+            return 0
+        }
+        static arr.13: Array(3,Int) = zero[12]
+        static index.3: Int = 0
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_simple() {
+    let src = r#"
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            return arr[2];
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=arr.0, 1, offset=0)
+            copy_to_offset(dst=arr.0, 2, offset=4)
+            copy_to_offset(dst=arr.0, 3, offset=8)
+            tmp.0 = add_ptr(arr.0, index=2, scale=4)
+            tmp.1 = load tmp.0
+            return tmp.1
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_simple_subscripts() {
+    let src = r#"
+        int integer_types(unsigned *arr, unsigned expected) {
+            unsigned val1 = arr[5];
+            unsigned val2 = arr[5u];
+            unsigned val3 = arr[5l];
+            unsigned val4 = arr[5ul];
+            if (val1 != expected) {
+                return 1;
+            }
+            if (val2 != expected) {
+                return 2;
+            }
+            if (val3 != expected) {
+                return 3;
+            }
+            if (val4 != expected) {
+                return 4;
+            }
+            return 0;
+        }
+        int reverse_subscript(long *arr, long expected) {
+            if (arr[3] != expected) {
+                return 5;
+            }
+            if (3[arr] != expected) {
+                return 6;
+            }
+            if (&3[arr] != &arr[3]) {
+                return 7;
+            }
+            return 0;
+        }
+        static double static_array[3] = {0.1, 0.2, 0.3};
+        int subscript_static(void) {
+            if (static_array[0] != 0.1) {
+                return 8;
+            }
+            if (static_array[1] != 0.2) {
+                return 9;
+            }
+            if (static_array[2] != 0.3) {
+                return 10;
+            }
+            return 0;
+        }
+        int update_element(int *arr, int expected) {
+            arr[10] = arr[10] * 2;
+            if (arr[10] != expected) {
+                return 11;
+            }
+            return 0;
+        }
+        int *increment_static_element(void) {
+            static int arr[4];
+            arr[3] = arr[3] + 1;
+            return arr;
+        }
+        int check_increment_static_element(void) {
+            int *arr1 = increment_static_element();
+            if (arr1[3] != 1) {
+                return 12;
+            }
+            if (arr1[0] || arr1[1] || arr1[2]) {
+                return 13;
+            }
+            int *arr2 = increment_static_element();
+            if (arr1 != arr2) {
+                return 14;
+            }
+            if (arr1[3] != 2) {
+                return 15;
+            }
+            return 0;
+        }
+        int main(void) {
+            unsigned int unsigned_arr[6] = {0, 0, 0, 0, 0, 7u};
+            int check = integer_types(unsigned_arr, 7u);
+            if (check) {
+                return check;
+            }
+            long int long_arr[4] = {100, 102, 104, 106};
+            check = reverse_subscript(long_arr, 106);
+            if (check) {
+                return check;
+            }
+            check = subscript_static();
+            if (check) {
+                return check;
+            }
+            int int_arr[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15};
+            check = update_element(int_arr, 30);
+            if (check) {
+                return check;
+            }
+            check = check_increment_static_element();
+            if (check) {
+                return check;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function integer_types(arr.0, expected.1) { 
+            tmp.0 = add_ptr(arr.0, index=5, scale=4)
+            tmp.1 = load tmp.0
+            val1.2 = tmp.1
+            tmp.2 = add_ptr(arr.0, index=5U, scale=4)
+            tmp.3 = load tmp.2
+            val2.3 = tmp.3
+            tmp.4 = add_ptr(arr.0, index=5L, scale=4)
+            tmp.5 = load tmp.4
+            val3.4 = tmp.5
+            tmp.6 = add_ptr(arr.0, index=5UL, scale=4)
+            tmp.7 = load tmp.6
+            val4.5 = tmp.7
+            tmp.8 = val1.2 != expected.1
+            if !tmp.8 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.9 = val2.3 != expected.1
+            if !tmp.9 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.10 = val3.4 != expected.1
+            if !tmp.10 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.11 = val4.5 != expected.1
+            if !tmp.11 jump end_if_6
+            return 4
+        
+          end_if_6:
+            return 0
+            return 0
+        }
+        global function reverse_subscript(arr.6, expected.7) { 
+            tmp.12 = add_ptr(arr.6, index=3, scale=8)
+            tmp.13 = load tmp.12
+            tmp.14 = tmp.13 != expected.7
+            if !tmp.14 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.15 = add_ptr(arr.6, index=3, scale=8)
+            tmp.16 = load tmp.15
+            tmp.17 = tmp.16 != expected.7
+            if !tmp.17 jump end_if_10
+            return 6
+        
+          end_if_10:
+            tmp.18 = add_ptr(arr.6, index=3, scale=8)
+            tmp.20 = add_ptr(arr.6, index=3, scale=8)
+            tmp.19 = tmp.18 != tmp.20
+            if !tmp.19 jump end_if_12
+            return 7
+        
+          end_if_12:
+            return 0
+            return 0
+        }
+        global function subscript_static() { 
+            tmp.21 = add_ptr(static_array, index=0, scale=8)
+            tmp.22 = load tmp.21
+            tmp.23 = tmp.22 != 0.1D
+            if !tmp.23 jump end_if_14
+            return 8
+        
+          end_if_14:
+            tmp.24 = add_ptr(static_array, index=1, scale=8)
+            tmp.25 = load tmp.24
+            tmp.26 = tmp.25 != 0.2D
+            if !tmp.26 jump end_if_16
+            return 9
+        
+          end_if_16:
+            tmp.27 = add_ptr(static_array, index=2, scale=8)
+            tmp.28 = load tmp.27
+            tmp.29 = tmp.28 != 0.3D
+            if !tmp.29 jump end_if_18
+            return 10
+        
+          end_if_18:
+            return 0
+            return 0
+        }
+        global function update_element(arr.8, expected.9) { 
+            tmp.30 = add_ptr(arr.8, index=10, scale=4)
+            tmp.31 = add_ptr(arr.8, index=10, scale=4)
+            tmp.32 = load tmp.31
+            tmp.33 = tmp.32 * 2
+            tmp.30 = store tmp.33
+            tmp.34 = add_ptr(arr.8, index=10, scale=4)
+            tmp.35 = load tmp.34
+            tmp.36 = tmp.35 != expected.9
+            if !tmp.36 jump end_if_20
+            return 11
+        
+          end_if_20:
+            return 0
+            return 0
+        }
+        global function increment_static_element() { 
+            tmp.37 = add_ptr(arr.10, index=3, scale=4)
+            tmp.38 = add_ptr(arr.10, index=3, scale=4)
+            tmp.39 = load tmp.38
+            tmp.40 = tmp.39 + 1
+            tmp.37 = store tmp.40
+            return arr.10
+            return 0
+        }
+        global function check_increment_static_element() { 
+            tmp.41 = increment_static_element()
+            arr1.11 = tmp.41
+            tmp.42 = add_ptr(arr1.11, index=3, scale=4)
+            tmp.43 = load tmp.42
+            tmp.44 = tmp.43 != 1
+            if !tmp.44 jump end_if_22
+            return 12
+        
+          end_if_22:
+            tmp.45 = add_ptr(arr1.11, index=0, scale=4)
+            tmp.46 = load tmp.45
+            if tmp.46 jump or_true_24
+            tmp.49 = add_ptr(arr1.11, index=1, scale=4)
+            tmp.50 = load tmp.49
+            if tmp.50 jump or_true_24
+            tmp.48 = 0
+            jump or_end_25
+        
+          or_true_24:
+            tmp.48 = 1
+        
+          or_end_25:
+            if tmp.48 jump or_true_26
+            tmp.53 = add_ptr(arr1.11, index=2, scale=4)
+            tmp.54 = load tmp.53
+            if tmp.54 jump or_true_26
+            tmp.52 = 0
+            jump or_end_27
+        
+          or_true_26:
+            tmp.52 = 1
+        
+          or_end_27:
+            if !tmp.52 jump end_if_28
+            return 13
+        
+          end_if_28:
+            tmp.55 = increment_static_element()
+            arr2.12 = tmp.55
+            tmp.56 = arr1.11 != arr2.12
+            if !tmp.56 jump end_if_30
+            return 14
+        
+          end_if_30:
+            tmp.57 = add_ptr(arr1.11, index=3, scale=4)
+            tmp.58 = load tmp.57
+            tmp.59 = tmp.58 != 2
+            if !tmp.59 jump end_if_32
+            return 15
+        
+          end_if_32:
+            return 0
+            return 0
+        }
+        global function main() { 
+            tmp.60 = 0
+            copy_to_offset(dst=unsigned_arr.13, tmp.60, offset=0)
+            tmp.61 = 0
+            copy_to_offset(dst=unsigned_arr.13, tmp.61, offset=4)
+            tmp.62 = 0
+            copy_to_offset(dst=unsigned_arr.13, tmp.62, offset=8)
+            tmp.63 = 0
+            copy_to_offset(dst=unsigned_arr.13, tmp.63, offset=12)
+            tmp.64 = 0
+            copy_to_offset(dst=unsigned_arr.13, tmp.64, offset=16)
+            copy_to_offset(dst=unsigned_arr.13, 7U, offset=20)
+            tmp.65 = integer_types(unsigned_arr.13, 7U)
+            check.14 = tmp.65
+            if !check.14 jump end_if_34
+            return check.14
+        
+          end_if_34:
+            tmp.66 = sign_extend 100
+            copy_to_offset(dst=long_arr.15, tmp.66, offset=0)
+            tmp.67 = sign_extend 102
+            copy_to_offset(dst=long_arr.15, tmp.67, offset=8)
+            tmp.68 = sign_extend 104
+            copy_to_offset(dst=long_arr.15, tmp.68, offset=16)
+            tmp.69 = sign_extend 106
+            copy_to_offset(dst=long_arr.15, tmp.69, offset=24)
+            tmp.70 = sign_extend 106
+            tmp.71 = reverse_subscript(long_arr.15, tmp.70)
+            check.14 = tmp.71
+            if !check.14 jump end_if_36
+            return check.14
+        
+          end_if_36:
+            tmp.72 = subscript_static()
+            check.14 = tmp.72
+            if !check.14 jump end_if_38
+            return check.14
+        
+          end_if_38:
+            copy_to_offset(dst=int_arr.16, 0, offset=0)
+            copy_to_offset(dst=int_arr.16, 0, offset=4)
+            copy_to_offset(dst=int_arr.16, 0, offset=8)
+            copy_to_offset(dst=int_arr.16, 0, offset=12)
+            copy_to_offset(dst=int_arr.16, 0, offset=16)
+            copy_to_offset(dst=int_arr.16, 0, offset=20)
+            copy_to_offset(dst=int_arr.16, 0, offset=24)
+            copy_to_offset(dst=int_arr.16, 0, offset=28)
+            copy_to_offset(dst=int_arr.16, 0, offset=32)
+            copy_to_offset(dst=int_arr.16, 0, offset=36)
+            copy_to_offset(dst=int_arr.16, 15, offset=40)
+            tmp.73 = update_element(int_arr.16, 30)
+            check.14 = tmp.73
+            if !check.14 jump end_if_40
+            return check.14
+        
+          end_if_40:
+            tmp.74 = check_increment_static_element()
+            check.14 = tmp.74
+            if !check.14 jump end_if_42
+            return check.14
+        
+          end_if_42:
+            return 0
+            return 0
+        }
+        static arr.10: Array(4,Int) = zero[16]
+        static static_array: Array(3,Double) = [ 0.1D, 0.2D, 0.3D]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_subscript_nested() {
+    let src = r#"
+        int read_nested(int nested_arr[2][3], int i, int j, int expected) {
+            return (nested_arr[i][j] == expected);
+        }
+        int write_nested(int nested_arr[2][3], int i, int j, int new_val) {
+            nested_arr[i][j] = new_val;
+            return 0;
+        }
+        int read_nested_negated(int (*nested_arr)[3], int i, int j, int expected) {
+            return (nested_arr[-i][j] == expected);
+        }
+        int get_nested_addr(int nested_arr[2][3], int i, int j, int *expected) {
+            return &nested_arr[i][j] == expected;
+        }
+        static int nested_arr[4][3][5] = {
+            {{1, 2}, {3}},
+            {{4}, {5}}
+        };
+        int read_static_nested(int i, int j, int k, int expected) {
+            return nested_arr[i][j][k] == expected;
+        }
+        int (*get_array(void))[3][5] {
+            return nested_arr;
+        }
+        int write_nested_complex(int i, int j, int k, int val) {
+            get_array()[i][j][k] = val;
+            return 0;
+        }
+        int *get_subarray(int nested[2][3], int i) {
+            return nested[i];
+        }
+        int main(void) {
+            int nested_arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
+            if (!read_nested(nested_arr, 1, 2, 6)) {
+                return 1;
+            }
+            write_nested(nested_arr, 1, 2, -1);
+            if (nested_arr[1][2] != -1) {
+                return 2;
+            }
+            if (!read_nested_negated(nested_arr + 2, 2, 0, 1)) {
+                return 3;
+            }
+            int *ptr = (nested_arr[0]) + 1;
+            if (!get_nested_addr(nested_arr, 0, 1, ptr)) {
+                return 4;
+            }
+            if (!read_static_nested(1, 1, 0, 5)) {
+                return 5;
+            }
+            write_nested_complex(0, 2, 3, 111);
+            if (get_array()[0][2][3] != 111) {
+                return 6;
+            }
+            int *row_1 = get_subarray(nested_arr, 1);
+            if (row_1 + 1 != &nested_arr[1][1]) {
+                return 7;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function read_nested(nested_arr.0, i.1, j.2, expected.3) { 
+            tmp.1 = add_ptr(nested_arr.0, index=i.1, scale=8)
+            tmp.2 = load tmp.1
+            tmp.0 = add_ptr(tmp.2, index=j.2, scale=4)
+            tmp.3 = load tmp.0
+            tmp.4 = tmp.3 == expected.3
+            return tmp.4
+            return 0
+        }
+        global function write_nested(nested_arr.4, i.5, j.6, new_val.7) { 
+            tmp.6 = add_ptr(nested_arr.4, index=i.5, scale=8)
+            tmp.7 = load tmp.6
+            tmp.5 = add_ptr(tmp.7, index=j.6, scale=4)
+            tmp.5 = store new_val.7
+            return 0
+            return 0
+        }
+        global function read_nested_negated(nested_arr.8, i.9, j.10, expected.11) { 
+            tmp.10 = - i.9
+            tmp.9 = add_ptr(nested_arr.8, index=tmp.10, scale=8)
+            tmp.11 = load tmp.9
+            tmp.8 = add_ptr(tmp.11, index=j.10, scale=4)
+            tmp.12 = load tmp.8
+            tmp.13 = tmp.12 == expected.11
+            return tmp.13
+            return 0
+        }
+        global function get_nested_addr(nested_arr.12, i.13, j.14, expected.15) { 
+            tmp.15 = add_ptr(nested_arr.12, index=i.13, scale=8)
+            tmp.16 = load tmp.15
+            tmp.14 = add_ptr(tmp.16, index=j.14, scale=4)
+            tmp.17 = tmp.14 == expected.15
+            return tmp.17
+            return 0
+        }
+        global function read_static_nested(i.16, j.17, k.18, expected.19) { 
+            tmp.20 = add_ptr(nested_arr, index=i.16, scale=8)
+            tmp.21 = load tmp.20
+            tmp.19 = add_ptr(tmp.21, index=j.17, scale=8)
+            tmp.22 = load tmp.19
+            tmp.18 = add_ptr(tmp.22, index=k.18, scale=4)
+            tmp.23 = load tmp.18
+            tmp.24 = tmp.23 == expected.19
+            return tmp.24
+            return 0
+        }
+        global function get_array() { 
+            return nested_arr
+            return 0
+        }
+        global function write_nested_complex(i.20, j.21, k.22, val.23) { 
+            tmp.28 = get_array()
+            tmp.27 = add_ptr(tmp.28, index=i.20, scale=8)
+            tmp.29 = load tmp.27
+            tmp.26 = add_ptr(tmp.29, index=j.21, scale=8)
+            tmp.30 = load tmp.26
+            tmp.25 = add_ptr(tmp.30, index=k.22, scale=4)
+            tmp.25 = store val.23
+            return 0
+            return 0
+        }
+        global function get_subarray(nested.24, i.25) { 
+            tmp.31 = add_ptr(nested.24, index=i.25, scale=8)
+            tmp.32 = load tmp.31
+            return tmp.32
+            return 0
+        }
+        global function main() { 
+            copy_to_offset(dst=nested_arr.26, 1, offset=0)
+            copy_to_offset(dst=nested_arr.26, 2, offset=4)
+            copy_to_offset(dst=nested_arr.26, 3, offset=8)
+            copy_to_offset(dst=nested_arr.26, 4, offset=12)
+            copy_to_offset(dst=nested_arr.26, 5, offset=16)
+            copy_to_offset(dst=nested_arr.26, 6, offset=20)
+            tmp.33 = read_nested(nested_arr.26, 1, 2, 6)
+            tmp.34 = ! tmp.33
+            if !tmp.34 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.35 = - 1
+            tmp.36 = write_nested(nested_arr.26, 1, 2, tmp.35)
+            tmp.38 = add_ptr(nested_arr.26, index=1, scale=8)
+            tmp.39 = load tmp.38
+            tmp.37 = add_ptr(tmp.39, index=2, scale=4)
+            tmp.40 = load tmp.37
+            tmp.42 = - 1
+            tmp.41 = tmp.40 != tmp.42
+            if !tmp.41 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.43 = add_ptr(nested_arr.26, index=2, scale=8)
+            tmp.44 = read_nested_negated(tmp.43, 2, 0, 1)
+            tmp.45 = ! tmp.44
+            if !tmp.45 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.46 = add_ptr(nested_arr.26, index=0, scale=8)
+            tmp.47 = load tmp.46
+            tmp.48 = add_ptr(tmp.47, index=1, scale=8)
+            ptr.27 = tmp.48
+            tmp.49 = get_nested_addr(nested_arr.26, 0, 1, ptr.27)
+            tmp.50 = ! tmp.49
+            if !tmp.50 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.51 = read_static_nested(1, 1, 0, 5)
+            tmp.52 = ! tmp.51
+            if !tmp.52 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.53 = write_nested_complex(0, 2, 3, 111)
+            tmp.57 = get_array()
+            tmp.56 = add_ptr(tmp.57, index=0, scale=8)
+            tmp.58 = load tmp.56
+            tmp.55 = add_ptr(tmp.58, index=2, scale=8)
+            tmp.59 = load tmp.55
+            tmp.54 = add_ptr(tmp.59, index=3, scale=4)
+            tmp.60 = load tmp.54
+            tmp.61 = tmp.60 != 111
+            if !tmp.61 jump end_if_10
+            return 6
+        
+          end_if_10:
+            tmp.62 = get_subarray(nested_arr.26, 1)
+            row_1.28 = tmp.62
+            tmp.63 = add_ptr(row_1.28, index=1, scale=8)
+            tmp.66 = add_ptr(nested_arr.26, index=1, scale=8)
+            tmp.67 = load tmp.66
+            tmp.65 = add_ptr(tmp.67, index=1, scale=4)
+            tmp.64 = tmp.63 != tmp.65
+            if !tmp.64 jump end_if_12
+            return 7
+        
+          end_if_12:
+            return 0
+            return 0
+        }
+        static nested_arr: Array(4,Array(3,Array(5,Int))) = [ 1, 2, zero[12], 3, zero[16], zero[20], 4, zero[16], 5, zero[16], zero[20], zero[120]]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_subscript_pointer() {
+    let src = r#"
+        int subscript_pointer_to_pointer(int **x) {
+            return x[0][0];
+        }
+        int main(void) {
+            int a = 3;
+            int *ptr = &a;
+            if (ptr[0] != 3) {
+                return 1;
+            }
+            int **ptr_ptr = &ptr;
+            if (ptr_ptr[0][0] != 3) {
+                return 2;
+            }
+            int dereferenced = subscript_pointer_to_pointer(ptr_ptr);
+            if (dereferenced != 3) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function subscript_pointer_to_pointer(x.0) { 
+            tmp.1 = add_ptr(x.0, index=0, scale=8)
+            tmp.2 = load tmp.1
+            tmp.0 = add_ptr(tmp.2, index=0, scale=4)
+            tmp.3 = load tmp.0
+            return tmp.3
+            return 0
+        }
+        global function main() { 
+            a.1 = 3
+            tmp.4 = get_address a.1
+            ptr.2 = tmp.4
+            tmp.5 = add_ptr(ptr.2, index=0, scale=4)
+            tmp.6 = load tmp.5
+            tmp.7 = tmp.6 != 3
+            if !tmp.7 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.8 = get_address ptr.2
+            ptr_ptr.3 = tmp.8
+            tmp.10 = add_ptr(ptr_ptr.3, index=0, scale=8)
+            tmp.11 = load tmp.10
+            tmp.9 = add_ptr(tmp.11, index=0, scale=4)
+            tmp.12 = load tmp.9
+            tmp.13 = tmp.12 != 3
+            if !tmp.13 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.14 = subscript_pointer_to_pointer(ptr_ptr.3)
+            dereferenced.4 = tmp.14
+            tmp.15 = dereferenced.4 != 3
+            if !tmp.15 jump end_if_4
+            return 3
+        
+          end_if_4:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_15_valid_subscripting_subscript_precedence() {
+    let src = r#"
+        int main(void) {
+            int arr[3] = {1, 2, 3};
+            return (-arr[2] == -3);
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            copy_to_offset(dst=arr.0, 1, offset=0)
+            copy_to_offset(dst=arr.0, 2, offset=4)
+            copy_to_offset(dst=arr.0, 3, offset=8)
+            tmp.0 = add_ptr(arr.0, index=2, scale=4)
+            tmp.1 = load tmp.0
+            tmp.2 = - tmp.1
+            tmp.4 = - 3
+            tmp.3 = tmp.2 == tmp.4
+            return tmp.3
+            return 0
+        }
     "#;
     assert_eq!(dump_tacky(src), dedent(expected));
 }

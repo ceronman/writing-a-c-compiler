@@ -186,6 +186,40 @@ pub enum Initializer {
     Compound(Vec<Node<Initializer>>),
 }
 
+impl Initializer {
+    pub fn zero(ty: &Type) -> Initializer {
+        match ty {
+            Type::Int => Self::from_constant(Constant::Int(0)),
+            Type::UInt => Self::from_constant(Constant::Int(0)),
+            Type::Long => Self::from_constant(Constant::Int(0)),
+            Type::ULong => Self::from_constant(Constant::Int(0)),
+            Type::Double => Self::from_constant(Constant::Int(0)),
+            Type::Function(_) => panic!("Zero initializer for function type"),
+            Type::Pointer(_) => panic!("Zero initializer for pointer type"),
+            Type::Array(inner, size) => {
+                Initializer::Compound(
+                    (0..*size).map(|_| 
+                        Node { 
+                            id: 0, 
+                            span: Span(0, 0), 
+                            data: Box::new(Initializer::zero(inner)) 
+                        }).collect()
+                )
+            }
+        }
+    }
+    
+    fn from_constant(c: Constant) -> Initializer {
+        Initializer::Single(
+            Node {
+                id: 0,
+                span: Span(0, 0),
+                data: Box::new(Expression::Constant(c))
+            }
+        )
+    }
+}
+
 #[derive(Debug)]
 pub enum StorageClass {
     Static,

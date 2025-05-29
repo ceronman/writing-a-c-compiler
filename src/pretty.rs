@@ -48,6 +48,14 @@ fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -
     write!(file, ": ")?;
     pp_type(file, &variable.ty)?;
     write!(file, " = ")?;
+
+    // Shortcut for a nicer single initializer.
+    if variable.init.len() == 1 {
+        pp_initializer(file, &variable.init[0])?;
+        writeln!(file)?;
+        return Ok(())
+    }
+    
     write!(file, "[ ")?;
     for (i, init) in variable.init.iter().enumerate() {
         pp_initializer(file, init)?;
@@ -55,18 +63,18 @@ fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -
             write!(file, ", ")?;
         }
     }
-    write!(file, "] ")?;
+    writeln!(file, "]")?;
     Ok(())
 }
 
 fn pp_initializer(file: &mut impl Write, init: &StaticInit) -> Result<()> {
     match init {
-        StaticInit::Int(v) => writeln!(file, "{v}")?,
-        StaticInit::Long(v) => writeln!(file, "{v}L")?,
-        StaticInit::UInt(v) => writeln!(file, "{v}U")?,
-        StaticInit::ULong(v) => writeln!(file, "{v}UL")?,
-        StaticInit::Double(v) => writeln!(file, "{v}D")?,
-        StaticInit::ZeroInit(size) => writeln!(file, "zero[{size}]")?,
+        StaticInit::Int(v) => write!(file, "{v}")?,
+        StaticInit::Long(v) => write!(file, "{v}L")?,
+        StaticInit::UInt(v) => write!(file, "{v}U")?,
+        StaticInit::ULong(v) => write!(file, "{v}UL")?,
+        StaticInit::Double(v) => write!(file, "{v}D")?,
+        StaticInit::ZeroInit(size) => write!(file, "zero[{size}]")?,
     }
     Ok(())
 }
@@ -230,8 +238,22 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
                 write!(file, " = store ")?;
                 pp_val(file, src)?;
             }
-            tacky::Instruction::AddPtr { .. } => todo!(),
-            tacky::Instruction::CopyToOffset { .. } => todo!()
+            tacky::Instruction::AddPtr { ptr, index, scale, dst } => {
+                write!(file, "{indent}")?;
+                pp_val(file, dst)?;
+                write!(file, " = add_ptr(")?;
+                pp_val(file, ptr)?;
+                write!(file, ", index=")?;
+                pp_val(file, index)?;
+                write!(file, ", scale=")?;
+                write!(file, "{scale})")?;
+            },
+            tacky::Instruction::CopyToOffset { src, dst, offset } => {
+                write!(file, "{indent}")?;
+                write!(file, "copy_to_offset(dst={dst}, ")?;
+                pp_val(file, src)?;
+                write!(file, ", offset={offset})")?;
+            }
         }
         writeln!(file)?;
     }
