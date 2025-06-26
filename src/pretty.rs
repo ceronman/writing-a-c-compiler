@@ -250,9 +250,8 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
             },
             tacky::Instruction::CopyToOffset { src, dst, offset } => {
                 write!(file, "{indent}")?;
-                write!(file, "copy_to_offset(dst={dst}, ")?;
+                write!(file, "{dst}[{offset}] = ")?;
                 pp_val(file, src)?;
-                write!(file, ", offset={offset})")?;
             }
         }
         writeln!(file)?;

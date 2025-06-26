@@ -1,10 +1,8 @@
 #[cfg(test)]
 mod test;
 
-use std::mem::ManuallyDrop;
 use crate::ast;
-use crate::ast::{Initializer, Node};
-use crate::lexer::Span;
+use crate::ast::Initializer;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
 use crate::symbol::Symbol;
 

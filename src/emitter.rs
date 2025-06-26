@@ -51,6 +51,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Longword => "movl",
                     AsmType::Quadword => "movq",
                     AsmType::Double => "movsd",
+                    AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -66,6 +67,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     (UnaryOp::Not, AsmType::Longword) => "notl",
                     (UnaryOp::Not, AsmType::Quadword) => "notq",
                     (UnaryOp::Not, AsmType::Double) => unreachable!(),
+                    (_, AsmType::ByteArray {..}) => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -98,6 +100,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
 
                     (BinaryOp::DivDouble, AsmType::Double) => "divsd",
                     (BinaryOp::DivDouble, _) => unreachable!(),
+                    (_, AsmType::ByteArray {..}) => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, left, RegSize::from_ty(ty))?;
@@ -109,7 +112,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "sall",
                     AsmType::Quadword => "salq",
-                    AsmType::Double => unreachable!(),
+                    AsmType::Double | AsmType::ByteArray {..} => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
@@ -122,7 +125,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "shll",
                     AsmType::Quadword => "shlq",
-                    AsmType::Double => unreachable!(),
+                    AsmType::Double | AsmType::ByteArray {..} => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
@@ -135,7 +138,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "sarl",
                     AsmType::Quadword => "sarq",
-                    AsmType::Double => unreachable!(),
+                    AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
@@ -147,7 +150,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "shrl",
                     AsmType::Quadword => "shrq",
-                    AsmType::Double => unreachable!(),
+                    AsmType::Double | AsmType::ByteArray { .. }=> unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
@@ -159,7 +162,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "idivl",
                     AsmType::Quadword => "idivq",
-                    AsmType::Double => unreachable!(),
+                    AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -169,7 +172,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "divl",
                     AsmType::Quadword => "divq",
-                    AsmType::Double => unreachable!(),
+                    AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -179,7 +182,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "cdq",
                     AsmType::Quadword => "cqo",
-                    AsmType::Double => unreachable!(),
+                    AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
             }
@@ -198,6 +201,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Longword => "cmpl",
                     AsmType::Quadword => "cmpq",
                     AsmType::Double => "comisd",
+                    AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, left, RegSize::from_ty(ty))?;
@@ -273,7 +277,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "cvttsd2sil",
                     AsmType::Quadword => "cvttsd2siq",
-                    AsmType::Double => panic!("Should never be called with double"),
+                    AsmType::Double| AsmType::ByteArray { .. } => panic!("Should never be called with double or bytearray"),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::Quad)?;
@@ -284,7 +288,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 let op = match ty {
                     AsmType::Longword => "cvtsi2sdl",
                     AsmType::Quadword => "cvtsi2sdq",
-                    AsmType::Double => unreachable!("Should never be called with double"),
+                    AsmType::Double| AsmType::ByteArray { .. } => unreachable!("Should never be called with double or bytearray"),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -302,7 +306,7 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
         writeln!(output, "\t.globl _{name}", name = variable.name)?;
     }
     if matches!(
-        variable.init,
+        variable.init[0], // FIXME
         StaticInit::Int(0) | StaticInit::Long(0) | StaticInit::UInt(0) | StaticInit::ULong(0)
     ) {
         writeln!(output, "\t.bss")?;
@@ -316,7 +320,7 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
         emit_ins(output, ".balign")?;
         writeln!(output, "{}", variable.alignment)?;
         writeln!(output, "_{name}:", name = variable.name)?;
-        emit_static_init(output, &variable.init)?;
+        emit_static_init(output, &variable.init[0])?;
     }
     Ok(())
 }
@@ -385,6 +389,7 @@ impl RegSize {
             AsmType::Longword => RegSize::Long,
             AsmType::Quadword => RegSize::Quad,
             AsmType::Double => RegSize::Quad,
+            AsmType::ByteArray { .. } => todo!()
         }
     }
 }
@@ -450,7 +455,7 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
         }
         (Operand::Data(true, name), _) => write!(output, "L{name}(%rip)"),
         (Operand::Data(_, name), _) => write!(output, "_{name}(%rip)"),
-        (Operand::Pseudo(_), _) => unreachable!("Pseudo-registers should not appear here"),
+        (Operand::Pseudo(..) | Operand::PseudoMem(..) | Operand::Indexed(..), _) => unreachable!("Pseudo-registers should not appear here"),
     }
 }
 

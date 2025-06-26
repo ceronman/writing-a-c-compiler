@@ -25,7 +25,7 @@ pub struct StaticVariable {
     pub name: Symbol,
     pub global: bool,
     pub alignment: u8,
-    pub init: StaticInit,
+    pub init: Vec<StaticInit>,
 }
 
 #[derive(Debug)]
@@ -84,8 +84,10 @@ pub enum Operand {
     Imm(u64),
     Reg(Reg),
     Pseudo(Symbol),
+    PseudoMem(Symbol, i64),
     Data(bool, Symbol),
     Memory(Reg, i64),
+    Indexed(Reg, Reg, u8)
 }
 
 impl Operand {
@@ -130,6 +132,7 @@ pub enum AsmType {
     Longword,
     Quadword,
     Double,
+    ByteArray { size: u64, alignment: u8 }
 }
 
 #[derive(Debug)]

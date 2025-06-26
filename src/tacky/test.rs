@@ -22655,22 +22655,22 @@ fn test_chapter_15_valid_allocation_test_alignment() {
             return 0
         }
         global function main() { 
-            copy_to_offset(dst=arr.2, 0, offset=0)
-            copy_to_offset(dst=arr.2, 0, offset=4)
-            copy_to_offset(dst=arr.2, 0, offset=8)
-            copy_to_offset(dst=arr.2, 0, offset=12)
-            copy_to_offset(dst=arr.2, 0, offset=16)
-            copy_to_offset(dst=arr2.3, 0, offset=0)
-            copy_to_offset(dst=arr2.3, 0, offset=4)
-            copy_to_offset(dst=arr2.3, 0, offset=8)
-            copy_to_offset(dst=arr2.3, 0, offset=12)
-            copy_to_offset(dst=arr2.3, 0, offset=16)
-            copy_to_offset(dst=arr2.3, 0, offset=20)
-            copy_to_offset(dst=arr2.3, 0, offset=24)
-            copy_to_offset(dst=arr3.4, 0, offset=0)
-            copy_to_offset(dst=arr3.4, 0, offset=4)
-            copy_to_offset(dst=arr3.4, 0, offset=8)
-            copy_to_offset(dst=arr3.4, 0, offset=12)
+            arr.2[0] = 0
+            arr.2[4] = 0
+            arr.2[8] = 0
+            arr.2[12] = 0
+            arr.2[16] = 0
+            arr2.3[0] = 0
+            arr2.3[4] = 0
+            arr2.3[8] = 0
+            arr2.3[12] = 0
+            arr2.3[16] = 0
+            arr2.3[20] = 0
+            arr2.3[24] = 0
+            arr3.4[0] = 0
+            arr3.4[4] = 0
+            arr3.4[8] = 0
+            arr3.4[12] = 0
             tmp.5 = check_alignment(arr.2)
             tmp.6 = ! tmp.5
             if !tmp.6 jump end_if_0
@@ -22808,14 +22808,14 @@ fn test_chapter_15_valid_casts_cast_array_of_pointers() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=simple_array.0, 1, offset=0)
-            copy_to_offset(dst=simple_array.0, 2, offset=4)
+            simple_array.0[0] = 1
+            simple_array.0[4] = 2
             tmp.0 = get_address simple_array.0
-            copy_to_offset(dst=ptr_arr.1, tmp.0, offset=0)
+            ptr_arr.1[0] = tmp.0
             tmp.1 = sign_extend 0
-            copy_to_offset(dst=ptr_arr.1, tmp.1, offset=8)
+            ptr_arr.1[8] = tmp.1
             tmp.2 = get_address simple_array.0
-            copy_to_offset(dst=ptr_arr.1, tmp.2, offset=16)
+            ptr_arr.1[16] = tmp.2
             tmp.3 = ptr_arr.1
             other_ptr.2 = tmp.3
             tmp.4 = other_ptr.2
@@ -22852,16 +22852,16 @@ fn test_chapter_15_valid_casts_implicit_and_explicit_conversions() {
         global function main() { 
             tmp.0 = - 1
             tmp.1 = sign_extend tmp.0
-            copy_to_offset(dst=arr.0, tmp.1, offset=0)
+            arr.0[0] = tmp.1
             tmp.2 = - 2
             tmp.3 = sign_extend tmp.2
-            copy_to_offset(dst=arr.0, tmp.3, offset=8)
+            arr.0[8] = tmp.3
             tmp.4 = - 3
             tmp.5 = sign_extend tmp.4
-            copy_to_offset(dst=arr.0, tmp.5, offset=16)
+            arr.0[16] = tmp.5
             tmp.6 = - 4
             tmp.7 = sign_extend tmp.6
-            copy_to_offset(dst=arr.0, tmp.7, offset=24)
+            arr.0[24] = tmp.7
             tmp.8 = arr.0 != arr.0
             if !tmp.8 jump end_if_0
             return 1
@@ -22928,12 +22928,12 @@ fn test_chapter_15_valid_casts_multi_dim_casts() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=multi_dim.0, 0, offset=0)
-            copy_to_offset(dst=multi_dim.0, 1, offset=4)
-            copy_to_offset(dst=multi_dim.0, 2, offset=8)
-            copy_to_offset(dst=multi_dim.0, 3, offset=12)
-            copy_to_offset(dst=multi_dim.0, 4, offset=16)
-            copy_to_offset(dst=multi_dim.0, 5, offset=20)
+            multi_dim.0[0] = 0
+            multi_dim.0[4] = 1
+            multi_dim.0[8] = 2
+            multi_dim.0[12] = 3
+            multi_dim.0[16] = 4
+            multi_dim.0[20] = 5
             tmp.0 = get_address multi_dim.0
             array_pointer.1 = tmp.0
             tmp.1 = array_pointer.1
@@ -23045,14 +23045,14 @@ fn test_chapter_15_valid_declarators_array_as_argument() {
             return 0
         }
         global function main() { 
-            copy_to_offset(dst=arr.6, 8, offset=0)
-            copy_to_offset(dst=arr.6, 7, offset=4)
-            copy_to_offset(dst=arr.6, 6, offset=8)
-            copy_to_offset(dst=arr.6, 5, offset=12)
-            copy_to_offset(dst=arr.6, 4, offset=16)
-            copy_to_offset(dst=arr.6, 3, offset=20)
-            copy_to_offset(dst=arr.6, 2, offset=24)
-            copy_to_offset(dst=arr.6, 1, offset=28)
+            arr.6[0] = 8
+            arr.6[4] = 7
+            arr.6[8] = 6
+            arr.6[12] = 5
+            arr.6[16] = 4
+            arr.6[20] = 3
+            arr.6[24] = 2
+            arr.6[28] = 1
             tmp.4 = array_param(arr.6)
             tmp.5 = add_ptr(arr.6, index=4, scale=4)
             tmp.6 = load tmp.5
@@ -23091,29 +23091,29 @@ fn test_chapter_15_valid_declarators_array_as_argument() {
         
           break_loop_0:
             tmp.16 = - 1
-            copy_to_offset(dst=nested_arr.8, tmp.16, offset=0)
+            nested_arr.8[0] = tmp.16
             tmp.17 = - 1
-            copy_to_offset(dst=nested_arr.8, tmp.17, offset=4)
+            nested_arr.8[4] = tmp.17
             tmp.18 = - 1
-            copy_to_offset(dst=nested_arr.8, tmp.18, offset=8)
+            nested_arr.8[8] = tmp.18
             tmp.19 = - 2
-            copy_to_offset(dst=nested_arr.8, tmp.19, offset=12)
+            nested_arr.8[12] = tmp.19
             tmp.20 = - 2
-            copy_to_offset(dst=nested_arr.8, tmp.20, offset=16)
+            nested_arr.8[16] = tmp.20
             tmp.21 = - 2
-            copy_to_offset(dst=nested_arr.8, tmp.21, offset=20)
+            nested_arr.8[20] = tmp.21
             tmp.22 = - 3
-            copy_to_offset(dst=nested_arr.8, tmp.22, offset=24)
+            nested_arr.8[24] = tmp.22
             tmp.23 = - 3
-            copy_to_offset(dst=nested_arr.8, tmp.23, offset=28)
+            nested_arr.8[28] = tmp.23
             tmp.24 = - 3
-            copy_to_offset(dst=nested_arr.8, tmp.24, offset=32)
+            nested_arr.8[32] = tmp.24
             tmp.25 = - 4
-            copy_to_offset(dst=nested_arr.8, tmp.25, offset=36)
+            nested_arr.8[36] = tmp.25
             tmp.26 = - 4
-            copy_to_offset(dst=nested_arr.8, tmp.26, offset=40)
+            nested_arr.8[40] = tmp.26
             tmp.27 = - 4
-            copy_to_offset(dst=nested_arr.8, tmp.27, offset=44)
+            nested_arr.8[44] = tmp.27
             tmp.28 = nested_array_param(nested_arr.8)
             tmp.30 = add_ptr(nested_arr.8, index=1, scale=8)
             tmp.31 = load tmp.30
@@ -23423,9 +23423,9 @@ fn test_chapter_15_valid_declarators_for_loop_array() {
     let expected = r#"
         global function main() { 
             counter.0 = 0
-            copy_to_offset(dst=i.1, 1, offset=0)
-            copy_to_offset(dst=i.1, 2, offset=4)
-            copy_to_offset(dst=i.1, 3, offset=8)
+            i.1[0] = 1
+            i.1[4] = 2
+            i.1[8] = 3
         
           start_loop_0:
             tmp.0 = counter.0 < 3
@@ -23551,14 +23551,14 @@ fn test_chapter_15_valid_extra_credit_bitwise_subscript() {
     let expected = r#"
         global function main() { 
             tmp.0 = - 10
-            copy_to_offset(dst=arr.0, tmp.0, offset=0)
-            copy_to_offset(dst=arr.0, 10, offset=4)
+            arr.0[0] = tmp.0
+            arr.0[4] = 10
             tmp.1 = - 11
-            copy_to_offset(dst=arr.0, tmp.1, offset=8)
-            copy_to_offset(dst=arr.0, 11, offset=12)
+            arr.0[8] = tmp.1
+            arr.0[12] = 11
             tmp.2 = - 12
-            copy_to_offset(dst=arr.0, tmp.2, offset=16)
-            copy_to_offset(dst=arr.0, 12, offset=20)
+            arr.0[16] = tmp.2
+            arr.0[20] = 12
             tmp.3 = add_ptr(arr.0, index=0, scale=4)
             tmp.4 = load tmp.3
             tmp.6 = add_ptr(arr.0, index=5, scale=4)
@@ -23648,13 +23648,13 @@ fn test_chapter_15_valid_extra_credit_compound_assign_and_increment() {
     let expected = r#"
         global function main() { 
             tmp.0 = - 1
-            copy_to_offset(dst=arr.0, tmp.0, offset=0)
+            arr.0[0] = tmp.0
             tmp.1 = - 2
-            copy_to_offset(dst=arr.0, tmp.1, offset=4)
+            arr.0[4] = tmp.1
             tmp.2 = - 3
-            copy_to_offset(dst=arr.0, tmp.2, offset=8)
+            arr.0[8] = tmp.2
             tmp.3 = - 4
-            copy_to_offset(dst=arr.0, tmp.3, offset=12)
+            arr.0[12] = tmp.3
             ptr.1 = arr.0
             idx.2 = 2
             tmp.5 = ptr.1
@@ -23782,18 +23782,18 @@ fn test_chapter_15_valid_extra_credit_compound_assign_array_of_pointers() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=array1.1, 100, offset=0)
-            copy_to_offset(dst=array1.1, 101, offset=4)
-            copy_to_offset(dst=array1.1, 102, offset=8)
-            copy_to_offset(dst=array1.1, 103, offset=12)
-            copy_to_offset(dst=nested_array.2, 200, offset=0)
-            copy_to_offset(dst=nested_array.2, 201, offset=4)
-            copy_to_offset(dst=nested_array.2, 202, offset=8)
-            copy_to_offset(dst=nested_array.2, 203, offset=12)
-            copy_to_offset(dst=nested_array.2, 300, offset=16)
-            copy_to_offset(dst=nested_array.2, 301, offset=20)
-            copy_to_offset(dst=nested_array.2, 302, offset=24)
-            copy_to_offset(dst=nested_array.2, 303, offset=28)
+            array1.1[0] = 100
+            array1.1[4] = 101
+            array1.1[8] = 102
+            array1.1[12] = 103
+            nested_array.2[0] = 200
+            nested_array.2[4] = 201
+            nested_array.2[8] = 202
+            nested_array.2[12] = 203
+            nested_array.2[16] = 300
+            nested_array.2[20] = 301
+            nested_array.2[24] = 302
+            nested_array.2[28] = 303
             tmp.0 = add_ptr(array_of_pointers.0, index=0, scale=8)
             tmp.1 = get_address array1.1
             tmp.0 = store tmp.1
@@ -24249,11 +24249,11 @@ fn test_chapter_15_valid_extra_credit_compound_bitwise_subscript() {
     let expected = r#"
         global function main() { 
             tmp.0 = 2147483648L
-            copy_to_offset(dst=arr.0, tmp.0, offset=0)
-            copy_to_offset(dst=arr.0, 18446744069414584320UL, offset=8)
-            copy_to_offset(dst=arr.0, 9223372036854775808UL, offset=16)
+            arr.0[0] = tmp.0
+            arr.0[8] = 18446744069414584320UL
+            arr.0[16] = 9223372036854775808UL
             tmp.1 = 1085102592571150095L
-            copy_to_offset(dst=arr.0, tmp.1, offset=24)
+            arr.0[24] = tmp.1
             tmp.2 = add_ptr(arr.0, index=1, scale=8)
             tmp.3 = load tmp.2
             tmp.5 = add_ptr(arr.0, index=3, scale=8)
@@ -24357,10 +24357,10 @@ fn test_chapter_15_valid_extra_credit_compound_lval_evaluated_once() {
             return 0
         }
         global function main() { 
-            copy_to_offset(dst=arr.1, 10, offset=0)
-            copy_to_offset(dst=arr.1, 11, offset=4)
-            copy_to_offset(dst=arr.1, 12, offset=8)
-            copy_to_offset(dst=arr.1, 13, offset=12)
+            arr.1[0] = 10
+            arr.1[4] = 11
+            arr.1[8] = 12
+            arr.1[12] = 13
             tmp.2 = get_call_count()
             tmp.1 = add_ptr(arr.1, index=tmp.2, scale=4)
             tmp.3 = load tmp.1
@@ -24607,12 +24607,12 @@ fn test_chapter_15_valid_extra_credit_compound_pointer_assignment() {
     "#;
     let expected = r#"
         global function int_array() { 
-            copy_to_offset(dst=arr.0, 1, offset=0)
-            copy_to_offset(dst=arr.0, 2, offset=4)
-            copy_to_offset(dst=arr.0, 3, offset=8)
-            copy_to_offset(dst=arr.0, 4, offset=12)
-            copy_to_offset(dst=arr.0, 5, offset=16)
-            copy_to_offset(dst=arr.0, 6, offset=20)
+            arr.0[0] = 1
+            arr.0[4] = 2
+            arr.0[8] = 3
+            arr.0[12] = 4
+            arr.0[16] = 5
+            arr.0[20] = 6
             ptr.1 = arr.0
             tmp.1 = sign_extend 5
             tmp.0 = ptr.1 + tmp.1
@@ -24884,53 +24884,53 @@ fn test_chapter_15_valid_extra_credit_incr_and_decr_nested_pointers() {
     let expected = r#"
         global function main() { 
             tmp.0 = sign_extend 1
-            copy_to_offset(dst=arr.0, tmp.0, offset=0)
+            arr.0[0] = tmp.0
             tmp.1 = sign_extend 2
-            copy_to_offset(dst=arr.0, tmp.1, offset=8)
+            arr.0[8] = tmp.1
             tmp.2 = sign_extend 3
-            copy_to_offset(dst=arr.0, tmp.2, offset=16)
+            arr.0[16] = tmp.2
             tmp.3 = sign_extend 4
-            copy_to_offset(dst=arr.0, tmp.3, offset=24)
+            arr.0[24] = tmp.3
             tmp.4 = sign_extend 5
-            copy_to_offset(dst=arr.0, tmp.4, offset=32)
+            arr.0[32] = tmp.4
             tmp.5 = sign_extend 6
-            copy_to_offset(dst=arr.0, tmp.5, offset=40)
+            arr.0[40] = tmp.5
             tmp.6 = sign_extend 7
-            copy_to_offset(dst=arr.0, tmp.6, offset=48)
+            arr.0[48] = tmp.6
             tmp.7 = sign_extend 8
-            copy_to_offset(dst=arr.0, tmp.7, offset=56)
+            arr.0[56] = tmp.7
             tmp.8 = sign_extend 9
-            copy_to_offset(dst=arr.0, tmp.8, offset=64)
+            arr.0[64] = tmp.8
             tmp.9 = sign_extend 10
-            copy_to_offset(dst=arr.0, tmp.9, offset=72)
+            arr.0[72] = tmp.9
             tmp.10 = sign_extend 11
-            copy_to_offset(dst=arr.0, tmp.10, offset=80)
+            arr.0[80] = tmp.10
             tmp.11 = sign_extend 12
-            copy_to_offset(dst=arr.0, tmp.11, offset=88)
+            arr.0[88] = tmp.11
             tmp.12 = sign_extend 13
-            copy_to_offset(dst=arr.0, tmp.12, offset=96)
+            arr.0[96] = tmp.12
             tmp.13 = sign_extend 14
-            copy_to_offset(dst=arr.0, tmp.13, offset=104)
+            arr.0[104] = tmp.13
             tmp.14 = sign_extend 15
-            copy_to_offset(dst=arr.0, tmp.14, offset=112)
+            arr.0[112] = tmp.14
             tmp.15 = sign_extend 16
-            copy_to_offset(dst=arr.0, tmp.15, offset=120)
+            arr.0[120] = tmp.15
             tmp.16 = sign_extend 17
-            copy_to_offset(dst=arr.0, tmp.16, offset=128)
+            arr.0[128] = tmp.16
             tmp.17 = sign_extend 18
-            copy_to_offset(dst=arr.0, tmp.17, offset=136)
+            arr.0[136] = tmp.17
             tmp.18 = sign_extend 19
-            copy_to_offset(dst=arr.0, tmp.18, offset=144)
+            arr.0[144] = tmp.18
             tmp.19 = sign_extend 20
-            copy_to_offset(dst=arr.0, tmp.19, offset=152)
+            arr.0[152] = tmp.19
             tmp.20 = sign_extend 21
-            copy_to_offset(dst=arr.0, tmp.20, offset=160)
+            arr.0[160] = tmp.20
             tmp.21 = sign_extend 22
-            copy_to_offset(dst=arr.0, tmp.21, offset=168)
+            arr.0[168] = tmp.21
             tmp.22 = sign_extend 23
-            copy_to_offset(dst=arr.0, tmp.22, offset=176)
+            arr.0[176] = tmp.22
             tmp.23 = sign_extend 24
-            copy_to_offset(dst=arr.0, tmp.23, offset=184)
+            arr.0[184] = tmp.23
             tmp.24 = add_ptr(arr.0, index=1, scale=8)
             outer_ptr.1 = tmp.24
             tmp.25 = outer_ptr.1
@@ -25093,9 +25093,9 @@ fn test_chapter_15_valid_extra_credit_incr_and_decr_pointers() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=x.0, 0D, offset=0)
-            copy_to_offset(dst=x.0, 1D, offset=8)
-            copy_to_offset(dst=x.0, 2D, offset=16)
+            x.0[0] = 0D
+            x.0[8] = 1D
+            x.0[16] = 2D
             ptr.1 = x.0
             tmp.0 = inc ptr.1
             ptr.1 = tmp.0
@@ -25202,18 +25202,18 @@ fn test_chapter_15_valid_extra_credit_incr_decr_subscripted_vals() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=arr.0, 1, offset=0)
-            copy_to_offset(dst=arr.0, 2, offset=4)
-            copy_to_offset(dst=arr.0, 3, offset=8)
-            copy_to_offset(dst=arr.0, 4, offset=12)
-            copy_to_offset(dst=arr.0, 5, offset=16)
-            copy_to_offset(dst=arr.0, 6, offset=20)
-            copy_to_offset(dst=arr.0, 7, offset=24)
-            copy_to_offset(dst=arr.0, 8, offset=28)
-            copy_to_offset(dst=arr.0, 9, offset=32)
-            copy_to_offset(dst=arr.0, 10, offset=36)
-            copy_to_offset(dst=arr.0, 11, offset=40)
-            copy_to_offset(dst=arr.0, 12, offset=44)
+            arr.0[0] = 1
+            arr.0[4] = 2
+            arr.0[8] = 3
+            arr.0[12] = 4
+            arr.0[16] = 5
+            arr.0[20] = 6
+            arr.0[24] = 7
+            arr.0[28] = 8
+            arr.0[32] = 9
+            arr.0[36] = 10
+            arr.0[40] = 11
+            arr.0[44] = 12
             tmp.2 = add_ptr(arr.0, index=i, scale=8)
             tmp.3 = load tmp.2
             tmp.1 = add_ptr(tmp.3, index=j, scale=8)
@@ -25330,11 +25330,11 @@ fn test_chapter_15_valid_extra_credit_postfix_prefix_precedence() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=arr.0, 1, offset=0)
-            copy_to_offset(dst=arr.0, 2, offset=4)
-            copy_to_offset(dst=arr.0, 3, offset=8)
-            copy_to_offset(dst=arr.0, 4, offset=12)
-            copy_to_offset(dst=arr.0, 5, offset=16)
+            arr.0[0] = 1
+            arr.0[4] = 2
+            arr.0[8] = 3
+            arr.0[12] = 4
+            arr.0[16] = 5
             tmp.0 = add_ptr(arr.0, index=1, scale=8)
             ptr.1 = tmp.0
             tmp.2 = ptr.1
@@ -25489,9 +25489,9 @@ fn test_chapter_15_valid_initialization_automatic() {
     "#;
     let expected = r#"
         global function test_simple() { 
-            copy_to_offset(dst=arr.0, 18446744073709551615UL, offset=0)
-            copy_to_offset(dst=arr.0, 9223372036854775807UL, offset=8)
-            copy_to_offset(dst=arr.0, 100UL, offset=16)
+            arr.0[0] = 18446744073709551615UL
+            arr.0[8] = 9223372036854775807UL
+            arr.0[16] = 100UL
             tmp.0 = add_ptr(arr.0, index=0, scale=8)
             tmp.1 = load tmp.0
             tmp.2 = tmp.1 == 18446744073709551615UL
@@ -25523,11 +25523,11 @@ fn test_chapter_15_valid_initialization_automatic() {
             return 0
         }
         global function test_partial() { 
-            copy_to_offset(dst=arr.1, 1D, offset=0)
-            copy_to_offset(dst=arr.1, 1230000D, offset=8)
-            copy_to_offset(dst=arr.1, 0D, offset=16)
-            copy_to_offset(dst=arr.1, 0D, offset=24)
-            copy_to_offset(dst=arr.1, 0D, offset=32)
+            arr.1[0] = 1D
+            arr.1[8] = 1230000D
+            arr.1[16] = 0D
+            arr.1[24] = 0D
+            arr.1[32] = 0D
             tmp.13 = add_ptr(arr.1, index=0, scale=8)
             tmp.14 = load tmp.13
             tmp.15 = tmp.14 == 1D
@@ -25588,15 +25588,15 @@ fn test_chapter_15_valid_initialization_automatic() {
             tmp.38 = sign_extend tmp.37
             tmp.36 = negative_7billion.2 * tmp.38
             var.4 = tmp.36
-            copy_to_offset(dst=arr.5, negative_7billion.2, offset=0)
+            arr.5[0] = negative_7billion.2
             tmp.39 = three()
             tmp.40 = sign_extend tmp.39
             tmp.41 = tmp.40 * 7L
-            copy_to_offset(dst=arr.5, tmp.41, offset=8)
+            arr.5[8] = tmp.41
             tmp.42 = load ptr.3
             tmp.43 = sign_extend tmp.42
             tmp.44 = - tmp.43
-            copy_to_offset(dst=arr.5, tmp.44, offset=16)
+            arr.5[16] = tmp.44
             if !negative_7billion.2 jump else_13
             tmp.46 = 2
             jump end_if_12
@@ -25607,8 +25607,8 @@ fn test_chapter_15_valid_initialization_automatic() {
           end_if_12:
             tmp.47 = sign_extend tmp.46
             tmp.45 = var.4 + tmp.47
-            copy_to_offset(dst=arr.5, tmp.45, offset=24)
-            copy_to_offset(dst=arr.5, 0L, offset=32)
+            arr.5[24] = tmp.45
+            arr.5[32] = 0L
             tmp.48 = add_ptr(arr.5, index=0, scale=8)
             tmp.49 = load tmp.48
             tmp.51 = - 7000000000L
@@ -25674,16 +25674,16 @@ fn test_chapter_15_valid_initialization_automatic() {
             tmp.74 = - 100
             ptr.6 = store tmp.74
             tmp.75 = double_to_uint 3458764513821589500D
-            copy_to_offset(dst=arr.7, tmp.75, offset=0)
+            arr.7[0] = tmp.75
             tmp.76 = load ptr.6
             tmp.77 = sign_extend tmp.76
-            copy_to_offset(dst=arr.7, tmp.77, offset=8)
+            arr.7[8] = tmp.77
             tmp.78 = truncate 18446744073709551615UL
             tmp.79 = zero_extend tmp.78
-            copy_to_offset(dst=arr.7, tmp.79, offset=16)
+            arr.7[16] = tmp.79
             tmp.80 = - global_one
             tmp.81 = tmp.80
-            copy_to_offset(dst=arr.7, tmp.81, offset=24)
+            arr.7[24] = tmp.81
             tmp.82 = add_ptr(arr.7, index=0, scale=8)
             tmp.83 = load tmp.82
             tmp.84 = tmp.83 == 3458764513821589504UL
@@ -25732,13 +25732,13 @@ fn test_chapter_15_valid_initialization_automatic() {
             i.8 = tmp.101
             tmp.102 = global_one * 2L
             tmp.103 = truncate tmp.102
-            copy_to_offset(dst=arr.9, tmp.103, offset=0)
+            arr.9[0] = tmp.103
             tmp.105 = three()
             tmp.106 = sign_extend tmp.105
             tmp.104 = global_one + tmp.106
             tmp.107 = truncate tmp.104
-            copy_to_offset(dst=arr.9, tmp.107, offset=4)
-            copy_to_offset(dst=arr.9, 0, offset=8)
+            arr.9[4] = tmp.107
+            arr.9[8] = 0
             tmp.108 = truncate 2684366905L
             u.10 = tmp.108
             tmp.110 = - 1
@@ -25920,15 +25920,15 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
     "#;
     let expected = r#"
         global function test_simple() { 
-            copy_to_offset(dst=arr.0, 1, offset=0)
-            copy_to_offset(dst=arr.0, 2, offset=4)
-            copy_to_offset(dst=arr.0, 3, offset=8)
-            copy_to_offset(dst=arr.0, 4, offset=12)
-            copy_to_offset(dst=arr.0, 5, offset=16)
-            copy_to_offset(dst=arr.0, 6, offset=20)
-            copy_to_offset(dst=arr.0, 7, offset=24)
-            copy_to_offset(dst=arr.0, 8, offset=28)
-            copy_to_offset(dst=arr.0, 9, offset=32)
+            arr.0[0] = 1
+            arr.0[4] = 2
+            arr.0[8] = 3
+            arr.0[12] = 4
+            arr.0[16] = 5
+            arr.0[20] = 6
+            arr.0[24] = 7
+            arr.0[28] = 8
+            arr.0[32] = 9
             i.1 = 0
         
           start_loop_0:
@@ -25969,54 +25969,54 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
             return 0
         }
         global function test_partial() { 
-            copy_to_offset(dst=first_half_only.3, 1, offset=0)
-            copy_to_offset(dst=first_half_only.3, 2, offset=4)
-            copy_to_offset(dst=first_half_only.3, 3, offset=8)
-            copy_to_offset(dst=first_half_only.3, 0, offset=12)
-            copy_to_offset(dst=first_half_only.3, 0, offset=16)
-            copy_to_offset(dst=first_half_only.3, 0, offset=20)
-            copy_to_offset(dst=first_half_only.3, 0, offset=24)
-            copy_to_offset(dst=first_half_only.3, 0, offset=28)
-            copy_to_offset(dst=first_half_only.3, 0, offset=32)
-            copy_to_offset(dst=first_half_only.3, 0, offset=36)
-            copy_to_offset(dst=first_half_only.3, 0, offset=40)
-            copy_to_offset(dst=first_half_only.3, 0, offset=44)
-            copy_to_offset(dst=first_half_only.3, 4, offset=48)
-            copy_to_offset(dst=first_half_only.3, 5, offset=52)
-            copy_to_offset(dst=first_half_only.3, 6, offset=56)
-            copy_to_offset(dst=first_half_only.3, 0, offset=60)
-            copy_to_offset(dst=first_half_only.3, 0, offset=64)
-            copy_to_offset(dst=first_half_only.3, 0, offset=68)
-            copy_to_offset(dst=first_half_only.3, 0, offset=72)
-            copy_to_offset(dst=first_half_only.3, 0, offset=76)
-            copy_to_offset(dst=first_half_only.3, 0, offset=80)
-            copy_to_offset(dst=first_half_only.3, 0, offset=84)
-            copy_to_offset(dst=first_half_only.3, 0, offset=88)
-            copy_to_offset(dst=first_half_only.3, 0, offset=92)
-            copy_to_offset(dst=first_half_only.3, 0, offset=96)
-            copy_to_offset(dst=first_half_only.3, 0, offset=100)
-            copy_to_offset(dst=first_half_only.3, 0, offset=104)
-            copy_to_offset(dst=first_half_only.3, 0, offset=108)
-            copy_to_offset(dst=first_half_only.3, 0, offset=112)
-            copy_to_offset(dst=first_half_only.3, 0, offset=116)
-            copy_to_offset(dst=first_half_only.3, 0, offset=120)
-            copy_to_offset(dst=first_half_only.3, 0, offset=124)
-            copy_to_offset(dst=first_half_only.3, 0, offset=128)
-            copy_to_offset(dst=first_half_only.3, 0, offset=132)
-            copy_to_offset(dst=first_half_only.3, 0, offset=136)
-            copy_to_offset(dst=first_half_only.3, 0, offset=140)
-            copy_to_offset(dst=first_half_only.3, 0, offset=144)
-            copy_to_offset(dst=first_half_only.3, 0, offset=148)
-            copy_to_offset(dst=first_half_only.3, 0, offset=152)
-            copy_to_offset(dst=first_half_only.3, 0, offset=156)
-            copy_to_offset(dst=first_half_only.3, 0, offset=160)
-            copy_to_offset(dst=first_half_only.3, 0, offset=164)
-            copy_to_offset(dst=first_half_only.3, 0, offset=168)
-            copy_to_offset(dst=first_half_only.3, 0, offset=172)
-            copy_to_offset(dst=first_half_only.3, 0, offset=176)
-            copy_to_offset(dst=first_half_only.3, 0, offset=180)
-            copy_to_offset(dst=first_half_only.3, 0, offset=184)
-            copy_to_offset(dst=first_half_only.3, 0, offset=188)
+            first_half_only.3[0] = 1
+            first_half_only.3[4] = 2
+            first_half_only.3[8] = 3
+            first_half_only.3[12] = 0
+            first_half_only.3[16] = 0
+            first_half_only.3[20] = 0
+            first_half_only.3[24] = 0
+            first_half_only.3[28] = 0
+            first_half_only.3[32] = 0
+            first_half_only.3[36] = 0
+            first_half_only.3[40] = 0
+            first_half_only.3[44] = 0
+            first_half_only.3[48] = 4
+            first_half_only.3[52] = 5
+            first_half_only.3[56] = 6
+            first_half_only.3[60] = 0
+            first_half_only.3[64] = 0
+            first_half_only.3[68] = 0
+            first_half_only.3[72] = 0
+            first_half_only.3[76] = 0
+            first_half_only.3[80] = 0
+            first_half_only.3[84] = 0
+            first_half_only.3[88] = 0
+            first_half_only.3[92] = 0
+            first_half_only.3[96] = 0
+            first_half_only.3[100] = 0
+            first_half_only.3[104] = 0
+            first_half_only.3[108] = 0
+            first_half_only.3[112] = 0
+            first_half_only.3[116] = 0
+            first_half_only.3[120] = 0
+            first_half_only.3[124] = 0
+            first_half_only.3[128] = 0
+            first_half_only.3[132] = 0
+            first_half_only.3[136] = 0
+            first_half_only.3[140] = 0
+            first_half_only.3[144] = 0
+            first_half_only.3[148] = 0
+            first_half_only.3[152] = 0
+            first_half_only.3[156] = 0
+            first_half_only.3[160] = 0
+            first_half_only.3[164] = 0
+            first_half_only.3[168] = 0
+            first_half_only.3[172] = 0
+            first_half_only.3[176] = 0
+            first_half_only.3[180] = 0
+            first_half_only.3[184] = 0
+            first_half_only.3[188] = 0
             expected.4 = 1
             i.5 = 0
         
@@ -26108,17 +26108,17 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
             tmp.34 = get_address negative_four.10
             ptr.11 = tmp.34
             tmp.35 = int_to_double x.9
-            copy_to_offset(dst=arr.12, tmp.35, offset=0)
+            arr.12[0] = tmp.35
             tmp.37 = load ptr.11
             tmp.36 = x.9 / tmp.37
             tmp.38 = int_to_double tmp.36
-            copy_to_offset(dst=arr.12, tmp.38, offset=8)
+            arr.12[8] = tmp.38
             tmp.39 = three()
             tmp.40 = uint_to_double tmp.39
-            copy_to_offset(dst=arr.12, tmp.40, offset=16)
-            copy_to_offset(dst=arr.12, 0D, offset=24)
-            copy_to_offset(dst=arr.12, 0D, offset=32)
-            copy_to_offset(dst=arr.12, 0D, offset=40)
+            arr.12[16] = tmp.40
+            arr.12[24] = 0D
+            arr.12[32] = 0D
+            arr.12[40] = 0D
             tmp.42 = add_ptr(arr.12, index=0, scale=8)
             tmp.43 = load tmp.42
             tmp.41 = add_ptr(tmp.43, index=0, scale=8)
@@ -26203,13 +26203,13 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
             i.13 = tmp.77
             tmp.78 = one * 2L
             tmp.79 = truncate tmp.78
-            copy_to_offset(dst=arr.14, tmp.79, offset=0)
+            arr.14[0] = tmp.79
             tmp.81 = three()
             tmp.82 = zero_extend tmp.81
             tmp.80 = one + tmp.82
             tmp.83 = truncate tmp.80
-            copy_to_offset(dst=arr.14, tmp.83, offset=4)
-            copy_to_offset(dst=arr.14, 0, offset=8)
+            arr.14[4] = tmp.83
+            arr.14[8] = 0
             tmp.84 = truncate 2684366905L
             u.15 = tmp.84
             tmp.86 = - 1
@@ -26567,9 +26567,9 @@ fn test_chapter_15_valid_initialization_static() {
             return 0
         }
         global function test_local() { 
-            copy_to_offset(dst=local_double_arr.6, 1D, offset=0)
-            copy_to_offset(dst=local_double_arr.6, 2D, offset=8)
-            copy_to_offset(dst=local_double_arr.6, 3D, offset=16)
+            local_double_arr.6[0] = 1D
+            local_double_arr.6[8] = 2D
+            local_double_arr.6[16] = 3D
             tmp.43 = check_double_arr(local_double_arr.6)
             check.10 = tmp.43
             if !check.10 jump end_if_34
@@ -27059,9 +27059,9 @@ fn test_chapter_15_valid_initialization_trailing_comma_initializer() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=arr.3, 1, offset=0)
-            copy_to_offset(dst=arr.3, 2, offset=4)
-            copy_to_offset(dst=arr.3, 3, offset=8)
+            arr.3[0] = 1
+            arr.3[4] = 2
+            arr.3[8] = 3
             tmp.0 = add_ptr(arr.3, index=2, scale=4)
             tmp.1 = load tmp.0
             return tmp.1
@@ -27233,40 +27233,40 @@ fn test_chapter_15_valid_libraries_return_pointer_to_array_client() {
     let expected = r#"
         global function main() { 
             tmp.0 = sign_extend 0
-            copy_to_offset(dst=nested_array.2, tmp.0, offset=0)
-            copy_to_offset(dst=nested_array.2, 0L, offset=8)
-            copy_to_offset(dst=nested_array.2, 0L, offset=16)
-            copy_to_offset(dst=nested_array.2, 0L, offset=24)
-            copy_to_offset(dst=nested_array.2, 0L, offset=32)
-            copy_to_offset(dst=nested_array.2, 0L, offset=40)
-            copy_to_offset(dst=nested_array.2, 0L, offset=48)
-            copy_to_offset(dst=nested_array.2, 0L, offset=56)
-            copy_to_offset(dst=nested_array.2, 0L, offset=64)
-            copy_to_offset(dst=nested_array.2, 0L, offset=72)
-            copy_to_offset(dst=nested_array.2, 0L, offset=80)
-            copy_to_offset(dst=nested_array.2, 0L, offset=88)
+            nested_array.2[0] = tmp.0
+            nested_array.2[8] = 0L
+            nested_array.2[16] = 0L
+            nested_array.2[24] = 0L
+            nested_array.2[32] = 0L
+            nested_array.2[40] = 0L
+            nested_array.2[48] = 0L
+            nested_array.2[56] = 0L
+            nested_array.2[64] = 0L
+            nested_array.2[72] = 0L
+            nested_array.2[80] = 0L
+            nested_array.2[88] = 0L
             tmp.1 = - 12
             tmp.2 = sign_extend tmp.1
-            copy_to_offset(dst=nested_array.2, tmp.2, offset=96)
+            nested_array.2[96] = tmp.2
             tmp.3 = - 13
             tmp.4 = sign_extend tmp.3
-            copy_to_offset(dst=nested_array.2, tmp.4, offset=104)
+            nested_array.2[104] = tmp.4
             tmp.5 = - 14
             tmp.6 = sign_extend tmp.5
-            copy_to_offset(dst=nested_array.2, tmp.6, offset=112)
+            nested_array.2[112] = tmp.6
             tmp.7 = - 15
             tmp.8 = sign_extend tmp.7
-            copy_to_offset(dst=nested_array.2, tmp.8, offset=120)
+            nested_array.2[120] = tmp.8
             tmp.9 = - 16
             tmp.10 = sign_extend tmp.9
-            copy_to_offset(dst=nested_array.2, tmp.10, offset=128)
-            copy_to_offset(dst=nested_array.2, 0L, offset=136)
-            copy_to_offset(dst=nested_array.2, 0L, offset=144)
-            copy_to_offset(dst=nested_array.2, 0L, offset=152)
-            copy_to_offset(dst=nested_array.2, 0L, offset=160)
-            copy_to_offset(dst=nested_array.2, 0L, offset=168)
-            copy_to_offset(dst=nested_array.2, 0L, offset=176)
-            copy_to_offset(dst=nested_array.2, 0L, offset=184)
+            nested_array.2[128] = tmp.10
+            nested_array.2[136] = 0L
+            nested_array.2[144] = 0L
+            nested_array.2[152] = 0L
+            nested_array.2[160] = 0L
+            nested_array.2[168] = 0L
+            nested_array.2[176] = 0L
+            nested_array.2[184] = 0L
             tmp.11 = return_row(nested_array.2, 1)
             row_pointer.3 = tmp.11
             i.4 = 0
@@ -27475,11 +27475,11 @@ fn test_chapter_15_valid_libraries_set_array_val_client() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=arr.5, 0D, offset=0)
-            copy_to_offset(dst=arr.5, 0D, offset=8)
-            copy_to_offset(dst=arr.5, 0D, offset=16)
-            copy_to_offset(dst=arr.5, 0D, offset=24)
-            copy_to_offset(dst=arr.5, 0D, offset=32)
+            arr.5[0] = 0D
+            arr.5[8] = 0D
+            arr.5[16] = 0D
+            arr.5[24] = 0D
+            arr.5[32] = 0D
             tmp.0 = set_nth_element(arr.5, 4)
             check.6 = tmp.0
             if !check.6 jump end_if_0
@@ -27515,17 +27515,17 @@ fn test_chapter_15_valid_libraries_set_array_val_client() {
         
           end_if_4:
             tmp.11 = - 10
-            copy_to_offset(dst=nested_arr.8, tmp.11, offset=0)
+            nested_arr.8[0] = tmp.11
             tmp.12 = - 9
-            copy_to_offset(dst=nested_arr.8, tmp.12, offset=4)
+            nested_arr.8[4] = tmp.12
             tmp.13 = - 8
-            copy_to_offset(dst=nested_arr.8, tmp.13, offset=8)
+            nested_arr.8[8] = tmp.13
             tmp.14 = - 7
-            copy_to_offset(dst=nested_arr.8, tmp.14, offset=12)
+            nested_arr.8[12] = tmp.14
             tmp.15 = - 6
-            copy_to_offset(dst=nested_arr.8, tmp.15, offset=16)
+            nested_arr.8[16] = tmp.15
             tmp.16 = - 5
-            copy_to_offset(dst=nested_arr.8, tmp.16, offset=20)
+            nested_arr.8[20] = tmp.16
             tmp.17 = set_nested_element(nested_arr.8, 2, 1)
             check.6 = tmp.17
             if !check.6 jump end_if_6
@@ -27621,8 +27621,8 @@ fn test_chapter_15_valid_pointer_arithmetic_add_dereference_and_assign() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=arr.0, 1, offset=0)
-            copy_to_offset(dst=arr.0, 2, offset=4)
+            arr.0[0] = 1
+            arr.0[4] = 2
             arr.0 = store 3
             tmp.0 = add_ptr(arr.0, index=1, scale=8)
             tmp.0 = store 4
@@ -27980,28 +27980,28 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
     let expected = r#"
         global function test_add_constant_to_pointer() { 
             tmp.0 = sign_extend 0
-            copy_to_offset(dst=long_arr.0, tmp.0, offset=0)
+            long_arr.0[0] = tmp.0
             tmp.1 = sign_extend 0
-            copy_to_offset(dst=long_arr.0, tmp.1, offset=8)
+            long_arr.0[8] = tmp.1
             tmp.2 = sign_extend 3
-            copy_to_offset(dst=long_arr.0, tmp.2, offset=16)
+            long_arr.0[16] = tmp.2
             tmp.3 = sign_extend 0
-            copy_to_offset(dst=long_arr.0, tmp.3, offset=24)
+            long_arr.0[24] = tmp.3
             tmp.4 = sign_extend 0
-            copy_to_offset(dst=long_arr.0, tmp.4, offset=32)
+            long_arr.0[32] = tmp.4
             tmp.5 = sign_extend 0
-            copy_to_offset(dst=long_arr.0, tmp.5, offset=40)
+            long_arr.0[40] = tmp.5
             tmp.6 = sign_extend 0
-            copy_to_offset(dst=long_arr.0, tmp.6, offset=48)
+            long_arr.0[48] = tmp.6
             tmp.7 = sign_extend 0
-            copy_to_offset(dst=long_arr.0, tmp.7, offset=56)
+            long_arr.0[56] = tmp.7
             tmp.8 = sign_extend 0
-            copy_to_offset(dst=long_arr.0, tmp.8, offset=64)
+            long_arr.0[64] = tmp.8
             tmp.9 = sign_extend 0
-            copy_to_offset(dst=long_arr.0, tmp.9, offset=72)
+            long_arr.0[72] = tmp.9
             tmp.10 = sign_extend 13
-            copy_to_offset(dst=long_arr.0, tmp.10, offset=80)
-            copy_to_offset(dst=long_arr.0, 0L, offset=88)
+            long_arr.0[80] = tmp.10
+            long_arr.0[88] = 0L
             tmp.11 = add_ptr(long_arr.0, index=10, scale=8)
             ptr.1 = tmp.11
             tmp.12 = load ptr.1
@@ -28012,28 +28012,28 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
         }
         global function test_add_negative_index() { 
             tmp.15 = 0
-            copy_to_offset(dst=unsigned_arr.2, tmp.15, offset=0)
+            unsigned_arr.2[0] = tmp.15
             tmp.16 = 0
-            copy_to_offset(dst=unsigned_arr.2, tmp.16, offset=4)
+            unsigned_arr.2[4] = tmp.16
             tmp.17 = 2
-            copy_to_offset(dst=unsigned_arr.2, tmp.17, offset=8)
+            unsigned_arr.2[8] = tmp.17
             tmp.18 = 0
-            copy_to_offset(dst=unsigned_arr.2, tmp.18, offset=12)
+            unsigned_arr.2[12] = tmp.18
             tmp.19 = 0
-            copy_to_offset(dst=unsigned_arr.2, tmp.19, offset=16)
+            unsigned_arr.2[16] = tmp.19
             tmp.20 = 0
-            copy_to_offset(dst=unsigned_arr.2, tmp.20, offset=20)
+            unsigned_arr.2[20] = tmp.20
             tmp.21 = 0
-            copy_to_offset(dst=unsigned_arr.2, tmp.21, offset=24)
+            unsigned_arr.2[24] = tmp.21
             tmp.22 = 0
-            copy_to_offset(dst=unsigned_arr.2, tmp.22, offset=28)
+            unsigned_arr.2[28] = tmp.22
             tmp.23 = 0
-            copy_to_offset(dst=unsigned_arr.2, tmp.23, offset=32)
+            unsigned_arr.2[32] = tmp.23
             tmp.24 = 0
-            copy_to_offset(dst=unsigned_arr.2, tmp.24, offset=36)
+            unsigned_arr.2[36] = tmp.24
             tmp.25 = 42
-            copy_to_offset(dst=unsigned_arr.2, tmp.25, offset=40)
-            copy_to_offset(dst=unsigned_arr.2, 0U, offset=44)
+            unsigned_arr.2[40] = tmp.25
+            unsigned_arr.2[44] = 0U
             tmp.26 = add_ptr(unsigned_arr.2, index=12, scale=8)
             end_ptr.3 = tmp.26
             tmp.28 = - 10
@@ -28046,11 +28046,11 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
             return 0
         }
         global function test_add_pointer_to_int() { 
-            copy_to_offset(dst=int_arr.5, 0, offset=0)
-            copy_to_offset(dst=int_arr.5, 98, offset=4)
-            copy_to_offset(dst=int_arr.5, 99, offset=8)
-            copy_to_offset(dst=int_arr.5, 0, offset=12)
-            copy_to_offset(dst=int_arr.5, 0, offset=16)
+            int_arr.5[0] = 0
+            int_arr.5[4] = 98
+            int_arr.5[8] = 99
+            int_arr.5[12] = 0
+            int_arr.5[16] = 0
             tmp.32 = add_ptr(int_arr.5, index=2, scale=8)
             ptr1.6 = tmp.32
             tmp.33 = 2 + int_arr.5
@@ -28072,21 +28072,21 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
         }
         global function test_add_different_index_types() { 
             tmp.39 = int_to_double 0
-            copy_to_offset(dst=double_arr.8, tmp.39, offset=0)
+            double_arr.8[0] = tmp.39
             tmp.40 = int_to_double 0
-            copy_to_offset(dst=double_arr.8, tmp.40, offset=8)
+            double_arr.8[8] = tmp.40
             tmp.41 = int_to_double 0
-            copy_to_offset(dst=double_arr.8, tmp.41, offset=16)
+            double_arr.8[16] = tmp.41
             tmp.42 = int_to_double 0
-            copy_to_offset(dst=double_arr.8, tmp.42, offset=24)
+            double_arr.8[24] = tmp.42
             tmp.43 = int_to_double 0
-            copy_to_offset(dst=double_arr.8, tmp.43, offset=32)
-            copy_to_offset(dst=double_arr.8, 6D, offset=40)
-            copy_to_offset(dst=double_arr.8, 0D, offset=48)
-            copy_to_offset(dst=double_arr.8, 0D, offset=56)
-            copy_to_offset(dst=double_arr.8, 0D, offset=64)
-            copy_to_offset(dst=double_arr.8, 0D, offset=72)
-            copy_to_offset(dst=double_arr.8, 0D, offset=80)
+            double_arr.8[32] = tmp.43
+            double_arr.8[40] = 6D
+            double_arr.8[48] = 0D
+            double_arr.8[56] = 0D
+            double_arr.8[64] = 0D
+            double_arr.8[72] = 0D
+            double_arr.8[80] = 0D
             tmp.44 = add_ptr(double_arr.8, index=5, scale=8)
             ptr1.9 = tmp.44
             tmp.45 = add_ptr(double_arr.8, index=5L, scale=8)
@@ -28181,15 +28181,15 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
             return 0
         }
         global function test_add_multi_dimensional() { 
-            copy_to_offset(dst=nested_arr.23, 1, offset=0)
-            copy_to_offset(dst=nested_arr.23, 2, offset=4)
-            copy_to_offset(dst=nested_arr.23, 3, offset=8)
-            copy_to_offset(dst=nested_arr.23, 4, offset=12)
-            copy_to_offset(dst=nested_arr.23, 5, offset=16)
-            copy_to_offset(dst=nested_arr.23, 6, offset=20)
-            copy_to_offset(dst=nested_arr.23, 7, offset=24)
-            copy_to_offset(dst=nested_arr.23, 8, offset=28)
-            copy_to_offset(dst=nested_arr.23, 9, offset=32)
+            nested_arr.23[0] = 1
+            nested_arr.23[4] = 2
+            nested_arr.23[8] = 3
+            nested_arr.23[12] = 4
+            nested_arr.23[16] = 5
+            nested_arr.23[20] = 6
+            nested_arr.23[24] = 7
+            nested_arr.23[28] = 8
+            nested_arr.23[32] = 9
             tmp.76 = add_ptr(nested_arr.23, index=index.22, scale=8)
             row_pointer.24 = tmp.76
             tmp.77 = load row_pointer.24
@@ -28199,15 +28199,15 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
             return 0
         }
         global function test_add_to_subarray_pointer() { 
-            copy_to_offset(dst=nested_arr.26, 1, offset=0)
-            copy_to_offset(dst=nested_arr.26, 2, offset=4)
-            copy_to_offset(dst=nested_arr.26, 3, offset=8)
-            copy_to_offset(dst=nested_arr.26, 4, offset=12)
-            copy_to_offset(dst=nested_arr.26, 5, offset=16)
-            copy_to_offset(dst=nested_arr.26, 6, offset=20)
-            copy_to_offset(dst=nested_arr.26, 7, offset=24)
-            copy_to_offset(dst=nested_arr.26, 8, offset=28)
-            copy_to_offset(dst=nested_arr.26, 9, offset=32)
+            nested_arr.26[0] = 1
+            nested_arr.26[4] = 2
+            nested_arr.26[8] = 3
+            nested_arr.26[12] = 4
+            nested_arr.26[16] = 5
+            nested_arr.26[20] = 6
+            nested_arr.26[24] = 7
+            nested_arr.26[28] = 8
+            nested_arr.26[32] = 9
             tmp.80 = add_ptr(nested_arr.26, index=1, scale=8)
             tmp.81 = load tmp.80
             row1.27 = tmp.81
@@ -28220,15 +28220,15 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
         }
         global function test_subtract_from_pointer() { 
             tmp.85 = sign_extend 10
-            copy_to_offset(dst=long_arr.29, tmp.85, offset=0)
+            long_arr.29[0] = tmp.85
             tmp.86 = sign_extend 9
-            copy_to_offset(dst=long_arr.29, tmp.86, offset=8)
+            long_arr.29[8] = tmp.86
             tmp.87 = sign_extend 8
-            copy_to_offset(dst=long_arr.29, tmp.87, offset=16)
+            long_arr.29[16] = tmp.87
             tmp.88 = sign_extend 7
-            copy_to_offset(dst=long_arr.29, tmp.88, offset=24)
+            long_arr.29[24] = tmp.88
             tmp.89 = sign_extend 6
-            copy_to_offset(dst=long_arr.29, tmp.89, offset=32)
+            long_arr.29[32] = tmp.89
             tmp.90 = add_ptr(long_arr.29, index=5, scale=8)
             one_past_the_end.30 = tmp.90
             tmp.92 = - index.31
@@ -28242,15 +28242,15 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
         }
         global function test_subtract_negative_index() { 
             tmp.96 = 100
-            copy_to_offset(dst=arr.33, tmp.96, offset=0)
+            arr.33[0] = tmp.96
             tmp.97 = 101
-            copy_to_offset(dst=arr.33, tmp.97, offset=4)
+            arr.33[4] = tmp.97
             tmp.98 = 102
-            copy_to_offset(dst=arr.33, tmp.98, offset=8)
+            arr.33[8] = tmp.98
             tmp.99 = 103
-            copy_to_offset(dst=arr.33, tmp.99, offset=12)
+            arr.33[12] = tmp.99
             tmp.100 = 104
-            copy_to_offset(dst=arr.33, tmp.100, offset=16)
+            arr.33[16] = tmp.100
             tmp.102 = - 3
             tmp.103 = - tmp.102
             tmp.101 = add_ptr(arr.33, index=tmp.103, scale=8)
@@ -28263,22 +28263,22 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
         }
         global function test_subtract_different_index_types() { 
             tmp.107 = int_to_double 0
-            copy_to_offset(dst=double_arr.35, tmp.107, offset=0)
+            double_arr.35[0] = tmp.107
             tmp.108 = int_to_double 0
-            copy_to_offset(dst=double_arr.35, tmp.108, offset=8)
+            double_arr.35[8] = tmp.108
             tmp.109 = int_to_double 0
-            copy_to_offset(dst=double_arr.35, tmp.109, offset=16)
+            double_arr.35[16] = tmp.109
             tmp.110 = int_to_double 0
-            copy_to_offset(dst=double_arr.35, tmp.110, offset=24)
+            double_arr.35[24] = tmp.110
             tmp.111 = int_to_double 0
-            copy_to_offset(dst=double_arr.35, tmp.111, offset=32)
+            double_arr.35[32] = tmp.111
             tmp.112 = int_to_double 0
-            copy_to_offset(dst=double_arr.35, tmp.112, offset=40)
-            copy_to_offset(dst=double_arr.35, 6D, offset=48)
-            copy_to_offset(dst=double_arr.35, 0D, offset=56)
-            copy_to_offset(dst=double_arr.35, 0D, offset=64)
-            copy_to_offset(dst=double_arr.35, 0D, offset=72)
-            copy_to_offset(dst=double_arr.35, 0D, offset=80)
+            double_arr.35[40] = tmp.112
+            double_arr.35[48] = 6D
+            double_arr.35[56] = 0D
+            double_arr.35[64] = 0D
+            double_arr.35[72] = 0D
+            double_arr.35[80] = 0D
             tmp.113 = add_ptr(double_arr.35, index=11, scale=8)
             end_ptr.36 = tmp.113
             tmp.115 = - 5
@@ -28350,15 +28350,15 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_add() {
             return 0
         }
         global function test_subtract_multi_dimensional() { 
-            copy_to_offset(dst=nested_arr.46, 1, offset=0)
-            copy_to_offset(dst=nested_arr.46, 2, offset=4)
-            copy_to_offset(dst=nested_arr.46, 3, offset=8)
-            copy_to_offset(dst=nested_arr.46, 4, offset=12)
-            copy_to_offset(dst=nested_arr.46, 5, offset=16)
-            copy_to_offset(dst=nested_arr.46, 6, offset=20)
-            copy_to_offset(dst=nested_arr.46, 7, offset=24)
-            copy_to_offset(dst=nested_arr.46, 8, offset=28)
-            copy_to_offset(dst=nested_arr.46, 9, offset=32)
+            nested_arr.46[0] = 1
+            nested_arr.46[4] = 2
+            nested_arr.46[8] = 3
+            nested_arr.46[12] = 4
+            nested_arr.46[16] = 5
+            nested_arr.46[20] = 6
+            nested_arr.46[24] = 7
+            nested_arr.46[28] = 8
+            nested_arr.46[32] = 9
             tmp.142 = add_ptr(nested_arr.46, index=2, scale=8)
             last_row_pointer.47 = tmp.142
             tmp.144 = - index.45
@@ -28518,11 +28518,11 @@ fn test_chapter_15_valid_pointer_arithmetic_pointer_diff() {
             return 0
         }
         global function main() { 
-            copy_to_offset(dst=arr.8, 5, offset=0)
-            copy_to_offset(dst=arr.8, 4, offset=4)
-            copy_to_offset(dst=arr.8, 3, offset=8)
-            copy_to_offset(dst=arr.8, 2, offset=12)
-            copy_to_offset(dst=arr.8, 1, offset=16)
+            arr.8[0] = 5
+            arr.8[4] = 4
+            arr.8[8] = 3
+            arr.8[12] = 2
+            arr.8[16] = 1
             tmp.12 = add_ptr(arr.8, index=5, scale=8)
             end_of_array.9 = tmp.12
             tmp.13 = get_ptr_diff(arr.8, end_of_array.9)
@@ -28757,23 +28757,23 @@ fn test_chapter_15_valid_subscripting_array_of_pointers_to_arrays() {
             y.1 = 1
             z.2 = 2
             tmp.0 = get_address x.0
-            copy_to_offset(dst=arr.3, tmp.0, offset=0)
+            arr.3[0] = tmp.0
             tmp.1 = get_address y.1
-            copy_to_offset(dst=arr.3, tmp.1, offset=8)
+            arr.3[8] = tmp.1
             tmp.2 = get_address z.2
-            copy_to_offset(dst=arr.3, tmp.2, offset=16)
+            arr.3[16] = tmp.2
             tmp.3 = get_address z.2
-            copy_to_offset(dst=arr2.4, tmp.3, offset=0)
+            arr2.4[0] = tmp.3
             tmp.4 = get_address y.1
-            copy_to_offset(dst=arr2.4, tmp.4, offset=8)
+            arr2.4[8] = tmp.4
             tmp.5 = get_address x.0
-            copy_to_offset(dst=arr2.4, tmp.5, offset=16)
+            arr2.4[16] = tmp.5
             tmp.6 = get_address arr.3
-            copy_to_offset(dst=array_of_pointers.5, tmp.6, offset=0)
+            array_of_pointers.5[0] = tmp.6
             tmp.7 = get_address arr2.4
-            copy_to_offset(dst=array_of_pointers.5, tmp.7, offset=8)
+            array_of_pointers.5[8] = tmp.7
             tmp.8 = get_address arr.3
-            copy_to_offset(dst=array_of_pointers.5, tmp.8, offset=16)
+            array_of_pointers.5[16] = tmp.8
             tmp.9 = add_ptr(array_of_pointers.5, index=0, scale=8)
             tmp.10 = load tmp.9
             tmp.12 = arr.3
@@ -28932,9 +28932,9 @@ fn test_chapter_15_valid_subscripting_complex_operands() {
     "#;
     let expected = r#"
         global function assign_in_index(idx.0) { 
-            copy_to_offset(dst=arr.1, 1, offset=0)
-            copy_to_offset(dst=arr.1, 2, offset=4)
-            copy_to_offset(dst=arr.1, 3, offset=8)
+            arr.1[0] = 1
+            arr.1[4] = 2
+            arr.1[8] = 3
             tmp.1 = idx.0 + 2
             idx.0 = tmp.1
             tmp.0 = add_ptr(arr.1, index=tmp.1, scale=4)
@@ -28961,9 +28961,9 @@ fn test_chapter_15_valid_subscripting_complex_operands() {
             return 0
         }
         global function funcall_in_index() { 
-            copy_to_offset(dst=arr.5, 1, offset=0)
-            copy_to_offset(dst=arr.5, 2, offset=4)
-            copy_to_offset(dst=arr.5, 3, offset=8)
+            arr.5[0] = 1
+            arr.5[4] = 2
+            arr.5[8] = 3
             tmp.7 = static_index()
             tmp.6 = add_ptr(arr.5, index=tmp.7, scale=4)
             tmp.8 = load tmp.6
@@ -28996,15 +28996,15 @@ fn test_chapter_15_valid_subscripting_complex_operands() {
         }
         global function check_subscript_inception() { 
             tmp.19 = sign_extend 4
-            copy_to_offset(dst=arr.11, tmp.19, offset=0)
+            arr.11[0] = tmp.19
             tmp.20 = sign_extend 3
-            copy_to_offset(dst=arr.11, tmp.20, offset=8)
+            arr.11[8] = tmp.20
             tmp.21 = sign_extend 2
-            copy_to_offset(dst=arr.11, tmp.21, offset=16)
+            arr.11[16] = tmp.21
             tmp.22 = sign_extend 1
-            copy_to_offset(dst=arr.11, tmp.22, offset=24)
-            copy_to_offset(dst=indices.12, 1, offset=0)
-            copy_to_offset(dst=indices.12, 2, offset=4)
+            arr.11[24] = tmp.22
+            indices.12[0] = 1
+            indices.12[4] = 2
             tmp.23 = subscript_inception(arr.11, indices.12, 1)
             tmp.24 = tmp.23 != 2
             if !tmp.24 jump end_if_8
@@ -29077,9 +29077,9 @@ fn test_chapter_15_valid_subscripting_complex_operands() {
             return check.17
         
           end_if_22:
-            copy_to_offset(dst=arr.18, 0, offset=0)
-            copy_to_offset(dst=arr.18, 1, offset=4)
-            copy_to_offset(dst=arr.18, 2, offset=8)
+            arr.18[0] = 0
+            arr.18[4] = 1
+            arr.18[8] = 2
             tmp.42 = add_ptr(arr.18, index=2, scale=8)
             tmp.43 = negate_subscript(tmp.42, 2, 0)
             check.17 = tmp.43
@@ -29106,9 +29106,9 @@ fn test_chapter_15_valid_subscripting_simple() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=arr.0, 1, offset=0)
-            copy_to_offset(dst=arr.0, 2, offset=4)
-            copy_to_offset(dst=arr.0, 3, offset=8)
+            arr.0[0] = 1
+            arr.0[4] = 2
+            arr.0[8] = 3
             tmp.0 = add_ptr(arr.0, index=2, scale=4)
             tmp.1 = load tmp.0
             return tmp.1
@@ -29390,16 +29390,16 @@ fn test_chapter_15_valid_subscripting_simple_subscripts() {
         }
         global function main() { 
             tmp.60 = 0
-            copy_to_offset(dst=unsigned_arr.13, tmp.60, offset=0)
+            unsigned_arr.13[0] = tmp.60
             tmp.61 = 0
-            copy_to_offset(dst=unsigned_arr.13, tmp.61, offset=4)
+            unsigned_arr.13[4] = tmp.61
             tmp.62 = 0
-            copy_to_offset(dst=unsigned_arr.13, tmp.62, offset=8)
+            unsigned_arr.13[8] = tmp.62
             tmp.63 = 0
-            copy_to_offset(dst=unsigned_arr.13, tmp.63, offset=12)
+            unsigned_arr.13[12] = tmp.63
             tmp.64 = 0
-            copy_to_offset(dst=unsigned_arr.13, tmp.64, offset=16)
-            copy_to_offset(dst=unsigned_arr.13, 7U, offset=20)
+            unsigned_arr.13[16] = tmp.64
+            unsigned_arr.13[20] = 7U
             tmp.65 = integer_types(unsigned_arr.13, 7U)
             check.14 = tmp.65
             if !check.14 jump end_if_34
@@ -29407,13 +29407,13 @@ fn test_chapter_15_valid_subscripting_simple_subscripts() {
         
           end_if_34:
             tmp.66 = sign_extend 100
-            copy_to_offset(dst=long_arr.15, tmp.66, offset=0)
+            long_arr.15[0] = tmp.66
             tmp.67 = sign_extend 102
-            copy_to_offset(dst=long_arr.15, tmp.67, offset=8)
+            long_arr.15[8] = tmp.67
             tmp.68 = sign_extend 104
-            copy_to_offset(dst=long_arr.15, tmp.68, offset=16)
+            long_arr.15[16] = tmp.68
             tmp.69 = sign_extend 106
-            copy_to_offset(dst=long_arr.15, tmp.69, offset=24)
+            long_arr.15[24] = tmp.69
             tmp.70 = sign_extend 106
             tmp.71 = reverse_subscript(long_arr.15, tmp.70)
             check.14 = tmp.71
@@ -29427,17 +29427,17 @@ fn test_chapter_15_valid_subscripting_simple_subscripts() {
             return check.14
         
           end_if_38:
-            copy_to_offset(dst=int_arr.16, 0, offset=0)
-            copy_to_offset(dst=int_arr.16, 0, offset=4)
-            copy_to_offset(dst=int_arr.16, 0, offset=8)
-            copy_to_offset(dst=int_arr.16, 0, offset=12)
-            copy_to_offset(dst=int_arr.16, 0, offset=16)
-            copy_to_offset(dst=int_arr.16, 0, offset=20)
-            copy_to_offset(dst=int_arr.16, 0, offset=24)
-            copy_to_offset(dst=int_arr.16, 0, offset=28)
-            copy_to_offset(dst=int_arr.16, 0, offset=32)
-            copy_to_offset(dst=int_arr.16, 0, offset=36)
-            copy_to_offset(dst=int_arr.16, 15, offset=40)
+            int_arr.16[0] = 0
+            int_arr.16[4] = 0
+            int_arr.16[8] = 0
+            int_arr.16[12] = 0
+            int_arr.16[16] = 0
+            int_arr.16[20] = 0
+            int_arr.16[24] = 0
+            int_arr.16[28] = 0
+            int_arr.16[32] = 0
+            int_arr.16[36] = 0
+            int_arr.16[40] = 15
             tmp.73 = update_element(int_arr.16, 30)
             check.14 = tmp.73
             if !check.14 jump end_if_40
@@ -29591,12 +29591,12 @@ fn test_chapter_15_valid_subscripting_subscript_nested() {
             return 0
         }
         global function main() { 
-            copy_to_offset(dst=nested_arr.26, 1, offset=0)
-            copy_to_offset(dst=nested_arr.26, 2, offset=4)
-            copy_to_offset(dst=nested_arr.26, 3, offset=8)
-            copy_to_offset(dst=nested_arr.26, 4, offset=12)
-            copy_to_offset(dst=nested_arr.26, 5, offset=16)
-            copy_to_offset(dst=nested_arr.26, 6, offset=20)
+            nested_arr.26[0] = 1
+            nested_arr.26[4] = 2
+            nested_arr.26[8] = 3
+            nested_arr.26[12] = 4
+            nested_arr.26[16] = 5
+            nested_arr.26[20] = 6
             tmp.33 = read_nested(nested_arr.26, 1, 2, 6)
             tmp.34 = ! tmp.33
             if !tmp.34 jump end_if_0
@@ -29748,9 +29748,9 @@ fn test_chapter_15_valid_subscripting_subscript_precedence() {
     "#;
     let expected = r#"
         global function main() { 
-            copy_to_offset(dst=arr.0, 1, offset=0)
-            copy_to_offset(dst=arr.0, 2, offset=4)
-            copy_to_offset(dst=arr.0, 3, offset=8)
+            arr.0[0] = 1
+            arr.0[4] = 2
+            arr.0[8] = 3
             tmp.0 = add_ptr(arr.0, index=2, scale=4)
             tmp.1 = load tmp.0
             tmp.2 = - tmp.1

@@ -1,9 +1,6 @@
 pub mod ir;
 
-use crate::asm::ir::{
-    AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
-    StaticVariable, TopLevel, UnaryOp,
-};
+use crate::asm::ir::{AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant, StaticVariable, TopLevel, UnaryOp};
 use crate::ast::{Constant, Type};
 use crate::semantic::{Attributes, SemanticData, StaticInit};
 use crate::symbol::Symbol;
@@ -45,15 +42,33 @@ impl SemanticData {
         }
     }
 
-    fn symbol_asm_ty(&self, symbol: &Symbol) -> AsmType {
-        match self.symbol_ty(symbol) {
+    fn ty_to_asm(ty: &Type) -> AsmType {
+        match ty {
             Type::Int | Type::UInt => AsmType::Longword,
             Type::Long | Type::ULong => AsmType::Quadword,
             Type::Double => AsmType::Double,
             Type::Function(_) => unreachable!(),
             Type::Pointer(_) => AsmType::Quadword,
-            Type::Array(_, _) => todo!(),
+            Type::Array(inner, length) => {
+                let size = (inner.size() * length) as u64;
+                let inner_asm_ty = Self::ty_to_asm(inner);
+                let alignment = if size < 16 {
+                    match inner_asm_ty {
+                        AsmType::Longword => 4,
+                        AsmType::Quadword => 8,
+                        AsmType::Double => 8,
+                        AsmType::ByteArray { size, alignment } => alignment
+                    }
+                } else {
+                    16
+                };
+                AsmType::ByteArray { size, alignment }
+            }
         }
+    }
+
+    fn symbol_asm_ty(&self, symbol: &Symbol) -> AsmType {
+        Self::ty_to_asm(self.symbol_ty(symbol))
     }
 
     fn symbol_ty(&self, symbol: &Symbol) -> &Type {
@@ -71,7 +86,7 @@ impl SemanticData {
                 Type::Double => true,
                 Type::Function(_) => unreachable!(),
                 Type::Pointer(_) => false,
-                Type::Array(_, _) => todo!(),
+                Type::Array(_, _) => false,
             },
         }
     }
@@ -91,6 +106,7 @@ struct FnArgs {
 struct Compiler {
     doubles: HashMap<u64, Symbol>,
     label_counter: u64,
+    semantics: SemanticData
 }
 
 impl Compiler {
@@ -99,10 +115,10 @@ impl Compiler {
         for element in &program.top_level {
             match element {
                 tacky::TopLevel::Function(f) => top_level.push(TopLevel::Function(
-                    self.generate_function(f, &program.semantics),
+                    self.generate_function(f),
                 )),
                 tacky::TopLevel::Variable(v) => top_level.push(TopLevel::Variable(
-                    self.generate_static_variable(v, &program.semantics),
+                    self.generate_static_variable(v),
                 )),
             }
         }
@@ -131,7 +147,7 @@ impl Compiler {
         for tl in &mut top_level {
             if let TopLevel::Function(function) = tl {
                 let stack_size =
-                    self.replace_pseudo_registers(&mut function.instructions, &backend_symbols);
+                    self.replace_pseudo_operands(&mut function.instructions, &backend_symbols);
                 self.fixup_instructions(function, stack_size);
             }
         }
@@ -142,7 +158,6 @@ impl Compiler {
     fn generate_function(
         &mut self,
         function: &tacky::Function,
-        semantic: &SemanticData,
     ) -> Function {
         let mut instructions = Vec::new();
         let args: Vec<tacky::Val> = function
@@ -155,7 +170,7 @@ impl Compiler {
             int_reg_args,
             double_reg_args,
             stack_args,
-        } = self.classify_parameters(&args, semantic);
+        } = self.classify_parameters(&args);
 
         for (reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().zip(int_reg_args) {
             instructions.push(Instruction::Mov(ty, Operand::Reg(*reg), operand));
@@ -179,12 +194,12 @@ impl Compiler {
         for tacky_instruction in &function.body {
             match tacky_instruction {
                 tacky::Instruction::Return(val) => {
-                    let reg = match semantic.val_asm_ty(val) {
+                    let reg = match self.semantics.val_asm_ty(val) {
                         AsmType::Double => Reg::XMM0,
                         _ => Reg::Ax,
                     };
                     instructions.push(Instruction::Mov(
-                        semantic.val_asm_ty(val),
+                        self.semantics.val_asm_ty(val),
                         self.generate_val(val),
                         reg.into(),
                     ));
@@ -192,7 +207,7 @@ impl Compiler {
                 }
 
                 tacky::Instruction::Unary { op, src, dst } => {
-                    let ty = semantic.val_asm_ty(src);
+                    let ty = self.semantics.val_asm_ty(src);
                     let is_double = matches!(ty, AsmType::Double);
                     match op {
                         tacky::UnaryOp::Increment => {
@@ -244,7 +259,7 @@ impl Compiler {
                                 Reg::XMM0.into(),
                             ));
                             instructions.push(Instruction::Mov(
-                                semantic.val_asm_ty(dst),
+                                self.semantics.val_asm_ty(dst),
                                 Operand::Imm(0),
                                 self.generate_val(dst),
                             ));
@@ -258,7 +273,7 @@ impl Compiler {
                                 self.generate_val(src),
                             ));
                             instructions.push(Instruction::Mov(
-                                semantic.val_asm_ty(dst),
+                                self.semantics.val_asm_ty(dst),
                                 Operand::Imm(0),
                                 self.generate_val(dst),
                             ));
@@ -301,7 +316,7 @@ impl Compiler {
                     src2,
                     dst,
                 } => {
-                    let ty = semantic.val_asm_ty(src1);
+                    let ty = self.semantics.val_asm_ty(src1);
                     let is_double = matches!(ty, AsmType::Double);
                     match op {
                         tacky::BinaryOp::Divide if !is_double => {
@@ -310,7 +325,7 @@ impl Compiler {
                                 self.generate_val(src1),
                                 Reg::Ax.into(),
                             ));
-                            if semantic.is_signed(src1) {
+                            if self.semantics.is_signed(src1) {
                                 instructions.push(Instruction::Cdq(ty));
                                 instructions.push(Instruction::Idiv(ty, self.generate_val(src2)));
                             } else {
@@ -333,7 +348,7 @@ impl Compiler {
                                 self.generate_val(src1),
                                 Reg::Ax.into(),
                             ));
-                            if semantic.is_signed(src1) {
+                            if self.semantics.is_signed(src1) {
                                 instructions.push(Instruction::Cdq(ty));
                                 instructions.push(Instruction::Idiv(ty, self.generate_val(src2)));
                             } else {
@@ -361,7 +376,7 @@ impl Compiler {
                                 self.generate_val(src2),
                                 Reg::Cx.into(),
                             ));
-                            if semantic.is_signed(src1) {
+                            if self.semantics.is_signed(src1) {
                                 instructions.push(Instruction::Sal(ty, self.generate_val(dst)));
                             } else {
                                 instructions.push(Instruction::Shl(ty, self.generate_val(dst)));
@@ -378,7 +393,7 @@ impl Compiler {
                                 self.generate_val(src2),
                                 Reg::Cx.into(),
                             ));
-                            if semantic.is_signed(src1) {
+                            if self.semantics.is_signed(src1) {
                                 instructions.push(Instruction::Sar(ty, self.generate_val(dst)));
                             } else {
                                 instructions.push(Instruction::Shr(ty, self.generate_val(dst)));
@@ -396,12 +411,12 @@ impl Compiler {
                                 self.generate_val(src1),
                             ));
                             instructions.push(Instruction::Mov(
-                                semantic.val_asm_ty(dst),
+                                self.semantics.val_asm_ty(dst),
                                 Operand::Imm(0),
                                 self.generate_val(dst),
                             ));
                             let is_double = matches!(ty, AsmType::Double);
-                            let is_unsigned = !semantic.is_signed(src1);
+                            let is_unsigned = !self.semantics.is_signed(src1);
                             let cond = match (op, is_unsigned || is_double) {
                                 (tacky::BinaryOp::Equal, _) => CondCode::E,
                                 (tacky::BinaryOp::NotEqual, _) => CondCode::NE,
@@ -447,7 +462,7 @@ impl Compiler {
                         | tacky::BinaryOp::BinAnd
                         | tacky::BinaryOp::BinOr
                         | tacky::BinaryOp::BinXor => {
-                            let ty = semantic.val_asm_ty(src1);
+                            let ty = self.semantics.val_asm_ty(src1);
                             instructions.push(Instruction::Mov(
                                 ty,
                                 self.generate_val(src1),
@@ -467,7 +482,7 @@ impl Compiler {
                     instructions.push(Instruction::Jmp(target.clone()));
                 }
                 tacky::Instruction::JumpIfZero { cond, target } => {
-                    if let AsmType::Double = semantic.val_asm_ty(cond) {
+                    if let AsmType::Double = self.semantics.val_asm_ty(cond) {
                         instructions.push(Instruction::Binary(
                             AsmType::Double,
                             BinaryOp::Xor,
@@ -475,13 +490,13 @@ impl Compiler {
                             Reg::XMM0.into(),
                         ));
                         instructions.push(Instruction::Cmp(
-                            semantic.val_asm_ty(cond),
+                            self.semantics.val_asm_ty(cond),
                             Reg::XMM0.into(),
                             self.generate_val(cond),
                         ));
                     } else {
                         instructions.push(Instruction::Cmp(
-                            semantic.val_asm_ty(cond),
+                            self.semantics.val_asm_ty(cond),
                             Operand::Imm(0),
                             self.generate_val(cond),
                         ));
@@ -489,7 +504,7 @@ impl Compiler {
                     instructions.push(Instruction::JmpCC(CondCode::E, target.clone()));
                 }
                 tacky::Instruction::JumpIfNotZero { cond, target } => {
-                    if let AsmType::Double = semantic.val_asm_ty(cond) {
+                    if let AsmType::Double = self.semantics.val_asm_ty(cond) {
                         instructions.push(Instruction::Binary(
                             AsmType::Double,
                             BinaryOp::Xor,
@@ -497,13 +512,13 @@ impl Compiler {
                             Reg::XMM0.into(),
                         ));
                         instructions.push(Instruction::Cmp(
-                            semantic.val_asm_ty(cond),
+                            self.semantics.val_asm_ty(cond),
                             Reg::XMM0.into(),
                             self.generate_val(cond),
                         ));
                     } else {
                         instructions.push(Instruction::Cmp(
-                            semantic.val_asm_ty(cond),
+                            self.semantics.val_asm_ty(cond),
                             Operand::Imm(0),
                             self.generate_val(cond),
                         ));
@@ -512,7 +527,7 @@ impl Compiler {
                 }
                 tacky::Instruction::Copy { src, dst } => {
                     instructions.push(Instruction::Mov(
-                        semantic.val_asm_ty(src),
+                        self.semantics.val_asm_ty(src),
                         self.generate_val(src),
                         self.generate_val(dst),
                     ));
@@ -521,7 +536,7 @@ impl Compiler {
                     instructions.push(Instruction::Label(l.clone()));
                 }
                 tacky::Instruction::FnCall { name, args, dst } => {
-                    self.generate_call(&mut instructions, semantic, name, args, dst);
+                    self.generate_call(&mut instructions, name, args, dst);
                 }
                 tacky::Instruction::SignExtend { src, dst } => {
                     instructions.push(Instruction::Movsx(
@@ -545,19 +560,19 @@ impl Compiler {
 
                 tacky::Instruction::DoubleToInt { src, dst } => {
                     instructions.push(Instruction::Cvttsd2si(
-                        semantic.val_asm_ty(dst),
+                        self.semantics.val_asm_ty(dst),
                         self.generate_val(src),
                         self.generate_val(dst),
                     ));
                 }
                 tacky::Instruction::IntToDouble { src, dst } => {
                     instructions.push(Instruction::Cvtsi2sd(
-                        semantic.val_asm_ty(src),
+                        self.semantics.val_asm_ty(src),
                         self.generate_val(src),
                         self.generate_val(dst),
                     ));
                 }
-                tacky::Instruction::DoubleToUInt { src, dst } => match semantic.val_asm_ty(dst) {
+                tacky::Instruction::DoubleToUInt { src, dst } => match self.semantics.val_asm_ty(dst) {
                     AsmType::Longword => {
                         instructions.push(Instruction::Cvttsd2si(
                             AsmType::Quadword,
@@ -618,9 +633,9 @@ impl Compiler {
                         ));
                         instructions.push(Instruction::Label(end_label));
                     }
-                    AsmType::Double => unreachable!(),
+                    AsmType::Double | AsmType::ByteArray {..} => unreachable!(),
                 },
-                tacky::Instruction::UIntToDouble { src, dst } => match semantic.val_asm_ty(src) {
+                tacky::Instruction::UIntToDouble { src, dst } => match self.semantics.val_asm_ty(src) {
                     AsmType::Longword => {
                         instructions.push(Instruction::MovZeroExtend(
                             self.generate_val(src),
@@ -690,7 +705,7 @@ impl Compiler {
                         ));
                         instructions.push(Instruction::Label(end_label));
                     }
-                    AsmType::Double => unreachable!(),
+                    AsmType::Double | AsmType::ByteArray {..} => unreachable!(),
                 },
                 tacky::Instruction::GetAddress { src, dst } => {
                     instructions.push(Instruction::Lea(
@@ -705,7 +720,7 @@ impl Compiler {
                         Reg::Ax.into(),
                     ));
                     instructions.push(Instruction::Mov(
-                        semantic.val_asm_ty(dst),
+                        self.semantics.val_asm_ty(dst),
                         Operand::Memory(Reg::Ax, 0),
                         self.generate_val(dst),
                     ));
@@ -717,13 +732,46 @@ impl Compiler {
                         Reg::Ax.into(),
                     ));
                     instructions.push(Instruction::Mov(
-                        semantic.val_asm_ty(src),
+                        self.semantics.val_asm_ty(src),
                         self.generate_val(src),
                         Operand::Memory(Reg::Ax, 0),
                     ));
                 }
-                tacky::Instruction::AddPtr { .. } => todo!(),
-                tacky::Instruction::CopyToOffset { .. } => todo!()
+                tacky::Instruction::AddPtr { ptr, index, scale, dst } => {
+                    instructions.push(Instruction::Mov(
+                        AsmType::Quadword,
+                        self.generate_val(ptr),
+                        Reg::Ax.into(),
+                    ));
+                    instructions.push(Instruction::Mov(
+                        AsmType::Quadword,
+                        self.generate_val(index),
+                        Reg::Dx.into(),
+                    ));
+                    let indexing_scale = match *scale {
+                        1 | 2 | 4 | 8 => *scale as u8,
+                        _ => {
+                            instructions.push(Instruction::Binary(
+                                AsmType::Quadword,
+                                BinaryOp::Mul,
+                                Operand::Imm(*scale as u64),
+                                Reg::Dx.into(),
+                            ));
+                            1
+                        }
+                    };
+                    instructions.push(Instruction::Lea(
+                        Operand::Indexed(Reg::Ax, Reg::Dx, indexing_scale),
+                        self.generate_val(dst)
+                    ));
+                },
+                tacky::Instruction::CopyToOffset { src, dst, offset } => {
+                    instructions.push(Instruction::Mov(
+                        self.semantics.val_asm_ty(src),
+                        self.generate_val(src),
+                        Operand::PseudoMem(dst.clone(), *offset),
+                    ));
+                }
             }
         }
 
@@ -767,18 +815,15 @@ impl Compiler {
         backend_symbols
     }
 
-    fn generate_static_variable(
-        &mut self,
-        var: &tacky::StaticVariable,
-        semantic: &SemanticData,
-    ) -> StaticVariable {
+    fn generate_static_variable(&mut self, var: &tacky::StaticVariable) -> StaticVariable {
         StaticVariable {
             name: var.name.clone(),
             global: var.global,
-            init: var.init[0].clone(), // FIXME
-            alignment: match semantic.symbol_asm_ty(&var.name) {
+            init: var.init.clone(),
+            alignment: match self.semantics.symbol_asm_ty(&var.name) {
                 AsmType::Longword => 4,
                 AsmType::Quadword | AsmType::Double => 8,
+                AsmType::ByteArray { size, alignment } => alignment,
             },
         }
     }
@@ -786,7 +831,6 @@ impl Compiler {
     fn generate_call(
         &mut self,
         instructions: &mut Vec<Instruction>,
-        semantic: &SemanticData,
         name: &Symbol,
         args: &[tacky::Val],
         dst: &tacky::Val,
@@ -795,7 +839,7 @@ impl Compiler {
             int_reg_args,
             double_reg_args,
             stack_args,
-        } = self.classify_parameters(args, semantic);
+        } = self.classify_parameters(args);
 
         let padding = if stack_args.len() % 2 == 0 { 0 } else { 8 };
         if padding != 0 {
@@ -839,26 +883,27 @@ impl Compiler {
             ));
         }
 
-        let return_reg = match semantic.val_asm_ty(dst) {
+        let return_reg = match self.semantics.val_asm_ty(dst) {
             AsmType::Longword | AsmType::Quadword => Reg::Ax,
             AsmType::Double => Reg::XMM0,
+            AsmType::ByteArray { .. } => panic!("Cannot return a byte array")
         };
 
         instructions.push(Instruction::Mov(
-            semantic.val_asm_ty(dst),
+            self.semantics.val_asm_ty(dst),
             return_reg.into(),
             self.generate_val(dst),
         ));
     }
 
-    fn classify_parameters(&mut self, values: &[tacky::Val], semantic: &SemanticData) -> FnArgs {
+    fn classify_parameters(&mut self, values: &[tacky::Val]) -> FnArgs {
         let mut int_reg_args = Vec::new();
         let mut double_reg_args = Vec::new();
         let mut stack_args = Vec::new();
 
         for value in values {
             let operand = self.generate_val(value);
-            let ty = semantic.val_asm_ty(value);
+            let ty = self.semantics.val_asm_ty(value);
             let operand = TypedOperand { operand, ty };
             if let AsmType::Double = ty {
                 if double_reg_args.len() < DOUBLE_ARG_REGISTERS.len() {
@@ -879,7 +924,7 @@ impl Compiler {
         }
     }
 
-    fn replace_pseudo_registers(
+    fn replace_pseudo_operands(
         &mut self,
         instructions: &mut Vec<Instruction>,
         symbols: &BackendSymbolTable,
@@ -888,7 +933,7 @@ impl Compiler {
         let mut stack_vars = HashMap::new();
 
         let mut update_operand = |operand: &mut Operand| {
-            if let Operand::Pseudo(name) = operand {
+            if let Operand::Pseudo(name) | Operand::PseudoMem(name, ..) = operand {
                 let Some(&BackendSymbolData::Obj {
                     ty,
                     is_static,
@@ -909,12 +954,20 @@ impl Compiler {
                         }
                         AsmType::Quadword | AsmType::Double => {
                             stack_size += 8 + stack_size % 8;
+                        },
+                        AsmType::ByteArray { size, alignment } => {
+                            stack_size += size + (stack_size % alignment as u64)
                         }
                     }
                     stack_vars.insert(name.clone(), stack_size);
                     stack_size
                 };
-                *operand = Operand::Memory(Reg::BP, -(offset as i64));
+                let offset = if let Operand::PseudoMem(name, array_offset) = operand {
+                    (offset as i64) - *array_offset
+                } else {
+                    offset as i64
+                };
+                *operand = Operand::Memory(Reg::BP, -offset);
             }
         };
 
@@ -992,6 +1045,7 @@ impl Compiler {
                                 AsmType::Longword => (v as i32) as u64,
                                 AsmType::Quadword => v,
                                 AsmType::Double => panic!("Immediate values, can't be double"),
+                                AsmType::ByteArray { .. } => panic!("Immediate values can't be byte array")
                             };
                             fixed.push(Instruction::Mov(ty, Operand::Imm(value), Reg::R10.into()));
                             Reg::R10.into()
@@ -1170,7 +1224,10 @@ impl Compiler {
                     Operand::Imm(value.as_u64())
                 }
             }
-            tacky::Val::Var(name) => Operand::Pseudo(name.clone()),
+            tacky::Val::Var(name) => match self.semantics.val_asm_ty(val) {
+                AsmType::ByteArray {..} => Operand::PseudoMem(name.clone(), 0),
+                _ => Operand::Pseudo(name.clone())
+            }
         }
     }
 
@@ -1235,6 +1292,7 @@ pub fn generate(program: &tacky::Program) -> Program {
     let mut compiler = Compiler {
         doubles: HashMap::new(),
         label_counter: 0,
+        semantics: program.semantics.clone(),
     };
     compiler.generate(program)
 }

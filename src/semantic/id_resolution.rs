@@ -5,7 +5,6 @@ use crate::ast::{
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
 use std::collections::{HashMap, VecDeque};
-use std::ptr::addr_of_mut;
 
 #[derive(Default)]
 struct Resolver {
