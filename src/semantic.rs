@@ -15,6 +15,7 @@ pub struct SemanticData {
     pub symbols: BTreeMap<Symbol, SymbolData>,
     pub expression_types: HashMap<NodeId, Type>,
     pub implicit_casts: HashMap<NodeId, Type>,
+    pub pointer_decays: HashMap<NodeId, Type>,
     pub switch_cases: HashMap<NodeId, SwitchCases>,
 }
 

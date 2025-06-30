@@ -501,11 +501,11 @@ impl TackyGenerator {
                 let dst = self.make_temp(&expr_ty);
                 let op = match op.as_ref() {
                     ast::BinaryOp::Add => {
-                        let left_ty = self.semantics.expr_type(left);
-                        if left_ty.is_pointer() {
+                        let left_ty = self.semantics.expr_type(left).clone();
+                        if let Type::Pointer(inner) = left_ty {
                             let ptr = src1;
                             let index = self.emit_expr(right);
-                            let scale = expr_ty.size();
+                            let scale = inner.size();
                             self.instructions.push(Instruction::AddPtr {
                                 ptr,
                                 index,
@@ -537,16 +537,16 @@ impl TackyGenerator {
                                 dst: dst.clone(),
                             });
                             return ExprResult::Operand(dst)
-                        } else if left_ty.is_pointer() {
+                        } else if let Type::Pointer(inner) = left_ty {
                             let ptr = src1;
                             let index = self.emit_expr(right);
-                            let negated = self.make_temp(&expr_ty);
+                            let negated = self.make_temp(&Type::Long);
                             self.instructions.push(Instruction::Unary {
                                 op: UnaryOp::Negate,
                                 src: index,
                                 dst: negated.clone(),
                             });
-                            let scale = expr_ty.size();
+                            let scale = inner.size();
                             self.instructions.push(Instruction::AddPtr {
                                 ptr,
                                 index: negated,
@@ -743,17 +743,20 @@ impl TackyGenerator {
             },
             ast::Expression::Subscript(expr1, expr2) => {
                 let ty1 = self.semantics.expr_type(expr1).clone();
-                let dst = self.make_temp(&expr_ty);
-                let val1 = self.emit_expr(expr1);
-                let val2 = self.emit_expr(expr2);
                 // Semantic check ensures only a pointer and ints are supported
                 // it also converts the type array to a pointer
-                let (ptr, index) = if ty1.is_pointer() {
-                    (val1, val2)
+                let (ptr_expr, index_expr) = if ty1.is_pointer() {
+                    (expr1, expr2)
                 } else {
-                    (val2, val1)
+                    (expr2, expr)
                 };
-                let scale = expr_ty.size();
+                let ptr = self.emit_expr(ptr_expr);
+                let index = self.emit_expr(index_expr);
+                let Type::Pointer(inner) = self.semantics.expr_type(ptr_expr) else {
+                    unreachable!();
+                };
+                let scale = inner.size();
+                let dst = self.make_temp(&expr_ty);
                 self.instructions.push(Instruction::AddPtr {
                     ptr,
                     index,
@@ -761,7 +764,6 @@ impl TackyGenerator {
                     dst: dst.clone(),
                 });
                 return ExprResult::Dereference(dst)
-
             },
         };
         ExprResult::Operand(result)
@@ -808,7 +810,15 @@ impl TackyGenerator {
     ) -> Val {
         if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
             self.cast(val, expr_ty, &target)
-        } else {
+        } else if let Some(target) = self.semantics.pointer_decays.get(&expr.id).cloned() {
+            let dst = self.make_temp(&target);
+            self.instructions.push(Instruction::GetAddress {
+                src: val,
+                dst: dst.clone(),
+            });
+            dst
+        }
+        else {
             val
         }
     }

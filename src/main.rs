@@ -79,7 +79,7 @@ fn main() -> Result<()> {
 
     if let Flag::Validate = options.flag {
         println!("{}", pretty_print_ast(&validated_ast)?);
-        println!("{semantic_data:?}");
+        println!("{semantic_data:#?}");
         return Ok(());
     }
 

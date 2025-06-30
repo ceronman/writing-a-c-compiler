@@ -92,7 +92,7 @@ pub enum Operand {
 
 impl Operand {
     pub(crate) fn is_mem(&self) -> bool {
-        matches!(self, Operand::Memory(_, _) | Operand::Data(_, _))
+        matches!(self, Operand::Memory(..) | Operand::Data(..) | Operand::Indexed(..))
     }
 }
 

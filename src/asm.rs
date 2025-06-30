@@ -956,7 +956,8 @@ impl Compiler {
                             stack_size += 8 + stack_size % 8;
                         },
                         AsmType::ByteArray { size, alignment } => {
-                            stack_size += size + (stack_size % alignment as u64)
+                            let unaligned = stack_size + size;
+                            stack_size = ((unaligned - 1) | (alignment as u64) - 1) + 1;
                         }
                     }
                     stack_vars.insert(name.clone(), stack_size);

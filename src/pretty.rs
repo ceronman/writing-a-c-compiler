@@ -223,19 +223,20 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
             tacky::Instruction::GetAddress { src, dst } => {
                 write!(file, "{indent}")?;
                 pp_val(file, dst)?;
-                write!(file, " = get_address ")?;
+                write!(file, " = &")?;
                 pp_val(file, src)?;
             }
             tacky::Instruction::Load { ptr, dst } => {
                 write!(file, "{indent}")?;
                 pp_val(file, dst)?;
-                write!(file, " = load ")?;
+                write!(file, " = *")?;
                 pp_val(file, ptr)?;
             }
             tacky::Instruction::Store { src, ptr } => {
                 write!(file, "{indent}")?;
+                write!(file, "*")?;
                 pp_val(file, ptr)?;
-                write!(file, " = store ")?;
+                write!(file, " = ")?;
                 pp_val(file, src)?;
             }
             tacky::Instruction::AddPtr { ptr, index, scale, dst } => {
@@ -542,23 +543,24 @@ impl PrettyAst {
         }
     }
     fn from_expression(expression: &ast::Node<ast::Expression>) -> PrettyAst {
+        let node_id = expression.id;
         match expression.as_ref() {
             ast::Expression::Constant(value) => Self::from_constant(value),
-            ast::Expression::Var(name) => Self::new(format!("Var [{name}]"), vec![]),
+            ast::Expression::Var(name) => Self::new(format!("<{node_id}> Var [{name}]"), vec![]),
             ast::Expression::Unary { op, expr } => Self::new(
-                format!("Unary [{}]", Self::unary_op(op)),
+                format!("<{node_id}> Unary [{}]", Self::unary_op(op)),
                 vec![Self::from_expression(expr)],
             ),
             ast::Expression::Postfix { op, expr } => Self::new(
-                format!("Postfix [{}]", Self::postfix_op(op)),
+                format!("<{node_id}> Postfix [{}]", Self::postfix_op(op)),
                 vec![Self::from_expression(expr)],
             ),
             ast::Expression::Binary { op, left, right } => Self::new(
-                format!("Binary [{}]", Self::binary_op(op)),
+                format!("<{node_id}>  [{}]", Self::binary_op(op)),
                 vec![Self::from_expression(left), Self::from_expression(right)],
             ),
             ast::Expression::Assignment { op, left, right } => Self::new(
-                format!("Assign [{}]", Self::assign_op(op)),
+                format!("<{node_id}> Assign [{}]", Self::assign_op(op)),
                 vec![Self::from_expression(left), Self::from_expression(right)],
             ),
             ast::Expression::Conditional {
@@ -571,27 +573,27 @@ impl PrettyAst {
                     Self::new("Then", vec![Self::from_expression(then_expr)]),
                     Self::new("Else", vec![Self::from_expression(else_expr)]),
                 ];
-                Self::new("Conditional [?]", children)
+                Self::new("<{node_id}> Conditional [?]", children)
             }
             ast::Expression::FunctionCall { name, args } => Self::new(
-                format!("FunctionCall [{}]", name.symbol),
+                format!("<{node_id}> FunctionCall [{}]", name.symbol),
                 args.iter().map(Self::from_expression),
             ),
             ast::Expression::Cast { target, expr } => Self::new(
-                "Cast",
+                format!("<{node_id}> Cast"),
                 vec![
                     Self::new("Target", vec![Self::from_type(target)]),
                     Self::new("Expression", vec![Self::from_expression(expr)]),
                 ],
             ),
             ast::Expression::AddressOf(expr) => {
-                Self::new("AddressOf", vec![Self::from_expression(expr)])
+                Self::new(format!("<{node_id}> AddressOf"), vec![Self::from_expression(expr)])
             }
             ast::Expression::Dereference(expr) => {
-                Self::new("Dereference", vec![Self::from_expression(expr)])
+                Self::new(format!("<{node_id}> Dereference"), vec![Self::from_expression(expr)])
             }
             ast::Expression::Subscript(expr, index) => Self::new(
-                "Subscript",
+                format!("<{node_id}> Subscript"),
                 vec![Self::from_expression(expr), Self::from_expression(index)],
             ),
         }
@@ -732,3 +734,6 @@ impl PrettyAst {
         }
     }
 }
+
+// TODO: Separate pretty per module
+// TODO: Implement pretty for asm

@@ -32,6 +32,7 @@ struct TypeChecker {
     symbols: BTreeMap<String, SymbolData>,
     expression_types: HashMap<NodeId, Type>,
     implicit_casts: HashMap<NodeId, Type>,
+    pointer_decays: HashMap<NodeId, Type>,
     switch_stack: VecDeque<SwitchCases>,
     switch_cases: HashMap<NodeId, SwitchCases>,
 }
@@ -281,9 +282,9 @@ impl TypeChecker {
         top_level: bool,
     ) -> Result<()> {
         let name = decl.name.symbol.clone();
-        let mut this_ty = decl.ty.clone();
+        let mut function_ty = decl.ty.clone();
 
-        if this_ty.ret.is_array() {
+        if function_ty.ret.is_array() {
             // TODO: Make this error point to the span of the actual return type
             return Err(CompilerError {
                 kind: ErrorKind::Type,
@@ -293,13 +294,13 @@ impl TypeChecker {
         }
 
         // Replace array params with pointers
-        for param in &mut this_ty.params {
+        for param in &mut function_ty.params {
             if let Type::Array(inner, _) = param {
                 *param = Type::Pointer(inner.clone());
             }
         }
 
-        let this_ty = Type::Function(this_ty);
+        let this_ty = Type::Function(function_ty.clone());
         let has_body = decl.body.is_some();
         let mut already_defined = false;
         let is_static = matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
@@ -362,7 +363,7 @@ impl TypeChecker {
                     span: decl.name.span,
                 });
             }
-            for (param_name, param_ty) in decl.params.iter().zip(decl.ty.params.iter()) {
+            for (param_name, param_ty) in decl.params.iter().zip(function_ty.params.iter()) {
                 self.symbols.insert(
                     param_name.symbol.clone(),
                     SymbolData::local(param_ty.clone()),
@@ -529,6 +530,7 @@ impl TypeChecker {
         if let Type::Array(inner, size) = ty {
             // Pointer decay
             let pointer_ty = Type::Pointer(inner);
+            self.pointer_decays.insert(expr.id, pointer_ty.clone());
             self.expression_types.insert(expr.id, pointer_ty.clone());
             Ok(pointer_ty)
         } else {
@@ -635,7 +637,7 @@ impl TypeChecker {
                             });
                         }
                     }
-                    BinaryOp::Multiply | BinaryOp::Divide if !left_ty.is_arithmetic() => {
+                    BinaryOp::Multiply | BinaryOp::Divide if !left_ty.is_int() => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Operator is invalid".to_string(),
@@ -739,6 +741,7 @@ impl TypeChecker {
                     BinaryOp::Add | BinaryOp::Subtract
                         if left_ty.is_pointer() && right_ty.is_int() =>
                     {
+                        self.cast_if_needed(right, &right_ty, &Type::Long);
                         left_ty
                     }
                     BinaryOp::Add if left_ty.is_int() && right_ty.is_pointer() => right_ty,
@@ -946,8 +949,14 @@ impl TypeChecker {
                 let ty1 = self.check_and_convert_expr(expr1)?;
                 let ty2 = self.check_and_convert_expr(expr2)?;
                 match (&ty1, &ty2) {
-                    (Type::Pointer(referenced), _) if ty2.is_int() => *referenced.clone(),
-                    (_, Type::Pointer(referenced)) if ty1.is_int() => *referenced.clone(),
+                    (Type::Pointer(referenced), _) if ty2.is_int() => {
+                        self.cast_if_needed(expr2, &ty2, &Type::Long);
+                        *referenced.clone()
+                    },
+                    (_, Type::Pointer(referenced)) if ty1.is_int() => {
+                        self.cast_if_needed(expr1, &ty1, &Type::Long);
+                        *referenced.clone()
+                    },
                     _ => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
@@ -1056,6 +1065,7 @@ pub fn check(program: &Node<Program>) -> Result<SemanticData> {
     Ok(SemanticData {
         symbols: type_checker.symbols,
         expression_types: type_checker.expression_types,
+        pointer_decays: type_checker.pointer_decays,
         implicit_casts: type_checker.implicit_casts,
         switch_cases: type_checker.switch_cases,
     })

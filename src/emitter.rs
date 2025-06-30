@@ -49,9 +49,8 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
             Instruction::Mov(ty, src, dst) => {
                 let op = match ty {
                     AsmType::Longword => "movl",
-                    AsmType::Quadword => "movq",
+                    AsmType::Quadword | AsmType::ByteArray { .. } => "movq",
                     AsmType::Double => "movsd",
-                    AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, src, RegSize::from_ty(ty))?;
@@ -199,9 +198,8 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
             Instruction::Cmp(ty, left, right) => {
                 let op = match ty {
                     AsmType::Longword => "cmpl",
-                    AsmType::Quadword => "cmpq",
+                    AsmType::Quadword | AsmType::ByteArray { .. } => "cmpq",
                     AsmType::Double => "comisd",
-                    AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
                 emit_operand(output, left, RegSize::from_ty(ty))?;
@@ -306,8 +304,8 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
         writeln!(output, "\t.globl _{name}", name = variable.name)?;
     }
     if matches!(
-        variable.init[0], // FIXME
-        StaticInit::Int(0) | StaticInit::Long(0) | StaticInit::UInt(0) | StaticInit::ULong(0)
+        variable.init[..], // TODO: Get rid of everything different than ZeroInit(0)
+        [StaticInit::Int(0)] | [StaticInit::Long(0)] | [StaticInit::UInt(0)] | [StaticInit::ULong(0)] | [StaticInit::ZeroInit(0)]
     ) {
         writeln!(output, "\t.bss")?;
         emit_ins(output, ".balign")?;
@@ -320,7 +318,9 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
         emit_ins(output, ".balign")?;
         writeln!(output, "{}", variable.alignment)?;
         writeln!(output, "_{name}:", name = variable.name)?;
-        emit_static_init(output, &variable.init[0])?;
+        for init in &variable.init {
+            emit_static_init(output, init)?;
+        }
     }
     Ok(())
 }
@@ -347,7 +347,10 @@ fn emit_static_init(output: &mut impl Write, init: &StaticInit) -> Result<()> {
             emit_ins(output, ".quad")?;
             writeln!(output, "{:#x} # {v}_f64", v.to_bits())?;
         }
-        StaticInit::ZeroInit(_) => todo!(),
+        StaticInit::ZeroInit(size) => {
+            emit_ins(output, ".zero")?;
+            writeln!(output, "{}", size)?;
+        }
     };
     Ok(())
 }
@@ -389,7 +392,7 @@ impl RegSize {
             AsmType::Longword => RegSize::Long,
             AsmType::Quadword => RegSize::Quad,
             AsmType::Double => RegSize::Quad,
-            AsmType::ByteArray { .. } => todo!()
+            AsmType::ByteArray { .. } => RegSize::Quad
         }
     }
 }
@@ -453,9 +456,18 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
             emit_operand(output, &Operand::Reg(*reg), RegSize::Quad)?;
             write!(output, ")")
         }
+        (Operand::Indexed(reg1, reg2, scale), _) => {
+            write!(output, "(")?;
+            emit_operand(output, &Operand::Reg(*reg1), RegSize::Quad)?;
+            write!(output, ", ")?;
+            emit_operand(output, &Operand::Reg(*reg2), RegSize::Quad)?;
+            write!(output, ", ")?;
+            write!(output, "{scale}")?;
+            write!(output, ")")
+        },
         (Operand::Data(true, name), _) => write!(output, "L{name}(%rip)"),
         (Operand::Data(_, name), _) => write!(output, "_{name}(%rip)"),
-        (Operand::Pseudo(..) | Operand::PseudoMem(..) | Operand::Indexed(..), _) => unreachable!("Pseudo-registers should not appear here"),
+        (Operand::Pseudo(..) | Operand::PseudoMem(..), _) => unreachable!("Pseudo-registers should not appear here"),
     }
 }
 
