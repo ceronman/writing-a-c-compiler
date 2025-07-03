@@ -1,6 +1,9 @@
 pub mod ir;
 
-use crate::asm::ir::{AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant, StaticVariable, TopLevel, UnaryOp};
+use crate::asm::ir::{
+    AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
+    StaticVariable, TopLevel, UnaryOp,
+};
 use crate::ast::{Constant, Type};
 use crate::semantic::{Attributes, SemanticData, StaticInit};
 use crate::symbol::Symbol;
@@ -57,7 +60,7 @@ impl SemanticData {
                         AsmType::Longword => 4,
                         AsmType::Quadword => 8,
                         AsmType::Double => 8,
-                        AsmType::ByteArray { size, alignment } => alignment
+                        AsmType::ByteArray { alignment, .. } => alignment,
                     }
                 } else {
                     16
@@ -106,7 +109,7 @@ struct FnArgs {
 struct Compiler {
     doubles: HashMap<u64, Symbol>,
     label_counter: u64,
-    semantics: SemanticData
+    semantics: SemanticData,
 }
 
 impl Compiler {
@@ -114,12 +117,12 @@ impl Compiler {
         let mut top_level = Vec::new();
         for element in &program.top_level {
             match element {
-                tacky::TopLevel::Function(f) => top_level.push(TopLevel::Function(
-                    self.generate_function(f),
-                )),
-                tacky::TopLevel::Variable(v) => top_level.push(TopLevel::Variable(
-                    self.generate_static_variable(v),
-                )),
+                tacky::TopLevel::Function(f) => {
+                    top_level.push(TopLevel::Function(self.generate_function(f)))
+                }
+                tacky::TopLevel::Variable(v) => {
+                    top_level.push(TopLevel::Variable(self.generate_static_variable(v)))
+                }
             }
         }
 
@@ -155,10 +158,7 @@ impl Compiler {
         Program { top_level }
     }
 
-    fn generate_function(
-        &mut self,
-        function: &tacky::Function,
-    ) -> Function {
+    fn generate_function(&mut self, function: &tacky::Function) -> Function {
         let mut instructions = Vec::new();
         let args: Vec<tacky::Val> = function
             .params
@@ -263,8 +263,29 @@ impl Compiler {
                                 Operand::Imm(0),
                                 self.generate_val(dst),
                             ));
-                            instructions
-                                .push(Instruction::SetCC(CondCode::E, self.generate_val(dst)));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Longword,
+                                Operand::Imm(0),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Longword,
+                                Operand::Imm(0),
+                                Reg::Cx.into(),
+                            ));
+                            instructions.push(Instruction::SetCC(CondCode::E, Reg::Ax.into()));
+                            instructions.push(Instruction::SetCC(CondCode::NP, Reg::Cx.into()));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Longword,
+                                BinaryOp::And,
+                                Reg::Ax.into(),
+                                Reg::Cx.into(),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Longword,
+                                Reg::Cx.into(),
+                                self.generate_val(dst),
+                            ));
                         }
                         tacky::UnaryOp::Not => {
                             instructions.push(Instruction::Cmp(
@@ -572,141 +593,145 @@ impl Compiler {
                         self.generate_val(dst),
                     ));
                 }
-                tacky::Instruction::DoubleToUInt { src, dst } => match self.semantics.val_asm_ty(dst) {
-                    AsmType::Longword => {
-                        instructions.push(Instruction::Cvttsd2si(
-                            AsmType::Quadword,
-                            self.generate_val(src),
-                            Reg::Ax.into(),
-                        ));
-                        instructions.push(Instruction::Mov(
-                            AsmType::Longword,
-                            Reg::Ax.into(),
-                            self.generate_val(dst),
-                        ));
+                tacky::Instruction::DoubleToUInt { src, dst } => {
+                    match self.semantics.val_asm_ty(dst) {
+                        AsmType::Longword => {
+                            instructions.push(Instruction::Cvttsd2si(
+                                AsmType::Quadword,
+                                self.generate_val(src),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Longword,
+                                Reg::Ax.into(),
+                                self.generate_val(dst),
+                            ));
+                        }
+                        AsmType::Quadword => {
+                            let upper_bound_u64 = (i64::MAX as u64) + 1;
+                            let upper_bound_f64 = upper_bound_u64 as f64;
+                            instructions.push(Instruction::Cmp(
+                                AsmType::Double,
+                                self.make_double_constant(upper_bound_f64),
+                                self.generate_val(src),
+                            ));
+                            let out_of_range_label = self.make_label("d2u_out_of_range");
+                            let end_label = self.make_label("d2u_end");
+                            instructions
+                                .push(Instruction::JmpCC(CondCode::AE, out_of_range_label.clone()));
+                            instructions.push(Instruction::Cvttsd2si(
+                                AsmType::Quadword,
+                                self.generate_val(src),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Jmp(end_label.clone()));
+                            instructions.push(Instruction::Label(out_of_range_label));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Double,
+                                self.generate_val(src),
+                                Reg::XMM14.into(),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Double,
+                                BinaryOp::Sub,
+                                self.make_double_constant(upper_bound_f64),
+                                Reg::XMM14.into(),
+                            ));
+                            instructions.push(Instruction::Cvttsd2si(
+                                AsmType::Quadword,
+                                Reg::XMM14.into(),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Quadword,
+                                Operand::Imm(upper_bound_u64),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Quadword,
+                                BinaryOp::Add,
+                                Reg::Ax.into(),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Label(end_label));
+                        }
+                        AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                     }
-                    AsmType::Quadword => {
-                        let upper_bound_u64 = (i64::MAX as u64) + 1;
-                        let upper_bound_f64 = upper_bound_u64 as f64;
-                        instructions.push(Instruction::Cmp(
-                            AsmType::Double,
-                            self.make_double_constant(upper_bound_f64),
-                            self.generate_val(src),
-                        ));
-                        let out_of_range_label = self.make_label("d2u_out_of_range");
-                        let end_label = self.make_label("d2u_end");
-                        instructions
-                            .push(Instruction::JmpCC(CondCode::AE, out_of_range_label.clone()));
-                        instructions.push(Instruction::Cvttsd2si(
-                            AsmType::Quadword,
-                            self.generate_val(src),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::Jmp(end_label.clone()));
-                        instructions.push(Instruction::Label(out_of_range_label));
-                        instructions.push(Instruction::Mov(
-                            AsmType::Double,
-                            self.generate_val(src),
-                            Reg::XMM14.into(),
-                        ));
-                        instructions.push(Instruction::Binary(
-                            AsmType::Double,
-                            BinaryOp::Sub,
-                            self.make_double_constant(upper_bound_f64),
-                            Reg::XMM14.into(),
-                        ));
-                        instructions.push(Instruction::Cvttsd2si(
-                            AsmType::Quadword,
-                            Reg::XMM14.into(),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::Mov(
-                            AsmType::Quadword,
-                            Operand::Imm(upper_bound_u64),
-                            Reg::Ax.into(),
-                        ));
-                        instructions.push(Instruction::Binary(
-                            AsmType::Quadword,
-                            BinaryOp::Add,
-                            Reg::Ax.into(),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::Label(end_label));
+                }
+                tacky::Instruction::UIntToDouble { src, dst } => {
+                    match self.semantics.val_asm_ty(src) {
+                        AsmType::Longword => {
+                            instructions.push(Instruction::MovZeroExtend(
+                                self.generate_val(src),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Cvtsi2sd(
+                                AsmType::Quadword,
+                                Reg::Ax.into(),
+                                self.generate_val(dst),
+                            ));
+                        }
+                        AsmType::Quadword => {
+                            instructions.push(Instruction::Cmp(
+                                AsmType::Quadword,
+                                Operand::Imm(0),
+                                self.generate_val(src),
+                            ));
+                            let out_of_range_label = self.make_label("u2d_out_of_range");
+                            let end_label = self.make_label("u2d_end");
+                            instructions
+                                .push(Instruction::JmpCC(CondCode::L, out_of_range_label.clone()));
+                            instructions.push(Instruction::Cvtsi2sd(
+                                AsmType::Quadword,
+                                self.generate_val(src),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Jmp(end_label.clone()));
+                            instructions.push(Instruction::Label(out_of_range_label));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Quadword,
+                                self.generate_val(src),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Quadword,
+                                Reg::Ax.into(),
+                                Reg::Dx.into(),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Quadword,
+                                Operand::Imm(1),
+                                Reg::Cx.into(),
+                            ));
+                            instructions.push(Instruction::Shr(AsmType::Quadword, Reg::Dx.into()));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Quadword,
+                                BinaryOp::And,
+                                Operand::Imm(1),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Quadword,
+                                BinaryOp::Or,
+                                Reg::Ax.into(),
+                                Reg::Dx.into(),
+                            ));
+                            instructions.push(Instruction::Cvtsi2sd(
+                                AsmType::Quadword,
+                                Reg::Dx.into(),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Binary(
+                                AsmType::Double,
+                                BinaryOp::Add,
+                                self.generate_val(dst),
+                                self.generate_val(dst),
+                            ));
+                            instructions.push(Instruction::Label(end_label));
+                        }
+                        AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                     }
-                    AsmType::Double | AsmType::ByteArray {..} => unreachable!(),
-                },
-                tacky::Instruction::UIntToDouble { src, dst } => match self.semantics.val_asm_ty(src) {
-                    AsmType::Longword => {
-                        instructions.push(Instruction::MovZeroExtend(
-                            self.generate_val(src),
-                            Reg::Ax.into(),
-                        ));
-                        instructions.push(Instruction::Cvtsi2sd(
-                            AsmType::Quadword,
-                            Reg::Ax.into(),
-                            self.generate_val(dst),
-                        ));
-                    }
-                    AsmType::Quadword => {
-                        instructions.push(Instruction::Cmp(
-                            AsmType::Quadword,
-                            Operand::Imm(0),
-                            self.generate_val(src),
-                        ));
-                        let out_of_range_label = self.make_label("u2d_out_of_range");
-                        let end_label = self.make_label("u2d_end");
-                        instructions
-                            .push(Instruction::JmpCC(CondCode::L, out_of_range_label.clone()));
-                        instructions.push(Instruction::Cvtsi2sd(
-                            AsmType::Quadword,
-                            self.generate_val(src),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::Jmp(end_label.clone()));
-                        instructions.push(Instruction::Label(out_of_range_label));
-                        instructions.push(Instruction::Mov(
-                            AsmType::Quadword,
-                            self.generate_val(src),
-                            Reg::Ax.into(),
-                        ));
-                        instructions.push(Instruction::Mov(
-                            AsmType::Quadword,
-                            Reg::Ax.into(),
-                            Reg::Dx.into(),
-                        ));
-                        instructions.push(Instruction::Mov(
-                            AsmType::Quadword,
-                            Operand::Imm(1),
-                            Reg::Cx.into(),
-                        ));
-                        instructions.push(Instruction::Shr(AsmType::Quadword, Reg::Dx.into()));
-                        instructions.push(Instruction::Binary(
-                            AsmType::Quadword,
-                            BinaryOp::And,
-                            Operand::Imm(1),
-                            Reg::Ax.into(),
-                        ));
-                        instructions.push(Instruction::Binary(
-                            AsmType::Quadword,
-                            BinaryOp::Or,
-                            Reg::Ax.into(),
-                            Reg::Dx.into(),
-                        ));
-                        instructions.push(Instruction::Cvtsi2sd(
-                            AsmType::Quadword,
-                            Reg::Dx.into(),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::Binary(
-                            AsmType::Double,
-                            BinaryOp::Add,
-                            self.generate_val(dst),
-                            self.generate_val(dst),
-                        ));
-                        instructions.push(Instruction::Label(end_label));
-                    }
-                    AsmType::Double | AsmType::ByteArray {..} => unreachable!(),
-                },
+                }
                 tacky::Instruction::GetAddress { src, dst } => {
                     instructions.push(Instruction::Lea(
                         self.generate_val(src),
@@ -737,7 +762,12 @@ impl Compiler {
                         Operand::Memory(Reg::Ax, 0),
                     ));
                 }
-                tacky::Instruction::AddPtr { ptr, index, scale, dst } => {
+                tacky::Instruction::AddPtr {
+                    ptr,
+                    index,
+                    scale,
+                    dst,
+                } => {
                     instructions.push(Instruction::Mov(
                         AsmType::Quadword,
                         self.generate_val(ptr),
@@ -762,9 +792,9 @@ impl Compiler {
                     };
                     instructions.push(Instruction::Lea(
                         Operand::Indexed(Reg::Ax, Reg::Dx, indexing_scale),
-                        self.generate_val(dst)
+                        self.generate_val(dst),
                     ));
-                },
+                }
                 tacky::Instruction::CopyToOffset { src, dst, offset } => {
                     instructions.push(Instruction::Mov(
                         self.semantics.val_asm_ty(src),
@@ -823,7 +853,7 @@ impl Compiler {
             alignment: match self.semantics.symbol_asm_ty(&var.name) {
                 AsmType::Longword => 4,
                 AsmType::Quadword | AsmType::Double => 8,
-                AsmType::ByteArray { size, alignment } => alignment,
+                AsmType::ByteArray { alignment, .. } => alignment,
             },
         }
     }
@@ -886,7 +916,7 @@ impl Compiler {
         let return_reg = match self.semantics.val_asm_ty(dst) {
             AsmType::Longword | AsmType::Quadword => Reg::Ax,
             AsmType::Double => Reg::XMM0,
-            AsmType::ByteArray { .. } => panic!("Cannot return a byte array")
+            AsmType::ByteArray { .. } => panic!("Cannot return a byte array"),
         };
 
         instructions.push(Instruction::Mov(
@@ -954,16 +984,16 @@ impl Compiler {
                         }
                         AsmType::Quadword | AsmType::Double => {
                             stack_size += 8 + stack_size % 8;
-                        },
+                        }
                         AsmType::ByteArray { size, alignment } => {
                             let unaligned = stack_size + size;
-                            stack_size = ((unaligned - 1) | (alignment as u64) - 1) + 1;
+                            stack_size = ((unaligned - 1) | ((alignment as u64) - 1)) + 1;
                         }
                     }
                     stack_vars.insert(name.clone(), stack_size);
                     stack_size
                 };
-                let offset = if let Operand::PseudoMem(name, array_offset) = operand {
+                let offset = if let Operand::PseudoMem(_name, array_offset) = operand {
                     (offset as i64) - *array_offset
                 } else {
                     offset as i64
@@ -1046,7 +1076,9 @@ impl Compiler {
                                 AsmType::Longword => (v as i32) as u64,
                                 AsmType::Quadword => v,
                                 AsmType::Double => panic!("Immediate values, can't be double"),
-                                AsmType::ByteArray { .. } => panic!("Immediate values can't be byte array")
+                                AsmType::ByteArray { .. } => {
+                                    panic!("Immediate values can't be byte array")
+                                }
                             };
                             fixed.push(Instruction::Mov(ty, Operand::Imm(value), Reg::R10.into()));
                             Reg::R10.into()
@@ -1226,9 +1258,9 @@ impl Compiler {
                 }
             }
             tacky::Val::Var(name) => match self.semantics.val_asm_ty(val) {
-                AsmType::ByteArray {..} => Operand::PseudoMem(name.clone(), 0),
-                _ => Operand::Pseudo(name.clone())
-            }
+                AsmType::ByteArray { .. } => Operand::PseudoMem(name.clone(), 0),
+                _ => Operand::Pseudo(name.clone()),
+            },
         }
     }
 

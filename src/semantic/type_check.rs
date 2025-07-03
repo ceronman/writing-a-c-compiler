@@ -160,7 +160,7 @@ impl TypeChecker {
                         span: init.span,
                     });
                 };
-                let size = *size as usize;
+                let size = *size;
                 if initializers.len() > size {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -527,7 +527,7 @@ impl TypeChecker {
 
     fn check_and_convert_expr(&mut self, expr: &Node<Expression>) -> Result<Type> {
         let ty = self.check_expression(expr)?;
-        if let Type::Array(inner, size) = ty {
+        if let Type::Array(inner, ..) = ty {
             // Pointer decay
             let pointer_ty = Type::Pointer(inner);
             self.pointer_decays.insert(expr.id, pointer_ty.clone());
@@ -637,7 +637,7 @@ impl TypeChecker {
                             });
                         }
                     }
-                    BinaryOp::Multiply | BinaryOp::Divide if !left_ty.is_int() => {
+                    BinaryOp::Multiply | BinaryOp::Divide if !left_ty.is_arithmetic() => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Operator is invalid".to_string(),
@@ -736,7 +736,7 @@ impl TypeChecker {
                         Type::Int
                     }
                     BinaryOp::Subtract if left_ty.is_pointer() && right_ty.is_pointer() => {
-                        Type::Long
+                        Type::Long // TODO: Suspicious
                     }
                     BinaryOp::Add | BinaryOp::Subtract
                         if left_ty.is_pointer() && right_ty.is_int() =>
@@ -744,7 +744,10 @@ impl TypeChecker {
                         self.cast_if_needed(right, &right_ty, &Type::Long);
                         left_ty
                     }
-                    BinaryOp::Add if left_ty.is_int() && right_ty.is_pointer() => right_ty,
+                    BinaryOp::Add if left_ty.is_int() && right_ty.is_pointer() => {
+                        self.cast_if_needed(left, &left_ty, &Type::Long);
+                        right_ty
+                    }
                     _ => {
                         let common = Self::common_type(&left_ty, &right_ty);
                         self.cast_if_needed(left, &left_ty, &common);
@@ -949,14 +952,8 @@ impl TypeChecker {
                 let ty1 = self.check_and_convert_expr(expr1)?;
                 let ty2 = self.check_and_convert_expr(expr2)?;
                 match (&ty1, &ty2) {
-                    (Type::Pointer(referenced), _) if ty2.is_int() => {
-                        self.cast_if_needed(expr2, &ty2, &Type::Long);
-                        *referenced.clone()
-                    },
-                    (_, Type::Pointer(referenced)) if ty1.is_int() => {
-                        self.cast_if_needed(expr1, &ty1, &Type::Long);
-                        *referenced.clone()
-                    },
+                    (Type::Pointer(referenced), _) if ty2.is_int() => *referenced.clone(),
+                    (_, Type::Pointer(referenced)) if ty1.is_int() => *referenced.clone(),
                     _ => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,

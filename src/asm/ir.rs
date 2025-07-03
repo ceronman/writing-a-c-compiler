@@ -87,12 +87,15 @@ pub enum Operand {
     PseudoMem(Symbol, i64),
     Data(bool, Symbol),
     Memory(Reg, i64),
-    Indexed(Reg, Reg, u8)
+    Indexed(Reg, Reg, u8),
 }
 
 impl Operand {
     pub(crate) fn is_mem(&self) -> bool {
-        matches!(self, Operand::Memory(..) | Operand::Data(..) | Operand::Indexed(..))
+        matches!(
+            self,
+            Operand::Memory(..) | Operand::Data(..) | Operand::Indexed(..)
+        )
     }
 }
 
@@ -132,7 +135,7 @@ pub enum AsmType {
     Longword,
     Quadword,
     Double,
-    ByteArray { size: u64, alignment: u8 }
+    ByteArray { size: u64, alignment: u8 },
 }
 
 #[derive(Debug)]

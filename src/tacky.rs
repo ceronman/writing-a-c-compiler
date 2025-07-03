@@ -118,7 +118,7 @@ pub enum Instruction {
         src: Val,
         dst: Symbol,
         offset: i64,
-    }
+    },
 }
 
 pub type Constant = ast::Constant;
@@ -209,7 +209,13 @@ impl TackyGenerator {
         }
     }
 
-    fn emit_initializer(&mut self, offset: usize, name: &Symbol, initializer: &ast::Initializer, ty: &Type) {
+    fn emit_initializer(
+        &mut self,
+        offset: usize,
+        name: &Symbol,
+        initializer: &ast::Initializer,
+        ty: &Type,
+    ) {
         match initializer {
             ast::Initializer::Single(init) => {
                 let result = self.emit_expr(init);
@@ -249,7 +255,7 @@ impl TackyGenerator {
                 for i in 0..*size {
                     self.emit_zero_initializer(offset + i * ty_size, name, inner)
                 }
-                return
+                return;
             }
         };
         self.instructions.push(Instruction::CopyToOffset {
@@ -273,7 +279,7 @@ impl TackyGenerator {
                 then_stmt,
                 else_stmt,
             } => {
-                let cond_val = self.emit_expr(cond);
+                let cond_val = self.make_cond(cond);
                 let end_label = self.make_label("end_if");
                 let else_label = self.make_label("else");
 
@@ -324,9 +330,10 @@ impl TackyGenerator {
                 self.emit_statement(body);
                 self.instructions
                     .push(Instruction::Label(format!("continue_{label}")));
-                let cond = self.emit_expr(cond);
+                let cond_val = self.make_cond(cond);
+
                 self.instructions.push(Instruction::JumpIfNotZero {
-                    cond,
+                    cond: cond_val,
                     target: start_label,
                 });
                 self.instructions
@@ -337,9 +344,9 @@ impl TackyGenerator {
                 let break_label = format!("break_{label}");
                 self.instructions
                     .push(Instruction::Label(continue_label.clone()));
-                let cond = self.emit_expr(cond);
+                let cond_val = self.make_cond(cond);
                 self.instructions.push(Instruction::JumpIfZero {
-                    cond,
+                    cond: cond_val,
                     target: break_label.clone(),
                 });
                 self.emit_statement(body);
@@ -365,14 +372,14 @@ impl TackyGenerator {
                 let start_label = format!("start_{label}");
                 self.instructions
                     .push(Instruction::Label(start_label.clone()));
-                let cond = if let Some(cond) = cond {
-                    self.emit_expr(cond)
+                let cond_val = if let Some(cond) = cond {
+                    self.make_cond(cond)
                 } else {
                     Val::Constant(Constant::Int(1))
                 };
                 let break_label = format!("break_{label}");
                 self.instructions.push(Instruction::JumpIfZero {
-                    cond,
+                    cond: cond_val,
                     target: break_label.clone(),
                 });
                 self.emit_statement(body);
@@ -409,7 +416,7 @@ impl TackyGenerator {
                         target: label.clone(),
                     })
                 }
-                let break_label = format!("break_{}", label);
+                let break_label = format!("break_{label}");
                 self.instructions.push(Instruction::Jump {
                     target: break_label.clone(),
                 });
@@ -430,6 +437,25 @@ impl TackyGenerator {
             }
         }
     }
+
+    // Hack to deal with evaluating double conditionals that support NaN.
+    fn make_cond(&mut self, cond: &ast::Node<ast::Expression>) -> Val {
+        let cond_val = self.emit_expr(cond);
+        let cond_ty = self.semantics.expr_type(cond).clone();
+        if cond_ty.is_double() {
+            let dst = self.make_temp(&Type::Int);
+            self.instructions.push(Instruction::Binary {
+                op: BinaryOp::NotEqual,
+                src1: cond_val,
+                src2: Val::Constant(Constant::Double(0.0)),
+                dst: dst.clone(),
+            });
+            dst
+        } else {
+            cond_val
+        }
+    }
+
     fn emit_expr(&mut self, expr: &ast::Node<ast::Expression>) -> Val {
         let expr_ty = self.semantics.expr_type(expr).clone();
         match self.expression(expr) {
@@ -463,7 +489,7 @@ impl TackyGenerator {
                         let index = match op.as_ref() {
                             ast::UnaryOp::Increment => 1,
                             ast::UnaryOp::Decrement => -1,
-                            _ => unreachable!()
+                            _ => unreachable!(),
                         };
                         let index = Val::Constant(Constant::Long(index));
                         let scale = inner.size();
@@ -508,7 +534,7 @@ impl TackyGenerator {
                 if let Type::Pointer(inner) = self.semantics.expr_type(expr).clone() {
                     let index = match op.as_ref() {
                         ast::PostfixOp::Increment => 1,
-                        ast::PostfixOp::Decrement => -1
+                        ast::PostfixOp::Decrement => -1,
                     };
                     let index = Val::Constant(Constant::Long(index));
                     let scale = inner.size();
@@ -551,9 +577,9 @@ impl TackyGenerator {
                                 scale,
                                 dst: dst.clone(),
                             });
-                            return ExprResult::Operand(dst)
+                            return ExprResult::Operand(dst);
                         } else if let Type::Pointer(inner) = right_ty {
-                            let ptr = self.emit_expr(right);;
+                            let ptr = self.emit_expr(right);
                             let index = src1;
                             let scale = inner.size();
                             self.instructions.push(Instruction::AddPtr {
@@ -562,32 +588,35 @@ impl TackyGenerator {
                                 scale,
                                 dst: dst.clone(),
                             });
-                            return ExprResult::Operand(dst)
-                        }
-                        else {
+                            return ExprResult::Operand(dst);
+                        } else {
                             BinaryOp::Add
                         }
-                    },
+                    }
                     ast::BinaryOp::Subtract => {
                         let left_ty = self.semantics.expr_type(left).clone();
                         let right_ty = self.semantics.expr_type(right).clone();
-                        if left_ty.is_pointer() && right_ty.is_pointer() {
+                        if let (Type::Pointer(inner1), Type::Pointer(inner2)) =
+                            (&left_ty, &right_ty)
+                        {
+                            assert_eq!(inner1, inner2);
                             let src2 = self.emit_expr(right);
-                            let diff = self.make_temp(&left_ty);
+                            let diff = self.make_temp(&Type::Long);
                             self.instructions.push(Instruction::Binary {
                                 op: BinaryOp::Subtract,
                                 src1,
                                 src2,
                                 dst: diff.clone(),
                             });
-                            let size = Val::Constant(Constant::Long(left_ty.size() as i64));
+
+                            let size = Val::Constant(Constant::Long(inner1.size() as i64));
                             self.instructions.push(Instruction::Binary {
                                 op: BinaryOp::Divide,
                                 src1: diff,
                                 src2: size,
                                 dst: dst.clone(),
                             });
-                            return ExprResult::Operand(dst)
+                            return ExprResult::Operand(dst);
                         } else if let Type::Pointer(inner) = left_ty {
                             let ptr = src1;
                             let index = self.emit_expr(right);
@@ -604,11 +633,11 @@ impl TackyGenerator {
                                 scale,
                                 dst: dst.clone(),
                             });
-                            return ExprResult::Operand(dst)
+                            return ExprResult::Operand(dst);
                         } else {
                             BinaryOp::Subtract
                         }
-                    },
+                    }
                     ast::BinaryOp::Multiply => BinaryOp::Multiply,
                     ast::BinaryOp::Divide => BinaryOp::Divide,
                     ast::BinaryOp::Reminder => BinaryOp::Reminder,
@@ -723,8 +752,8 @@ impl TackyGenerator {
                                         dst: negated.clone(),
                                     });
                                     negated.clone()
-                                },
-                                _ => unreachable!()
+                                }
+                                _ => unreachable!(),
                             };
                             let scale = inner.size();
                             self.instructions.push(Instruction::AddPtr {
@@ -756,7 +785,7 @@ impl TackyGenerator {
                 then_expr,
                 else_expr,
             } => {
-                let cond_val = self.emit_expr(cond);
+                let cond_val = self.make_cond(cond);
                 let end_label = self.make_label("end_if");
                 let else_label = self.make_label("else");
                 let result = self.make_temp(&expr_ty);
@@ -824,10 +853,12 @@ impl TackyGenerator {
                 let (ptr_expr, index_expr) = if ty1.is_pointer() {
                     (expr1, expr2)
                 } else {
-                    (expr2, expr)
+                    (expr2, expr1)
                 };
                 let ptr = self.emit_expr(ptr_expr);
+                let index_ty = self.semantics.expr_type(index_expr).clone();
                 let index = self.emit_expr(index_expr);
+                let index = self.cast(index, &index_ty, &Type::Long);
                 let ptr_ty = self.semantics.expr_type(ptr_expr).clone();
                 let Type::Pointer(inner) = &ptr_ty else {
                     unreachable!();
@@ -840,8 +871,8 @@ impl TackyGenerator {
                     scale,
                     dst: dst.clone(),
                 });
-                return ExprResult::Dereference(dst)
-            },
+                return ExprResult::Dereference(dst);
+            }
         };
         ExprResult::Operand(result)
     }
@@ -894,8 +925,7 @@ impl TackyGenerator {
                 dst: dst.clone(),
             });
             dst
-        }
-        else {
+        } else {
             val
         }
     }

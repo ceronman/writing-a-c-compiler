@@ -61,18 +61,6 @@ pub enum StaticInit {
     ZeroInit(usize),
 }
 
-impl StaticInit {
-    fn from_const(c: &Constant) -> StaticInit {
-        match *c {
-            Constant::Int(v) => StaticInit::Int(v),
-            Constant::UInt(v) => StaticInit::UInt(v),
-            Constant::Long(v) => StaticInit::Long(v),
-            Constant::ULong(v) => StaticInit::ULong(v),
-            Constant::Double(v) => StaticInit::Double(v),
-        }
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct SwitchCases {
     pub expr_ty: Type,

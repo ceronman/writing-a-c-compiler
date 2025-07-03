@@ -53,9 +53,9 @@ fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -
     if variable.init.len() == 1 {
         pp_initializer(file, &variable.init[0])?;
         writeln!(file)?;
-        return Ok(())
+        return Ok(());
     }
-    
+
     write!(file, "[ ")?;
     for (i, init) in variable.init.iter().enumerate() {
         pp_initializer(file, init)?;
@@ -239,7 +239,12 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
                 write!(file, " = ")?;
                 pp_val(file, src)?;
             }
-            tacky::Instruction::AddPtr { ptr, index, scale, dst } => {
+            tacky::Instruction::AddPtr {
+                ptr,
+                index,
+                scale,
+                dst,
+            } => {
                 write!(file, "{indent}")?;
                 pp_val(file, dst)?;
                 write!(file, " = add_ptr(")?;
@@ -248,7 +253,7 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
                 pp_val(file, index)?;
                 write!(file, ", scale=")?;
                 write!(file, "{scale})")?;
-            },
+            }
             tacky::Instruction::CopyToOffset { src, dst, offset } => {
                 write!(file, "{indent}")?;
                 write!(file, "{dst}[{offset}] = ")?;
@@ -479,10 +484,7 @@ impl PrettyAst {
                         ast::Constant::ULong(v) => *v as i64,
                         ast::Constant::Double(v) => *v as i64,
                     };
-                    Self::new(
-                        format!("Case [{}]", value),
-                        vec![Self::from_statement(body)],
-                    )
+                    Self::new(format!("Case [{value}]"), vec![Self::from_statement(body)])
                 } else {
                     let children = vec![
                         Self::new("Value", vec![Self::from_expression(value)]),
@@ -586,12 +588,14 @@ impl PrettyAst {
                     Self::new("Expression", vec![Self::from_expression(expr)]),
                 ],
             ),
-            ast::Expression::AddressOf(expr) => {
-                Self::new(format!("<{node_id}> AddressOf"), vec![Self::from_expression(expr)])
-            }
-            ast::Expression::Dereference(expr) => {
-                Self::new(format!("<{node_id}> Dereference"), vec![Self::from_expression(expr)])
-            }
+            ast::Expression::AddressOf(expr) => Self::new(
+                format!("<{node_id}> AddressOf"),
+                vec![Self::from_expression(expr)],
+            ),
+            ast::Expression::Dereference(expr) => Self::new(
+                format!("<{node_id}> Dereference"),
+                vec![Self::from_expression(expr)],
+            ),
             ast::Expression::Subscript(expr, index) => Self::new(
                 format!("<{node_id}> Subscript"),
                 vec![Self::from_expression(expr), Self::from_expression(index)],

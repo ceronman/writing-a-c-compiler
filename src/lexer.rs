@@ -184,7 +184,7 @@ impl Display for TokenKind {
             TokenKind::Eof => "end of file",
             TokenKind::Error => "error token",
         };
-        write!(f, "{}", s)
+        write!(f, "{s}")
     }
 }
 
