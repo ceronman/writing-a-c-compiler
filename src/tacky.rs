@@ -2,7 +2,6 @@
 mod test;
 
 use crate::ast;
-use crate::ast::Initializer;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
 use crate::symbol::Symbol;
 
@@ -198,7 +197,7 @@ impl TackyGenerator {
             return;
         }
         if let Some(init) = &decl.init {
-            if let Initializer::Single(expr) = init.as_ref() {
+            if let ast::Initializer::Single(expr) = init.as_ref() {
                 let result = self.emit_expr(expr);
                 self.instructions.push(Instruction::Copy {
                     src: result,
@@ -210,9 +209,9 @@ impl TackyGenerator {
         }
     }
 
-    fn emit_initializer(&mut self, offset: usize, name: &Symbol, initializer: &Initializer, ty: &Type) {
+    fn emit_initializer(&mut self, offset: usize, name: &Symbol, initializer: &ast::Initializer, ty: &Type) {
         match initializer {
-            Initializer::Single(init) => {
+            ast::Initializer::Single(init) => {
                 let result = self.emit_expr(init);
                 self.instructions.push(Instruction::CopyToOffset {
                     src: result,
@@ -220,7 +219,7 @@ impl TackyGenerator {
                     offset: offset as i64,
                 });
             }
-            Initializer::Compound(initializers) => {
+            ast::Initializer::Compound(initializers) => {
                 let Type::Array(inner, len) = ty else {
                     panic!("Compound initializer used with non-array type")
                 };
@@ -436,12 +435,16 @@ impl TackyGenerator {
         match self.expression(expr) {
             ExprResult::Operand(val) => self.cast_if_needed(val, expr, &expr_ty),
             ExprResult::Dereference(ptr) => {
-                let dst = self.make_temp(&expr_ty);
-                self.instructions.push(Instruction::Load {
-                    ptr,
-                    dst: dst.clone(),
-                });
-                self.cast_if_needed(dst, expr, &expr_ty)
+                if self.semantics.pointer_decays.contains_key(&expr.id) {
+                    ptr
+                } else {
+                    let dst = self.make_temp(&expr_ty);
+                    self.instructions.push(Instruction::Load {
+                        ptr,
+                        dst: dst.clone(),
+                    });
+                    self.cast_if_needed(dst, expr, &expr_ty)
+                }
             }
         }
     }
@@ -451,23 +454,42 @@ impl TackyGenerator {
         let result = match expr.as_ref() {
             ast::Expression::Constant(value) => Val::Constant(value.clone()),
             ast::Expression::Unary { op, expr } => {
-                let tacky_op = match op.as_ref() {
-                    ast::UnaryOp::Complement => UnaryOp::Complement,
-                    ast::UnaryOp::Negate => UnaryOp::Negate,
-                    ast::UnaryOp::Not => UnaryOp::Not,
-                    ast::UnaryOp::Increment => UnaryOp::Increment,
-                    ast::UnaryOp::Decrement => UnaryOp::Decrement,
-                };
-
                 let lvalue = self.expression(expr);
                 let val = self.get_or_load(&lvalue, expr);
                 let dst = self.make_temp(&expr_ty);
 
-                self.instructions.push(Instruction::Unary {
-                    op: tacky_op,
-                    src: val.clone(),
-                    dst: dst.clone(),
-                });
+                if let Type::Pointer(inner) = self.semantics.expr_type(expr).clone() {
+                    if let ast::UnaryOp::Decrement | ast::UnaryOp::Increment = op.as_ref() {
+                        let index = match op.as_ref() {
+                            ast::UnaryOp::Increment => 1,
+                            ast::UnaryOp::Decrement => -1,
+                            _ => unreachable!()
+                        };
+                        let index = Val::Constant(Constant::Long(index));
+                        let scale = inner.size();
+                        self.instructions.push(Instruction::AddPtr {
+                            ptr: val,
+                            index,
+                            scale,
+                            dst: dst.clone(),
+                        });
+                    }
+                } else {
+                    let tacky_op = match op.as_ref() {
+                        ast::UnaryOp::Complement => UnaryOp::Complement,
+                        ast::UnaryOp::Negate => UnaryOp::Negate,
+                        ast::UnaryOp::Not => UnaryOp::Not,
+                        ast::UnaryOp::Increment => UnaryOp::Increment,
+                        ast::UnaryOp::Decrement => UnaryOp::Decrement,
+                    };
+
+                    self.instructions.push(Instruction::Unary {
+                        op: tacky_op,
+                        src: val.clone(),
+                        dst: dst.clone(),
+                    });
+                }
+
                 if let ast::UnaryOp::Increment | ast::UnaryOp::Decrement = op.as_ref() {
                     self.copy_or_store(&lvalue, dst.clone());
                 }
@@ -481,18 +503,34 @@ impl TackyGenerator {
                     src: val.clone(),
                     dst: dst.clone(),
                 });
-
-                let tacky_op = match op.as_ref() {
-                    ast::PostfixOp::Increment => UnaryOp::Increment,
-                    ast::PostfixOp::Decrement => UnaryOp::Decrement,
-                };
-
                 let decremented = self.make_temp(&expr_ty);
-                self.instructions.push(Instruction::Unary {
-                    op: tacky_op,
-                    src: val.clone(),
-                    dst: decremented.clone(),
-                });
+
+                if let Type::Pointer(inner) = self.semantics.expr_type(expr).clone() {
+                    let index = match op.as_ref() {
+                        ast::PostfixOp::Increment => 1,
+                        ast::PostfixOp::Decrement => -1
+                    };
+                    let index = Val::Constant(Constant::Long(index));
+                    let scale = inner.size();
+                    self.instructions.push(Instruction::AddPtr {
+                        ptr: val,
+                        index,
+                        scale,
+                        dst: decremented.clone(),
+                    });
+                } else {
+                    let tacky_op = match op.as_ref() {
+                        ast::PostfixOp::Increment => UnaryOp::Increment,
+                        ast::PostfixOp::Decrement => UnaryOp::Decrement,
+                    };
+
+                    self.instructions.push(Instruction::Unary {
+                        op: tacky_op,
+                        src: val.clone(),
+                        dst: decremented.clone(),
+                    });
+                }
+
                 self.copy_or_store(&lvalue, decremented.clone());
                 dst
             }
@@ -502,6 +540,7 @@ impl TackyGenerator {
                 let op = match op.as_ref() {
                     ast::BinaryOp::Add => {
                         let left_ty = self.semantics.expr_type(left).clone();
+                        let right_ty = self.semantics.expr_type(right).clone();
                         if let Type::Pointer(inner) = left_ty {
                             let ptr = src1;
                             let index = self.emit_expr(right);
@@ -513,7 +552,19 @@ impl TackyGenerator {
                                 dst: dst.clone(),
                             });
                             return ExprResult::Operand(dst)
-                        } else {
+                        } else if let Type::Pointer(inner) = right_ty {
+                            let ptr = self.emit_expr(right);;
+                            let index = src1;
+                            let scale = inner.size();
+                            self.instructions.push(Instruction::AddPtr {
+                                ptr,
+                                index,
+                                scale,
+                                dst: dst.clone(),
+                            });
+                            return ExprResult::Operand(dst)
+                        }
+                        else {
                             BinaryOp::Add
                         }
                     },
@@ -660,12 +711,37 @@ impl TackyGenerator {
                     let src1 = self.get_or_load(&lvalue, left);
                     let dst = self.make_temp(&expr_ty);
                     let src2 = self.emit_expr(right);
-                    self.instructions.push(Instruction::Binary {
-                        op,
-                        src1,
-                        src2,
-                        dst: dst.clone(),
-                    });
+                    if let Type::Pointer(inner) = self.semantics.expr_type(left).clone() {
+                        if let BinaryOp::Add | BinaryOp::Subtract = op {
+                            let index = match op {
+                                BinaryOp::Add => src2,
+                                BinaryOp::Subtract => {
+                                    let negated = self.make_temp(&Type::Long);
+                                    self.instructions.push(Instruction::Unary {
+                                        op: UnaryOp::Negate,
+                                        src: src2,
+                                        dst: negated.clone(),
+                                    });
+                                    negated.clone()
+                                },
+                                _ => unreachable!()
+                            };
+                            let scale = inner.size();
+                            self.instructions.push(Instruction::AddPtr {
+                                ptr: src1,
+                                index,
+                                scale,
+                                dst: dst.clone(),
+                            });
+                        }
+                    } else {
+                        self.instructions.push(Instruction::Binary {
+                            op,
+                            src1,
+                            src2,
+                            dst: dst.clone(),
+                        });
+                    }
                     dst
                 } else {
                     self.emit_expr(right)
@@ -752,11 +828,12 @@ impl TackyGenerator {
                 };
                 let ptr = self.emit_expr(ptr_expr);
                 let index = self.emit_expr(index_expr);
-                let Type::Pointer(inner) = self.semantics.expr_type(ptr_expr) else {
+                let ptr_ty = self.semantics.expr_type(ptr_expr).clone();
+                let Type::Pointer(inner) = &ptr_ty else {
                     unreachable!();
                 };
                 let scale = inner.size();
-                let dst = self.make_temp(&expr_ty);
+                let dst = self.make_temp(&ptr_ty);
                 self.instructions.push(Instruction::AddPtr {
                     ptr,
                     index,
