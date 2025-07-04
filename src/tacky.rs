@@ -1,3 +1,5 @@
+pub mod pretty;
+
 #[cfg(test)]
 mod test;
 

@@ -192,7 +192,7 @@ use crate::pretty::{{dedent, dump_tacky}};
     let ast = parser::parse(&indented)?;
     let (ast, semantics) = semantic::validate(ast)?;
     let tacky = tacky::emit(&ast, semantics);
-    let expected = indent(&pretty::pp_tacky(&tacky)?);
+    let expected = indent(&tacky::pretty::pp(&tacky)?);
     writeln!(file)?;
     writeln!(file, "#[test]")?;
     writeln!(file, "fn test_{name}() {{")?;

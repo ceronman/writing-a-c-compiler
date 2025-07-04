@@ -13,7 +13,6 @@ mod tempfile;
 #[cfg(feature = "test_gen")]
 mod testgen;
 
-use crate::pretty::pp_tacky;
 use crate::tempfile::TempPath;
 use anyhow::{bail, Result};
 use std::fs;
@@ -85,7 +84,7 @@ fn main() -> Result<()> {
 
     let tacky = tacky::emit(&validated_ast, semantic_data);
     if let Flag::Tacky = options.flag {
-        println!("{}", pp_tacky(&tacky)?);
+        println!("{}", tacky::pretty::pp(&tacky)?);
         println!("{:#?}", tacky.semantics);
         return Ok(());
     }
