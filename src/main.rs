@@ -13,7 +13,7 @@ mod tempfile;
 #[cfg(feature = "test_gen")]
 mod testgen;
 
-use crate::pretty::{pp_tacky, pretty_print_ast};
+use crate::pretty::pp_tacky;
 use crate::tempfile::TempPath;
 use anyhow::{bail, Result};
 use std::fs;
@@ -65,7 +65,7 @@ fn main() -> Result<()> {
         }
     };
     if let Flag::Parse = options.flag {
-        print!("{}", pretty_print_ast(&ast)?);
+        print!("{}", ast::pretty::dump(&ast)?);
         return Ok(());
     }
 
@@ -78,7 +78,7 @@ fn main() -> Result<()> {
     };
 
     if let Flag::Validate = options.flag {
-        println!("{}", pretty_print_ast(&validated_ast)?);
+        println!("{}", ast::pretty::dump(&validated_ast)?);
         println!("{semantic_data:#?}");
         return Ok(());
     }

@@ -1,3 +1,5 @@
+pub mod pretty;
+
 use crate::lexer::Span;
 use crate::symbol::Symbol;
 use std::ops::{Deref, DerefMut};

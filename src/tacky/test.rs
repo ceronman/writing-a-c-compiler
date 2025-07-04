@@ -9850,8 +9850,8 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
         extern int sum(int x, int y);
         int sum(int x, int y);
         int add_three_and_four(void) {
-            int f = 3;
-            if (f > 2) {
+            int sum = 3;
+            if (sum > 2) {
                 extern int sum(int one, int two);
                 return sum(3, 4);
             }
@@ -9872,8 +9872,8 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
             return 0
         }
         global function add_three_and_four() { 
-            f.8 = 3
-            tmp.1 = f.8 > 2
+            sum.8 = 3
+            tmp.1 = sum.8 > 2
             if !tmp.1 jump end_if_0
             tmp.2 = sum(3, 4)
             return tmp.2
@@ -11772,7 +11772,7 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
                 return 2;
             }
             i = -100;
-            l = 4294967296;
+            l = 2147483648;
             if (!comparison()) {
                 return 3;
             }
@@ -11841,7 +11841,7 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
           end_if_4:
             tmp.16 = - 100
             i = tmp.16
-            l = 4294967296L
+            l = 2147483648L
             tmp.17 = comparison()
             tmp.18 = ! tmp.17
             if !tmp.18 jump end_if_6
@@ -12114,7 +12114,7 @@ fn test_chapter_11_valid_implicit_casts_long_constants() {
             if (2147483647l + 2147483647l < 0l) {
                 return 1;
             }
-            if (17179869184 < 100l) {
+            if (19327352832 < 100l) {
                 return 2;
             }
             return 0;
@@ -12128,7 +12128,7 @@ fn test_chapter_11_valid_implicit_casts_long_constants() {
             return 1
         
           end_if_0:
-            tmp.2 = 17179869184L < 100L
+            tmp.2 = 19327352832L < 100L
             if !tmp.2 jump end_if_2
             return 2
         
@@ -15682,7 +15682,7 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
         }
         int main(void) {
             ui_a = 4294967293u;
-            ui_b = 2u;
+            ui_b = 3u;
             if (!addition()) {
                 return 1;
             }
@@ -15719,7 +15719,7 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
         }
         global function main() { 
             ui_a = 4294967293U
-            ui_b = 2U
+            ui_b = 3U
             tmp.6 = addition()
             tmp.7 = ! tmp.6
             if !tmp.7 jump end_if_0
@@ -17208,7 +17208,7 @@ fn test_chapter_13_valid_extra_credit_nan() {
             double nan = 0.0 / zero;
             if (nan < 0.0 || nan == 0.0 || nan > 0.0 || nan <= 0.0 || nan >= 0.0)
                 return 1;
-            if (1 > nan || 1 == nan || 1 > nan || 1 <= nan || 1 >= nan)
+            if (1 < nan || 1 == nan || 1 > nan || 1 <= nan || 1 >= nan)
                 return 2;
             if (nan == nan)
                 return 3;
@@ -17226,6 +17226,43 @@ fn test_chapter_13_valid_extra_credit_nan() {
             }
             if (!double_isnan(-nan)) {
                 return 8;
+            }
+            if (!nan) {
+                return 9;
+            }
+            if (nan) {
+            } else {
+                return 10;
+            }
+            int nan_is_nonzero;
+            for (nan_is_nonzero = 0; nan;) {
+                nan_is_nonzero = 1;
+                break;
+            }
+            if (!nan_is_nonzero) {
+                return 11;
+            }
+            nan_is_nonzero = 0;
+            while (nan) {
+                nan_is_nonzero = 1;
+                break;
+            }
+            if (!nan_is_nonzero) {
+                return 12;
+            }
+            nan_is_nonzero = -1;
+            do {
+                nan_is_nonzero = nan_is_nonzero + 1;
+                if (nan_is_nonzero) {
+                    break;
+                }
+            } while (nan);
+            if (!nan_is_nonzero) {
+                return 13;
+            }
+            nan_is_nonzero = nan ? 1 : 0;
+            if (!nan_is_nonzero) {
+                return 14;
             }
             return 0;
         }
@@ -17280,7 +17317,7 @@ fn test_chapter_13_valid_extra_credit_nan() {
         
           end_if_8:
             tmp.14 = int_to_double 1
-            tmp.15 = tmp.14 > nan.2
+            tmp.15 = tmp.14 < nan.2
             if tmp.15 jump or_true_10
             tmp.18 = int_to_double 1
             tmp.19 = tmp.18 == nan.2
@@ -17368,6 +17405,221 @@ fn test_chapter_13_valid_extra_credit_nan() {
             return 8
         
           end_if_30:
+            tmp.47 = ! nan.2
+            if !tmp.47 jump end_if_32
+            return 9
+        
+          end_if_32:
+            tmp.48 = nan.2 != 0D
+            if !tmp.48 jump else_35
+            jump end_if_34
+        
+          else_35:
+            return 10
+        
+          end_if_34:
+            nan_is_nonzero.3 = 0
+        
+          start_loop_0:
+            tmp.49 = nan.2 != 0D
+            if !tmp.49 jump break_loop_0
+            nan_is_nonzero.3 = 1
+            jump break_loop_0
+        
+          continue_loop_0:
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.50 = ! nan_is_nonzero.3
+            if !tmp.50 jump end_if_36
+            return 11
+        
+          end_if_36:
+            nan_is_nonzero.3 = 0
+        
+          continue_loop_1:
+            tmp.51 = nan.2 != 0D
+            if !tmp.51 jump break_loop_1
+            nan_is_nonzero.3 = 1
+            jump break_loop_1
+            jump continue_loop_1
+        
+          break_loop_1:
+            tmp.52 = ! nan_is_nonzero.3
+            if !tmp.52 jump end_if_38
+            return 12
+        
+          end_if_38:
+            tmp.53 = - 1
+            nan_is_nonzero.3 = tmp.53
+        
+          start_loop_2:
+            tmp.54 = nan_is_nonzero.3 + 1
+            nan_is_nonzero.3 = tmp.54
+            if !nan_is_nonzero.3 jump end_if_40
+            jump break_loop_2
+        
+          end_if_40:
+        
+          continue_loop_2:
+            tmp.55 = nan.2 != 0D
+            if tmp.55 jump start_loop_2
+        
+          break_loop_2:
+            tmp.56 = ! nan_is_nonzero.3
+            if !tmp.56 jump end_if_42
+            return 13
+        
+          end_if_42:
+            tmp.57 = nan.2 != 0D
+            if !tmp.57 jump else_45
+            tmp.58 = 1
+            jump end_if_44
+        
+          else_45:
+            tmp.58 = 0
+        
+          end_if_44:
+            nan_is_nonzero.3 = tmp.58
+            tmp.59 = ! nan_is_nonzero.3
+            if !tmp.59 jump end_if_46
+            return 14
+        
+          end_if_46:
+            return 0
+            return 0
+        }
+        static zero.1: Double = 0D
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_extra_credit_nan_compound_assign() {
+    let src = r#"
+        int double_isnan(double d);
+        int main(void) {
+            static double zero = 0.0;
+            double nan = 0.0 / zero;
+            if (!double_isnan(nan += 99.2)) {
+                return 1;
+            }
+            if (!double_isnan(nan -= nan)) {
+                return 2;
+            }
+            if (!double_isnan(nan *= 4.0)) {
+                return 3;
+            }
+            if (!double_isnan(nan /= 0.0)) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = 0D / zero.1
+            nan.2 = tmp.0
+            tmp.1 = nan.2 + 99.2D
+            nan.2 = tmp.1
+            tmp.2 = double_isnan(tmp.1)
+            tmp.3 = ! tmp.2
+            if !tmp.3 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.4 = nan.2 - nan.2
+            nan.2 = tmp.4
+            tmp.5 = double_isnan(tmp.4)
+            tmp.6 = ! tmp.5
+            if !tmp.6 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.7 = nan.2 * 4D
+            nan.2 = tmp.7
+            tmp.8 = double_isnan(tmp.7)
+            tmp.9 = ! tmp.8
+            if !tmp.9 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.10 = nan.2 / 0D
+            nan.2 = tmp.10
+            tmp.11 = double_isnan(tmp.10)
+            tmp.12 = ! tmp.11
+            if !tmp.12 jump end_if_6
+            return 4
+        
+          end_if_6:
+            return 0
+            return 0
+        }
+        static zero.1: Double = 0D
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_extra_credit_nan_incr_and_decr() {
+    let src = r#"
+        int double_isnan(double d);
+        int main(void) {
+            static double zero = 0.0;
+            double nan = 0.0 / zero;
+            if (!double_isnan(++nan)) {
+                return 1;
+            }
+            if (!double_isnan(--nan)) {
+                return 2;
+            }
+            if (!double_isnan(nan++)) {
+                return 3;
+            }
+            if (!double_isnan(nan--)) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = 0D / zero.1
+            nan.2 = tmp.0
+            tmp.1 = inc nan.2
+            nan.2 = tmp.1
+            tmp.2 = double_isnan(tmp.1)
+            tmp.3 = ! tmp.2
+            if !tmp.3 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.4 = dec nan.2
+            nan.2 = tmp.4
+            tmp.5 = double_isnan(tmp.4)
+            tmp.6 = ! tmp.5
+            if !tmp.6 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.7 = nan.2
+            tmp.8 = inc nan.2
+            nan.2 = tmp.8
+            tmp.9 = double_isnan(tmp.7)
+            tmp.10 = ! tmp.9
+            if !tmp.10 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.11 = nan.2
+            tmp.12 = dec nan.2
+            nan.2 = tmp.12
+            tmp.13 = double_isnan(tmp.11)
+            tmp.14 = ! tmp.13
+            if !tmp.14 jump end_if_6
+            return 4
+        
+          end_if_6:
             return 0
             return 0
         }
@@ -17724,175 +17976,179 @@ fn test_chapter_13_valid_floating_expressions_logical() {
     "#;
     let expected = r#"
         global function main() { 
-            if !zero jump end_if_0
+            tmp.0 = zero != 0D
+            if !tmp.0 jump end_if_0
             return 1
         
           end_if_0:
-            if !rounded_to_zero jump end_if_2
+            tmp.1 = rounded_to_zero != 0D
+            if !tmp.1 jump end_if_2
             return 2
         
           end_if_2:
-            if !non_zero jump else_5
+            tmp.2 = non_zero != 0D
+            if !tmp.2 jump else_5
             jump end_if_4
         
           else_5:
             return 3
         
           end_if_4:
-            if !0D jump end_if_6
+            tmp.3 = 0D != 0D
+            if !tmp.3 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.0 = ! non_zero
-            if !tmp.0 jump end_if_8
+            tmp.4 = ! non_zero
+            if !tmp.4 jump end_if_8
             return 4
         
           end_if_8:
-            tmp.1 = ! zero
-            tmp.2 = ! tmp.1
-            if !tmp.2 jump end_if_10
+            tmp.5 = ! zero
+            tmp.6 = ! tmp.5
+            if !tmp.6 jump end_if_10
             return 5
         
           end_if_10:
-            tmp.3 = ! rounded_to_zero
-            tmp.4 = ! tmp.3
-            if !tmp.4 jump end_if_12
+            tmp.7 = ! rounded_to_zero
+            tmp.8 = ! tmp.7
+            if !tmp.8 jump end_if_12
             return 6
         
           end_if_12:
             if !non_zero jump and_false_14
             if !1D jump and_false_14
-            tmp.6 = 1
+            tmp.10 = 1
             jump and_end_15
         
           and_false_14:
-            tmp.6 = 0
+            tmp.10 = 0
         
           and_end_15:
-            tmp.7 = ! tmp.6
-            if !tmp.7 jump end_if_16
+            tmp.11 = ! tmp.10
+            if !tmp.11 jump end_if_16
             return 8
         
           end_if_16:
             if !3D jump and_false_18
             if !zero jump and_false_18
-            tmp.9 = 1
+            tmp.13 = 1
             jump and_end_19
         
           and_false_18:
-            tmp.9 = 0
+            tmp.13 = 0
         
           and_end_19:
-            if !tmp.9 jump end_if_20
+            if !tmp.13 jump end_if_20
             return 8
         
           end_if_20:
             if !rounded_to_zero jump and_false_22
             if !10000000000000D jump and_false_22
-            tmp.11 = 1
+            tmp.15 = 1
             jump and_end_23
         
           and_false_22:
-            tmp.11 = 0
+            tmp.15 = 0
         
           and_end_23:
-            if !tmp.11 jump end_if_24
+            if !tmp.15 jump end_if_24
             return 9
         
           end_if_24:
             if !18446744073709551615UL jump and_false_26
             if !zero jump and_false_26
-            tmp.13 = 1
+            tmp.17 = 1
             jump and_end_27
         
           and_false_26:
-            tmp.13 = 0
+            tmp.17 = 0
         
           and_end_27:
-            if !tmp.13 jump end_if_28
+            if !tmp.17 jump end_if_28
             return 10
         
           end_if_28:
             if !non_zero jump and_false_30
             if !5L jump and_false_30
-            tmp.15 = 1
+            tmp.19 = 1
             jump and_end_31
         
           and_false_30:
-            tmp.15 = 0
+            tmp.19 = 0
         
           and_end_31:
-            tmp.16 = ! tmp.15
-            if !tmp.16 jump end_if_32
+            tmp.20 = ! tmp.19
+            if !tmp.20 jump end_if_32
             return 11
         
           end_if_32:
             if 5D jump or_true_34
             if zero jump or_true_34
-            tmp.18 = 0
+            tmp.22 = 0
             jump or_end_35
         
           or_true_34:
-            tmp.18 = 1
+            tmp.22 = 1
         
           or_end_35:
-            tmp.19 = ! tmp.18
-            if !tmp.19 jump end_if_36
+            tmp.23 = ! tmp.22
+            if !tmp.23 jump end_if_36
             return 12
         
           end_if_36:
             if zero jump or_true_38
             if rounded_to_zero jump or_true_38
-            tmp.21 = 0
+            tmp.25 = 0
             jump or_end_39
         
           or_true_38:
-            tmp.21 = 1
+            tmp.25 = 1
         
           or_end_39:
-            if !tmp.21 jump end_if_40
+            if !tmp.25 jump end_if_40
             return 13
         
           end_if_40:
             if rounded_to_zero jump or_true_42
             if 0.0001D jump or_true_42
-            tmp.23 = 0
+            tmp.27 = 0
             jump or_end_43
         
           or_true_42:
-            tmp.23 = 1
+            tmp.27 = 1
         
           or_end_43:
-            tmp.24 = ! tmp.23
-            if !tmp.24 jump end_if_44
+            tmp.28 = ! tmp.27
+            if !tmp.28 jump end_if_44
             return 14
         
           end_if_44:
             if non_zero jump or_true_46
             if 0U jump or_true_46
-            tmp.26 = 0
+            tmp.30 = 0
             jump or_end_47
         
           or_true_46:
-            tmp.26 = 1
+            tmp.30 = 1
         
           or_end_47:
-            tmp.27 = ! tmp.26
-            if !tmp.27 jump end_if_48
+            tmp.31 = ! tmp.30
+            if !tmp.31 jump end_if_48
             return 15
         
           end_if_48:
             if 0 jump or_true_50
             if 0.0000005D jump or_true_50
-            tmp.29 = 0
+            tmp.33 = 0
             jump or_end_51
         
           or_true_50:
-            tmp.29 = 1
+            tmp.33 = 1
         
           or_end_51:
-            tmp.30 = ! tmp.29
-            if !tmp.30 jump end_if_52
+            tmp.34 = ! tmp.33
+            if !tmp.34 jump end_if_52
             return 16
         
           end_if_52:
@@ -18776,77 +19032,78 @@ fn test_chapter_13_valid_implicit_casts_common_type() {
             return 0
         }
         global function tern_double_flag(flag.2) { 
-            if !flag.2 jump else_1
-            tmp.3 = - 30
-            tmp.4 = sign_extend tmp.3
-            tmp.2 = tmp.4
+            tmp.2 = flag.2 != 0D
+            if !tmp.2 jump else_1
+            tmp.4 = - 30
+            tmp.5 = sign_extend tmp.4
+            tmp.3 = tmp.5
             jump end_if_0
         
           else_1:
-            tmp.2 = 10UL
+            tmp.3 = 10UL
         
           end_if_0:
-            tmp.5 = uint_to_double tmp.2
-            return tmp.5
+            tmp.6 = uint_to_double tmp.3
+            return tmp.6
             return 0
         }
         global function tern_double_result(flag.3) { 
             if !flag.3 jump else_3
-            tmp.6 = 5D
+            tmp.7 = 5D
             jump end_if_2
         
           else_3:
-            tmp.7 = uint_to_double 9223372036854777850UL
-            tmp.6 = tmp.7
+            tmp.8 = uint_to_double 9223372036854777850UL
+            tmp.7 = tmp.8
         
           end_if_2:
-            return tmp.6
+            return tmp.7
             return 0
         }
         global function multiply() { 
-            tmp.9 = int_to_double ten
-            tmp.8 = 10.75D * tmp.9
-            tmp.10 = double_to_int tmp.8
-            i.4 = tmp.10
-            tmp.11 = i.4 == 107
-            return tmp.11
+            tmp.10 = int_to_double ten
+            tmp.9 = 10.75D * tmp.10
+            tmp.11 = double_to_int tmp.9
+            i.4 = tmp.11
+            tmp.12 = i.4 == 107
+            return tmp.12
             return 0
         }
         global function main() { 
-            tmp.12 = - 9007199254751228D
-            tmp.13 = - 9007199254751227L
-            tmp.14 = lt(tmp.12, tmp.13)
-            if !tmp.14 jump end_if_4
+            tmp.13 = - 9007199254751228D
+            tmp.14 = - 9007199254751227L
+            tmp.15 = lt(tmp.13, tmp.14)
+            if !tmp.15 jump end_if_4
             return 1
         
           end_if_4:
-            tmp.15 = tern_double_flag(20D)
-            tmp.16 = tmp.15 != 18446744073709552000D
-            if !tmp.16 jump end_if_6
+            tmp.16 = tern_double_flag(20D)
+            tmp.17 = tmp.16 != 18446744073709552000D
+            if !tmp.17 jump end_if_6
             return 2
         
           end_if_6:
-            tmp.17 = tern_double_flag(0D)
-            tmp.18 = tmp.17 != 10D
-            if !tmp.18 jump end_if_8
+            tmp.18 = tern_double_flag(0D)
+            tmp.19 = tmp.18 != 10D
+            if !tmp.19 jump end_if_8
             return 3
         
           end_if_8:
-            tmp.19 = tern_double_result(1)
-            tmp.20 = tmp.19 != 5D
-            if !tmp.20 jump end_if_10
+            tmp.20 = tern_double_result(1)
+            tmp.21 = tmp.20 != 5D
+            if !tmp.21 jump end_if_10
             return 4
         
           end_if_10:
-            tmp.21 = tern_double_result(0)
-            tmp.22 = tmp.21 != 9223372036854778000D
-            if !tmp.22 jump end_if_12
+            tmp.22 = tern_double_result(0)
+            tmp.23 = tmp.22 != 9223372036854778000D
+            if !tmp.23 jump end_if_12
             return 5
         
           end_if_12:
-            tmp.23 = multiply()
-            tmp.24 = ! tmp.23
-            if !tmp.24 jump end_if_14
+            tmp.24 = multiply()
+            tmp.25 = ! tmp.24
+            if !tmp.25 jump end_if_14
             return 6
         
           end_if_14:
@@ -19076,27 +19333,28 @@ fn test_chapter_13_valid_implicit_casts_static_initializers() {
             return 7
         
           end_if_12:
-            if !uninitialized jump end_if_14
+            tmp.7 = uninitialized != 0D
+            if !tmp.7 jump end_if_14
             return 8
         
           end_if_14:
-            tmp.7 = i != 4
-            if !tmp.7 jump end_if_16
+            tmp.8 = i != 4
+            if !tmp.8 jump end_if_16
             return 9
         
           end_if_16:
-            tmp.8 = u != 4294967292U
-            if !tmp.8 jump end_if_18
+            tmp.9 = u != 4294967292U
+            if !tmp.9 jump end_if_18
             return 10
         
           end_if_18:
-            tmp.9 = l != 4611686018427389952L
-            if !tmp.9 jump end_if_20
+            tmp.10 = l != 4611686018427389952L
+            if !tmp.10 jump end_if_20
             return 11
         
           end_if_20:
-            tmp.10 = ul != 18446744073709549568UL
-            if !tmp.10 jump end_if_22
+            tmp.11 = ul != 18446744073709549568UL
+            if !tmp.11 jump end_if_22
             return 12
         
           end_if_22:
@@ -19780,30 +20038,31 @@ fn test_chapter_13_valid_special_values_negative_zero() {
             return 4
         
           end_if_8:
-            if !negative_zero.2 jump end_if_10
+            tmp.13 = negative_zero.2 != 0D
+            if !tmp.13 jump end_if_10
             return 5
         
           end_if_10:
-            tmp.14 = - 0D
-            tmp.13 = zero != tmp.14
-            if !tmp.13 jump end_if_12
+            tmp.15 = - 0D
+            tmp.14 = zero != tmp.15
+            if !tmp.14 jump end_if_12
             return 6
         
           end_if_12:
-            tmp.15 = - 0D
-            tmp.16 = copysign(4D, tmp.15)
-            negated.4 = tmp.16
-            tmp.17 = - 5D
-            tmp.18 = copysign(tmp.17, 0D)
-            positive.5 = tmp.18
-            tmp.20 = - 4D
-            tmp.19 = negated.4 != tmp.20
-            if !tmp.19 jump end_if_14
+            tmp.16 = - 0D
+            tmp.17 = copysign(4D, tmp.16)
+            negated.4 = tmp.17
+            tmp.18 = - 5D
+            tmp.19 = copysign(tmp.18, 0D)
+            positive.5 = tmp.19
+            tmp.21 = - 4D
+            tmp.20 = negated.4 != tmp.21
+            if !tmp.20 jump end_if_14
             return 7
         
           end_if_14:
-            tmp.21 = positive.5 != 5D
-            if !tmp.21 jump end_if_16
+            tmp.22 = positive.5 != 5D
+            if !tmp.22 jump end_if_16
             return 8
         
           end_if_16:
@@ -22031,10 +22290,18 @@ fn test_chapter_14_valid_extra_credit_eval_compound_lhs_once() {
             putchar(65);
             return &i;
         }
+        int *print_B(void) {
+            putchar(66);
+            return &i;
+        }
         int main(void) {
             *print_A() += 5;
             if (i != 5) {
                 return 1;
+            }
+            *print_B() += 5l;
+            if (i != 10) {
+                return 2;
             }
             return 0;
         }
@@ -22046,16 +22313,34 @@ fn test_chapter_14_valid_extra_credit_eval_compound_lhs_once() {
             return tmp.1
             return 0
         }
+        global function print_B() { 
+            tmp.2 = putchar(66)
+            tmp.3 = &i
+            return tmp.3
+            return 0
+        }
         global function main() { 
-            tmp.2 = print_A()
-            tmp.3 = *tmp.2
-            tmp.4 = tmp.3 + 5
-            *tmp.2 = tmp.4
-            tmp.5 = i != 5
-            if !tmp.5 jump end_if_0
+            tmp.4 = print_A()
+            tmp.5 = *tmp.4
+            tmp.6 = tmp.5 + 5
+            *tmp.4 = tmp.6
+            tmp.7 = i != 5
+            if !tmp.7 jump end_if_0
             return 1
         
           end_if_0:
+            tmp.8 = print_B()
+            tmp.9 = *tmp.8
+            tmp.10 = sign_extend tmp.9
+            tmp.11 = tmp.10 + 5L
+            tmp.12 = truncate tmp.11
+            *tmp.8 = tmp.12
+            tmp.13 = truncate tmp.12
+            tmp.14 = i != 10
+            if !tmp.14 jump end_if_2
+            return 2
+        
+          end_if_2:
             return 0
             return 0
         }
@@ -26144,7 +26429,7 @@ fn test_chapter_15_valid_initialization_automatic() {
 fn test_chapter_15_valid_initialization_automatic_nested() {
     let src = r#"
         int test_simple(void) {
-            int arr[3][3] = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+            int arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
             for (int i = 0; i < 3; i = i + 1) {
                 for (int j = 0; j < 3; j = j + 1) {
                     if (arr[i][j] != i * 3 + j + 1) {
@@ -26164,7 +26449,7 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
                 for (int j = 0; j < 2; j = j + 1) {
                     for (int k = 0; k < 6; k = k + 1) {
                         int val = first_half_only[i][j][k];
-                        if (i > 1 || j > 0 || k > 2 ) {
+                        if (i > 1 || j > 0 || k > 2) {
                             if (val) {
                                 return 0;
                             }
@@ -26185,8 +26470,8 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
             int negative_four = -4;
             int *ptr = &negative_four;
             double arr[3][2] = {
-                { x, x / *ptr },
-                { three() }
+                {x, x / *ptr},
+                {three()},
             };
             if (arr[0][0] != 2000.0 || arr[0][1] != -500.0 || arr[1][0] != 3.0) {
                 return 0;
@@ -26202,7 +26487,7 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
         long one = 1l;
         int test_preserve_stack(void) {
             int i = -1;
-            int arr[3][1] = { {one * 2l}, {one + three()} };
+            int arr[3][1] = {{one * 2l}, {one + three()}};
             unsigned int u = 2684366905;
             if (i != -1) {
                 return 0;
@@ -26210,7 +26495,7 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
             if (u != 2684366905) {
                 return 0;
             }
-            if ( arr[0][0] != 2 || arr[1][0] != 4 || arr[2][0] != 0 ) {
+            if (arr[0][0] != 2 || arr[1][0] != 4 || arr[2][0] != 0) {
                 return 0;
             }
             return 1;
@@ -27752,21 +28037,22 @@ fn test_chapter_15_valid_libraries_set_array_val() {
             tmp.1 = sign_extend i.2
             tmp.2 = add_ptr(arr.0, index=tmp.1, scale=8)
             tmp.3 = *tmp.2
-            if !tmp.3 jump end_if_0
+            tmp.4 = tmp.3 != 0D
+            if !tmp.4 jump end_if_0
             return 1
         
           end_if_0:
         
           continue_loop_0:
-            tmp.4 = i.2 + 1
-            i.2 = tmp.4
+            tmp.5 = i.2 + 1
+            i.2 = tmp.5
             jump start_loop_0
         
           break_loop_0:
-            tmp.5 = sign_extend idx.1
-            tmp.6 = add_ptr(arr.0, index=tmp.5, scale=8)
-            tmp.7 = int_to_double 8
-            *tmp.6 = tmp.7
+            tmp.6 = sign_extend idx.1
+            tmp.7 = add_ptr(arr.0, index=tmp.6, scale=8)
+            tmp.8 = int_to_double 8
+            *tmp.7 = tmp.8
             return 0
             return 0
         }
@@ -27774,47 +28060,47 @@ fn test_chapter_15_valid_libraries_set_array_val() {
             x.6 = 0
         
           start_loop_1:
-            tmp.8 = x.6 < 3
-            if !tmp.8 jump break_loop_1
+            tmp.9 = x.6 < 3
+            if !tmp.9 jump break_loop_1
             y.7 = 0
         
           start_loop_2:
-            tmp.9 = y.7 < 2
-            if !tmp.9 jump break_loop_2
-            tmp.10 = - 10
-            tmp.12 = 2 * x.6
-            tmp.11 = tmp.10 + tmp.12
-            tmp.13 = tmp.11 + y.7
-            expected.8 = tmp.13
-            tmp.14 = sign_extend x.6
-            tmp.15 = add_ptr(arr.3, index=tmp.14, scale=8)
-            tmp.16 = sign_extend y.7
-            tmp.17 = add_ptr(tmp.15, index=tmp.16, scale=4)
-            tmp.18 = *tmp.17
-            tmp.19 = tmp.18 != expected.8
-            if !tmp.19 jump end_if_2
+            tmp.10 = y.7 < 2
+            if !tmp.10 jump break_loop_2
+            tmp.11 = - 10
+            tmp.13 = 2 * x.6
+            tmp.12 = tmp.11 + tmp.13
+            tmp.14 = tmp.12 + y.7
+            expected.8 = tmp.14
+            tmp.15 = sign_extend x.6
+            tmp.16 = add_ptr(arr.3, index=tmp.15, scale=8)
+            tmp.17 = sign_extend y.7
+            tmp.18 = add_ptr(tmp.16, index=tmp.17, scale=4)
+            tmp.19 = *tmp.18
+            tmp.20 = tmp.19 != expected.8
+            if !tmp.20 jump end_if_2
             return 4
         
           end_if_2:
         
           continue_loop_2:
-            tmp.20 = y.7 + 1
-            y.7 = tmp.20
+            tmp.21 = y.7 + 1
+            y.7 = tmp.21
             jump start_loop_2
         
           break_loop_2:
         
           continue_loop_1:
-            tmp.21 = x.6 + 1
-            x.6 = tmp.21
+            tmp.22 = x.6 + 1
+            x.6 = tmp.22
             jump start_loop_1
         
           break_loop_1:
-            tmp.22 = sign_extend i.4
-            tmp.23 = add_ptr(arr.3, index=tmp.22, scale=8)
-            tmp.24 = sign_extend j.5
-            tmp.25 = add_ptr(tmp.23, index=tmp.24, scale=4)
-            *tmp.25 = 10
+            tmp.23 = sign_extend i.4
+            tmp.24 = add_ptr(arr.3, index=tmp.23, scale=8)
+            tmp.25 = sign_extend j.5
+            tmp.26 = add_ptr(tmp.24, index=tmp.25, scale=4)
+            *tmp.26 = 10
             return 0
             return 0
         }

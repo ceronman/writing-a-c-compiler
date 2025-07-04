@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::{fs, panic};
 
 use crate::lexer::TokenKind;
-use crate::{lexer, parser, pretty, semantic, tacky};
+use crate::{ast, lexer, parser, pretty, semantic, tacky};
 use anyhow::Result;
 
 pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
@@ -98,7 +98,7 @@ fn assert_error(expected_annotated: &str) {{
     let result = parser::parse(&indented);
     match result {
         Ok(ast) => {
-            let tree = pretty::pretty_print_ast(&ast)?;
+            let tree = ast::pretty::dump(&ast)?;
             let tree = indent(&tree);
             writeln!(file)?;
             writeln!(file, "#[test]")?;

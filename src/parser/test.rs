@@ -16345,7 +16345,7 @@ fn test_chapter_10_invalid_parse_multi_storage_class_var() {
     assert_error(
         r#"
         int main(void) {
-            static extern foo = 0;
+            static extern int foo = 0;
                  //^^^^^^ Duplicated storage class in declaration
             return foo;
         }
@@ -17840,8 +17840,8 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
         extern int sum(int x, int y);
         int sum(int x, int y);
         int add_three_and_four(void) {
-            int f = 3;
-            if (f > 2) {
+            int sum = 3;
+            if (sum > 2) {
                 extern int sum(int one, int two);
                 return sum(3, 4);
             }
@@ -17915,7 +17915,7 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
             │   ╰── Body
             │       ├── VarDeclaration
             │       │   ├── Name
-            │       │   │   ╰── f
+            │       │   │   ╰── sum
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
@@ -17923,7 +17923,7 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <72>  [>]
-            │       │   │       ├── <69> Var [f]
+            │       │   │       ├── <69> Var [sum]
             │       │   │       ╰── Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
@@ -21246,7 +21246,7 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
                 return 2;
             }
             i = -100;
-            l = 4294967296;
+            l = 2147483648;
             if (!comparison()) {
                 return 3;
             }
@@ -21357,7 +21357,7 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
                     │       ╰── Constant Int [100]
                     ├── <147> Assign [=]
                     │   ├── <144> Var [l]
-                    │   ╰── Constant Long [4294967296]
+                    │   ╰── Constant Long [2147483648]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <152> Unary [!]
@@ -21823,7 +21823,7 @@ fn test_chapter_11_valid_implicit_casts_long_constants() {
             if (2147483647l + 2147483647l < 0l) {
                 return 1;
             }
-            if (17179869184 < 100l) {
+            if (19327352832 < 100l) {
                 return 2;
             }
             return 0;
@@ -21847,7 +21847,7 @@ fn test_chapter_11_valid_implicit_casts_long_constants() {
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <20>  [<]
-                    │   │       ├── Constant Long [17179869184]
+                    │   │       ├── Constant Long [19327352832]
                     │   │       ╰── Constant Long [100]
                     │   ╰── Then
                     │       ╰── Block
@@ -28337,7 +28337,7 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
         }
         int main(void) {
             ui_a = 4294967293u;
-            ui_b = 2u;
+            ui_b = 3u;
             if (!addition()) {
                 return 1;
             }
@@ -28405,7 +28405,7 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
                     │   ╰── Constant UInt [4294967293]
                     ├── <78> Assign [=]
                     │   ├── <75> Var [ui_b]
-                    │   ╰── Constant UInt [2]
+                    │   ╰── Constant UInt [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <83> Unary [!]
@@ -31409,7 +31409,7 @@ fn test_chapter_13_valid_extra_credit_nan() {
             double nan = 0.0 / zero;
             if (nan < 0.0 || nan == 0.0 || nan > 0.0 || nan <= 0.0 || nan >= 0.0)
                 return 1;
-            if (1 > nan || 1 == nan || 1 > nan || 1 <= nan || 1 >= nan)
+            if (1 < nan || 1 == nan || 1 > nan || 1 <= nan || 1 >= nan)
                 return 2;
             if (nan == nan)
                 return 3;
@@ -31427,6 +31427,43 @@ fn test_chapter_13_valid_extra_credit_nan() {
             }
             if (!double_isnan(-nan)) {
                 return 8;
+            }
+            if (!nan) {
+                return 9;
+            }
+            if (nan) {
+            } else {
+                return 10;
+            }
+            int nan_is_nonzero;
+            for (nan_is_nonzero = 0; nan;) {
+                nan_is_nonzero = 1;
+                break;
+            }
+            if (!nan_is_nonzero) {
+                return 11;
+            }
+            nan_is_nonzero = 0;
+            while (nan) {
+                nan_is_nonzero = 1;
+                break;
+            }
+            if (!nan_is_nonzero) {
+                return 12;
+            }
+            nan_is_nonzero = -1;
+            do {
+                nan_is_nonzero = nan_is_nonzero + 1;
+                if (nan_is_nonzero) {
+                    break;
+                }
+            } while (nan);
+            if (!nan_is_nonzero) {
+                return 13;
+            }
+            nan_is_nonzero = nan ? 1 : 0;
+            if (!nan_is_nonzero) {
+                return 14;
             }
             return 0;
         }
@@ -31489,7 +31526,7 @@ fn test_chapter_13_valid_extra_credit_nan() {
                     │   │       ├── <91>  [||]
                     │   │       │   ├── <84>  [||]
                     │   │       │   │   ├── <77>  [||]
-                    │   │       │   │   │   ├── <70>  [>]
+                    │   │       │   │   │   ├── <70>  [<]
                     │   │       │   │   │   │   ├── Constant Int [1]
                     │   │       │   │   │   │   ╰── <69> Var [nan]
                     │   │       │   │   │   ╰── <76>  [==]
@@ -31566,6 +31603,308 @@ fn test_chapter_13_valid_extra_credit_nan() {
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <180> Unary [!]
+                    │   │       ╰── <179> Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [9]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <187> Var [nan]
+                    │   ├── Then
+                    │   │   ╰── Block
+                    │   ╰── Else
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── nan_is_nonzero
+                    │   ╰── Type
+                    │       ╰── Int
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── <203> Assign [=]
+                    │   │       ├── <200> Var [nan_is_nonzero]
+                    │   │       ╰── Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── <205> Var [nan]
+                    │   ╰── Block
+                    │       ├── <210> Assign [=]
+                    │       │   ├── <207> Var [nan_is_nonzero]
+                    │       │   ╰── Constant Int [1]
+                    │       ╰── Break
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <219> Unary [!]
+                    │   │       ╰── <218> Var [nan_is_nonzero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [11]
+                    ├── <229> Assign [=]
+                    │   ├── <226> Var [nan_is_nonzero]
+                    │   ╰── Constant Int [0]
+                    ├── While
+                    │   ├── Condition
+                    │   │   ╰── <232> Var [nan]
+                    │   ╰── Body
+                    │       ╰── Block
+                    │           ├── <237> Assign [=]
+                    │           │   ├── <234> Var [nan_is_nonzero]
+                    │           │   ╰── Constant Int [1]
+                    │           ╰── Break
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <246> Unary [!]
+                    │   │       ╰── <245> Var [nan_is_nonzero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [12]
+                    ├── <258> Assign [=]
+                    │   ├── <253> Var [nan_is_nonzero]
+                    │   ╰── <257> Unary [-]
+                    │       ╰── Constant Int [1]
+                    ├── DoWhile
+                    │   ├── Body
+                    │   │   ╰── Block
+                    │   │       ├── <268> Assign [=]
+                    │   │       │   ├── <261> Var [nan_is_nonzero]
+                    │   │       │   ╰── <267>  [+]
+                    │   │       │       ├── <264> Var [nan_is_nonzero]
+                    │   │       │       ╰── Constant Int [1]
+                    │   │       ╰── If
+                    │   │           ├── Condition
+                    │   │           │   ╰── <271> Var [nan_is_nonzero]
+                    │   │           ╰── Then
+                    │   │               ╰── Block
+                    │   │                   ╰── Break
+                    │   ╰── Condition
+                    │       ╰── <279> Var [nan]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <284> Unary [!]
+                    │   │       ╰── <283> Var [nan_is_nonzero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [13]
+                    ├── <298> Assign [=]
+                    │   ├── <291> Var [nan_is_nonzero]
+                    │   ╰── <{node_id}> Conditional [?]
+                    │       ├── <294> Var [nan]
+                    │       ├── Then
+                    │       │   ╰── Constant Int [1]
+                    │       ╰── Else
+                    │           ╰── Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <303> Unary [!]
+                    │   │       ╰── <302> Var [nan_is_nonzero]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [14]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_extra_credit_nan_compound_assign() {
+    let src = r#"
+        int double_isnan(double d);
+        int main(void) {
+            static double zero = 0.0;
+            double nan = 0.0 / zero;
+            if (!double_isnan(nan += 99.2)) {
+                return 1;
+            }
+            if (!double_isnan(nan -= nan)) {
+                return 2;
+            }
+            if (!double_isnan(nan *= 4.0)) {
+                return 3;
+            }
+            if (!double_isnan(nan /= 0.0)) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [double_isnan]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── d
+            │           ╰── Type
+            │               ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── zero
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ├── Initializer
+                    │   │   ╰── Constant Double [+0e0]
+                    │   ╰── Static
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── nan
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── <27>  [/]
+                    │           ├── Constant Double [+0e0]
+                    │           ╰── <26> Var [zero]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <38> Unary [!]
+                    │   │       ╰── <37> FunctionCall [double_isnan]
+                    │   │           ╰── <36> Assign [+=]
+                    │   │               ├── <33> Var [nan]
+                    │   │               ╰── Constant Double [+9.92e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <53> Unary [!]
+                    │   │       ╰── <52> FunctionCall [double_isnan]
+                    │   │           ╰── <51> Assign [-=]
+                    │   │               ├── <47> Var [nan]
+                    │   │               ╰── <50> Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <67> Unary [!]
+                    │   │       ╰── <66> FunctionCall [double_isnan]
+                    │   │           ╰── <65> Assign [*=]
+                    │   │               ├── <62> Var [nan]
+                    │   │               ╰── Constant Double [+4e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <81> Unary [!]
+                    │   │       ╰── <80> FunctionCall [double_isnan]
+                    │   │           ╰── <79> Assign [/=]
+                    │   │               ├── <76> Var [nan]
+                    │   │               ╰── Constant Double [+0e0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
+                    ╰── Return
+                        ╰── Constant Int [0]
+    "#;
+    assert_eq!(dump_ast(src), dedent(expected));
+}
+
+#[test]
+fn test_chapter_13_valid_extra_credit_nan_incr_and_decr() {
+    let src = r#"
+        int double_isnan(double d);
+        int main(void) {
+            static double zero = 0.0;
+            double nan = 0.0 / zero;
+            if (!double_isnan(++nan)) {
+                return 1;
+            }
+            if (!double_isnan(--nan)) {
+                return 2;
+            }
+            if (!double_isnan(nan++)) {
+                return 3;
+            }
+            if (!double_isnan(nan--)) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [double_isnan]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── d
+            │           ╰── Type
+            │               ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── zero
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ├── Initializer
+                    │   │   ╰── Constant Double [+0e0]
+                    │   ╰── Static
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── nan
+                    │   ├── Type
+                    │   │   ╰── Double
+                    │   ╰── Initializer
+                    │       ╰── <27>  [/]
+                    │           ├── Constant Double [+0e0]
+                    │           ╰── <26> Var [zero]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <37> Unary [!]
+                    │   │       ╰── <36> FunctionCall [double_isnan]
+                    │   │           ╰── <35> Unary [++]
+                    │   │               ╰── <34> Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <50> Unary [!]
+                    │   │       ╰── <49> FunctionCall [double_isnan]
+                    │   │           ╰── <48> Unary [--]
+                    │   │               ╰── <47> Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <63> Unary [!]
+                    │   │       ╰── <62> FunctionCall [double_isnan]
+                    │   │           ╰── <61> Postfix [++]
+                    │   │               ╰── <59> Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <76> Unary [!]
+                    │   │       ╰── <75> FunctionCall [double_isnan]
+                    │   │           ╰── <74> Postfix [--]
+                    │   │               ╰── <72> Var [nan]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [4]
                     ╰── Return
                         ╰── Constant Int [0]
     "#;
@@ -41273,10 +41612,18 @@ fn test_chapter_14_valid_extra_credit_eval_compound_lhs_once() {
             putchar(65);
             return &i;
         }
+        int *print_B(void) {
+            putchar(66);
+            return &i;
+        }
         int main(void) {
             *print_A() += 5;
             if (i != 5) {
                 return 1;
+            }
+            *print_B() += 5l;
+            if (i != 10) {
+                return 2;
             }
             return 0;
         }
@@ -41304,21 +41651,41 @@ fn test_chapter_14_valid_extra_credit_eval_compound_lhs_once() {
             │       ╰── Return
             │           ╰── <26> AddressOf
             │               ╰── <25> Var [i]
+            ├── Function [print_B]
+            │   ╰── Body
+            │       ├── <37> FunctionCall [putchar]
+            │       │   ╰── Constant Int [66]
+            │       ╰── Return
+            │           ╰── <41> AddressOf
+            │               ╰── <40> Var [i]
             ╰── Function [main]
                 ╰── Body
-                    ├── <39> Assign [+=]
-                    │   ├── <36> Dereference
-                    │   │   ╰── <35> FunctionCall [print_A]
+                    ├── <54> Assign [+=]
+                    │   ├── <51> Dereference
+                    │   │   ╰── <50> FunctionCall [print_A]
                     │   ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <45>  [!=]
-                    │   │       ├── <42> Var [i]
+                    │   │   ╰── <60>  [!=]
+                    │   │       ├── <57> Var [i]
                     │   │       ╰── Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [1]
+                    ├── <71> Assign [+=]
+                    │   ├── <68> Dereference
+                    │   │   ╰── <67> FunctionCall [print_B]
+                    │   ╰── Constant Long [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <77>  [!=]
+                    │   │       ├── <74> Var [i]
+                    │   │       ╰── Constant Int [10]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── Constant Int [2]
                     ╰── Return
                         ╰── Constant Int [0]
     "#;
@@ -48668,7 +49035,7 @@ fn test_chapter_15_valid_initialization_automatic() {
 fn test_chapter_15_valid_initialization_automatic_nested() {
     let src = r#"
         int test_simple(void) {
-            int arr[3][3] = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+            int arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
             for (int i = 0; i < 3; i = i + 1) {
                 for (int j = 0; j < 3; j = j + 1) {
                     if (arr[i][j] != i * 3 + j + 1) {
@@ -48688,7 +49055,7 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
                 for (int j = 0; j < 2; j = j + 1) {
                     for (int k = 0; k < 6; k = k + 1) {
                         int val = first_half_only[i][j][k];
-                        if (i > 1 || j > 0 || k > 2 ) {
+                        if (i > 1 || j > 0 || k > 2) {
                             if (val) {
                                 return 0;
                             }
@@ -48709,8 +49076,8 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
             int negative_four = -4;
             int *ptr = &negative_four;
             double arr[3][2] = {
-                { x, x / *ptr },
-                { three() }
+                {x, x / *ptr},
+                {three()},
             };
             if (arr[0][0] != 2000.0 || arr[0][1] != -500.0 || arr[1][0] != 3.0) {
                 return 0;
@@ -48726,7 +49093,7 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
         long one = 1l;
         int test_preserve_stack(void) {
             int i = -1;
-            int arr[3][1] = { {one * 2l}, {one + three()} };
+            int arr[3][1] = {{one * 2l}, {one + three()}};
             unsigned int u = 2684366905;
             if (i != -1) {
                 return 0;
@@ -48734,7 +49101,7 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
             if (u != 2684366905) {
                 return 0;
             }
-            if ( arr[0][0] != 2 || arr[1][0] != 4 || arr[2][0] != 0 ) {
+            if (arr[0][0] != 2 || arr[1][0] != 4 || arr[2][0] != 0) {
                 return 0;
             }
             return 1;

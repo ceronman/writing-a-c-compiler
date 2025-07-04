@@ -14469,8 +14469,8 @@ fn test_chapter_10_valid_libraries_external_linkage_function_client() {
         extern int sum(int x, int y);
         int sum(int x, int y);
         int add_three_and_four(void) {
-            int f = 3;
-            if (f > 2) {
+            int sum = 3;
+            if (sum > 2) {
                 extern int sum(int one, int two);
                 return sum(3, 4);
             }
@@ -17985,7 +17985,7 @@ fn test_chapter_11_valid_implicit_casts_common_type() {
                 return 2;
             }
             i = -100;
-            l = 4294967296;
+            l = 2147483648;
             if (!comparison()) {
                 return 3;
             }
@@ -18626,7 +18626,7 @@ fn test_chapter_11_valid_implicit_casts_long_constants() {
             if (2147483647l + 2147483647l < 0l) {
                 return 1;
             }
-            if (17179869184 < 100l) {
+            if (19327352832 < 100l) {
                 return 2;
             }
             return 0;
@@ -25735,7 +25735,7 @@ fn test_chapter_12_valid_unsigned_expressions_arithmetic_wraparound() {
         }
         int main(void) {
             ui_a = 4294967293u;
-            ui_b = 2u;
+            ui_b = 3u;
             if (!addition()) {
                 return 1;
             }
@@ -28650,7 +28650,7 @@ fn test_chapter_13_valid_extra_credit_nan() {
             double nan = 0.0 / zero;
             if (nan < 0.0 || nan == 0.0 || nan > 0.0 || nan <= 0.0 || nan >= 0.0)
                 return 1;
-            if (1 > nan || 1 == nan || 1 > nan || 1 <= nan || 1 >= nan)
+            if (1 < nan || 1 == nan || 1 > nan || 1 <= nan || 1 >= nan)
                 return 2;
             if (nan == nan)
                 return 3;
@@ -28668,6 +28668,43 @@ fn test_chapter_13_valid_extra_credit_nan() {
             }
             if (!double_isnan(-nan)) {
                 return 8;
+            }
+            if (!nan) {
+                return 9;
+            }
+            if (nan) {
+            } else {
+                return 10;
+            }
+            int nan_is_nonzero;
+            for (nan_is_nonzero = 0; nan;) {
+                nan_is_nonzero = 1;
+                break;
+            }
+            if (!nan_is_nonzero) {
+                return 11;
+            }
+            nan_is_nonzero = 0;
+            while (nan) {
+                nan_is_nonzero = 1;
+                break;
+            }
+            if (!nan_is_nonzero) {
+                return 12;
+            }
+            nan_is_nonzero = -1;
+            do {
+                nan_is_nonzero = nan_is_nonzero + 1;
+                if (nan_is_nonzero) {
+                    break;
+                }
+            } while (nan);
+            if (!nan_is_nonzero) {
+                return 13;
+            }
+            nan_is_nonzero = nan ? 1 : 0;
+            if (!nan_is_nonzero) {
+                return 14;
             }
             return 0;
         }
@@ -28727,7 +28764,7 @@ fn test_chapter_13_valid_extra_credit_nan() {
         If,
         OpenParen,
         IntConstant(IntKind::Int),
-        Greater,
+        Less,
         Identifier,
         PipePipe,
         IntConstant(IntKind::Int),
@@ -28822,6 +28859,369 @@ fn test_chapter_13_valid_extra_credit_nan() {
         OpenParen,
         Minus,
         Identifier,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        CloseBrace,
+        Else,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        Int,
+        Identifier,
+        Semicolon,
+        For,
+        OpenParen,
+        Identifier,
+        Equal,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        Identifier,
+        Semicolon,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        Equal,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        Break,
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        Identifier,
+        Equal,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        While,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        Equal,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        Break,
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        Identifier,
+        Equal,
+        Minus,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        Do,
+        OpenBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Plus,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Break,
+        Semicolon,
+        CloseBrace,
+        CloseBrace,
+        While,
+        OpenParen,
+        Identifier,
+        CloseParen,
+        Semicolon,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        Identifier,
+        Equal,
+        Identifier,
+        Question,
+        IntConstant(IntKind::Int),
+        Colon,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_13_valid_extra_credit_nan_compound_assign() {
+    let src = r#"
+        int double_isnan(double d);
+        int main(void) {
+            static double zero = 0.0;
+            double nan = 0.0 / zero;
+            if (!double_isnan(nan += 99.2)) {
+                return 1;
+            }
+            if (!double_isnan(nan -= nan)) {
+                return 2;
+            }
+            if (!double_isnan(nan *= 4.0)) {
+                return 3;
+            }
+            if (!double_isnan(nan /= 0.0)) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Double,
+        Identifier,
+        CloseParen,
+        Semicolon,
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Static,
+        Double,
+        Identifier,
+        Equal,
+        DoubleConstant,
+        Semicolon,
+        Double,
+        Identifier,
+        Equal,
+        DoubleConstant,
+        Slash,
+        Identifier,
+        Semicolon,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        Identifier,
+        PlusEqual,
+        DoubleConstant,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        Identifier,
+        MinusEqual,
+        Identifier,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        Identifier,
+        StarEqual,
+        DoubleConstant,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        Identifier,
+        SlashEqual,
+        DoubleConstant,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+    ];
+    assert_eq!(tokenize(src), expected);
+}
+
+#[test]
+fn test_chapter_13_valid_extra_credit_nan_incr_and_decr() {
+    let src = r#"
+        int double_isnan(double d);
+        int main(void) {
+            static double zero = 0.0;
+            double nan = 0.0 / zero;
+            if (!double_isnan(++nan)) {
+                return 1;
+            }
+            if (!double_isnan(--nan)) {
+                return 2;
+            }
+            if (!double_isnan(nan++)) {
+                return 3;
+            }
+            if (!double_isnan(nan--)) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = vec![
+        Int,
+        Identifier,
+        OpenParen,
+        Double,
+        Identifier,
+        CloseParen,
+        Semicolon,
+        Int,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Static,
+        Double,
+        Identifier,
+        Equal,
+        DoubleConstant,
+        Semicolon,
+        Double,
+        Identifier,
+        Equal,
+        DoubleConstant,
+        Slash,
+        Identifier,
+        Semicolon,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        PlusPlus,
+        Identifier,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        MinusMinus,
+        Identifier,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        Identifier,
+        PlusPlus,
+        CloseParen,
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        If,
+        OpenParen,
+        Bang,
+        Identifier,
+        OpenParen,
+        Identifier,
+        MinusMinus,
         CloseParen,
         CloseParen,
         OpenBrace,
@@ -37734,10 +38134,18 @@ fn test_chapter_14_valid_extra_credit_eval_compound_lhs_once() {
             putchar(65);
             return &i;
         }
+        int *print_B(void) {
+            putchar(66);
+            return &i;
+        }
         int main(void) {
             *print_A() += 5;
             if (i != 5) {
                 return 1;
+            }
+            *print_B() += 5l;
+            if (i != 10) {
+                return 2;
             }
             return 0;
         }
@@ -37773,6 +38181,23 @@ fn test_chapter_14_valid_extra_credit_eval_compound_lhs_once() {
         Semicolon,
         CloseBrace,
         Int,
+        Star,
+        Identifier,
+        OpenParen,
+        Void,
+        CloseParen,
+        OpenBrace,
+        Identifier,
+        OpenParen,
+        IntConstant(IntKind::Int),
+        CloseParen,
+        Semicolon,
+        Return,
+        Ampersand,
+        Identifier,
+        Semicolon,
+        CloseBrace,
+        Int,
         Identifier,
         OpenParen,
         Void,
@@ -37784,6 +38209,24 @@ fn test_chapter_14_valid_extra_credit_eval_compound_lhs_once() {
         CloseParen,
         PlusEqual,
         IntConstant(IntKind::Int),
+        Semicolon,
+        If,
+        OpenParen,
+        Identifier,
+        BangEqual,
+        IntConstant(IntKind::Int),
+        CloseParen,
+        OpenBrace,
+        Return,
+        IntConstant(IntKind::Int),
+        Semicolon,
+        CloseBrace,
+        Star,
+        Identifier,
+        OpenParen,
+        CloseParen,
+        PlusEqual,
+        IntConstant(IntKind::Long),
         Semicolon,
         If,
         OpenParen,
@@ -44401,7 +44844,7 @@ fn test_chapter_15_valid_initialization_automatic() {
 fn test_chapter_15_valid_initialization_automatic_nested() {
     let src = r#"
         int test_simple(void) {
-            int arr[3][3] = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+            int arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
             for (int i = 0; i < 3; i = i + 1) {
                 for (int j = 0; j < 3; j = j + 1) {
                     if (arr[i][j] != i * 3 + j + 1) {
@@ -44421,7 +44864,7 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
                 for (int j = 0; j < 2; j = j + 1) {
                     for (int k = 0; k < 6; k = k + 1) {
                         int val = first_half_only[i][j][k];
-                        if (i > 1 || j > 0 || k > 2 ) {
+                        if (i > 1 || j > 0 || k > 2) {
                             if (val) {
                                 return 0;
                             }
@@ -44442,8 +44885,8 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
             int negative_four = -4;
             int *ptr = &negative_four;
             double arr[3][2] = {
-                { x, x / *ptr },
-                { three() }
+                {x, x / *ptr},
+                {three()},
             };
             if (arr[0][0] != 2000.0 || arr[0][1] != -500.0 || arr[1][0] != 3.0) {
                 return 0;
@@ -44459,7 +44902,7 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
         long one = 1l;
         int test_preserve_stack(void) {
             int i = -1;
-            int arr[3][1] = { {one * 2l}, {one + three()} };
+            int arr[3][1] = {{one * 2l}, {one + three()}};
             unsigned int u = 2684366905;
             if (i != -1) {
                 return 0;
@@ -44467,7 +44910,7 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
             if (u != 2684366905) {
                 return 0;
             }
-            if ( arr[0][0] != 2 || arr[1][0] != 4 || arr[2][0] != 0 ) {
+            if (arr[0][0] != 2 || arr[1][0] != 4 || arr[2][0] != 0) {
                 return 0;
             }
             return 1;
@@ -44817,6 +45260,7 @@ fn test_chapter_15_valid_initialization_automatic_nested() {
         OpenParen,
         CloseParen,
         CloseBrace,
+        Comma,
         CloseBrace,
         Semicolon,
         If,
