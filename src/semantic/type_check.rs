@@ -75,7 +75,7 @@ impl TypeChecker {
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
             let initial_value = if let Some(init) = &decl.init {
-                InitialValue::Initial(self.check_static_initializer(init, &decl.ty)?)
+                InitialValue::Initial(Self::check_static_initializer(init, &decl.ty)?)
             } else {
                 InitialValue::single(StaticInit::ZeroInit(decl.ty.size()))
             };
@@ -109,10 +109,7 @@ impl TypeChecker {
         Ok(())
     }
 
-    fn check_static_initializer(
-        &mut self,
-        init: &Node<Initializer>,
-        target: &Type,
+    fn check_static_initializer(init: &Node<Initializer>, target: &Type,
     ) -> Result<Vec<StaticInit>> {
         match init.as_ref() {
             Initializer::Single(expr) => {
@@ -170,7 +167,7 @@ impl TypeChecker {
                 }
                 let mut static_inits = Vec::with_capacity(size);
                 for initializer in initializers {
-                    let inner_inits = self.check_static_initializer(initializer, inner_ty)?;
+                    let inner_inits = Self::check_static_initializer(initializer, inner_ty)?;
                     static_inits.extend(inner_inits);
                 }
                 let padding = (size - initializers.len()) * inner_ty.size();
@@ -213,7 +210,7 @@ impl TypeChecker {
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let mut initial_value = if let Some(init) = &decl.init {
-            InitialValue::Initial(self.check_static_initializer(init, &decl.ty)?)
+            InitialValue::Initial(Self::check_static_initializer(init, &decl.ty)?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             InitialValue::NoInitializer
         } else {
