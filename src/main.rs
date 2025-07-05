@@ -91,7 +91,7 @@ fn main() -> Result<()> {
 
     let asm = asm::generate(&tacky);
     if let Flag::Codegen = options.flag {
-        println!("{asm:#?}");
+        println!("{}", asm::pretty::pp(&asm)?);
         return Ok(());
     }
 

@@ -1,4 +1,5 @@
 pub mod ir;
+pub mod pretty;
 
 use crate::asm::ir::{
     AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,

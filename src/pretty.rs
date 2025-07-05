@@ -56,5 +56,3 @@ pub fn annotate(src: &str, error: &crate::error::CompilerError) -> String {
     }
     result
 }
-
-// TODO: Implement pretty for asm
