@@ -444,7 +444,7 @@ impl TypeChecker {
                     Type::ULong => Constant::ULong(case_constant),
                     Type::Double | Type::Function(_) => unreachable!(),
                     Type::Pointer(_) => Constant::ULong(case_constant),
-                    Type::Array(_, _) => todo!(),
+                    Type::Array(_, _) => unreachable!(),
                 };
 
                 if switch_cases.values.iter().any(|(v, _)| *v == case_value) {
@@ -736,7 +736,7 @@ impl TypeChecker {
                         Type::Int
                     }
                     BinaryOp::Subtract if left_ty.is_pointer() && right_ty.is_pointer() => {
-                        Type::Long // TODO: Suspicious
+                        Type::Long
                     }
                     BinaryOp::Add | BinaryOp::Subtract
                         if left_ty.is_pointer() && right_ty.is_int() =>

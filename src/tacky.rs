@@ -912,11 +912,7 @@ impl TackyGenerator {
         }
     }
 
-    fn cast_if_needed(
-        &mut self,
-        val: Val,
-        expr: &ast::Node<ast::Expression>,
-    ) -> Val {
+    fn cast_if_needed(&mut self, val: Val, expr: &ast::Node<ast::Expression>) -> Val {
         let expr_ty = self.semantics.expr_type(expr).clone();
         if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
             self.cast(val, &expr_ty, &target)
