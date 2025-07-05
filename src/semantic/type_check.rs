@@ -1005,7 +1005,6 @@ impl TypeChecker {
         }
     }
 
-    // TODO: maybe expected is not needed
     fn cast_if_needed(&mut self, expr: &Node<Expression>, ty: &Type, expected: &Type) -> Type {
         if ty == expected {
             expected.clone()

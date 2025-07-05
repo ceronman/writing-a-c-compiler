@@ -30,7 +30,6 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
     Ok(output_path)
 }
 
-// TODO: rewrite with an IR for simplicity
 fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
     if function.global {
         writeln!(output, "\t.globl _{name}", name = function.name)?;
@@ -308,7 +307,7 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
         writeln!(output, "\t.globl _{name}", name = variable.name)?;
     }
     if matches!(
-        variable.init[..], // TODO: Get rid of everything different than ZeroInit(0)
+        variable.init[..],
         [StaticInit::Int(0)]
             | [StaticInit::Long(0)]
             | [StaticInit::UInt(0)]

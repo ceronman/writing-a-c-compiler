@@ -461,7 +461,7 @@ impl TackyGenerator {
     fn emit_expr(&mut self, expr: &ast::Node<ast::Expression>) -> Val {
         let expr_ty = self.semantics.expr_type(expr).clone();
         match self.expression(expr) {
-            ExprResult::Operand(val) => self.cast_if_needed(val, expr, &expr_ty),
+            ExprResult::Operand(val) => self.cast_if_needed(val, expr),
             ExprResult::Dereference(ptr) => {
                 if self.semantics.pointer_decays.contains_key(&expr.id) {
                     ptr
@@ -471,7 +471,7 @@ impl TackyGenerator {
                         ptr,
                         dst: dst.clone(),
                     });
-                    self.cast_if_needed(dst, expr, &expr_ty)
+                    self.cast_if_needed(dst, expr)
                 }
             }
         }
@@ -777,7 +777,7 @@ impl TackyGenerator {
                 } else {
                     self.emit_expr(right)
                 };
-                let rvalue = self.cast_if_needed(rvalue, expr, &expr_ty);
+                let rvalue = self.cast_if_needed(rvalue, expr);
                 self.copy_or_store(&lvalue, rvalue.clone());
                 rvalue
             }
@@ -892,7 +892,7 @@ impl TackyGenerator {
                 dst
             }
         };
-        self.cast_if_needed(val, expr, &expr_ty)
+        self.cast_if_needed(val, expr)
     }
 
     fn copy_or_store(&mut self, result: &ExprResult, src: Val) {
@@ -916,10 +916,10 @@ impl TackyGenerator {
         &mut self,
         val: Val,
         expr: &ast::Node<ast::Expression>,
-        expr_ty: &Type,
     ) -> Val {
+        let expr_ty = self.semantics.expr_type(expr).clone();
         if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
-            self.cast(val, expr_ty, &target)
+            self.cast(val, &expr_ty, &target)
         } else if let Some(target) = self.semantics.pointer_decays.get(&expr.id).cloned() {
             let dst = self.make_temp(&target);
             self.instructions.push(Instruction::GetAddress {
