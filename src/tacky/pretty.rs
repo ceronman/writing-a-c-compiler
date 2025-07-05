@@ -1,6 +1,6 @@
-use std::io::Write;
 use crate::semantic::StaticInit;
 use crate::{ast, tacky};
+use std::io::Write;
 
 pub fn pp(program: &tacky::Program) -> anyhow::Result<String> {
     let mut buffer = Vec::new();
@@ -14,7 +14,10 @@ pub fn pp(program: &tacky::Program) -> anyhow::Result<String> {
     Ok(String::from_utf8(buffer)?)
 }
 
-fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -> anyhow::Result<()> {
+fn pp_static_variable(
+    file: &mut impl Write,
+    variable: &tacky::StaticVariable,
+) -> anyhow::Result<()> {
     write!(file, "static ")?;
     if variable.global {
         write!(file, "global ")?;

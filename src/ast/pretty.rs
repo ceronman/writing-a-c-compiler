@@ -1,5 +1,9 @@
+use crate::ast::{
+    AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration,
+    Identifier, Initializer, Node, PostfixOp, Program, Statement, StorageClass, Type, UnaryOp,
+    VarDeclaration,
+};
 use std::io::Write;
-use crate::ast::{AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Initializer, Node, PostfixOp, Program, Statement, StorageClass, Type, UnaryOp, VarDeclaration};
 
 struct PrettyAst {
     label: String,
