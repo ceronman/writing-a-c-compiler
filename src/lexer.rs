@@ -416,20 +416,27 @@ impl<'src> Lexer<'src> {
         }
     }
     
+    fn eat_escape(&mut self) -> bool {
+        self.advance(); // Consume the backslash
+
+        match self.peek() {
+            Some('\'') | Some('"') | Some('?') | Some('\\') |
+            Some('a') | Some('b') | Some('f') | Some('n') |
+            Some('r') | Some('t') | Some('v') => {
+                self.advance(); // Consume the escape character
+                true
+            }
+            _ => false,
+        }
+    }
+    
     fn char_literal(&mut self) -> TokenKind {
         // The opening single quote is already consumed by token_kind
         
         match self.peek() {
             Some('\\') => {
-                self.advance(); // Consume the backslash
-
-                match self.peek() {
-                    Some('\'') | Some('"') | Some('?') | Some('\\') |
-                    Some('a') | Some('b') | Some('f') | Some('n') |
-                    Some('r') | Some('t') | Some('v') => {
-                        self.advance(); // Consume the escape character
-                    }
-                    _ => return TokenKind::Error, // Invalid escape sequence
+                if !self.eat_escape() {
+                    return TokenKind::Error;
                 }
             }
             None | Some('\'') | Some('\n') => return TokenKind::Error,
@@ -457,15 +464,8 @@ impl<'src> Lexer<'src> {
                     return TokenKind::StringLiteral;
                 }
                 Some('\\') => {
-                    self.advance(); // Consume the backslash
-
-                    match self.peek() {
-                        Some('\'') | Some('"') | Some('?') | Some('\\') |
-                        Some('a') | Some('b') | Some('f') | Some('n') |
-                        Some('r') | Some('t') | Some('v') => {
-                            self.advance(); // Consume the escape character
-                        }
-                        _ => return TokenKind::Error, // Invalid escape sequence
+                    if !self.eat_escape() {
+                        return TokenKind::Error;
                     }
                 }
                 None | Some('\n') => return TokenKind::Error, // Unclosed string literal
