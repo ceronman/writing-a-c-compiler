@@ -28,6 +28,7 @@ pub enum TokenKind {
     IntConstant(IntKind),
     DoubleConstant,
     CharLiteral,
+    StringLiteral,
 
     Char,
     Int,
@@ -121,6 +122,7 @@ impl Display for TokenKind {
             TokenKind::IntConstant(IntKind::ULong) => "unsigned long constant",
             TokenKind::DoubleConstant => "double constant",
             TokenKind::CharLiteral => "character literal",
+            TokenKind::StringLiteral => "string literal",
             TokenKind::Char => "'char'",
             TokenKind::Int => "'int'",
             TokenKind::Long => "'long'",
@@ -303,6 +305,7 @@ impl<'src> Lexer<'src> {
             },
             '0'..='9' | '.' => self.constant(c),
             '\'' => self.char_literal(),
+            '"' => self.string_literal(),
             c if c == '_' || c.is_alphabetic() => self.identifier(),
             _ => TokenKind::Error,
         }
@@ -388,6 +391,7 @@ impl<'src> Lexer<'src> {
             }
         }
         match &self.source[self.start..self.offset] {
+            "char" => TokenKind::Char,
             "int" => TokenKind::Int,
             "long" => TokenKind::Long,
             "void" => TokenKind::Void,
@@ -415,26 +419,20 @@ impl<'src> Lexer<'src> {
     fn char_literal(&mut self) -> TokenKind {
         // The opening single quote is already consumed by token_kind
         
-        let Some(c) = self.peek() else {
-            return TokenKind::Error;
-        };
-        
         match self.peek() {
             Some('\\') => {
                 self.advance(); // Consume the backslash
-                let escape = self.peek();
 
-                match escape {
+                match self.peek() {
                     Some('\'') | Some('"') | Some('?') | Some('\\') |
                     Some('a') | Some('b') | Some('f') | Some('n') |
-                    Some('r') | Some('v') => {
+                    Some('r') | Some('t') | Some('v') => {
                         self.advance(); // Consume the escape character
                     }
                     _ => return TokenKind::Error, // Invalid escape sequence
                 }
             }
-            None | Some('\n') => return TokenKind::Error,
-            Some(c) if !c.is_ascii() => return TokenKind::Error,
+            None | Some('\'') | Some('\n') => return TokenKind::Error,
             _ => {
                 self.advance();
             }
@@ -446,6 +444,36 @@ impl<'src> Lexer<'src> {
         }
         
         TokenKind::CharLiteral
+    }
+    
+    fn string_literal(&mut self) -> TokenKind {
+        // The opening double quote is already consumed by token_kind
+        
+        loop {
+            match self.peek() {
+                Some('"') => {
+                    // Found closing quote
+                    self.advance(); // Consume the closing quote
+                    return TokenKind::StringLiteral;
+                }
+                Some('\\') => {
+                    self.advance(); // Consume the backslash
+
+                    match self.peek() {
+                        Some('\'') | Some('"') | Some('?') | Some('\\') |
+                        Some('a') | Some('b') | Some('f') | Some('n') |
+                        Some('r') | Some('t') | Some('v') => {
+                            self.advance(); // Consume the escape character
+                        }
+                        _ => return TokenKind::Error, // Invalid escape sequence
+                    }
+                }
+                None | Some('\n') => return TokenKind::Error, // Unclosed string literal
+                _ => {
+                    self.advance(); // Consume regular character
+                }
+            }
+        }
     }
 
     fn advance(&mut self) -> Option<char> {
