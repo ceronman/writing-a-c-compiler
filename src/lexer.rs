@@ -27,7 +27,9 @@ pub enum TokenKind {
     Identifier,
     IntConstant(IntKind),
     DoubleConstant,
+    CharLiteral,
 
+    Char,
     Int,
     Long,
     Void,
@@ -118,6 +120,8 @@ impl Display for TokenKind {
             TokenKind::IntConstant(IntKind::Long) => "long constant",
             TokenKind::IntConstant(IntKind::ULong) => "unsigned long constant",
             TokenKind::DoubleConstant => "double constant",
+            TokenKind::CharLiteral => "character literal",
+            TokenKind::Char => "'char'",
             TokenKind::Int => "'int'",
             TokenKind::Long => "'long'",
             TokenKind::Void => "'void'",
@@ -298,6 +302,7 @@ impl<'src> Lexer<'src> {
                 _ => TokenKind::Less,
             },
             '0'..='9' | '.' => self.constant(c),
+            '\'' => self.char_literal(),
             c if c == '_' || c.is_alphabetic() => self.identifier(),
             _ => TokenKind::Error,
         }
@@ -405,6 +410,42 @@ impl<'src> Lexer<'src> {
             "extern" => TokenKind::Extern,
             _ => TokenKind::Identifier,
         }
+    }
+    
+    fn char_literal(&mut self) -> TokenKind {
+        // The opening single quote is already consumed by token_kind
+        
+        let Some(c) = self.peek() else {
+            return TokenKind::Error;
+        };
+        
+        match self.peek() {
+            Some('\\') => {
+                self.advance(); // Consume the backslash
+                let escape = self.peek();
+
+                match escape {
+                    Some('\'') | Some('"') | Some('?') | Some('\\') |
+                    Some('a') | Some('b') | Some('f') | Some('n') |
+                    Some('r') | Some('v') => {
+                        self.advance(); // Consume the escape character
+                    }
+                    _ => return TokenKind::Error, // Invalid escape sequence
+                }
+            }
+            None | Some('\n') => return TokenKind::Error,
+            Some(c) if !c.is_ascii() => return TokenKind::Error,
+            _ => {
+                self.advance();
+            }
+        }
+        
+        // Check for closing single quote
+        if !self.eat('\'') {
+            return TokenKind::Error;
+        }
+        
+        TokenKind::CharLiteral
     }
 
     fn advance(&mut self) -> Option<char> {
