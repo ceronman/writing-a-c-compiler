@@ -246,6 +246,8 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> anyhow::Res
 
 fn pp_val(file: &mut impl Write, val: &tacky::Val) -> anyhow::Result<()> {
     match val {
+        tacky::Val::Constant(ast::Constant::Char(value)) => write!(file, "{value}SC")?,
+        tacky::Val::Constant(ast::Constant::UChar(value)) => write!(file, "{value}UC")?,
         tacky::Val::Constant(ast::Constant::Int(value)) => write!(file, "{value}")?,
         tacky::Val::Constant(ast::Constant::Long(value)) => write!(file, "{value}L")?,
         tacky::Val::Constant(ast::Constant::UInt(value)) => write!(file, "{value}U")?,
@@ -258,6 +260,9 @@ fn pp_val(file: &mut impl Write, val: &tacky::Val) -> anyhow::Result<()> {
 
 fn pp_type(file: &mut impl Write, ty: &ast::Type) -> anyhow::Result<()> {
     match ty {
+        ast::Type::Char => write!(file, "Char"),
+        ast::Type::SChar => write!(file, "Signed Char"),
+        ast::Type::UChar => write!(file, "Unsigned Char"),
         ast::Type::Int => write!(file, "Int"),
         ast::Type::Long => write!(file, "Long"),
         ast::Type::UInt => write!(file, "Unsigned Int"),

@@ -14,7 +14,7 @@ mod tempfile;
 mod testgen;
 
 use crate::tempfile::TempPath;
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -139,7 +139,9 @@ fn parse_args() -> Options {
         _ => {
             eprintln!("Error: incorrect number of arguments");
             eprintln!("{}", args.join(" "));
-            eprintln!("Usage: compiler [ --lex | --parse | --validate | --semantic | --codegen | --emmit ] <FILENAME>");
+            eprintln!(
+                "Usage: compiler [ --lex | --parse | --validate | --semantic | --codegen | --emmit ] <FILENAME>"
+            );
             std::process::exit(1);
         }
     };

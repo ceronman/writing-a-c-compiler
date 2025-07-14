@@ -270,7 +270,6 @@ impl Resolver {
                 self.resolve_expression(then_expr)?;
                 self.resolve_expression(else_expr)?;
             }
-            Expression::Constant(_) => {}
             Expression::FunctionCall { name, args } => {
                 let symbol = &name.symbol;
                 for scope in &self.scopes {
@@ -297,6 +296,7 @@ impl Resolver {
                 self.resolve_expression(expr1)?;
                 self.resolve_expression(expr2)?;
             }
+            Expression::Constant(_) | Expression::String(_) => {}
         }
         Ok(())
     }

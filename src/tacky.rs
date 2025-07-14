@@ -245,6 +245,8 @@ impl TackyGenerator {
 
     fn emit_zero_initializer(&mut self, offset: usize, name: &Symbol, ty: &Type) {
         let constant = match ty {
+            Type::Char | Type::SChar => Constant::Char(0),
+            Type::UChar => Constant::UChar(0),
             Type::Int => Constant::Int(0),
             Type::UInt => Constant::UInt(0),
             Type::Long => Constant::Long(0),
@@ -481,6 +483,7 @@ impl TackyGenerator {
         let expr_ty = self.semantics.expr_type(expr).clone();
         let result = match expr.as_ref() {
             ast::Expression::Constant(value) => Val::Constant(value.clone()),
+            ast::Expression::String(_) => todo!(),
             ast::Expression::Unary { op, expr } => {
                 let lvalue = self.expression(expr);
                 let val = self.get_or_load(&lvalue, expr);

@@ -39,6 +39,7 @@ type BackendSymbolTable = HashMap<Symbol, BackendSymbolData>;
 impl SemanticData {
     fn val_asm_ty(&self, val: &tacky::Val) -> AsmType {
         match val {
+            tacky::Val::Constant(Constant::Char(_) | Constant::UChar(_)) => todo!(),
             tacky::Val::Constant(Constant::Int(_) | Constant::UInt(_)) => AsmType::Longword,
             tacky::Val::Constant(Constant::Long(_) | Constant::ULong(_)) => AsmType::Quadword,
             tacky::Val::Constant(Constant::Double(_)) => AsmType::Double,
@@ -48,6 +49,7 @@ impl SemanticData {
 
     fn ty_to_asm(ty: &Type) -> AsmType {
         match ty {
+            Type::UChar | Type::SChar | Type::Char => todo!(),
             Type::Int | Type::UInt => AsmType::Longword,
             Type::Long | Type::ULong => AsmType::Quadword,
             Type::Double => AsmType::Double,
@@ -81,17 +83,12 @@ impl SemanticData {
 
     fn is_signed(&self, val: &tacky::Val) -> bool {
         match val {
-            tacky::Val::Constant(Constant::Int(_) | Constant::Long(_)) => true,
-            tacky::Val::Constant(Constant::UInt(_) | Constant::ULong(_)) => false,
+            tacky::Val::Constant(Constant::Int(_) | Constant::Long(_) | Constant::Char(_)) => true,
+            tacky::Val::Constant(Constant::UInt(_) | Constant::ULong(_) | Constant::UChar(_)) => {
+                false
+            }
             tacky::Val::Constant(Constant::Double(_)) => true,
-            tacky::Val::Var(name) => match self.symbol_ty(name) {
-                Type::Int | Type::Long => true,
-                Type::UInt | Type::ULong => false,
-                Type::Double => true,
-                Type::Function(_) => unreachable!(),
-                Type::Pointer(_) => false,
-                Type::Array(_, _) => false,
-            },
+            tacky::Val::Var(name) => self.symbol_ty(name).is_signed(),
         }
     }
 }

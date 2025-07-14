@@ -90,6 +90,7 @@ pub enum ForInit {
 #[derive(Debug)]
 pub enum Expression {
     Constant(Constant),
+    String(Symbol),
     Var(Symbol),
     Unary {
         op: Node<UnaryOp>,
@@ -134,6 +135,8 @@ pub enum Constant {
     Long(i64),
     ULong(u64),
     Double(f64),
+    Char(i8),
+    UChar(u8),
 }
 
 #[derive(Debug)]
@@ -149,6 +152,9 @@ pub enum Declaration {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Type {
+    Char,
+    SChar,
+    UChar,
     Int,
     UInt,
     Long,
@@ -308,6 +314,7 @@ impl Type {
 
     pub fn size(&self) -> usize {
         match self {
+            Type::Char | Type::UChar | Type::SChar => 1,
             Type::Int => 4,
             Type::UInt => 4,
             Type::Long => 8,
@@ -321,13 +328,9 @@ impl Type {
 
     pub fn is_signed(&self) -> bool {
         match self {
-            Type::Int => true,
-            Type::UInt => false,
-            Type::Long => true,
-            Type::ULong => false,
-            Type::Double => false,
+            Type::Int | Type::Long | Type::Char | Type::SChar => true,
+            Type::UInt | Type::ULong | Type::Double | Type::Pointer(_) | Type::UChar => false,
             Type::Function(_) => panic!("Sign of function type"),
-            Type::Pointer(_) => false,
             Type::Array(_, _) => panic!("Arrays don't have sign"),
         }
     }
@@ -336,6 +339,8 @@ impl Type {
 impl Constant {
     pub fn as_u64(&self) -> u64 {
         match self {
+            Constant::Char(v) => *v as u64,
+            Constant::UChar(v) => *v as u64,
             Constant::Int(v) => *v as u64,
             Constant::UInt(v) => *v as u64,
             Constant::Long(v) => *v as u64,
@@ -350,6 +355,8 @@ impl Constant {
 
     pub fn ty(&self) -> Type {
         match self {
+            Constant::Char(_) => Type::Char,
+            Constant::UChar(_) => Type::UChar,
             Constant::Int(_) => Type::Int,
             Constant::UInt(_) => Type::UInt,
             Constant::Long(_) => Type::Long,

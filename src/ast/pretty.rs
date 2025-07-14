@@ -141,6 +141,8 @@ impl PrettyAst {
             Statement::Case { value, body, .. } => {
                 if let Expression::Constant(value) = value.as_ref() {
                     let value = match value {
+                        Constant::UChar(v) => *v as i64,
+                        Constant::Char(v) => *v as i64,
                         Constant::Int(v) => *v as i64,
                         Constant::Long(v) => *v,
                         Constant::UInt(v) => *v as i64,
@@ -211,6 +213,7 @@ impl PrettyAst {
         let node_id = expression.id;
         match expression.as_ref() {
             Expression::Constant(value) => Self::from_constant(value),
+            Expression::String(symbol) => Self::new(format!("<{node_id}> \"{symbol}\""), vec![]),
             Expression::Var(name) => Self::new(format!("<{node_id}> Var [{name}]"), vec![]),
             Expression::Unary { op, expr } => Self::new(
                 format!("<{node_id}> Unary [{}]", Self::unary_op(op)),
@@ -282,6 +285,8 @@ impl PrettyAst {
             Constant::UInt(v) => Self::new(format!("Constant UInt [{}]", *v), vec![]),
             Constant::ULong(v) => Self::new(format!("Constant ULong [{}]", *v), vec![]),
             Constant::Double(v) => Self::new(format!("Constant Double [{:+e}]", *v), vec![]),
+            Constant::Char(v) => Self::new(format!("Constant Char [{}]", *v), vec![]),
+            Constant::UChar(v) => Self::new(format!("Constant UChar [{}]", *v), vec![]),
         }
     }
 
@@ -289,6 +294,9 @@ impl PrettyAst {
         match ty {
             Type::Int => Self::new("Int", vec![]),
             Type::Long => Self::new("Long", vec![]),
+            Type::Char => Self::new("Char", vec![]),
+            Type::SChar => Self::new("Signed Char", vec![]),
+            Type::UChar => Self::new("Unsigned Char", vec![]),
             Type::ULong => Self::new("Unsigned Long", vec![]),
             Type::UInt => Self::new("Unsigned Int", vec![]),
             Type::Double => Self::new("Double", vec![]),

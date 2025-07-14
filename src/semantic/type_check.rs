@@ -109,7 +109,9 @@ impl TypeChecker {
         Ok(())
     }
 
-    fn check_static_initializer(init: &Node<Initializer>, target: &Type,
+    fn check_static_initializer(
+        init: &Node<Initializer>,
+        target: &Type,
     ) -> Result<Vec<StaticInit>> {
         match init.as_ref() {
             Initializer::Single(expr) => {
@@ -430,11 +432,13 @@ impl TypeChecker {
                             kind: ErrorKind::Type,
                             msg: "case label does not reduce to an integer constant".to_owned(),
                             span: value.span,
-                        })
+                        });
                     }
                 };
                 let case_constant = constant.as_u64();
                 let case_value = match &switch_cases.expr_ty {
+                    Type::Char | Type::SChar => Constant::Char(case_constant as i8),
+                    Type::UChar => Constant::UChar(case_constant as u8),
                     Type::Int => Constant::Int(case_constant as i32),
                     Type::UInt => Constant::UInt(case_constant as u32),
                     Type::Long => Constant::Long(case_constant as i64),
@@ -538,6 +542,7 @@ impl TypeChecker {
     fn check_expression(&mut self, expr: &Node<Expression>) -> Result<Type> {
         let ty = match expr.as_ref() {
             Expression::Constant(c) => c.ty(),
+            Expression::String(_) => todo!(),
             Expression::Var(name) => {
                 let Some(data) = self.symbols.get(name) else {
                     return Err(CompilerError {
@@ -929,7 +934,7 @@ impl TypeChecker {
                             kind: ErrorKind::Type,
                             msg: "Cannot dereference a non-pointer".to_string(),
                             span: expr.span,
-                        })
+                        });
                     }
                 }
             }
@@ -956,7 +961,7 @@ impl TypeChecker {
                             kind: ErrorKind::Type,
                             msg: "Subscript requires integer and pointer types".to_string(),
                             span: expr.span,
-                        })
+                        });
                     }
                 }
             }
@@ -1017,11 +1022,7 @@ impl TypeChecker {
         } else if matches!(ty1, Type::Double) || matches!(ty2, Type::Double) {
             &Type::Double
         } else if ty1.size() == ty2.size() {
-            if ty1.is_signed() {
-                ty2
-            } else {
-                ty1
-            }
+            if ty1.is_signed() { ty2 } else { ty1 }
         } else if ty1.size() > ty2.size() {
             ty1
         } else {

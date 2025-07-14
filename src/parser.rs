@@ -27,6 +27,7 @@ impl TokenKind {
         matches!(
             self,
             TokenKind::Double
+                | TokenKind::Char
                 | TokenKind::Int
                 | TokenKind::Long
                 | TokenKind::Unsigned
@@ -350,6 +351,7 @@ impl<'src> Parser<'src> {
             return Ok(self.node(span, Type::Double));
         }
 
+        let mut char = 0;
         let mut signed = 0;
         let mut unsigned = 0;
         let mut int = 0;
@@ -357,6 +359,7 @@ impl<'src> Parser<'src> {
 
         for ty in types {
             match ty {
+                TokenKind::Char => char += 1,
                 TokenKind::Signed => signed += 1,
                 TokenKind::Unsigned => unsigned += 1,
                 TokenKind::Int => int += 1,
@@ -366,31 +369,34 @@ impl<'src> Parser<'src> {
                         kind: ErrorKind::Parse,
                         msg: "Invalid type specifier".into(),
                         span,
-                    })
+                    });
                 }
                 _ => unreachable!(),
             };
         }
 
-        let ty = match (signed, unsigned, int, long) {
-            (0, 1, 0 | 1, 1) => Type::ULong,
-            (0, 1, 0 | 1, 0) => Type::UInt,
-            (0 | 1, 0, 0 | 1, 1) => Type::Long,
-            (0 | 1, 0, 1, 0) => Type::Int,
-            (1, 0, 0, 0) => Type::Int,
-            (0, 0, 0, 0) => {
+        let ty = match (signed, unsigned, char, int, long) {
+            (0, 0, 1, 0, 0) => Type::Char,
+            (1, 0, 1, 0, 0) => Type::SChar,
+            (0, 1, 1, 0, 0) => Type::UChar,
+            (0, 1, 0, 0 | 1, 1) => Type::ULong,
+            (0, 1, 0, 0 | 1, 0) => Type::UInt,
+            (0 | 1, 0, 0, 0 | 1, 1) => Type::Long,
+            (0 | 1, 0, 0, 1, 0) => Type::Int,
+            (1, 0, 0, 0, 0) => Type::Int,
+            (0, 0, 0, 0, 0) => {
                 return Err(CompilerError {
                     kind: ErrorKind::Parse,
                     msg: "Expected type specifier".into(),
                     span,
-                })
+                });
             }
             _ => {
                 return Err(CompilerError {
                     kind: ErrorKind::Parse,
                     msg: "Invalid type specifier".into(),
                     span,
-                })
+                });
             }
         };
 
@@ -684,8 +690,10 @@ impl<'src> Parser<'src> {
         error_kind: &str,
     ) -> Result<Node<Expression>> {
         let mut expr = match self.current.kind {
+            TokenKind::StringLiteral => self.string_literal()?,
             TokenKind::IntConstant(_) => self.int_constant()?,
             TokenKind::DoubleConstant => self.double_constant()?,
+            TokenKind::CharLiteral => self.char_literal()?,
             TokenKind::Identifier => {
                 if self.next.kind == TokenKind::OpenParen {
                     self.function_call()?
@@ -1056,6 +1064,63 @@ impl<'src> Parser<'src> {
             span: token.span,
         })?;
         Ok(self.node(token.span, Expression::Constant(Constant::Double(value))))
+    }
+
+    fn char_literal(&mut self) -> Result<Node<Expression>> {
+        let token = self.expect(TokenKind::CharLiteral)?;
+        let lexeme = token.slice(self.source);
+        let trimmed = &lexeme[1..lexeme.len() - 1];
+        let mut chars = trimmed.chars();
+        if let Some(c) = chars.next() {
+            let c = match (c, chars.next()) {
+                ('\\', Some('\'')) => '\'',
+                ('\\', Some('"')) => '"',
+                ('\\', Some('?')) => '?',
+                ('\\', Some('\\')) => '\\',
+                ('\\', Some('a')) => '\x07',
+                ('\\', Some('b')) => '\x08',
+                ('\\', Some('f')) => '\x0C',
+                ('\\', Some('n')) => '\n',
+                ('\\', Some('r')) => '\r',
+                ('\\', Some('t')) => '\t',
+                ('\\', Some('v')) => '\x0B',
+                _ => c,
+            };
+            return Ok(self.node(token.span, Expression::Constant(Constant::Int(c as i32))));
+        }
+        unreachable!()
+    }
+
+    fn string_literal(&mut self) -> Result<Node<Expression>> {
+        let mut value = String::new();
+        let begin = self.current.span;
+        let mut end = self.current.span;
+        while let TokenKind::StringLiteral = self.current.kind {
+            let lexeme = self.current.slice(self.source);
+            let trimmed = &lexeme[1..lexeme.len() - 1];
+            let mut chars = trimmed.chars();
+            while let Some(c) = chars.next() {
+                // TODO: de-duplicate with char_literal
+                let c = match (c, chars.next()) {
+                    ('\\', Some('\'')) => '\'',
+                    ('\\', Some('"')) => '"',
+                    ('\\', Some('?')) => '?',
+                    ('\\', Some('\\')) => '\\',
+                    ('\\', Some('a')) => '\x07',
+                    ('\\', Some('b')) => '\x08',
+                    ('\\', Some('f')) => '\x0C',
+                    ('\\', Some('n')) => '\n',
+                    ('\\', Some('r')) => '\r',
+                    ('\\', Some('t')) => '\t',
+                    ('\\', Some('v')) => '\x0B',
+                    _ => c,
+                };
+                value.push(c);
+            }
+            end = self.current.span;
+            self.advance();
+        }
+        Ok(self.node(begin + end, Expression::String(value)))
     }
 
     fn int_constant(&mut self) -> Result<Node<Expression>> {

@@ -415,24 +415,23 @@ impl<'src> Lexer<'src> {
             _ => TokenKind::Identifier,
         }
     }
-    
+
     fn eat_escape(&mut self) -> bool {
         self.advance(); // Consume the backslash
 
         match self.peek() {
-            Some('\'') | Some('"') | Some('?') | Some('\\') |
-            Some('a') | Some('b') | Some('f') | Some('n') |
-            Some('r') | Some('t') | Some('v') => {
+            Some('\'') | Some('"') | Some('?') | Some('\\') | Some('a') | Some('b') | Some('f')
+            | Some('n') | Some('r') | Some('t') | Some('v') => {
                 self.advance(); // Consume the escape character
                 true
             }
             _ => false,
         }
     }
-    
+
     fn char_literal(&mut self) -> TokenKind {
         // The opening single quote is already consumed by token_kind
-        
+
         match self.peek() {
             Some('\\') => {
                 if !self.eat_escape() {
@@ -444,18 +443,18 @@ impl<'src> Lexer<'src> {
                 self.advance();
             }
         }
-        
+
         // Check for closing single quote
         if !self.eat('\'') {
             return TokenKind::Error;
         }
-        
+
         TokenKind::CharLiteral
     }
-    
+
     fn string_literal(&mut self) -> TokenKind {
         // The opening double quote is already consumed by token_kind
-        
+
         loop {
             match self.peek() {
                 Some('"') => {
