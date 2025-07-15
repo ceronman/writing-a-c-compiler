@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod test;
 
+use std::slice::Iter;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
     FunctionDeclaration, FunctionType, Identifier, Initializer, Node, PostfixOp, Program,
@@ -1071,24 +1072,14 @@ impl<'src> Parser<'src> {
         let lexeme = token.slice(self.source);
         let trimmed = &lexeme[1..lexeme.len() - 1];
         let mut chars = trimmed.chars();
-        if let Some(c) = chars.next() {
-            let c = match (c, chars.next()) {
-                ('\\', Some('\'')) => '\'',
-                ('\\', Some('"')) => '"',
-                ('\\', Some('?')) => '?',
-                ('\\', Some('\\')) => '\\',
-                ('\\', Some('a')) => '\x07',
-                ('\\', Some('b')) => '\x08',
-                ('\\', Some('f')) => '\x0C',
-                ('\\', Some('n')) => '\n',
-                ('\\', Some('r')) => '\r',
-                ('\\', Some('t')) => '\t',
-                ('\\', Some('v')) => '\x0B',
-                _ => c,
-            };
-            return Ok(self.node(token.span, Expression::Constant(Constant::Int(c as i32))));
-        }
-        unreachable!()
+        let Some(c) = self.next_character(&mut chars)? else {
+            return Err(CompilerError {
+                kind: ErrorKind::Parse,
+                msg: "Invalid escape sequence".to_string(),
+                span: self.current.span,
+            })
+        };
+        Ok(self.node(token.span, Expression::Constant(Constant::Int(c as i32))))
     }
 
     fn string_literal(&mut self) -> Result<Node<Expression>> {
@@ -1099,28 +1090,48 @@ impl<'src> Parser<'src> {
             let lexeme = self.current.slice(self.source);
             let trimmed = &lexeme[1..lexeme.len() - 1];
             let mut chars = trimmed.chars();
-            while let Some(c) = chars.next() {
-                // TODO: de-duplicate with char_literal
-                let c = match (c, chars.next()) {
-                    ('\\', Some('\'')) => '\'',
-                    ('\\', Some('"')) => '"',
-                    ('\\', Some('?')) => '?',
-                    ('\\', Some('\\')) => '\\',
-                    ('\\', Some('a')) => '\x07',
-                    ('\\', Some('b')) => '\x08',
-                    ('\\', Some('f')) => '\x0C',
-                    ('\\', Some('n')) => '\n',
-                    ('\\', Some('r')) => '\r',
-                    ('\\', Some('t')) => '\t',
-                    ('\\', Some('v')) => '\x0B',
-                    _ => c,
-                };
+            while let Some(c) = self.next_character(&mut chars)? {
                 value.push(c);
             }
             end = self.current.span;
             self.advance();
         }
         Ok(self.node(begin + end, Expression::String(value)))
+    }
+
+    fn next_character(&self, chars: &mut impl Iterator<Item = char>) -> Result<Option<char>> {
+        if let Some(c) = chars.next() {
+            let c = if c == '\\' {
+                match chars.next() {
+                    Some('\'') => '\'',
+                    Some('"') => '"',
+                    Some('?') => '?',
+                    Some('\\') => '\\',
+                    Some('a') => '\x07',
+                    Some('b') => '\x08',
+                    Some('f') => '\x0C',
+                    Some('n') => '\n',
+                    Some('r') => '\r',
+                    Some('t') => '\t',
+                    Some('v') => '\x0B',
+                    Some(escape) => return Err(CompilerError {
+                        kind: ErrorKind::Parse,
+                        msg: format!("Invalid escape sequence: '\\{escape}'"),
+                        span: self.current.span,
+                    }),
+                    _ => return Err(CompilerError {
+                        kind: ErrorKind::Parse,
+                        msg: "Invalid escape sequence".to_string(),
+                        span: self.current.span,
+                    }),
+                }
+            } else {
+                c
+            };
+            Ok(Some(c))
+        } else {
+            Ok(None)
+        }
     }
 
     fn int_constant(&mut self) -> Result<Node<Expression>> {

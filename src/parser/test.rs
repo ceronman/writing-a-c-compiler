@@ -55611,8 +55611,8 @@ fn test_chapter_16_invalid_types_assign_to_string_literal() {
             ╰── Function [main]
                 ╰── Body
                     ├── <8> Assign [=]
-                    │   ├── <5> "fo"
-                    │   ╰── <7> "br"
+                    │   ├── <5> "foo"
+                    │   ╰── <7> "bar"
                     ╰── Return
                         ╰── Constant Int [0]
     "#;
@@ -55735,7 +55735,7 @@ fn test_chapter_16_invalid_types_extra_credit_bit_shift_string() {
             ╰── Function [main]
                 ╰── Body
                     ├── <8>  [<<]
-                    │   ├── <5> "fo"
+                    │   ├── <5> "foo"
                     │   ╰── Constant Int [3]
                     ╰── Return
                         ╰── Constant Int [0]
@@ -55757,7 +55757,7 @@ fn test_chapter_16_invalid_types_extra_credit_bitwise_operation_on_string() {
             ╰── Function [main]
                 ╰── Body
                     ├── <8>  [&]
-                    │   ├── <5> "M tig"
+                    │   ├── <5> "My string"
                     │   ╰── Constant Int [100]
                     ╰── Return
                         ╰── Constant Int [0]
@@ -55788,7 +55788,7 @@ fn test_chapter_16_invalid_types_extra_credit_case_statement_string() {
                         ╰── Block
                             ├── Case [invalid]
                             │   ├── Value
-                            │   │   ╰── <6> "fo"
+                            │   │   ╰── <6> "foo"
                             │   ╰── Return
                             │       ╰── Constant Int [1]
                             ╰── Default
@@ -55819,10 +55819,10 @@ fn test_chapter_16_invalid_types_extra_credit_compound_assign_from_string() {
                     │   │   ╰── Pointer
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <9> "sm tig"
+                    │       ╰── <9> "some string "
                     ├── <16> Assign [+=]
                     │   ├── <13> Var [s]
-                    │   ╰── <15> "aohrsr"
+                    │   ╰── <15> "another str"
                     ╰── Return
                         ╰── Constant Int [0]
     "#;
@@ -55843,7 +55843,7 @@ fn test_chapter_16_invalid_types_extra_credit_compound_assign_to_string() {
             ╰── Function [main]
                 ╰── Body
                     ├── <8> Assign [+=]
-                    │   ├── <5> "M tig"
+                    │   ├── <5> "My string"
                     │   ╰── Constant Int [1]
                     ╰── Return
                         ╰── Constant Int [0]
@@ -55865,7 +55865,7 @@ fn test_chapter_16_invalid_types_extra_credit_postfix_incr_string() {
             ╰── Function [main]
                 ╰── Body
                     ├── <7> Postfix [++]
-                    │   ╰── <5> "fo"
+                    │   ╰── <5> "foo"
                     ╰── Return
                         ╰── Constant Int [0]
     "#;
@@ -55886,7 +55886,7 @@ fn test_chapter_16_invalid_types_extra_credit_prefix_incr_string() {
             ╰── Function [main]
                 ╰── Body
                     ├── <7> Unary [++]
-                    │   ╰── <6> "fo"
+                    │   ╰── <6> "foo"
                     ╰── Return
                         ╰── Constant Int [0]
     "#;
@@ -55910,7 +55910,7 @@ fn test_chapter_16_invalid_types_extra_credit_switch_on_string() {
                 ╰── Body
                     ╰── Switch
                         ├── Expression
-                        │   ╰── <5> "fo"
+                        │   ╰── <5> "foo"
                         ╰── Block
                             ╰── Default
                                 ╰── Return
@@ -56008,7 +56008,7 @@ fn test_chapter_16_invalid_types_negate_char_pointer() {
                     │   │   ╰── Pointer
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <9> "fo"
+                    │       ╰── <9> "foo"
                     ╰── Return
                         ╰── <15> Unary [-]
                             ╰── <14> Var [x]
@@ -56037,7 +56037,7 @@ fn test_chapter_16_invalid_types_string_initializer_for_multidim_array() {
             │   │           ├── 3
             │   │           ╰── Char
             │   ╰── Initializer
-            │       ╰── <8> "hlo"
+            │       ╰── <8> "hello"
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -56070,7 +56070,7 @@ fn test_chapter_16_invalid_types_string_initializer_too_long() {
                     │   │       ├── 3
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <10> "ac"
+                    │       ╰── <10> "abcd"
                     ╰── Return
                         ╰── Constant Int [0]
     "#;
@@ -56101,7 +56101,7 @@ fn test_chapter_16_invalid_types_string_initializer_too_long_nested() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── <12> "a"
-                    │           ╰── <14> "bd"
+                    │           ╰── <14> "bcde"
                     ╰── Return
                         ╰── Constant Int [0]
     "#;
@@ -56131,7 +56131,7 @@ fn test_chapter_16_invalid_types_string_initializer_too_long_nested_static() {
             │   ╰── Initializer
             │       ╰── Compound
             │           ├── <8> "a"
-            │           ╰── <10> "bd"
+            │           ╰── <10> "bcde"
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -56160,7 +56160,7 @@ fn test_chapter_16_invalid_types_string_initializer_too_long_static() {
                     │   │       ├── 3
                     │   │       ╰── Char
                     │   ├── Initializer
-                    │   │   ╰── <11> "ac"
+                    │   │   ╰── <11> "abcd"
                     │   ╰── Static
                     ╰── Return
                         ╰── Constant Int [0]
@@ -56188,7 +56188,7 @@ fn test_chapter_16_invalid_types_string_initializer_wrong_type() {
                     │   │       ├── 4
                     │   │       ╰── Long
                     │   ╰── Initializer
-                    │       ╰── <10> "ac"
+                    │       ╰── <10> "abc"
                     ╰── Return
                         ╰── <16> Subscript
                             ├── <14> Var [ints]
@@ -56279,7 +56279,7 @@ fn test_chapter_16_invalid_types_string_literal_is_plain_char_pointer() {
                     │   │   ╰── Pointer
                     │   │       ╰── Signed Char
                     │   ╰── Initializer
-                    │       ╰── <9> "fo"
+                    │       ╰── <9> "foo"
                     ╰── Return
                         ╰── Constant Int [0]
     "#;
@@ -56305,7 +56305,7 @@ fn test_chapter_16_invalid_types_string_literal_is_plain_char_pointer_static() {
                     │   │   ╰── Pointer
                     │   │       ╰── Signed Char
                     │   ├── Initializer
-                    │   │   ╰── <10> "fo"
+                    │   │   ╰── <10> "foo"
                     │   ╰── Static
                     ╰── Return
                         ╰── Constant Int [0]
@@ -63888,7 +63888,7 @@ fn test_chapter_16_valid_strings_as_initializers_adjacent_strings_in_initializer
                     │   │       ├── 6
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <23> "ysn"
+                    │       ╰── <23> "yesno"
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── nested_multi_string
@@ -63906,7 +63906,7 @@ fn test_chapter_16_valid_strings_as_initializers_adjacent_strings_in_initializer
                     │   ├── Condition
                     │   │   ╰── <43> FunctionCall [strcmp]
                     │   │       ├── <41> Var [multi_string]
-                    │   │       ╰── <42> "yso"
+                    │   │       ╰── <42> "yesno"
                     │   ╰── Then
                     │       ╰── Return
                     │           ╰── Constant Int [1]
@@ -63916,7 +63916,7 @@ fn test_chapter_16_valid_strings_as_initializers_adjacent_strings_in_initializer
                     │   │       ├── <51> Subscript
                     │   │       │   ├── <49> Var [nested_multi_string]
                     │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── <52> "a"
+                    │   │       ╰── <52> "ab"
                     │   ╰── Then
                     │       ╰── Return
                     │           ╰── Constant Int [2]
@@ -63926,7 +63926,7 @@ fn test_chapter_16_valid_strings_as_initializers_adjacent_strings_in_initializer
                     │   │       ├── <61> Subscript
                     │   │       │   ├── <59> Var [nested_multi_string]
                     │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── <62> "c"
+                    │   │       ╰── <62> "cd"
                     │   ╰── Then
                     │       ╰── Return
                     │           ╰── Constant Int [3]
@@ -63976,7 +63976,7 @@ fn test_chapter_16_valid_strings_as_initializers_array_init_special_chars() {
                     │   │       ╰── Char
                     │   ╰── Initializer
                     │       ╰── <10> "
-        	"
+        	"
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <19>  [!=]
@@ -64084,8 +64084,8 @@ fn test_chapter_16_valid_strings_as_initializers_literals_and_compound_initializ
             │           │   ├── Constant Int [98]
             │           │   ├── Constant Int [99]
             │           │   ╰── Constant Int [100]
-            │           ├── <17> "eg"
-            │           ╰── <19> "ik"
+            │           ├── <17> "efgh"
+            │           ╰── <19> "ijk"
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -64099,7 +64099,7 @@ fn test_chapter_16_valid_strings_as_initializers_literals_and_compound_initializ
                     │   │           ╰── Unsigned Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── <34> "ln"
+                    │           ├── <34> "lmn"
                     │           ╰── Compound
                     │               ├── Constant Int [111]
                     │               ╰── Constant Int [112]
@@ -64150,7 +64150,7 @@ fn test_chapter_16_valid_strings_as_initializers_literals_and_compound_initializ
                     │           │       │   │   ╰── <88> Var [i]
                     │           │       │   ╰── <91> Var [j]
                     │           │       ╰── <104> Subscript
-                    │           │           ├── <94> "acegik"
+                    │           │           ├── <94> "abcdefghijk"
                     │           │           ╰── <103>  [+]
                     │           │               ├── <99>  [*]
                     │           │               │   ├── <96> Var [i]
@@ -64206,7 +64206,7 @@ fn test_chapter_16_valid_strings_as_initializers_literals_and_compound_initializ
                     │           │       │   │   ╰── <156> Var [i]
                     │           │       │   ╰── <159> Var [j]
                     │           │       ╰── <172> Subscript
-                    │           │           ├── <162> "lnp"
+                    │           │           ├── <162> "lmnop"
                     │           │           ╰── <171>  [+]
                     │           │               ├── <167>  [*]
                     │           │               │   ├── <164> Var [i]
@@ -64305,7 +64305,7 @@ fn test_chapter_16_valid_strings_as_initializers_partial_initialize_via_string()
             │   │       ├── 5
             │   │       ╰── Char
             │   ├── Initializer
-            │   │   ╰── <7> "h"
+            │   │   ╰── <7> "hi"
             │   ╰── Static
             ├── Function [test_static]
             │   ╰── Body
@@ -64346,7 +64346,7 @@ fn test_chapter_16_valid_strings_as_initializers_partial_initialize_via_string()
             │   ├── Initializer
             │   │   ╰── Compound
             │   │       ├── <63> ""
-            │   │       ╰── <65> "b"
+            │   │       ╰── <65> "bc"
             │   ╰── Static
             ├── Function [test_static_nested]
             │   ╰── Body
@@ -64457,7 +64457,7 @@ fn test_chapter_16_valid_strings_as_initializers_partial_initialize_via_string()
             │       │   │       ├── 4
             │       │   │       ╰── Unsigned Char
             │       │   ╰── Initializer
-            │       │       ╰── <204> "a"
+            │       │       ╰── <204> "ab"
             │       ╰── Return
             │           ╰── <238>  [&&]
             │               ├── <222>  [&&]
@@ -64495,10 +64495,10 @@ fn test_chapter_16_valid_strings_as_initializers_partial_initialize_via_string()
             │       │   ╰── Initializer
             │       │       ╰── Compound
             │       │           ├── Compound
-            │       │           │   ╰── <255> "fo"
+            │       │           │   ╰── <255> "foo"
             │       │           ╰── Compound
             │       │               ├── <258> "x"
-            │       │               ╰── <260> "y"
+            │       │               ╰── <260> "yz"
             │       ├── For
             │       │   ├── Init
             │       │   │   ╰── VarDeclaration
@@ -64743,7 +64743,7 @@ fn test_chapter_16_valid_strings_as_initializers_simple() {
                     │   │       ├── 4
                     │   │       ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── <10> "ac"
+                    │       ╰── <10> "abc"
                     ╰── Return
                         ╰── <16> Subscript
                             ├── <14> Var [chars]
@@ -64861,7 +64861,7 @@ fn test_chapter_16_valid_strings_as_initializers_terminating_null_bytes() {
             │       │   │       ├── 4
             │       │   │       ╰── Unsigned Char
             │       │   ├── Initializer
-            │       │   │   ╰── <24> "dg"
+            │       │   │   ╰── <24> "dog"
             │       │   ╰── Static
             │       ╰── Return
             │           ╰── <61>  [&&]
@@ -64900,8 +64900,8 @@ fn test_chapter_16_valid_strings_as_initializers_terminating_null_bytes() {
             │       │   │           ╰── Char
             │       │   ├── Initializer
             │       │   │   ╰── Compound
-            │       │   │       ├── <77> "ys"
-            │       │   │       ╰── <79> "yp"
+            │       │   │       ├── <77> "yes"
+            │       │   │       ╰── <79> "yup"
             │       │   ╰── Static
             │       ╰── Return
             │           ╰── <169>  [&&]
@@ -65101,7 +65101,7 @@ fn test_chapter_16_valid_strings_as_initializers_terminating_null_bytes() {
             │       │   │       ├── 4
             │       │   │       ╰── Char
             │       │   ├── Initializer
-            │       │   │   ╰── <346> "ac"
+            │       │   │   ╰── <346> "abcd"
             │       │   ╰── Static
             │       ╰── Return
             │           ╰── <382>  [&&]
@@ -65138,9 +65138,9 @@ fn test_chapter_16_valid_strings_as_initializers_terminating_null_bytes() {
             │   │           ╰── Char
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── <393> "ys"
-            │           ├── <395> "n"
-            │           ╰── <397> "o"
+            │           ├── <393> "yes"
+            │           ├── <395> "no"
+            │           ╰── <397> "ok"
             ├── Function [test_nested_static_without_null_byte]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -65208,16 +65208,16 @@ fn test_chapter_16_valid_strings_as_initializers_terminating_null_bytes() {
             │                   │   ├── <471>  [||]
             │                   │   │   ├── <464> FunctionCall [strcmp]
             │                   │   │   │   ├── <462> Var [whole_array]
-            │                   │   │   │   ╰── <463> "yso"
+            │                   │   │   │   ╰── <463> "yesno"
             │                   │   │   ╰── <470> FunctionCall [strcmp]
             │                   │   │       ├── <468> Var [word1]
-            │                   │   │       ╰── <469> "yso"
+            │                   │   │       ╰── <469> "yesno"
             │                   │   ╰── <477> FunctionCall [strcmp]
             │                   │       ├── <475> Var [word2]
-            │                   │       ╰── <476> "n"
+            │                   │       ╰── <476> "no"
             │                   ╰── <484> FunctionCall [strcmp]
             │                       ├── <482> Var [word3]
-            │                       ╰── <483> "o"
+            │                       ╰── <483> "ok"
             ├── Function [test_flat_auto_without_null_byte]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -65236,7 +65236,7 @@ fn test_chapter_16_valid_strings_as_initializers_terminating_null_bytes() {
             │       │   │       ├── 4
             │       │   │       ╰── Char
             │       │   ╰── Initializer
-            │       │       ╰── <508> "ac"
+            │       │       ╰── <508> "abcd"
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── y
@@ -65292,9 +65292,9 @@ fn test_chapter_16_valid_strings_as_initializers_terminating_null_bytes() {
             │       │   │           ╰── Char
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── <586> "ys"
-            │       │           ├── <588> "n"
-            │       │           ╰── <590> "o"
+            │       │           ├── <586> "yes"
+            │       │           ├── <588> "no"
+            │       │           ╰── <590> "ok"
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── whole_array
@@ -65360,16 +65360,16 @@ fn test_chapter_16_valid_strings_as_initializers_terminating_null_bytes() {
             │                   │   ├── <660>  [||]
             │                   │   │   ├── <653> FunctionCall [strcmp]
             │                   │   │   │   ├── <651> Var [whole_array]
-            │                   │   │   │   ╰── <652> "yso"
+            │                   │   │   │   ╰── <652> "yesno"
             │                   │   │   ╰── <659> FunctionCall [strcmp]
             │                   │   │       ├── <657> Var [word1]
-            │                   │   │       ╰── <658> "yso"
+            │                   │   │       ╰── <658> "yesno"
             │                   │   ╰── <666> FunctionCall [strcmp]
             │                   │       ├── <664> Var [word2]
-            │                   │       ╰── <665> "n"
+            │                   │       ╰── <665> "no"
             │                   ╰── <673> FunctionCall [strcmp]
             │                       ├── <671> Var [word3]
-            │                       ╰── <672> "o"
+            │                       ╰── <672> "ok"
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -65651,7 +65651,7 @@ fn test_chapter_16_valid_strings_as_initializers_transfer_by_eightbyte() {
                     │   │           ╰── Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── <25> "acegik"
+                    │           ├── <25> "abcdefghijkl"
                     │           ╰── <27> "z"
                     ├── If
                     │   ├── Condition
@@ -65659,7 +65659,7 @@ fn test_chapter_16_valid_strings_as_initializers_transfer_by_eightbyte() {
                     │   │       ├── <35> Subscript
                     │   │       │   ├── <33> Var [strings]
                     │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── <36> "acegik"
+                    │   │       ╰── <36> "abcdefghijkl"
                     │   ╰── Then
                     │       ╰── Return
                     │           ╰── Constant Int [1]
@@ -65748,7 +65748,7 @@ fn test_chapter_16_valid_strings_as_initializers_write_to_array() {
                     │   │       ├── 4
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <19> "ac"
+                    │       ╰── <19> "abc"
                     ├── <25> FunctionCall [puts]
                     │   ╰── <24> Var [flat_arr]
                     ├── <33> Assign [=]
@@ -65769,8 +65769,8 @@ fn test_chapter_16_valid_strings_as_initializers_write_to_array() {
                     │   │           ╰── Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── <47> "Hlo"
-                    │           ╰── <49> "Wrd"
+                    │           ├── <47> "Hello"
+                    │           ╰── <49> "World"
                     ├── <58> FunctionCall [puts]
                     │   ╰── <57> Subscript
                     │       ├── <55> Var [nested_array]
@@ -65833,7 +65833,8 @@ fn test_chapter_16_valid_strings_as_lvalues_addr_of_string() {
                     │   │           ╰── Char
                     │   ╰── Initializer
                     │       ╰── <22> AddressOf
-                    │           ╰── <21> "Sml	srn!n"
+                    │           ╰── <21> "Sample	string!
+        "
                     ├── <29> FunctionCall [puts]
                     │   ╰── <28> Dereference
                     │       ╰── <27> Var [str]
@@ -65909,7 +65910,7 @@ fn test_chapter_16_valid_strings_as_lvalues_adjacent_strings() {
                     │   │   ╰── Pointer
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <18> "Hlo ol"
+                    │       ╰── <18> "Hello, World"
                     ├── <24> FunctionCall [puts]
                     │   ╰── <23> Var [strings]
                     ╰── Return
@@ -65967,16 +65968,16 @@ fn test_chapter_16_valid_strings_as_lvalues_array_of_strings() {
                     │   │           ╰── Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── <24> "ys"
-                    │           ├── <26> "n"
-                    │           ╰── <28> "mye"
+                    │           ├── <24> "yes"
+                    │           ├── <26> "no"
+                    │           ╰── <28> "maybe"
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <38> FunctionCall [strcmp]
                     │   │       ├── <36> Subscript
                     │   │       │   ├── <34> Var [strings]
                     │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── <37> "ys"
+                    │   │       ╰── <37> "yes"
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -65987,7 +65988,7 @@ fn test_chapter_16_valid_strings_as_lvalues_array_of_strings() {
                     │   │       ├── <48> Subscript
                     │   │       │   ├── <46> Var [strings]
                     │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── <49> "n"
+                    │   │       ╰── <49> "no"
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -65998,7 +65999,7 @@ fn test_chapter_16_valid_strings_as_lvalues_array_of_strings() {
                     │   │       ├── <60> Subscript
                     │   │       │   ├── <58> Var [strings]
                     │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── <61> "mye"
+                    │   │       ╰── <61> "maybe"
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -66045,7 +66046,7 @@ fn test_chapter_16_valid_strings_as_lvalues_cast_string_pointer() {
                     │   │   ╰── Pointer
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <9> "Ti sasrn!"
+                    │       ╰── <9> "This is a string!"
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── uc
@@ -66159,7 +66160,7 @@ fn test_chapter_16_valid_strings_as_lvalues_pointer_operations() {
                     │   ├── Condition
                     │   │   ╰── <10>  [!=]
                     │   │       ├── <7> Subscript
-                    │   │       │   ├── <5> "aceg"
+                    │   │       │   ├── <5> "abcdefg"
                     │   │       │   ╰── Constant Int [2]
                     │   │       ╰── Constant Int [99]
                     │   ╰── Then
@@ -66174,7 +66175,7 @@ fn test_chapter_16_valid_strings_as_lvalues_pointer_operations() {
                     │   │       ╰── Char
                     │   ╰── Initializer
                     │       ╰── <23>  [+]
-                    │           ├── <20> "Ti sasrn!"
+                    │           ├── <20> "This is a string!"
                     │           ╰── Constant Int [10]
                     ├── If
                     │   ├── Condition
@@ -66209,7 +66210,7 @@ fn test_chapter_16_valid_strings_as_lvalues_pointer_operations() {
                     ╰── If
                         ├── Condition
                         │   ╰── <60> Unary [!]
-                        │       ╰── <59> "Ntanl one!"
+                        │       ╰── <59> "Not a null pointer!"
                         ╰── Then
                             ╰── Block
                                 ╰── Return
@@ -66237,7 +66238,7 @@ fn test_chapter_16_valid_strings_as_lvalues_simple() {
                     │   │   ╰── Pointer
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <9> "Hlo ol!"
+                    │       ╰── <9> "Hello, World!"
                     ╰── Return
                         ╰── <15> Subscript
                             ├── <13> Var [x]
@@ -66316,8 +66317,8 @@ fn test_chapter_16_valid_strings_as_lvalues_standard_library_calls() {
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <48> FunctionCall [strcmp]
-                    │   │       ├── <46> "ac"
-                    │   │       ╰── <47> "ac"
+                    │   │       ├── <46> "abc"
+                    │   │       ╰── <47> "abc"
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -66326,15 +66327,15 @@ fn test_chapter_16_valid_strings_as_lvalues_standard_library_calls() {
                     │   ├── Condition
                     │   │   ╰── <60>  [>=]
                     │   │       ├── <57> FunctionCall [strcmp]
-                    │   │       │   ├── <55> "a"
-                    │   │       │   ╰── <56> "x"
+                    │   │       │   ├── <55> "ab"
+                    │   │       │   ╰── <56> "xy"
                     │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [2]
                     ├── <68> FunctionCall [puts]
-                    │   ╰── <67> "Hlo ol!"
+                    │   ╰── <67> "Hello, World!"
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <72> FunctionCall [strlen]
@@ -66350,7 +66351,7 @@ fn test_chapter_16_valid_strings_as_lvalues_standard_library_calls() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <83> FunctionCall [atoi]
-                    │           ╰── <82> "1"
+                    │           ╰── <82> "10"
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <90>  [!=]
@@ -66478,7 +66479,7 @@ fn test_chapter_16_valid_strings_as_lvalues_string_special_characters() {
                     │   │   ╰── Pointer
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <71> "Hlo"ol"
+                    │       ╰── <71> "Hello"world"
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <80>  [!=]
@@ -66499,7 +66500,7 @@ fn test_chapter_16_valid_strings_as_lvalues_string_special_characters() {
                     │   │   ╰── Pointer
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <95> "Hlo\ol"
+                    │       ╰── <95> "Hello\World"
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <104>  [!=]
@@ -66520,8 +66521,8 @@ fn test_chapter_16_valid_strings_as_lvalues_string_special_characters() {
                     │   │   ╰── Pointer
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── <119> "Ln
-        bek"
+                    │       ╰── <119> "Line
+        break!"
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <128>  [!=]
@@ -66553,9 +66554,9 @@ fn test_chapter_16_valid_strings_as_lvalues_string_special_characters() {
                     │           ╰── Return
                     │               ╰── Constant Int [7]
                     ├── <158> FunctionCall [puts]
-                    │   ╰── <157> "Tsig 2."
+                    │   ╰── <157> "Testing, 123."
                     ├── <162> FunctionCall [puts]
-                    │   ╰── <161> "^1_\"
+                    │   ╰── <161> "^@1 _\]"
                     ╰── Return
                         ╰── Constant Int [0]
     "#;
@@ -66615,7 +66616,7 @@ fn test_chapter_16_valid_strings_as_lvalues_strings_in_function_calls() {
             ├── Function [return_string]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── <15> "Imasrn!"
+            │           ╰── <15> "I'm a string!"
             ├── Function [pass_string_args]
             │   ├── Parameters
             │   │   ├── Param
@@ -66733,7 +66734,7 @@ fn test_chapter_16_valid_strings_as_lvalues_strings_in_function_calls() {
                     │   ├── Condition
                     │   │   ╰── <160> Unary [!]
                     │   │       ╰── <159> FunctionCall [pass_string_args]
-                    │   │           ├── <157> "Teqikbonfxjme vrtelz o."
+                    │   │           ├── <157> "The quick brown fox jumped over the lazy dog."
                     │   │           ╰── <158> ""
                     │   ╰── Then
                     │       ╰── Block
