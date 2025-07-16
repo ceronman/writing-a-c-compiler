@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod test;
 
-use std::slice::Iter;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
     FunctionDeclaration, FunctionType, Identifier, Initializer, Node, PostfixOp, Program,
@@ -10,6 +9,7 @@ use crate::ast::{
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{IntKind, Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
+use std::slice::Iter;
 
 struct Parser<'src> {
     source: &'src str,
@@ -1077,7 +1077,7 @@ impl<'src> Parser<'src> {
                 kind: ErrorKind::Parse,
                 msg: "Invalid escape sequence".to_string(),
                 span: self.current.span,
-            })
+            });
         };
         Ok(self.node(token.span, Expression::Constant(Constant::Int(c as i32))))
     }
@@ -1114,16 +1114,20 @@ impl<'src> Parser<'src> {
                     Some('r') => '\r',
                     Some('t') => '\t',
                     Some('v') => '\x0B',
-                    Some(escape) => return Err(CompilerError {
-                        kind: ErrorKind::Parse,
-                        msg: format!("Invalid escape sequence: '\\{escape}'"),
-                        span: self.current.span,
-                    }),
-                    _ => return Err(CompilerError {
-                        kind: ErrorKind::Parse,
-                        msg: "Invalid escape sequence".to_string(),
-                        span: self.current.span,
-                    }),
+                    Some(escape) => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Parse,
+                            msg: format!("Invalid escape sequence: '\\{escape}'"),
+                            span: self.current.span,
+                        });
+                    }
+                    _ => {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Parse,
+                            msg: "Invalid escape sequence".to_string(),
+                            span: self.current.span,
+                        });
+                    }
                 }
             } else {
                 c

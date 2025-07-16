@@ -334,6 +334,10 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
 
 fn emit_static_init(output: &mut impl Write, init: &StaticInit) -> Result<()> {
     match init {
+        StaticInit::String { .. } => todo!(),
+        StaticInit::Pointer(..) => todo!(),
+        StaticInit::Char(v) => todo!(),
+        StaticInit::UChar(v) => todo!(),
         StaticInit::Int(v) => {
             emit_ins(output, ".long")?;
             writeln!(output, "{v}")?;

@@ -35,6 +35,9 @@ pub enum Attributes {
         initial_value: InitialValue,
         global: bool,
     },
+    Const {
+        init: StaticInit,
+    },
     Local,
 }
 
@@ -53,12 +56,19 @@ impl InitialValue {
 
 #[derive(Clone, Debug)]
 pub enum StaticInit {
+    Char(i32),
+    UChar(i32),
     Int(i32),
     UInt(u32),
     Long(i64),
     ULong(u64),
     Double(f64),
     ZeroInit(usize),
+    String {
+        symbol: Symbol,
+        null_terminated: bool,
+    },
+    Pointer(Symbol),
 }
 
 #[derive(Debug, Clone)]

@@ -828,6 +828,7 @@ impl Compiler {
                         },
                     );
                 }
+                Attributes::Const { .. } => todo!(),
                 Attributes::Local => {
                     backend_symbols.insert(
                         symbol.clone(),

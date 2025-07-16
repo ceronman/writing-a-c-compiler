@@ -1,6 +1,7 @@
 use crate::semantic::StaticInit;
 use crate::{ast, tacky};
 use std::io::Write;
+use std::ptr::write;
 
 pub fn pp(program: &tacky::Program) -> anyhow::Result<String> {
     let mut buffer = Vec::new();
@@ -45,14 +46,25 @@ fn pp_static_variable(
     Ok(())
 }
 
-fn pp_initializer(file: &mut impl Write, init: &StaticInit) -> anyhow::Result<()> {
+fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> anyhow::Result<()> {
     match init {
-        StaticInit::Int(v) => write!(file, "{v}")?,
-        StaticInit::Long(v) => write!(file, "{v}L")?,
-        StaticInit::UInt(v) => write!(file, "{v}U")?,
-        StaticInit::ULong(v) => write!(file, "{v}UL")?,
-        StaticInit::Double(v) => write!(file, "{v}D")?,
-        StaticInit::ZeroInit(size) => write!(file, "zero[{size}]")?,
+        StaticInit::Char(v) => write!(out, "'{}'", (*v as u8) as char)?,
+        StaticInit::UChar(v) => write!(out, "'{}'U", (*v as u8) as char)?,
+        StaticInit::Int(v) => write!(out, "{v}")?,
+        StaticInit::UInt(v) => write!(out, "{v}U")?,
+        StaticInit::Long(v) => write!(out, "{v}L")?,
+        StaticInit::ULong(v) => write!(out, "{v}UL")?,
+        StaticInit::Double(v) => write!(out, "{v}D")?,
+        StaticInit::ZeroInit(v) => write!(out, "zero[{v}]")?,
+        StaticInit::String {
+            symbol,
+            null_terminated,
+        } => write!(
+            out,
+            "\"{symbol}{}\"",
+            if *null_terminated { "\\0" } else { "" }
+        )?,
+        StaticInit::Pointer(name) => write!(out, "&{name}")?,
     }
     Ok(())
 }

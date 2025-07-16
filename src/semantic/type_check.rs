@@ -114,15 +114,66 @@ impl TypeChecker {
         target: &Type,
     ) -> Result<Vec<StaticInit>> {
         match init.as_ref() {
-            Initializer::Single(expr) => {
-                if let Expression::Constant(c) = expr.as_ref() {
+            Initializer::Single(expr) => match expr.as_ref() {
+                Expression::String(s) => {
+                    match target {
+                        Type::Array(inner_ty, size) => {
+                            if !inner_ty.is_char() {
+                                return Err(CompilerError {
+                                        kind: ErrorKind::Type,
+                                        msg: "Can't initialize a non-character type with a string literal".into(),
+                                        span: init.span,
+                                    });
+                            }
+
+                            if s.len() > *size {
+                                return Err(CompilerError {
+                                        kind: ErrorKind::Type,
+                                        msg: "Initializer string has more characters than destination array".into(),
+                                        span: init.span,
+                                    });
+                            }
+                            let padding = size - s.len();
+                            let mut result = vec![StaticInit::String {
+                                symbol: s.clone(),
+                                null_terminated: padding > 0,
+                            }];
+                            if padding > 0 {
+                                result.push(StaticInit::ZeroInit(padding));
+                            }
+                            Ok(result)
+                        }
+                        Type::Pointer(inner_ty) => {
+                            if let Type::Char = **inner_ty {
+                                Ok(vec![StaticInit::Pointer(s.clone())])
+                            } else {
+                                Err(CompilerError {
+                                        kind: ErrorKind::Type,
+                                        msg: "Can't initialize a non-character pointer to a string literal".into(),
+                                        span: init.span,
+                                    })
+                            }
+                        }
+                        _ => Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Non-string initializer on local static variable".to_string(),
+                            span: init.span,
+                        }),
+                    }
+                }
+                Expression::Constant(c) => {
                     let static_init = match (c, target) {
-                        (c, Type::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
+                        (c, Type::Int | Type::Char | Type::SChar | Type::UChar) if c.is_int() => {
+                            StaticInit::Int(c.as_u64() as i32)
+                        }
                         (c, Type::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
                         (c, Type::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
                         (c, Type::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
                         (c, Type::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
-                        (Constant::Double(value), Type::Int) => StaticInit::Int(*value as i32),
+                        (
+                            Constant::Double(value),
+                            Type::Int | Type::Char | Type::SChar | Type::UChar,
+                        ) => StaticInit::Int(*value as i32),
                         (Constant::Double(value), Type::UInt) => StaticInit::UInt(*value as u32),
                         (Constant::Double(value), Type::Long) => StaticInit::Long(*value as i64),
                         (Constant::Double(value), Type::ULong) => StaticInit::ULong(*value as u64),
@@ -143,14 +194,13 @@ impl TypeChecker {
                         }
                     };
                     Ok(vec![static_init])
-                } else {
-                    Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Non-constant initializer on local static variable".to_string(),
-                        span: init.span,
-                    })
                 }
-            }
+                _ => Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: "Non-constant initializer on local static variable".to_string(),
+                    span: init.span,
+                }),
+            },
             Initializer::Compound(initializers) => {
                 let Type::Array(inner_ty, size) = target else {
                     return Err(CompilerError {
@@ -184,7 +234,31 @@ impl TypeChecker {
     fn check_initializer(&mut self, init: &Node<Initializer>, target: &Type) -> Result<Type> {
         match init.as_ref() {
             Initializer::Single(expr) => {
-                let init_ty = self.check_and_convert_expr(expr)?;
+                let init_ty = if let Expression::String(s) = expr.as_ref()
+                    && let Type::Array(inner_ty, size) = target
+                {
+                    if !inner_ty.is_char() {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Can't initialize a non-character type with a string literal"
+                                .into(),
+                            span: init.span,
+                        });
+                    }
+
+                    if s.len() > *size {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Initializer string has more characters than destination array"
+                                .into(),
+                            span: init.span,
+                        });
+                    }
+                    self.expression_types.insert(expr.id, target.clone());
+                    target.clone()
+                } else {
+                    self.check_and_convert_expr(expr)?
+                };
                 self.convert_by_assignment(expr, &init_ty, target)
             }
             Initializer::Compound(initializers) => {
@@ -437,9 +511,9 @@ impl TypeChecker {
                 };
                 let case_constant = constant.as_u64();
                 let case_value = match &switch_cases.expr_ty {
-                    Type::Char | Type::SChar => Constant::Char(case_constant as i8),
-                    Type::UChar => Constant::UChar(case_constant as u8),
-                    Type::Int => Constant::Int(case_constant as i32),
+                    Type::Int | Type::Char | Type::SChar | Type::UChar => {
+                        Constant::Int(case_constant as i32)
+                    }
                     Type::UInt => Constant::UInt(case_constant as u32),
                     Type::Long => Constant::Long(case_constant as i64),
                     Type::ULong => Constant::ULong(case_constant),
@@ -542,7 +616,7 @@ impl TypeChecker {
     fn check_expression(&mut self, expr: &Node<Expression>) -> Result<Type> {
         let ty = match expr.as_ref() {
             Expression::Constant(c) => c.ty(),
-            Expression::String(_) => todo!(),
+            Expression::String(s) => Type::Array(Type::Char.into(), s.len() + 1),
             Expression::Var(name) => {
                 let Some(data) = self.symbols.get(name) else {
                     return Err(CompilerError {
@@ -562,39 +636,53 @@ impl TypeChecker {
             }
             Expression::Unary { op, expr } => {
                 let operand_ty = self.check_expression(expr)?;
-                if let UnaryOp::Increment | UnaryOp::Decrement = op.as_ref() {
-                    if operand_ty.is_array() {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Type,
-                            msg: "Array is not assignable".to_owned(),
-                            span: expr.span,
-                        });
-                    }
-                    if !Self::is_lvalue(expr) {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Resolve,
-                            msg: "Expression is not assignable".to_owned(),
-                            span: expr.span,
-                        });
-                    }
-                }
-                if matches!(op.as_ref(), UnaryOp::Complement) && !operand_ty.is_int() {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Unary operator requires an integer type".to_string(),
-                        span: expr.span,
-                    });
-                }
-                if matches!(op.as_ref(), UnaryOp::Negate) && operand_ty.is_pointer() {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Unary operator requires an non-pointer type".to_string(),
-                        span: expr.span,
-                    });
-                }
                 match op.as_ref() {
+                    UnaryOp::Increment | UnaryOp::Decrement => {
+                        if operand_ty.is_array() {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Array is not assignable".to_owned(),
+                                span: expr.span,
+                            });
+                        }
+                        if !Self::is_lvalue(expr) {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Resolve,
+                                msg: "Expression is not assignable".to_owned(),
+                                span: expr.span,
+                            });
+                        }
+                        operand_ty
+                    }
+                    UnaryOp::Complement => {
+                        if !(operand_ty.is_int() || operand_ty.is_char()) {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Unary operator requires an integer type".to_string(),
+                                span: expr.span,
+                            });
+                        }
+                        if operand_ty.is_char() {
+                            self.cast_if_needed(expr, &operand_ty, &Type::Int)
+                        } else {
+                            operand_ty
+                        }
+                    }
+                    UnaryOp::Negate => {
+                        if operand_ty.is_pointer() {
+                            return Err(CompilerError {
+                                kind: ErrorKind::Type,
+                                msg: "Unary operator requires an non-pointer type".to_string(),
+                                span: expr.span,
+                            });
+                        }
+                        if operand_ty.is_char() {
+                            self.cast_if_needed(expr, &operand_ty, &Type::Int)
+                        } else {
+                            operand_ty
+                        }
+                    }
                     UnaryOp::Not => Type::Int,
-                    _ => operand_ty,
                 }
             }
             Expression::Postfix { expr, .. } => {
@@ -973,7 +1061,10 @@ impl TypeChecker {
     fn is_lvalue(expr: &Expression) -> bool {
         matches!(
             expr,
-            Expression::Var(_) | Expression::Dereference(_) | Expression::Subscript(_, _)
+            Expression::Var(_)
+                | Expression::Dereference(_)
+                | Expression::Subscript(_, _)
+                | Expression::String(_)
         )
     }
 
@@ -1017,6 +1108,10 @@ impl TypeChecker {
     }
 
     fn common_type(ty1: &Type, ty2: &Type) -> Type {
+        // Char types are treated as ints
+        let ty1 = if ty1.is_char() { &Type::Int } else { ty1 };
+        let ty2 = if ty2.is_char() { &Type::Int } else { ty2 };
+
         let result = if ty1 == ty2 {
             ty1
         } else if matches!(ty1, Type::Double) || matches!(ty2, Type::Double) {

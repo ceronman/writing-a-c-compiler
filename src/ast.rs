@@ -289,8 +289,21 @@ impl<T> InnerRef<T> for Option<Node<T>> {
 }
 
 impl Type {
+    pub fn is_char(&self) -> bool {
+        matches!(self, Type::Char | Type::SChar | Type::UChar)
+    }
+
     pub fn is_int(&self) -> bool {
-        matches!(self, Type::Int | Type::UInt | Type::Long | Type::ULong)
+        matches!(
+            self,
+            Type::Char
+                | Type::SChar
+                | Type::UChar
+                | Type::Int
+                | Type::UInt
+                | Type::Long
+                | Type::ULong
+        )
     }
 
     pub fn is_double(&self) -> bool {
@@ -300,7 +313,14 @@ impl Type {
     pub fn is_arithmetic(&self) -> bool {
         matches!(
             self,
-            Type::Int | Type::UInt | Type::Long | Type::ULong | Type::Double
+            Type::Char
+                | Type::SChar
+                | Type::UChar
+                | Type::Int
+                | Type::UInt
+                | Type::Long
+                | Type::ULong
+                | Type::Double
         )
     }
 
