@@ -1,7 +1,6 @@
 use crate::semantic::StaticInit;
 use crate::{ast, tacky};
 use std::io::Write;
-use std::ptr::write;
 
 pub fn pp(program: &tacky::Program) -> anyhow::Result<String> {
     let mut buffer = Vec::new();
@@ -10,9 +9,21 @@ pub fn pp(program: &tacky::Program) -> anyhow::Result<String> {
         match top_level {
             tacky::TopLevel::Function(f) => pp_function(file, f)?,
             tacky::TopLevel::Variable(v) => pp_static_variable(file, v)?,
+            tacky::TopLevel::Constant(c) => pp_static_constant(file, c)?,
         }
     }
     Ok(String::from_utf8(buffer)?)
+}
+
+fn pp_static_constant(file: &mut impl Write, constant: &tacky::StaticConstant) -> anyhow::Result<()> {
+    write!(file, "constant ")?;
+    write!(file, "{}", constant.name)?;
+    write!(file, ": ")?;
+    pp_type(file, &constant.ty)?;
+    write!(file, " = ")?;
+    pp_initializer(file, &constant.init)?;
+    writeln!(file)?;
+    Ok(())
 }
 
 fn pp_static_variable(

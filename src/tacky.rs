@@ -4,8 +4,10 @@ pub mod pretty;
 mod test;
 
 use crate::ast;
+use crate::ast::Expression;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
 use crate::symbol::Symbol;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct Program {
@@ -17,6 +19,7 @@ pub struct Program {
 pub enum TopLevel {
     Function(Function),
     Variable(StaticVariable),
+    Constant(StaticConstant)
 }
 
 #[derive(Debug, Clone)]
@@ -33,6 +36,13 @@ pub struct StaticVariable {
     pub global: bool,
     pub ty: ast::Type,
     pub init: Vec<StaticInit>,
+}
+
+#[derive(Debug, Clone)]
+pub struct StaticConstant {
+    pub name: Symbol,
+    pub ty: ast::Type,
+    pub init: StaticInit,
 }
 
 #[derive(Debug, Clone)]
@@ -169,6 +179,7 @@ enum ExprResult {
 
 struct TackyGenerator {
     semantics: SemanticData,
+    strings: HashMap<Symbol, Symbol>,
     instructions: Vec<Instruction>,
     tmp_counter: u32,
     label_counter: u32,
@@ -199,20 +210,13 @@ impl TackyGenerator {
             return;
         }
         if let Some(init) = &decl.init {
-            if let ast::Initializer::Single(expr) = init.as_ref() {
-                let result = self.emit_expr(expr);
-                self.instructions.push(Instruction::Copy {
-                    src: result,
-                    dst: Val::Var(decl.name.symbol.clone()),
-                });
-            } else {
-                self.emit_initializer(0, &decl.name.symbol, init, &decl.ty);
-            }
+            self.emit_initializer(0, 0, &decl.name.symbol, init, &decl.ty);
         }
     }
 
     fn emit_initializer(
         &mut self,
+        level: usize,
         offset: usize,
         name: &Symbol,
         initializer: &ast::Initializer,
@@ -220,12 +224,39 @@ impl TackyGenerator {
     ) {
         match initializer {
             ast::Initializer::Single(init) => {
-                let result = self.emit_expr(init);
-                self.instructions.push(Instruction::CopyToOffset {
-                    src: result,
-                    dst: name.clone(),
-                    offset: offset as i64,
-                });
+                if let Expression::String(s) = init.as_ref() && ty.is_array() {
+                    let Type::Array(inner, len) = ty else {
+                        panic!("String initializer used with non-array type");
+                    };
+                    for (i, c) in s.chars().enumerate() {
+                        self.instructions.push(Instruction::CopyToOffset {
+                            src: Val::Constant(Constant::from_char(c, inner)),
+                            dst: name.clone(),
+                            offset: (offset + i) as i64,
+                        });
+                    }
+                    if *len > s.len() {
+                        self.instructions.push(Instruction::CopyToOffset {
+                            src: Val::Constant(Constant::UChar(0)),
+                            dst: name.clone(),
+                            offset: (offset + s.len()) as i64,
+                        });
+                    }
+                } else {
+                    let result = self.emit_expr(init);
+                    if level == 0 {
+                        self.instructions.push(Instruction::Copy {
+                            src: result,
+                            dst: Val::Var(name.clone()),
+                        });
+                    } else {
+                        self.instructions.push(Instruction::CopyToOffset {
+                            src: result,
+                            dst: name.clone(),
+                            offset: offset as i64,
+                        });
+                    }
+                }
             }
             ast::Initializer::Compound(initializers) => {
                 let Type::Array(inner, len) = ty else {
@@ -234,7 +265,7 @@ impl TackyGenerator {
                 for i in 0..*len {
                     let size = inner.size();
                     if let Some(initializer) = initializers.get(i) {
-                        self.emit_initializer(offset + i * size, name, initializer, inner)
+                        self.emit_initializer(level + 1, offset + i * size, name, initializer, inner)
                     } else {
                         self.emit_zero_initializer(offset + i * size, name, inner)
                     }
@@ -483,7 +514,7 @@ impl TackyGenerator {
         let expr_ty = self.semantics.expr_type(expr).clone();
         let result = match expr.as_ref() {
             ast::Expression::Constant(value) => Val::Constant(value.clone()),
-            ast::Expression::String(_) => todo!(),
+            ast::Expression::String(s) => self.make_string_const(s),
             ast::Expression::Unary { op, expr } => {
                 let lvalue = self.expression(expr);
                 let val = self.get_or_load(&lvalue, expr);
@@ -1000,6 +1031,31 @@ impl TackyGenerator {
         tmp
     }
 
+    fn make_string_const(&mut self, s: &Symbol) -> Val {
+        let existing_constant = self.strings.get(s);
+        let name = match existing_constant {
+            Some(name) => name.clone(),
+            None => {
+                let name = format!("string.{}", self.strings.len());
+                self.strings.insert(s.clone(), name.clone());
+                self.semantics.symbols.insert(
+                    name.clone(),
+                    SymbolData {
+                        ty: Type::Array(Type::Char.into(), s.len() + 1),
+                        attrs: Attributes::Const {
+                            init: StaticInit::String {
+                                symbol: s.clone(),
+                                null_terminated: true
+                            }
+                        },
+                    },
+                );
+                name
+            }
+        };
+        Val::Var(name)
+    }
+
     fn make_label(&mut self, prefix: &str) -> Symbol {
         let result = format!("{prefix}_{i}", i = self.label_counter);
         self.label_counter += 1;
@@ -1011,6 +1067,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
     let mut top_level = Vec::new();
     let mut generator = TackyGenerator {
         semantics,
+        strings: Default::default(),
         instructions: vec![],
         tmp_counter: 0,
         label_counter: 0,
@@ -1041,30 +1098,36 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
     }
 
     for (name, symbol_data) in &generator.semantics.symbols {
-        if let Attributes::Static {
-            initial_value,
-            global,
-        } = symbol_data.attrs.clone()
-        {
-            let ty = symbol_data.ty.clone();
-            match initial_value {
-                InitialValue::Initial(init) => top_level.push(TopLevel::Variable(StaticVariable {
-                    name: name.clone(),
-                    ty,
-                    global,
-                    init,
-                })),
-                InitialValue::Tentative => {
-                    let init = StaticInit::ZeroInit(ty.size());
-                    top_level.push(TopLevel::Variable(StaticVariable {
+        match symbol_data.attrs.clone() {
+            Attributes::Static { initial_value, global } => {
+                let ty = symbol_data.ty.clone();
+                match initial_value {
+                    InitialValue::Initial(init) => top_level.push(TopLevel::Variable(StaticVariable {
                         name: name.clone(),
                         ty,
                         global,
-                        init: vec![init],
-                    }))
+                        init,
+                    })),
+                    InitialValue::Tentative => {
+                        let init = StaticInit::ZeroInit(ty.size());
+                        top_level.push(TopLevel::Variable(StaticVariable {
+                            name: name.clone(),
+                            ty,
+                            global,
+                            init: vec![init],
+                        }))
+                    }
+                    InitialValue::NoInitializer => continue,
                 }
-                InitialValue::NoInitializer => continue,
+            },
+            Attributes::Const { init } => {
+                top_level.push(TopLevel::Constant(StaticConstant {
+                    name: name.clone(),
+                    ty: symbol_data.ty.clone(),
+                    init,
+                }))
             }
+            _ => {}
         }
     }
 

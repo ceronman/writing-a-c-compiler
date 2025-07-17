@@ -357,6 +357,13 @@ impl Type {
 }
 
 impl Constant {
+    pub fn from_char(c: char, ty: &Type) -> Constant {
+        match ty {
+            Type::Char | Type::SChar => Constant::Char(c as i8),
+            Type::UChar => Constant::UChar(c as u8),
+            _ => panic!("Cannot convert char to {ty:?}"),
+        }
+    }
     pub fn as_u64(&self) -> u64 {
         match self {
             Constant::Char(v) => *v as u64,
