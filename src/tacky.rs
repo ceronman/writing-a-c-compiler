@@ -19,7 +19,7 @@ pub struct Program {
 pub enum TopLevel {
     Function(Function),
     Variable(StaticVariable),
-    Constant(StaticConstant)
+    Constant(StaticConstant),
 }
 
 #[derive(Debug, Clone)]
@@ -224,7 +224,9 @@ impl TackyGenerator {
     ) {
         match initializer {
             ast::Initializer::Single(init) => {
-                if let Expression::String(s) = init.as_ref() && ty.is_array() {
+                if let Expression::String(s) = init.as_ref()
+                    && ty.is_array()
+                {
                     let Type::Array(inner, len) = ty else {
                         panic!("String initializer used with non-array type");
                     };
@@ -265,7 +267,13 @@ impl TackyGenerator {
                 for i in 0..*len {
                     let size = inner.size();
                     if let Some(initializer) = initializers.get(i) {
-                        self.emit_initializer(level + 1, offset + i * size, name, initializer, inner)
+                        self.emit_initializer(
+                            level + 1,
+                            offset + i * size,
+                            name,
+                            initializer,
+                            inner,
+                        )
                     } else {
                         self.emit_zero_initializer(offset + i * size, name, inner)
                     }
@@ -283,8 +291,8 @@ impl TackyGenerator {
             Type::Long => Constant::Long(0),
             Type::ULong => Constant::ULong(0),
             Type::Double => Constant::Double(0.0),
+            Type::Pointer(_) => Constant::ULong(0),
             Type::Function(_) => panic!("Zero initializer for function type"),
-            Type::Pointer(_) => panic!("Zero initializer for pointer type"),
             Type::Array(inner, size) => {
                 let ty_size = inner.size();
                 for i in 0..*size {
@@ -1045,8 +1053,8 @@ impl TackyGenerator {
                         attrs: Attributes::Const {
                             init: StaticInit::String {
                                 symbol: s.clone(),
-                                null_terminated: true
-                            }
+                                null_terminated: true,
+                            },
                         },
                     },
                 );
@@ -1099,15 +1107,20 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
 
     for (name, symbol_data) in &generator.semantics.symbols {
         match symbol_data.attrs.clone() {
-            Attributes::Static { initial_value, global } => {
+            Attributes::Static {
+                initial_value,
+                global,
+            } => {
                 let ty = symbol_data.ty.clone();
                 match initial_value {
-                    InitialValue::Initial(init) => top_level.push(TopLevel::Variable(StaticVariable {
-                        name: name.clone(),
-                        ty,
-                        global,
-                        init,
-                    })),
+                    InitialValue::Initial(init) => {
+                        top_level.push(TopLevel::Variable(StaticVariable {
+                            name: name.clone(),
+                            ty,
+                            global,
+                            init,
+                        }))
+                    }
                     InitialValue::Tentative => {
                         let init = StaticInit::ZeroInit(ty.size());
                         top_level.push(TopLevel::Variable(StaticVariable {
@@ -1119,14 +1132,12 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                     }
                     InitialValue::NoInitializer => continue,
                 }
-            },
-            Attributes::Const { init } => {
-                top_level.push(TopLevel::Constant(StaticConstant {
-                    name: name.clone(),
-                    ty: symbol_data.ty.clone(),
-                    init,
-                }))
             }
+            Attributes::Const { init } => top_level.push(TopLevel::Constant(StaticConstant {
+                name: name.clone(),
+                ty: symbol_data.ty.clone(),
+                init,
+            })),
             _ => {}
         }
     }

@@ -15,7 +15,10 @@ pub fn pp(program: &tacky::Program) -> anyhow::Result<String> {
     Ok(String::from_utf8(buffer)?)
 }
 
-fn pp_static_constant(file: &mut impl Write, constant: &tacky::StaticConstant) -> anyhow::Result<()> {
+fn pp_static_constant(
+    file: &mut impl Write,
+    constant: &tacky::StaticConstant,
+) -> anyhow::Result<()> {
     write!(file, "constant ")?;
     write!(file, "{}", constant.name)?;
     write!(file, ": ")?;

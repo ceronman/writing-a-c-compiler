@@ -121,7 +121,7 @@ impl Compiler {
                 tacky::TopLevel::Variable(v) => {
                     top_level.push(TopLevel::Variable(self.generate_static_variable(v)))
                 }
-                tacky::TopLevel::Constant(..) => todo!()
+                tacky::TopLevel::Constant(..) => todo!(),
             }
         }
 
