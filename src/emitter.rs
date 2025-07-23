@@ -362,7 +362,10 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
 
 fn emit_static_init(output: &mut impl Write, init: &StaticInit) -> Result<()> {
     match init {
-        StaticInit::String { symbol, null_terminated } => {
+        StaticInit::String {
+            symbol,
+            null_terminated,
+        } => {
             if *null_terminated {
                 emit_ins(output, ".asciz")?;
             } else {
@@ -378,20 +381,20 @@ fn emit_static_init(output: &mut impl Write, init: &StaticInit) -> Result<()> {
                 }
             }
             writeln!(output, "\"")?;
-        },
+        }
         StaticInit::Pointer(label) => {
             emit_ins(output, ".quad")?;
             emit_label(output, label)?;
             writeln!(output)?;
-        },
+        }
         StaticInit::Char(v) => {
             emit_ins(output, ".byte")?;
             writeln!(output, "{v}")?;
-        },
+        }
         StaticInit::UChar(v) => {
             emit_ins(output, ".byte")?;
             writeln!(output, "{v}")?;
-        },
+        }
         StaticInit::Int(v) => {
             emit_ins(output, ".long")?;
             writeln!(output, "{v}")?;
@@ -425,7 +428,7 @@ fn emit_constant(output: &mut impl Write, constant: &StaticConstant) -> Result<(
         writeln!(output, "\t.cstring")?;
         writeln!(output, "L{name}:", name = constant.name)?;
         emit_static_init(output, &constant.init)?;
-        return Ok(())
+        return Ok(());
     }
     match constant.alignment {
         8 => {

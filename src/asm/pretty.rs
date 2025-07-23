@@ -38,8 +38,8 @@ fn pp_static_variable(out: &mut impl Write, var: &StaticVariable) -> anyhow::Res
 
 fn pp_static_init(out: &mut impl Write, init: &StaticInit) -> anyhow::Result<()> {
     match init {
-        StaticInit::Char(v) => writeln!(out, "'{}'", (*v as u8) as char)?,
-        StaticInit::UChar(v) => writeln!(out, "'{}'U", (*v as u8) as char)?,
+        StaticInit::Char(v) => writeln!(out, "{:?}", (*v as u8) as char)?,
+        StaticInit::UChar(v) => writeln!(out, "{:?}U", *v as char)?,
         StaticInit::Int(v) => writeln!(out, "{v}")?,
         StaticInit::UInt(v) => writeln!(out, "{v}U")?,
         StaticInit::Long(v) => writeln!(out, "{v}L")?,

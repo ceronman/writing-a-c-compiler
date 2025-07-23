@@ -237,7 +237,7 @@ impl TackyGenerator {
                         });
                     }
                     let padding = *len - s.len();
-                    for i in  0..padding {
+                    for i in 0..padding {
                         self.instructions.push(Instruction::CopyToOffset {
                             src: Val::Constant(Constant::Char(0)),
                             dst: name.clone(),
@@ -529,7 +529,8 @@ impl TackyGenerator {
                 let dst = self.make_temp(&expr_ty);
 
                 if let Type::Pointer(inner) = self.semantics.expr_type(expr).clone()
-                    && let ast::UnaryOp::Decrement | ast::UnaryOp::Increment = op.as_ref() {
+                    && let ast::UnaryOp::Decrement | ast::UnaryOp::Increment = op.as_ref()
+                {
                     let index = match op.as_ref() {
                         ast::UnaryOp::Increment => 1,
                         ast::UnaryOp::Decrement => -1,

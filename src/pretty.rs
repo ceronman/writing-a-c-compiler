@@ -43,7 +43,7 @@ pub fn annotate(src: &str, error: &crate::error::CompilerError) -> String {
         result.push_str(line);
         if !annotated && offset + line.len() > error.span.0 {
             let start = error.span.0 - offset;
-            let start = if start > 2 { start - 2 } else { 0 };
+            let start = start.saturating_sub(2);
             let len = error.span.1 - error.span.0;
             let annotation = format!("{}//{} {}\n", " ".repeat(start), "^".repeat(len), error.msg);
             result.push_str(&annotation);

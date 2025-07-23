@@ -78,7 +78,7 @@ impl Type {
             Type::Pointer(_) => AsmType::Quadword,
             Type::Array(inner, length) => {
                 let size = (inner.size() * length) as u64;
-                let inner_asm_ty =inner.to_asm();
+                let inner_asm_ty = inner.to_asm();
                 let alignment = if size < 16 {
                     match inner_asm_ty {
                         AsmType::Byte => 1,
@@ -126,7 +126,7 @@ impl Compiler {
                 }
                 tacky::TopLevel::Constant(c) => {
                     top_level.push(TopLevel::Constant(self.generate_constant(c)))
-                },
+                }
             }
         }
 
@@ -597,7 +597,7 @@ impl Compiler {
                         instructions.push(Instruction::Mov(
                             AsmType::Byte,
                             Reg::Ax.into(),
-                            self.generate_val(dst)
+                            self.generate_val(dst),
                         ))
                     } else {
                         instructions.push(Instruction::Cvttsd2si(
@@ -613,7 +613,7 @@ impl Compiler {
                             AsmType::Byte,
                             self.generate_val(src),
                             AsmType::Longword,
-                            Reg::Ax.into()
+                            Reg::Ax.into(),
                         ));
                         instructions.push(Instruction::Cvtsi2sd(
                             AsmType::Longword,
@@ -893,12 +893,15 @@ impl Compiler {
                     );
                 }
                 Attributes::Const { .. } => {
-                    backend_symbols.insert(symbol.clone(), BackendSymbolData::Obj {
-                        ty: semantic.symbol_asm_ty(symbol),
-                        is_static: true,
-                        is_const: true
-                    });
-                },
+                    backend_symbols.insert(
+                        symbol.clone(),
+                        BackendSymbolData::Obj {
+                            ty: semantic.symbol_asm_ty(symbol),
+                            is_static: true,
+                            is_const: true,
+                        },
+                    );
+                }
                 Attributes::Local => {
                     backend_symbols.insert(
                         symbol.clone(),
@@ -917,7 +920,8 @@ impl Compiler {
     fn generate_constant(&mut self, c: &tacky::StaticConstant) -> StaticConstant {
         StaticConstant {
             name: c.name.clone(),
-            alignment: match c.ty.to_asm() { // TODO: extract this duplicated logic
+            alignment: match c.ty.to_asm() {
+                // TODO: extract this duplicated logic
                 AsmType::Byte => 1,
                 AsmType::Longword => 4,
                 AsmType::Quadword | AsmType::Double => 8,
@@ -1062,9 +1066,7 @@ impl Compiler {
                     return;
                 } else {
                     match ty {
-                        AsmType::Byte => {
-                            stack_size += 1
-                        }
+                        AsmType::Byte => stack_size += 1,
                         AsmType::Longword => {
                             stack_size += 4 + stack_size % 8;
                         }
@@ -1291,12 +1293,13 @@ impl Compiler {
                     fixed.push(Instruction::Push(value));
                 }
 
-                // Instruction::MovZeroExtend(src, Operand::Reg(reg)) => {
-                //     fixed.push(Instruction::Mov(AsmType::Longword, src, Operand::Reg(reg)));
-                // }
-                Instruction::MovZeroExtend(src_ty, src, dst_ty, dst) if matches!(src_ty, AsmType::Byte) => {
+                Instruction::MovZeroExtend(src_ty, src, dst_ty, dst)
+                    if matches!(src_ty, AsmType::Byte) =>
+                {
                     // TODO: generalize this pattern that is repeated all over the fixup phase.
-                    let src = if let Operand::Imm(v) = src && v > i32::MAX as u64 {
+                    let src = if let Operand::Imm(v) = src
+                        && v > i32::MAX as u64
+                    {
                         fixed.push(Instruction::Mov(src_ty, src, Reg::R10.into()));
                         Reg::R10.into()
                     } else {
@@ -1306,10 +1309,14 @@ impl Compiler {
                     if let Operand::Reg(_) = dst {
                         fixed.push(Instruction::MovZeroExtend(src_ty, src, dst_ty, dst))
                     } else {
-                        fixed.push(Instruction::MovZeroExtend(src_ty, src, dst_ty, Reg::R11.into()));
+                        fixed.push(Instruction::MovZeroExtend(
+                            src_ty,
+                            src,
+                            dst_ty,
+                            Reg::R11.into(),
+                        ));
                         fixed.push(Instruction::Mov(dst_ty, Reg::R11.into(), dst));
                     };
-
                 }
                 Instruction::MovZeroExtend(_src_ty, src, _dst_ty, dst) => {
                     if let Operand::Reg(_) = dst {

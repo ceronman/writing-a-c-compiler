@@ -165,7 +165,9 @@ impl TypeChecker {
                 }
                 Expression::Constant(c) => {
                     let static_init = match (c, target) {
-                        (c, Type::Char | Type::SChar) if c.is_int() => StaticInit::Char(c.as_u64() as i8),
+                        (c, Type::Char | Type::SChar) if c.is_int() => {
+                            StaticInit::Char(c.as_u64() as i8)
+                        }
                         (c, Type::UChar) if c.is_int() => StaticInit::UChar(c.as_u64() as u8),
                         (c, Type::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
                         (c, Type::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
@@ -826,7 +828,7 @@ impl TypeChecker {
                         } else {
                             left_ty
                         }
-                    },
+                    }
                     BinaryOp::Equal | BinaryOp::NotEqual => {
                         let common = if left_ty.is_pointer() || right_ty.is_pointer() {
                             self.common_pointer_type(left, &left_ty, right, &right_ty)?

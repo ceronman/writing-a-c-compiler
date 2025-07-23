@@ -74,9 +74,13 @@ fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> anyhow::Result<()>
             symbol,
             null_terminated,
         } => {
-            let s = if *null_terminated { format!("{}\\0", symbol) } else { symbol.clone() };
+            let s = if *null_terminated {
+                format!("{symbol}\\0")
+            } else {
+                symbol.clone()
+            };
             write!(out, "{s:?}")?
-        },
+        }
         StaticInit::Pointer(name) => write!(out, "&{name}")?,
     }
     Ok(())
@@ -271,7 +275,9 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> anyhow::Res
 
 fn pp_val(file: &mut impl Write, val: &tacky::Val) -> anyhow::Result<()> {
     match val {
-        tacky::Val::Constant(ast::Constant::Char(value)) => write!(file, "{:?}", (*value as u8) as char)?,
+        tacky::Val::Constant(ast::Constant::Char(value)) => {
+            write!(file, "{:?}", (*value as u8) as char)?
+        }
         tacky::Val::Constant(ast::Constant::UChar(value)) => write!(file, "{value}UC")?,
         tacky::Val::Constant(ast::Constant::Int(value)) => write!(file, "{value}")?,
         tacky::Val::Constant(ast::Constant::Long(value)) => write!(file, "{value}L")?,
