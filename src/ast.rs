@@ -340,7 +340,7 @@ impl Type {
             Type::Long => 8,
             Type::ULong => 8,
             Type::Double => 8,
-            Type::Function(_) => panic!("Size of function type"),
+            Type::Function(_) => panic!("Size of a function type"),
             Type::Pointer(_) => 8,
             Type::Array(ty, size) => ty.size() * size,
         }
@@ -350,7 +350,7 @@ impl Type {
         match self {
             Type::Int | Type::Long | Type::Char | Type::SChar => true,
             Type::UInt | Type::ULong | Type::Double | Type::Pointer(_) | Type::UChar => false,
-            Type::Function(_) => panic!("Sign of function type"),
+            Type::Function(_) => panic!("Sign of a function type"),
             Type::Array(_, _) => panic!("Arrays don't have sign"),
         }
     }

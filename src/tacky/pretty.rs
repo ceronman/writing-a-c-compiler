@@ -62,8 +62,8 @@ fn pp_static_variable(
 
 fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> anyhow::Result<()> {
     match init {
-        StaticInit::Char(v) => write!(out, "'{}'", (*v as u8) as char)?,
-        StaticInit::UChar(v) => write!(out, "'{}'U", (*v as u8) as char)?,
+        StaticInit::Char(v) => write!(out, "{:?}", (*v as u8) as char)?,
+        StaticInit::UChar(v) => write!(out, "{}UC", *v)?,
         StaticInit::Int(v) => write!(out, "{v}")?,
         StaticInit::UInt(v) => write!(out, "{v}U")?,
         StaticInit::Long(v) => write!(out, "{v}L")?,
@@ -73,11 +73,10 @@ fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> anyhow::Result<()>
         StaticInit::String {
             symbol,
             null_terminated,
-        } => write!(
-            out,
-            "\"{symbol}{}\"",
-            if *null_terminated { "\\0" } else { "" }
-        )?,
+        } => {
+            let s = if *null_terminated { format!("{}\\0", symbol) } else { symbol.clone() };
+            write!(out, "{s:?}")?
+        },
         StaticInit::Pointer(name) => write!(out, "&{name}")?,
     }
     Ok(())
@@ -272,7 +271,7 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> anyhow::Res
 
 fn pp_val(file: &mut impl Write, val: &tacky::Val) -> anyhow::Result<()> {
     match val {
-        tacky::Val::Constant(ast::Constant::Char(value)) => write!(file, "{value}SC")?,
+        tacky::Val::Constant(ast::Constant::Char(value)) => write!(file, "{:?}", (*value as u8) as char)?,
         tacky::Val::Constant(ast::Constant::UChar(value)) => write!(file, "{value}UC")?,
         tacky::Val::Constant(ast::Constant::Int(value)) => write!(file, "{value}")?,
         tacky::Val::Constant(ast::Constant::Long(value)) => write!(file, "{value}L")?,

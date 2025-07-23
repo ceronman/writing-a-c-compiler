@@ -38,8 +38,8 @@ pub struct StaticConstant {
 #[derive(Debug)]
 pub enum Instruction {
     Mov(AsmType, Operand, Operand),
-    Movsx(Operand, Operand),
-    MovZeroExtend(Operand, Operand),
+    Movsx(AsmType, Operand, AsmType, Operand),
+    MovZeroExtend(AsmType, Operand, AsmType, Operand),
     Lea(Operand, Operand),
     Cvttsd2si(AsmType, Operand, Operand),
     Cvtsi2sd(AsmType, Operand, Operand),
@@ -132,6 +132,7 @@ pub enum Reg {
 
 #[derive(Debug, Clone, Copy)]
 pub enum AsmType {
+    Byte,
     Longword,
     Quadword,
     Double,

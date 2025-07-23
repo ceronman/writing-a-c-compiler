@@ -4,7 +4,6 @@ pub mod pretty;
 mod test;
 
 use crate::ast;
-use crate::ast::Expression;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
 use crate::symbol::Symbol;
 use std::collections::HashMap;
@@ -224,7 +223,7 @@ impl TackyGenerator {
     ) {
         match initializer {
             ast::Initializer::Single(init) => {
-                if let Expression::String(s) = init.as_ref()
+                if let ast::Expression::String(s) = init.as_ref()
                     && ty.is_array()
                 {
                     let Type::Array(inner, len) = ty else {
@@ -237,11 +236,12 @@ impl TackyGenerator {
                             offset: (offset + i) as i64,
                         });
                     }
-                    if *len > s.len() {
+                    let padding = *len - s.len();
+                    for i in  0..padding {
                         self.instructions.push(Instruction::CopyToOffset {
-                            src: Val::Constant(Constant::UChar(0)),
+                            src: Val::Constant(Constant::Char(0)),
                             dst: name.clone(),
-                            offset: (offset + s.len()) as i64,
+                            offset: (offset + s.len() + i) as i64,
                         });
                     }
                 } else {
@@ -262,7 +262,7 @@ impl TackyGenerator {
             }
             ast::Initializer::Compound(initializers) => {
                 let Type::Array(inner, len) = ty else {
-                    panic!("Compound initializer used with non-array type")
+                    panic!("Compound initializer used with a non-array type")
                 };
                 for i in 0..*len {
                     let size = inner.size();
@@ -445,8 +445,8 @@ impl TackyGenerator {
                     let result = self.make_temp(&expr_ty);
                     self.instructions.push(Instruction::Binary {
                         op: BinaryOp::Equal,
-                        src1: cond.clone(),
-                        src2: case_value,
+                        src1: case_value,
+                        src2: cond.clone(),
                         dst: result.clone(),
                     });
                     self.instructions.push(Instruction::JumpIfNotZero {
@@ -528,22 +528,21 @@ impl TackyGenerator {
                 let val = self.get_or_load(&lvalue, expr);
                 let dst = self.make_temp(&expr_ty);
 
-                if let Type::Pointer(inner) = self.semantics.expr_type(expr).clone() {
-                    if let ast::UnaryOp::Decrement | ast::UnaryOp::Increment = op.as_ref() {
-                        let index = match op.as_ref() {
-                            ast::UnaryOp::Increment => 1,
-                            ast::UnaryOp::Decrement => -1,
-                            _ => unreachable!(),
-                        };
-                        let index = Val::Constant(Constant::Long(index));
-                        let scale = inner.size();
-                        self.instructions.push(Instruction::AddPtr {
-                            ptr: val,
-                            index,
-                            scale,
-                            dst: dst.clone(),
-                        });
-                    }
+                if let Type::Pointer(inner) = self.semantics.expr_type(expr).clone()
+                    && let ast::UnaryOp::Decrement | ast::UnaryOp::Increment = op.as_ref() {
+                    let index = match op.as_ref() {
+                        ast::UnaryOp::Increment => 1,
+                        ast::UnaryOp::Decrement => -1,
+                        _ => unreachable!(),
+                    };
+                    let index = Val::Constant(Constant::Long(index));
+                    let scale = inner.size();
+                    self.instructions.push(Instruction::AddPtr {
+                        ptr: val,
+                        index,
+                        scale,
+                        dst: dst.clone(),
+                    });
                 } else {
                     let tacky_op = match op.as_ref() {
                         ast::UnaryOp::Complement => UnaryOp::Complement,
@@ -1082,26 +1081,23 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
     };
     for decl in &program.declarations {
         generator.instructions.clear();
-        match decl.as_ref() {
-            ast::Declaration::Function(function) => {
-                let name = function.name.symbol.clone();
-                let symbol_data = generator
-                    .semantics
-                    .symbols
-                    .get(&name)
-                    .expect("Function without symbol data");
-                let Attributes::Function { global, .. } = symbol_data.attrs else {
-                    panic!("Function with incorrect symbol attributes");
-                };
-                let Some(body) = &function.body else { continue };
-                top_level.push(TopLevel::Function(Function {
-                    name,
-                    global,
-                    params: function.params.iter().map(|i| i.symbol.clone()).collect(),
-                    body: generator.emit_instructions(body),
-                }));
-            }
-            ast::Declaration::Var(_) => {}
+        if let ast::Declaration::Function(function) = decl.as_ref() {
+            let name = function.name.symbol.clone();
+            let symbol_data = generator
+                .semantics
+                .symbols
+                .get(&name)
+                .expect("Function without symbol data");
+            let Attributes::Function { global, .. } = symbol_data.attrs else {
+                panic!("Function with incorrect symbol attributes");
+            };
+            let Some(body) = &function.body else { continue };
+            top_level.push(TopLevel::Function(Function {
+                name,
+                global,
+                params: function.params.iter().map(|i| i.symbol.clone()).collect(),
+                body: generator.emit_instructions(body),
+            }));
         }
     }
 

@@ -56,8 +56,8 @@ impl InitialValue {
 
 #[derive(Clone, Debug)]
 pub enum StaticInit {
-    Char(i32),
-    UChar(i32),
+    Char(i8),
+    UChar(u8),
     Int(i32),
     UInt(u32),
     Long(i64),

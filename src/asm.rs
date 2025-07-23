@@ -39,7 +39,7 @@ type BackendSymbolTable = HashMap<Symbol, BackendSymbolData>;
 impl SemanticData {
     fn val_asm_ty(&self, val: &tacky::Val) -> AsmType {
         match val {
-            tacky::Val::Constant(Constant::Char(_) | Constant::UChar(_)) => todo!(),
+            tacky::Val::Constant(Constant::Char(_) | Constant::UChar(_)) => AsmType::Byte,
             tacky::Val::Constant(Constant::Int(_) | Constant::UInt(_)) => AsmType::Longword,
             tacky::Val::Constant(Constant::Long(_) | Constant::ULong(_)) => AsmType::Quadword,
             tacky::Val::Constant(Constant::Double(_)) => AsmType::Double,
@@ -47,34 +47,8 @@ impl SemanticData {
         }
     }
 
-    fn ty_to_asm(ty: &Type) -> AsmType {
-        match ty {
-            Type::UChar | Type::SChar | Type::Char => todo!(),
-            Type::Int | Type::UInt => AsmType::Longword,
-            Type::Long | Type::ULong => AsmType::Quadword,
-            Type::Double => AsmType::Double,
-            Type::Function(_) => unreachable!(),
-            Type::Pointer(_) => AsmType::Quadword,
-            Type::Array(inner, length) => {
-                let size = (inner.size() * length) as u64;
-                let inner_asm_ty = Self::ty_to_asm(inner);
-                let alignment = if size < 16 {
-                    match inner_asm_ty {
-                        AsmType::Longword => 4,
-                        AsmType::Quadword => 8,
-                        AsmType::Double => 8,
-                        AsmType::ByteArray { alignment, .. } => alignment,
-                    }
-                } else {
-                    16
-                };
-                AsmType::ByteArray { size, alignment }
-            }
-        }
-    }
-
     fn symbol_asm_ty(&self, symbol: &Symbol) -> AsmType {
-        Self::ty_to_asm(self.symbol_ty(symbol))
+        self.symbol_ty(symbol).to_asm()
     }
 
     fn symbol_ty(&self, symbol: &Symbol) -> &Type {
@@ -89,6 +63,35 @@ impl SemanticData {
             }
             tacky::Val::Constant(Constant::Double(_)) => true,
             tacky::Val::Var(name) => self.symbol_ty(name).is_signed(),
+        }
+    }
+}
+
+impl Type {
+    fn to_asm(&self) -> AsmType {
+        match self {
+            Type::UChar | Type::SChar | Type::Char => AsmType::Byte,
+            Type::Int | Type::UInt => AsmType::Longword,
+            Type::Long | Type::ULong => AsmType::Quadword,
+            Type::Double => AsmType::Double,
+            Type::Function(_) => unreachable!(),
+            Type::Pointer(_) => AsmType::Quadword,
+            Type::Array(inner, length) => {
+                let size = (inner.size() * length) as u64;
+                let inner_asm_ty =inner.to_asm();
+                let alignment = if size < 16 {
+                    match inner_asm_ty {
+                        AsmType::Byte => 1,
+                        AsmType::Longword => 4,
+                        AsmType::Quadword => 8,
+                        AsmType::Double => 8,
+                        AsmType::ByteArray { alignment, .. } => alignment,
+                    }
+                } else {
+                    16
+                };
+                AsmType::ByteArray { size, alignment }
+            }
         }
     }
 }
@@ -121,7 +124,9 @@ impl Compiler {
                 tacky::TopLevel::Variable(v) => {
                     top_level.push(TopLevel::Variable(self.generate_static_variable(v)))
                 }
-                tacky::TopLevel::Constant(..) => todo!(),
+                tacky::TopLevel::Constant(c) => {
+                    top_level.push(TopLevel::Constant(self.generate_constant(c)))
+                },
             }
         }
 
@@ -560,40 +565,83 @@ impl Compiler {
                 }
                 tacky::Instruction::SignExtend { src, dst } => {
                     instructions.push(Instruction::Movsx(
+                        self.semantics.val_asm_ty(src),
                         self.generate_val(src),
+                        self.semantics.val_asm_ty(dst),
                         self.generate_val(dst),
                     ));
                 }
                 tacky::Instruction::Truncate { src, dst } => {
                     instructions.push(Instruction::Mov(
-                        AsmType::Longword,
+                        self.semantics.val_asm_ty(dst),
                         self.generate_val(src),
                         self.generate_val(dst),
                     ));
                 }
                 tacky::Instruction::ZeroExtend { src, dst } => {
                     instructions.push(Instruction::MovZeroExtend(
+                        self.semantics.val_asm_ty(src),
                         self.generate_val(src),
+                        self.semantics.val_asm_ty(dst),
                         self.generate_val(dst),
                     ));
                 }
 
                 tacky::Instruction::DoubleToInt { src, dst } => {
-                    instructions.push(Instruction::Cvttsd2si(
-                        self.semantics.val_asm_ty(dst),
-                        self.generate_val(src),
-                        self.generate_val(dst),
-                    ));
+                    if let AsmType::Byte = self.semantics.val_asm_ty(dst) {
+                        instructions.push(Instruction::Cvttsd2si(
+                            AsmType::Longword,
+                            self.generate_val(src),
+                            Reg::Ax.into(),
+                        ));
+                        instructions.push(Instruction::Mov(
+                            AsmType::Byte,
+                            Reg::Ax.into(),
+                            self.generate_val(dst)
+                        ))
+                    } else {
+                        instructions.push(Instruction::Cvttsd2si(
+                            self.semantics.val_asm_ty(dst),
+                            self.generate_val(src),
+                            self.generate_val(dst),
+                        ));
+                    }
                 }
                 tacky::Instruction::IntToDouble { src, dst } => {
-                    instructions.push(Instruction::Cvtsi2sd(
-                        self.semantics.val_asm_ty(src),
-                        self.generate_val(src),
-                        self.generate_val(dst),
-                    ));
+                    if let AsmType::Byte = self.semantics.val_asm_ty(src) {
+                        instructions.push(Instruction::Movsx(
+                            AsmType::Byte,
+                            self.generate_val(src),
+                            AsmType::Longword,
+                            Reg::Ax.into()
+                        ));
+                        instructions.push(Instruction::Cvtsi2sd(
+                            AsmType::Longword,
+                            Reg::Ax.into(),
+                            self.generate_val(dst),
+                        ));
+                    } else {
+                        instructions.push(Instruction::Cvtsi2sd(
+                            self.semantics.val_asm_ty(src),
+                            self.generate_val(src),
+                            self.generate_val(dst),
+                        ));
+                    }
                 }
                 tacky::Instruction::DoubleToUInt { src, dst } => {
                     match self.semantics.val_asm_ty(dst) {
+                        AsmType::Byte => {
+                            instructions.push(Instruction::Cvttsd2si(
+                                AsmType::Longword,
+                                self.generate_val(src),
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Mov(
+                                AsmType::Byte,
+                                Reg::Ax.into(),
+                                self.generate_val(dst),
+                            ));
+                        }
                         AsmType::Longword => {
                             instructions.push(Instruction::Cvttsd2si(
                                 AsmType::Quadword,
@@ -659,9 +707,24 @@ impl Compiler {
                 }
                 tacky::Instruction::UIntToDouble { src, dst } => {
                     match self.semantics.val_asm_ty(src) {
+                        AsmType::Byte => {
+                            instructions.push(Instruction::MovZeroExtend(
+                                AsmType::Byte,
+                                self.generate_val(src),
+                                AsmType::Longword,
+                                Reg::Ax.into(),
+                            ));
+                            instructions.push(Instruction::Cvtsi2sd(
+                                AsmType::Longword,
+                                Reg::Ax.into(),
+                                self.generate_val(dst),
+                            ));
+                        }
                         AsmType::Longword => {
                             instructions.push(Instruction::MovZeroExtend(
+                                AsmType::Longword,
                                 self.generate_val(src),
+                                AsmType::Quadword,
                                 Reg::Ax.into(),
                             ));
                             instructions.push(Instruction::Cvtsi2sd(
@@ -829,7 +892,13 @@ impl Compiler {
                         },
                     );
                 }
-                Attributes::Const { .. } => todo!(),
+                Attributes::Const { .. } => {
+                    backend_symbols.insert(symbol.clone(), BackendSymbolData::Obj {
+                        ty: semantic.symbol_asm_ty(symbol),
+                        is_static: true,
+                        is_const: true
+                    });
+                },
                 Attributes::Local => {
                     backend_symbols.insert(
                         symbol.clone(),
@@ -845,12 +914,26 @@ impl Compiler {
         backend_symbols
     }
 
+    fn generate_constant(&mut self, c: &tacky::StaticConstant) -> StaticConstant {
+        StaticConstant {
+            name: c.name.clone(),
+            alignment: match c.ty.to_asm() { // TODO: extract this duplicated logic
+                AsmType::Byte => 1,
+                AsmType::Longword => 4,
+                AsmType::Quadword | AsmType::Double => 8,
+                AsmType::ByteArray { alignment, .. } => alignment,
+            },
+            init: c.init.clone(),
+        }
+    }
+
     fn generate_static_variable(&mut self, var: &tacky::StaticVariable) -> StaticVariable {
         StaticVariable {
             name: var.name.clone(),
             global: var.global,
             init: var.init.clone(),
             alignment: match self.semantics.symbol_asm_ty(&var.name) {
+                AsmType::Byte => 1,
                 AsmType::Longword => 4,
                 AsmType::Quadword | AsmType::Double => 8,
                 AsmType::ByteArray { alignment, .. } => alignment,
@@ -914,7 +997,7 @@ impl Compiler {
         }
 
         let return_reg = match self.semantics.val_asm_ty(dst) {
-            AsmType::Longword | AsmType::Quadword => Reg::Ax,
+            AsmType::Byte | AsmType::Longword | AsmType::Quadword => Reg::Ax,
             AsmType::Double => Reg::XMM0,
             AsmType::ByteArray { .. } => panic!("Cannot return a byte array"),
         };
@@ -979,8 +1062,11 @@ impl Compiler {
                     return;
                 } else {
                     match ty {
+                        AsmType::Byte => {
+                            stack_size += 1
+                        }
                         AsmType::Longword => {
-                            stack_size += 4;
+                            stack_size += 4 + stack_size % 8;
                         }
                         AsmType::Quadword | AsmType::Double => {
                             stack_size += 8 + stack_size % 8;
@@ -1005,8 +1091,8 @@ impl Compiler {
         for instruction in instructions {
             match instruction {
                 Instruction::Mov(_, src, dst)
-                | Instruction::Movsx(src, dst)
-                | Instruction::MovZeroExtend(src, dst)
+                | Instruction::Movsx(_, src, _, dst)
+                | Instruction::MovZeroExtend(_, src, _, dst)
                 | Instruction::Binary(_, _, src, dst)
                 | Instruction::Cvttsd2si(_, src, dst)
                 | Instruction::Cvtsi2sd(_, src, dst)
@@ -1073,7 +1159,7 @@ impl Compiler {
                     let src = if let Operand::Imm(v) = src {
                         if v > i32::MAX as u64 {
                             let value = match ty {
-                                AsmType::Longword => (v as i32) as u64,
+                                AsmType::Byte | AsmType::Longword => (v as i32) as u64,
                                 AsmType::Quadword => v,
                                 AsmType::Double => panic!("Immediate values, can't be double"),
                                 AsmType::ByteArray { .. } => {
@@ -1094,7 +1180,7 @@ impl Compiler {
                     };
                     fixed.push(Instruction::Mov(ty, src, dst));
                 }
-                Instruction::Movsx(src, dst) => {
+                Instruction::Movsx(src_ty, src, dst_ty, dst) => {
                     let src = if let Operand::Imm(value) = src {
                         fixed.push(Instruction::Mov(
                             AsmType::Longword,
@@ -1106,10 +1192,10 @@ impl Compiler {
                         src
                     };
                     if dst.is_mem() {
-                        fixed.push(Instruction::Movsx(src, Reg::R11.into()));
-                        fixed.push(Instruction::Mov(AsmType::Quadword, Reg::R11.into(), dst));
+                        fixed.push(Instruction::Movsx(src_ty, src, dst_ty, Reg::R11.into()));
+                        fixed.push(Instruction::Mov(dst_ty, Reg::R11.into(), dst));
                     } else {
-                        fixed.push(Instruction::Movsx(src, dst));
+                        fixed.push(Instruction::Movsx(src_ty, src, dst_ty, dst));
                     }
                 }
                 Instruction::Binary(ty, op, left, right)
@@ -1204,12 +1290,34 @@ impl Compiler {
                     };
                     fixed.push(Instruction::Push(value));
                 }
-                Instruction::MovZeroExtend(src, Operand::Reg(reg)) => {
-                    fixed.push(Instruction::Mov(AsmType::Longword, src, Operand::Reg(reg)));
+
+                // Instruction::MovZeroExtend(src, Operand::Reg(reg)) => {
+                //     fixed.push(Instruction::Mov(AsmType::Longword, src, Operand::Reg(reg)));
+                // }
+                Instruction::MovZeroExtend(src_ty, src, dst_ty, dst) if matches!(src_ty, AsmType::Byte) => {
+                    // TODO: generalize this pattern that is repeated all over the fixup phase.
+                    let src = if let Operand::Imm(v) = src && v > i32::MAX as u64 {
+                        fixed.push(Instruction::Mov(src_ty, src, Reg::R10.into()));
+                        Reg::R10.into()
+                    } else {
+                        src
+                    };
+
+                    if let Operand::Reg(_) = dst {
+                        fixed.push(Instruction::MovZeroExtend(src_ty, src, dst_ty, dst))
+                    } else {
+                        fixed.push(Instruction::MovZeroExtend(src_ty, src, dst_ty, Reg::R11.into()));
+                        fixed.push(Instruction::Mov(dst_ty, Reg::R11.into(), dst));
+                    };
+
                 }
-                Instruction::MovZeroExtend(src, dst) => {
-                    fixed.push(Instruction::Mov(AsmType::Longword, src, Reg::R11.into()));
-                    fixed.push(Instruction::Mov(AsmType::Quadword, Reg::R11.into(), dst));
+                Instruction::MovZeroExtend(_src_ty, src, _dst_ty, dst) => {
+                    if let Operand::Reg(_) = dst {
+                        fixed.push(Instruction::Mov(AsmType::Longword, src, dst));
+                    } else {
+                        fixed.push(Instruction::Mov(AsmType::Longword, src, Reg::R11.into()));
+                        fixed.push(Instruction::Mov(AsmType::Quadword, Reg::R11.into(), dst));
+                    };
                 }
                 Instruction::Cvttsd2si(ty, src, Operand::Memory(mem_reg, offset)) => {
                     fixed.push(Instruction::Cvttsd2si(ty, src, Reg::R11.into()));

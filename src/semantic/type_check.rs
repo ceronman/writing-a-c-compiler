@@ -138,8 +138,10 @@ impl TypeChecker {
                                 symbol: s.clone(),
                                 null_terminated: padding > 0,
                             }];
-                            if padding > 0 {
-                                result.push(StaticInit::ZeroInit(padding));
+                            // We check padding > 1 here because we need to account for the null
+                            // terminator
+                            if padding > 1 {
+                                result.push(StaticInit::ZeroInit(padding - 1));
                             }
                             Ok(result)
                         }
@@ -163,9 +165,9 @@ impl TypeChecker {
                 }
                 Expression::Constant(c) => {
                     let static_init = match (c, target) {
-                        (c, Type::Int | Type::Char | Type::SChar | Type::UChar) if c.is_int() => {
-                            StaticInit::Int(c.as_u64() as i32)
-                        }
+                        (c, Type::Char | Type::SChar) if c.is_int() => StaticInit::Char(c.as_u64() as i8),
+                        (c, Type::UChar) if c.is_int() => StaticInit::UChar(c.as_u64() as u8),
+                        (c, Type::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
                         (c, Type::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
                         (c, Type::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
                         (c, Type::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
@@ -486,6 +488,10 @@ impl TypeChecker {
                         msg: "Switch statement requires an integer expression".to_owned(),
                         span: expr.span,
                     });
+                }
+
+                if expr_ty.is_char() {
+                    self.cast_if_needed(expr, &expr_ty, &Type::Int);
                 }
 
                 self.switch_stack.push_front(SwitchCases {
@@ -814,7 +820,13 @@ impl TypeChecker {
 
                 match op.as_ref() {
                     BinaryOp::And | BinaryOp::Or => Type::Int,
-                    BinaryOp::ShiftRight | BinaryOp::ShiftLeft => left_ty,
+                    BinaryOp::ShiftRight | BinaryOp::ShiftLeft => {
+                        if let Type::Char | Type::SChar | Type::UChar = left_ty {
+                            self.cast_if_needed(left, &left_ty, &Type::Int)
+                        } else {
+                            left_ty
+                        }
+                    },
                     BinaryOp::Equal | BinaryOp::NotEqual => {
                         let common = if left_ty.is_pointer() || right_ty.is_pointer() {
                             self.common_pointer_type(left, &left_ty, right, &right_ty)?

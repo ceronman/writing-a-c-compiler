@@ -9,7 +9,6 @@ use crate::ast::{
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{IntKind, Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
-use std::slice::Iter;
 
 struct Parser<'src> {
     source: &'src str,
