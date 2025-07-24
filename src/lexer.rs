@@ -52,6 +52,7 @@ pub enum TokenKind {
     Return,
     Static,
     Extern,
+    Sizeof,
 
     Plus,
     PlusPlus,
@@ -144,6 +145,7 @@ impl Display for TokenKind {
             TokenKind::Return => "'return'",
             TokenKind::Static => "'static'",
             TokenKind::Extern => "'extern'",
+            TokenKind::Sizeof => "'sizeof'",
             TokenKind::Plus => "'+'",
             TokenKind::PlusPlus => "'++'",
             TokenKind::PlusEqual => "'+='",
@@ -412,6 +414,7 @@ impl<'src> Lexer<'src> {
             "continue" => TokenKind::Continue,
             "static" => TokenKind::Static,
             "extern" => TokenKind::Extern,
+            "sizeof" => TokenKind::Sizeof,
             _ => TokenKind::Identifier,
         }
     }
