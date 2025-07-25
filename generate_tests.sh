@@ -5,19 +5,19 @@ TEST_RUNNER=../writing-a-c-compiler-tests/test_compiler
 set -euxo pipefail
 cargo build --features test_gen
 
-#cp /dev/null src/lexer/test.rs
+#rm -rf src/lexer/test.rs src/lexer/test/*
 #arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 17 --stage lex --bitwise --compound --increment --goto --switch --nan
-#rustfmt src/lexer/test.rs
+#rustfmt src/lexer/test/*
 
-cp /dev/null src/parser/test.rs
-arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 17 --stage parse --bitwise --compound --increment --goto --switch --nan
-rustfmt src/parser/test.rs
+#rm -rf src/parser/test.rs src/parser/test/*
+#arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 17 --stage parse --bitwise --compound --increment --goto --switch --nan
+#rustfmt src/parser/test/*
 
-#cp /dev/null src/semantic/test.rs
+#rm -rf src/semantic/test.rs src/semantic/test/*
 #arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 16 --stage validate --bitwise --compound --increment --goto --switch --nan
-#rustfmt src/semantic/test.rs
+#rustfmt src/semantic/test/*
 
-#cp /dev/null src/tacky/test.rs
+#rm -rf src/tacky/test.rs src/tacky/test/*
 #arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler --verbose --chapter 16 --stage tacky --bitwise --compound --increment --goto --switch --nan
 #rustfmt src/tacky/test.rs
 

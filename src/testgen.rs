@@ -1,4 +1,4 @@
-use std::fs::OpenOptions;
+use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::{fs, panic};
@@ -8,15 +8,29 @@ use crate::{ast, lexer, parser, pretty, semantic, tacky};
 use anyhow::Result;
 
 pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
-    let output = PathBuf::from(file!());
-    let output = output
+    let chapter = test_chapter(path);
+    let this_file = PathBuf::from(file!());
+    let output = this_file
         .parent()
         .unwrap()
         .parent()
         .unwrap()
-        .join("src/lexer/test.rs");
-    if fs::read_to_string(&output)?.is_empty() {
-        let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
+        .join(format!("src/lexer/test/test_{chapter}.rs"));
+
+    let parent_mod = this_file
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join(format!("src/lexer/test.rs"));
+
+    if !fs::read_to_string(&parent_mod).unwrap_or("".into()).contains(&chapter) {
+        let mut file = OpenOptions::new().create(true).append(true).open(&parent_mod)?;
+        writeln!(file, "mod test_{chapter};")?;
+    }
+
+    if fs::read_to_string(&output).unwrap_or("".into()).is_empty() {
+        let mut file = OpenOptions::new().create(true).truncate(true).write(true).open(&output)?;
         writeln!(file, "use crate::lexer::{{IntKind, tokenize}};")?;
         writeln!(file, "use crate::lexer::TokenKind::*;")?;
     }
@@ -66,15 +80,24 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
 }
 
 pub fn generate_parser_tests(path: &Path, source: &str) -> Result<()> {
-    let output = PathBuf::from(file!());
-    let output = output
+    let chapter = test_chapter(path);
+    let this_file = PathBuf::from(file!());
+    let output = this_file
         .parent()
         .unwrap()
         .parent()
         .unwrap()
-        .join("src/parser/test.rs");
-    if fs::read_to_string(&output)?.is_empty() {
-        let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
+        .join(format!("src/parser/test/test_{chapter}.rs"));
+
+    let parent_mod = this_file
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join(format!("src/parser/test.rs"));
+
+    if !fs::exists(&parent_mod)? {
+        let mut file = OpenOptions::new().create(true).write(true).truncate(true).open(&parent_mod)?;
         writeln!(
             file,
             r#"
@@ -89,8 +112,21 @@ fn assert_error(expected_annotated: &str) {{
     let actual_annotated = annotate(&clean_source, &error);
     assert_eq!(actual_annotated, expected_annotated);
 }}
+
+fn assert_parse(src: &str, expected: &str) {{
+    assert_eq!(dump_ast(src), dedent(expected));
+}}
 "#
         )?;
+    }
+
+    if !fs::read_to_string(&parent_mod)?.contains(&chapter) {
+        let mut file = OpenOptions::new().create(true).append(true).open(&parent_mod)?;
+        writeln!(file, "mod test_{chapter};")?;
+    }
+    if fs::read_to_string(&output).unwrap_or("".into()).is_empty() {
+        let mut file = OpenOptions::new().create(true).truncate(true).write(true).open(&output)?;
+        writeln!(file, "use super::{{assert_error, assert_parse}};")?;
     }
     let name = test_name(path);
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
@@ -105,7 +141,7 @@ fn assert_error(expected_annotated: &str) {{
             writeln!(file, "fn test_{name}() {{")?;
             writeln!(file, "    let src = r#\"{indented}\"#;")?;
             writeln!(file, "    let expected = r#\"{tree}\"#;")?;
-            writeln!(file, "    assert_eq!(dump_ast(src), dedent(expected));")?;
+            writeln!(file, "    assert_parse(src, expected);")?;
             writeln!(file, "}}")?;
         }
         Err(error) => {
@@ -122,15 +158,24 @@ fn assert_error(expected_annotated: &str) {{
 }
 
 pub fn generate_resolver_tests(path: &Path, source: &str) -> Result<()> {
-    let output = PathBuf::from(file!());
-    let output = output
+    let chapter = test_chapter(path);
+    let this_file = PathBuf::from(file!());
+    let output = this_file
         .parent()
         .unwrap()
         .parent()
         .unwrap()
-        .join("src/semantic/test.rs");
-    if fs::read_to_string(&output)?.is_empty() {
-        let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
+        .join(format!("src/semantic/test/test_{chapter}.rs"));
+
+    let parent_mod = this_file
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join(format!("src/semantic/test.rs"));
+
+    if !fs::exists(&parent_mod)? {
+        let mut file = OpenOptions::new().create(true).write(true).truncate(true).open(&parent_mod)?;
         writeln!(
             file,
             r#"
@@ -150,6 +195,7 @@ fn assert_error(expected_annotated: &str) {{
 "#
         )?;
     }
+
     let name = test_name(path);
     let mut file = OpenOptions::new().create(true).append(true).open(&output)?;
     let indented = indent(source);
@@ -157,6 +203,14 @@ fn assert_error(expected_annotated: &str) {{
     match result {
         Ok(_) => {}
         Err(error) => {
+            if !fs::read_to_string(&parent_mod)?.contains(&chapter) {
+                let mut file = OpenOptions::new().create(true).append(true).open(&parent_mod)?;
+                writeln!(file, "mod test_{chapter};")?;
+            }
+            if fs::read_to_string(&output).unwrap_or("".into()).is_empty() {
+                let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
+                writeln!(file, "use super::{{assert_error}};")?;
+            }
             let annotated = pretty::annotate(&indented, &error);
             writeln!(file)?;
             writeln!(file, "#[test]")?;
@@ -170,15 +224,28 @@ fn assert_error(expected_annotated: &str) {{
 }
 
 pub fn generate_tacky_tests(path: &Path, source: &str) -> Result<()> {
-    let output = PathBuf::from(file!());
-    let output = output
+    let chapter = test_chapter(path);
+    let this_file = PathBuf::from(file!());
+    let output = this_file
         .parent()
         .unwrap()
         .parent()
         .unwrap()
-        .join("src/tacky/test.rs");
-    if fs::read_to_string(&output)?.is_empty() {
-        let mut file = OpenOptions::new().create(true).write(true).open(&output)?;
+        .join(format!("src/tacky/test/test_{chapter}.rs"));
+
+    let parent_mod = this_file
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join(format!("src/tacky/test.rs"));
+
+    if !fs::read_to_string(&parent_mod).unwrap_or("".into()).contains(&chapter) {
+        let mut file = OpenOptions::new().create(true).append(true).open(&parent_mod)?;
+        writeln!(file, "mod test_{chapter};")?;
+    }
+    if fs::read_to_string(&output).unwrap_or("".into()).is_empty() {
+        let mut file = OpenOptions::new().create(true).truncate(true).write(true).open(&output)?;
         writeln!(
             file,
             r#"
@@ -223,13 +290,25 @@ fn test_name(path: &Path) -> String {
         .enumerate()
         .filter_map(|(i, c)| {
             if c.starts_with("chapter") {
-                Some(i)
+                Some(i+1)
             } else {
                 None
             }
         })
         .next()
-        .unwrap_or(3);
+        .unwrap();
     let components = &components[index..];
     components.join("_").strip_suffix(".c").unwrap().to_owned()
+}
+
+fn test_chapter(path: &Path) -> String {
+    let components: Vec<_> = path
+        .components()
+        .map(|c| c.as_os_str().to_str().unwrap().to_owned())
+        .collect();
+    components
+        .iter()
+        .find(|c| c.starts_with("chapter"))
+        .unwrap()
+        .clone()
 }
