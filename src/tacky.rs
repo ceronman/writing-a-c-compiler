@@ -291,6 +291,7 @@ impl TackyGenerator {
             Type::Long => Constant::Long(0),
             Type::ULong => Constant::ULong(0),
             Type::Double => Constant::Double(0.0),
+            Type::Void => todo!(),
             Type::Pointer(_) => Constant::ULong(0),
             Type::Function(_) => panic!("Zero initializer for function type"),
             Type::Array(inner, size) => {
@@ -311,8 +312,10 @@ impl TackyGenerator {
     fn emit_statement(&mut self, stmt: &ast::Statement) {
         match stmt {
             ast::Statement::Return(expr) => {
-                let val = self.emit_expr(expr);
-                self.instructions.push(Instruction::Return(val));
+                if let Some(expr) = expr {
+                    let val = self.emit_expr(expr);
+                    self.instructions.push(Instruction::Return(val));
+                }
             }
             ast::Statement::Expression(expr) => {
                 self.emit_expr(expr);
@@ -917,6 +920,7 @@ impl TackyGenerator {
                 });
                 return ExprResult::Dereference(dst);
             }
+            ast::Expression::SizeOfType(_) | ast::Expression::SizeOfExpr(_) => todo!(),
         };
         ExprResult::Operand(result)
     }

@@ -32,6 +32,7 @@ impl TokenKind {
                 | TokenKind::Long
                 | TokenKind::Unsigned
                 | TokenKind::Signed
+                | TokenKind::Void
         )
     }
 }
@@ -208,8 +209,10 @@ impl<'src> Parser<'src> {
         let mut end = simple.span;
         if self.matches(TokenKind::OpenParen) {
             let mut params = Vec::new();
-            if self.matches(TokenKind::Void) {
-                self.expect(TokenKind::CloseParen)?;
+            if self.current.kind == TokenKind::Void && self.next.kind == TokenKind::CloseParen {
+                // empty argument list foo(void)
+                self.advance(); // consume void
+                self.advance(); // consume close paren
             } else {
                 loop {
                     let param = self.parse_param()?;
@@ -347,8 +350,14 @@ impl<'src> Parser<'src> {
     }
 
     fn type_from_list(&mut self, span: Span, types: &[TokenKind]) -> Result<Node<Type>> {
-        if let [TokenKind::Double] = types {
-            return Ok(self.node(span, Type::Double));
+        match types {
+            [TokenKind::Double] => {
+                return Ok(self.node(span, Type::Double));
+            }
+            [TokenKind::Void] => {
+                return Ok(self.node(span, Type::Void));
+            }
+            _ => {}
         }
 
         let mut char = 0;
@@ -364,7 +373,7 @@ impl<'src> Parser<'src> {
                 TokenKind::Unsigned => unsigned += 1,
                 TokenKind::Int => int += 1,
                 TokenKind::Long => long += 1,
-                TokenKind::Double => {
+                TokenKind::Double | TokenKind::Void => {
                     return Err(CompilerError {
                         kind: ErrorKind::Parse,
                         msg: "Invalid type specifier".into(),
@@ -675,9 +684,14 @@ impl<'src> Parser<'src> {
     fn return_stmt(&mut self) -> Result<Node<Statement>> {
         let begin = self.current.span;
         self.expect(TokenKind::Return)?;
-        let expr = self.expression()?;
-        let end = self.expect(TokenKind::Semicolon)?.span;
-        Ok(self.node(begin + end, Statement::Return(expr)))
+        if self.matches(TokenKind::Semicolon) {
+            let end = self.current.span;
+            Ok(self.node(begin + end, Statement::Return(None)))
+        } else {
+            let expr = self.expression()?;
+            let end = self.expect(TokenKind::Semicolon)?.span;
+            Ok(self.node(begin + end, Statement::Return(Some(expr))))
+        }
     }
 
     fn expression(&mut self) -> Result<Node<Expression>> {
@@ -690,6 +704,7 @@ impl<'src> Parser<'src> {
         error_kind: &str,
     ) -> Result<Node<Expression>> {
         let mut expr = match self.current.kind {
+            TokenKind::Sizeof => self.sizeof()?,
             TokenKind::StringLiteral => self.string_literal()?,
             TokenKind::IntConstant(_) => self.int_constant()?,
             TokenKind::DoubleConstant => self.double_constant()?,
@@ -1064,6 +1079,23 @@ impl<'src> Parser<'src> {
             span: token.span,
         })?;
         Ok(self.node(token.span, Expression::Constant(Constant::Double(value))))
+    }
+
+    fn sizeof(&mut self) -> Result<Node<Expression>> {
+        let begin = self.current.span;
+        self.expect(TokenKind::Sizeof)?;
+        if self.current.kind == TokenKind::OpenParen && self.next.kind.is_type_specifier() {
+            self.advance(); // consume open paren
+            let base_ty = self.type_specifier()?;
+            let declarator = self.abstract_declarator()?;
+            let target = Self::process_abstract_declaration(base_ty, declarator);
+            let end = self.expect(TokenKind::CloseParen)?.span;
+            Ok(self.node(begin + end, Expression::SizeOfType(target)))
+        } else {
+            let expr = self.expression()?;
+            let end = expr.span;
+            Ok(self.node(begin + end, Expression::SizeOfExpr(expr)))
+        }
     }
 
     fn char_literal(&mut self) -> Result<Node<Expression>> {

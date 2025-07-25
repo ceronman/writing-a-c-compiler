@@ -74,6 +74,7 @@ impl Type {
             Type::Int | Type::UInt => AsmType::Longword,
             Type::Long | Type::ULong => AsmType::Quadword,
             Type::Double => AsmType::Double,
+            Type::Void => todo!(),
             Type::Function(_) => unreachable!(),
             Type::Pointer(_) => AsmType::Quadword,
             Type::Array(inner, length) => {

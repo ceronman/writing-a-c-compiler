@@ -108,7 +108,14 @@ impl PrettyAst {
     }
     fn from_statement(statement: &Statement) -> PrettyAst {
         match statement {
-            Statement::Return(expr) => Self::new("Return", vec![Self::from_expression(expr)]),
+            Statement::Return(expr) => {
+                let children = if let Some(expr) = expr {
+                    vec![Self::from_expression(expr)]
+                } else {
+                    vec![]
+                };
+                Self::new("Return", children)
+            }
             Statement::If {
                 cond,
                 then_stmt,
@@ -266,6 +273,13 @@ impl PrettyAst {
                 format!("<{node_id}> Subscript"),
                 vec![Self::from_expression(expr), Self::from_expression(index)],
             ),
+            Expression::SizeOfType(ty) => {
+                Self::new(format!("<{node_id}> SizeOfType"), vec![Self::from_type(ty)])
+            }
+            Expression::SizeOfExpr(ty) => Self::new(
+                format!("<{node_id}> SizeOfExpr"),
+                vec![Self::from_expression(ty)],
+            ),
         }
     }
     fn from_block_item(item: &BlockItem) -> PrettyAst {
@@ -300,6 +314,7 @@ impl PrettyAst {
             Type::ULong => Self::new("Unsigned Long", vec![]),
             Type::UInt => Self::new("Unsigned Int", vec![]),
             Type::Double => Self::new("Double", vec![]),
+            Type::Void => Self::new("Void", vec![]),
             Type::Function(f) => Self::new(
                 "FunctionType",
                 vec![

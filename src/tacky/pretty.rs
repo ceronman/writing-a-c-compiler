@@ -300,6 +300,7 @@ fn pp_type(file: &mut impl Write, ty: &ast::Type) -> anyhow::Result<()> {
         ast::Type::ULong => write!(file, "Unsigned Long"),
         ast::Type::Function(_) => write!(file, "Function(...)"),
         ast::Type::Double => write!(file, "Double"),
+        ast::Type::Void => write!(file, "Void"),
         ast::Type::Pointer(referenced) => {
             write!(file, "Pointer(")?;
             pp_type(file, referenced.as_ref())?;

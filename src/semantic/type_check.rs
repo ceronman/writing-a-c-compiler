@@ -464,8 +464,10 @@ impl TypeChecker {
     fn check_statement(&mut self, function: &FunctionType, stmt: &Node<Statement>) -> Result<()> {
         match stmt.as_ref() {
             Statement::Return(expr) => {
-                let expr_ty = self.check_and_convert_expr(expr)?;
-                self.convert_by_assignment(expr, &expr_ty, &function.ret)?;
+                if let Some(expr) = expr {
+                    let expr_ty = self.check_and_convert_expr(expr)?;
+                    self.convert_by_assignment(expr, &expr_ty, &function.ret)?;
+                }
             }
             Statement::Expression(expr) => {
                 self.check_and_convert_expr(expr)?;
@@ -528,6 +530,7 @@ impl TypeChecker {
                     Type::Double | Type::Function(_) => unreachable!(),
                     Type::Pointer(_) => Constant::ULong(case_constant),
                     Type::Array(_, _) => unreachable!(),
+                    Type::Void => todo!(),
                 };
 
                 if switch_cases.values.iter().any(|(v, _)| *v == case_value) {
@@ -1067,6 +1070,7 @@ impl TypeChecker {
                     }
                 }
             }
+            Expression::SizeOfExpr(_) | Expression::SizeOfType(_) => todo!(),
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)

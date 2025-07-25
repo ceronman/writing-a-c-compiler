@@ -164,7 +164,12 @@ impl Resolver {
 
     fn resolve_statement(&mut self, stmt: &mut Node<Statement>) -> Result<()> {
         match stmt.as_mut() {
-            Statement::Return(expr) | Statement::Expression(expr) => {
+            Statement::Return(expr) => {
+                if let Some(expr) = expr {
+                    self.resolve_expression(expr)?;
+                }
+            }
+            Statement::Expression(expr) => {
                 self.resolve_expression(expr)?;
             }
             Statement::If {
@@ -289,14 +294,15 @@ impl Resolver {
             }
             Expression::Cast { expr, .. }
             | Expression::Dereference(expr)
-            | Expression::AddressOf(expr) => {
+            | Expression::AddressOf(expr)
+            | Expression::SizeOfExpr(expr) => {
                 self.resolve_expression(expr)?;
             }
             Expression::Subscript(expr1, expr2) => {
                 self.resolve_expression(expr1)?;
                 self.resolve_expression(expr2)?;
             }
-            Expression::Constant(_) | Expression::String(_) => {}
+            Expression::Constant(_) | Expression::String(_) | Expression::SizeOfType(_) => {}
         }
         Ok(())
     }

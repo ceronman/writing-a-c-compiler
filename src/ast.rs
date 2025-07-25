@@ -31,7 +31,7 @@ pub enum BlockItem {
 
 #[derive(Debug)]
 pub enum Statement {
-    Return(Node<Expression>),
+    Return(Option<Node<Expression>>),
     If {
         cond: Node<Expression>,
         then_stmt: Node<Statement>,
@@ -126,6 +126,8 @@ pub enum Expression {
     Dereference(Node<Expression>),
     AddressOf(Node<Expression>),
     Subscript(Node<Expression>, Node<Expression>),
+    SizeOfExpr(Node<Expression>),
+    SizeOfType(Node<Type>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -163,6 +165,7 @@ pub enum Type {
     Function(FunctionType),
     Pointer(Box<Type>),
     Array(Box<Type>, usize),
+    Void,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -343,6 +346,7 @@ impl Type {
             Type::Function(_) => panic!("Size of a function type"),
             Type::Pointer(_) => 8,
             Type::Array(ty, size) => ty.size() * size,
+            Type::Void => 1,
         }
     }
 
@@ -350,8 +354,9 @@ impl Type {
         match self {
             Type::Int | Type::Long | Type::Char | Type::SChar => true,
             Type::UInt | Type::ULong | Type::Double | Type::Pointer(_) | Type::UChar => false,
-            Type::Function(_) => panic!("Sign of a function type"),
-            Type::Array(_, _) => panic!("Arrays don't have sign"),
+            Type::Function(_) => panic!("Function types don't have a sign"),
+            Type::Array(_, _) => panic!("Arrays don't have a sign"),
+            Type::Void => panic!("Void doesn't have a sign"),
         }
     }
 }
