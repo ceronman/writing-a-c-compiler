@@ -100,8 +100,7 @@ pub fn generate_parser_tests(path: &Path, source: &str) -> Result<()> {
         let mut file = OpenOptions::new().create(true).write(true).truncate(true).open(&parent_mod)?;
         writeln!(
             file,
-            r#"
-use crate::parser::parse;
+            r#"use crate::parser::parse;
 use crate::pretty::{{annotate, dedent, dump_ast, remove_annotation}};
 
 fn assert_error(expected_annotated: &str) {{
@@ -178,8 +177,7 @@ pub fn generate_resolver_tests(path: &Path, source: &str) -> Result<()> {
         let mut file = OpenOptions::new().create(true).write(true).truncate(true).open(&parent_mod)?;
         writeln!(
             file,
-            r#"
-use crate::parser::parse;
+            r#"use crate::parser::parse;
 use crate::semantic::validate;
 use crate::pretty::{{annotate, remove_annotation}};
 

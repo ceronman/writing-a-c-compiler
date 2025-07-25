@@ -1,4 +1,3 @@
-
 use crate::parser::parse;
 use crate::semantic::validate;
 use crate::pretty::{annotate, remove_annotation};
