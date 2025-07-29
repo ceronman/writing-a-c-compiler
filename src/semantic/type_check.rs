@@ -52,6 +52,7 @@ impl TypeChecker {
     fn check_local_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let name = decl.name.symbol.clone();
         Self::validate_type_specifier(&decl.ty, decl.name.span)?; // FIXME: We need a span to the type
+        Self::error_if(decl.ty.is_void(), decl.name.span, "Illegal void variable")?;
         if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             if let Some(init) = &decl.init {
                 return Err(CompilerError {
@@ -292,6 +293,7 @@ impl TypeChecker {
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         Self::validate_type_specifier(&decl.ty, decl.name.span)?; // FIXME: span should be in type
+        Self::error_if(decl.ty.is_void(), decl.name.span, "Illegal void variable")?;
         let mut initial_value = if let Some(init) = &decl.init {
             InitialValue::Initial(Self::check_static_initializer(init, &decl.ty)?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
@@ -364,24 +366,24 @@ impl TypeChecker {
         let name = decl.name.symbol.clone();
         let mut function_ty = decl.ty.clone();
 
-        if function_ty.ret.is_array() {
-            // TODO: Make this error point to the span of the actual return type
-            return Err(CompilerError {
-                kind: ErrorKind::Type,
-                msg: "A function cannot return array".into(),
-                span: decl.name.span,
-            });
-        }
+        // TODO: Make this error point to the span of the actual return type
+        Self::error_if(
+            function_ty.ret.is_array(),
+            decl.name.span,
+            "A function cannot return array",
+        )?;
+        Self::validate_type_specifier(&function_ty.ret, decl.name.span)?; // FIXME: span should be in type
 
         // Replace array params with pointers
         for param in &mut function_ty.params {
+            Self::error_if(param.is_void(), decl.name.span, "Illegal void parameter")?;
+            Self::validate_type_specifier(param, decl.name.span)?; // FIXME: span should be in type
             if let Type::Array(inner, _) = param {
                 *param = Type::Pointer(inner.clone());
             }
         }
 
         let this_ty = Type::Function(function_ty.clone());
-        Self::validate_type_specifier(&this_ty, decl.name.span)?; // FIXME: span should be in type
 
         let has_body = decl.body.is_some();
         let mut already_defined = false;
@@ -459,17 +461,21 @@ impl TypeChecker {
     fn validate_type_specifier(ty: &Type, span: Span) -> Result<()> {
         match ty {
             Type::Array(inner, _) => {
-                Self::error_if(!inner.is_complete(), span, "Illegal array of incomplete types")?;
-                Self::validate_type_specifier(&*inner, span)?;
+                Self::error_if(
+                    !inner.is_complete(),
+                    span,
+                    "Illegal array of incomplete types",
+                )?;
+                Self::validate_type_specifier(inner, span)?;
             }
             Type::Pointer(inner) => {
-                Self::validate_type_specifier(&*inner, span)?;
+                Self::validate_type_specifier(inner, span)?;
             }
             Type::Function(f) => {
                 for param in &f.params {
-                    Self::validate_type_specifier(&*f.ret, span)?;
+                    Self::validate_type_specifier(param, span)?;
                 }
-                Self::validate_type_specifier(&*f.ret, span)?;
+                Self::validate_type_specifier(&f.ret, span)?;
             }
             _ => {}
         }
@@ -689,6 +695,11 @@ impl TypeChecker {
                         expr.span,
                         "Expression is not assignable",
                     )?;
+                    Self::error_if(
+                        operand_ty.is_pointer_to_incomplete(),
+                        expr.span,
+                        "Illegal operation on pointer to void type",
+                    )?;
                     operand_ty
                 }
                 UnaryOp::Complement => {
@@ -735,6 +746,11 @@ impl TypeChecker {
                     expr.span,
                     "Expression is not assignable",
                 )?;
+                Self::error_if(
+                    operand_ty.is_pointer_to_incomplete(),
+                    expr.span,
+                    "Illegal operation on pointer to void type",
+                )?;
                 operand_ty
             }
             Expression::Binary { left, right, op } => {
@@ -764,21 +780,53 @@ impl TypeChecker {
                     }
                     BinaryOp::Multiply | BinaryOp::Divide => {
                         Self::error_if(!left_ty.is_arithmetic(), left.span, "Operator is invalid")?;
-                        Self::error_if(!right_ty.is_arithmetic(), right.span, "Operator is invalid")?;
+                        Self::error_if(
+                            !right_ty.is_arithmetic(),
+                            right.span,
+                            "Operator is invalid",
+                        )?;
                     }
                     BinaryOp::Add => {
-                        Self::error_if(left_ty.is_pointer_to_incomplete(), left.span, "Cannot add pointers to incomplete types")?;
-                        Self::error_if(right_ty.is_pointer_to_incomplete(), right.span, "Cannot add pointers to incomplete types")?;
-                        Self::error_if(left_ty.is_pointer() && !right_ty.is_int(), right.span, "Operator is invalid")?;
-                        Self::error_if(right_ty.is_pointer() && !left_ty.is_int(), left.span, "Operator is invalid")?;
+                        Self::error_if(
+                            left_ty.is_pointer_to_incomplete(),
+                            left.span,
+                            "Cannot add pointers to incomplete types",
+                        )?;
+                        Self::error_if(
+                            right_ty.is_pointer_to_incomplete(),
+                            right.span,
+                            "Cannot add pointers to incomplete types",
+                        )?;
+                        Self::error_if(
+                            left_ty.is_pointer() && !right_ty.is_int(),
+                            right.span,
+                            "Operator is invalid",
+                        )?;
+                        Self::error_if(
+                            right_ty.is_pointer() && !left_ty.is_int(),
+                            left.span,
+                            "Operator is invalid",
+                        )?;
                     }
                     BinaryOp::Subtract => match (&left_ty, &right_ty) {
                         (Type::Pointer(left_inner), Type::Pointer(right_inner)) => {
-                            Self::error_if(!left_inner.is_complete(), left.span, "Incomplete pointer type")?;
-                            Self::error_if(left_inner != right_inner, right.span, "Invalid pointer operator type")?;
+                            Self::error_if(
+                                !left_inner.is_complete(),
+                                left.span,
+                                "Incomplete pointer type",
+                            )?;
+                            Self::error_if(
+                                left_inner != right_inner,
+                                right.span,
+                                "Invalid pointer operator type",
+                            )?;
                         }
                         (Type::Pointer(left_inner), right_ty) => {
-                            Self::error_if(!left_inner.is_complete(), left.span, "Incomplete pointer type")?;
+                            Self::error_if(
+                                !left_inner.is_complete(),
+                                left.span,
+                                "Incomplete pointer type",
+                            )?;
                             Self::error_if(!right_ty.is_int(), right.span, "Operator is invalid")?;
                         }
                         (_, Type::Pointer(_)) => {
@@ -810,8 +858,16 @@ impl TypeChecker {
                                 span: right.span,
                             });
                         };
-                        Self::error_if(!left_inner.is_complete(), right.span, "Operator is invalid")?;
-                        Self::error_if(left_inner != right_inner, right.span, "Operator is invalid")?;
+                        Self::error_if(
+                            !left_inner.is_complete(),
+                            right.span,
+                            "Operator is invalid",
+                        )?;
+                        Self::error_if(
+                            left_inner != right_inner,
+                            right.span,
+                            "Operator is invalid",
+                        )?;
                     }
                     _ => {}
                 };
@@ -829,6 +885,12 @@ impl TypeChecker {
                         let common = if left_ty.is_pointer() || right_ty.is_pointer() {
                             self.common_pointer_type(left, &left_ty, right, &right_ty)?
                         } else {
+                            Self::error_if(!left_ty.is_arithmetic(), left.span, "Invalid operand")?;
+                            Self::error_if(
+                                !right_ty.is_arithmetic(),
+                                right.span,
+                                "Invalid operand",
+                            )?;
                             Self::common_type(&left_ty, &right_ty)
                         };
                         self.cast_if_needed(left, &left_ty, &common);
@@ -866,7 +928,11 @@ impl TypeChecker {
             Expression::Assignment { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
                 Self::error_if(!left_ty.is_scalar(), left.span, "Type is not assignable")?;
-                Self::error_if(!Self::is_lvalue(left), left.span, "Expression is not assignable")?;
+                Self::error_if(
+                    !Self::is_lvalue(left),
+                    left.span,
+                    "Expression is not assignable",
+                )?;
                 let right_ty = self.check_and_convert_expr(right)?;
                 Self::error_if(!right_ty.is_scalar(), right.span, "Invalid assign target")?;
 
@@ -877,52 +943,45 @@ impl TypeChecker {
                     | AssignOp::ShiftLeftEqual
                     | AssignOp::ShiftRightEqual
                     | AssignOp::ModEqual => {
-                        if !left_ty.is_int() || !right_ty.is_int() {
-                            let span = if !left_ty.is_int() {
-                                left.span
-                            } else {
-                                right.span
-                            };
-                            return Err(CompilerError {
-                                kind: ErrorKind::Type,
-                                msg: "Assign compound operation requires integer operands"
-                                    .to_string(),
-                                span,
-                            });
-                        }
+                        Self::error_if(
+                            !left_ty.is_int(),
+                            left.span,
+                            "Assign compound operation requires integer operands",
+                        )?;
+                        Self::error_if(
+                            !right_ty.is_int(),
+                            right.span,
+                            "Assign compound operation requires integer operands",
+                        )?;
                     }
                     AssignOp::MulEqual | AssignOp::DivEqual => {
-                        if left_ty.is_pointer() || right_ty.is_pointer() {
-                            let span = if left_ty.is_pointer() {
-                                left.span
-                            } else {
-                                right.span
-                            };
-                            return Err(CompilerError {
-                                kind: ErrorKind::Type,
-                                msg: "Assign compound operation cannot be used on pointer type"
-                                    .to_string(),
-                                span,
-                            });
-                        }
+                        Self::error_if(
+                            !left_ty.is_arithmetic(),
+                            left.span,
+                            "Assign compound operation cannot be used on pointer type",
+                        )?;
+                        Self::error_if(
+                            !right_ty.is_arithmetic(),
+                            right.span,
+                            "Assign compound operation cannot be used on pointer type",
+                        )?;
                     }
-                    AssignOp::AddEqual | AssignOp::SubEqual
-                        if left_ty.is_pointer() && !right_ty.is_int() =>
-                    {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Type,
-                            msg: "Assign compound operation on a pointer requires integer operand"
-                                .to_string(),
-                            span: right.span,
-                        });
-                    }
-
-                    AssignOp::AddEqual | AssignOp::SubEqual if right_ty.is_pointer() => {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Type,
-                            msg: "Assign compound operator cannot be a pointer type".to_string(),
-                            span: right.span,
-                        });
+                    AssignOp::AddEqual | AssignOp::SubEqual => {
+                        Self::error_if(
+                            left_ty.is_pointer() && !right_ty.is_int(),
+                            right.span,
+                            "Assign compound operation on a pointer requires integer operand",
+                        )?;
+                        Self::error_if(
+                            left_ty.is_pointer_to_incomplete(),
+                            left.span,
+                            "Cannot assign to a pointer of an incomplete type",
+                        )?;
+                        Self::error_if(
+                            right_ty.is_pointer(),
+                            right.span,
+                            "Assign compound operator cannot be a pointer type",
+                        )?;
                     }
                     _ => {}
                 };
@@ -952,10 +1011,24 @@ impl TypeChecker {
                 Self::error_if(!cond_ty.is_scalar(), cond.span, "Invalid condition type")?;
                 let then_ty = self.check_and_convert_expr(then_expr)?;
                 let else_ty = self.check_and_convert_expr(else_expr)?;
-                let common = Self::common_type(&then_ty, &else_ty);
-                self.cast_if_needed(then_expr, &then_ty, &common);
-                self.cast_if_needed(else_expr, &else_ty, &common);
-                common
+                if then_ty.is_void() && else_ty.is_void() {
+                    Type::Void
+                } else {
+                    let common = if then_ty.is_pointer() || else_ty.is_pointer() {
+                        self.common_pointer_type(then_expr, &then_ty, else_expr, &else_ty)?
+                    } else if then_ty.is_arithmetic() && else_ty.is_arithmetic() {
+                        Self::common_type(&then_ty, &else_ty)
+                    } else {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Invalid types of the branches".to_string(),
+                            span: expr.span,
+                        });
+                    };
+                    self.cast_if_needed(then_expr, &then_ty, &common);
+                    self.cast_if_needed(else_expr, &else_ty, &common);
+                    common
+                }
             }
 
             Expression::FunctionCall { name, args } => {
@@ -990,29 +1063,19 @@ impl TypeChecker {
             Expression::Cast { target, expr } => {
                 Self::validate_type_specifier(target, target.span)?;
                 let ty = self.check_and_convert_expr(expr)?;
-                if target.is_pointer() && ty.is_double() {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Cannot cast a double to a pointer".to_string(),
-                        span: expr.span,
-                    });
-                }
-                if target.is_double() && ty.is_pointer() {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Cannot cast a pointer to a double".to_string(),
-                        span: expr.span,
-                    });
-                }
-                if target.is_array() {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Cannot cast to an array type".to_string(),
-                        span: expr.span,
-                    });
-                }
+                Self::error_if(
+                    target.is_pointer() && ty.is_double(),
+                    expr.span,
+                    "Cannot cast a double to a pointer",
+                )?;
+                Self::error_if(
+                    target.is_double() && ty.is_pointer(),
+                    expr.span,
+                    "Cannot cast a pointer to a double",
+                )?;
+                Self::error_if(target.is_array(), expr.span, "Cannot cast to an array type")?;
 
-                if !target.is_void() {
+                if target.is_void() {
                     *target.data.clone()
                 } else {
                     Self::error_if(
@@ -1021,7 +1084,7 @@ impl TypeChecker {
                         "Cannot cast a value to a non-scalar type",
                     )?;
                     Self::error_if(
-                        ty.is_scalar(),
+                        !ty.is_scalar(),
                         expr.span,
                         "Cannot cast non-scalar expression",
                     )?;
@@ -1031,7 +1094,14 @@ impl TypeChecker {
             Expression::Dereference(inner) => {
                 let inner_ty = self.check_and_convert_expr(inner)?;
                 match inner_ty {
-                    Type::Pointer(referenced) => *referenced.clone(),
+                    Type::Pointer(referenced) => {
+                        Self::error_if(
+                            referenced.is_void(),
+                            inner.span,
+                            "Cannot dereference pointers to void",
+                        )?;
+                        *referenced.clone()
+                    }
                     _ => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
@@ -1057,8 +1127,22 @@ impl TypeChecker {
                 let ty1 = self.check_and_convert_expr(expr1)?;
                 let ty2 = self.check_and_convert_expr(expr2)?;
                 match (&ty1, &ty2) {
-                    (Type::Pointer(referenced), _) if ty2.is_int() => *referenced.clone(),
-                    (_, Type::Pointer(referenced)) if ty1.is_int() => *referenced.clone(),
+                    (Type::Pointer(referenced), _) if ty2.is_int() => {
+                        Self::error_if(
+                            !referenced.is_complete(),
+                            expr1.span,
+                            "Cannot subscript a pointer to void type",
+                        )?;
+                        *referenced.clone()
+                    }
+                    (_, Type::Pointer(referenced)) if ty1.is_int() => {
+                        Self::error_if(
+                            !referenced.is_complete(),
+                            expr2.span,
+                            "Cannot subscript a pointer to void type",
+                        )?;
+                        *referenced.clone()
+                    }
                     _ => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
@@ -1070,9 +1154,22 @@ impl TypeChecker {
             }
             Expression::SizeOfType(ty) => {
                 Self::validate_type_specifier(ty, ty.span)?;
+                Self::error_if(
+                    !ty.is_complete(),
+                    ty.span,
+                    "Cannot get size of an incomplete type",
+                )?;
                 Type::ULong
             }
-            Expression::SizeOfExpr(_) => todo!(),
+            Expression::SizeOfExpr(expr) => {
+                let ty = self.check_expression(expr)?;
+                Self::error_if(
+                    !ty.is_complete(),
+                    expr.span,
+                    "Cannot get size of an incomplete type",
+                )?;
+                Type::ULong
+            }
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)
@@ -1141,7 +1238,7 @@ impl TypeChecker {
 
         let result = if ty1 == ty2 {
             ty1
-        } else if matches!(ty1, Type::Double) || matches!(ty2, Type::Double) {
+        } else if ty1.is_double() || ty2.is_double() {
             &Type::Double
         } else if ty1.size() == ty2.size() {
             if ty1.is_signed() { ty2 } else { ty1 }

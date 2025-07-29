@@ -1924,72 +1924,72 @@ fn test_valid_extra_credit_sizeof_bitwise() {
                     │   ╰── Static
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <35> SizeOfExpr
-                    │   │       ╰── <34>  [!=]
-                    │   │           ├── <31>  [&]
-                    │   │           │   ├── <26> Var [c]
-                    │   │           │   ╰── <29> Var [i]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <35>  [!=]
+                    │   │       ├── <32> SizeOfExpr
+                    │   │       │   ╰── <31>  [&]
+                    │   │       │       ├── <26> Var [c]
+                    │   │       │       ╰── <29> Var [i]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <51> SizeOfExpr
-                    │   │       ╰── <50>  [!=]
-                    │   │           ├── <47>  [|]
-                    │   │           │   ├── <42> Var [i]
-                    │   │           │   ╰── <45> Var [l]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <51>  [!=]
+                    │   │       ├── <48> SizeOfExpr
+                    │   │       │   ╰── <47>  [|]
+                    │   │       │       ├── <42> Var [i]
+                    │   │       │       ╰── <45> Var [l]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <67> SizeOfExpr
-                    │   │       ╰── <66>  [!=]
-                    │   │           ├── <63>  [^]
-                    │   │           │   ├── <58> Var [c]
-                    │   │           │   ╰── <61> Var [c]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <67>  [!=]
+                    │   │       ├── <64> SizeOfExpr
+                    │   │       │   ╰── <63>  [^]
+                    │   │       │       ├── <58> Var [c]
+                    │   │       │       ╰── <61> Var [c]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <83> SizeOfExpr
-                    │   │       ╰── <82>  [!=]
-                    │   │           ├── <79>  [<<]
-                    │   │           │   ├── <74> Var [i]
-                    │   │           │   ╰── <77> Var [l]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <83>  [!=]
+                    │   │       ├── <80> SizeOfExpr
+                    │   │       │   ╰── <79>  [<<]
+                    │   │       │       ├── <74> Var [i]
+                    │   │       │       ╰── <77> Var [l]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <99> SizeOfExpr
-                    │   │       ╰── <98>  [!=]
-                    │   │           ├── <95>  [<<]
-                    │   │           │   ├── <90> Var [c]
-                    │   │           │   ╰── <93> Var [i]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <99>  [!=]
+                    │   │       ├── <96> SizeOfExpr
+                    │   │       │   ╰── <95>  [<<]
+                    │   │       │       ├── <90> Var [c]
+                    │   │       │       ╰── <93> Var [i]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <115> SizeOfExpr
-                    │   │       ╰── <114>  [!=]
-                    │   │           ├── <111>  [>>]
-                    │   │           │   ├── <106> Var [l]
-                    │   │           │   ╰── <109> Var [c]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <115>  [!=]
+                    │   │       ├── <112> SizeOfExpr
+                    │   │       │   ╰── <111>  [>>]
+                    │   │       │       ├── <106> Var [l]
+                    │   │       │       ╰── <109> Var [c]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -2093,62 +2093,62 @@ fn test_valid_extra_credit_sizeof_compound() {
                     │       ╰── <41> Var [long_arr]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <55> SizeOfExpr
-                    │   │       ╰── <54>  [!=]
-                    │   │           ├── <51> Assign [*=]
-                    │   │           │   ├── <47> Subscript
-                    │   │           │   │   ├── <45> Var [long_arr]
-                    │   │           │   │   ╰── Constant Int [1]
-                    │   │           │   ╰── Constant Int [10]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <55>  [!=]
+                    │   │       ├── <52> SizeOfExpr
+                    │   │       │   ╰── <51> Assign [*=]
+                    │   │       │       ├── <47> Subscript
+                    │   │       │       │   ├── <45> Var [long_arr]
+                    │   │       │       │   ╰── Constant Int [1]
+                    │   │       │       ╰── Constant Int [10]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <70> SizeOfExpr
-                    │   │       ╰── <69>  [!=]
-                    │   │           ├── <66> Assign [/=]
-                    │   │           │   ├── <62> Var [i]
-                    │   │           │   ╰── Constant ULong [10]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <70>  [!=]
+                    │   │       ├── <67> SizeOfExpr
+                    │   │       │   ╰── <66> Assign [/=]
+                    │   │       │       ├── <62> Var [i]
+                    │   │       │       ╰── Constant ULong [10]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <85> SizeOfExpr
-                    │   │       ╰── <84>  [!=]
-                    │   │           ├── <81> Assign [&=]
-                    │   │           │   ├── <77> Var [uc]
-                    │   │           │   ╰── Constant Int [2]
-                    │   │           ╰── Constant Int [1]
+                    │   │   ╰── <85>  [!=]
+                    │   │       ├── <82> SizeOfExpr
+                    │   │       │   ╰── <81> Assign [&=]
+                    │   │       │       ├── <77> Var [uc]
+                    │   │       │       ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <100> SizeOfExpr
-                    │   │       ╰── <99>  [!=]
-                    │   │           ├── <96> Assign [-=]
-                    │   │           │   ├── <92> Var [d]
-                    │   │           │   ╰── Constant Int [11]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <100>  [!=]
+                    │   │       ├── <97> SizeOfExpr
+                    │   │       │   ╰── <96> Assign [-=]
+                    │   │       │       ├── <92> Var [d]
+                    │   │       │       ╰── Constant Int [11]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <115> SizeOfExpr
-                    │   │       ╰── <114>  [!=]
-                    │   │           ├── <111> Assign [+=]
-                    │   │           │   ├── <107> Var [ptr]
-                    │   │           │   ╰── Constant Int [1]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <115>  [!=]
+                    │   │       ├── <112> SizeOfExpr
+                    │   │       │   ╰── <111> Assign [+=]
+                    │   │       │       ├── <107> Var [ptr]
+                    │   │       │       ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -2280,60 +2280,60 @@ fn test_valid_extra_credit_sizeof_compound_bitwise() {
                     │           ╰── Constant Int [99999]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <36> SizeOfExpr
-                    │   │       ╰── <35>  [!=]
-                    │   │           ├── <32> Assign [&=]
-                    │   │           │   ├── <27> Var [sc]
-                    │   │           │   ╰── <30> Var [l]
-                    │   │           ╰── Constant Int [1]
+                    │   │   ╰── <36>  [!=]
+                    │   │       ├── <33> SizeOfExpr
+                    │   │       │   ╰── <32> Assign [&=]
+                    │   │       │       ├── <27> Var [sc]
+                    │   │       │       ╰── <30> Var [l]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <52> SizeOfExpr
-                    │   │       ╰── <51>  [!=]
-                    │   │           ├── <48> Assign [|=]
-                    │   │           │   ├── <43> Var [l]
-                    │   │           │   ╰── <46> Var [u]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <52>  [!=]
+                    │   │       ├── <49> SizeOfExpr
+                    │   │       │   ╰── <48> Assign [|=]
+                    │   │       │       ├── <43> Var [l]
+                    │   │       │       ╰── <46> Var [u]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <68> SizeOfExpr
-                    │   │       ╰── <67>  [!=]
-                    │   │           ├── <64> Assign [^=]
-                    │   │           │   ├── <59> Var [u]
-                    │   │           │   ╰── <62> Var [l]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <68>  [!=]
+                    │   │       ├── <65> SizeOfExpr
+                    │   │       │   ╰── <64> Assign [^=]
+                    │   │       │       ├── <59> Var [u]
+                    │   │       │       ╰── <62> Var [l]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <84> SizeOfExpr
-                    │   │       ╰── <83>  [!=]
-                    │   │           ├── <80> Assign [>>=]
-                    │   │           │   ├── <75> Var [l]
-                    │   │           │   ╰── <78> Var [sc]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <84>  [!=]
+                    │   │       ├── <81> SizeOfExpr
+                    │   │       │   ╰── <80> Assign [>>=]
+                    │   │       │       ├── <75> Var [l]
+                    │   │       │       ╰── <78> Var [sc]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <100> SizeOfExpr
-                    │   │       ╰── <99>  [!=]
-                    │   │           ├── <96> Assign [<<=]
-                    │   │           │   ├── <91> Var [sc]
-                    │   │           │   ╰── <94> Var [sc]
-                    │   │           ╰── Constant Int [1]
+                    │   │   ╰── <100>  [!=]
+                    │   │       ├── <97> SizeOfExpr
+                    │   │       │   ╰── <96> Assign [<<=]
+                    │   │       │       ├── <91> Var [sc]
+                    │   │       │       ╰── <94> Var [sc]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -2451,59 +2451,59 @@ fn test_valid_extra_credit_sizeof_incr() {
                     │       ╰── <36> Var [arr]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <47> SizeOfExpr
-                    │   │       ╰── <46>  [!=]
-                    │   │           ├── <43> Postfix [++]
-                    │   │           │   ╰── <40> Var [i]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <47>  [!=]
+                    │   │       ├── <44> SizeOfExpr
+                    │   │       │   ╰── <43> Postfix [++]
+                    │   │       │       ╰── <40> Var [i]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <63> SizeOfExpr
-                    │   │       ╰── <62>  [!=]
-                    │   │           ├── <59> Postfix [--]
-                    │   │           │   ╰── <56> Subscript
-                    │   │           │       ├── <54> Var [arr]
-                    │   │           │       ╰── Constant Int [0]
-                    │   │           ╰── Constant Int [1]
+                    │   │   ╰── <63>  [!=]
+                    │   │       ├── <60> SizeOfExpr
+                    │   │       │   ╰── <59> Postfix [--]
+                    │   │       │       ╰── <56> Subscript
+                    │   │       │           ├── <54> Var [arr]
+                    │   │       │           ╰── Constant Int [0]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <77> SizeOfExpr
-                    │   │       ╰── <76>  [!=]
-                    │   │           ├── <73> Unary [++]
-                    │   │           │   ╰── <71> Var [l]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <77>  [!=]
+                    │   │       ├── <74> SizeOfExpr
+                    │   │       │   ╰── <73> Unary [++]
+                    │   │       │       ╰── <71> Var [l]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <93> SizeOfExpr
-                    │   │       ╰── <92>  [!=]
-                    │   │           ├── <89> Unary [--]
-                    │   │           │   ╰── <87> Subscript
-                    │   │           │       ├── <85> Var [arr]
-                    │   │           │       ╰── Constant Int [1]
-                    │   │           ╰── Constant Int [1]
+                    │   │   ╰── <93>  [!=]
+                    │   │       ├── <90> SizeOfExpr
+                    │   │       │   ╰── <89> Unary [--]
+                    │   │       │       ╰── <87> Subscript
+                    │   │       │           ├── <85> Var [arr]
+                    │   │       │           ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <107> SizeOfExpr
-                    │   │       ╰── <106>  [!=]
-                    │   │           ├── <103> Postfix [--]
-                    │   │           │   ╰── <100> Var [ptr]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <107>  [!=]
+                    │   │       ├── <104> SizeOfExpr
+                    │   │       │   ╰── <103> Postfix [--]
+                    │   │       │       ╰── <100> Var [ptr]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -2835,10 +2835,10 @@ fn test_valid_libraries_sizeof_extern_client() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <19> SizeOfExpr
-                            ╰── <18>  [==]
-                                ├── <15> Var [large_array]
-                                ╰── Constant Int [16000000]
+                        ╰── <19>  [==]
+                            ├── <16> SizeOfExpr
+                            │   ╰── <15> Var [large_array]
+                            ╰── Constant Int [16000000]
     "#;
     assert_parse(src, expected);
 }
@@ -3308,10 +3308,10 @@ fn test_valid_sizeof_simple() {
                     │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <20> SizeOfExpr
-                    │   │       ╰── <19>  [!=]
-                    │   │           ├── Constant Double [+3e0]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <20>  [!=]
+                    │   │       ├── <17> SizeOfExpr
+                    │   │       │   ╰── Constant Double [+3e0]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -3372,10 +3372,10 @@ fn test_valid_sizeof_sizeof_array() {
                     │           ╰── Int
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <31> SizeOfExpr
-                    │   │       ╰── <30>  [!=]
-                    │   │           ├── <27> Var [arr]
-                    │   │           ╰── Constant Int [12]
+                    │   │   ╰── <31>  [!=]
+                    │   │       ├── <28> SizeOfExpr
+                    │   │       │   ╰── <27> Var [arr]
+                    │   │       ╰── Constant Int [12]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -3392,22 +3392,22 @@ fn test_valid_sizeof_sizeof_array() {
                     │   ╰── Static
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <53> SizeOfExpr
-                    │   │       ╰── <52>  [!=]
-                    │   │           ├── <49> Subscript
-                    │   │           │   ├── <47> Var [nested_arr]
-                    │   │           │   ╰── Constant Int [2]
-                    │   │           ╰── Constant Int [40]
+                    │   │   ╰── <53>  [!=]
+                    │   │       ├── <50> SizeOfExpr
+                    │   │       │   ╰── <49> Subscript
+                    │   │       │       ├── <47> Var [nested_arr]
+                    │   │       │       ╰── Constant Int [2]
+                    │   │       ╰── Constant Int [40]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <63> SizeOfExpr
-                    │   │       ╰── <62>  [!=]
-                    │   │           ├── <59> "Hello, World!"
-                    │   │           ╰── Constant Int [14]
+                    │   │   ╰── <63>  [!=]
+                    │   │       ├── <60> SizeOfExpr
+                    │   │       │   ╰── <59> "Hello, World!"
+                    │   │       ╰── Constant Int [14]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -3580,60 +3580,60 @@ fn test_valid_sizeof_sizeof_consts() {
                 ╰── Body
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <9> SizeOfExpr
-                    │   │       ╰── <8>  [!=]
-                    │   │           ├── Constant Int [97]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <9>  [!=]
+                    │   │       ├── <6> SizeOfExpr
+                    │   │       │   ╰── Constant Int [97]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <19> SizeOfExpr
-                    │   │       ╰── <18>  [!=]
-                    │   │           ├── Constant Int [2147483647]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <19>  [!=]
+                    │   │       ├── <16> SizeOfExpr
+                    │   │       │   ╰── Constant Int [2147483647]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [2]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <29> SizeOfExpr
-                    │   │       ╰── <28>  [!=]
-                    │   │           ├── Constant UInt [4294967295]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <29>  [!=]
+                    │   │       ├── <26> SizeOfExpr
+                    │   │       │   ╰── Constant UInt [4294967295]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [3]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <39> SizeOfExpr
-                    │   │       ╰── <38>  [!=]
-                    │   │           ├── Constant Long [2]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <39>  [!=]
+                    │   │       ├── <36> SizeOfExpr
+                    │   │       │   ╰── Constant Long [2]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [4]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <49> SizeOfExpr
-                    │   │       ╰── <48>  [!=]
-                    │   │           ├── Constant ULong [0]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <49>  [!=]
+                    │   │       ├── <46> SizeOfExpr
+                    │   │       │   ╰── Constant ULong [0]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <59> SizeOfExpr
-                    │   │       ╰── <58>  [!=]
-                    │   │           ├── Constant Double [+1e0]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <59>  [!=]
+                    │   │       ├── <56> SizeOfExpr
+                    │   │       │   ╰── Constant Double [+1e0]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -3848,10 +3848,10 @@ fn test_valid_sizeof_sizeof_expressions() {
                     │       ╰── Double
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <32> SizeOfExpr
-                    │   │       ╰── <31>  [!=]
-                    │   │           ├── <28> Var [d]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <32>  [!=]
+                    │   │       ├── <29> SizeOfExpr
+                    │   │       │   ╰── <28> Var [d]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -3863,10 +3863,10 @@ fn test_valid_sizeof_sizeof_expressions() {
                     │       ╰── Unsigned Char
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <47> SizeOfExpr
-                    │   │       ╰── <46>  [!=]
-                    │   │           ├── <43> Var [c]
-                    │   │           ╰── Constant Int [1]
+                    │   │   ╰── <47>  [!=]
+                    │   │       ├── <44> SizeOfExpr
+                    │   │       │   ╰── <43> Var [c]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -3882,10 +3882,10 @@ fn test_valid_sizeof_sizeof_expressions() {
                     │           ╰── Constant Int [100]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <68> SizeOfExpr
-                    │   │       ╰── <67>  [!=]
-                    │   │           ├── <64> Var [buffer]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <68>  [!=]
+                    │   │       ├── <65> SizeOfExpr
+                    │   │       │   ╰── <64> Var [buffer]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -3894,41 +3894,41 @@ fn test_valid_sizeof_sizeof_expressions() {
                     │   ╰── <76> Var [buffer]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <88> SizeOfExpr
-                    │   │       ╰── <87>  [!=]
-                    │   │           ├── <84> Cast
-                    │   │           │   ├── Target
-                    │   │           │   │   ╰── Int
-                    │   │           │   ╰── Expression
-                    │   │           │       ╰── <82> Var [d]
-                    │   │           ╰── Constant Int [4]
+                    │   │   ╰── <88>  [!=]
+                    │   │       ├── <85> SizeOfExpr
+                    │   │       │   ╰── <84> Cast
+                    │   │       │       ├── Target
+                    │   │       │       │   ╰── Int
+                    │   │       │       ╰── Expression
+                    │   │       │           ╰── <82> Var [d]
+                    │   │       ╰── Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [5]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <104> SizeOfExpr
-                    │   │       ╰── <103>  [!=]
-                    │   │           ├── <{node_id}> Conditional [?]
-                    │   │           │   ├── <95> Var [d]
-                    │   │           │   ├── Then
-                    │   │           │   │   ╰── <97> Var [c]
-                    │   │           │   ╰── Else
-                    │   │           │       ╰── Constant Long [10]
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <104>  [!=]
+                    │   │       ├── <101> SizeOfExpr
+                    │   │       │   ╰── <{node_id}> Conditional [?]
+                    │   │       │       ├── <95> Var [d]
+                    │   │       │       ├── Then
+                    │   │       │       │   ╰── <97> Var [c]
+                    │   │       │       ╰── Else
+                    │   │       │           ╰── Constant Long [10]
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [6]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <119> SizeOfExpr
-                    │   │       ╰── <118>  [!=]
-                    │   │           ├── <115> Assign [=]
-                    │   │           │   ├── <111> Var [c]
-                    │   │           │   ╰── Constant Double [+1e1]
-                    │   │           ╰── Constant Int [1]
+                    │   │   ╰── <119>  [!=]
+                    │   │       ├── <116> SizeOfExpr
+                    │   │       │   ╰── <115> Assign [=]
+                    │   │       │       ├── <111> Var [c]
+                    │   │       │       ╰── Constant Double [+1e1]
+                    │   │       ╰── Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
@@ -3989,26 +3989,26 @@ fn test_valid_sizeof_sizeof_result_is_ulong() {
                 ╰── Body
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <11> SizeOfExpr
-                    │   │       ╰── <10>  [!=]
-                    │   │           ├── <7> SizeOfType
-                    │   │           │   ╰── Char
-                    │   │           ╰── Constant Int [8]
+                    │   │   ╰── <11>  [!=]
+                    │   │       ├── <8> SizeOfExpr
+                    │   │       │   ╰── <7> SizeOfType
+                    │   │       │       ╰── Char
+                    │   │       ╰── Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── Constant Int [1]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <28> SizeOfExpr
-                    │   │       ╰── <27>  [-]
-                    │   │           ├── Constant Int [4]
-                    │   │           ╰── <26> SizeOfExpr
-                    │   │               ╰── <25>  [<]
-                    │   │                   ├── <22>  [-]
-                    │   │                   │   ├── Constant Int [4]
-                    │   │                   │   ╰── Constant Int [1]
-                    │   │                   ╰── Constant Int [0]
+                    │   │   ╰── <28>  [<]
+                    │   │       ├── <25>  [-]
+                    │   │       │   ├── <22>  [-]
+                    │   │       │   │   ├── <18> SizeOfExpr
+                    │   │       │   │   │   ╰── Constant Int [4]
+                    │   │       │   │   ╰── <21> SizeOfExpr
+                    │   │       │   │       ╰── Constant Int [4]
+                    │   │       │   ╰── Constant Int [1]
+                    │   │       ╰── Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return

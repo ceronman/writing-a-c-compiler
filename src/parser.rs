@@ -1092,7 +1092,7 @@ impl<'src> Parser<'src> {
             let end = self.expect(TokenKind::CloseParen)?.span;
             Ok(self.node(begin + end, Expression::SizeOfType(target)))
         } else {
-            let expr = self.expression()?;
+            let expr = self.expression_precedence(13, "expression")?;
             let end = expr.span;
             Ok(self.node(begin + end, Expression::SizeOfExpr(expr)))
         }

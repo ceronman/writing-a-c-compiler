@@ -611,7 +611,7 @@ fn test_invalid_types_ternary_mixed_pointer_types() {
             long *x = 0;
             int *y = 0;
             int *result = 1 ? x : y;
-                        //^^^^^^^^^ Cannot convert type for assignment!
+                            //^^^^^ Expressions have incompatible types
             return 0;
         }
     "#,
