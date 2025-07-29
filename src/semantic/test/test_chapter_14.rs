@@ -563,7 +563,7 @@ fn test_invalid_types_negate_pointer() {
         int main(void) {
             int *x = 0;
             -x;
-           //^ Unary operator requires an non-pointer type
+           //^ Unary operator requires an arithmetic operator
             return 0;
         }
     "#,

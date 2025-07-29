@@ -26,7 +26,7 @@ fn test_invalid_types_assign_to_string_literal() {
         r#"
         int main(void) {
             "foo" = "bar";
-          //^^^^^ Array is not assignable
+          //^^^^^ Type is not assignable
             return 0;
         }
     "#,
@@ -146,7 +146,7 @@ fn test_invalid_types_extra_credit_compound_assign_to_string() {
         
         int main(void) {
             "My string" += 1;
-          //^^^^^^^^^^^ Array is not assignable
+          //^^^^^^^^^^^ Type is not assignable
             return 0;
         }
     "#,
@@ -160,7 +160,7 @@ fn test_invalid_types_extra_credit_postfix_incr_string() {
         
         int main(void) {
             "foo"++;
-          //^^^^^ Array is not assignable
+          //^^^^^ Type is not assignable
             return 0;
         }
     "#,
@@ -174,7 +174,7 @@ fn test_invalid_types_extra_credit_prefix_incr_string() {
         
         int main(void) {
             ++"foo";
-            //^^^^^ Array is not assignable
+            //^^^^^ Type is not assignable
             return 0;
         }
     "#,
@@ -233,7 +233,7 @@ fn test_invalid_types_negate_char_pointer() {
         int main(void) {
             char *x = "foo";
             return -x;
-                  //^ Unary operator requires an non-pointer type
+                  //^ Unary operator requires an arithmetic operator
         }
     "#,
     );

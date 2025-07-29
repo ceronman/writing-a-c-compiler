@@ -7371,8 +7371,9 @@ fn test_valid_strings_as_lvalues_pointer_operations() {
             return 4
         
           end_if_6:
-            tmp.20 = ! string.2
-            if !tmp.20 jump end_if_8
+            tmp.20 = &string.2
+            tmp.21 = ! tmp.20
+            if !tmp.21 jump end_if_8
             return 5
         
           end_if_8:

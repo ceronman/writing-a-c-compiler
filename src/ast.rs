@@ -324,6 +324,14 @@ impl Type {
         matches!(self, Type::Double)
     }
 
+    pub fn is_void(&self) -> bool {
+        matches!(self, Type::Void)
+    }
+
+    pub fn is_function(&self) -> bool {
+        matches!(self, Type::Function(_))
+    }
+
     pub fn is_arithmetic(&self) -> bool {
         matches!(
             self,
@@ -338,12 +346,24 @@ impl Type {
         )
     }
 
+    pub fn is_scalar(&self) -> bool {
+        matches!(self, Type::Char
+                | Type::SChar
+                | Type::UChar
+                | Type::Int
+                | Type::UInt
+                | Type::Long
+                | Type::ULong
+                | Type::Double
+                | Type::Pointer(_))
+    }
+
     pub fn is_pointer(&self) -> bool {
         matches!(self, Type::Pointer(_))
     }
 
     pub fn is_pointer_to_void(&self) -> bool {
-        matches!(self, Type::Pointer(inner) if matches!(**inner, Type::Void))
+        matches!(self, Type::Pointer(inner) if inner.is_void())
     }
 
     pub fn is_array(&self) -> bool {

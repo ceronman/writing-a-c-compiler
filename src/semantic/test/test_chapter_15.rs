@@ -37,7 +37,7 @@ fn test_invalid_types_assign_to_array() {
             int arr[3] = {1, 2, 3};
             int arr2[3] = {4, 5, 6};
             arr = arr2;
-          //^^^ Array is not assignable
+          //^^^ Type is not assignable
             return arr[0];
         }
     "#,
@@ -53,7 +53,7 @@ fn test_invalid_types_assign_to_array_2() {
             int dim2[1][2] = {{1, 2}};
             int dim[2] = {3, 4};
             dim2[0] = dim;
-          //^^^^^^^ Array is not assignable
+          //^^^^^^^ Type is not assignable
             return dim[0];
         }
     "#,
@@ -68,7 +68,7 @@ fn test_invalid_types_assign_to_array_3() {
             int arr[3] = { 1, 2, 3};
             int (*ptr_to_array)[3];
             *ptr_to_array = arr;
-          //^^^^^^^^^^^^^ Array is not assignable
+          //^^^^^^^^^^^^^ Type is not assignable
         }
     "#,
     );
@@ -322,7 +322,7 @@ fn test_invalid_types_extra_credit_compound_assign_to_array() {
         int main(void) {
             int arr[3] = {1, 2, 3};
             arr -= 1;
-          //^^^ Array is not assignable
+          //^^^ Type is not assignable
             0;
         }
     "#,
@@ -336,7 +336,7 @@ fn test_invalid_types_extra_credit_compound_assign_to_nested_array() {
         int main(void) {
             long arr[2][2] = {{1, 2}, {3, 4}};
             arr[1] += 1;
-          //^^^^^^ Array is not assignable
+          //^^^^^^ Type is not assignable
             return 0;
         }
     "#,
@@ -367,7 +367,7 @@ fn test_invalid_types_extra_credit_postfix_incr_array() {
         int main(void) {
             int arr[3] = {1, 2, 3};
             arr++;
-          //^^^ Array is not assignable
+          //^^^ Type is not assignable
             return 0;
         }
     "#,
@@ -381,7 +381,7 @@ fn test_invalid_types_extra_credit_postfix_incr_nested_array() {
         int main(void) {
             int arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
             arr[2]++;
-          //^^^^^^ Array is not assignable
+          //^^^^^^ Type is not assignable
             return 0;
         }
     "#,
@@ -395,7 +395,7 @@ fn test_invalid_types_extra_credit_prefix_decr_array() {
         int main(void) {
             int arr[3] = {1, 2, 3};
             --arr;
-            //^^^ Array is not assignable
+            //^^^ Type is not assignable
             return 0;
         }
     "#,
@@ -409,7 +409,7 @@ fn test_invalid_types_extra_credit_prefix_decr_nested_array() {
         int main(void) {
             int arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
             --arr[2];
-            //^^^^^^ Array is not assignable
+            //^^^^^^ Type is not assignable
             return 0;
         }
     "#,

@@ -8,6 +8,7 @@ use crate::semantic::{
     Attributes, InitialValue, SemanticData, StaticInit, SwitchCases, SymbolData,
 };
 use std::collections::{BTreeMap, HashMap, VecDeque};
+use crate::lexer::Span;
 
 impl SymbolData {
     fn local(ty: Type) -> Self {
@@ -465,8 +466,21 @@ impl TypeChecker {
         match stmt.as_ref() {
             Statement::Return(expr) => {
                 if let Some(expr) = expr {
+                    if function.ret.is_void() {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Return statement with an expression in a void function".to_string(),
+                            span: stmt.span,
+                        })
+                    }
                     let expr_ty = self.check_and_convert_expr(expr)?;
                     self.convert_by_assignment(expr, &expr_ty, &function.ret)?;
+                } else if !function.ret.is_void() {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Return statement without an expression ".to_string(),
+                        span: stmt.span,
+                    })
                 }
             }
             Statement::Expression(expr) => {
@@ -477,7 +491,8 @@ impl TypeChecker {
                 then_stmt,
                 else_stmt,
             } => {
-                self.check_and_convert_expr(cond)?;
+                let cond_ty = self.check_and_convert_expr(cond)?;
+                Self::check_scalar(cond.span, &cond_ty, "Invalid condition type")?;
                 self.check_statement(function, then_stmt)?;
                 if let Some(else_stmt) = else_stmt {
                     self.check_statement(function, else_stmt)?;
@@ -555,13 +570,10 @@ impl TypeChecker {
                 switch_cases.default = Some(label.clone());
                 self.check_statement(function, body)?
             }
-            Statement::While {
-                cond: expr, body, ..
-            }
-            | Statement::DoWhile {
-                cond: expr, body, ..
-            } => {
-                self.check_and_convert_expr(expr)?;
+            Statement::While { cond, body, .. }
+            | Statement::DoWhile { cond, body, .. } => {
+                let cond_ty = self.check_and_convert_expr(cond)?;
+                Self::check_scalar(cond.span, &cond_ty, "Invalid condition type")?;
                 self.check_statement(function, body)?;
             }
             Statement::Labeled { body, .. } => self.check_statement(function, body)?,
@@ -591,7 +603,8 @@ impl TypeChecker {
                     ForInit::None => {}
                 }
                 if let Some(cond) = cond {
-                    self.check_and_convert_expr(cond)?;
+                    let cond_ty = self.check_and_convert_expr(cond)?;
+                    Self::check_scalar(cond.span, &cond_ty, "Invalid condition type")?;
                 }
                 if let Some(post) = post {
                     self.check_and_convert_expr(post)?;
@@ -636,7 +649,7 @@ impl TypeChecker {
                         span: expr.span,
                     });
                 };
-                if let Type::Function(_) = data.ty {
+                if data.ty.is_function() {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Function used as variable".to_string(),
@@ -646,16 +659,10 @@ impl TypeChecker {
                 data.ty.clone()
             }
             Expression::Unary { op, expr } => {
-                let operand_ty = self.check_expression(expr)?;
                 match op.as_ref() {
                     UnaryOp::Increment | UnaryOp::Decrement => {
-                        if operand_ty.is_array() {
-                            return Err(CompilerError {
-                                kind: ErrorKind::Type,
-                                msg: "Array is not assignable".to_owned(),
-                                span: expr.span,
-                            });
-                        }
+                        let operand_ty = self.check_expression(expr)?;
+                        Self::check_scalar(expr.span, &operand_ty, "Type is not assignable")?;
                         if !Self::is_lvalue(expr) {
                             return Err(CompilerError {
                                 kind: ErrorKind::Resolve,
@@ -666,7 +673,8 @@ impl TypeChecker {
                         operand_ty
                     }
                     UnaryOp::Complement => {
-                        if !(operand_ty.is_int() || operand_ty.is_char()) {
+                        let operand_ty = self.check_and_convert_expr(expr)?;
+                        if !operand_ty.is_int() {
                             return Err(CompilerError {
                                 kind: ErrorKind::Type,
                                 msg: "Unary operator requires an integer type".to_string(),
@@ -680,10 +688,11 @@ impl TypeChecker {
                         }
                     }
                     UnaryOp::Negate => {
-                        if operand_ty.is_pointer() {
+                        let operand_ty = self.check_and_convert_expr(expr)?;
+                        if !operand_ty.is_arithmetic() {
                             return Err(CompilerError {
                                 kind: ErrorKind::Type,
-                                msg: "Unary operator requires an non-pointer type".to_string(),
+                                msg: "Unary operator requires an arithmetic operator".to_string(),
                                 span: expr.span,
                             });
                         }
@@ -693,18 +702,16 @@ impl TypeChecker {
                             operand_ty
                         }
                     }
-                    UnaryOp::Not => Type::Int,
+                    UnaryOp::Not => {
+                        let operand_ty = self.check_and_convert_expr(expr)?;
+                        Self::check_scalar(expr.span, &operand_ty, "Unary operator requires a scalar operator")?;
+                        Type::Int
+                    },
                 }
             }
             Expression::Postfix { expr, .. } => {
                 let operand_ty = self.check_expression(expr)?;
-                if operand_ty.is_array() {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Array is not assignable".to_owned(),
-                        span: expr.span,
-                    });
-                }
+                Self::check_scalar(expr.span, &operand_ty, "Type is not assignable")?;
                 if !Self::is_lvalue(expr) {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -717,6 +724,9 @@ impl TypeChecker {
             Expression::Binary { left, right, op } => {
                 let left_ty = self.check_and_convert_expr(left)?;
                 let right_ty = self.check_and_convert_expr(right)?;
+
+                Self::check_scalar(left.span, &left_ty, "Invalid operator type")?;
+                Self::check_scalar(right.span, &right_ty, "Invalid operator type")?;
 
                 match op.as_ref() {
                     BinaryOp::Reminder
@@ -872,13 +882,7 @@ impl TypeChecker {
 
             Expression::Assignment { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
-                if left_ty.is_array() {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Array is not assignable".to_owned(),
-                        span: left.span,
-                    });
-                }
+                Self::check_scalar(left.span, &left_ty, "Type is not assignable")?;
 
                 if !Self::is_lvalue(left) {
                     return Err(CompilerError {
@@ -888,6 +892,7 @@ impl TypeChecker {
                     });
                 }
                 let right_ty = self.check_and_convert_expr(right)?;
+                Self::check_scalar(right.span, &right_ty, "Invalid assign target")?;
 
                 match op.as_ref() {
                     AssignOp::BitAndEqual
@@ -967,7 +972,8 @@ impl TypeChecker {
                 then_expr,
                 else_expr,
             } => {
-                self.check_and_convert_expr(cond)?;
+                let cond_ty= self.check_and_convert_expr(cond)?;
+                Self::check_scalar(cond.span, &cond_ty, "Invalid condition type")?;
                 let then_ty = self.check_and_convert_expr(then_expr)?;
                 let else_ty = self.check_and_convert_expr(else_expr)?;
                 let common = Self::common_type(&then_ty, &else_ty);
@@ -1028,7 +1034,14 @@ impl TypeChecker {
                         span: expr.span,
                     });
                 }
-                *target.data.clone()
+
+                if !target.is_void() {
+                    *target.data.clone()
+                } else {
+                    Self::check_scalar(target.span, target, "Cannot cast a value to a non-scalar type")?;
+                    Self::check_scalar(expr.span, &ty, "Cannot cast non-scalar expression")?;
+                    *target.data.clone()
+                }
             }
             Expression::Dereference(inner) => {
                 let inner_ty = self.check_and_convert_expr(inner)?;
@@ -1084,6 +1097,18 @@ impl TypeChecker {
                 | Expression::Subscript(_, _)
                 | Expression::String(_)
         )
+    }
+
+    fn check_scalar(span: Span, ty: &Type, err: &str) -> Result<()> {
+        if !ty.is_scalar() {
+            Err(CompilerError {
+                kind: ErrorKind::Type,
+                msg: err.to_string(),
+                span,
+            })
+        } else {
+            Ok(())
+        }
     }
 
     fn convert_by_assignment(
