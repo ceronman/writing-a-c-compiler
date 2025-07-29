@@ -492,7 +492,7 @@ impl TypeChecker {
                 else_stmt,
             } => {
                 let cond_ty = self.check_and_convert_expr(cond)?;
-                Self::check_scalar(cond.span, &cond_ty, "Invalid condition type")?;
+                Self::error_if(!cond_ty.is_scalar(), cond.span, "Invalid condition type")?;
                 self.check_statement(function, then_stmt)?;
                 if let Some(else_stmt) = else_stmt {
                     self.check_statement(function, else_stmt)?;
@@ -573,7 +573,7 @@ impl TypeChecker {
             Statement::While { cond, body, .. }
             | Statement::DoWhile { cond, body, .. } => {
                 let cond_ty = self.check_and_convert_expr(cond)?;
-                Self::check_scalar(cond.span, &cond_ty, "Invalid condition type")?;
+                Self::error_if(!cond_ty.is_scalar(), cond.span, "Invalid condition type")?;
                 self.check_statement(function, body)?;
             }
             Statement::Labeled { body, .. } => self.check_statement(function, body)?,
@@ -604,7 +604,7 @@ impl TypeChecker {
                 }
                 if let Some(cond) = cond {
                     let cond_ty = self.check_and_convert_expr(cond)?;
-                    Self::check_scalar(cond.span, &cond_ty, "Invalid condition type")?;
+                    Self::error_if(!cond_ty.is_scalar(), cond.span, "Invalid condition type")?;
                 }
                 if let Some(post) = post {
                     self.check_and_convert_expr(post)?;
@@ -662,7 +662,7 @@ impl TypeChecker {
                 match op.as_ref() {
                     UnaryOp::Increment | UnaryOp::Decrement => {
                         let operand_ty = self.check_expression(expr)?;
-                        Self::check_scalar(expr.span, &operand_ty, "Type is not assignable")?;
+                        Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
                         if !Self::is_lvalue(expr) {
                             return Err(CompilerError {
                                 kind: ErrorKind::Resolve,
@@ -704,14 +704,14 @@ impl TypeChecker {
                     }
                     UnaryOp::Not => {
                         let operand_ty = self.check_and_convert_expr(expr)?;
-                        Self::check_scalar(expr.span, &operand_ty, "Unary operator requires a scalar operator")?;
+                        Self::error_if(!operand_ty.is_scalar(), expr.span, "Unary operator requires a scalar operator")?;
                         Type::Int
                     },
                 }
             }
             Expression::Postfix { expr, .. } => {
                 let operand_ty = self.check_expression(expr)?;
-                Self::check_scalar(expr.span, &operand_ty, "Type is not assignable")?;
+                Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
                 if !Self::is_lvalue(expr) {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -725,8 +725,8 @@ impl TypeChecker {
                 let left_ty = self.check_and_convert_expr(left)?;
                 let right_ty = self.check_and_convert_expr(right)?;
 
-                Self::check_scalar(left.span, &left_ty, "Invalid operator type")?;
-                Self::check_scalar(right.span, &right_ty, "Invalid operator type")?;
+                Self::error_if(!left_ty.is_scalar(), left.span, "Invalid operator type")?;
+                Self::error_if(!right_ty.is_scalar(), right.span, "Invalid operator type")?;
 
                 match op.as_ref() {
                     BinaryOp::Reminder
@@ -882,7 +882,7 @@ impl TypeChecker {
 
             Expression::Assignment { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
-                Self::check_scalar(left.span, &left_ty, "Type is not assignable")?;
+                Self::error_if(!left_ty.is_scalar(), left.span, "Type is not assignable")?;
 
                 if !Self::is_lvalue(left) {
                     return Err(CompilerError {
@@ -892,7 +892,7 @@ impl TypeChecker {
                     });
                 }
                 let right_ty = self.check_and_convert_expr(right)?;
-                Self::check_scalar(right.span, &right_ty, "Invalid assign target")?;
+                Self::error_if(!right_ty.is_scalar(), right.span, "Invalid assign target")?;
 
                 match op.as_ref() {
                     AssignOp::BitAndEqual
@@ -973,7 +973,7 @@ impl TypeChecker {
                 else_expr,
             } => {
                 let cond_ty= self.check_and_convert_expr(cond)?;
-                Self::check_scalar(cond.span, &cond_ty, "Invalid condition type")?;
+                Self::error_if(!cond_ty.is_scalar(), cond.span, "Invalid condition type")?;
                 let then_ty = self.check_and_convert_expr(then_expr)?;
                 let else_ty = self.check_and_convert_expr(else_expr)?;
                 let common = Self::common_type(&then_ty, &else_ty);
@@ -1038,8 +1038,8 @@ impl TypeChecker {
                 if !target.is_void() {
                     *target.data.clone()
                 } else {
-                    Self::check_scalar(target.span, target, "Cannot cast a value to a non-scalar type")?;
-                    Self::check_scalar(expr.span, &ty, "Cannot cast non-scalar expression")?;
+                    Self::error_if(!target.is_scalar(), target.span, "Cannot cast a value to a non-scalar type")?;
+                    Self::error_if(ty.is_scalar(), expr.span, "Cannot cast non-scalar expression")?;
                     *target.data.clone()
                 }
             }
@@ -1099,8 +1099,8 @@ impl TypeChecker {
         )
     }
 
-    fn check_scalar(span: Span, ty: &Type, err: &str) -> Result<()> {
-        if !ty.is_scalar() {
+    fn error_if(condition: bool, span: Span, err: &str) -> Result<()> {
+        if condition {
             Err(CompilerError {
                 kind: ErrorKind::Type,
                 msg: err.to_string(),
