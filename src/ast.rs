@@ -189,7 +189,7 @@ pub struct FunctionType {
 pub struct VarDeclaration {
     pub name: Node<Identifier>,
     pub init: Option<Node<Initializer>>,
-    pub ty: Type,
+    pub ty: Type, // TODO: Use Node here for better errors
     pub storage_class: Option<Node<StorageClass>>,
 }
 
@@ -358,12 +358,20 @@ impl Type {
                 | Type::Pointer(_))
     }
 
+    pub fn is_complete(&self) -> bool {
+        !matches!(self, Type::Void)
+    }
+
     pub fn is_pointer(&self) -> bool {
         matches!(self, Type::Pointer(_))
     }
 
     pub fn is_pointer_to_void(&self) -> bool {
         matches!(self, Type::Pointer(inner) if inner.is_void())
+    }
+
+    pub fn is_pointer_to_incomplete(&self) -> bool {
+        matches!(self, Type::Pointer(inner) if !inner.is_complete())
     }
 
     pub fn is_array(&self) -> bool {

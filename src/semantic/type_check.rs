@@ -4,11 +4,11 @@ use crate::ast::{
     StorageClass, Type, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
+use crate::lexer::Span;
 use crate::semantic::{
     Attributes, InitialValue, SemanticData, StaticInit, SwitchCases, SymbolData,
 };
 use std::collections::{BTreeMap, HashMap, VecDeque};
-use crate::lexer::Span;
 
 impl SymbolData {
     fn local(ty: Type) -> Self {
@@ -51,6 +51,7 @@ impl TypeChecker {
 
     fn check_local_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let name = decl.name.symbol.clone();
+        Self::validate_type_specifier(&decl.ty, decl.name.span)?; // FIXME: We need a span to the type
         if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             if let Some(init) = &decl.init {
                 return Err(CompilerError {
@@ -290,6 +291,7 @@ impl TypeChecker {
     }
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
+        Self::validate_type_specifier(&decl.ty, decl.name.span)?; // FIXME: span should be in type
         let mut initial_value = if let Some(init) = &decl.init {
             InitialValue::Initial(Self::check_static_initializer(init, &decl.ty)?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
@@ -379,6 +381,8 @@ impl TypeChecker {
         }
 
         let this_ty = Type::Function(function_ty.clone());
+        Self::validate_type_specifier(&this_ty, decl.name.span)?; // FIXME: span should be in type
+
         let has_body = decl.body.is_some();
         let mut already_defined = false;
         let is_static = matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
@@ -452,6 +456,26 @@ impl TypeChecker {
         Ok(())
     }
 
+    fn validate_type_specifier(ty: &Type, span: Span) -> Result<()> {
+        match ty {
+            Type::Array(inner, _) => {
+                Self::error_if(!inner.is_complete(), span, "Illegal array of incomplete types")?;
+                Self::validate_type_specifier(&*inner, span)?;
+            }
+            Type::Pointer(inner) => {
+                Self::validate_type_specifier(&*inner, span)?;
+            }
+            Type::Function(f) => {
+                for param in &f.params {
+                    Self::validate_type_specifier(&*f.ret, span)?;
+                }
+                Self::validate_type_specifier(&*f.ret, span)?;
+            }
+            _ => {}
+        }
+        Ok(())
+    }
+
     fn check_block(&mut self, function: &FunctionType, block: &Block) -> Result<()> {
         for item in &block.items {
             match item {
@@ -469,9 +493,10 @@ impl TypeChecker {
                     if function.ret.is_void() {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
-                            msg: "Return statement with an expression in a void function".to_string(),
+                            msg: "Return statement with an expression in a void function"
+                                .to_string(),
                             span: stmt.span,
-                        })
+                        });
                     }
                     let expr_ty = self.check_and_convert_expr(expr)?;
                     self.convert_by_assignment(expr, &expr_ty, &function.ret)?;
@@ -480,7 +505,7 @@ impl TypeChecker {
                         kind: ErrorKind::Type,
                         msg: "Return statement without an expression ".to_string(),
                         span: stmt.span,
-                    })
+                    });
                 }
             }
             Statement::Expression(expr) => {
@@ -570,8 +595,7 @@ impl TypeChecker {
                 switch_cases.default = Some(label.clone());
                 self.check_statement(function, body)?
             }
-            Statement::While { cond, body, .. }
-            | Statement::DoWhile { cond, body, .. } => {
+            Statement::While { cond, body, .. } | Statement::DoWhile { cond, body, .. } => {
                 let cond_ty = self.check_and_convert_expr(cond)?;
                 Self::error_if(!cond_ty.is_scalar(), cond.span, "Invalid condition type")?;
                 self.check_statement(function, body)?;
@@ -649,76 +673,68 @@ impl TypeChecker {
                         span: expr.span,
                     });
                 };
-                if data.ty.is_function() {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Function used as variable".to_string(),
-                        span: expr.span,
-                    });
-                };
+                Self::error_if(
+                    data.ty.is_function(),
+                    expr.span,
+                    "Function used as variable",
+                )?;
                 data.ty.clone()
             }
-            Expression::Unary { op, expr } => {
-                match op.as_ref() {
-                    UnaryOp::Increment | UnaryOp::Decrement => {
-                        let operand_ty = self.check_expression(expr)?;
-                        Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
-                        if !Self::is_lvalue(expr) {
-                            return Err(CompilerError {
-                                kind: ErrorKind::Resolve,
-                                msg: "Expression is not assignable".to_owned(),
-                                span: expr.span,
-                            });
-                        }
+            Expression::Unary { op, expr } => match op.as_ref() {
+                UnaryOp::Increment | UnaryOp::Decrement => {
+                    let operand_ty = self.check_expression(expr)?;
+                    Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
+                    Self::error_if(
+                        !Self::is_lvalue(expr),
+                        expr.span,
+                        "Expression is not assignable",
+                    )?;
+                    operand_ty
+                }
+                UnaryOp::Complement => {
+                    let operand_ty = self.check_and_convert_expr(expr)?;
+                    Self::error_if(
+                        !operand_ty.is_int(),
+                        expr.span,
+                        "Unary operator requires an integer type",
+                    )?;
+                    if operand_ty.is_char() {
+                        self.cast_if_needed(expr, &operand_ty, &Type::Int)
+                    } else {
                         operand_ty
                     }
-                    UnaryOp::Complement => {
-                        let operand_ty = self.check_and_convert_expr(expr)?;
-                        if !operand_ty.is_int() {
-                            return Err(CompilerError {
-                                kind: ErrorKind::Type,
-                                msg: "Unary operator requires an integer type".to_string(),
-                                span: expr.span,
-                            });
-                        }
-                        if operand_ty.is_char() {
-                            self.cast_if_needed(expr, &operand_ty, &Type::Int)
-                        } else {
-                            operand_ty
-                        }
-                    }
-                    UnaryOp::Negate => {
-                        let operand_ty = self.check_and_convert_expr(expr)?;
-                        if !operand_ty.is_arithmetic() {
-                            return Err(CompilerError {
-                                kind: ErrorKind::Type,
-                                msg: "Unary operator requires an arithmetic operator".to_string(),
-                                span: expr.span,
-                            });
-                        }
-                        if operand_ty.is_char() {
-                            self.cast_if_needed(expr, &operand_ty, &Type::Int)
-                        } else {
-                            operand_ty
-                        }
-                    }
-                    UnaryOp::Not => {
-                        let operand_ty = self.check_and_convert_expr(expr)?;
-                        Self::error_if(!operand_ty.is_scalar(), expr.span, "Unary operator requires a scalar operator")?;
-                        Type::Int
-                    },
                 }
-            }
+                UnaryOp::Negate => {
+                    let operand_ty = self.check_and_convert_expr(expr)?;
+                    Self::error_if(
+                        !operand_ty.is_arithmetic(),
+                        expr.span,
+                        "Unary operator requires an arithmetic operator",
+                    )?;
+                    if operand_ty.is_char() {
+                        self.cast_if_needed(expr, &operand_ty, &Type::Int)
+                    } else {
+                        operand_ty
+                    }
+                }
+                UnaryOp::Not => {
+                    let operand_ty = self.check_and_convert_expr(expr)?;
+                    Self::error_if(
+                        !operand_ty.is_scalar(),
+                        expr.span,
+                        "Unary operator requires a scalar operator",
+                    )?;
+                    Type::Int
+                }
+            },
             Expression::Postfix { expr, .. } => {
                 let operand_ty = self.check_expression(expr)?;
                 Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
-                if !Self::is_lvalue(expr) {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Expression is not assignable".to_owned(),
-                        span: expr.span,
-                    });
-                }
+                Self::error_if(
+                    !Self::is_lvalue(expr),
+                    expr.span,
+                    "Expression is not assignable",
+                )?;
                 operand_ty
             }
             Expression::Binary { left, right, op } => {
@@ -735,68 +751,40 @@ impl TypeChecker {
                     | BinaryOp::BinOr
                     | BinaryOp::BinXor
                     | BinaryOp::BinAnd => {
-                        if !left_ty.is_int() || !right_ty.is_int() {
-                            let span = if !left_ty.is_int() {
-                                left.span
-                            } else {
-                                right.span
-                            };
-                            return Err(CompilerError {
-                                kind: ErrorKind::Type,
-                                msg: "Operator requires integer operands".to_string(),
-                                span,
-                            });
-                        }
+                        Self::error_if(
+                            !left_ty.is_int(),
+                            left.span,
+                            "Operator requires integer operands",
+                        )?;
+                        Self::error_if(
+                            !right_ty.is_int(),
+                            right.span,
+                            "Operator requires integer operands",
+                        )?;
                     }
-                    BinaryOp::Multiply | BinaryOp::Divide if !left_ty.is_arithmetic() => {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Type,
-                            msg: "Operator is invalid".to_string(),
-                            span: left.span,
-                        });
+                    BinaryOp::Multiply | BinaryOp::Divide => {
+                        Self::error_if(!left_ty.is_arithmetic(), left.span, "Operator is invalid")?;
+                        Self::error_if(!right_ty.is_arithmetic(), right.span, "Operator is invalid")?;
                     }
-                    BinaryOp::Multiply | BinaryOp::Divide if !right_ty.is_arithmetic() => {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Type,
-                            msg: "Operator is invalid".to_string(),
-                            span: right.span,
-                        });
-                    }
-                    BinaryOp::Add if left_ty.is_pointer() && !right_ty.is_int() => {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Type,
-                            msg: "Operator is invalid".to_string(),
-                            span: right.span,
-                        });
-                    }
-                    BinaryOp::Add if right_ty.is_pointer() && !left_ty.is_int() => {
-                        return Err(CompilerError {
-                            kind: ErrorKind::Type,
-                            msg: "Operator is invalid".to_string(),
-                            span: left.span,
-                        });
+                    BinaryOp::Add => {
+                        Self::error_if(left_ty.is_pointer_to_incomplete(), left.span, "Cannot add pointers to incomplete types")?;
+                        Self::error_if(right_ty.is_pointer_to_incomplete(), right.span, "Cannot add pointers to incomplete types")?;
+                        Self::error_if(left_ty.is_pointer() && !right_ty.is_int(), right.span, "Operator is invalid")?;
+                        Self::error_if(right_ty.is_pointer() && !left_ty.is_int(), left.span, "Operator is invalid")?;
                     }
                     BinaryOp::Subtract => match (&left_ty, &right_ty) {
                         (Type::Pointer(left_inner), Type::Pointer(right_inner)) => {
-                            if left_inner != right_inner {
-                                return Err(CompilerError {
-                                    kind: ErrorKind::Type,
-                                    msg: "Invalid pointer operator type".to_string(),
-                                    span: right.span,
-                                });
-                            }
+                            Self::error_if(!left_inner.is_complete(), left.span, "Incomplete pointer type")?;
+                            Self::error_if(left_inner != right_inner, right.span, "Invalid pointer operator type")?;
                         }
-                        (left_ty, Type::Pointer(_)) if left_ty.is_int() => {
+                        (Type::Pointer(left_inner), right_ty) => {
+                            Self::error_if(!left_inner.is_complete(), left.span, "Incomplete pointer type")?;
+                            Self::error_if(!right_ty.is_int(), right.span, "Operator is invalid")?;
+                        }
+                        (_, Type::Pointer(_)) => {
                             return Err(CompilerError {
                                 kind: ErrorKind::Type,
                                 msg: "Cannot substract a pointer from an int".to_string(),
-                                span: right.span,
-                            });
-                        }
-                        (Type::Pointer(_), _) if !right_ty.is_int() => {
-                            return Err(CompilerError {
-                                kind: ErrorKind::Type,
-                                msg: "Operator is invalid".to_string(),
                                 span: right.span,
                             });
                         }
@@ -822,13 +810,8 @@ impl TypeChecker {
                                 span: right.span,
                             });
                         };
-                        if left_inner != right_inner {
-                            return Err(CompilerError {
-                                kind: ErrorKind::Type,
-                                msg: "Operator is invalid".to_string(),
-                                span: right.span,
-                            });
-                        }
+                        Self::error_if(!left_inner.is_complete(), right.span, "Operator is invalid")?;
+                        Self::error_if(left_inner != right_inner, right.span, "Operator is invalid")?;
                     }
                     _ => {}
                 };
@@ -883,14 +866,7 @@ impl TypeChecker {
             Expression::Assignment { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
                 Self::error_if(!left_ty.is_scalar(), left.span, "Type is not assignable")?;
-
-                if !Self::is_lvalue(left) {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Expression is not assignable".to_owned(),
-                        span: left.span,
-                    });
-                }
+                Self::error_if(!Self::is_lvalue(left), left.span, "Expression is not assignable")?;
                 let right_ty = self.check_and_convert_expr(right)?;
                 Self::error_if(!right_ty.is_scalar(), right.span, "Invalid assign target")?;
 
@@ -972,7 +948,7 @@ impl TypeChecker {
                 then_expr,
                 else_expr,
             } => {
-                let cond_ty= self.check_and_convert_expr(cond)?;
+                let cond_ty = self.check_and_convert_expr(cond)?;
                 Self::error_if(!cond_ty.is_scalar(), cond.span, "Invalid condition type")?;
                 let then_ty = self.check_and_convert_expr(then_expr)?;
                 let else_ty = self.check_and_convert_expr(else_expr)?;
@@ -1012,6 +988,7 @@ impl TypeChecker {
                 *function_ty.ret.clone()
             }
             Expression::Cast { target, expr } => {
+                Self::validate_type_specifier(target, target.span)?;
                 let ty = self.check_and_convert_expr(expr)?;
                 if target.is_pointer() && ty.is_double() {
                     return Err(CompilerError {
@@ -1038,8 +1015,16 @@ impl TypeChecker {
                 if !target.is_void() {
                     *target.data.clone()
                 } else {
-                    Self::error_if(!target.is_scalar(), target.span, "Cannot cast a value to a non-scalar type")?;
-                    Self::error_if(ty.is_scalar(), expr.span, "Cannot cast non-scalar expression")?;
+                    Self::error_if(
+                        !target.is_scalar(),
+                        target.span,
+                        "Cannot cast a value to a non-scalar type",
+                    )?;
+                    Self::error_if(
+                        ty.is_scalar(),
+                        expr.span,
+                        "Cannot cast non-scalar expression",
+                    )?;
                     *target.data.clone()
                 }
             }
@@ -1083,7 +1068,11 @@ impl TypeChecker {
                     }
                 }
             }
-            Expression::SizeOfExpr(_) | Expression::SizeOfType(_) => todo!(),
+            Expression::SizeOfType(ty) => {
+                Self::validate_type_specifier(ty, ty.span)?;
+                Type::ULong
+            }
+            Expression::SizeOfExpr(_) => todo!(),
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)
