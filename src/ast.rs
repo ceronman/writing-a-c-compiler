@@ -130,6 +130,17 @@ pub enum Expression {
     SizeOfType(Node<Type>),
 }
 
+impl Expression {
+    pub fn is_null_constant(&self) -> bool {
+        matches!(
+            self,
+            Expression::Constant(
+                Constant::Int(0) | Constant::Long(0) | Constant::UInt(0) | Constant::ULong(0)
+            )
+        )
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Constant {
     Int(i32),
@@ -329,6 +340,10 @@ impl Type {
 
     pub fn is_pointer(&self) -> bool {
         matches!(self, Type::Pointer(_))
+    }
+
+    pub fn is_pointer_to_void(&self) -> bool {
+        matches!(self, Type::Pointer(inner) if matches!(**inner, Type::Void))
     }
 
     pub fn is_array(&self) -> bool {

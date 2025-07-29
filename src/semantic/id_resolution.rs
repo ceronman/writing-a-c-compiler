@@ -65,14 +65,14 @@ impl Resolver {
         let unique_name = self.make_name(symbol);
         let scope = self.scopes.front_mut().expect("Invalid scope state");
         let storage = decl.storage_class.inner_ref();
-        if let Some(entry) = scope.get(symbol) {
-            if !(entry.linked && matches!(storage, Some(StorageClass::Extern))) {
-                return Err(CompilerError {
-                    kind: ErrorKind::Resolve,
-                    msg: format!("Variable '{symbol}' was already declared"),
-                    span: decl.name.span,
-                });
-            }
+        if let Some(entry) = scope.get(symbol)
+            && !(entry.linked && matches!(storage, Some(StorageClass::Extern)))
+        {
+            return Err(CompilerError {
+                kind: ErrorKind::Resolve,
+                msg: format!("Variable '{symbol}' was already declared"),
+                span: decl.name.span,
+            });
         }
         if let Some(StorageClass::Extern) = storage {
             scope.insert(
@@ -113,15 +113,16 @@ impl Resolver {
     fn resolve_function_declaration(&mut self, decl: &mut FunctionDeclaration) -> Result<()> {
         let symbol = &decl.name.symbol;
         let scope = self.scopes.front_mut().expect("Invalid scope state");
-        if let Some(resolution) = scope.get(symbol) {
-            if !resolution.linked {
-                return Err(CompilerError {
-                    kind: ErrorKind::Resolve,
-                    msg: format!("Variable '{symbol}' was already declared"),
-                    span: decl.name.span,
-                });
-            }
+        if let Some(resolution) = scope.get(symbol)
+            && !resolution.linked
+        {
+            return Err(CompilerError {
+                kind: ErrorKind::Resolve,
+                msg: format!("Variable '{symbol}' was already declared"),
+                span: decl.name.span,
+            });
         }
+
         scope.insert(
             symbol.clone(),
             Resolution {

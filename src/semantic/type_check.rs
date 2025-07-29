@@ -1086,15 +1086,6 @@ impl TypeChecker {
         )
     }
 
-    fn is_null_constant(expr: &Expression) -> bool {
-        matches!(
-            expr,
-            Expression::Constant(
-                Constant::Int(0) | Constant::Long(0) | Constant::UInt(0) | Constant::ULong(0)
-            )
-        )
-    }
-
     fn convert_by_assignment(
         &mut self,
         expr: &Node<Expression>,
@@ -1102,18 +1093,22 @@ impl TypeChecker {
         target: &Type,
     ) -> Result<Type> {
         if ty == target {
-            Ok(ty.clone())
-        } else if ty.is_arithmetic() && target.is_arithmetic()
-            || Self::is_null_constant(expr) && target.is_pointer()
-        {
-            Ok(self.cast_if_needed(expr, ty, target))
-        } else {
-            Err(CompilerError {
-                kind: ErrorKind::Type,
-                msg: "Cannot convert type for assignment!".to_string(),
-                span: expr.span,
-            })
+            return Ok(ty.clone());
         }
+
+        if ty.is_arithmetic() && target.is_arithmetic()
+            || expr.is_null_constant() && target.is_pointer()
+            || target.is_pointer_to_void() && ty.is_pointer()
+            || target.is_pointer() && ty.is_pointer_to_void()
+        {
+            return Ok(self.cast_if_needed(expr, ty, target));
+        }
+
+        Err(CompilerError {
+            kind: ErrorKind::Type,
+            msg: "Cannot convert type for assignment!".to_string(),
+            span: expr.span,
+        })
     }
 
     fn cast_if_needed(&mut self, expr: &Node<Expression>, ty: &Type, expected: &Type) -> Type {
@@ -1151,19 +1146,24 @@ impl TypeChecker {
         e2: &Node<Expression>,
         ty2: &Type,
     ) -> Result<Type> {
-        if ty1 == ty2 {
-            Ok(ty1.clone())
-        } else if Self::is_null_constant(e1) {
-            Ok(ty2.clone())
-        } else if Self::is_null_constant(e2) {
-            Ok(ty1.clone())
+        let result = if ty1 == ty2 {
+            ty1
+        } else if e1.is_null_constant() {
+            ty2
+        } else if e2.is_null_constant() {
+            ty1
+        } else if ty1.is_pointer_to_void() && ty2.is_pointer()
+            || ty1.is_pointer() && ty2.is_pointer_to_void()
+        {
+            &Type::Pointer(Type::Void.into())
         } else {
-            Err(CompilerError {
+            return Err(CompilerError {
                 kind: ErrorKind::Type,
                 msg: "Expressions have incompatible types".to_string(),
                 span: e1.span + e2.span,
-            })
-        }
+            });
+        };
+        Ok(result.clone())
     }
 }
 
