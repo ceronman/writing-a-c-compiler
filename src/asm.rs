@@ -959,7 +959,11 @@ impl Compiler {
             stack_args,
         } = self.classify_parameters(args);
 
-        let padding = if stack_args.len().is_multiple_of(2) { 0 } else { 8 };
+        let padding = if stack_args.len().is_multiple_of(2) {
+            0
+        } else {
+            8
+        };
         if padding != 0 {
             instructions.push(Instruction::Binary(
                 AsmType::Quadword,

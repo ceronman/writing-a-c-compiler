@@ -1,8 +1,11 @@
 use crate::asm::ir::{Function, Instruction, Program, StaticConstant, StaticVariable, TopLevel};
 use crate::semantic::StaticInit;
+use std::error::Error;
 use std::io::Write;
 
-pub fn pp(program: &Program) -> anyhow::Result<String> {
+type Result<T> = std::result::Result<T, Box<dyn Error>>;
+
+pub fn pp(program: &Program) -> Result<String> {
     let mut buffer = Vec::new();
     let file = &mut buffer;
     for top_level in &program.top_level {
@@ -15,7 +18,7 @@ pub fn pp(program: &Program) -> anyhow::Result<String> {
     Ok(String::from_utf8(buffer)?)
 }
 
-fn pp_function(out: &mut impl Write, f: &Function) -> anyhow::Result<()> {
+fn pp_function(out: &mut impl Write, f: &Function) -> Result<()> {
     let global = if f.global { "global " } else { "" };
     writeln!(out, "{global}function {}", f.name)?;
     for ins in &f.instructions {
@@ -25,7 +28,7 @@ fn pp_function(out: &mut impl Write, f: &Function) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn pp_static_variable(out: &mut impl Write, var: &StaticVariable) -> anyhow::Result<()> {
+fn pp_static_variable(out: &mut impl Write, var: &StaticVariable) -> Result<()> {
     let global = if var.global { "global " } else { "" };
     writeln!(out, "{global}[{}] static {} = ", var.alignment, var.name)?;
     for init in &var.init {
@@ -36,7 +39,7 @@ fn pp_static_variable(out: &mut impl Write, var: &StaticVariable) -> anyhow::Res
     Ok(())
 }
 
-fn pp_static_init(out: &mut impl Write, init: &StaticInit) -> anyhow::Result<()> {
+fn pp_static_init(out: &mut impl Write, init: &StaticInit) -> Result<()> {
     match init {
         StaticInit::Char(v) => writeln!(out, "{:?}", (*v as u8) as char)?,
         StaticInit::UChar(v) => writeln!(out, "{:?}U", *v as char)?,
@@ -59,14 +62,14 @@ fn pp_static_init(out: &mut impl Write, init: &StaticInit) -> anyhow::Result<()>
     Ok(())
 }
 
-fn pp_static_constant(out: &mut impl Write, c: &StaticConstant) -> anyhow::Result<()> {
+fn pp_static_constant(out: &mut impl Write, c: &StaticConstant) -> Result<()> {
     write!(out, "[{}] static {} = ", c.alignment, c.name)?;
     pp_static_init(out, &c.init)?;
     writeln!(out)?;
     Ok(())
 }
 
-fn pp_instruction(out: &mut impl Write, ins: &Instruction) -> anyhow::Result<()> {
+fn pp_instruction(out: &mut impl Write, ins: &Instruction) -> Result<()> {
     writeln!(out, "    {ins:?}")?;
     Ok(())
 }

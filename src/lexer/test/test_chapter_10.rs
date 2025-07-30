@@ -1,5 +1,5 @@
 use crate::lexer::TokenKind::*;
-use crate::lexer::{tokenize, IntKind};
+use crate::lexer::{IntKind, tokenize};
 
 #[test]
 fn test_valid_distinct_local_and_extern() {

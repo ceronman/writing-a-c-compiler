@@ -8,4 +8,3 @@ default = []
 test_gen = []
 
 [dependencies]
-anyhow = "1.0.86"

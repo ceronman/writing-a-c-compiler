@@ -14,10 +14,12 @@ mod tempfile;
 mod testgen;
 
 use crate::tempfile::TempPath;
-use anyhow::{Result, bail};
+use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+
+type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
 fn main() -> Result<()> {
     let options = parse_args();
@@ -162,7 +164,7 @@ fn run_preprocessor(filename: &Path) -> Result<TempPath> {
         .output()?;
 
     if !output.status.success() {
-        bail!("{}", String::from_utf8(output.stderr)?)
+        return Err(String::from_utf8(output.stderr)?.into());
     }
 
     Ok(output_path)
@@ -177,7 +179,7 @@ fn assemble(path: &Path) -> Result<()> {
         .output()?;
 
     if !output.status.success() {
-        bail!("{}", String::from_utf8(output.stderr)?)
+        return Err(String::from_utf8(output.stderr)?.into());
     }
 
     Ok(())
@@ -191,7 +193,7 @@ fn assemble_and_link(path: &Path) -> Result<()> {
         .output()?;
 
     if !output.status.success() {
-        bail!("{}", String::from_utf8(output.stderr)?)
+        return Err(String::from_utf8(output.stderr)?.into());
     }
 
     Ok(())

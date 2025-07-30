@@ -1,11 +1,12 @@
-use std::fs::{OpenOptions};
-use std::io::Write;
-use std::path::{Path, PathBuf};
-use std::{fs, panic};
-
 use crate::lexer::TokenKind;
 use crate::{ast, lexer, parser, pretty, semantic, tacky};
-use anyhow::Result;
+use std::error::Error;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
+use std::panic;
+use std::path::{Path, PathBuf};
+
+type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
 pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
     let chapter = test_chapter(path);
@@ -24,13 +25,23 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
         .unwrap()
         .join(format!("src/lexer/test.rs"));
 
-    if !fs::read_to_string(&parent_mod).unwrap_or("".into()).contains(&chapter) {
-        let mut file = OpenOptions::new().create(true).append(true).open(&parent_mod)?;
+    if !fs::read_to_string(&parent_mod)
+        .unwrap_or("".into())
+        .contains(&chapter)
+    {
+        let mut file = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&parent_mod)?;
         writeln!(file, "mod test_{chapter};")?;
     }
 
     if fs::read_to_string(&output).unwrap_or("".into()).is_empty() {
-        let mut file = OpenOptions::new().create(true).truncate(true).write(true).open(&output)?;
+        let mut file = OpenOptions::new()
+            .create(true)
+            .truncate(true)
+            .write(true)
+            .open(&output)?;
         writeln!(file, "use crate::lexer::{{IntKind, tokenize}};")?;
         writeln!(file, "use crate::lexer::TokenKind::*;")?;
     }
@@ -97,7 +108,11 @@ pub fn generate_parser_tests(path: &Path, source: &str) -> Result<()> {
         .join(format!("src/parser/test.rs"));
 
     if !fs::exists(&parent_mod)? {
-        let mut file = OpenOptions::new().create(true).write(true).truncate(true).open(&parent_mod)?;
+        let mut file = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(&parent_mod)?;
         writeln!(
             file,
             r#"use crate::parser::parse;
@@ -120,11 +135,18 @@ fn assert_parse(src: &str, expected: &str) {{
     }
 
     if !fs::read_to_string(&parent_mod)?.contains(&chapter) {
-        let mut file = OpenOptions::new().create(true).append(true).open(&parent_mod)?;
+        let mut file = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&parent_mod)?;
         writeln!(file, "mod test_{chapter};")?;
     }
     if fs::read_to_string(&output).unwrap_or("".into()).is_empty() {
-        let mut file = OpenOptions::new().create(true).truncate(true).write(true).open(&output)?;
+        let mut file = OpenOptions::new()
+            .create(true)
+            .truncate(true)
+            .write(true)
+            .open(&output)?;
         writeln!(file, "use super::{{assert_error, assert_parse}};")?;
     }
     let name = test_name(path);
@@ -174,7 +196,11 @@ pub fn generate_resolver_tests(path: &Path, source: &str) -> Result<()> {
         .join(format!("src/semantic/test.rs"));
 
     if !fs::exists(&parent_mod)? {
-        let mut file = OpenOptions::new().create(true).write(true).truncate(true).open(&parent_mod)?;
+        let mut file = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(&parent_mod)?;
         writeln!(
             file,
             r#"use crate::parser::parse;
@@ -202,7 +228,10 @@ fn assert_error(expected_annotated: &str) {{
         Ok(_) => {}
         Err(error) => {
             if !fs::read_to_string(&parent_mod)?.contains(&chapter) {
-                let mut file = OpenOptions::new().create(true).append(true).open(&parent_mod)?;
+                let mut file = OpenOptions::new()
+                    .create(true)
+                    .append(true)
+                    .open(&parent_mod)?;
                 writeln!(file, "mod test_{chapter};")?;
             }
             if fs::read_to_string(&output).unwrap_or("".into()).is_empty() {
@@ -238,12 +267,22 @@ pub fn generate_tacky_tests(path: &Path, source: &str) -> Result<()> {
         .unwrap()
         .join(format!("src/tacky/test.rs"));
 
-    if !fs::read_to_string(&parent_mod).unwrap_or("".into()).contains(&chapter) {
-        let mut file = OpenOptions::new().create(true).append(true).open(&parent_mod)?;
+    if !fs::read_to_string(&parent_mod)
+        .unwrap_or("".into())
+        .contains(&chapter)
+    {
+        let mut file = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&parent_mod)?;
         writeln!(file, "mod test_{chapter};")?;
     }
     if fs::read_to_string(&output).unwrap_or("".into()).is_empty() {
-        let mut file = OpenOptions::new().create(true).truncate(true).write(true).open(&output)?;
+        let mut file = OpenOptions::new()
+            .create(true)
+            .truncate(true)
+            .write(true)
+            .open(&output)?;
         writeln!(
             file,
             r#"
@@ -288,7 +327,7 @@ fn test_name(path: &Path) -> String {
         .enumerate()
         .filter_map(|(i, c)| {
             if c.starts_with("chapter") {
-                Some(i+1)
+                Some(i + 1)
             } else {
                 None
             }

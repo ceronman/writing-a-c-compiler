@@ -347,7 +347,9 @@ impl Type {
     }
 
     pub fn is_scalar(&self) -> bool {
-        matches!(self, Type::Char
+        matches!(
+            self,
+            Type::Char
                 | Type::SChar
                 | Type::UChar
                 | Type::Int
@@ -355,7 +357,8 @@ impl Type {
                 | Type::Long
                 | Type::ULong
                 | Type::Double
-                | Type::Pointer(_))
+                | Type::Pointer(_)
+        )
     }
 
     pub fn is_complete(&self) -> bool {

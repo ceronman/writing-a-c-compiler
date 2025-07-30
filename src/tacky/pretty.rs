@@ -1,8 +1,11 @@
 use crate::semantic::StaticInit;
 use crate::{ast, tacky};
+use std::error::Error;
 use std::io::Write;
 
-pub fn pp(program: &tacky::Program) -> anyhow::Result<String> {
+type Result<T> = std::result::Result<T, Box<dyn Error>>;
+
+pub fn pp(program: &tacky::Program) -> Result<String> {
     let mut buffer = Vec::new();
     let file = &mut buffer;
     for top_level in &program.top_level {
@@ -15,10 +18,7 @@ pub fn pp(program: &tacky::Program) -> anyhow::Result<String> {
     Ok(String::from_utf8(buffer)?)
 }
 
-fn pp_static_constant(
-    file: &mut impl Write,
-    constant: &tacky::StaticConstant,
-) -> anyhow::Result<()> {
+fn pp_static_constant(file: &mut impl Write, constant: &tacky::StaticConstant) -> Result<()> {
     write!(file, "constant ")?;
     write!(file, "{}", constant.name)?;
     write!(file, ": ")?;
@@ -29,10 +29,7 @@ fn pp_static_constant(
     Ok(())
 }
 
-fn pp_static_variable(
-    file: &mut impl Write,
-    variable: &tacky::StaticVariable,
-) -> anyhow::Result<()> {
+fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -> Result<()> {
     write!(file, "static ")?;
     if variable.global {
         write!(file, "global ")?;
@@ -60,7 +57,7 @@ fn pp_static_variable(
     Ok(())
 }
 
-fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> anyhow::Result<()> {
+fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> Result<()> {
     match init {
         StaticInit::Char(v) => write!(out, "{:?}", (*v as u8) as char)?,
         StaticInit::UChar(v) => write!(out, "{}UC", *v)?,
@@ -86,7 +83,7 @@ fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> anyhow::Result<()>
     Ok(())
 }
 
-fn pp_function(file: &mut impl Write, function: &tacky::Function) -> anyhow::Result<()> {
+fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> {
     let global = if function.global { "global " } else { "" };
     let params = function.params.to_vec().join(", ");
     writeln!(file, "{}function {}({}) {{ ", global, function.name, params)?;
@@ -273,7 +270,7 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> anyhow::Res
     Ok(())
 }
 
-fn pp_val(file: &mut impl Write, val: &tacky::Val) -> anyhow::Result<()> {
+fn pp_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
     match val {
         tacky::Val::Constant(ast::Constant::Char(value)) => {
             write!(file, "{:?}", (*value as u8) as char)?
@@ -289,7 +286,7 @@ fn pp_val(file: &mut impl Write, val: &tacky::Val) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn pp_type(file: &mut impl Write, ty: &ast::Type) -> anyhow::Result<()> {
+fn pp_type(file: &mut impl Write, ty: &ast::Type) -> Result<()> {
     match ty {
         ast::Type::Char => write!(file, "Char"),
         ast::Type::SChar => write!(file, "Signed Char"),
