@@ -91,7 +91,11 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
         match item {
             tacky::Instruction::Return(val) => {
                 write!(file, "{indent}return ")?;
-                pp_val(file, val)?;
+                if let Some(val) = val {
+                    pp_val(file, val)?;
+                } else {
+                    writeln!(file)?;
+                }
             }
             tacky::Instruction::Unary { op, src, dst } => {
                 write!(file, "{indent}")?;
@@ -169,8 +173,10 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
             }
             tacky::Instruction::FnCall { name, args, dst } => {
                 write!(file, "{indent}")?;
-                pp_val(file, dst)?;
-                write!(file, " = ")?;
+                if let Some(dst) = dst {
+                    pp_val(file, dst)?;
+                    write!(file, " = ")?;
+                }
                 write!(file, "{name}(")?;
                 for (i, arg) in args.iter().enumerate() {
                     pp_val(file, arg)?;

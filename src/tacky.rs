@@ -46,7 +46,7 @@ pub struct StaticConstant {
 
 #[derive(Debug, Clone)]
 pub enum Instruction {
-    Return(Val),
+    Return(Option<Val>),
     Unary {
         op: UnaryOp,
         src: Val,
@@ -77,7 +77,7 @@ pub enum Instruction {
     FnCall {
         name: Symbol,
         args: Vec<Val>,
-        dst: Val,
+        dst: Option<Val>,
     },
     SignExtend {
         src: Val,
@@ -188,7 +188,7 @@ impl TackyGenerator {
     fn emit_instructions(&mut self, function: &ast::Block) -> Vec<Instruction> {
         self.emit_block(function);
         self.instructions
-            .push(Instruction::Return(Val::Constant(Constant::Int(0))));
+            .push(Instruction::Return(Some(Val::Constant(Constant::Int(0)))));
         self.instructions.clone()
     }
 
@@ -291,9 +291,8 @@ impl TackyGenerator {
             Type::Long => Constant::Long(0),
             Type::ULong => Constant::ULong(0),
             Type::Double => Constant::Double(0.0),
-            Type::Void => todo!(),
             Type::Pointer(_) => Constant::ULong(0),
-            Type::Function(_) => panic!("Zero initializer for function type"),
+            Type::Void | Type::Function(_) => panic!("Zero initializer for invalid type"),
             Type::Array(inner, size) => {
                 let ty_size = inner.size();
                 for i in 0..*size {
@@ -314,7 +313,9 @@ impl TackyGenerator {
             ast::Statement::Return(expr) => {
                 if let Some(expr) = expr {
                     let val = self.emit_expr(expr);
-                    self.instructions.push(Instruction::Return(val));
+                    self.instructions.push(Instruction::Return(Some(val)));
+                } else {
+                    self.instructions.push(Instruction::Return(None));
                 }
             }
             ast::Statement::Expression(expr) => {
@@ -841,30 +842,41 @@ impl TackyGenerator {
                     target: else_label.clone(),
                 });
                 let true_value = self.emit_expr(then_expr);
-                self.instructions.push(Instruction::Copy {
-                    src: true_value,
-                    dst: result.clone(),
-                });
+                let true_ty = self.semantics.expr_type(then_expr).clone();
+                if !true_ty.is_void() {
+                    self.instructions.push(Instruction::Copy {
+                        src: true_value,
+                        dst: result.clone(),
+                    });
+                }
                 self.instructions.push(Instruction::Jump {
                     target: end_label.clone(),
                 });
                 self.instructions.push(Instruction::Label(else_label));
                 let false_value = self.emit_expr(else_expr);
-                self.instructions.push(Instruction::Copy {
-                    src: false_value,
-                    dst: result.clone(),
-                });
+                let else_ty = self.semantics.expr_type(else_expr).clone();
+                if !else_ty.is_void() {
+                    self.instructions.push(Instruction::Copy {
+                        src: false_value,
+                        dst: result.clone(),
+                    });
+                }
                 self.instructions.push(Instruction::Label(end_label));
                 result
             }
 
             ast::Expression::FunctionCall { name, args } => {
                 let args: Vec<Val> = args.iter().map(|a| self.emit_expr(a)).collect();
-                let result = self.make_temp(&expr_ty);
+                let (result, dst) = if expr_ty.is_void() {
+                    (Val::Var("DUMMY".into()), None)
+                } else {
+                    let dst = self.make_temp(&expr_ty);
+                    (dst.clone(), Some(dst))
+                };
                 self.instructions.push(Instruction::FnCall {
                     name: name.symbol.clone(),
                     args,
-                    dst: result.clone(),
+                    dst,
                 });
                 result
             }
@@ -874,8 +886,12 @@ impl TackyGenerator {
                 expr: inner,
             } => {
                 let result = self.emit_expr(inner);
-                let inner_ty = self.semantics.expr_type(inner).clone();
-                self.cast(result, &inner_ty, target)
+                if target.is_void() {
+                    return ExprResult::Operand(Val::Var("DUMMY".into()));
+                } else {
+                    let inner_ty = self.semantics.expr_type(inner).clone();
+                    self.cast(result, &inner_ty, target)
+                }
             }
 
             ast::Expression::Dereference(inner) => {
@@ -920,7 +936,13 @@ impl TackyGenerator {
                 });
                 return ExprResult::Dereference(dst);
             }
-            ast::Expression::SizeOfType(_) | ast::Expression::SizeOfExpr(_) => todo!(),
+            ast::Expression::SizeOfType(ty) => {
+                return ExprResult::Operand(Val::Constant(Constant::ULong(ty.size() as u64)));
+            }
+            ast::Expression::SizeOfExpr(e) => {
+                let ty = self.semantics.expr_type(e);
+                return ExprResult::Operand(Val::Constant(Constant::ULong(ty.size() as u64)));
+            }
         };
         ExprResult::Operand(result)
     }

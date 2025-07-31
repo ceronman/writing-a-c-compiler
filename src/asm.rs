@@ -199,6 +199,7 @@ impl Compiler {
         for tacky_instruction in &function.body {
             match tacky_instruction {
                 tacky::Instruction::Return(val) => {
+                    let Some(val) = val else { todo!() };
                     let reg = match self.semantics.val_asm_ty(val) {
                         AsmType::Double => Reg::XMM0,
                         _ => Reg::Ax,
@@ -562,7 +563,11 @@ impl Compiler {
                     instructions.push(Instruction::Label(l.clone()));
                 }
                 tacky::Instruction::FnCall { name, args, dst } => {
-                    self.generate_call(&mut instructions, name, args, dst);
+                    if let Some(dst) = dst {
+                        self.generate_call(&mut instructions, name, args, dst);
+                    } else {
+                        todo!();
+                    }
                 }
                 tacky::Instruction::SignExtend { src, dst } => {
                     instructions.push(Instruction::Movsx(
