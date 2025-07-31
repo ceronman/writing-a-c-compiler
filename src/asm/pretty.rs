@@ -1,9 +1,8 @@
 use crate::asm::ir::{Function, Instruction, Program, StaticConstant, StaticVariable, TopLevel};
 use crate::semantic::StaticInit;
-use std::error::Error;
 use std::io::Write;
 
-type Result<T> = std::result::Result<T, Box<dyn Error>>;
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 pub fn pp(program: &Program) -> Result<String> {
     let mut buffer = Vec::new();

@@ -1,12 +1,11 @@
 use crate::lexer::TokenKind;
 use crate::{ast, lexer, parser, pretty, semantic, tacky};
-use std::error::Error;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::panic;
 use std::path::{Path, PathBuf};
 
-type Result<T> = std::result::Result<T, Box<dyn Error>>;
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
     let chapter = test_chapter(path);

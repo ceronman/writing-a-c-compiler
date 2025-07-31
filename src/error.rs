@@ -1,5 +1,4 @@
 use crate::lexer::Span;
-use std::error::Error;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug)]
@@ -38,6 +37,6 @@ impl Display for CompilerError {
     }
 }
 
-impl Error for CompilerError {}
+impl std::error::Error for CompilerError {}
 
 pub type Result<T> = std::result::Result<T, CompilerError>;

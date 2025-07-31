@@ -14,12 +14,11 @@ mod tempfile;
 mod testgen;
 
 use crate::tempfile::TempPath;
-use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-type Result<T> = std::result::Result<T, Box<dyn Error>>;
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 fn main() -> Result<()> {
     let options = parse_args();

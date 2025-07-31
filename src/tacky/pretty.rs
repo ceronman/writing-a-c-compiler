@@ -1,9 +1,8 @@
 use crate::semantic::StaticInit;
 use crate::{ast, tacky};
-use std::error::Error;
 use std::io::Write;
 
-type Result<T> = std::result::Result<T, Box<dyn Error>>;
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 pub fn pp(program: &tacky::Program) -> Result<String> {
     let mut buffer = Vec::new();
