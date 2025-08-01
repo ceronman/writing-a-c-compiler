@@ -527,6 +527,7 @@ impl TackyGenerator {
         let result = match expr.as_ref() {
             ast::Expression::Constant(value) => Val::Constant(value.clone()),
             ast::Expression::String(s) => self.make_string_const(s),
+            ast::Expression::Var(name) => Val::Var(name.clone()),
             ast::Expression::Unary { op, expr } => {
                 let lvalue = self.expression(expr);
                 let val = self.get_or_load(&lvalue, expr);
@@ -767,7 +768,6 @@ impl TackyGenerator {
                 dst
             }
 
-            ast::Expression::Var(name) => Val::Var(name.clone()),
             ast::Expression::Assignment { op, left, right } => {
                 let op = match op.as_ref() {
                     ast::AssignOp::Equal => None,
@@ -836,13 +836,17 @@ impl TackyGenerator {
                 let cond_val = self.make_cond(cond);
                 let end_label = self.make_label("end_if");
                 let else_label = self.make_label("else");
-                let result = self.make_temp(&expr_ty);
+                let true_ty = self.semantics.expr_type(then_expr).clone();
+                let result = if true_ty.is_void() {
+                    Val::Var("DUMMY".into())
+                } else {
+                    self.make_temp(&expr_ty)
+                };
                 self.instructions.push(Instruction::JumpIfZero {
                     cond: cond_val,
                     target: else_label.clone(),
                 });
                 let true_value = self.emit_expr(then_expr);
-                let true_ty = self.semantics.expr_type(then_expr).clone();
                 if !true_ty.is_void() {
                     self.instructions.push(Instruction::Copy {
                         src: true_value,
@@ -940,8 +944,14 @@ impl TackyGenerator {
                 return ExprResult::Operand(Val::Constant(Constant::ULong(ty.size() as u64)));
             }
             ast::Expression::SizeOfExpr(e) => {
-                let ty = self.semantics.expr_type(e);
-                return ExprResult::Operand(Val::Constant(Constant::ULong(ty.size() as u64)));
+                let size = if let Some(target) = self.semantics.implicit_casts.get(&e.id).cloned() {
+                    target.size()
+                } else if let Some(target) = self.semantics.pointer_decays.get(&e.id).cloned() {
+                    target.size()
+                } else {
+                    self.semantics.expr_type(e).size()
+                };
+                return ExprResult::Operand(Val::Constant(Constant::ULong(size as u64)));
             }
         };
         ExprResult::Operand(result)
@@ -982,15 +992,18 @@ impl TackyGenerator {
 
     fn cast_if_needed(&mut self, val: Val, expr: &ast::Node<ast::Expression>) -> Val {
         let expr_ty = self.semantics.expr_type(expr).clone();
-        if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
-            self.cast(val, &expr_ty, &target)
-        } else if let Some(target) = self.semantics.pointer_decays.get(&expr.id).cloned() {
+        let val = if let Some(target) = self.semantics.pointer_decays.get(&expr.id).cloned() {
             let dst = self.make_temp(&target);
             self.instructions.push(Instruction::GetAddress {
                 src: val,
                 dst: dst.clone(),
             });
             dst
+        } else {
+            val
+        };
+        if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
+            self.cast(val, &expr_ty, &target)
         } else {
             val
         }
@@ -1052,6 +1065,7 @@ impl TackyGenerator {
     }
 
     fn make_temp(&mut self, ty: &Type) -> Val {
+        assert!(!matches!(ty, Type::Void));
         let name = format!("tmp.{i}", i = self.tmp_counter);
         let tmp = Val::Var(name.clone());
         self.semantics.symbols.insert(

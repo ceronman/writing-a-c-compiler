@@ -230,8 +230,8 @@ fn test_invalid_semantics_declared_after_use() {
                     ├── <12> Assign [=]
                     │   ├── <6> Var [a]
                     │   ╰── <11>  [+]
-                    │       ├── Constant Int [1]
-                    │       ╰── Constant Int [2]
+                    │       ├── <8> Constant Int [1]
+                    │       ╰── <10> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── a
@@ -262,11 +262,11 @@ fn test_invalid_semantics_extra_credit_compound_invalid_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── <17> Assign [+=]
                     │   ├── <14> Unary [-]
                     │   │   ╰── <13> Var [a]
-                    │   ╰── Constant Int [1]
+                    │   ╰── <16> Constant Int [1]
                     ╰── Return
                         ╰── <20> Var [a]
     "#;
@@ -291,12 +291,12 @@ fn test_invalid_semantics_extra_credit_compound_invalid_lvalue_2() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ╰── <19> Assign [-=]
                         ├── <16> Assign [+=]
                         │   ├── <12> Var [a]
-                        │   ╰── Constant Int [1]
-                        ╰── Constant Int [2]
+                        │   ╰── <14> Constant Int [1]
+                        ╰── <18> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -319,7 +319,7 @@ fn test_invalid_semantics_extra_credit_postfix_decr_non_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ╰── Return
                         ╰── <16> Postfix [--]
                             ╰── <14> Postfix [++]
@@ -346,11 +346,11 @@ fn test_invalid_semantics_extra_credit_postfix_incr_non_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ╰── <18> Postfix [++]
                         ╰── <16> Assign [=]
                             ├── <12> Var [a]
-                            ╰── Constant Int [4]
+                            ╰── <14> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -368,7 +368,7 @@ fn test_invalid_semantics_extra_credit_prefix_decr_non_lvalue() {
                 ╰── Body
                     ╰── Return
                         ╰── <7> Unary [--]
-                            ╰── Constant Int [3]
+                            ╰── <6> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -392,13 +392,13 @@ fn test_invalid_semantics_extra_credit_prefix_incr_non_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── <18> Unary [++]
                     │   ╰── <17>  [+]
                     │       ├── <13> Var [a]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <15> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <20> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -417,7 +417,7 @@ fn test_invalid_semantics_extra_credit_undeclared_bitwise_op() {
                     ╰── Return
                         ╰── <9>  [>>]
                             ├── <6> Var [a]
-                            ╰── Constant Int [2]
+                            ╰── <8> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -436,9 +436,9 @@ fn test_invalid_semantics_extra_credit_undeclared_compound_assignment() {
                 ╰── Body
                     ├── <9> Assign [+=]
                     │   ├── <6> Var [a]
-                    │   ╰── Constant Int [1]
+                    │   ╰── <8> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <11> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -462,12 +462,12 @@ fn test_invalid_semantics_extra_credit_undeclared_compound_assignment_use() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── <16> Assign [*=]
                     │   ├── <12> Var [b]
                     │   ╰── <15> Var [a]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <18> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -487,7 +487,7 @@ fn test_invalid_semantics_extra_credit_undeclared_postfix_decr() {
                     ├── <8> Postfix [--]
                     │   ╰── <6> Var [a]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -507,7 +507,7 @@ fn test_invalid_semantics_extra_credit_undeclared_prefix_incr() {
                     ├── <8> Postfix [++]
                     │   ╰── <6> Var [a]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -531,12 +531,12 @@ fn test_invalid_semantics_invalid_lvalue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <8> Constant Int [2]
                     ├── <18> Assign [=]
                     │   ├── <15>  [+]
                     │   │   ├── <12> Var [a]
-                    │   │   ╰── Constant Int [3]
-                    │   ╰── Constant Int [4]
+                    │   │   ╰── <14> Constant Int [3]
+                    │   ╰── <17> Constant Int [4]
                     ╰── Return
                         ╰── <21> Var [a]
     "#;
@@ -562,11 +562,11 @@ fn test_invalid_semantics_invalid_lvalue_2() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <8> Constant Int [2]
                     ├── <17> Assign [=]
                     │   ├── <14> Unary [!]
                     │   │   ╰── <13> Var [a]
-                    │   ╰── Constant Int [3]
+                    │   ╰── <16> Constant Int [3]
                     ╰── Return
                         ╰── <20> Var [a]
     "#;
@@ -592,19 +592,19 @@ fn test_invalid_semantics_mixed_precedence_assignment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <14> Constant Int [2]
                     ╰── <29> Assign [=]
                         ├── <18> Var [a]
                         ╰── <28> Assign [=]
                             ├── <24>  [*]
-                            │   ├── Constant Int [3]
+                            │   ├── <20> Constant Int [3]
                             │   ╰── <23> Var [b]
                             ╰── <27> Var [a]
     "#;
@@ -630,14 +630,14 @@ fn test_invalid_semantics_redefine() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── a
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <14> Constant Int [2]
                     ╰── Return
                         ╰── <18> Var [a]
     "#;
@@ -674,7 +674,7 @@ fn test_invalid_semantics_undeclared_var_and() {
                 ╰── Body
                     ╰── Return
                         ╰── <9>  [&&]
-                            ├── Constant Int [0]
+                            ├── <5> Constant Int [0]
                             ╰── <8> Var [a]
     "#;
     assert_parse(src, expected);
@@ -694,7 +694,7 @@ fn test_invalid_semantics_undeclared_var_compare() {
                     ╰── Return
                         ╰── <9>  [<]
                             ├── <6> Var [a]
-                            ╰── Constant Int [5]
+                            ╰── <8> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -737,7 +737,7 @@ fn test_invalid_semantics_use_then_redefine() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── Return
                     │   ╰── <12> Var [a]
                     ├── VarDeclaration
@@ -746,7 +746,7 @@ fn test_invalid_semantics_use_then_redefine() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <17> Constant Int [1]
                     ╰── Return
                         ╰── <21> Var [a]
     "#;
@@ -772,14 +772,14 @@ fn test_valid_add_variables() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── second_variable
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <14> Constant Int [2]
                     ╰── Return
                         ╰── <22>  [+]
                             ├── <18> Var [first_variable]
@@ -808,14 +808,14 @@ fn test_valid_allocate_temps_and_vars() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2147483646]
+                    │       ╰── <8> Constant Int [2147483646]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -825,17 +825,17 @@ fn test_valid_allocate_temps_and_vars() {
                     │       ╰── <30>  [+]
                     │           ├── <24>  [/]
                     │           │   ├── <21> Var [a]
-                    │           │   ╰── Constant Int [6]
+                    │           │   ╰── <23> Constant Int [6]
                     │           ╰── <29> Unary [!]
                     │               ╰── <28> Var [b]
                     ╰── Return
                         ╰── <44>  [==]
                             ├── <37>  [*]
                             │   ├── <34> Var [c]
-                            │   ╰── Constant Int [2]
+                            │   ╰── <36> Constant Int [2]
                             ╰── <43>  [-]
                                 ├── <40> Var [a]
-                                ╰── Constant Int [1431655762]
+                                ╰── <42> Constant Int [1431655762]
     "#;
     assert_parse(src, expected);
 }
@@ -860,7 +860,7 @@ fn test_valid_assign() {
                     │       ╰── Int
                     ├── <13> Assign [=]
                     │   ├── <10> Var [var0]
-                    │   ╰── Constant Int [2]
+                    │   ╰── <12> Constant Int [2]
                     ╰── Return
                         ╰── <16> Var [var0]
     "#;
@@ -887,7 +887,7 @@ fn test_valid_assign_val_in_initializer() {
                     │   ╰── Initializer
                     │       ╰── <12> Assign [=]
                     │           ├── <9> Var [a]
-                    │           ╰── Constant Int [5]
+                    │           ╰── <11> Constant Int [5]
                     ╰── Return
                         ╰── <16> Var [a]
     "#;
@@ -920,7 +920,7 @@ fn test_valid_assignment_in_initializer() {
                     │   ╰── Initializer
                     │       ╰── <16> Assign [=]
                     │           ├── <13> Var [a]
-                    │           ╰── Constant Int [0]
+                    │           ╰── <15> Constant Int [0]
                     ╰── Return
                         ╰── <20> Var [b]
     "#;
@@ -948,8 +948,8 @@ fn test_valid_assignment_lowest_precedence() {
                     ├── <16> Assign [=]
                     │   ├── <10> Var [a]
                     │   ╰── <15>  [||]
-                    │       ├── Constant Int [0]
-                    │       ╰── Constant Int [5]
+                    │       ├── <12> Constant Int [0]
+                    │       ╰── <14> Constant Int [5]
                     ╰── Return
                         ╰── <19> Var [a]
     "#;
@@ -991,12 +991,12 @@ fn test_valid_exp_then_declaration() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <10> Unary [-]
-                    │           ╰── Constant Int [2593]
+                    │           ╰── <9> Constant Int [2593]
                     ├── <21> Assign [=]
                     │   ├── <14> Var [a]
                     │   ╰── <20>  [%]
                     │       ├── <17> Var [a]
-                    │       ╰── Constant Int [3]
+                    │       ╰── <19> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -1030,7 +1030,7 @@ fn test_valid_extra_credit_bitwise_in_initializer() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [15]
+                    │       ╰── <8> Constant Int [15]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -1039,10 +1039,10 @@ fn test_valid_extra_credit_bitwise_in_initializer() {
                     │   ╰── Initializer
                     │       ╰── <18>  [^]
                     │           ├── <15> Var [a]
-                    │           ╰── Constant Int [5]
+                    │           ╰── <17> Constant Int [5]
                     ╰── Return
                         ╰── <25>  [|]
-                            ├── Constant Int [1]
+                            ├── <21> Constant Int [1]
                             ╰── <24> Var [b]
     "#;
     assert_parse(src, expected);
@@ -1068,21 +1068,21 @@ fn test_valid_extra_credit_bitwise_ops_vars() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [5]
+                    │       ╰── <14> Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [8]
+                    │       ╰── <20> Constant Int [8]
                     ╰── Return
                         ╰── <32>  [|]
                             ├── <28>  [&]
@@ -1111,11 +1111,11 @@ fn test_valid_extra_credit_bitwise_shiftl_variable() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ╰── Return
                         ╰── <15>  [<<]
                             ├── <12> Var [x]
-                            ╰── Constant Int [3]
+                            ╰── <14> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -1140,19 +1140,19 @@ fn test_valid_extra_credit_bitwise_shiftr_assign() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1234]
+                    │       ╰── <8> Constant Int [1234]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── <25> Assign [=]
                     │   ├── <18> Var [x]
                     │   ╰── <24>  [>>]
                     │       ├── <21> Var [var_to_shift]
-                    │       ╰── Constant Int [4]
+                    │       ╰── <23> Constant Int [4]
                     ╰── Return
                         ╰── <28> Var [x]
     "#;
@@ -1185,28 +1185,28 @@ fn test_valid_extra_credit_compound_assignment_chained() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [250]
+                    │       ╰── <8> Constant Int [250]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [200]
+                    │       ╰── <14> Constant Int [200]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <20> Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [75]
+                    │       ╰── <26> Constant Int [75]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── e
@@ -1214,21 +1214,21 @@ fn test_valid_extra_credit_compound_assignment_chained() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <34> Unary [-]
-                    │           ╰── Constant Int [25]
+                    │           ╰── <33> Constant Int [25]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── f
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <40> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <46> Constant Int [0]
                     ├── <79> Assign [=]
                     │   ├── <50> Var [x]
                     │   ╰── <78> Assign [+=]
@@ -1244,7 +1244,7 @@ fn test_valid_extra_credit_compound_assignment_chained() {
                     │                       ╰── <73> Assign [=]
                     │                           ├── <68> Var [f]
                     │                           ╰── <72> Unary [-]
-                    │                               ╰── Constant Int [7]
+                    │                               ╰── <71> Constant Int [7]
                     ╰── Return
                         ╰── <135>  [&&]
                             ├── <128>  [&&]
@@ -1254,29 +1254,29 @@ fn test_valid_extra_credit_compound_assignment_chained() {
                             │   │   │   │   ├── <92>  [&&]
                             │   │   │   │   │   ├── <85>  [==]
                             │   │   │   │   │   │   ├── <82> Var [a]
-                            │   │   │   │   │   │   ╰── Constant Int [2250]
+                            │   │   │   │   │   │   ╰── <84> Constant Int [2250]
                             │   │   │   │   │   ╰── <91>  [==]
                             │   │   │   │   │       ├── <88> Var [b]
-                            │   │   │   │   │       ╰── Constant Int [2000]
+                            │   │   │   │   │       ╰── <90> Constant Int [2000]
                             │   │   │   │   ╰── <100>  [==]
                             │   │   │   │       ├── <95> Var [c]
                             │   │   │   │       ╰── <99> Unary [-]
-                            │   │   │   │           ╰── Constant Int [1800]
+                            │   │   │   │           ╰── <98> Constant Int [1800]
                             │   │   │   ╰── <109>  [==]
                             │   │   │       ├── <104> Var [d]
                             │   │   │       ╰── <108> Unary [-]
-                            │   │   │           ╰── Constant Int [18]
+                            │   │   │           ╰── <107> Constant Int [18]
                             │   │   ╰── <118>  [==]
                             │   │       ├── <113> Var [e]
                             │   │       ╰── <117> Unary [-]
-                            │   │           ╰── Constant Int [4]
+                            │   │           ╰── <116> Constant Int [4]
                             │   ╰── <127>  [==]
                             │       ├── <122> Var [f]
                             │       ╰── <126> Unary [-]
-                            │           ╰── Constant Int [7]
+                            │           ╰── <125> Constant Int [7]
                             ╰── <134>  [==]
                                 ├── <131> Var [x]
-                                ╰── Constant Int [2250]
+                                ╰── <133> Constant Int [2250]
     "#;
     assert_parse(src, expected);
 }
@@ -1306,31 +1306,31 @@ fn test_valid_extra_credit_compound_assignment_lowest_precedence() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [12]
+                    │       ╰── <14> Constant Int [12]
                     ├── <25> Assign [+=]
                     │   ├── <18> Var [a]
                     │   ╰── <24>  [||]
-                    │       ├── Constant Int [0]
+                    │       ├── <20> Constant Int [0]
                     │       ╰── <23> Var [b]
                     ├── <35> Assign [*=]
                     │   ├── <28> Var [b]
                     │   ╰── <34>  [&&]
                     │       ├── <31> Var [a]
-                    │       ╰── Constant Int [0]
+                    │       ╰── <33> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [14]
+                    │       ╰── <40> Constant Int [14]
                     ├── <52> Assign [-=]
                     │   ├── <44> Var [c]
                     │   ╰── <51>  [||]
@@ -1342,7 +1342,7 @@ fn test_valid_extra_credit_compound_assignment_lowest_precedence() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [16]
+                    │       ╰── <57> Constant Int [16]
                     ├── <69> Assign [/=]
                     │   ├── <61> Var [d]
                     │   ╰── <68>  [||]
@@ -1354,16 +1354,16 @@ fn test_valid_extra_credit_compound_assignment_lowest_precedence() {
                             │   ├── <82>  [&&]
                             │   │   ├── <75>  [==]
                             │   │   │   ├── <72> Var [a]
-                            │   │   │   ╰── Constant Int [11]
+                            │   │   │   ╰── <74> Constant Int [11]
                             │   │   ╰── <81>  [==]
                             │   │       ├── <78> Var [b]
-                            │   │       ╰── Constant Int [0]
+                            │   │       ╰── <80> Constant Int [0]
                             │   ╰── <88>  [==]
                             │       ├── <85> Var [c]
-                            │       ╰── Constant Int [13]
+                            │       ╰── <87> Constant Int [13]
                             ╰── <95>  [==]
                                 ├── <92> Var [d]
-                                ╰── Constant Int [16]
+                                ╰── <94> Constant Int [16]
     "#;
     assert_parse(src, expected);
 }
@@ -1387,7 +1387,7 @@ fn test_valid_extra_credit_compound_assignment_use_result() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
@@ -1396,15 +1396,15 @@ fn test_valid_extra_credit_compound_assignment_use_result() {
                     │   ╰── Initializer
                     │       ╰── <18> Assign [+=]
                     │           ├── <15> Var [x]
-                    │           ╰── Constant Int [3]
+                    │           ╰── <17> Constant Int [3]
                     ╰── Return
                         ╰── <33>  [&&]
                             ├── <25>  [==]
                             │   ├── <22> Var [x]
-                            │   ╰── Constant Int [4]
+                            │   ╰── <24> Constant Int [4]
                             ╰── <31>  [==]
                                 ├── <28> Var [y]
-                                ╰── Constant Int [4]
+                                ╰── <30> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -1428,10 +1428,10 @@ fn test_valid_extra_credit_compound_bitwise_and() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ├── <15> Assign [&=]
                     │   ├── <12> Var [to_and]
-                    │   ╰── Constant Int [6]
+                    │   ╰── <14> Constant Int [6]
                     ╰── Return
                         ╰── <18> Var [to_and]
     "#;
@@ -1465,31 +1465,31 @@ fn test_valid_extra_credit_compound_bitwise_assignment_lowest_precedence() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [11]
+                    │       ╰── <8> Constant Int [11]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [12]
+                    │       ╰── <14> Constant Int [12]
                     ├── <25> Assign [&=]
                     │   ├── <18> Var [a]
                     │   ╰── <24>  [||]
-                    │       ├── Constant Int [0]
+                    │       ├── <20> Constant Int [0]
                     │       ╰── <23> Var [b]
                     ├── <35> Assign [^=]
                     │   ├── <28> Var [b]
                     │   ╰── <34>  [||]
                     │       ├── <31> Var [a]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <33> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [14]
+                    │       ╰── <40> Constant Int [14]
                     ├── <52> Assign [|=]
                     │   ├── <44> Var [c]
                     │   ╰── <51>  [||]
@@ -1501,7 +1501,7 @@ fn test_valid_extra_credit_compound_bitwise_assignment_lowest_precedence() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [16]
+                    │       ╰── <57> Constant Int [16]
                     ├── <69> Assign [>>=]
                     │   ├── <61> Var [d]
                     │   ╰── <68>  [||]
@@ -1513,7 +1513,7 @@ fn test_valid_extra_credit_compound_bitwise_assignment_lowest_precedence() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [18]
+                    │       ╰── <74> Constant Int [18]
                     ├── <86> Assign [<<=]
                     │   ├── <78> Var [e]
                     │   ╰── <85>  [||]
@@ -1526,19 +1526,19 @@ fn test_valid_extra_credit_compound_bitwise_assignment_lowest_precedence() {
                             │   │   ├── <99>  [&&]
                             │   │   │   ├── <92>  [==]
                             │   │   │   │   ├── <89> Var [a]
-                            │   │   │   │   ╰── Constant Int [1]
+                            │   │   │   │   ╰── <91> Constant Int [1]
                             │   │   │   ╰── <98>  [==]
                             │   │   │       ├── <95> Var [b]
-                            │   │   │       ╰── Constant Int [13]
+                            │   │   │       ╰── <97> Constant Int [13]
                             │   │   ╰── <105>  [==]
                             │   │       ├── <102> Var [c]
-                            │   │       ╰── Constant Int [15]
+                            │   │       ╰── <104> Constant Int [15]
                             │   ╰── <112>  [==]
                             │       ├── <109> Var [d]
-                            │       ╰── Constant Int [8]
+                            │       ╰── <111> Constant Int [8]
                             ╰── <119>  [==]
                                 ├── <116> Var [e]
-                                ╰── Constant Int [36]
+                                ╰── <118> Constant Int [36]
     "#;
     assert_parse(src, expected);
 }
@@ -1572,70 +1572,70 @@ fn test_valid_extra_credit_compound_bitwise_chained() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [250]
+                    │       ╰── <8> Constant Int [250]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [200]
+                    │       ╰── <14> Constant Int [200]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <20> Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [75]
+                    │       ╰── <26> Constant Int [75]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── e
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [50]
+                    │       ╰── <32> Constant Int [50]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── f
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [25]
+                    │       ╰── <38> Constant Int [25]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── g
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <44> Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── h
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <50> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── j
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <56> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <62> Constant Int [0]
                     ├── <105> Assign [=]
                     │   ├── <66> Var [x]
                     │   ╰── <104> Assign [&=]
@@ -1656,7 +1656,7 @@ fn test_valid_extra_credit_compound_bitwise_chained() {
                     │                                   ├── <90> Var [h]
                     │                                   ╰── <96> Assign [=]
                     │                                       ├── <93> Var [j]
-                    │                                       ╰── Constant Int [1]
+                    │                                       ╰── <95> Constant Int [1]
                     ╰── Return
                         ╰── <175>  [&&]
                             ├── <167>  [&&]
@@ -1669,34 +1669,34 @@ fn test_valid_extra_credit_compound_bitwise_chained() {
                             │   │   │   │   │   │   │   ├── <118>  [&&]
                             │   │   │   │   │   │   │   │   ├── <111>  [==]
                             │   │   │   │   │   │   │   │   │   ├── <108> Var [a]
-                            │   │   │   │   │   │   │   │   │   ╰── Constant Int [40]
+                            │   │   │   │   │   │   │   │   │   ╰── <110> Constant Int [40]
                             │   │   │   │   │   │   │   │   ╰── <117>  [==]
                             │   │   │   │   │   │   │   │       ├── <114> Var [b]
-                            │   │   │   │   │   │   │   │       ╰── Constant Int [21800]
+                            │   │   │   │   │   │   │   │       ╰── <116> Constant Int [21800]
                             │   │   │   │   │   │   │   ╰── <124>  [==]
                             │   │   │   │   │   │   │       ├── <121> Var [c]
-                            │   │   │   │   │   │   │       ╰── Constant Int [109]
+                            │   │   │   │   │   │   │       ╰── <123> Constant Int [109]
                             │   │   │   │   │   │   ╰── <131>  [==]
                             │   │   │   │   │   │       ├── <128> Var [d]
-                            │   │   │   │   │   │       ╰── Constant Int [41]
+                            │   │   │   │   │   │       ╰── <130> Constant Int [41]
                             │   │   │   │   │   ╰── <138>  [==]
                             │   │   │   │   │       ├── <135> Var [e]
-                            │   │   │   │   │       ╰── Constant Int [41]
+                            │   │   │   │   │       ╰── <137> Constant Int [41]
                             │   │   │   │   ╰── <145>  [==]
                             │   │   │   │       ├── <142> Var [f]
-                            │   │   │   │       ╰── Constant Int [27]
+                            │   │   │   │       ╰── <144> Constant Int [27]
                             │   │   │   ╰── <152>  [==]
                             │   │   │       ├── <149> Var [g]
-                            │   │   │       ╰── Constant Int [2]
+                            │   │   │       ╰── <151> Constant Int [2]
                             │   │   ╰── <159>  [==]
                             │   │       ├── <156> Var [h]
-                            │   │       ╰── Constant Int [2]
+                            │   │       ╰── <158> Constant Int [2]
                             │   ╰── <166>  [==]
                             │       ├── <163> Var [j]
-                            │       ╰── Constant Int [1]
+                            │       ╰── <165> Constant Int [1]
                             ╰── <173>  [==]
                                 ├── <170> Var [x]
-                                ╰── Constant Int [40]
+                                ╰── <172> Constant Int [40]
     "#;
     assert_parse(src, expected);
 }
@@ -1720,10 +1720,10 @@ fn test_valid_extra_credit_compound_bitwise_or() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── <15> Assign [|=]
                     │   ├── <12> Var [to_or]
-                    │   ╰── Constant Int [30]
+                    │   ╰── <14> Constant Int [30]
                     ╰── Return
                         ╰── <18> Var [to_or]
     "#;
@@ -1749,10 +1749,10 @@ fn test_valid_extra_credit_compound_bitwise_shiftl() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ├── <15> Assign [<<=]
                     │   ├── <12> Var [to_shiftl]
-                    │   ╰── Constant Int [4]
+                    │   ╰── <14> Constant Int [4]
                     ╰── Return
                         ╰── <18> Var [to_shiftl]
     "#;
@@ -1778,10 +1778,10 @@ fn test_valid_extra_credit_compound_bitwise_shiftr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [382574]
+                    │       ╰── <8> Constant Int [382574]
                     ├── <15> Assign [>>=]
                     │   ├── <12> Var [to_shiftr]
-                    │   ╰── Constant Int [4]
+                    │   ╰── <14> Constant Int [4]
                     ╰── Return
                         ╰── <18> Var [to_shiftr]
     "#;
@@ -1807,10 +1807,10 @@ fn test_valid_extra_credit_compound_bitwise_xor() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [7]
+                    │       ╰── <8> Constant Int [7]
                     ├── <15> Assign [^=]
                     │   ├── <12> Var [to_xor]
-                    │   ╰── Constant Int [5]
+                    │   ╰── <14> Constant Int [5]
                     ╰── Return
                         ╰── <18> Var [to_xor]
     "#;
@@ -1836,10 +1836,10 @@ fn test_valid_extra_credit_compound_divide() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [8]
+                    │       ╰── <8> Constant Int [8]
                     ├── <15> Assign [/=]
                     │   ├── <12> Var [to_divide]
-                    │   ╰── Constant Int [4]
+                    │   ╰── <14> Constant Int [4]
                     ╰── Return
                         ╰── <18> Var [to_divide]
     "#;
@@ -1865,10 +1865,10 @@ fn test_valid_extra_credit_compound_minus() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── <15> Assign [-=]
                     │   ├── <12> Var [to_subtract]
-                    │   ╰── Constant Int [8]
+                    │   ╰── <14> Constant Int [8]
                     ╰── Return
                         ╰── <18> Var [to_subtract]
     "#;
@@ -1894,10 +1894,10 @@ fn test_valid_extra_credit_compound_mod() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [5]
+                    │       ╰── <8> Constant Int [5]
                     ├── <15> Assign [&=]
                     │   ├── <12> Var [to_mod]
-                    │   ╰── Constant Int [3]
+                    │   ╰── <14> Constant Int [3]
                     ╰── Return
                         ╰── <18> Var [to_mod]
     "#;
@@ -1923,10 +1923,10 @@ fn test_valid_extra_credit_compound_multiply() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [4]
+                    │       ╰── <8> Constant Int [4]
                     ├── <15> Assign [*=]
                     │   ├── <12> Var [to_multiply]
-                    │   ╰── Constant Int [3]
+                    │   ╰── <14> Constant Int [3]
                     ╰── Return
                         ╰── <18> Var [to_multiply]
     "#;
@@ -1952,10 +1952,10 @@ fn test_valid_extra_credit_compound_plus() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── <15> Assign [+=]
                     │   ├── <12> Var [to_add]
-                    │   ╰── Constant Int [4]
+                    │   ╰── <14> Constant Int [4]
                     ╰── Return
                         ╰── <18> Var [to_add]
     "#;
@@ -1986,14 +1986,14 @@ fn test_valid_extra_credit_incr_expression_statement() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── <20> Postfix [++]
                     │   ╰── <18> Var [a]
                     ├── <25> Unary [++]
@@ -2008,11 +2008,11 @@ fn test_valid_extra_credit_incr_expression_statement() {
                         ╰── <56>  [&&]
                             ├── <46>  [==]
                             │   ├── <43> Var [a]
-                            │   ╰── Constant Int [3]
+                            │   ╰── <45> Constant Int [3]
                             ╰── <54>  [==]
                                 ├── <49> Var [b]
                                 ╰── <53> Unary [-]
-                                    ╰── Constant Int [2]
+                                    ╰── <52> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -2037,7 +2037,7 @@ fn test_valid_extra_credit_incr_in_binary_expr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <8> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -2045,7 +2045,7 @@ fn test_valid_extra_credit_incr_in_binary_expr() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <20>  [+]
-                    │           ├── Constant Int [3]
+                    │           ├── <14> Constant Int [3]
                     │           ╰── <19> Postfix [++]
                     │               ╰── <17> Var [a]
                     ├── VarDeclaration
@@ -2055,7 +2055,7 @@ fn test_valid_extra_credit_incr_in_binary_expr() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <32>  [+]
-                    │           ├── Constant Int [4]
+                    │           ├── <26> Constant Int [4]
                     │           ╰── <31> Unary [++]
                     │               ╰── <30> Var [b]
                     ╰── Return
@@ -2063,13 +2063,13 @@ fn test_valid_extra_credit_incr_in_binary_expr() {
                             ├── <46>  [&&]
                             │   ├── <39>  [==]
                             │   │   ├── <36> Var [a]
-                            │   │   ╰── Constant Int [3]
+                            │   │   ╰── <38> Constant Int [3]
                             │   ╰── <45>  [==]
                             │       ├── <42> Var [b]
-                            │       ╰── Constant Int [6]
+                            │       ╰── <44> Constant Int [6]
                             ╰── <52>  [==]
                                 ├── <49> Var [c]
-                                ╰── Constant Int [10]
+                                ╰── <51> Constant Int [10]
     "#;
     assert_parse(src, expected);
 }
@@ -2096,14 +2096,14 @@ fn test_valid_extra_credit_incr_parenthesized() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <14> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -2128,17 +2128,17 @@ fn test_valid_extra_credit_incr_parenthesized() {
                             │   ├── <52>  [&&]
                             │   │   ├── <45>  [==]
                             │   │   │   ├── <42> Var [a]
-                            │   │   │   ╰── Constant Int [2]
+                            │   │   │   ╰── <44> Constant Int [2]
                             │   │   ╰── <51>  [==]
                             │   │       ├── <48> Var [b]
-                            │   │       ╰── Constant Int [1]
+                            │   │       ╰── <50> Constant Int [1]
                             │   ╰── <60>  [==]
                             │       ├── <55> Var [c]
                             │       ╰── <59> Unary [-]
-                            │           ╰── Constant Int [2]
+                            │           ╰── <58> Constant Int [2]
                             ╰── <67>  [==]
                                 ├── <64> Var [d]
-                                ╰── Constant Int [0]
+                                ╰── <66> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2164,14 +2164,14 @@ fn test_valid_extra_credit_postfix_incr_and_decr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <14> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -2194,16 +2194,16 @@ fn test_valid_extra_credit_postfix_incr_and_decr() {
                             │   ├── <46>  [&&]
                             │   │   ├── <39>  [==]
                             │   │   │   ├── <36> Var [a]
-                            │   │   │   ╰── Constant Int [2]
+                            │   │   │   ╰── <38> Constant Int [2]
                             │   │   ╰── <45>  [==]
                             │   │       ├── <42> Var [b]
-                            │   │       ╰── Constant Int [1]
+                            │   │       ╰── <44> Constant Int [1]
                             │   ╰── <52>  [==]
                             │       ├── <49> Var [c]
-                            │       ╰── Constant Int [1]
+                            │       ╰── <51> Constant Int [1]
                             ╰── <59>  [==]
                                 ├── <56> Var [d]
-                                ╰── Constant Int [2]
+                                ╰── <58> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -2227,7 +2227,7 @@ fn test_valid_extra_credit_postfix_precedence() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -2241,10 +2241,10 @@ fn test_valid_extra_credit_postfix_precedence() {
                         ╰── <34>  [&&]
                             ├── <26>  [==]
                             │   ├── <23> Var [a]
-                            │   ╰── Constant Int [2]
+                            │   ╰── <25> Constant Int [2]
                             ╰── <32>  [==]
                                 ├── <29> Var [b]
-                                ╰── Constant Int [0]
+                                ╰── <31> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2270,14 +2270,14 @@ fn test_valid_extra_credit_prefix_incr_and_decr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <14> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -2300,16 +2300,16 @@ fn test_valid_extra_credit_prefix_incr_and_decr() {
                             │   ├── <46>  [&&]
                             │   │   ├── <39>  [==]
                             │   │   │   ├── <36> Var [a]
-                            │   │   │   ╰── Constant Int [2]
+                            │   │   │   ╰── <38> Constant Int [2]
                             │   │   ╰── <45>  [==]
                             │   │       ├── <42> Var [b]
-                            │   │       ╰── Constant Int [1]
+                            │   │       ╰── <44> Constant Int [1]
                             │   ╰── <52>  [==]
                             │       ├── <49> Var [c]
-                            │       ╰── Constant Int [2]
+                            │       ╰── <51> Constant Int [2]
                             ╰── <59>  [==]
                                 ├── <56> Var [d]
-                                ╰── Constant Int [1]
+                                ╰── <58> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -2333,14 +2333,14 @@ fn test_valid_kw_var_names() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── void2
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <14> Constant Int [2]
                     ╰── Return
                         ╰── <22>  [+]
                             ├── <18> Var [return_val]
@@ -2367,12 +2367,12 @@ fn test_valid_local_var_missing_return() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ╰── <19> Assign [=]
                         ├── <12> Var [a]
                         ╰── <18>  [+]
                             ├── <15> Var [a]
-                            ╰── Constant Int [5]
+                            ╰── <17> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -2397,18 +2397,18 @@ fn test_valid_mixed_precedence_assignment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── <30> Assign [=]
                     │   ├── <18> Var [a]
                     │   ╰── <29>  [*]
-                    │       ├── Constant Int [3]
+                    │       ├── <20> Constant Int [3]
                     │       ╰── <28> Assign [=]
                     │           ├── <23> Var [b]
                     │           ╰── <26> Var [a]
@@ -2439,12 +2439,12 @@ fn test_valid_non_short_circuit_or() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── <19>  [||]
-                    │   ├── Constant Int [0]
+                    │   ├── <11> Constant Int [0]
                     │   ╰── <18> Assign [=]
                     │       ├── <14> Var [a]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <16> Constant Int [1]
                     ╰── Return
                         ╰── <22> Var [a]
     "#;
@@ -2481,7 +2481,7 @@ fn test_valid_null_then_return() {
                 ╰── Body
                     ├── Empty
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <6> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2504,7 +2504,7 @@ fn test_valid_return_var() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <8> Constant Int [2]
                     ╰── Return
                         ╰── <12> Var [a]
     "#;
@@ -2530,12 +2530,12 @@ fn test_valid_short_circuit_and_fail() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── <19>  [&&]
-                    │   ├── Constant Int [0]
+                    │   ├── <11> Constant Int [0]
                     │   ╰── <18> Assign [=]
                     │       ├── <14> Var [a]
-                    │       ╰── Constant Int [5]
+                    │       ╰── <16> Constant Int [5]
                     ╰── Return
                         ╰── <22> Var [a]
     "#;
@@ -2561,12 +2561,12 @@ fn test_valid_short_circuit_or() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── <19>  [||]
-                    │   ├── Constant Int [1]
+                    │   ├── <11> Constant Int [1]
                     │   ╰── <18> Assign [=]
                     │       ├── <14> Var [a]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <16> Constant Int [1]
                     ╰── Return
                         ╰── <22> Var [a]
     "#;
@@ -2586,10 +2586,10 @@ fn test_valid_unused_exp() {
             ╰── Function [main]
                 ╰── Body
                     ├── <8>  [+]
-                    │   ├── Constant Int [2]
-                    │   ╰── Constant Int [2]
+                    │   ├── <5> Constant Int [2]
+                    │   ╰── <7> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2613,20 +2613,20 @@ fn test_valid_use_assignment_result() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <14> Constant Int [2]
                     ╰── Return
                         ╰── <25> Assign [=]
                             ├── <18> Var [a]
                             ╰── <24> Assign [=]
                                 ├── <21> Var [b]
-                                ╰── Constant Int [4]
+                                ╰── <23> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -2650,7 +2650,7 @@ fn test_valid_use_val_in_own_initializer() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <12>  [&&]
-                    │           ├── Constant Int [0]
+                    │           ├── <8> Constant Int [0]
                     │           ╰── <11> Var [a]
                     ╰── Return
                         ╰── <16> Var [a]

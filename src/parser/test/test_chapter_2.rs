@@ -100,7 +100,7 @@ fn test_valid_bitwise() {
                 ╰── Body
                     ╰── Return
                         ╰── <7> Unary [~]
-                            ╰── Constant Int [12]
+                            ╰── <6> Constant Int [12]
     "#;
     assert_parse(src, expected);
 }
@@ -119,7 +119,7 @@ fn test_valid_bitwise_int_min() {
                     ╰── Return
                         ╰── <9> Unary [~]
                             ╰── <8> Unary [-]
-                                ╰── Constant Int [2147483647]
+                                ╰── <7> Constant Int [2147483647]
     "#;
     assert_parse(src, expected);
 }
@@ -137,7 +137,7 @@ fn test_valid_bitwise_zero() {
                 ╰── Body
                     ╰── Return
                         ╰── <7> Unary [~]
-                            ╰── Constant Int [0]
+                            ╰── <6> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -155,7 +155,7 @@ fn test_valid_neg() {
                 ╰── Body
                     ╰── Return
                         ╰── <7> Unary [-]
-                            ╰── Constant Int [5]
+                            ╰── <6> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -173,7 +173,7 @@ fn test_valid_neg_zero() {
                 ╰── Body
                     ╰── Return
                         ╰── <7> Unary [-]
-                            ╰── Constant Int [0]
+                            ╰── <6> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -191,7 +191,7 @@ fn test_valid_negate_int_max() {
                 ╰── Body
                     ╰── Return
                         ╰── <7> Unary [-]
-                            ╰── Constant Int [2147483647]
+                            ╰── <6> Constant Int [2147483647]
     "#;
     assert_parse(src, expected);
 }
@@ -210,7 +210,7 @@ fn test_valid_nested_ops() {
                     ╰── Return
                         ╰── <9> Unary [~]
                             ╰── <8> Unary [-]
-                                ╰── Constant Int [3]
+                                ╰── <7> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -229,7 +229,7 @@ fn test_valid_nested_ops_2() {
                     ╰── Return
                         ╰── <9> Unary [-]
                             ╰── <8> Unary [~]
-                                ╰── Constant Int [0]
+                                ╰── <7> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -247,7 +247,7 @@ fn test_valid_parens() {
                 ╰── Body
                     ╰── Return
                         ╰── <8> Unary [-]
-                            ╰── Constant Int [2]
+                            ╰── <6> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -265,7 +265,7 @@ fn test_valid_parens_2() {
                 ╰── Body
                     ╰── Return
                         ╰── <8> Unary [~]
-                            ╰── Constant Int [2]
+                            ╰── <7> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -284,7 +284,7 @@ fn test_valid_parens_3() {
                     ╰── Return
                         ╰── <10> Unary [-]
                             ╰── <9> Unary [-]
-                                ╰── Constant Int [4]
+                                ╰── <7> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -303,7 +303,7 @@ fn test_valid_redundant_parens() {
                 ╰── Body
                     ╰── Return
                         ╰── <11> Unary [-]
-                            ╰── Constant Int [10]
+                            ╰── <10> Constant Int [10]
     "#;
     assert_parse(src, expected);
 }

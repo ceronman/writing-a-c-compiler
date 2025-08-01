@@ -74,7 +74,7 @@ impl Type {
             Type::Int | Type::UInt => AsmType::Longword,
             Type::Long | Type::ULong => AsmType::Quadword,
             Type::Double => AsmType::Double,
-            Type::Void => todo!(),
+            Type::Void => unreachable!(),
             Type::Function(_) => unreachable!(),
             Type::Pointer(_) => AsmType::Quadword,
             Type::Array(inner, length) => {
@@ -199,16 +199,17 @@ impl Compiler {
         for tacky_instruction in &function.body {
             match tacky_instruction {
                 tacky::Instruction::Return(val) => {
-                    let Some(val) = val else { todo!() };
-                    let reg = match self.semantics.val_asm_ty(val) {
-                        AsmType::Double => Reg::XMM0,
-                        _ => Reg::Ax,
+                    if let Some(val) = val {
+                        let reg = match self.semantics.val_asm_ty(val) {
+                            AsmType::Double => Reg::XMM0,
+                            _ => Reg::Ax,
+                        };
+                        instructions.push(Instruction::Mov(
+                            self.semantics.val_asm_ty(val),
+                            self.generate_val(val),
+                            reg.into(),
+                        ));
                     };
-                    instructions.push(Instruction::Mov(
-                        self.semantics.val_asm_ty(val),
-                        self.generate_val(val),
-                        reg.into(),
-                    ));
                     instructions.push(Instruction::Ret);
                 }
 
@@ -563,11 +564,7 @@ impl Compiler {
                     instructions.push(Instruction::Label(l.clone()));
                 }
                 tacky::Instruction::FnCall { name, args, dst } => {
-                    if let Some(dst) = dst {
-                        self.generate_call(&mut instructions, name, args, dst);
-                    } else {
-                        todo!();
-                    }
+                    self.generate_call(&mut instructions, name, args, dst);
                 }
                 tacky::Instruction::SignExtend { src, dst } => {
                     instructions.push(Instruction::Movsx(
@@ -956,7 +953,7 @@ impl Compiler {
         instructions: &mut Vec<Instruction>,
         name: &Symbol,
         args: &[tacky::Val],
-        dst: &tacky::Val,
+        dst: &Option<tacky::Val>,
     ) {
         let FnArgs {
             int_reg_args,
@@ -1010,17 +1007,19 @@ impl Compiler {
             ));
         }
 
-        let return_reg = match self.semantics.val_asm_ty(dst) {
-            AsmType::Byte | AsmType::Longword | AsmType::Quadword => Reg::Ax,
-            AsmType::Double => Reg::XMM0,
-            AsmType::ByteArray { .. } => panic!("Cannot return a byte array"),
-        };
+        if let Some(dst) = dst {
+            let return_reg = match self.semantics.val_asm_ty(dst) {
+                AsmType::Byte | AsmType::Longword | AsmType::Quadword => Reg::Ax,
+                AsmType::Double => Reg::XMM0,
+                AsmType::ByteArray { .. } => panic!("Cannot return a byte array"),
+            };
 
-        instructions.push(Instruction::Mov(
-            self.semantics.val_asm_ty(dst),
-            return_reg.into(),
-            self.generate_val(dst),
-        ));
+            instructions.push(Instruction::Mov(
+                self.semantics.val_asm_ty(dst),
+                return_reg.into(),
+                self.generate_val(dst),
+            ));
+        }
     }
 
     fn classify_parameters(&mut self, values: &[tacky::Val]) -> FnArgs {

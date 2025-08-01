@@ -24,20 +24,20 @@ fn test_invalid_labels_extra_credit_switch_duplicate_cases() {
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant UInt [10]
+                    │       ╰── <8> Constant UInt [10]
                     ╰── Switch
                         ├── Expression
                         │   ╰── <12> Var [ui]
                         ╰── Block
                             ├── Case [4294967295]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <14> Constant Int [0]
                             ├── Case [1099511627775]
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <18> Constant Int [1]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant Int [2]
+                                    ╰── <21> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -92,7 +92,7 @@ fn test_invalid_types_conflicting_signed_unsigned() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <13> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -115,11 +115,11 @@ fn test_invalid_types_conflicting_uint_ulong() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <10> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <18> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -144,7 +144,7 @@ fn test_valid_explicit_casts_chained_casts() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant UInt [4294967200]
+            │       ╰── <4> Constant UInt [4294967200]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -160,10 +160,10 @@ fn test_valid_explicit_casts_chained_casts() {
                     │   │       │           ╰── Expression
                     │   │       │               ╰── <16> Var [ui]
                     │   │       ╰── <22> Unary [-]
-                    │   │           ╰── Constant Long [96]
+                    │   │           ╰── <21> Constant Long [96]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <24> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <37>  [!=]
@@ -176,12 +176,12 @@ fn test_valid_explicit_casts_chained_casts() {
                     │   │       │           │   ╰── Int
                     │   │       │           ╰── Expression
                     │   │       │               ╰── <32> Var [ui]
-                    │   │       ╰── Constant ULong [18446744073709551520]
+                    │   │       ╰── <36> Constant ULong [18446744073709551520]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [2]
+                    │           ╰── <38> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <41> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -304,43 +304,43 @@ fn test_valid_explicit_casts_extension() {
                     │   ├── Condition
                     │   │   ╰── <90> Unary [!]
                     │   │       ╰── <89> FunctionCall [int_to_ulong]
-                    │   │           ├── Constant Int [10]
-                    │   │           ╰── Constant ULong [10]
+                    │   │           ├── <87> Constant Int [10]
+                    │   │           ╰── <88> Constant ULong [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <91> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <103> Unary [!]
                     │   │       ╰── <102> FunctionCall [int_to_ulong]
                     │   │           ├── <100> Unary [-]
-                    │   │           │   ╰── Constant Int [10]
-                    │   │           ╰── Constant ULong [18446744073709551606]
+                    │   │           │   ╰── <99> Constant Int [10]
+                    │   │           ╰── <101> Constant ULong [18446744073709551606]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <104> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <114> Unary [!]
                     │   │       ╰── <113> FunctionCall [uint_to_long]
-                    │   │           ├── Constant UInt [4294967200]
-                    │   │           ╰── Constant Long [4294967200]
+                    │   │           ├── <111> Constant UInt [4294967200]
+                    │   │           ╰── <112> Constant Long [4294967200]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <115> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <125> Unary [!]
                     │   │       ╰── <124> FunctionCall [uint_to_ulong]
-                    │   │           ├── Constant UInt [4294967200]
-                    │   │           ╰── Constant ULong [4294967200]
+                    │   │           ├── <122> Constant UInt [4294967200]
+                    │   │           ╰── <123> Constant ULong [4294967200]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <126> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <137>  [!=]
@@ -348,14 +348,14 @@ fn test_valid_explicit_casts_extension() {
                     │   │       │   ├── Target
                     │   │       │   │   ╰── Unsigned Long
                     │   │       │   ╰── Expression
-                    │   │       │       ╰── Constant UInt [4294967200]
-                    │   │       ╰── Constant ULong [4294967200]
+                    │   │       │       ╰── <133> Constant UInt [4294967200]
+                    │   │       ╰── <136> Constant ULong [4294967200]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <138> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <143> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -531,7 +531,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant UInt [5000]
+            │       ╰── <48> Constant UInt [5000]
             ├── Function [main]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -553,7 +553,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <72>  [-]
             │       │           ├── <69> Var [glob]
-            │       │           ╰── Constant Int [4999]
+            │       │           ╰── <71> Constant Int [4999]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── two
@@ -570,7 +570,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <93>  [+]
-            │       │           ├── Constant Int [2]
+            │       │           ├── <89> Constant Int [2]
             │       │           ╰── <92> Var [one]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -588,7 +588,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <114>  [-]
-            │       │           ├── Constant Int [6]
+            │       │           ├── <110> Constant Int [6]
             │       │           ╰── <113> Var [one]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -607,7 +607,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <135>  [+]
             │       │           ├── <132> Var [one]
-            │       │           ╰── Constant Int [6]
+            │       │           ╰── <134> Constant Int [6]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── eight
@@ -616,7 +616,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <145>  [*]
             │       │           ├── <142> Var [two]
-            │       │           ╰── Constant Int [4]
+            │       │           ╰── <144> Constant Int [4]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── nine
@@ -642,7 +642,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <177>  [-]
-            │       │           ├── Constant Int [16]
+            │       │           ├── <173> Constant Int [16]
             │       │           ╰── <176> Var [five]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -666,7 +666,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ├── <211> Var [ten]
             │       │   ├── <213> Var [eleven]
             │       │   ├── <215> Var [twelve]
-            │       │   ╰── Constant Int [1]
+            │       │   ╰── <216> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── thirteen
@@ -675,7 +675,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <226>  [-]
             │       │           ├── <223> Var [glob]
-            │       │           ╰── Constant UInt [4987]
+            │       │           ╰── <225> Constant UInt [4987]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── fourteen
@@ -684,7 +684,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <236>  [+]
             │       │           ├── <233> Var [thirteen]
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <235> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── fifteen
@@ -692,7 +692,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <246>  [-]
-            │       │           ├── Constant Int [28]
+            │       │           ├── <242> Constant Int [28]
             │       │           ╰── <245> Var [thirteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -702,7 +702,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <256>  [+]
             │       │           ├── <253> Var [fourteen]
-            │       │           ╰── Constant Int [2]
+            │       │           ╰── <255> Constant Int [2]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── seventeen
@@ -710,7 +710,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <266>  [+]
-            │       │           ├── Constant Int [4]
+            │       │           ├── <262> Constant Int [4]
             │       │           ╰── <265> Var [thirteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -719,7 +719,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <276>  [-]
-            │       │           ├── Constant Int [32]
+            │       │           ├── <272> Constant Int [32]
             │       │           ╰── <275> Var [fourteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -728,7 +728,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <286>  [-]
-            │       │           ├── Constant Int [35]
+            │       │           ├── <282> Constant Int [35]
             │       │           ╰── <285> Var [sixteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -738,7 +738,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <296>  [+]
             │       │           ├── <293> Var [fifteen]
-            │       │           ╰── Constant Int [5]
+            │       │           ╰── <295> Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_one
@@ -748,8 +748,8 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │       ╰── <309>  [-]
             │       │           ├── <306>  [*]
             │       │           │   ├── <303> Var [thirteen]
-            │       │           │   ╰── Constant Int [2]
-            │       │           ╰── Constant Int [5]
+            │       │           │   ╰── <305> Constant Int [2]
+            │       │           ╰── <308> Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_two
@@ -758,7 +758,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <319>  [+]
             │       │           ├── <316> Var [fifteen]
-            │       │           ╰── Constant Int [7]
+            │       │           ╰── <318> Constant Int [7]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_three
@@ -766,7 +766,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <329>  [+]
-            │       │           ├── Constant Int [6]
+            │       │           ├── <325> Constant Int [6]
             │       │           ╰── <328> Var [seventeen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -776,7 +776,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <339>  [+]
             │       │           ├── <336> Var [thirteen]
-            │       │           ╰── Constant Int [11]
+            │       │           ╰── <338> Constant Int [11]
             │       ├── <368> FunctionCall [check_12_ints]
             │       │   ├── <344> Var [thirteen]
             │       │   ├── <346> Var [fourteen]
@@ -790,19 +790,19 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
             │       │   ├── <362> Var [twenty_two]
             │       │   ├── <364> Var [twenty_three]
             │       │   ├── <366> Var [twenty_four]
-            │       │   ╰── Constant Int [13]
+            │       │   ╰── <367> Constant Int [13]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <374>  [!=]
             │       │   │       ├── <371> Var [should_spill]
-            │       │   │       ╰── Constant Long [5000]
+            │       │   │       ╰── <373> Constant Long [5000]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── <377> Unary [-]
-            │       │                   ╰── Constant Int [1]
+            │       │                   ╰── <376> Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <382> Constant Int [0]
             ╰── Function [check_12_ints]
                 ├── Parameters
                 │   ├── Param
@@ -877,12 +877,12 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <432> Constant Int [0]
                     ├── <443> Assign [=]
                     │   ├── <436> Var [expected]
                     │   ╰── <442>  [+]
                     │       ├── <439> Var [start]
-                    │       ╰── Constant Int [0]
+                    │       ╰── <441> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <450>  [!=]
@@ -896,7 +896,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <458> Var [expected]
                     │   ╰── <464>  [+]
                     │       ├── <461> Var [start]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <463> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <472>  [!=]
@@ -910,7 +910,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <480> Var [expected]
                     │   ╰── <486>  [+]
                     │       ├── <483> Var [start]
-                    │       ╰── Constant Int [2]
+                    │       ╰── <485> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <494>  [!=]
@@ -924,7 +924,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <502> Var [expected]
                     │   ╰── <508>  [+]
                     │       ├── <505> Var [start]
-                    │       ╰── Constant Int [3]
+                    │       ╰── <507> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <516>  [!=]
@@ -938,7 +938,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <524> Var [expected]
                     │   ╰── <530>  [+]
                     │       ├── <527> Var [start]
-                    │       ╰── Constant Int [4]
+                    │       ╰── <529> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <538>  [!=]
@@ -952,7 +952,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <546> Var [expected]
                     │   ╰── <552>  [+]
                     │       ├── <549> Var [start]
-                    │       ╰── Constant Int [5]
+                    │       ╰── <551> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <560>  [!=]
@@ -966,7 +966,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <568> Var [expected]
                     │   ╰── <574>  [+]
                     │       ├── <571> Var [start]
-                    │       ╰── Constant Int [6]
+                    │       ╰── <573> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <582>  [!=]
@@ -980,7 +980,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <590> Var [expected]
                     │   ╰── <596>  [+]
                     │       ├── <593> Var [start]
-                    │       ╰── Constant Int [7]
+                    │       ╰── <595> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <604>  [!=]
@@ -994,7 +994,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <612> Var [expected]
                     │   ╰── <618>  [+]
                     │       ├── <615> Var [start]
-                    │       ╰── Constant Int [8]
+                    │       ╰── <617> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <626>  [!=]
@@ -1008,7 +1008,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <634> Var [expected]
                     │   ╰── <640>  [+]
                     │       ├── <637> Var [start]
-                    │       ╰── Constant Int [9]
+                    │       ╰── <639> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <648>  [!=]
@@ -1022,7 +1022,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <656> Var [expected]
                     │   ╰── <662>  [+]
                     │       ├── <659> Var [start]
-                    │       ╰── Constant Int [10]
+                    │       ╰── <661> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <670>  [!=]
@@ -1036,7 +1036,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │   ├── <678> Var [expected]
                     │   ╰── <684>  [+]
                     │       ├── <681> Var [start]
-                    │       ╰── Constant Int [11]
+                    │       ╰── <683> Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <692>  [!=]
@@ -1047,7 +1047,7 @@ fn test_valid_explicit_casts_rewrite_movz_regression() {
                     │           ╰── Return
                     │               ╰── <694> Var [expected]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <699> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1074,7 +1074,7 @@ fn test_valid_explicit_casts_round_trip_casts() {
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant ULong [8589934580]
+            │       ╰── <4> Constant ULong [8589934580]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -1096,10 +1096,10 @@ fn test_valid_explicit_casts_round_trip_casts() {
                     │   ├── Condition
                     │   │   ╰── <28>  [!=]
                     │   │       ├── <25> Var [b]
-                    │   │       ╰── Constant ULong [4294967284]
+                    │   │       ╰── <27> Constant ULong [4294967284]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <29> Constant Int [1]
                     ├── <43> Assign [=]
                     │   ├── <33> Var [b]
                     │   ╰── <42> Cast
@@ -1115,12 +1115,12 @@ fn test_valid_explicit_casts_round_trip_casts() {
                     │   ├── Condition
                     │   │   ╰── <49>  [!=]
                     │   │       ├── <46> Var [b]
-                    │   │       ╰── Constant ULong [18446744073709551604]
+                    │   │       ╰── <48> Constant ULong [18446744073709551604]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [2]
+                    │           ╰── <50> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <53> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1248,46 +1248,46 @@ fn test_valid_explicit_casts_same_size_conversion() {
                     │   ├── Condition
                     │   │   ╰── <98> Unary [!]
                     │   │       ╰── <97> FunctionCall [int_to_uint]
-                    │   │           ├── Constant Int [10]
-                    │   │           ╰── Constant UInt [10]
+                    │   │           ├── <95> Constant Int [10]
+                    │   │           ╰── <96> Constant UInt [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <99> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <109> Unary [!]
                     │   │       ╰── <108> FunctionCall [uint_to_int]
-                    │   │           ├── Constant UInt [10]
-                    │   │           ╰── Constant Int [10]
+                    │   │           ├── <106> Constant UInt [10]
+                    │   │           ╰── <107> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <110> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <122> Unary [!]
                     │   │       ╰── <121> FunctionCall [long_to_ulong]
                     │   │           ├── <119> Unary [-]
-                    │   │           │   ╰── Constant Long [1000]
-                    │   │           ╰── Constant ULong [18446744073709550616]
+                    │   │           │   ╰── <118> Constant Long [1000]
+                    │   │           ╰── <120> Constant ULong [18446744073709550616]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <123> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <135> Unary [!]
                     │   │       ╰── <134> FunctionCall [ulong_to_long]
-                    │   │           ├── Constant ULong [18446744073709550616]
+                    │   │           ├── <130> Constant ULong [18446744073709550616]
                     │   │           ╰── <133> Unary [-]
-                    │   │               ╰── Constant Long [1000]
+                    │   │               ╰── <132> Constant Long [1000]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <136> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <141> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1415,85 +1415,85 @@ fn test_valid_explicit_casts_truncate() {
                     │   ├── Condition
                     │   │   ╰── <85> Unary [!]
                     │   │       ╰── <84> FunctionCall [long_to_uint]
-                    │   │           ├── Constant Long [100]
-                    │   │           ╰── Constant UInt [100]
+                    │   │           ├── <82> Constant Long [100]
+                    │   │           ╰── <83> Constant UInt [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <86> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <98> Unary [!]
                     │   │       ╰── <97> FunctionCall [long_to_uint]
                     │   │           ├── <95> Unary [-]
-                    │   │           │   ╰── Constant Long [9223372036854774574]
-                    │   │           ╰── Constant UInt [1234]
+                    │   │           │   ╰── <94> Constant Long [9223372036854774574]
+                    │   │           ╰── <96> Constant UInt [1234]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <99> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <109> Unary [!]
                     │   │       ╰── <108> FunctionCall [ulong_to_int]
-                    │   │           ├── Constant ULong [100]
-                    │   │           ╰── Constant Int [100]
+                    │   │           ├── <106> Constant ULong [100]
+                    │   │           ╰── <107> Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <110> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <120> Unary [!]
                     │   │       ╰── <119> FunctionCall [ulong_to_uint]
-                    │   │           ├── Constant ULong [100]
-                    │   │           ╰── Constant UInt [100]
+                    │   │           ├── <117> Constant ULong [100]
+                    │   │           ╰── <118> Constant UInt [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <121> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <131> Unary [!]
                     │   │       ╰── <130> FunctionCall [ulong_to_uint]
-                    │   │           ├── Constant ULong [4294967200]
-                    │   │           ╰── Constant UInt [4294967200]
+                    │   │           ├── <128> Constant ULong [4294967200]
+                    │   │           ╰── <129> Constant UInt [4294967200]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <132> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <144> Unary [!]
                     │   │       ╰── <143> FunctionCall [ulong_to_int]
-                    │   │           ├── Constant ULong [4294967200]
+                    │   │           ├── <139> Constant ULong [4294967200]
                     │   │           ╰── <142> Unary [-]
-                    │   │               ╰── Constant Int [96]
+                    │   │               ╰── <141> Constant Int [96]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <145> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <155> Unary [!]
                     │   │       ╰── <154> FunctionCall [ulong_to_uint]
-                    │   │           ├── Constant ULong [1152921506754330624]
-                    │   │           ╰── Constant UInt [2147483648]
+                    │   │           ├── <152> Constant ULong [1152921506754330624]
+                    │   │           ╰── <153> Constant UInt [2147483648]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <156> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <168> Unary [!]
                     │   │       ╰── <167> FunctionCall [ulong_to_int]
-                    │   │           ├── Constant ULong [1152921506754330624]
+                    │   │           ├── <163> Constant ULong [1152921506754330624]
                     │   │           ╰── <166> Unary [-]
-                    │   │               ╰── Constant Long [2147483648]
+                    │   │               ╰── <165> Constant Long [2147483648]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <169> Constant Int [8]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ui
@@ -1504,17 +1504,17 @@ fn test_valid_explicit_casts_truncate() {
                     │           ├── Target
                     │           │   ╰── Unsigned Int
                     │           ╰── Expression
-                    │               ╰── Constant ULong [17179869189]
+                    │               ╰── <179> Constant ULong [17179869189]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <187>  [!=]
                     │   │       ├── <184> Var [ui]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <186> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [9]
+                    │           ╰── <188> Constant Int [9]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <191> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1548,34 +1548,34 @@ fn test_valid_extra_credit_bitwise_unsigned_ops() {
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
                     │       ╰── <10> Unary [-]
-                    │           ╰── Constant UInt [1]
+                    │           ╰── <9> Constant UInt [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ul
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant ULong [9223372036854775808]
+                    │       ╰── <16> Constant ULong [9223372036854775808]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <28>  [!=]
                     │   │       ├── <25>  [&]
                     │   │       │   ├── <20> Var [ui]
                     │   │       │   ╰── <23> Var [ul]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <27> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <29> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <41>  [!=]
                     │   │       ├── <38>  [|]
                     │   │       │   ├── <33> Var [ui]
                     │   │       │   ╰── <36> Var [ul]
-                    │   │       ╰── Constant ULong [9223372041149743103]
+                    │   │       ╰── <40> Constant ULong [9223372041149743103]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [2]
+                    │           ╰── <42> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -1583,7 +1583,7 @@ fn test_valid_extra_credit_bitwise_unsigned_ops() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <50> Unary [-]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <49> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <63>  [!=]
@@ -1593,7 +1593,7 @@ fn test_valid_extra_credit_bitwise_unsigned_ops() {
                     │   │       ╰── <62> Var [ul]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [3]
+                    │           ╰── <64> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <77>  [!=]
@@ -1603,9 +1603,9 @@ fn test_valid_extra_credit_bitwise_unsigned_ops() {
                     │   │       ╰── <76> Var [i]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [4]
+                    │           ╰── <78> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <81> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1642,61 +1642,61 @@ fn test_valid_extra_credit_bitwise_unsigned_shift() {
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
                     │       ╰── <10> Unary [-]
-                    │           ╰── Constant UInt [1]
+                    │           ╰── <9> Constant UInt [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <21>  [!=]
                     │   │       ├── <18>  [<<]
                     │   │       │   ├── <14> Var [ui]
-                    │   │       │   ╰── Constant Long [2]
-                    │   │       ╰── Constant Long [4294967292]
+                    │   │       │   ╰── <16> Constant Long [2]
+                    │   │       ╰── <20> Constant Long [4294967292]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <22> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <35>  [!=]
                     │   │       ├── <32>  [>>]
                     │   │       │   ├── <28> Var [ui]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [1073741823]
+                    │   │       │   ╰── <30> Constant Int [2]
+                    │   │       ╰── <34> Constant Int [1073741823]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <36> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── shiftcount
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [5]
+                    │   │   ╰── <45> Constant Int [5]
                     │   ╰── Static
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <56>  [!=]
                     │   │       ├── <53>  [>>]
-                    │   │       │   ├── Constant UInt [1000000]
+                    │   │       │   ├── <48> Constant UInt [1000000]
                     │   │       │   ╰── <51> Var [shiftcount]
-                    │   │       ╰── Constant Int [31250]
+                    │   │       ╰── <55> Constant Int [31250]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <57> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <70>  [!=]
                     │   │       ├── <67>  [<<]
-                    │   │       │   ├── Constant UInt [1000000]
+                    │   │       │   ├── <62> Constant UInt [1000000]
                     │   │       │   ╰── <65> Var [shiftcount]
-                    │   │       ╰── Constant Int [32000000]
+                    │   │       ╰── <69> Constant Int [32000000]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <71> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <76> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1721,15 +1721,15 @@ fn test_valid_extra_credit_compound_assign_uint() {
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
                     │       ╰── <10> Unary [-]
-                    │           ╰── Constant UInt [1]
+                    │           ╰── <9> Constant UInt [1]
                     ├── <19> Assign [/=]
                     │   ├── <14> Var [x]
                     │   ╰── <18> Unary [-]
-                    │       ╰── Constant Long [10]
+                    │       ╰── <17> Constant Long [10]
                     ╰── Return
                         ╰── <26>  [==]
                             ├── <22> Var [x]
-                            ╰── Constant UInt [3865470567]
+                            ╰── <24> Constant UInt [3865470567]
     "#;
     assert_parse(src, expected);
 }
@@ -1762,41 +1762,41 @@ fn test_valid_extra_credit_compound_bitshift() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <10> Unary [-]
-                    │           ╰── Constant Int [2]
+                    │           ╰── <9> Constant Int [2]
                     ├── <17> Assign [>>=]
                     │   ├── <14> Var [i]
-                    │   ╰── Constant UInt [3]
+                    │   ╰── <16> Constant UInt [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <25>  [!=]
                     │   │       ├── <20> Var [i]
                     │   │       ╰── <24> Unary [-]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <23> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <26> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ul
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant ULong [18446744073709551615]
+                    │       ╰── <34> Constant ULong [18446744073709551615]
                     ├── <41> Assign [<<=]
                     │   ├── <38> Var [ul]
-                    │   ╰── Constant Int [44]
+                    │   ╰── <40> Constant Int [44]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <47>  [!=]
                     │   │       ├── <44> Var [ul]
-                    │   │       ╰── Constant ULong [18446726481523507200]
+                    │   │       ╰── <46> Constant ULong [18446726481523507200]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <48> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <53> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1842,46 +1842,46 @@ fn test_valid_extra_credit_compound_bitwise() {
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant ULong [18446460386757245432]
+                    │       ╰── <8> Constant ULong [18446460386757245432]
                     ├── <17> Assign [&=]
                     │   ├── <12> Var [ul]
                     │   ╰── <16> Unary [-]
-                    │       ╰── Constant Int [1000]
+                    │       ╰── <15> Constant Int [1000]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <23>  [!=]
                     │   │       ├── <20> Var [ul]
-                    │   │       ╰── Constant ULong [18446460386757244952]
+                    │   │       ╰── <22> Constant ULong [18446460386757244952]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <24> Constant Int [1]
                     ├── <33> Assign [|=]
                     │   ├── <30> Var [ul]
-                    │   ╰── Constant UInt [4294967040]
+                    │   ╰── <32> Constant UInt [4294967040]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <39>  [!=]
                     │   │       ├── <36> Var [ul]
-                    │   │       ╰── Constant ULong [18446460386824683288]
+                    │   │       ╰── <38> Constant ULong [18446460386824683288]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <40> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [123456]
+                    │       ╰── <48> Constant Int [123456]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ui
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant UInt [4042322160]
+                    │       ╰── <54> Constant UInt [4042322160]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l
@@ -1889,7 +1889,7 @@ fn test_valid_extra_credit_compound_bitwise() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── <62> Unary [-]
-                    │           ╰── Constant Int [252645136]
+                    │           ╰── <61> Constant Int [252645136]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <70> Assign [^=]
@@ -1898,35 +1898,35 @@ fn test_valid_extra_credit_compound_bitwise() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <71> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <77> Var [ui]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <78> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <87>  [!=]
                     │   │       ├── <84> Var [i]
-                    │   │       ╰── Constant Int [123456]
+                    │   │       ╰── <86> Constant Int [123456]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <88> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <99>  [!=]
                     │   │       ├── <94> Var [l]
                     │   │       ╰── <98> Unary [-]
-                    │   │           ╰── Constant Int [252645136]
+                    │   │           ╰── <97> Constant Int [252645136]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <100> Constant Int [6]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <105> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1955,7 +1955,7 @@ fn test_valid_extra_credit_postfix_precedence() {
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant UInt [4294967295]
+                    │       ╰── <8> Constant UInt [4294967295]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <21>  [!=]
@@ -1965,20 +1965,20 @@ fn test_valid_extra_credit_postfix_precedence() {
                     │   │       │   ╰── Expression
                     │   │       │       ╰── <16> Postfix [++]
                     │   │       │           ╰── <14> Var [ui]
-                    │   │       ╰── Constant UInt [4294967295]
+                    │   │       ╰── <20> Constant UInt [4294967295]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <22> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <28> Var [ui]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <29> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <34> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2024,47 +2024,47 @@ fn test_valid_extra_credit_switch_uint() {
             │           ╰── Block
             │               ├── Case [5]
             │               │   ╰── Return
-            │               │       ╰── Constant Int [0]
+            │               │       ╰── <11> Constant Int [0]
             │               ├── Case [4294967286]
             │               │   ╰── Return
-            │               │       ╰── Constant Int [1]
+            │               │       ╰── <15> Constant Int [1]
             │               ├── Case [34359738378]
             │               │   ╰── Return
-            │               │       ╰── Constant Int [2]
+            │               │       ╰── <19> Constant Int [2]
             │               ╰── Default
             │                   ╰── Return
-            │                       ╰── Constant Int [3]
+            │                       ╰── <22> Constant Int [3]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <39>  [!=]
                     │   │       ├── <36> FunctionCall [switch_on_uint]
-                    │   │       │   ╰── Constant Int [5]
-                    │   │       ╰── Constant Int [0]
+                    │   │       │   ╰── <35> Constant Int [5]
+                    │   │       ╰── <38> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <40> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <48>  [!=]
                     │   │       ├── <45> FunctionCall [switch_on_uint]
-                    │   │       │   ╰── Constant Long [4294967286]
-                    │   │       ╰── Constant Int [1]
+                    │   │       │   ╰── <44> Constant Long [4294967286]
+                    │   │       ╰── <47> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [2]
+                    │           ╰── <49> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <57>  [!=]
                     │   │       ├── <54> FunctionCall [switch_on_uint]
-                    │   │       │   ╰── Constant Int [10]
-                    │   │       ╰── Constant Int [2]
+                    │   │       │   ╰── <53> Constant Int [10]
+                    │   │       ╰── <56> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [3]
+                    │           ╰── <58> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <61> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2113,92 +2113,92 @@ fn test_valid_extra_credit_unsigned_incr_decr() {
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <17>  [!=]
                     │   │       ├── <14> Postfix [--]
                     │   │       │   ╰── <12> Var [i]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <16> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <18> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <27>  [!=]
                     │   │       ├── <24> Var [i]
-                    │   │       ╰── Constant UInt [4294967295]
+                    │   │       ╰── <26> Constant UInt [4294967295]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <28> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <39>  [!=]
                     │   │       ├── <36> Unary [--]
                     │   │       │   ╰── <35> Var [i]
-                    │   │       ╰── Constant UInt [4294967294]
+                    │   │       ╰── <38> Constant UInt [4294967294]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <40> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <49>  [!=]
                     │   │       ├── <46> Var [i]
-                    │   │       ╰── Constant UInt [4294967294]
+                    │   │       ╰── <48> Constant UInt [4294967294]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <50> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant ULong [18446744073709551614]
+                    │       ╰── <58> Constant ULong [18446744073709551614]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <67>  [!=]
                     │   │       ├── <64> Postfix [++]
                     │   │       │   ╰── <62> Var [l]
-                    │   │       ╰── Constant ULong [18446744073709551614]
+                    │   │       ╰── <66> Constant ULong [18446744073709551614]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <68> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <77>  [!=]
                     │   │       ├── <74> Var [l]
-                    │   │       ╰── Constant ULong [18446744073709551615]
+                    │   │       ╰── <76> Constant ULong [18446744073709551615]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <78> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <89>  [!=]
                     │   │       ├── <86> Unary [++]
                     │   │       │   ╰── <85> Var [l]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <88> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <90> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <99>  [!=]
                     │   │       ├── <96> Var [l]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <98> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <100> Constant Int [8]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <105> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2358,7 +2358,7 @@ fn test_valid_implicit_casts_common_type() {
             │       │   ├── Type
             │       │   │   ╰── Long
             │       │   ╰── Initializer
-            │       │       ╰── <{node_id}> Conditional [?]
+            │       │       ╰── <118> Conditional [?]
             │       │           ├── <113> Var [flag]
             │       │           ├── Then
             │       │           │   ╰── <115> Var [i]
@@ -2367,7 +2367,7 @@ fn test_valid_implicit_casts_common_type() {
             │       ╰── Return
             │           ╰── <126>  [==]
             │               ├── <122> Var [result]
-            │               ╰── Constant Long [4294967295]
+            │               ╰── <124> Constant Long [4294967295]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -2375,69 +2375,69 @@ fn test_valid_implicit_casts_common_type() {
                     │   │   ╰── <141> Unary [!]
                     │   │       ╰── <140> FunctionCall [int_gt_uint]
                     │   │           ├── <138> Unary [-]
-                    │   │           │   ╰── Constant Int [100]
-                    │   │           ╰── Constant UInt [100]
+                    │   │           │   ╰── <137> Constant Int [100]
+                    │   │           ╰── <139> Constant UInt [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <142> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <155> Unary [!]
                     │   │       ╰── <154> FunctionCall [int_gt_ulong]
                     │   │           ├── <151> Unary [-]
-                    │   │           │   ╰── Constant Int [1]
-                    │   │           ╰── Constant ULong [18446744073709551606]
+                    │   │           │   ╰── <150> Constant Int [1]
+                    │   │           ╰── <152> Constant ULong [18446744073709551606]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <156> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <168> Unary [!]
                     │   │       ╰── <167> FunctionCall [uint_gt_long]
-                    │   │           ├── Constant UInt [100]
+                    │   │           ├── <163> Constant UInt [100]
                     │   │           ╰── <166> Unary [-]
-                    │   │               ╰── Constant Long [100]
+                    │   │               ╰── <165> Constant Long [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <169> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <179> Unary [!]
                     │   │       ╰── <178> FunctionCall [uint_lt_ulong]
-                    │   │           ├── Constant UInt [1073741824]
-                    │   │           ╰── Constant ULong [34359738368]
+                    │   │           ├── <176> Constant UInt [1073741824]
+                    │   │           ╰── <177> Constant ULong [34359738368]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <180> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <192> Unary [!]
                     │   │       ╰── <191> FunctionCall [long_gt_ulong]
                     │   │           ├── <189> Unary [-]
-                    │   │           │   ╰── Constant Long [1]
-                    │   │           ╰── Constant ULong [1000]
+                    │   │           │   ╰── <188> Constant Long [1]
+                    │   │           ╰── <190> Constant ULong [1000]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <193> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <206> Unary [!]
                     │   │       ╰── <205> FunctionCall [ternary_int_uint]
-                    │   │           ├── Constant Int [1]
+                    │   │           ├── <200> Constant Int [1]
                     │   │           ├── <203> Unary [-]
-                    │   │           │   ╰── Constant Int [1]
-                    │   │           ╰── Constant UInt [1]
+                    │   │           │   ╰── <202> Constant Int [1]
+                    │   │           ╰── <204> Constant UInt [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <207> Constant Int [6]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <212> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2610,54 +2610,54 @@ fn test_valid_implicit_casts_convert_by_assignment() {
                     │   ├── Condition
                     │   │   ╰── <132> Unary [!]
                     │   │       ╰── <131> FunctionCall [check_int]
-                    │   │           ├── Constant ULong [9223372036854775813]
-                    │   │           ╰── Constant Int [5]
+                    │   │           ├── <129> Constant ULong [9223372036854775813]
+                    │   │           ╰── <130> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <133> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <143> Unary [!]
                     │   │       ╰── <142> FunctionCall [check_long]
-                    │   │           ├── Constant UInt [2147483658]
-                    │   │           ╰── Constant Long [2147483658]
+                    │   │           ├── <140> Constant UInt [2147483658]
+                    │   │           ╰── <141> Constant Long [2147483658]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <144> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <156> Unary [!]
                     │   │       ╰── <155> FunctionCall [check_ulong]
                     │   │           ├── <153> Unary [-]
-                    │   │           │   ╰── Constant Int [1]
-                    │   │           ╰── Constant ULong [18446744073709551615]
+                    │   │           │   ╰── <152> Constant Int [1]
+                    │   │           ╰── <154> Constant ULong [18446744073709551615]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <157> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <167>  [!=]
                     │   │       ├── <164> FunctionCall [return_extended_uint]
-                    │   │       │   ╰── Constant UInt [2147483658]
-                    │   │       ╰── Constant Long [2147483658]
+                    │   │       │   ╰── <163> Constant UInt [2147483658]
+                    │   │       ╰── <166> Constant Long [2147483658]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <168> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <180>  [!=]
                     │   │       ├── <177> FunctionCall [return_extended_int]
                     │   │       │   ╰── <176> Unary [-]
-                    │   │       │       ╰── Constant Int [1]
-                    │   │       ╰── Constant ULong [18446744073709551615]
+                    │   │       │       ╰── <175> Constant Int [1]
+                    │   │       ╰── <179> Constant ULong [18446744073709551615]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <181> Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l
@@ -2665,46 +2665,46 @@ fn test_valid_implicit_casts_convert_by_assignment() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── <191> FunctionCall [return_truncated_ulong]
-                    │           ╰── Constant ULong [1125902054326372]
+                    │           ╰── <190> Constant ULong [1125902054326372]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <200>  [!=]
                     │   │       ├── <195> Var [l]
                     │   │       ╰── <199> Unary [-]
-                    │   │           ╰── Constant Long [2147483548]
+                    │   │           ╰── <198> Constant Long [2147483548]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <201> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <211> Unary [!]
                     │   │       ╰── <210> FunctionCall [extend_on_assignment]
-                    │   │           ├── Constant UInt [2147483658]
-                    │   │           ╰── Constant Long [2147483658]
+                    │   │           ├── <208> Constant UInt [2147483658]
+                    │   │           ╰── <209> Constant Long [2147483658]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <212> Constant Int [7]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant UInt [4294967196]
+                    │       ╰── <220> Constant UInt [4294967196]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <229>  [!=]
                     │   │       ├── <224> Var [i]
                     │   │       ╰── <228> Unary [-]
-                    │   │           ╰── Constant Int [100]
+                    │   │           ╰── <227> Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <230> Constant Int [8]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <235> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2736,14 +2736,14 @@ fn test_valid_implicit_casts_promote_constants() {
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant Long [1]
+            │       ╰── <4> Constant Long [1]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── zero
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant Long [0]
+            │       ╰── <10> Constant Long [0]
             ╰── Function [main]
                 ╰── Body
                     ├── <24> Assign [=]
@@ -2753,34 +2753,34 @@ fn test_valid_implicit_casts_promote_constants() {
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <30>  [>=]
-                    │   │       ├── Constant ULong [68719476736]
+                    │   │       ├── <26> Constant ULong [68719476736]
                     │   │       ╰── <29> Var [negative_one]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <31> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <42>  [>=]
                     │   │       ├── <38> Unary [-]
-                    │   │       │   ╰── Constant Long [2147483658]
+                    │   │       │   ╰── <37> Constant Long [2147483658]
                     │   │       ╰── <41> Var [zero]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <43> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <54> Unary [!]
                     │   │       ╰── <53>  [+]
-                    │   │           ├── Constant ULong [3]
-                    │   │           ╰── Constant ULong [4294967293]
+                    │   │           ├── <49> Constant ULong [3]
+                    │   │           ╰── <51> Constant ULong [4294967293]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <55> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <60> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2825,127 +2825,127 @@ fn test_valid_implicit_casts_static_initializers() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant Long [1152921506754330636]
+            │       ╰── <4> Constant Long [1152921506754330636]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── i
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant UInt [2147483650]
+            │       ╰── <10> Constant UInt [2147483650]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── l
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant ULong [9223372036854775900]
+            │       ╰── <16> Constant ULong [9223372036854775900]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── l2
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant UInt [2147483650]
+            │       ╰── <22> Constant UInt [2147483650]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── ul
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant UInt [4294967294]
+            │       ╰── <28> Constant UInt [4294967294]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── ul2
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant Long [9223372036854775798]
+            │       ╰── <34> Constant Long [9223372036854775798]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── i2
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant ULong [9223372039002259606]
+            │       ╰── <40> Constant ULong [9223372039002259606]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── ui2
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant ULong [9223372039002259606]
+            │       ╰── <46> Constant ULong [9223372039002259606]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <57>  [!=]
                     │   │       ├── <54> Var [u]
-                    │   │       ╰── Constant UInt [2147483660]
+                    │   │       ╰── <56> Constant UInt [2147483660]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <58> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <67>  [!=]
                     │   │       ├── <62> Var [i]
                     │   │       ╰── <66> Unary [-]
-                    │   │           ╰── Constant Int [2147483646]
+                    │   │           ╰── <65> Constant Int [2147483646]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [2]
+                    │           ╰── <68> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <77>  [!=]
                     │   │       ├── <72> Var [l]
                     │   │       ╰── <76> Unary [-]
-                    │   │           ╰── Constant Long [9223372036854775716]
+                    │   │           ╰── <75> Constant Long [9223372036854775716]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [3]
+                    │           ╰── <78> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <85>  [!=]
                     │   │       ├── <82> Var [l2]
-                    │   │       ╰── Constant Long [2147483650]
+                    │   │       ╰── <84> Constant Long [2147483650]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [4]
+                    │           ╰── <86> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <93>  [!=]
                     │   │       ├── <90> Var [ul]
-                    │   │       ╰── Constant ULong [4294967294]
+                    │   │       ╰── <92> Constant ULong [4294967294]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [5]
+                    │           ╰── <94> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <101>  [!=]
                     │   │       ├── <98> Var [ul2]
-                    │   │       ╰── Constant ULong [9223372036854775798]
+                    │   │       ╰── <100> Constant ULong [9223372036854775798]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [6]
+                    │           ╰── <102> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <111>  [!=]
                     │   │       ├── <106> Var [i2]
                     │   │       ╰── <110> Unary [-]
-                    │   │           ╰── Constant Int [2147483498]
+                    │   │           ╰── <109> Constant Int [2147483498]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [7]
+                    │           ╰── <112> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <119>  [!=]
                     │   │       ├── <116> Var [ui2]
-                    │   │       ╰── Constant UInt [2147483798]
+                    │   │       ╰── <118> Constant UInt [2147483798]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [8]
+                    │           ╰── <120> Constant Int [8]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <123> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3040,85 +3040,85 @@ fn test_valid_libraries_unsigned_args() {
                     │   ├── Condition
                     │   │   ╰── <36>  [!=]
                     │   │       ├── <33> Var [a]
-                    │   │       ╰── Constant UInt [1]
+                    │   │       ╰── <35> Constant UInt [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <37> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <46>  [!=]
                     │   │       ├── <43> Var [b]
-                    │   │       ╰── Constant UInt [4294967295]
+                    │   │       ╰── <45> Constant UInt [4294967295]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <47> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <56>  [!=]
                     │   │       ├── <53> Var [c]
-                    │   │       ╰── Constant ULong [18446744073709551615]
+                    │   │       ╰── <55> Constant ULong [18446744073709551615]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <57> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <66>  [!=]
                     │   │       ├── <63> Var [d]
-                    │   │       ╰── Constant ULong [9223372036854775808]
+                    │   │       ╰── <65> Constant ULong [9223372036854775808]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <67> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <76>  [!=]
                     │   │       ├── <73> Var [e]
-                    │   │       ╰── Constant UInt [2147483648]
+                    │   │       ╰── <75> Constant UInt [2147483648]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <77> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <86>  [!=]
                     │   │       ├── <83> Var [f]
-                    │   │       ╰── Constant UInt [0]
+                    │   │       ╰── <85> Constant UInt [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <87> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <96>  [!=]
                     │   │       ├── <93> Var [g]
-                    │   │       ╰── Constant UInt [123456]
+                    │   │       ╰── <95> Constant UInt [123456]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <97> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <106>  [!=]
                     │   │       ├── <103> Var [h]
-                    │   │       ╰── Constant UInt [2147487744]
+                    │   │       ╰── <105> Constant UInt [2147487744]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [10]
+                    │               ╰── <107> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <116>  [!=]
                     │   │       ├── <113> Var [i]
-                    │   │       ╰── Constant ULong [9223372041149743104]
+                    │   │       ╰── <115> Constant ULong [9223372041149743104]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [11]
+                    │               ╰── <117> Constant Int [11]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <122> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3187,17 +3187,17 @@ fn test_valid_libraries_unsigned_args_client() {
                 ╰── Body
                     ╰── Return
                         ╰── <51> FunctionCall [accept_unsigned]
-                            ├── Constant Int [1]
+                            ├── <38> Constant Int [1]
                             ├── <41> Unary [-]
-                            │   ╰── Constant Int [1]
+                            │   ╰── <40> Constant Int [1]
                             ├── <44> Unary [-]
-                            │   ╰── Constant Int [1]
-                            ├── Constant ULong [9223372036854775808]
-                            ├── Constant ULong [2147483648]
-                            ├── Constant Int [0]
-                            ├── Constant Int [123456]
-                            ├── Constant UInt [2147487744]
-                            ╰── Constant ULong [9223372041149743104]
+                            │   ╰── <43> Constant Int [1]
+                            ├── <45> Constant ULong [9223372036854775808]
+                            ├── <46> Constant ULong [2147483648]
+                            ├── <47> Constant Int [0]
+                            ├── <48> Constant Int [123456]
+                            ├── <49> Constant UInt [2147487744]
+                            ╰── <50> Constant ULong [9223372041149743104]
     "#;
     assert_parse(src, expected);
 }
@@ -3224,7 +3224,7 @@ fn test_valid_libraries_unsigned_global_var() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant UInt [4294967200]
+            │       ╰── <4> Constant UInt [4294967200]
             ├── Function [return_uint]
             │   ╰── Body
             │       ╰── Return
@@ -3281,14 +3281,14 @@ fn test_valid_libraries_unsigned_global_var_client() {
                     │   ├── Condition
                     │   │   ╰── <29>  [!=]
                     │   │       ├── <26> Var [ui]
-                    │   │       ╰── Constant UInt [4294967200]
+                    │   │       ╰── <28> Constant UInt [4294967200]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [0]
+                    │           ╰── <30> Constant Int [0]
                     ├── <39> Assign [=]
                     │   ├── <34> Var [ui]
                     │   ╰── <38> Unary [-]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <37> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── result
@@ -3304,10 +3304,10 @@ fn test_valid_libraries_unsigned_global_var_client() {
                     │   ├── Condition
                     │   │   ╰── <55>  [!=]
                     │   │       ├── <52> Var [result]
-                    │   │       ╰── Constant Long [4294967295]
+                    │   │       ╰── <54> Constant Long [4294967295]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [0]
+                    │           ╰── <56> Constant Int [0]
                     ├── <67> Assign [=]
                     │   ├── <60> Var [result]
                     │   ╰── <66> Cast
@@ -3320,10 +3320,10 @@ fn test_valid_libraries_unsigned_global_var_client() {
                     │   │   ╰── <75>  [!=]
                     │   │       ├── <70> Var [result]
                     │   │       ╰── <74> Unary [-]
-                    │   │           ╰── Constant Long [1]
+                    │   │           ╰── <73> Constant Long [1]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [0]
+                    │           ╰── <76> Constant Int [0]
                     ├── <84> Assign [=]
                     │   ├── <80> Var [result]
                     │   ╰── <83> FunctionCall [return_uint_as_long]
@@ -3331,12 +3331,12 @@ fn test_valid_libraries_unsigned_global_var_client() {
                     │   ├── Condition
                     │   │   ╰── <90>  [!=]
                     │   │       ├── <87> Var [result]
-                    │   │       ╰── Constant Long [4294967295]
+                    │   │       ╰── <89> Constant Long [4294967295]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [0]
+                    │           ╰── <91> Constant Int [0]
                     ╰── Return
-                        ╰── Constant Int [1]
+                        ╰── <94> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -3391,7 +3391,7 @@ fn test_valid_type_specifiers_signed_type_specifiers() {
             │   ├── Type
             │   │   ╰── Int
             │   ├── Initializer
-            │   │   ╰── Constant Int [5]
+            │   │   ╰── <15> Constant Int [5]
             │   ╰── Static
             ├── VarDeclaration
             │   ├── Name
@@ -3410,7 +3410,7 @@ fn test_valid_type_specifiers_signed_type_specifiers() {
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant Int [7]
+            │       ╰── <30> Constant Int [7]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── l
@@ -3439,27 +3439,27 @@ fn test_valid_type_specifiers_signed_type_specifiers() {
                     │   ├── Condition
                     │   │   ╰── <59>  [!=]
                     │   │       ├── <56> Var [i]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <58> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <60> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <69>  [!=]
                     │   │       ├── <66> Var [l]
-                    │   │       ╰── Constant Int [7]
+                    │   │       ╰── <68> Constant Int [7]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <70> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── counter
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <78> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -3468,34 +3468,34 @@ fn test_valid_type_specifiers_signed_type_specifiers() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [10]
+                    │   │           ╰── <84> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <92>  [>]
                     │   │       ├── <89> Var [index]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <91> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <101> Assign [=]
                     │   │       ├── <94> Var [index]
                     │   │       ╰── <100>  [-]
                     │   │           ├── <97> Var [index]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <99> Constant Int [1]
                     │   ╰── Block
                     │       ╰── <110> Assign [=]
                     │           ├── <103> Var [counter]
                     │           ╰── <109>  [+]
                     │               ├── <106> Var [counter]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <108> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <119>  [!=]
                     │   │       ├── <116> Var [counter]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <118> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <120> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <125> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3548,7 +3548,7 @@ fn test_valid_type_specifiers_unsigned_type_specifiers() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant Int [6]
+            │       ╰── <12> Constant Int [6]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── ul
@@ -3570,18 +3570,18 @@ fn test_valid_type_specifiers_unsigned_type_specifiers() {
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant Int [4]
+            │       ╰── <30> Constant Int [4]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <41>  [!=]
                     │   │       ├── <38> Var [u]
-                    │   │       ╰── Constant UInt [6]
+                    │   │       ╰── <40> Constant UInt [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <42> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ul
@@ -3604,18 +3604,18 @@ fn test_valid_type_specifiers_unsigned_type_specifiers() {
                     │   ├── Condition
                     │   │   ╰── <66>  [!=]
                     │   │       ├── <63> Var [ul]
-                    │   │       ╰── Constant ULong [4]
+                    │   │       ╰── <65> Constant ULong [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <67> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── counter
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <75> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -3624,34 +3624,34 @@ fn test_valid_type_specifiers_unsigned_type_specifiers() {
                     │   │       ├── Type
                     │   │       │   ╰── Unsigned Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [10]
+                    │   │           ╰── <81> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <89>  [<]
                     │   │       ├── <86> Var [index]
-                    │   │       ╰── Constant UInt [4294967295]
+                    │   │       ╰── <88> Constant UInt [4294967295]
                     │   ├── Condition
                     │   │   ╰── <98> Assign [=]
                     │   │       ├── <91> Var [index]
                     │   │       ╰── <97>  [-]
                     │   │           ├── <94> Var [index]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <96> Constant Int [1]
                     │   ╰── Block
                     │       ╰── <107> Assign [=]
                     │           ├── <100> Var [counter]
                     │           ╰── <106>  [+]
                     │               ├── <103> Var [counter]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <105> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <116>  [!=]
                     │   │       ├── <113> Var [counter]
-                    │   │       ╰── Constant Int [11]
+                    │   │       ╰── <115> Constant Int [11]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <117> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <122> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3756,8 +3756,8 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
             │           ╰── <29>  [==]
             │               ├── <25>  [+]
             │               │   ├── <22> Var [ui_a]
-            │               │   ╰── Constant UInt [2147483653]
-            │               ╰── Constant UInt [2147483663]
+            │               │   ╰── <24> Constant UInt [2147483653]
+            │               ╰── <27> Constant UInt [2147483663]
             ├── Function [subtraction]
             │   ╰── Body
             │       ╰── Return
@@ -3765,7 +3765,7 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
             │               ├── <42>  [-]
             │               │   ├── <38> Var [ul_a]
             │               │   ╰── <41> Var [ul_b]
-            │               ╰── Constant ULong [18446744072635808792]
+            │               ╰── <44> Constant ULong [18446744072635808792]
             ├── Function [multiplication]
             │   ╰── Body
             │       ╰── Return
@@ -3773,7 +3773,7 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
             │               ├── <59>  [*]
             │               │   ├── <55> Var [ui_a]
             │               │   ╰── <58> Var [ui_b]
-            │               ╰── Constant UInt [3221225472]
+            │               ╰── <61> Constant UInt [3221225472]
             ├── Function [division]
             │   ╰── Body
             │       ╰── Return
@@ -3781,7 +3781,7 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
             │               ├── <76>  [/]
             │               │   ├── <72> Var [ui_a]
             │               │   ╰── <75> Var [ui_b]
-            │               ╰── Constant Int [0]
+            │               ╰── <78> Constant Int [0]
             ├── Function [division_large_dividend]
             │   ╰── Body
             │       ╰── Return
@@ -3789,15 +3789,15 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
             │               ├── <93>  [/]
             │               │   ├── <89> Var [ui_a]
             │               │   ╰── <92> Var [ui_b]
-            │               ╰── Constant Int [2]
+            │               ╰── <95> Constant Int [2]
             ├── Function [division_by_literal]
             │   ╰── Body
             │       ╰── Return
             │           ╰── <113>  [==]
             │               ├── <109>  [/]
             │               │   ├── <106> Var [ul_a]
-            │               │   ╰── Constant ULong [5]
-            │               ╰── Constant ULong [219902325555]
+            │               │   ╰── <108> Constant ULong [5]
+            │               ╰── <111> Constant ULong [219902325555]
             ├── Function [remaind]
             │   ╰── Body
             │       ╰── Return
@@ -3805,19 +3805,19 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
             │               ├── <126>  [%]
             │               │   ├── <122> Var [ul_b]
             │               │   ╰── <125> Var [ul_a]
-            │               ╰── Constant ULong [5]
+            │               ╰── <128> Constant ULong [5]
             ├── Function [complement]
             │   ╰── Body
             │       ╰── Return
             │           ╰── <145>  [==]
             │               ├── <141> Unary [~]
             │               │   ╰── <140> Var [ui_a]
-            │               ╰── Constant Int [0]
+            │               ╰── <143> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── <157> Assign [=]
                     │   ├── <154> Var [ui_a]
-                    │   ╰── Constant UInt [10]
+                    │   ╰── <156> Constant UInt [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <162> Unary [!]
@@ -3825,13 +3825,13 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <163> Constant Int [1]
                     ├── <172> Assign [=]
                     │   ├── <169> Var [ul_a]
-                    │   ╰── Constant ULong [18446744072635809792]
+                    │   ╰── <171> Constant ULong [18446744072635809792]
                     ├── <178> Assign [=]
                     │   ├── <175> Var [ul_b]
-                    │   ╰── Constant ULong [1000]
+                    │   ╰── <177> Constant ULong [1000]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <183> Unary [!]
@@ -3839,13 +3839,13 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <184> Constant Int [2]
                     ├── <193> Assign [=]
                     │   ├── <190> Var [ui_a]
-                    │   ╰── Constant UInt [1073741824]
+                    │   ╰── <192> Constant UInt [1073741824]
                     ├── <199> Assign [=]
                     │   ├── <196> Var [ui_b]
-                    │   ╰── Constant UInt [3]
+                    │   ╰── <198> Constant UInt [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <204> Unary [!]
@@ -3853,13 +3853,13 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <205> Constant Int [3]
                     ├── <214> Assign [=]
                     │   ├── <211> Var [ui_a]
-                    │   ╰── Constant UInt [100]
+                    │   ╰── <213> Constant UInt [100]
                     ├── <220> Assign [=]
                     │   ├── <217> Var [ui_b]
-                    │   ╰── Constant UInt [4294967294]
+                    │   ╰── <219> Constant UInt [4294967294]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <225> Unary [!]
@@ -3867,13 +3867,13 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <226> Constant Int [4]
                     ├── <235> Assign [=]
                     │   ├── <232> Var [ui_a]
-                    │   ╰── Constant UInt [4294967294]
+                    │   ╰── <234> Constant UInt [4294967294]
                     ├── <241> Assign [=]
                     │   ├── <238> Var [ui_b]
-                    │   ╰── Constant UInt [2147483647]
+                    │   ╰── <240> Constant UInt [2147483647]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <246> Unary [!]
@@ -3881,10 +3881,10 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <247> Constant Int [5]
                     ├── <256> Assign [=]
                     │   ├── <253> Var [ul_a]
-                    │   ╰── Constant ULong [1099511627775]
+                    │   ╰── <255> Constant ULong [1099511627775]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <261> Unary [!]
@@ -3892,13 +3892,13 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <262> Constant Int [6]
                     ├── <271> Assign [=]
                     │   ├── <268> Var [ul_a]
-                    │   ╰── Constant ULong [100]
+                    │   ╰── <270> Constant ULong [100]
                     ├── <277> Assign [=]
                     │   ├── <274> Var [ul_b]
-                    │   ╰── Constant ULong [18446744073709551605]
+                    │   ╰── <276> Constant ULong [18446744073709551605]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <282> Unary [!]
@@ -3906,10 +3906,10 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <283> Constant Int [7]
                     ├── <292> Assign [=]
                     │   ├── <289> Var [ui_a]
-                    │   ╰── Constant UInt [4294967295]
+                    │   ╰── <291> Constant UInt [4294967295]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <297> Unary [!]
@@ -3917,9 +3917,9 @@ fn test_valid_unsigned_expressions_arithmetic_ops() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <298> Constant Int [8]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <303> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3987,7 +3987,7 @@ fn test_valid_unsigned_expressions_arithmetic_wraparound() {
             │               ├── <26>  [+]
             │               │   ├── <22> Var [ui_a]
             │               │   ╰── <25> Var [ui_b]
-            │               ╰── Constant UInt [0]
+            │               ╰── <28> Constant UInt [0]
             ├── Function [subtraction]
             │   ╰── Body
             │       ╰── Return
@@ -3995,22 +3995,22 @@ fn test_valid_unsigned_expressions_arithmetic_wraparound() {
             │               ├── <42>  [-]
             │               │   ├── <38> Var [ul_a]
             │               │   ╰── <41> Var [ul_b]
-            │               ╰── Constant ULong [18446744073709551606]
+            │               ╰── <44> Constant ULong [18446744073709551606]
             ├── Function [neg]
             │   ╰── Body
             │       ╰── Return
             │           ╰── <60>  [==]
             │               ├── <57> Unary [-]
             │               │   ╰── <56> Var [ul_a]
-            │               ╰── Constant ULong [18446744073709551615]
+            │               ╰── <59> Constant ULong [18446744073709551615]
             ╰── Function [main]
                 ╰── Body
                     ├── <72> Assign [=]
                     │   ├── <69> Var [ui_a]
-                    │   ╰── Constant UInt [4294967293]
+                    │   ╰── <71> Constant UInt [4294967293]
                     ├── <78> Assign [=]
                     │   ├── <75> Var [ui_b]
-                    │   ╰── Constant UInt [3]
+                    │   ╰── <77> Constant UInt [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <83> Unary [!]
@@ -4018,13 +4018,13 @@ fn test_valid_unsigned_expressions_arithmetic_wraparound() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <84> Constant Int [1]
                     ├── <93> Assign [=]
                     │   ├── <90> Var [ul_a]
-                    │   ╰── Constant ULong [10]
+                    │   ╰── <92> Constant ULong [10]
                     ├── <99> Assign [=]
                     │   ├── <96> Var [ul_b]
-                    │   ╰── Constant ULong [20]
+                    │   ╰── <98> Constant ULong [20]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <104> Unary [!]
@@ -4032,10 +4032,10 @@ fn test_valid_unsigned_expressions_arithmetic_wraparound() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <105> Constant Int [2]
                     ├── <114> Assign [=]
                     │   ├── <111> Var [ul_a]
-                    │   ╰── Constant ULong [1]
+                    │   ╰── <113> Constant ULong [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <119> Unary [!]
@@ -4043,9 +4043,9 @@ fn test_valid_unsigned_expressions_arithmetic_wraparound() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <120> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <125> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4101,28 +4101,28 @@ fn test_valid_unsigned_expressions_comparisons() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant UInt [100]
+            │       ╰── <4> Constant UInt [100]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── large_uint
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant UInt [4294967294]
+            │       ╰── <10> Constant UInt [4294967294]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── one_hundred_ulong
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant ULong [100]
+            │       ╰── <16> Constant ULong [100]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── large_ulong
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ╰── Initializer
-            │       ╰── Constant ULong [4294967294]
+            │       ╰── <22> Constant ULong [4294967294]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -4132,7 +4132,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── <33> Var [one_hundred]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <35> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <43>  [<=]
@@ -4140,7 +4140,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── <42> Var [one_hundred]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [2]
+                    │           ╰── <44> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <52>  [>=]
@@ -4148,7 +4148,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── <51> Var [large_uint]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [3]
+                    │           ╰── <53> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <61>  [>]
@@ -4156,7 +4156,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── <60> Var [large_uint]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [4]
+                    │           ╰── <62> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <73> Unary [!]
@@ -4165,7 +4165,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── <70> Var [large_uint]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [5]
+                    │           ╰── <74> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <85> Unary [!]
@@ -4174,7 +4174,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── <82> Var [large_uint]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [6]
+                    │           ╰── <86> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <97> Unary [!]
@@ -4183,7 +4183,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── <94> Var [one_hundred]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [7]
+                    │           ╰── <98> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <109> Unary [!]
@@ -4192,7 +4192,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── <106> Var [one_hundred]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [8]
+                    │           ╰── <110> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <118>  [<]
@@ -4200,7 +4200,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── <117> Var [one_hundred_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [9]
+                    │           ╰── <119> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <127>  [<=]
@@ -4208,7 +4208,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── <126> Var [one_hundred_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [10]
+                    │           ╰── <128> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <136>  [>=]
@@ -4216,7 +4216,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── <135> Var [large_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [11]
+                    │           ╰── <137> Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <145>  [>]
@@ -4224,7 +4224,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │       ╰── <144> Var [large_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [12]
+                    │           ╰── <146> Constant Int [12]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <157> Unary [!]
@@ -4233,7 +4233,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── <154> Var [large_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [13]
+                    │           ╰── <158> Constant Int [13]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <169> Unary [!]
@@ -4242,7 +4242,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── <166> Var [large_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [14]
+                    │           ╰── <170> Constant Int [14]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <181> Unary [!]
@@ -4251,7 +4251,7 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── <178> Var [one_hundred_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [15]
+                    │           ╰── <182> Constant Int [15]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <193> Unary [!]
@@ -4260,9 +4260,9 @@ fn test_valid_unsigned_expressions_comparisons() {
                     │   │           ╰── <190> Var [one_hundred_ulong]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [16]
+                    │           ╰── <194> Constant Int [16]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <197> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4316,7 +4316,7 @@ fn test_valid_unsigned_expressions_locals() {
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant ULong [8589934592]
+                    │       ╰── <8> Constant ULong [8589934592]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -4324,7 +4324,7 @@ fn test_valid_unsigned_expressions_locals() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <16> Unary [-]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <15> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -4332,52 +4332,52 @@ fn test_valid_unsigned_expressions_locals() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── <24> Unary [-]
-                    │           ╰── Constant Long [8589934592]
+                    │           ╰── <23> Constant Long [8589934592]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant UInt [10]
+                    │       ╰── <30> Constant UInt [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <37>  [!=]
                     │   │       ├── <34> Var [a]
-                    │   │       ╰── Constant ULong [8589934592]
+                    │   │       ╰── <36> Constant ULong [8589934592]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <38> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <49>  [!=]
                     │   │       ├── <44> Var [b]
                     │   │       ╰── <48> Unary [-]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <47> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <50> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <61>  [!=]
                     │   │       ├── <56> Var [c]
                     │   │       ╰── <60> Unary [-]
-                    │   │           ╰── Constant Long [8589934592]
+                    │   │           ╰── <59> Constant Long [8589934592]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <62> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <71>  [!=]
                     │   │       ├── <68> Var [d]
-                    │   │       ╰── Constant UInt [10]
+                    │   │       ╰── <70> Constant UInt [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <72> Constant Int [4]
                     ├── <84> Assign [=]
                     │   ├── <78> Var [a]
                     │   ╰── <83> Unary [-]
@@ -4386,56 +4386,56 @@ fn test_valid_unsigned_expressions_locals() {
                     │   ├── <87> Var [b]
                     │   ╰── <93>  [-]
                     │       ├── <90> Var [b]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <92> Constant Int [1]
                     ├── <104> Assign [=]
                     │   ├── <97> Var [c]
                     │   ╰── <103>  [+]
                     │       ├── <100> Var [c]
-                    │       ╰── Constant Long [8589934594]
+                    │       ╰── <102> Constant Long [8589934594]
                     ├── <114> Assign [=]
                     │   ├── <107> Var [d]
                     │   ╰── <113>  [*]
                     │       ├── <110> Var [d]
-                    │       ╰── Constant UInt [268435456]
+                    │       ╰── <112> Constant UInt [268435456]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <120>  [!=]
                     │   │       ├── <117> Var [a]
-                    │   │       ╰── Constant ULong [18446744065119617024]
+                    │   │       ╰── <119> Constant ULong [18446744065119617024]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <121> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <132>  [!=]
                     │   │       ├── <127> Var [b]
                     │   │       ╰── <131> Unary [-]
-                    │   │           ╰── Constant Int [2]
+                    │   │           ╰── <130> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <133> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <142>  [!=]
                     │   │       ├── <139> Var [c]
-                    │   │       ╰── Constant Int [2]
+                    │   │       ╰── <141> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <143> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <152>  [!=]
                     │   │       ├── <149> Var [d]
-                    │   │       ╰── Constant UInt [2684354560]
+                    │   │       ╰── <151> Constant UInt [2684354560]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <153> Constant Int [8]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <158> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4510,9 +4510,9 @@ fn test_valid_unsigned_expressions_logical() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <24> Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <29> Constant Int [0]
             ├── Function [and]
             │   ├── Parameters
             │   │   ├── Param
@@ -4555,21 +4555,21 @@ fn test_valid_unsigned_expressions_logical() {
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant ULong [1152921504606846976]
+                    │       ╰── <78> Constant ULong [1152921504606846976]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── u
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant UInt [2147483648]
+                    │       ╰── <84> Constant UInt [2147483648]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── zero
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ╰── Initializer
-                    │       ╰── Constant Long [0]
+                    │       ╰── <90> Constant Long [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <96> FunctionCall [not]
@@ -4577,7 +4577,7 @@ fn test_valid_unsigned_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <97> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <107> Unary [!]
@@ -4586,7 +4586,7 @@ fn test_valid_unsigned_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <108> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <118> Unary [!]
@@ -4595,7 +4595,7 @@ fn test_valid_unsigned_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <119> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <127> FunctionCall [if_cond]
@@ -4603,28 +4603,28 @@ fn test_valid_unsigned_expressions_logical() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <128> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <137> FunctionCall [and]
                     │   │       ├── <135> Var [zero]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <136> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <138> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <149> Unary [!]
                     │   │       ╰── <148> FunctionCall [or]
-                    │   │           ├── Constant Int [1]
+                    │   │           ├── <145> Constant Int [1]
                     │   │           ╰── <147> Var [u]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <150> Constant Int [6]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <155> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4647,13 +4647,13 @@ fn test_valid_unsigned_expressions_simple() {
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant UInt [2147483647]
+                    │       ╰── <8> Constant UInt [2147483647]
                     ╰── Return
                         ╰── <19>  [==]
                             ├── <15>  [+]
                             │   ├── <12> Var [u]
-                            │   ╰── Constant UInt [2]
-                            ╰── Constant UInt [2147483649]
+                            │   ╰── <14> Constant UInt [2]
+                            ╰── <17> Constant UInt [2147483649]
     "#;
     assert_parse(src, expected);
 }
@@ -4685,7 +4685,7 @@ fn test_valid_unsigned_expressions_static_variables() {
             │   ├── Type
             │   │   ╰── Unsigned Long
             │   ├── Initializer
-            │   │   ╰── Constant ULong [9223372036854775803]
+            │   │   ╰── <5> Constant ULong [9223372036854775803]
             │   ╰── Static
             ├── VarDeclaration
             │   ├── Name
@@ -4703,23 +4703,23 @@ fn test_valid_unsigned_expressions_static_variables() {
                     │   ├── Condition
                     │   │   ╰── <24>  [!=]
                     │   │       ├── <21> Var [x]
-                    │   │       ╰── Constant ULong [9223372036854775803]
+                    │   │       ╰── <23> Constant ULong [9223372036854775803]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [0]
+                    │           ╰── <25> Constant Int [0]
                     ├── <36> Assign [=]
                     │   ├── <29> Var [x]
                     │   ╰── <35>  [+]
                     │       ├── <32> Var [x]
-                    │       ╰── Constant Int [10]
+                    │       ╰── <34> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <42>  [!=]
                     │   │       ├── <39> Var [x]
-                    │   │       ╰── Constant ULong [9223372036854775813]
+                    │   │       ╰── <41> Constant ULong [9223372036854775813]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [0]
+                    │           ╰── <43> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <51>  [||]
@@ -4727,9 +4727,9 @@ fn test_valid_unsigned_expressions_static_variables() {
                     │   │       ╰── <50> Var [zero_int]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [0]
+                    │           ╰── <52> Constant Int [0]
                     ╰── Return
-                        ╰── Constant Int [1]
+                        ╰── <55> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }

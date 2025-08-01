@@ -279,7 +279,7 @@ fn test_invalid_semantics_break_not_in_loop() {
                 ╰── Body
                     ╰── If
                         ├── Condition
-                        │   ╰── Constant Int [1]
+                        │   ╰── <5> Constant Int [1]
                         ╰── Then
                             ╰── Break
     "#;
@@ -309,7 +309,7 @@ fn test_invalid_semantics_continue_not_in_loop() {
                     │   │       ╰── Int
                     │   ╰── Continue
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <12> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -337,19 +337,19 @@ fn test_invalid_semantics_extra_credit_case_continue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <15>  [+]
                     │   │       ├── <12> Var [a]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <14> Constant Int [1]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Continue
                     │       ╰── Default
                     │           ╰── <23> Assign [=]
                     │               ├── <20> Var [a]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <22> Constant Int [1]
                     ╰── Return
                         ╰── <30> Var [a]
     "#;
@@ -378,23 +378,23 @@ fn test_invalid_semantics_extra_credit_case_outside_switch() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <8> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <16>  [<]
                     │   │       ├── <13> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <15> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <25> Assign [=]
                     │   │       ├── <18> Var [i]
                     │   │       ╰── <24>  [+]
                     │   │           ├── <21> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <23> Constant Int [1]
                     │   ╰── Block
                     │       ╰── Case [0]
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <27> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [9]
+                        ╰── <33> Constant Int [9]
     "#;
     assert_parse(src, expected);
 }
@@ -422,17 +422,17 @@ fn test_invalid_semantics_extra_credit_default_continue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <15>  [+]
                     │   │       ├── <12> Var [a]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <14> Constant Int [1]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── <21> Assign [=]
                     │       │       ├── <18> Var [a]
-                    │       │       ╰── Constant Int [1]
+                    │       │       ╰── <20> Constant Int [1]
                     │       ╰── Default
                     │           ╰── Continue
                     ╰── Return
@@ -457,7 +457,7 @@ fn test_invalid_semantics_extra_credit_default_outside_switch() {
                     ╰── Block
                         ╰── Default
                             ╰── Return
-                                ╰── Constant Int [0]
+                                ╰── <5> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -490,7 +490,7 @@ fn test_invalid_semantics_extra_credit_different_cases_same_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
@@ -503,7 +503,7 @@ fn test_invalid_semantics_extra_credit_different_cases_same_scope() {
                     │       │   ├── Type
                     │       │   │   ╰── Int
                     │       │   ╰── Initializer
-                    │       │       ╰── Constant Int [10]
+                    │       │       ╰── <19> Constant Int [10]
                     │       ├── Break
                     │       ├── Case [2]
                     │       │   ╰── Empty
@@ -513,12 +513,12 @@ fn test_invalid_semantics_extra_credit_different_cases_same_scope() {
                     │       │   ├── Type
                     │       │   │   ╰── Int
                     │       │   ╰── Initializer
-                    │       │       ╰── Constant Int [11]
+                    │       │       ╰── <29> Constant Int [11]
                     │       ├── Break
                     │       ╰── Default
                     │           ╰── Break
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <38> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -541,20 +541,20 @@ fn test_invalid_semantics_extra_credit_duplicate_case() {
                 ╰── Body
                     ╰── Switch
                         ├── Expression
-                        │   ╰── Constant Int [4]
+                        │   ╰── <5> Constant Int [4]
                         ╰── Block
                             ├── Case [5]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <7> Constant Int [0]
                             ├── Case [4]
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <11> Constant Int [1]
                             ├── Case [5]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <15> Constant Int [0]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant Int [2]
+                                    ╰── <18> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -583,7 +583,7 @@ fn test_invalid_semantics_extra_credit_duplicate_case_in_labeled_switch() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── Label [label]
                     │   ╰── Switch
                     │       ├── Expression
@@ -593,7 +593,7 @@ fn test_invalid_semantics_extra_credit_duplicate_case_in_labeled_switch() {
                     │               ╰── Case [1]
                     │                   ╰── Break
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <23> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -625,7 +625,7 @@ fn test_invalid_semantics_extra_credit_duplicate_case_in_nested_statement() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
@@ -634,14 +634,14 @@ fn test_invalid_semantics_extra_credit_duplicate_case_in_nested_statement() {
                     │           ╰── Block
                     │               ╰── If
                     │                   ├── Condition
-                    │                   │   ╰── Constant Int [1]
+                    │                   │   ╰── <14> Constant Int [1]
                     │                   ╰── Then
                     │                       ╰── Block
                     │                           ╰── Case [1]
                     │                               ╰── Return
-                    │                                   ╰── Constant Int [0]
+                    │                                   ╰── <16> Constant Int [0]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <28> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -669,23 +669,23 @@ fn test_invalid_semantics_extra_credit_duplicate_default() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ╰── Switch
                         ├── Expression
                         │   ╰── <12> Var [a]
                         ╰── Block
                             ├── Case [0]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <14> Constant Int [0]
                             ├── Default
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <17> Constant Int [1]
                             ├── Case [2]
                             │   ╰── Return
-                            │       ╰── Constant Int [2]
+                            │       ╰── <21> Constant Int [2]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant Int [2]
+                                    ╰── <24> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -720,7 +720,7 @@ fn test_invalid_semantics_extra_credit_duplicate_default_in_nested_statement() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
@@ -734,32 +734,32 @@ fn test_invalid_semantics_extra_credit_duplicate_default_in_nested_statement() {
                     │       │       │       ├── Type
                     │       │       │       │   ╰── Int
                     │       │       │       ╰── Initializer
-                    │       │       │           ╰── Constant Int [0]
+                    │       │       │           ╰── <17> Constant Int [0]
                     │       │       ├── Condition
                     │       │       │   ╰── <25>  [<]
                     │       │       │       ├── <22> Var [i]
-                    │       │       │       ╰── Constant Int [10]
+                    │       │       │       ╰── <24> Constant Int [10]
                     │       │       ├── Condition
                     │       │       │   ╰── <34> Assign [=]
                     │       │       │       ├── <27> Var [i]
                     │       │       │       ╰── <33>  [+]
                     │       │       │           ├── <30> Var [i]
-                    │       │       │           ╰── Constant Int [1]
+                    │       │       │           ╰── <32> Constant Int [1]
                     │       │       ╰── Block
                     │       │           ├── Continue
                     │       │           ╰── While
                     │       │               ├── Condition
-                    │       │               │   ╰── Constant Int [1]
+                    │       │               │   ╰── <36> Constant Int [1]
                     │       │               ╰── Body
                     │       │                   ╰── Default
                     │       │                       ╰── Empty
                     │       ├── Case [2]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [0]
+                    │       │       ╰── <45> Constant Int [0]
                     │       ╰── Default
                     │           ╰── Empty
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <53> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -790,7 +790,7 @@ fn test_invalid_semantics_extra_credit_duplicate_label_in_default() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── Label [label]
                     │   ╰── Switch
                     │       ├── Expression
@@ -798,13 +798,13 @@ fn test_invalid_semantics_extra_credit_duplicate_label_in_default() {
                     │       ╰── Block
                     │           ├── Case [1]
                     │           │   ╰── Return
-                    │           │       ╰── Constant Int [0]
+                    │           │       ╰── <15> Constant Int [0]
                     │           ╰── Default
                     │               ╰── Label [label]
                     │                   ╰── Return
-                    │                       ╰── Constant Int [1]
+                    │                       ╰── <19> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <27> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -831,14 +831,14 @@ fn test_invalid_semantics_extra_credit_duplicate_label_in_loop() {
                     │   │   ╰── Block
                     │   │       ├── Label [lbl]
                     │   │       │   ╰── Return
-                    │   │       │       ╰── Constant Int [1]
+                    │   │       │       ╰── <6> Constant Int [1]
                     │   │       ╰── Label [lbl]
                     │   │           ╰── Return
-                    │   │               ╰── Constant Int [2]
+                    │   │               ╰── <10> Constant Int [2]
                     │   ╰── Condition
-                    │       ╰── Constant Int [1]
+                    │       ╰── <15> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <17> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -867,7 +867,7 @@ fn test_invalid_semantics_extra_credit_duplicate_variable_in_switch() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
@@ -878,20 +878,20 @@ fn test_invalid_semantics_extra_credit_duplicate_variable_in_switch() {
                     │       │   ├── Type
                     │       │   │   ╰── Int
                     │       │   ╰── Initializer
-                    │       │       ╰── Constant Int [2]
+                    │       │       ╰── <16> Constant Int [2]
                     │       ├── Case [0]
                     │       │   ╰── <24> Assign [=]
                     │       │       ├── <21> Var [a]
-                    │       │       ╰── Constant Int [3]
+                    │       │       ╰── <23> Constant Int [3]
                     │       ╰── VarDeclaration
                     │           ├── Name
                     │           │   ╰── b
                     │           ├── Type
                     │           │   ╰── Int
                     │           ╰── Initializer
-                    │               ╰── Constant Int [2]
+                    │               ╰── <30> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <36> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -911,7 +911,7 @@ fn test_invalid_semantics_extra_credit_labeled_break_outside_loop() {
                     ├── Label [label]
                     │   ╰── Break
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <8> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -938,24 +938,24 @@ fn test_invalid_semantics_extra_credit_non_constant_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ╰── Switch
                         ├── Expression
                         │   ╰── <15>  [+]
                         │       ├── <12> Var [a]
-                        │       ╰── Constant Int [1]
+                        │       ╰── <14> Constant Int [1]
                         ╰── Block
                             ├── Case [0]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <17> Constant Int [0]
                             ├── Case [invalid]
                             │   ├── Value
                             │   │   ╰── <21> Var [a]
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <22> Constant Int [1]
                             ╰── Case [1]
                                 ╰── Return
-                                    ╰── Constant Int [2]
+                                    ╰── <26> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -984,22 +984,22 @@ fn test_invalid_semantics_extra_credit_switch_continue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <15>  [+]
                     │   │       ├── <12> Var [a]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <14> Constant Int [1]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── <21> Assign [=]
                     │       │       ├── <18> Var [a]
-                    │       │       ╰── Constant Int [4]
+                    │       │       ╰── <20> Constant Int [4]
                     │       ├── Continue
                     │       ╰── Default
                     │           ╰── <29> Assign [=]
                     │               ├── <26> Var [a]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <28> Constant Int [1]
                     ╰── Return
                         ╰── <36> Var [a]
     "#;
@@ -1027,12 +1027,12 @@ fn test_invalid_semantics_extra_credit_undeclared_var_switch_expression() {
                     │   ╰── Block
                     │       ├── Case [1]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [0]
+                    │       │       ╰── <8> Constant Int [0]
                     │       ╰── Case [2]
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <12> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <18> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1062,7 +1062,7 @@ fn test_invalid_semantics_extra_credit_undeclared_variable_in_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
@@ -1074,7 +1074,7 @@ fn test_invalid_semantics_extra_credit_undeclared_variable_in_case() {
                     │       ╰── Default
                     │           ╰── Break
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <24> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1104,7 +1104,7 @@ fn test_invalid_semantics_extra_credit_undeclared_variable_in_default() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
@@ -1116,7 +1116,7 @@ fn test_invalid_semantics_extra_credit_undeclared_variable_in_default() {
                     │       │       ╰── <17> Var [b]
                     │       ╰── Break
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <24> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1144,7 +1144,7 @@ fn test_invalid_semantics_extra_credit_undefined_label_in_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
@@ -1153,9 +1153,9 @@ fn test_invalid_semantics_extra_credit_undefined_label_in_case() {
                     │       │   ╰── Goto [foo]
                     │       ╰── Default
                     │           ╰── Return
-                    │               ╰── Constant Int [0]
+                    │               ╰── <17> Constant Int [0]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <23> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1184,11 +1184,11 @@ fn test_invalid_semantics_out_of_scope_do_loop() {
                         │           ╰── Initializer
                         │               ╰── <12>  [+]
                         │                   ├── <9> Var [a]
-                        │                   ╰── Constant Int [1]
+                        │                   ╰── <11> Constant Int [1]
                         ╰── Condition
                             ╰── <21>  [<]
                                 ├── <18> Var [a]
-                                ╰── Constant Int [100]
+                                ╰── <20> Constant Int [100]
     "#;
     assert_parse(src, expected);
 }
@@ -1212,20 +1212,20 @@ fn test_invalid_semantics_out_of_scope_loop_variable() {
                         ├── Init
                         │   ╰── <9> Assign [=]
                         │       ├── <6> Var [i]
-                        │       ╰── Constant Int [0]
+                        │       ╰── <8> Constant Int [0]
                         ├── Condition
                         │   ╰── <14>  [<]
                         │       ├── <11> Var [i]
-                        │       ╰── Constant Int [1]
+                        │       ╰── <13> Constant Int [1]
                         ├── Condition
                         │   ╰── <23> Assign [=]
                         │       ├── <16> Var [i]
                         │       ╰── <22>  [+]
                         │           ├── <19> Var [i]
-                        │           ╰── Constant Int [1]
+                        │           ╰── <21> Constant Int [1]
                         ╰── Block
                             ╰── Return
-                                ╰── Constant Int [0]
+                                ╰── <24> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1254,52 +1254,52 @@ fn test_valid_break() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [20]
+                    │       ╰── <14> Constant Int [20]
                     ├── For
                     │   ├── Init
                     │   │   ╰── <23> Assign [=]
                     │   │       ├── <18> Var [b]
                     │   │       ╰── <22> Unary [-]
-                    │   │           ╰── Constant Int [20]
+                    │   │           ╰── <21> Constant Int [20]
                     │   ├── Condition
                     │   │   ╰── <28>  [<]
                     │   │       ├── <25> Var [b]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <27> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <37> Assign [=]
                     │   │       ├── <30> Var [b]
                     │   │       ╰── <36>  [+]
                     │   │           ├── <33> Var [b]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <35> Constant Int [1]
                     │   ╰── Block
                     │       ├── <46> Assign [=]
                     │       │   ├── <39> Var [a]
                     │       │   ╰── <45>  [-]
                     │       │       ├── <42> Var [a]
-                    │       │       ╰── Constant Int [1]
+                    │       │       ╰── <44> Constant Int [1]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── <52>  [<=]
                     │           │       ├── <49> Var [a]
-                    │           │       ╰── Constant Int [0]
+                    │           │       ╰── <51> Constant Int [0]
                     │           ╰── Then
                     │               ╰── Break
                     ╰── Return
                         ╰── <71>  [&&]
                             ├── <62>  [==]
                             │   ├── <59> Var [a]
-                            │   ╰── Constant Int [0]
+                            │   ╰── <61> Constant Int [0]
                             ╰── <70>  [==]
                                 ├── <65> Var [b]
                                 ╰── <69> Unary [-]
-                                    ╰── Constant Int [11]
+                                    ╰── <68> Constant Int [11]
     "#;
     assert_parse(src, expected);
 }
@@ -1324,12 +1324,12 @@ fn test_valid_break_immediate() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── <16> Assign [=]
                     │   │       ├── <12> Var [a]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <14> Constant Int [1]
                     │   ╰── Body
                     │       ╰── Break
                     ╰── Return
@@ -1363,7 +1363,7 @@ fn test_valid_continue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── counter
@@ -1377,17 +1377,17 @@ fn test_valid_continue() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <18> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <26>  [<=]
                     │   │       ├── <23> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <25> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <35> Assign [=]
                     │   │       ├── <28> Var [i]
                     │   │       ╰── <34>  [+]
                     │   │           ├── <31> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <33> Constant Int [1]
                     │   ╰── Block
                     │       ├── <41> Assign [=]
                     │       │   ├── <37> Var [counter]
@@ -1397,23 +1397,23 @@ fn test_valid_continue() {
                     │       │   │   ╰── <50>  [==]
                     │       │   │       ├── <47>  [%]
                     │       │   │       │   ├── <44> Var [i]
-                    │       │   │       │   ╰── Constant Int [2]
-                    │       │   │       ╰── Constant Int [0]
+                    │       │   │       │   ╰── <46> Constant Int [2]
+                    │       │   │       ╰── <49> Constant Int [0]
                     │       │   ╰── Then
                     │       │       ╰── Continue
                     │       ╰── <61> Assign [=]
                     │           ├── <54> Var [sum]
                     │           ╰── <60>  [+]
                     │               ├── <57> Var [sum]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <59> Constant Int [1]
                     ╰── Return
                         ╰── <77>  [&&]
                             ├── <70>  [==]
                             │   ├── <67> Var [sum]
-                            │   ╰── Constant Int [5]
+                            │   ╰── <69> Constant Int [5]
                             ╰── <76>  [==]
                                 ├── <73> Var [counter]
-                                ╰── Constant Int [10]
+                                ╰── <75> Constant Int [10]
     "#;
     assert_parse(src, expected);
 }
@@ -1442,7 +1442,7 @@ fn test_valid_continue_empty_post() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -1451,22 +1451,22 @@ fn test_valid_continue_empty_post() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <14> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <22>  [<]
                     │   │       ├── <19> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <21> Constant Int [10]
                     │   ╰── Block
                     │       ├── <31> Assign [=]
                     │       │   ├── <24> Var [i]
                     │       │   ╰── <30>  [+]
                     │       │       ├── <27> Var [i]
-                    │       │       ╰── Constant Int [1]
+                    │       │       ╰── <29> Constant Int [1]
                     │       ├── If
                     │       │   ├── Condition
                     │       │   │   ╰── <37>  [%]
                     │       │   │       ├── <34> Var [i]
-                    │       │   │       ╰── Constant Int [2]
+                    │       │   │       ╰── <36> Constant Int [2]
                     │       │   ╰── Then
                     │       │       ╰── Continue
                     │       ╰── <49> Assign [=]
@@ -1501,7 +1501,7 @@ fn test_valid_do_while() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Block
@@ -1509,11 +1509,11 @@ fn test_valid_do_while() {
                     │   │           ├── <12> Var [a]
                     │   │           ╰── <18>  [*]
                     │   │               ├── <15> Var [a]
-                    │   │               ╰── Constant Int [2]
+                    │   │               ╰── <17> Constant Int [2]
                     │   ╰── Condition
                     │       ╰── <27>  [<]
                     │           ├── <24> Var [a]
-                    │           ╰── Constant Int [11]
+                    │           ╰── <26> Constant Int [11]
                     ╰── Return
                         ╰── <30> Var [a]
     "#;
@@ -1541,14 +1541,14 @@ fn test_valid_do_while_break_immediate() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Break
                     │   ╰── Condition
                     │       ╰── <17> Assign [=]
                     │           ├── <13> Var [a]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <15> Constant Int [1]
                     ╰── Return
                         ╰── <20> Var [a]
     "#;
@@ -1567,7 +1567,7 @@ fn test_valid_empty_expression() {
             ╰── Function [main]
                 ╰── Body
                     ├── Return
-                    │   ╰── Constant Int [0]
+                    │   ╰── <5> Constant Int [0]
                     ├── Empty
                     ╰── Empty
     "#;
@@ -1593,7 +1593,7 @@ fn test_valid_empty_loop_body() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2147]
+                    │       ╰── <8> Constant Int [2147]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Empty
@@ -1603,8 +1603,8 @@ fn test_valid_empty_loop_body() {
                     │           │   ├── <13> Var [i]
                     │           │   ╰── <19>  [-]
                     │           │       ├── <16> Var [i]
-                    │           │       ╰── Constant Int [5]
-                    │           ╰── Constant Int [256]
+                    │           │       ╰── <18> Constant Int [5]
+                    │           ╰── <23> Constant Int [256]
                     ╰── Return
                         ╰── <27> Var [i]
     "#;
@@ -1636,17 +1636,17 @@ fn test_valid_extra_credit_case_block() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [4]
+                    │       ╰── <8> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant Int [2]
+                    │   │   ╰── <17> Constant Int [2]
                     │   ╰── Block
                     │       ╰── Case [2]
                     │           ╰── Block
@@ -1656,7 +1656,7 @@ fn test_valid_extra_credit_case_block() {
                     │               │   ├── Type
                     │               │   │   ╰── Int
                     │               │   ╰── Initializer
-                    │               │       ╰── Constant Int [8]
+                    │               │       ╰── <22> Constant Int [8]
                     │               ╰── <30> Assign [=]
                     │                   ├── <26> Var [b]
                     │                   ╰── <29> Var [a]
@@ -1664,10 +1664,10 @@ fn test_valid_extra_credit_case_block() {
                         ╰── <50>  [&&]
                             ├── <42>  [==]
                             │   ├── <39> Var [a]
-                            │   ╰── Constant Int [4]
+                            │   ╰── <41> Constant Int [4]
                             ╰── <48>  [==]
                                 ├── <45> Var [b]
-                                ╰── Constant Int [8]
+                                ╰── <47> Constant Int [8]
     "#;
     assert_parse(src, expected);
 }
@@ -1693,31 +1693,31 @@ fn test_valid_extra_credit_compound_assignment_controlling_expression() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <8> Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── sum
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── <21> Assign [+=]
                     │   │       ├── <18> Var [sum]
-                    │   │       ╰── Constant Int [2]
+                    │   │       ╰── <20> Constant Int [2]
                     │   ╰── Condition
                     │       ╰── <27> Assign [-=]
                     │           ├── <24> Var [i]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <26> Constant Int [1]
                     ╰── Return
                         ╰── <41>  [&&]
                             ├── <33>  [==]
                             │   ├── <30> Var [i]
-                            │   ╰── Constant Int [0]
+                            │   ╰── <32> Constant Int [0]
                             ╰── <39>  [==]
                                 ├── <36> Var [sum]
-                                ╰── Constant Int [200]
+                                ╰── <38> Constant Int [200]
     "#;
     assert_parse(src, expected);
 }
@@ -1742,28 +1742,28 @@ fn test_valid_extra_credit_compound_assignment_for_loop() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── For
                     │   ├── Init
                     │   │   ╰── <17> Assign [*=]
                     │   │       ├── <12> Var [i]
                     │   │       ╰── <16> Unary [-]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <15> Constant Int [1]
                     │   ├── Condition
                     │   │   ╰── <24>  [>=]
                     │   │       ├── <19> Var [i]
                     │   │       ╰── <23> Unary [-]
-                    │   │           ╰── Constant Int [100]
+                    │   │           ╰── <22> Constant Int [100]
                     │   ├── Condition
                     │   │   ╰── <29> Assign [-=]
                     │   │       ├── <26> Var [i]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <28> Constant Int [3]
                     │   ╰── Empty
                     ╰── Return
                         ╰── <39>  [==]
                             ├── <33> Var [i]
                             ╰── <37> Unary [-]
-                                ╰── Constant Int [103]
+                                ╰── <36> Constant Int [103]
     "#;
     assert_parse(src, expected);
 }
@@ -1802,7 +1802,7 @@ fn test_valid_extra_credit_duffs_device() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [37]
+                    │       ╰── <8> Constant Int [37]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── iterations
@@ -1812,13 +1812,13 @@ fn test_valid_extra_credit_duffs_device() {
                     │       ╰── <22>  [/]
                     │           ├── <19>  [+]
                     │           │   ├── <15> Var [count]
-                    │           │   ╰── Constant Int [4]
-                    │           ╰── Constant Int [5]
+                    │           │   ╰── <17> Constant Int [4]
+                    │           ╰── <21> Constant Int [5]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <29>  [%]
                     │   │       ├── <26> Var [count]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <28> Constant Int [5]
                     │   ╰── Block
                     │       ╰── Case [0]
                     │           ╰── DoWhile
@@ -1828,47 +1828,47 @@ fn test_valid_extra_credit_duffs_device() {
                     │               │       │   ├── <32> Var [count]
                     │               │       │   ╰── <38>  [-]
                     │               │       │       ├── <35> Var [count]
-                    │               │       │       ╰── Constant Int [1]
+                    │               │       │       ╰── <37> Constant Int [1]
                     │               │       ├── Case [4]
                     │               │       │   ╰── <50> Assign [=]
                     │               │       │       ├── <43> Var [count]
                     │               │       │       ╰── <49>  [-]
                     │               │       │           ├── <46> Var [count]
-                    │               │       │           ╰── Constant Int [1]
+                    │               │       │           ╰── <48> Constant Int [1]
                     │               │       ├── Case [3]
                     │               │       │   ╰── <62> Assign [=]
                     │               │       │       ├── <55> Var [count]
                     │               │       │       ╰── <61>  [-]
                     │               │       │           ├── <58> Var [count]
-                    │               │       │           ╰── Constant Int [1]
+                    │               │       │           ╰── <60> Constant Int [1]
                     │               │       ├── Case [2]
                     │               │       │   ╰── <74> Assign [=]
                     │               │       │       ├── <67> Var [count]
                     │               │       │       ╰── <73>  [-]
                     │               │       │           ├── <70> Var [count]
-                    │               │       │           ╰── Constant Int [1]
+                    │               │       │           ╰── <72> Constant Int [1]
                     │               │       ╰── Case [1]
                     │               │           ╰── <86> Assign [=]
                     │               │               ├── <79> Var [count]
                     │               │               ╰── <85>  [-]
                     │               │                   ├── <82> Var [count]
-                    │               │                   ╰── Constant Int [1]
+                    │               │                   ╰── <84> Constant Int [1]
                     │               ╰── Condition
                     │                   ╰── <103>  [>]
                     │                       ├── <100> Assign [=]
                     │                       │   ├── <92> Var [iterations]
                     │                       │   ╰── <98>  [-]
                     │                       │       ├── <95> Var [iterations]
-                    │                       │       ╰── Constant Int [1]
-                    │                       ╰── Constant Int [0]
+                    │                       │       ╰── <97> Constant Int [1]
+                    │                       ╰── <102> Constant Int [0]
                     ╰── Return
                         ╰── <121>  [&&]
                             ├── <113>  [==]
                             │   ├── <110> Var [count]
-                            │   ╰── Constant Int [0]
+                            │   ╰── <112> Constant Int [0]
                             ╰── <119>  [==]
                                 ├── <116> Var [iterations]
-                                ╰── Constant Int [0]
+                                ╰── <118> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1897,7 +1897,7 @@ fn test_valid_extra_credit_goto_bypass_condition() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Block
@@ -1906,16 +1906,16 @@ fn test_valid_extra_credit_goto_bypass_condition() {
                     │   │       │       ├── <13> Var [i]
                     │   │       │       ╰── <19>  [+]
                     │   │       │           ├── <16> Var [i]
-                    │   │       │           ╰── Constant Int [1]
+                    │   │       │           ╰── <18> Constant Int [1]
                     │   │       ╰── If
                     │   │           ├── Condition
                     │   │           │   ╰── <27>  [<]
                     │   │           │       ├── <24> Var [i]
-                    │   │           │       ╰── Constant Int [10]
+                    │   │           │       ╰── <26> Constant Int [10]
                     │   │           ╰── Then
                     │   │               ╰── Goto [while_start]
                     │   ╰── Condition
-                    │       ╰── Constant Int [0]
+                    │       ╰── <33> Constant Int [0]
                     ╰── Return
                         ╰── <36> Var [i]
     "#;
@@ -1945,34 +1945,34 @@ fn test_valid_extra_credit_goto_bypass_init_exp() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── Goto [target]
                     ├── For
                     │   ├── Init
                     │   │   ╰── <17> Assign [=]
                     │   │       ├── <14> Var [i]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <16> Constant Int [5]
                     │   ├── Condition
                     │   │   ╰── <22>  [<]
                     │   │       ├── <19> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <21> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <31> Assign [=]
                     │   │       ├── <24> Var [i]
                     │   │       ╰── <30>  [+]
                     │   │           ├── <27> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <29> Constant Int [1]
                     │   ╰── Label [target]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── <37>  [==]
                     │           │       ├── <34> Var [i]
-                    │           │       ╰── Constant Int [0]
+                    │           │       ╰── <36> Constant Int [0]
                     │           ╰── Then
                     │               ╰── Return
-                    │                   ╰── Constant Int [1]
+                    │                   ╰── <38> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <43> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2003,7 +2003,7 @@ fn test_valid_extra_credit_goto_bypass_post_exp() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -2012,28 +2012,28 @@ fn test_valid_extra_credit_goto_bypass_post_exp() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <14> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <22> Assign [=]
                     │   │       ├── <19> Var [i]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <21> Constant Int [0]
                     │   ╰── Block
                     │       ├── Label [lbl]
                     │       │   ╰── <32> Assign [=]
                     │       │       ├── <25> Var [sum]
                     │       │       ╰── <31>  [+]
                     │       │           ├── <28> Var [sum]
-                    │       │           ╰── Constant Int [1]
+                    │       │           ╰── <30> Constant Int [1]
                     │       ├── <43> Assign [=]
                     │       │   ├── <36> Var [i]
                     │       │   ╰── <42>  [+]
                     │       │       ├── <39> Var [i]
-                    │       │       ╰── Constant Int [1]
+                    │       │       ╰── <41> Constant Int [1]
                     │       ├── If
                     │       │   ├── Condition
                     │       │   │   ╰── <49>  [>]
                     │       │   │       ├── <46> Var [i]
-                    │       │   │       ╰── Constant Int [10]
+                    │       │   │       ╰── <48> Constant Int [10]
                     │       │   ╰── Then
                     │       │       ╰── Break
                     │       ╰── Goto [lbl]
@@ -2065,17 +2065,17 @@ fn test_valid_extra_credit_label_loop_body() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── Goto [label]
                     ├── While
                     │   ├── Condition
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <13> Constant Int [0]
                     │   ╰── Body
                     │       ╰── Label [label]
                     │           ╰── Block
                     │               ╰── <19> Assign [=]
                     │                   ├── <16> Var [result]
-                    │                   ╰── Constant Int [1]
+                    │                   ╰── <18> Constant Int [1]
                     ╰── Return
                         ╰── <26> Var [result]
     "#;
@@ -2126,40 +2126,40 @@ fn test_valid_extra_credit_label_loops_breaks_and_continues() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── Goto [do_label]
                     ├── Return
-                    │   ╰── Constant Int [0]
+                    │   ╰── <13> Constant Int [0]
                     ├── Label [do_label]
                     │   ╰── DoWhile
                     │       ├── Body
                     │       │   ╰── Block
                     │       │       ├── <20> Assign [=]
                     │       │       │   ├── <17> Var [sum]
-                    │       │       │   ╰── Constant Int [1]
+                    │       │       │   ╰── <19> Constant Int [1]
                     │       │       ╰── Goto [while_label]
                     │       ╰── Condition
-                    │           ╰── Constant Int [1]
+                    │           ╰── <26> Constant Int [1]
                     ├── Label [while_label]
                     │   ╰── While
                     │       ├── Condition
-                    │       │   ╰── Constant Int [1]
+                    │       │   ╰── <30> Constant Int [1]
                     │       ╰── Body
                     │           ╰── Block
                     │               ├── <39> Assign [=]
                     │               │   ├── <32> Var [sum]
                     │               │   ╰── <38>  [+]
                     │               │       ├── <35> Var [sum]
-                    │               │       ╰── Constant Int [1]
+                    │               │       ╰── <37> Constant Int [1]
                     │               ├── Goto [break_label]
                     │               ├── Return
-                    │               │   ╰── Constant Int [0]
+                    │               │   ╰── <43> Constant Int [0]
                     │               ╰── Label [break_label]
                     │                   ╰── Break
                     ├── Empty
                     ├── Goto [for_label]
                     ├── Return
-                    │   ╰── Constant Int [0]
+                    │   ╰── <55> Constant Int [0]
                     ├── Label [for_label]
                     │   ╰── For
                     │       ├── Init
@@ -2169,30 +2169,30 @@ fn test_valid_extra_credit_label_loops_breaks_and_continues() {
                     │       │       ├── Type
                     │       │       │   ╰── Int
                     │       │       ╰── Initializer
-                    │       │           ╰── Constant Int [0]
+                    │       │           ╰── <61> Constant Int [0]
                     │       ├── Condition
                     │       │   ╰── <69>  [<]
                     │       │       ├── <66> Var [i]
-                    │       │       ╰── Constant Int [10]
+                    │       │       ╰── <68> Constant Int [10]
                     │       ├── Condition
                     │       │   ╰── <78> Assign [=]
                     │       │       ├── <71> Var [i]
                     │       │       ╰── <77>  [+]
                     │       │           ├── <74> Var [i]
-                    │       │           ╰── Constant Int [1]
+                    │       │           ╰── <76> Constant Int [1]
                     │       ╰── Block
                     │           ├── <87> Assign [=]
                     │           │   ├── <80> Var [sum]
                     │           │   ╰── <86>  [+]
                     │           │       ├── <83> Var [sum]
-                    │           │       ╰── Constant Int [1]
+                    │           │       ╰── <85> Constant Int [1]
                     │           ├── Goto [continue_label]
                     │           ├── Return
-                    │           │   ╰── Constant Int [0]
+                    │           │   ╰── <91> Constant Int [0]
                     │           ├── Label [continue_label]
                     │           │   ╰── Continue
                     │           ╰── Return
-                    │               ╰── Constant Int [0]
+                    │               ╰── <96> Constant Int [0]
                     ╰── Return
                         ╰── <103> Var [sum]
     "#;
@@ -2226,14 +2226,14 @@ fn test_valid_extra_credit_loop_header_postfix_and_prefix() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <8> Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── count
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── <20> Postfix [--]
@@ -2245,16 +2245,16 @@ fn test_valid_extra_credit_loop_header_postfix_and_prefix() {
                     │   ├── Condition
                     │   │   ╰── <31>  [!=]
                     │   │       ├── <28> Var [count]
-                    │   │       ╰── Constant Int [100]
+                    │   │       ╰── <30> Constant Int [100]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [0]
+                    │           ╰── <32> Constant Int [0]
                     ├── <39> Assign [=]
                     │   ├── <36> Var [i]
-                    │   ╰── Constant Int [100]
+                    │   ╰── <38> Constant Int [100]
                     ├── <45> Assign [=]
                     │   ├── <42> Var [count]
-                    │   ╰── Constant Int [0]
+                    │   ╰── <44> Constant Int [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── <50> Unary [--]
@@ -2266,12 +2266,12 @@ fn test_valid_extra_credit_loop_header_postfix_and_prefix() {
                     │   ├── Condition
                     │   │   ╰── <61>  [!=]
                     │   │       ├── <58> Var [count]
-                    │   │       ╰── Constant Int [99]
+                    │   │       ╰── <60> Constant Int [99]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [0]
+                    │           ╰── <62> Constant Int [0]
                     ╰── Return
-                        ╰── Constant Int [1]
+                        ╰── <65> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -2307,14 +2307,14 @@ fn test_valid_extra_credit_loop_in_switch() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [cond]
                     │   ╰── Block
                     │       ├── Case [1]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [0]
+                    │       │       ╰── <14> Constant Int [0]
                     │       ├── Case [10]
                     │       │   ╰── For
                     │       │       ├── Init
@@ -2324,37 +2324,37 @@ fn test_valid_extra_credit_loop_in_switch() {
                     │       │       │       ├── Type
                     │       │       │       │   ╰── Int
                     │       │       │       ╰── Initializer
-                    │       │       │           ╰── Constant Int [0]
+                    │       │       │           ╰── <21> Constant Int [0]
                     │       │       ├── Condition
                     │       │       │   ╰── <29>  [<]
                     │       │       │       ├── <26> Var [i]
-                    │       │       │       ╰── Constant Int [5]
+                    │       │       │       ╰── <28> Constant Int [5]
                     │       │       ├── Condition
                     │       │       │   ╰── <38> Assign [=]
                     │       │       │       ├── <31> Var [i]
                     │       │       │       ╰── <37>  [+]
                     │       │       │           ├── <34> Var [i]
-                    │       │       │           ╰── Constant Int [1]
+                    │       │       │           ╰── <36> Constant Int [1]
                     │       │       ╰── Block
                     │       │           ├── <47> Assign [=]
                     │       │           │   ├── <40> Var [cond]
                     │       │           │   ╰── <46>  [-]
                     │       │           │       ├── <43> Var [cond]
-                    │       │           │       ╰── Constant Int [1]
+                    │       │           │       ╰── <45> Constant Int [1]
                     │       │           ╰── If
                     │       │               ├── Condition
                     │       │               │   ╰── <53>  [==]
                     │       │               │       ├── <50> Var [cond]
-                    │       │               │       ╰── Constant Int [8]
+                    │       │               │       ╰── <52> Constant Int [8]
                     │       │               ╰── Then
                     │       │                   ╰── Break
                     │       ├── Return
-                    │       │   ╰── Constant Int [123]
+                    │       │   ╰── <60> Constant Int [123]
                     │       ╰── Default
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <62> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [3]
+                        ╰── <68> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -2380,7 +2380,7 @@ fn test_valid_extra_credit_post_exp_incr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -2389,11 +2389,11 @@ fn test_valid_extra_credit_post_exp_incr() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <14> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <22>  [<]
                     │   │       ├── <19> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <21> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <26> Postfix [++]
                     │   │       ╰── <24> Var [i]
@@ -2402,7 +2402,7 @@ fn test_valid_extra_credit_post_exp_incr() {
                     │           ├── <28> Var [product]
                     │           ╰── <34>  [+]
                     │               ├── <31> Var [product]
-                    │               ╰── Constant Int [2]
+                    │               ╰── <33> Constant Int [2]
                     ╰── Return
                         ╰── <41> Var [product]
     "#;
@@ -2428,20 +2428,20 @@ fn test_valid_extra_credit_switch() {
                 ╰── Body
                     ╰── Switch
                         ├── Expression
-                        │   ╰── Constant Int [3]
+                        │   ╰── <5> Constant Int [3]
                         ╰── Block
                             ├── Case [0]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <7> Constant Int [0]
                             ├── Case [1]
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <11> Constant Int [1]
                             ├── Case [3]
                             │   ╰── Return
-                            │       ╰── Constant Int [3]
+                            │       ╰── <15> Constant Int [3]
                             ╰── Case [5]
                                 ╰── Return
-                                    ╰── Constant Int [5]
+                                    ╰── <19> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -2473,27 +2473,27 @@ fn test_valid_extra_credit_switch_assign_in_condition() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <15> Assign [=]
                     │   │       ├── <12> Var [a]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <14> Constant Int [1]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [10]
+                    │       │       ╰── <17> Constant Int [10]
                     │       ├── Case [1]
                     │       │   ╰── <29> Assign [=]
                     │       │       ├── <22> Var [a]
                     │       │       ╰── <28>  [*]
                     │       │           ├── <25> Var [a]
-                    │       │           ╰── Constant Int [2]
+                    │       │           ╰── <27> Constant Int [2]
                     │       ├── Break
                     │       ╰── Default
                     │           ╰── <37> Assign [=]
                     │               ├── <34> Var [a]
-                    │               ╰── Constant Int [99]
+                    │               ╰── <36> Constant Int [99]
                     ╰── Return
                         ╰── <44> Var [a]
     "#;
@@ -2526,7 +2526,7 @@ fn test_valid_extra_credit_switch_break() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [5]
+                    │       ╰── <8> Constant Int [5]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
@@ -2534,12 +2534,12 @@ fn test_valid_extra_credit_switch_break() {
                     │       ├── Case [5]
                     │       │   ╰── <18> Assign [=]
                     │       │       ├── <15> Var [a]
-                    │       │       ╰── Constant Int [10]
+                    │       │       ╰── <17> Constant Int [10]
                     │       ├── Break
                     │       ├── Case [6]
                     │       │   ╰── <27> Assign [=]
                     │       │       ├── <24> Var [a]
-                    │       │       ╰── Constant Int [0]
+                    │       │       ╰── <26> Constant Int [0]
                     │       ╰── Break
                     ╰── Return
                         ╰── <35> Var [a]
@@ -2572,14 +2572,14 @@ fn test_valid_extra_credit_switch_decl() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <18> Var [a]
@@ -2592,11 +2592,11 @@ fn test_valid_extra_credit_switch_decl() {
                     │       │   ╰── Initializer
                     │       │       ╰── <27> Assign [=]
                     │       │           ├── <23> Var [b]
-                    │       │           ╰── Constant Int [5]
+                    │       │           ╰── <25> Constant Int [5]
                     │       ├── Case [3]
                     │       │   ╰── <35> Assign [=]
                     │       │       ├── <32> Var [a]
-                    │       │       ╰── Constant Int [4]
+                    │       │       ╰── <34> Constant Int [4]
                     │       ╰── <47> Assign [=]
                     │           ├── <39> Var [b]
                     │           ╰── <46>  [+]
@@ -2606,10 +2606,10 @@ fn test_valid_extra_credit_switch_decl() {
                         ╰── <63>  [&&]
                             ├── <56>  [==]
                             │   ├── <53> Var [a]
-                            │   ╰── Constant Int [3]
+                            │   ╰── <55> Constant Int [3]
                             ╰── <62>  [==]
                                 ├── <59> Var [b]
-                                ╰── Constant Int [4]
+                                ╰── <61> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -2643,26 +2643,26 @@ fn test_valid_extra_credit_switch_default() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
                     │   ╰── Block
                     │       ├── Case [1]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [1]
+                    │       │       ╰── <14> Constant Int [1]
                     │       ├── Case [2]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [9]
+                    │       │       ╰── <18> Constant Int [9]
                     │       ├── Case [4]
                     │       │   ╰── <26> Assign [=]
                     │       │       ├── <23> Var [a]
-                    │       │       ╰── Constant Int [11]
+                    │       │       ╰── <25> Constant Int [11]
                     │       ├── Break
                     │       ╰── Default
                     │           ╰── <34> Assign [=]
                     │               ├── <31> Var [a]
-                    │               ╰── Constant Int [22]
+                    │               ╰── <33> Constant Int [22]
                     ╰── Return
                         ╰── <41> Var [a]
     "#;
@@ -2693,22 +2693,22 @@ fn test_valid_extra_credit_switch_default_fallthrough() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [5]
+                    │       ╰── <8> Constant Int [5]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <11> Constant Int [0]
                     │   ╰── Block
                     │       ├── Default
                     │       │   ╰── <16> Assign [=]
                     │       │       ├── <13> Var [a]
-                    │       │       ╰── Constant Int [0]
+                    │       │       ╰── <15> Constant Int [0]
                     │       ╰── Case [1]
                     │           ╰── Return
                     │               ╰── <21> Var [a]
                     ╰── Return
                         ╰── <31>  [+]
                             ├── <28> Var [a]
-                            ╰── Constant Int [1]
+                            ╰── <30> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -2742,7 +2742,7 @@ fn test_valid_extra_credit_switch_default_not_last() {
                     │   ╰── Initializer
                     │       ╰── <16> Assign [=]
                     │           ├── <13> Var [a]
-                    │           ╰── Constant Int [7]
+                    │           ╰── <15> Constant Int [7]
                     ╰── Switch
                         ├── Expression
                         │   ╰── <24>  [+]
@@ -2751,10 +2751,10 @@ fn test_valid_extra_credit_switch_default_not_last() {
                         ╰── Block
                             ├── Default
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <25> Constant Int [0]
                             ╰── Case [2]
                                 ╰── Return
-                                    ╰── Constant Int [1]
+                                    ╰── <29> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -2778,15 +2778,15 @@ fn test_valid_extra_credit_switch_default_only() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
                     │   ╰── Default
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <13> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <17> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2813,14 +2813,14 @@ fn test_valid_extra_credit_switch_empty() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <19> Assign [=]
                     │   │       ├── <12> Var [x]
                     │   │       ╰── <18>  [+]
                     │   │           ├── <15> Var [x]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <17> Constant Int [1]
                     │   ╰── Block
                     ├── Switch
                     │   ├── Expression
@@ -2828,7 +2828,7 @@ fn test_valid_extra_credit_switch_empty() {
                     │   │       ├── <24> Var [x]
                     │   │       ╰── <30>  [+]
                     │   │           ├── <27> Var [x]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <29> Constant Int [1]
                     │   ╰── Empty
                     ╰── Return
                         ╰── <35> Var [x]
@@ -2866,47 +2866,47 @@ fn test_valid_extra_credit_switch_fallthrough() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [4]
+                    │       ╰── <8> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [9]
+                    │       ╰── <14> Constant Int [9]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <20> Constant Int [0]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── <{node_id}> Conditional [?]
+                    │   │   ╰── <28> Conditional [?]
                     │   │       ├── <24> Var [a]
                     │   │       ├── Then
                     │   │       │   ╰── <26> Var [b]
                     │   │       ╰── Else
-                    │   │           ╰── Constant Int [7]
+                    │   │           ╰── <27> Constant Int [7]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [5]
+                    │       │       ╰── <30> Constant Int [5]
                     │       ├── Case [7]
                     │       │   ╰── <38> Assign [=]
                     │       │       ├── <35> Var [c]
-                    │       │       ╰── Constant Int [1]
+                    │       │       ╰── <37> Constant Int [1]
                     │       ├── Case [9]
                     │       │   ╰── <46> Assign [=]
                     │       │       ├── <43> Var [c]
-                    │       │       ╰── Constant Int [2]
+                    │       │       ╰── <45> Constant Int [2]
                     │       ╰── Case [1]
                     │           ╰── <58> Assign [=]
                     │               ├── <51> Var [c]
                     │               ╰── <57>  [+]
                     │                   ├── <54> Var [c]
-                    │                   ╰── Constant Int [4]
+                    │                   ╰── <56> Constant Int [4]
                     ╰── Return
                         ╰── <65> Var [c]
     "#;
@@ -2939,26 +2939,26 @@ fn test_valid_extra_credit_switch_goto_mid_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── Goto [mid_case]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant Int [4]
+                    │   │   ╰── <13> Constant Int [4]
                     │   ╰── Block
                     │       ├── Case [4]
                     │       │   ╰── <19> Assign [=]
                     │       │       ├── <16> Var [a]
-                    │       │       ╰── Constant Int [5]
+                    │       │       ╰── <18> Constant Int [5]
                     │       ├── Label [mid_case]
                     │       │   ╰── <31> Assign [=]
                     │       │       ├── <24> Var [a]
                     │       │       ╰── <30>  [+]
                     │       │           ├── <27> Var [a]
-                    │       │           ╰── Constant Int [1]
+                    │       │           ╰── <29> Constant Int [1]
                     │       ╰── Return
                     │           ╰── <35> Var [a]
                     ╰── Return
-                        ╰── Constant Int [100]
+                        ╰── <40> Constant Int [100]
     "#;
     assert_parse(src, expected);
 }
@@ -2998,14 +2998,14 @@ fn test_valid_extra_credit_switch_in_loop() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ctr
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -3014,17 +3014,17 @@ fn test_valid_extra_credit_switch_in_loop() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <20> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <28>  [<]
                     │   │       ├── <25> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <27> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <37> Assign [=]
                     │   │       ├── <30> Var [i]
                     │   │       ╰── <36>  [+]
                     │   │           ├── <33> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <35> Constant Int [1]
                     │   ╰── Block
                     │       ├── Switch
                     │       │   ├── Expression
@@ -3033,41 +3033,41 @@ fn test_valid_extra_credit_switch_in_loop() {
                     │       │       ├── Case [0]
                     │       │       │   ╰── <45> Assign [=]
                     │       │       │       ├── <42> Var [acc]
-                    │       │       │       ╰── Constant Int [2]
+                    │       │       │       ╰── <44> Constant Int [2]
                     │       │       ├── Break
                     │       │       ├── Case [1]
                     │       │       │   ╰── <58> Assign [=]
                     │       │       │       ├── <51> Var [acc]
                     │       │       │       ╰── <57>  [*]
                     │       │       │           ├── <54> Var [acc]
-                    │       │       │           ╰── Constant Int [3]
+                    │       │       │           ╰── <56> Constant Int [3]
                     │       │       ├── Break
                     │       │       ├── Case [2]
                     │       │       │   ╰── <71> Assign [=]
                     │       │       │       ├── <64> Var [acc]
                     │       │       │       ╰── <70>  [*]
                     │       │       │           ├── <67> Var [acc]
-                    │       │       │           ╰── Constant Int [4]
+                    │       │       │           ╰── <69> Constant Int [4]
                     │       │       ├── Break
                     │       │       ╰── Default
                     │       │           ╰── <83> Assign [=]
                     │       │               ├── <76> Var [acc]
                     │       │               ╰── <82>  [+]
                     │       │                   ├── <79> Var [acc]
-                    │       │                   ╰── Constant Int [1]
+                    │       │                   ╰── <81> Constant Int [1]
                     │       ╰── <97> Assign [=]
                     │           ├── <90> Var [ctr]
                     │           ╰── <96>  [+]
                     │               ├── <93> Var [ctr]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <95> Constant Int [1]
                     ╰── Return
                         ╰── <113>  [&&]
                             ├── <106>  [==]
                             │   ├── <103> Var [ctr]
-                            │   ╰── Constant Int [10]
+                            │   ╰── <105> Constant Int [10]
                             ╰── <112>  [==]
                                 ├── <109> Var [acc]
-                                ╰── Constant Int [31]
+                                ╰── <111> Constant Int [31]
     "#;
     assert_parse(src, expected);
 }
@@ -3115,69 +3115,69 @@ fn test_valid_extra_credit_switch_nested_cases() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── switch2
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── switch3
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <20> Constant Int [0]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant Int [3]
+                    │   │   ╰── <23> Constant Int [3]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [0]
+                    │       │       ╰── <25> Constant Int [0]
                     │       ├── Case [1]
                     │       │   ╰── If
                     │       │       ├── Condition
-                    │       │       │   ╰── Constant Int [0]
+                    │       │       │   ╰── <29> Constant Int [0]
                     │       │       ╰── Then
                     │       │           ╰── Block
                     │       │               ├── Case [3]
                     │       │               │   ╰── <35> Assign [=]
                     │       │               │       ├── <32> Var [switch1]
-                    │       │               │       ╰── Constant Int [1]
+                    │       │               │       ╰── <34> Constant Int [1]
                     │       │               ╰── Break
                     │       ╰── Default
                     │           ╰── Return
-                    │               ╰── Constant Int [0]
+                    │               ╰── <43> Constant Int [0]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant Int [4]
+                    │   │   ╰── <49> Constant Int [4]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [0]
+                    │       │       ╰── <51> Constant Int [0]
                     │       ├── If
                     │       │   ├── Condition
-                    │       │   │   ╰── Constant Int [1]
+                    │       │   │   ╰── <54> Constant Int [1]
                     │       │   ├── Then
                     │       │   │   ╰── Block
                     │       │   │       ╰── Return
-                    │       │   │           ╰── Constant Int [0]
+                    │       │   │           ╰── <55> Constant Int [0]
                     │       │   ╰── Else
                     │       │       ╰── Block
                     │       │           ├── Case [4]
                     │       │           │   ╰── <64> Assign [=]
                     │       │           │       ├── <61> Var [switch2]
-                    │       │           │       ╰── Constant Int [1]
+                    │       │           │       ╰── <63> Constant Int [1]
                     │       │           ╰── Break
                     │       ╰── Default
                     │           ╰── Return
-                    │               ╰── Constant Int [0]
+                    │               ╰── <71> Constant Int [0]
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant Int [5]
+                    │   │   ╰── <77> Constant Int [5]
                     │   ╰── Block
                     │       ╰── For
                     │           ├── Init
@@ -3187,29 +3187,29 @@ fn test_valid_extra_credit_switch_nested_cases() {
                     │           │       ├── Type
                     │           │       │   ╰── Int
                     │           │       ╰── Initializer
-                    │           │           ╰── Constant Int [0]
+                    │           │           ╰── <81> Constant Int [0]
                     │           ├── Condition
                     │           │   ╰── <89>  [<]
                     │           │       ├── <86> Var [i]
-                    │           │       ╰── Constant Int [10]
+                    │           │       ╰── <88> Constant Int [10]
                     │           ├── Condition
                     │           │   ╰── <98> Assign [=]
                     │           │       ├── <91> Var [i]
                     │           │       ╰── <97>  [+]
                     │           │           ├── <94> Var [i]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <96> Constant Int [1]
                     │           ╰── Block
                     │               ├── <103> Assign [=]
                     │               │   ├── <100> Var [switch1]
-                    │               │   ╰── Constant Int [0]
+                    │               │   ╰── <102> Constant Int [0]
                     │               ├── Case [5]
                     │               │   ╰── <110> Assign [=]
                     │               │       ├── <107> Var [switch3]
-                    │               │       ╰── Constant Int [1]
+                    │               │       ╰── <109> Constant Int [1]
                     │               ├── Break
                     │               ╰── Default
                     │                   ╰── Return
-                    │                       ╰── Constant Int [0]
+                    │                       ╰── <114> Constant Int [0]
                     ╰── Return
                         ╰── <133>  [&&]
                             ├── <128>  [&&]
@@ -3247,7 +3247,7 @@ fn test_valid_extra_credit_switch_nested_not_taken() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
@@ -3259,14 +3259,14 @@ fn test_valid_extra_credit_switch_nested_not_taken() {
                     │       │       ╰── Block
                     │       │           ├── Case [0]
                     │       │           │   ╰── Return
-                    │       │           │       ╰── Constant Int [0]
+                    │       │           │       ╰── <17> Constant Int [0]
                     │       │           ╰── Default
                     │       │               ╰── Return
-                    │       │                   ╰── Constant Int [0]
+                    │       │                   ╰── <20> Constant Int [0]
                     │       ╰── Default
                     │           ╰── <31> Assign [=]
                     │               ├── <28> Var [a]
-                    │               ╰── Constant Int [2]
+                    │               ╰── <30> Constant Int [2]
                     ╰── Return
                         ╰── <38> Var [a]
     "#;
@@ -3298,32 +3298,32 @@ fn test_valid_extra_credit_switch_nested_switch() {
                 ╰── Body
                     ╰── Switch
                         ├── Expression
-                        │   ╰── Constant Int [3]
+                        │   ╰── <5> Constant Int [3]
                         ╰── Block
                             ├── Case [0]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <7> Constant Int [0]
                             ├── Case [3]
                             │   ╰── Block
                             │       ╰── Switch
                             │           ├── Expression
-                            │           │   ╰── Constant Int [4]
+                            │           │   ╰── <11> Constant Int [4]
                             │           ╰── Block
                             │               ├── Case [3]
                             │               │   ╰── Return
-                            │               │       ╰── Constant Int [0]
+                            │               │       ╰── <13> Constant Int [0]
                             │               ├── Case [4]
                             │               │   ╰── Return
-                            │               │       ╰── Constant Int [1]
+                            │               │       ╰── <17> Constant Int [1]
                             │               ╰── Default
                             │                   ╰── Return
-                            │                       ╰── Constant Int [0]
+                            │                       ╰── <20> Constant Int [0]
                             ├── Case [4]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <30> Constant Int [0]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant Int [0]
+                                    ╰── <33> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3348,12 +3348,12 @@ fn test_valid_extra_credit_switch_no_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [4]
+                    │       ╰── <8> Constant Int [4]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
                     │   ╰── Return
-                    │       ╰── Constant Int [0]
+                    │       ╰── <13> Constant Int [0]
                     ╰── Return
                         ╰── <17> Var [a]
     "#;
@@ -3383,22 +3383,22 @@ fn test_valid_extra_credit_switch_not_taken() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [0]
+                    │       │       ╰── <14> Constant Int [0]
                     │       ├── Case [2]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [0]
+                    │       │       ╰── <18> Constant Int [0]
                     │       ╰── Case [3]
                     │           ╰── Return
-                    │               ╰── Constant Int [0]
+                    │               ╰── <22> Constant Int [0]
                     ╰── Return
-                        ╰── Constant Int [1]
+                        ╰── <28> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -3422,15 +3422,15 @@ fn test_valid_extra_credit_switch_single_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <12> Var [a]
                     │   ╰── Case [1]
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <14> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <18> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3461,11 +3461,11 @@ fn test_valid_extra_credit_switch_with_continue() {
                 ╰── Body
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant Int [4]
+                    │   │   ╰── <5> Constant Int [4]
                     │   ╰── Block
                     │       ├── Case [0]
                     │       │   ╰── Return
-                    │       │       ╰── Constant Int [0]
+                    │       │       ╰── <7> Constant Int [0]
                     │       ╰── Case [4]
                     │           ╰── Block
                     │               ├── VarDeclaration
@@ -3474,7 +3474,7 @@ fn test_valid_extra_credit_switch_with_continue() {
                     │               │   ├── Type
                     │               │   │   ╰── Int
                     │               │   ╰── Initializer
-                    │               │       ╰── Constant Int [0]
+                    │               │       ╰── <14> Constant Int [0]
                     │               ├── For
                     │               │   ├── Init
                     │               │   │   ╰── VarDeclaration
@@ -3483,34 +3483,34 @@ fn test_valid_extra_credit_switch_with_continue() {
                     │               │   │       ├── Type
                     │               │   │       │   ╰── Int
                     │               │   │       ╰── Initializer
-                    │               │   │           ╰── Constant Int [0]
+                    │               │   │           ╰── <20> Constant Int [0]
                     │               │   ├── Condition
                     │               │   │   ╰── <28>  [<]
                     │               │   │       ├── <25> Var [i]
-                    │               │   │       ╰── Constant Int [10]
+                    │               │   │       ╰── <27> Constant Int [10]
                     │               │   ├── Condition
                     │               │   │   ╰── <37> Assign [=]
                     │               │   │       ├── <30> Var [i]
                     │               │   │       ╰── <36>  [+]
                     │               │   │           ├── <33> Var [i]
-                    │               │   │           ╰── Constant Int [1]
+                    │               │   │           ╰── <35> Constant Int [1]
                     │               │   ╰── Block
                     │               │       ├── If
                     │               │       │   ├── Condition
                     │               │       │   │   ╰── <42>  [%]
                     │               │       │   │       ├── <39> Var [i]
-                    │               │       │   │       ╰── Constant Int [2]
+                    │               │       │   │       ╰── <41> Constant Int [2]
                     │               │       │   ╰── Then
                     │               │       │       ╰── Continue
                     │               │       ╰── <53> Assign [=]
                     │               │           ├── <46> Var [acc]
                     │               │           ╰── <52>  [+]
                     │               │               ├── <49> Var [acc]
-                    │               │               ╰── Constant Int [1]
+                    │               │               ╰── <51> Constant Int [1]
                     │               ╰── Return
                     │                   ╰── <59> Var [acc]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <67> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3539,7 +3539,7 @@ fn test_valid_extra_credit_switch_with_continue_2() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -3548,23 +3548,23 @@ fn test_valid_extra_credit_switch_with_continue_2() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <14> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <22>  [<]
                     │   │       ├── <19> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <21> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <31> Assign [=]
                     │   │       ├── <24> Var [i]
                     │   │       ╰── <30>  [+]
                     │   │           ├── <27> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <29> Constant Int [1]
                     │   ╰── Block
                     │       ╰── Switch
                     │           ├── Expression
                     │           │   ╰── <36>  [%]
                     │           │       ├── <33> Var [i]
-                    │           │       ╰── Constant Int [2]
+                    │           │       ╰── <35> Constant Int [2]
                     │           ╰── Block
                     │               ├── Case [0]
                     │               │   ╰── Continue
@@ -3573,7 +3573,7 @@ fn test_valid_extra_credit_switch_with_continue_2() {
                     │                       ├── <41> Var [sum]
                     │                       ╰── <47>  [+]
                     │                           ├── <44> Var [sum]
-                    │                           ╰── Constant Int [1]
+                    │                           ╰── <46> Constant Int [1]
                     ╰── Return
                         ╰── <58> Var [sum]
     "#;
@@ -3601,7 +3601,7 @@ fn test_valid_for() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [12345]
+                    │       ╰── <8> Constant Int [12345]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -3611,22 +3611,22 @@ fn test_valid_for() {
                     │   ├── Init
                     │   │   ╰── <19> Assign [=]
                     │   │       ├── <16> Var [i]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <18> Constant Int [5]
                     │   ├── Condition
                     │   │   ╰── <24>  [>=]
                     │   │       ├── <21> Var [i]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <23> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <33> Assign [=]
                     │   │       ├── <26> Var [i]
                     │   │       ╰── <32>  [-]
                     │   │           ├── <29> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <31> Constant Int [1]
                     │   ╰── <42> Assign [=]
                     │       ├── <35> Var [a]
                     │       ╰── <41>  [/]
                     │           ├── <38> Var [a]
-                    │           ╰── Constant Int [3]
+                    │           ╰── <40> Constant Int [3]
                     ╰── Return
                         ╰── <46> Var [a]
     "#;
@@ -3654,21 +3654,21 @@ fn test_valid_for_absent_condition() {
                         │       ├── Type
                         │       │   ╰── Int
                         │       ╰── Initializer
-                        │           ╰── Constant Int [400]
+                        │           ╰── <8> Constant Int [400]
                         ├── Condition
                         │   ╰── <20> Assign [=]
                         │       ├── <13> Var [i]
                         │       ╰── <19>  [-]
                         │           ├── <16> Var [i]
-                        │           ╰── Constant Int [100]
+                        │           ╰── <18> Constant Int [100]
                         ╰── If
                             ├── Condition
                             │   ╰── <25>  [==]
                             │       ├── <22> Var [i]
-                            │       ╰── Constant Int [100]
+                            │       ╰── <24> Constant Int [100]
                             ╰── Then
                                 ╰── Return
-                                    ╰── Constant Int [0]
+                                    ╰── <26> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3695,28 +3695,28 @@ fn test_valid_for_absent_post() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <10> Unary [-]
-                    │           ╰── Constant Int [2147]
+                    │           ╰── <9> Constant Int [2147]
                     ├── For
                     │   ├── Condition
                     │   │   ╰── <20>  [!=]
                     │   │       ├── <17>  [%]
                     │   │       │   ├── <14> Var [a]
-                    │   │       │   ╰── Constant Int [5]
-                    │   │       ╰── Constant Int [0]
+                    │   │       │   ╰── <16> Constant Int [5]
+                    │   │       ╰── <19> Constant Int [0]
                     │   ╰── Block
                     │       ╰── <29> Assign [=]
                     │           ├── <22> Var [a]
                     │           ╰── <28>  [+]
                     │               ├── <25> Var [a]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <27> Constant Int [1]
                     ╰── Return
                         ╰── <45>  [||]
                             ├── <38>  [%]
                             │   ├── <35> Var [a]
-                            │   ╰── Constant Int [5]
+                            │   ╰── <37> Constant Int [5]
                             ╰── <44>  [>]
                                 ├── <41> Var [a]
-                                ╰── Constant Int [0]
+                                ╰── <43> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3741,7 +3741,7 @@ fn test_valid_for_decl() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -3751,22 +3751,22 @@ fn test_valid_for_decl() {
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
                     │   │           ╰── <16> Unary [-]
-                    │   │               ╰── Constant Int [100]
+                    │   │               ╰── <15> Constant Int [100]
                     │   ├── Condition
                     │   │   ╰── <24>  [<=]
                     │   │       ├── <21> Var [i]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <23> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <33> Assign [=]
                     │   │       ├── <26> Var [i]
                     │   │       ╰── <32>  [+]
                     │   │           ├── <29> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <31> Constant Int [1]
                     │   ╰── <42> Assign [=]
                     │       ├── <35> Var [a]
                     │       ╰── <41>  [+]
                     │           ├── <38> Var [a]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <40> Constant Int [1]
                     ╰── Return
                         ╰── <46> Var [a]
     "#;
@@ -3798,21 +3798,21 @@ fn test_valid_for_nested_shadow() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── j
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── k
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <20> Constant Int [1]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -3821,17 +3821,17 @@ fn test_valid_for_nested_shadow() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [100]
+                    │   │           ╰── <26> Constant Int [100]
                     │   ├── Condition
                     │   │   ╰── <34>  [>]
                     │   │       ├── <31> Var [i]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <33> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <43> Assign [=]
                     │   │       ├── <36> Var [i]
                     │   │       ╰── <42>  [-]
                     │   │           ├── <39> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <41> Constant Int [1]
                     │   ╰── Block
                     │       ├── VarDeclaration
                     │       │   ├── Name
@@ -3839,7 +3839,7 @@ fn test_valid_for_nested_shadow() {
                     │       │   ├── Type
                     │       │   │   ╰── Int
                     │       │   ╰── Initializer
-                    │       │       ╰── Constant Int [1]
+                    │       │       ╰── <47> Constant Int [1]
                     │       ├── VarDeclaration
                     │       │   ├── Name
                     │       │   │   ╰── j
@@ -3857,13 +3857,13 @@ fn test_valid_for_nested_shadow() {
                             ├── <82>  [&&]
                             │   ├── <75>  [==]
                             │   │   ├── <72> Var [k]
-                            │   │   ╰── Constant Int [101]
+                            │   │   ╰── <74> Constant Int [101]
                             │   ╰── <81>  [==]
                             │       ├── <78> Var [i]
-                            │       ╰── Constant Int [0]
+                            │       ╰── <80> Constant Int [0]
                             ╰── <88>  [==]
                                 ├── <85> Var [j]
-                                ╰── Constant Int [0]
+                                ╰── <87> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3890,14 +3890,14 @@ fn test_valid_for_shadow() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── acc
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -3906,17 +3906,17 @@ fn test_valid_for_shadow() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <20> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <28>  [<]
                     │   │       ├── <25> Var [shadow]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <27> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <37> Assign [=]
                     │   │       ├── <30> Var [shadow]
                     │   │       ╰── <36>  [+]
                     │   │           ├── <33> Var [shadow]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <35> Constant Int [1]
                     │   ╰── Block
                     │       ╰── <47> Assign [=]
                     │           ├── <39> Var [acc]
@@ -3927,10 +3927,10 @@ fn test_valid_for_shadow() {
                         ╰── <63>  [&&]
                             ├── <56>  [==]
                             │   ├── <53> Var [acc]
-                            │   ╰── Constant Int [45]
+                            │   ╰── <55> Constant Int [45]
                             ╰── <62>  [==]
                                 ├── <59> Var [shadow]
-                                ╰── Constant Int [1]
+                                ╰── <61> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -3965,22 +3965,22 @@ fn test_valid_multi_break() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── While
                     │   ├── Condition
-                    │   │   ╰── Constant Int [1]
+                    │   │   ╰── <11> Constant Int [1]
                     │   ╰── Body
                     │       ╰── Block
                     │           ├── <20> Assign [=]
                     │           │   ├── <13> Var [i]
                     │           │   ╰── <19>  [+]
                     │           │       ├── <16> Var [i]
-                    │           │       ╰── Constant Int [1]
+                    │           │       ╰── <18> Constant Int [1]
                     │           ╰── If
                     │               ├── Condition
                     │               │   ╰── <26>  [>]
                     │               │       ├── <23> Var [i]
-                    │               │       ╰── Constant Int [10]
+                    │               │       ╰── <25> Constant Int [10]
                     │               ╰── Then
                     │                   ╰── Break
                     ├── VarDeclaration
@@ -3989,22 +3989,22 @@ fn test_valid_multi_break() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <35> Constant Int [10]
                     ├── While
                     │   ├── Condition
-                    │   │   ╰── Constant Int [1]
+                    │   │   ╰── <38> Constant Int [1]
                     │   ╰── Body
                     │       ╰── Block
                     │           ├── <47> Assign [=]
                     │           │   ├── <40> Var [j]
                     │           │   ╰── <46>  [-]
                     │           │       ├── <43> Var [j]
-                    │           │       ╰── Constant Int [1]
+                    │           │       ╰── <45> Constant Int [1]
                     │           ╰── If
                     │               ├── Condition
                     │               │   ╰── <53>  [<]
                     │               │       ├── <50> Var [j]
-                    │               │       ╰── Constant Int [0]
+                    │               │       ╰── <52> Constant Int [0]
                     │               ╰── Then
                     │                   ╰── Break
                     ├── VarDeclaration
@@ -4017,10 +4017,10 @@ fn test_valid_multi_break() {
                     │           ├── <68>  [==]
                     │           │   ├── <63> Var [j]
                     │           │   ╰── <67> Unary [-]
-                    │           │       ╰── Constant Int [1]
+                    │           │       ╰── <66> Constant Int [1]
                     │           ╰── <74>  [==]
                     │               ├── <71> Var [i]
-                    │               ╰── Constant Int [11]
+                    │               ╰── <73> Constant Int [11]
                     ╰── Return
                         ╰── <79> Var [result]
     "#;
@@ -4056,21 +4056,21 @@ fn test_valid_multi_continue_same_loop() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── z
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <20> Constant Int [0]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Block
@@ -4078,47 +4078,47 @@ fn test_valid_multi_continue_same_loop() {
                     │   │       │   ├── <24> Var [z]
                     │   │       │   ╰── <30>  [+]
                     │   │       │       ├── <27> Var [z]
-                    │   │       │       ╰── Constant Int [1]
+                    │   │       │       ╰── <29> Constant Int [1]
                     │   │       ├── If
                     │   │       │   ├── Condition
                     │   │       │   │   ╰── <37>  [<=]
                     │   │       │   │       ├── <34> Var [x]
-                    │   │       │   │       ╰── Constant Int [0]
+                    │   │       │   │       ╰── <36> Constant Int [0]
                     │   │       │   ╰── Then
                     │   │       │       ╰── Continue
                     │   │       ├── <48> Assign [=]
                     │   │       │   ├── <41> Var [x]
                     │   │       │   ╰── <47>  [-]
                     │   │       │       ├── <44> Var [x]
-                    │   │       │       ╰── Constant Int [1]
+                    │   │       │       ╰── <46> Constant Int [1]
                     │   │       ├── If
                     │   │       │   ├── Condition
                     │   │       │   │   ╰── <54>  [>=]
                     │   │       │   │       ├── <51> Var [y]
-                    │   │       │   │       ╰── Constant Int [10]
+                    │   │       │   │       ╰── <53> Constant Int [10]
                     │   │       │   ╰── Then
                     │   │       │       ╰── Continue
                     │   │       ╰── <65> Assign [=]
                     │   │           ├── <58> Var [y]
                     │   │           ╰── <64>  [+]
                     │   │               ├── <61> Var [y]
-                    │   │               ╰── Constant Int [1]
+                    │   │               ╰── <63> Constant Int [1]
                     │   ╰── Condition
                     │       ╰── <73>  [!=]
                     │           ├── <70> Var [z]
-                    │           ╰── Constant Int [50]
+                    │           ╰── <72> Constant Int [50]
                     ╰── Return
                         ╰── <93>  [&&]
                             ├── <86>  [&&]
                             │   ├── <79>  [==]
                             │   │   ├── <76> Var [z]
-                            │   │   ╰── Constant Int [50]
+                            │   │   ╰── <78> Constant Int [50]
                             │   ╰── <85>  [==]
                             │       ├── <82> Var [x]
-                            │       ╰── Constant Int [0]
+                            │       ╰── <84> Constant Int [0]
                             ╰── <92>  [==]
                                 ├── <89> Var [y]
-                                ╰── Constant Int [10]
+                                ╰── <91> Constant Int [10]
     "#;
     assert_parse(src, expected);
 }
@@ -4147,7 +4147,7 @@ fn test_valid_nested_break() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -4156,17 +4156,17 @@ fn test_valid_nested_break() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <14> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <22>  [<]
                     │   │       ├── <19> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <21> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <31> Assign [=]
                     │   │       ├── <24> Var [i]
                     │   │       ╰── <30>  [+]
                     │   │           ├── <27> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <29> Constant Int [1]
                     │   ╰── For
                     │       ├── Init
                     │       │   ╰── VarDeclaration
@@ -4175,25 +4175,25 @@ fn test_valid_nested_break() {
                     │       │       ├── Type
                     │       │       │   ╰── Int
                     │       │       ╰── Initializer
-                    │       │           ╰── Constant Int [0]
+                    │       │           ╰── <35> Constant Int [0]
                     │       ├── Condition
                     │       │   ╰── <43>  [<]
                     │       │       ├── <40> Var [j]
-                    │       │       ╰── Constant Int [10]
+                    │       │       ╰── <42> Constant Int [10]
                     │       ├── Condition
                     │       │   ╰── <52> Assign [=]
                     │       │       ├── <45> Var [j]
                     │       │       ╰── <51>  [+]
                     │       │           ├── <48> Var [j]
-                    │       │           ╰── Constant Int [1]
+                    │       │           ╰── <50> Constant Int [1]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── <65>  [==]
                     │           │       ├── <61>  [*]
                     │           │       │   ├── <58>  [/]
                     │           │       │   │   ├── <54> Var [i]
-                    │           │       │   │   ╰── Constant Int [2]
-                    │           │       │   ╰── Constant Int [2]
+                    │           │       │   │   ╰── <56> Constant Int [2]
+                    │           │       │   ╰── <60> Constant Int [2]
                     │           │       ╰── <64> Var [i]
                     │           ├── Then
                     │           │   ╰── Break
@@ -4238,19 +4238,19 @@ fn test_valid_nested_continue() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [5]
+                    │       ╰── <8> Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── acc
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <14> Constant Int [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── <21>  [>=]
                     │   │       ├── <18> Var [x]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <20> Constant Int [0]
                     │   ╰── Body
                     │       ╰── Block
                     │           ├── VarDeclaration
@@ -4264,31 +4264,31 @@ fn test_valid_nested_continue() {
                     │           │   ├── Condition
                     │           │   │   ╰── <33>  [<=]
                     │           │   │       ├── <30> Var [i]
-                    │           │   │       ╰── Constant Int [10]
+                    │           │   │       ╰── <32> Constant Int [10]
                     │           │   ╰── Body
                     │           │       ╰── Block
                     │           │           ├── <42> Assign [=]
                     │           │           │   ├── <35> Var [i]
                     │           │           │   ╰── <41>  [+]
                     │           │           │       ├── <38> Var [i]
-                    │           │           │       ╰── Constant Int [1]
+                    │           │           │       ╰── <40> Constant Int [1]
                     │           │           ├── If
                     │           │           │   ├── Condition
                     │           │           │   │   ╰── <48>  [%]
                     │           │           │   │       ├── <45> Var [i]
-                    │           │           │   │       ╰── Constant Int [2]
+                    │           │           │   │       ╰── <47> Constant Int [2]
                     │           │           │   ╰── Then
                     │           │           │       ╰── Continue
                     │           │           ╰── <59> Assign [=]
                     │           │               ├── <52> Var [acc]
                     │           │               ╰── <58>  [+]
                     │           │                   ├── <55> Var [acc]
-                    │           │                   ╰── Constant Int [1]
+                    │           │                   ╰── <57> Constant Int [1]
                     │           ╰── <72> Assign [=]
                     │               ├── <65> Var [x]
                     │               ╰── <71>  [-]
                     │                   ├── <68> Var [x]
-                    │                   ╰── Constant Int [1]
+                    │                   ╰── <70> Constant Int [1]
                     ╰── Return
                         ╰── <78> Var [acc]
     "#;
@@ -4322,14 +4322,14 @@ fn test_valid_nested_loop() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <14> Constant Int [100]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── <18> Var [x]
@@ -4341,7 +4341,7 @@ fn test_valid_nested_loop() {
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── Constant Int [10]
+                    │           │       ╰── <22> Constant Int [10]
                     │           ├── <34> Assign [=]
                     │           │   ├── <26> Var [x]
                     │           │   ╰── <33>  [-]
@@ -4356,20 +4356,20 @@ fn test_valid_nested_loop() {
                     │                       │   ├── <39> Var [acc]
                     │                       │   ╰── <45>  [+]
                     │                       │       ├── <42> Var [acc]
-                    │                       │       ╰── Constant Int [1]
+                    │                       │       ╰── <44> Constant Int [1]
                     │                       ╰── <56> Assign [=]
                     │                           ├── <49> Var [y]
                     │                           ╰── <55>  [-]
                     │                               ├── <52> Var [y]
-                    │                               ╰── Constant Int [1]
+                    │                               ╰── <54> Constant Int [1]
                     ╰── Return
                         ╰── <75>  [&&]
                             ├── <68>  [==]
                             │   ├── <65> Var [acc]
-                            │   ╰── Constant Int [100]
+                            │   ╰── <67> Constant Int [100]
                             ╰── <74>  [==]
                                 ├── <71> Var [x]
-                                ╰── Constant Int [0]
+                                ╰── <73> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4397,19 +4397,19 @@ fn test_valid_null_for_header() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── For
                     │   ╰── Block
                     │       ├── <19> Assign [=]
                     │       │   ├── <12> Var [a]
                     │       │   ╰── <18>  [+]
                     │       │       ├── <15> Var [a]
-                    │       │       ╰── Constant Int [1]
+                    │       │       ╰── <17> Constant Int [1]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── <25>  [>]
                     │           │       ├── <22> Var [a]
-                    │           │       ╰── Constant Int [3]
+                    │           │       ╰── <24> Constant Int [3]
                     │           ╰── Then
                     │               ╰── Break
                     ╰── Return
@@ -4438,18 +4438,18 @@ fn test_valid_while() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── While
                     │   ├── Condition
                     │   │   ╰── <15>  [<]
                     │   │       ├── <12> Var [a]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <14> Constant Int [5]
                     │   ╰── Body
                     │       ╰── <24> Assign [=]
                     │           ├── <17> Var [a]
                     │           ╰── <23>  [+]
                     │               ├── <20> Var [a]
-                    │               ╰── Constant Int [2]
+                    │               ╰── <22> Constant Int [2]
                     ╰── Return
                         ╰── <28> Var [a]
     "#;

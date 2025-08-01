@@ -1,8 +1,4 @@
-use crate::ast::{
-    AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration,
-    Identifier, Initializer, Node, PostfixOp, Program, Statement, StorageClass, Type, UnaryOp,
-    VarDeclaration,
-};
+use crate::ast::{AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Initializer, Node, NodeId, PostfixOp, Program, Statement, StorageClass, Type, UnaryOp, VarDeclaration};
 use std::io::Write;
 
 struct PrettyAst {
@@ -219,7 +215,7 @@ impl PrettyAst {
     fn from_expression(expression: &Node<Expression>) -> PrettyAst {
         let node_id = expression.id;
         match expression.as_ref() {
-            Expression::Constant(value) => Self::from_constant(value),
+            Expression::Constant(value) => Self::from_constant(node_id, value),
             Expression::String(symbol) => Self::new(format!("<{node_id}> \"{symbol}\""), vec![]),
             Expression::Var(name) => Self::new(format!("<{node_id}> Var [{name}]"), vec![]),
             Expression::Unary { op, expr } => Self::new(
@@ -248,7 +244,7 @@ impl PrettyAst {
                     Self::new("Then", vec![Self::from_expression(then_expr)]),
                     Self::new("Else", vec![Self::from_expression(else_expr)]),
                 ];
-                Self::new("<{node_id}> Conditional [?]", children)
+                Self::new(format!("<{node_id}> Conditional [?]"), children)
             }
             Expression::FunctionCall { name, args } => Self::new(
                 format!("<{node_id}> FunctionCall [{}]", name.symbol),
@@ -292,15 +288,15 @@ impl PrettyAst {
         Self::new(&identifier.symbol, vec![])
     }
 
-    fn from_constant(constant: &Constant) -> PrettyAst {
+    fn from_constant(node_id: NodeId, constant: &Constant) -> PrettyAst {
         match constant {
-            Constant::Int(v) => Self::new(format!("Constant Int [{}]", *v), vec![]),
-            Constant::Long(v) => Self::new(format!("Constant Long [{}]", *v), vec![]),
-            Constant::UInt(v) => Self::new(format!("Constant UInt [{}]", *v), vec![]),
-            Constant::ULong(v) => Self::new(format!("Constant ULong [{}]", *v), vec![]),
-            Constant::Double(v) => Self::new(format!("Constant Double [{:+e}]", *v), vec![]),
-            Constant::Char(v) => Self::new(format!("Constant Char [{}]", *v), vec![]),
-            Constant::UChar(v) => Self::new(format!("Constant UChar [{}]", *v), vec![]),
+            Constant::Int(v) => Self::new(format!("<{node_id}> Constant Int [{}]", *v), vec![]),
+            Constant::Long(v) => Self::new(format!("<{node_id}> Constant Long [{}]", *v), vec![]),
+            Constant::UInt(v) => Self::new(format!("<{node_id}> Constant UInt [{}]", *v), vec![]),
+            Constant::ULong(v) => Self::new(format!("<{node_id}> Constant ULong [{}]", *v), vec![]),
+            Constant::Double(v) => Self::new(format!("<{node_id}> Constant Double [{:+e}]", *v), vec![]),
+            Constant::Char(v) => Self::new(format!("<{node_id}> Constant Char [{}]", *v), vec![]),
+            Constant::UChar(v) => Self::new(format!("<{node_id}> Constant UChar [{}]", *v), vec![]),
         }
     }
 

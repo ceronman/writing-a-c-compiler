@@ -25,7 +25,7 @@ fn test_invalid_labels_extra_credit_duplicate_case_char_const() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [120]
+                    │   │   ╰── <9> Constant Int [120]
                     │   ╰── Static
                     ╰── Switch
                         ├── Expression
@@ -33,13 +33,13 @@ fn test_invalid_labels_extra_credit_duplicate_case_char_const() {
                         ╰── Block
                             ├── Case [120]
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <15> Constant Int [1]
                             ├── Case [120]
                             │   ╰── Return
-                            │       ╰── Constant Int [2]
+                            │       ╰── <19> Constant Int [2]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant Int [3]
+                                    ╰── <22> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -168,7 +168,7 @@ fn test_invalid_types_assign_to_string_literal() {
                     │   ├── <5> "foo"
                     │   ╰── <7> "bar"
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -191,7 +191,7 @@ fn test_invalid_types_char_and_schar_conflict() {
             │   ├── Type
             │   │   ╰── Char
             │   ╰── Initializer
-            │       ╰── Constant Int [10]
+            │       ╰── <4> Constant Int [10]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -233,7 +233,7 @@ fn test_invalid_types_char_and_uchar_conflict() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── <19> FunctionCall [foo]
-            │               ╰── Constant Int [0]
+            │               ╰── <18> Constant Int [0]
             ╰── Function [foo]
                 ╰── Parameters
                     ╰── Param
@@ -266,11 +266,11 @@ fn test_invalid_types_compound_initializer_for_pointer() {
                     │   │       ╰── Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [97]
-                    │           ├── Constant Int [98]
-                    │           ╰── Constant Int [99]
+                    │           ├── <9> Constant Int [97]
+                    │           ├── <11> Constant Int [98]
+                    │           ╰── <13> Constant Int [99]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <17> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -290,9 +290,9 @@ fn test_invalid_types_extra_credit_bit_shift_string() {
                 ╰── Body
                     ├── <8>  [<<]
                     │   ├── <5> "foo"
-                    │   ╰── Constant Int [3]
+                    │   ╰── <7> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -312,9 +312,9 @@ fn test_invalid_types_extra_credit_bitwise_operation_on_string() {
                 ╰── Body
                     ├── <8>  [&]
                     │   ├── <5> "My string"
-                    │   ╰── Constant Int [100]
+                    │   ╰── <7> Constant Int [100]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -338,16 +338,16 @@ fn test_invalid_types_extra_credit_case_statement_string() {
                 ╰── Body
                     ╰── Switch
                         ├── Expression
-                        │   ╰── Constant Int [0]
+                        │   ╰── <5> Constant Int [0]
                         ╰── Block
                             ├── Case [invalid]
                             │   ├── Value
                             │   │   ╰── <6> "foo"
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <7> Constant Int [1]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant Int [0]
+                                    ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -378,7 +378,7 @@ fn test_invalid_types_extra_credit_compound_assign_from_string() {
                     │   ├── <13> Var [s]
                     │   ╰── <15> "another str"
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <18> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -398,9 +398,9 @@ fn test_invalid_types_extra_credit_compound_assign_to_string() {
                 ╰── Body
                     ├── <8> Assign [+=]
                     │   ├── <5> "My string"
-                    │   ╰── Constant Int [1]
+                    │   ╰── <7> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -421,7 +421,7 @@ fn test_invalid_types_extra_credit_postfix_incr_string() {
                     ├── <7> Postfix [++]
                     │   ╰── <5> "foo"
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <9> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -442,7 +442,7 @@ fn test_invalid_types_extra_credit_prefix_incr_string() {
                     ├── <7> Unary [++]
                     │   ╰── <6> "foo"
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <9> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -468,7 +468,7 @@ fn test_invalid_types_extra_credit_switch_on_string() {
                         ╰── Block
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant Int [0]
+                                    ╰── <6> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -494,7 +494,7 @@ fn test_invalid_types_implicit_conversion_between_char_pointers() {
                     │   │   ╰── Pointer
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── s
@@ -537,7 +537,7 @@ fn test_invalid_types_implicit_conversion_pointers_to_different_size_arrays() {
                     │       ╰── <13> AddressOf
                     │           ╰── <12> "x"
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <16> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -598,8 +598,8 @@ fn test_invalid_types_string_initializer_for_multidim_array() {
                         ╰── <20> Subscript
                             ├── <18> Subscript
                             │   ├── <16> Var [arr]
-                            │   ╰── Constant Int [0]
-                            ╰── Constant Int [2]
+                            │   ╰── <17> Constant Int [0]
+                            ╰── <19> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -626,7 +626,7 @@ fn test_invalid_types_string_initializer_too_long() {
                     │   ╰── Initializer
                     │       ╰── <10> "abcd"
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <13> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -657,7 +657,7 @@ fn test_invalid_types_string_initializer_too_long_nested() {
                     │           ├── <12> "a"
                     │           ╰── <14> "bcde"
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <18> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -689,7 +689,7 @@ fn test_invalid_types_string_initializer_too_long_nested_static() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <18> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -717,7 +717,7 @@ fn test_invalid_types_string_initializer_too_long_static() {
                     │   │   ╰── <11> "abcd"
                     │   ╰── Static
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <14> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -746,7 +746,7 @@ fn test_invalid_types_string_initializer_wrong_type() {
                     ╰── Return
                         ╰── <16> Subscript
                             ├── <14> Var [ints]
-                            ╰── Constant Int [1]
+                            ╰── <15> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -777,7 +777,7 @@ fn test_invalid_types_string_initializer_wrong_type_nested() {
                     │       ╰── Compound
                     │           ╰── <12> "a"
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <16> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -809,7 +809,7 @@ fn test_invalid_types_string_initializer_wrong_type_nested_static() {
                     │   │       ╰── <13> "a"
                     │   ╰── Static
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <17> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -835,7 +835,7 @@ fn test_invalid_types_string_literal_is_plain_char_pointer() {
                     │   ╰── Initializer
                     │       ╰── <9> "foo"
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <12> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -862,7 +862,7 @@ fn test_invalid_types_string_literal_is_plain_char_pointer_static() {
                     │   │   ╰── <10> "foo"
                     │   ╰── Static
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <13> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -914,18 +914,18 @@ fn test_valid_char_constants_char_constant_operations() {
             │   ├── Type
             │   │   ╰── Double
             │   ╰── Initializer
-            │       ╰── Constant Int [92]
+            │       ╰── <4> Constant Int [92]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <15>  [!=]
                     │   │       ├── <12> Var [d]
-                    │   │       ╰── Constant Double [+9.2e1]
+                    │   │       ╰── <14> Constant Double [+9.2e1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <16> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── array
@@ -935,71 +935,71 @@ fn test_valid_char_constants_char_constant_operations() {
                     │   │       ╰── Unsigned Long
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ├── Constant Int [97]
-                    │           ├── Constant Int [8]
-                    │           ├── Constant Int [3]
-                    │           ├── Constant Int [4]
-                    │           ├── Constant Int [5]
-                    │           ├── Constant Int [33]
-                    │           ├── Constant Int [37]
-                    │           ╰── Constant Int [126]
+                    │           ├── <26> Constant Int [1]
+                    │           ├── <28> Constant Int [2]
+                    │           ├── <30> Constant Int [97]
+                    │           ├── <32> Constant Int [8]
+                    │           ├── <34> Constant Int [3]
+                    │           ├── <36> Constant Int [4]
+                    │           ├── <38> Constant Int [5]
+                    │           ├── <40> Constant Int [33]
+                    │           ├── <42> Constant Int [37]
+                    │           ╰── <44> Constant Int [126]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <54>  [!=]
                     │   │       ├── <51> Subscript
                     │   │       │   ├── <49> Var [array]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [97]
+                    │   │       │   ╰── <50> Constant Int [2]
+                    │   │       ╰── <53> Constant Int [97]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <55> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <66>  [!=]
                     │   │       ├── <63> Subscript
                     │   │       │   ├── <61> Var [array]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [8]
+                    │   │       │   ╰── <62> Constant Int [3]
+                    │   │       ╰── <65> Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <67> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <78>  [!=]
                     │   │       ├── <75> Subscript
                     │   │       │   ├── <73> Var [array]
-                    │   │       │   ╰── Constant Int [7]
-                    │   │       ╰── Constant Int [33]
+                    │   │       │   ╰── <74> Constant Int [7]
+                    │   │       ╰── <77> Constant Int [33]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <79> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <90>  [!=]
                     │   │       ├── <87> Subscript
                     │   │       │   ├── <85> Var [array]
-                    │   │       │   ╰── Constant Int [8]
-                    │   │       ╰── Constant Int [37]
+                    │   │       │   ╰── <86> Constant Int [8]
+                    │   │       ╰── <89> Constant Int [37]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <91> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <102>  [!=]
                     │   │       ├── <99> Subscript
                     │   │       │   ├── <97> Var [array]
-                    │   │       │   ╰── Constant Int [9]
-                    │   │       ╰── Constant Int [126]
+                    │   │       │   ╰── <98> Constant Int [9]
+                    │   │       ╰── <101> Constant Int [126]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <103> Constant Int [6]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── array_ptr
@@ -1017,13 +1017,13 @@ fn test_valid_char_constants_char_constant_operations() {
                     │   │       ├── <125> Subscript
                     │   │       │   ├── <123> Subscript
                     │   │       │   │   ├── <121> Var [array_ptr]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [9]
-                    │   │       ╰── Constant Int [126]
+                    │   │       │   │   ╰── <122> Constant Int [0]
+                    │   │       │   ╰── <124> Constant Int [9]
+                    │   │       ╰── <127> Constant Int [126]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <129> Constant Int [7]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -1032,16 +1032,16 @@ fn test_valid_char_constants_char_constant_operations() {
                     │   ╰── Initializer
                     │       ╰── <140> Subscript
                     │           ├── <138> Var [array]
-                    │           ╰── Constant Int [7]
+                    │           ╰── <139> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <147>  [!=]
                     │   │       ├── <144> Var [i]
-                    │   │       ╰── Constant Int [33]
+                    │   │       ╰── <146> Constant Int [33]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <148> Constant Int [8]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
@@ -1051,24 +1051,24 @@ fn test_valid_char_constants_char_constant_operations() {
                     │       ╰── <170>  [-]
                     │           ├── <165>  [+]
                     │           │   ├── <159>  [%]
-                    │           │   │   ├── Constant Int [10]
-                    │           │   │   ╰── Constant Int [7]
+                    │           │   │   ├── <156> Constant Int [10]
+                    │           │   │   ╰── <158> Constant Int [7]
                     │           │   ╰── <164>  [*]
-                    │           │       ├── Constant Double [+4e0]
-                    │           │       ╰── Constant Int [95]
+                    │           │       ├── <161> Constant Double [+4e0]
+                    │           │       ╰── <163> Constant Int [95]
                     │           ╰── <169> Unary [~]
-                    │               ╰── Constant Int [64]
+                    │               ╰── <168> Constant Int [64]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <177>  [!=]
                     │   │       ├── <174> Var [d]
-                    │   │       ╰── Constant Double [+4.48e2]
+                    │   │       ╰── <176> Constant Double [+4.48e2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <178> Constant Int [9]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <183> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1103,50 +1103,50 @@ fn test_valid_char_constants_control_characters() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [9]
+                    │       ╰── <8> Constant Int [9]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── vertical_tab
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [11]
+                    │       ╰── <14> Constant Int [11]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── form_feed
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [12]
+                    │       ╰── <20> Constant Int [12]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <27>  [!=]
                     │   │       ├── <24> Var [tab]
-                    │   │       ╰── Constant Int [9]
+                    │   │       ╰── <26> Constant Int [9]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <28> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <37>  [!=]
                     │   │       ├── <34> Var [vertical_tab]
-                    │   │       ╰── Constant Int [11]
+                    │   │       ╰── <36> Constant Int [11]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <38> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <47>  [!=]
                     │   │       ├── <44> Var [form_feed]
-                    │   │       ╰── Constant Int [12]
+                    │   │       ╰── <46> Constant Int [12]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <48> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <53> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1199,104 +1199,104 @@ fn test_valid_char_constants_escape_sequences() {
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <8>  [!=]
-                    │   │       ├── Constant Int [63]
-                    │   │       ╰── Constant Int [63]
+                    │   │       ├── <5> Constant Int [63]
+                    │   │       ╰── <7> Constant Int [63]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <9> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <17>  [!=]
-                    │   │       ├── Constant Int [34]
-                    │   │       ╰── Constant Int [34]
+                    │   │       ├── <14> Constant Int [34]
+                    │   │       ╰── <16> Constant Int [34]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <18> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <26>  [!=]
-                    │   │       ├── Constant Int [39]
-                    │   │       ╰── Constant Int [39]
+                    │   │       ├── <23> Constant Int [39]
+                    │   │       ╰── <25> Constant Int [39]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <27> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <35>  [!=]
-                    │   │       ├── Constant Int [92]
-                    │   │       ╰── Constant Int [92]
+                    │   │       ├── <32> Constant Int [92]
+                    │   │       ╰── <34> Constant Int [92]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <36> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <44>  [!=]
-                    │   │       ├── Constant Int [7]
-                    │   │       ╰── Constant Int [7]
+                    │   │       ├── <41> Constant Int [7]
+                    │   │       ╰── <43> Constant Int [7]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <45> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <53>  [!=]
-                    │   │       ├── Constant Int [8]
-                    │   │       ╰── Constant Int [8]
+                    │   │       ├── <50> Constant Int [8]
+                    │   │       ╰── <52> Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <54> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <62>  [!=]
-                    │   │       ├── Constant Int [12]
-                    │   │       ╰── Constant Int [12]
+                    │   │       ├── <59> Constant Int [12]
+                    │   │       ╰── <61> Constant Int [12]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <63> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <71>  [!=]
-                    │   │       ├── Constant Int [10]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ├── <68> Constant Int [10]
+                    │   │       ╰── <70> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <72> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <80>  [!=]
-                    │   │       ├── Constant Int [13]
-                    │   │       ╰── Constant Int [13]
+                    │   │       ├── <77> Constant Int [13]
+                    │   │       ╰── <79> Constant Int [13]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <81> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <89>  [!=]
-                    │   │       ├── Constant Int [9]
-                    │   │       ╰── Constant Int [9]
+                    │   │       ├── <86> Constant Int [9]
+                    │   │       ╰── <88> Constant Int [9]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [10]
+                    │               ╰── <90> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <98>  [!=]
-                    │   │       ├── Constant Int [11]
-                    │   │       ╰── Constant Int [11]
+                    │   │       ├── <95> Constant Int [11]
+                    │   │       ╰── <97> Constant Int [11]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [11]
+                    │               ╰── <99> Constant Int [11]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <104> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1314,7 +1314,7 @@ fn test_valid_char_constants_return_char_constant() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [99]
+                        ╰── <5> Constant Int [99]
     "#;
     assert_parse(src, expected);
 }
@@ -1370,7 +1370,7 @@ fn test_valid_chars_access_through_char_pointer() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <8> Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── byte_ptr
@@ -1390,29 +1390,29 @@ fn test_valid_chars_access_through_char_pointer() {
                     │   │   ╰── <30>  [!=]
                     │   │       ├── <27> Subscript
                     │   │       │   ├── <25> Var [byte_ptr]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [100]
+                    │   │       │   ╰── <26> Constant Int [0]
+                    │   │       ╰── <29> Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <31> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <51>  [||]
                     │   │       ├── <45>  [||]
                     │   │       │   ├── <39> Subscript
                     │   │       │   │   ├── <37> Var [byte_ptr]
-                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── <38> Constant Int [1]
                     │   │       │   ╰── <44> Subscript
                     │   │       │       ├── <42> Var [byte_ptr]
-                    │   │       │       ╰── Constant Int [2]
+                    │   │       │       ╰── <43> Constant Int [2]
                     │   │       ╰── <50> Subscript
                     │   │           ├── <48> Var [byte_ptr]
-                    │   │           ╰── Constant Int [3]
+                    │   │           ╰── <49> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <52> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
@@ -1420,7 +1420,7 @@ fn test_valid_chars_access_through_char_pointer() {
                     │   │   ╰── Double
                     │   ╰── Initializer
                     │       ╰── <62> Unary [-]
-                    │           ╰── Constant Double [+0e0]
+                    │           ╰── <61> Constant Double [+0e0]
                     ├── <75> Assign [=]
                     │   ├── <66> Var [byte_ptr]
                     │   ╰── <74> Cast
@@ -1435,13 +1435,13 @@ fn test_valid_chars_access_through_char_pointer() {
                     │   │   ╰── <85>  [!=]
                     │   │       ├── <80> Subscript
                     │   │       │   ├── <78> Var [byte_ptr]
-                    │   │       │   ╰── Constant Int [7]
+                    │   │       │   ╰── <79> Constant Int [7]
                     │   │       ╰── <84> Unary [-]
-                    │   │           ╰── Constant Int [128]
+                    │   │           ╰── <83> Constant Int [128]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <86> Constant Int [3]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -1450,17 +1450,17 @@ fn test_valid_chars_access_through_char_pointer() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <94> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <102>  [<]
                     │   │       ├── <99> Var [i]
-                    │   │       ╰── Constant Int [7]
+                    │   │       ╰── <101> Constant Int [7]
                     │   ├── Condition
                     │   │   ╰── <111> Assign [=]
                     │   │       ├── <104> Var [i]
                     │   │       ╰── <110>  [+]
                     │   │           ├── <107> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <109> Constant Int [1]
                     │   ╰── Block
                     │       ╰── If
                     │           ├── Condition
@@ -1470,7 +1470,7 @@ fn test_valid_chars_access_through_char_pointer() {
                     │           ╰── Then
                     │               ╰── Block
                     │                   ╰── Return
-                    │                       ╰── Constant Int [4]
+                    │                       ╰── <117> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── array
@@ -1487,20 +1487,20 @@ fn test_valid_chars_access_through_char_pointer() {
                     │           ├── Compound
                     │           │   ├── Compound
                     │           │   │   ╰── <136> Unary [-]
-                    │           │   │       ╰── Constant Int [1]
+                    │           │   │       ╰── <135> Constant Int [1]
                     │           │   ╰── Compound
                     │           │       ╰── <141> Unary [-]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <140> Constant Int [1]
                     │           ├── Compound
                     │           │   ├── Compound
                     │           │   │   ╰── <147> Unary [-]
-                    │           │   │       ╰── Constant Int [1]
+                    │           │   │       ╰── <146> Constant Int [1]
                     │           │   ╰── Compound
                     │           │       ╰── <152> Unary [-]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <151> Constant Int [1]
                     │           ╰── Compound
                     │               ╰── Compound
-                    │                   ╰── Constant UInt [4294901760]
+                    │                   ╰── <156> Constant UInt [4294901760]
                     ├── <171> Assign [=]
                     │   ├── <163> Var [byte_ptr]
                     │   ╰── <170> Cast
@@ -1513,46 +1513,46 @@ fn test_valid_chars_access_through_char_pointer() {
                     │   ├── <174> Var [byte_ptr]
                     │   ╰── <180>  [+]
                     │       ├── <177> Var [byte_ptr]
-                    │       ╰── Constant Int [16]
+                    │       ╰── <179> Constant Int [16]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <192>  [||]
                     │   │       ├── <186> Subscript
                     │   │       │   ├── <184> Var [byte_ptr]
-                    │   │       │   ╰── Constant Int [0]
+                    │   │       │   ╰── <185> Constant Int [0]
                     │   │       ╰── <191> Subscript
                     │   │           ├── <189> Var [byte_ptr]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <190> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <193> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <206>  [!=]
                     │   │       ├── <201> Subscript
                     │   │       │   ├── <199> Var [byte_ptr]
-                    │   │       │   ╰── Constant Int [2]
+                    │   │       │   ╰── <200> Constant Int [2]
                     │   │       ╰── <205> Unary [-]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <204> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <207> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <220>  [!=]
                     │   │       ├── <215> Subscript
                     │   │       │   ├── <213> Var [byte_ptr]
-                    │   │       │   ╰── Constant Int [3]
+                    │   │       │   ╰── <214> Constant Int [3]
                     │   │       ╰── <219> Unary [-]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <218> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <221> Constant Int [7]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <226> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1581,7 +1581,7 @@ fn test_valid_chars_chained_casts() {
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant UInt [4294967200]
+            │       ╰── <4> Constant UInt [4294967200]
             ╰── Function [main]
                 ╰── Body
                     ├── <22> Assign [=]
@@ -1599,11 +1599,11 @@ fn test_valid_chars_chained_casts() {
                     │   ├── Condition
                     │   │   ╰── <28>  [!=]
                     │   │       ├── <25> Var [ui]
-                    │   │       ╰── Constant Int [160]
+                    │   │       ╰── <27> Constant Int [160]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <29> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -1624,13 +1624,13 @@ fn test_valid_chars_chained_casts() {
                     │   │   ╰── <53>  [!=]
                     │   │       ├── <48> Var [i]
                     │   │       ╰── <52> Unary [-]
-                    │   │           ╰── Constant Int [96]
+                    │   │           ╰── <51> Constant Int [96]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <54> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <59> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1737,7 +1737,7 @@ fn test_valid_chars_char_arguments() {
             │       │   ├── Type
             │       │   │   ╰── Char
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [5]
+            │       │       ╰── <32> Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── expected_b
@@ -1745,28 +1745,28 @@ fn test_valid_chars_char_arguments() {
             │       │   │   ╰── Signed Char
             │       │   ╰── Initializer
             │       │       ╰── <40> Unary [-]
-            │       │           ╰── Constant Int [12]
+            │       │           ╰── <39> Constant Int [12]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── expected_c
             │       │   ├── Type
             │       │   │   ╰── Char
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [117]
+            │       │       ╰── <46> Constant Int [117]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── expected_d
             │       │   ├── Type
             │       │   │   ╰── Unsigned Char
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [254]
+            │       │       ╰── <52> Constant Int [254]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── expected_e
             │       │   ├── Type
             │       │   │   ╰── Char
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [1]
+            │       │       ╰── <58> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── expected_f
@@ -1774,21 +1774,21 @@ fn test_valid_chars_char_arguments() {
             │       │   │   ╰── Char
             │       │   ╰── Initializer
             │       │       ╰── <66> Unary [-]
-            │       │           ╰── Constant Int [20]
+            │       │           ╰── <65> Constant Int [20]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── expected_g
             │       │   ├── Type
             │       │   │   ╰── Signed Char
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [60]
+            │       │       ╰── <72> Constant Int [60]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── expected_h
             │       │   ├── Type
             │       │   │   ╰── Char
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [100]
+            │       │       ╰── <78> Constant Int [100]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <86>  [!=]
@@ -1797,7 +1797,7 @@ fn test_valid_chars_char_arguments() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <87> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <97>  [!=]
@@ -1806,7 +1806,7 @@ fn test_valid_chars_char_arguments() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [2]
+            │       │               ╰── <98> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <108>  [!=]
@@ -1815,7 +1815,7 @@ fn test_valid_chars_char_arguments() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <109> Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <119>  [!=]
@@ -1824,7 +1824,7 @@ fn test_valid_chars_char_arguments() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [4]
+            │       │               ╰── <120> Constant Int [4]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <130>  [!=]
@@ -1833,7 +1833,7 @@ fn test_valid_chars_char_arguments() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [5]
+            │       │               ╰── <131> Constant Int [5]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <141>  [!=]
@@ -1842,7 +1842,7 @@ fn test_valid_chars_char_arguments() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [6]
+            │       │               ╰── <142> Constant Int [6]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <152>  [!=]
@@ -1851,7 +1851,7 @@ fn test_valid_chars_char_arguments() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [7]
+            │       │               ╰── <153> Constant Int [7]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <163>  [!=]
@@ -1860,9 +1860,9 @@ fn test_valid_chars_char_arguments() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [8]
+            │       │               ╰── <164> Constant Int [8]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <169> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -1871,7 +1871,7 @@ fn test_valid_chars_char_arguments() {
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [5]
+                    │       ╰── <180> Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -1879,28 +1879,28 @@ fn test_valid_chars_char_arguments() {
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
                     │       ╰── <188> Unary [-]
-                    │           ╰── Constant Int [12]
+                    │           ╰── <187> Constant Int [12]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [117]
+                    │       ╰── <194> Constant Int [117]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [254]
+                    │       ╰── <200> Constant Int [254]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── e
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <206> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── f
@@ -1908,21 +1908,21 @@ fn test_valid_chars_char_arguments() {
                     │   │   ╰── Char
                     │   ╰── Initializer
                     │       ╰── <214> Unary [-]
-                    │           ╰── Constant Int [20]
+                    │           ╰── <213> Constant Int [20]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── g
                     │   ├── Type
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [60]
+                    │       ╰── <220> Constant Int [60]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── h
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <226> Constant Int [100]
                     ╰── Return
                         ╰── <246> FunctionCall [check_args]
                             ├── <231> Var [a]
@@ -2142,7 +2142,7 @@ fn test_valid_chars_char_expressions() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [0]
+            │       │       ╰── <143> Constant Int [0]
             │       ├── For
             │       │   ├── Init
             │       │   │   ╰── VarDeclaration
@@ -2151,27 +2151,27 @@ fn test_valid_chars_char_expressions() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Signed Char
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [127]
+            │       │   │           ╰── <149> Constant Int [127]
             │       │   ├── Condition
             │       │   │   ╰── <157>  [>]
             │       │   │       ├── <154> Var [s]
-            │       │   │       ╰── Constant Int [0]
+            │       │   │       ╰── <156> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <166> Assign [=]
             │       │   │       ├── <159> Var [s]
             │       │   │       ╰── <165>  [-]
             │       │   │           ├── <162> Var [s]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <164> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── <175> Assign [=]
             │       │           ├── <168> Var [counter]
             │       │           ╰── <174>  [+]
             │       │               ├── <171> Var [counter]
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <173> Constant Int [1]
             │       ╰── Return
             │           ╰── <185>  [==]
             │               ├── <181> Var [counter]
-            │               ╰── Constant Int [127]
+            │               ╰── <183> Constant Int [127]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -2180,50 +2180,50 @@ fn test_valid_chars_char_expressions() {
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [8]
+                    │       ╰── <196> Constant Int [8]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c2
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [4]
+                    │       ╰── <202> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <213>  [!=]
                     │   │       ├── <210> FunctionCall [add_chars]
                     │   │       │   ├── <207> Var [c1]
                     │   │       │   ╰── <209> Var [c2]
-                    │   │       ╰── Constant Int [12]
+                    │   │       ╰── <212> Constant Int [12]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <214> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── uc1
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [250]
+                    │       ╰── <222> Constant Int [250]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── uc2
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [25]
+                    │       ╰── <228> Constant Int [25]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <239>  [!=]
                     │   │       ├── <236> FunctionCall [divide_chars]
                     │   │       │   ├── <233> Var [uc1]
                     │   │       │   ╰── <235> Var [uc2]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <238> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <240> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <250> FunctionCall [le]
@@ -2232,7 +2232,7 @@ fn test_valid_chars_char_expressions() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <251> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <263> Unary [!]
@@ -2242,7 +2242,7 @@ fn test_valid_chars_char_expressions() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <264> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── arr
@@ -2252,74 +2252,74 @@ fn test_valid_chars_char_expressions() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [11]
-                    │           ├── Constant Int [12]
-                    │           ├── Constant Int [13]
-                    │           ╰── Constant Int [14]
+                    │           ├── <274> Constant Int [11]
+                    │           ├── <276> Constant Int [12]
+                    │           ├── <278> Constant Int [13]
+                    │           ╰── <280> Constant Int [14]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── idx
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <287> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <298>  [!=]
                     │   │       ├── <295> FunctionCall [subscript_char]
                     │   │       │   ├── <292> Var [arr]
                     │   │       │   ╰── <294> Var [idx]
-                    │   │       ╰── Constant Int [13]
+                    │   │       ╰── <297> Constant Int [13]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <299> Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── offset
                     │   ├── Type
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <307> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <322>  [!=]
                     │   │       ├── <318> FunctionCall [sub_char_from_pointer]
                     │   │       │   ├── <315>  [+]
                     │   │       │   │   ├── <312> Var [arr]
-                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── <314> Constant Int [1]
                     │   │       │   ╰── <317> Var [offset]
                     │   │       ╰── <321> Var [arr]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <323> Constant Int [6]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── zero
                     │   ├── Type
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <331> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <335> Var [zero]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <336> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <345> FunctionCall [and_char]
                     │   │       ├── <343> Var [zero]
-                    │   │       ╰── Constant Int [12]
+                    │   │       ╰── <344> Constant Int [12]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <346> Constant Int [8]
                     ├── <355> Assign [=]
                     │   ├── <352> Var [uc2]
-                    │   ╰── Constant Int [0]
+                    │   ╰── <354> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <362> FunctionCall [or_char]
@@ -2328,7 +2328,7 @@ fn test_valid_chars_char_expressions() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <363> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <371> Unary [!]
@@ -2336,9 +2336,9 @@ fn test_valid_chars_char_expressions() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [10]
+                    │               ╰── <372> Constant Int [10]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <377> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2407,12 +2407,12 @@ fn test_valid_chars_common_type() {
             │   │           ╰── Char
             │   ╰── Body
             │       ╰── Return
-            │           ╰── <{node_id}> Conditional [?]
+            │           ╰── <16> Conditional [?]
             │               ├── <12> Var [flag]
             │               ├── Then
             │               │   ╰── <14> Var [c]
             │               ╰── Else
-            │                   ╰── Constant UInt [1]
+            │                   ╰── <15> Constant UInt [1]
             ├── Function [char_lt_int]
             │   ├── Parameters
             │   │   ├── Param
@@ -2487,7 +2487,7 @@ fn test_valid_chars_common_type() {
             │   ├── Type
             │   │   ╰── Char
             │   ╰── Initializer
-            │       ╰── Constant Int [10]
+            │       ╰── <99> Constant Int [10]
             ├── Function [multiply]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -2497,26 +2497,26 @@ fn test_valid_chars_common_type() {
             │       │   │   ╰── Char
             │       │   ╰── Initializer
             │       │       ╰── <113>  [*]
-            │       │           ├── Constant Double [+1.075e1]
+            │       │           ├── <109> Constant Double [+1.075e1]
             │       │           ╰── <112> Var [ten]
             │       ╰── Return
             │           ╰── <120>  [==]
             │               ├── <117> Var [i]
-            │               ╰── Constant Int [107]
+            │               ╰── <119> Constant Int [107]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <136>  [!=]
                     │   │       ├── <133> FunctionCall [ternary]
-                    │   │       │   ├── Constant Int [1]
+                    │   │       │   ├── <129> Constant Int [1]
                     │   │       │   ╰── <132> Unary [-]
-                    │   │       │       ╰── Constant Int [10]
-                    │   │       ╰── Constant Long [4294967286]
+                    │   │       │       ╰── <131> Constant Int [10]
+                    │   │       ╰── <135> Constant Long [4294967286]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <137> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <150> Unary [!]
@@ -2525,12 +2525,12 @@ fn test_valid_chars_common_type() {
                     │   │           │   ├── Target
                     │   │           │   │   ╰── Char
                     │   │           │   ╰── Expression
-                    │   │           │       ╰── Constant Int [1]
-                    │   │           ╰── Constant Int [256]
+                    │   │           │       ╰── <146> Constant Int [1]
+                    │   │           ╰── <148> Constant Int [256]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <151> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <166> Unary [!]
@@ -2539,13 +2539,13 @@ fn test_valid_chars_common_type() {
                     │   │           │   ├── Target
                     │   │           │   │   ╰── Unsigned Char
                     │   │           │   ╰── Expression
-                    │   │           │       ╰── Constant Int [100]
+                    │   │           │       ╰── <160> Constant Int [100]
                     │   │           ╰── <164> Unary [-]
-                    │   │               ╰── Constant Int [2]
+                    │   │               ╰── <163> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <167> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -2553,14 +2553,14 @@ fn test_valid_chars_common_type() {
                     │   │   ╰── Char
                     │   ╰── Initializer
                     │       ╰── <177> Unary [-]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <176> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── u
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <183> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <193> Unary [!]
@@ -2570,7 +2570,7 @@ fn test_valid_chars_common_type() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <194> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── s
@@ -2578,7 +2578,7 @@ fn test_valid_chars_common_type() {
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
                     │       ╰── <204> Unary [-]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <203> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <214> Unary [!]
@@ -2588,7 +2588,7 @@ fn test_valid_chars_common_type() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <215> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <223> Unary [!]
@@ -2596,9 +2596,9 @@ fn test_valid_chars_common_type() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <224> Constant Int [6]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <229> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2937,46 +2937,46 @@ fn test_valid_chars_convert_by_assignment() {
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
                     │       ╰── <223> Unary [-]
-                    │           ╰── Constant Int [10]
+                    │           ╰── <222> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <234> Unary [!]
                     │   │       ╰── <233> FunctionCall [check_long]
                     │   │           ├── <229> Var [sc]
                     │   │           ╰── <232> Unary [-]
-                    │   │               ╰── Constant Long [10]
+                    │   │               ╰── <231> Constant Long [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <235> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <246> Unary [!]
                     │   │       ╰── <245> FunctionCall [check_uint]
                     │   │           ├── <243> Var [sc]
-                    │   │           ╰── Constant UInt [4294967286]
+                    │   │           ╰── <244> Constant UInt [4294967286]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <247> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <260> Unary [!]
                     │   │       ╰── <259> FunctionCall [check_double]
                     │   │           ├── <255> Var [sc]
                     │   │           ╰── <258> Unary [-]
-                    │   │               ╰── Constant Double [+1e1]
+                    │   │               ╰── <257> Constant Double [+1e1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <261> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── uc
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [246]
+                    │       ╰── <269> Constant Int [246]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <279> Unary [!]
@@ -2986,7 +2986,7 @@ fn test_valid_chars_convert_by_assignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <280> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -2994,76 +2994,76 @@ fn test_valid_chars_convert_by_assignment() {
                     │   │   ╰── Char
                     │   ╰── Initializer
                     │       ╰── <290> Unary [-]
-                    │           ╰── Constant Int [10]
+                    │           ╰── <289> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <301> Unary [!]
                     │   │       ╰── <300> FunctionCall [check_char]
                     │   │           ├── <297> Unary [-]
-                    │   │           │   ╰── Constant Int [10]
+                    │   │           │   ╰── <296> Constant Int [10]
                     │   │           ╰── <299> Var [c]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <302> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <313> Unary [!]
                     │   │       ╰── <312> FunctionCall [check_char]
-                    │   │           ├── Constant UInt [4294967286]
+                    │   │           ├── <309> Constant UInt [4294967286]
                     │   │           ╰── <311> Var [c]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <314> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <327> Unary [!]
                     │   │       ╰── <326> FunctionCall [check_char]
                     │   │           ├── <323> Unary [-]
-                    │   │           │   ╰── Constant Double [+1e1]
+                    │   │           │   ╰── <322> Constant Double [+1e1]
                     │   │           ╰── <325> Var [c]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <328> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <347> Unary [!]
                     │   │       ╰── <346> FunctionCall [check_char_on_stack]
                     │   │           ├── <336> Var [c]
-                    │   │           ├── Constant Int [0]
-                    │   │           ├── Constant Int [0]
-                    │   │           ├── Constant Int [0]
-                    │   │           ├── Constant Int [0]
-                    │   │           ├── Constant Int [0]
-                    │   │           ├── Constant Int [0]
+                    │   │           ├── <337> Constant Int [0]
+                    │   │           ├── <338> Constant Int [0]
+                    │   │           ├── <339> Constant Int [0]
+                    │   │           ├── <340> Constant Int [0]
+                    │   │           ├── <341> Constant Int [0]
+                    │   │           ├── <342> Constant Int [0]
                     │   │           ╰── <345> Unary [-]
-                    │   │               ╰── Constant Double [+1e1]
+                    │   │               ╰── <344> Constant Double [+1e1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <348> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <359> Unary [!]
                     │   │       ╰── <358> FunctionCall [check_int]
                     │   │           ├── <356> Var [uc]
-                    │   │           ╰── Constant Int [246]
+                    │   │           ╰── <357> Constant Int [246]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <360> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <371> Unary [!]
                     │   │       ╰── <370> FunctionCall [check_ulong]
                     │   │           ├── <368> Var [uc]
-                    │   │           ╰── Constant ULong [246]
+                    │   │           ╰── <369> Constant ULong [246]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [10]
+                    │               ╰── <372> Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── expected_char
@@ -3071,7 +3071,7 @@ fn test_valid_chars_convert_by_assignment() {
                     │   │   ╰── Char
                     │   ╰── Initializer
                     │       ╰── <382> Unary [-]
-                    │           ╰── Constant Int [10]
+                    │           ╰── <381> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <392> Unary [!]
@@ -3081,47 +3081,47 @@ fn test_valid_chars_convert_by_assignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [11]
+                    │               ╰── <393> Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <404> Unary [!]
                     │   │       ╰── <403> FunctionCall [check_uchar]
-                    │   │           ├── Constant ULong [18446744073709551606]
+                    │   │           ├── <400> Constant ULong [18446744073709551606]
                     │   │           ╰── <402> Var [uc]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [12]
+                    │               ╰── <405> Constant Int [12]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <416>  [!=]
                     │   │       ├── <413> FunctionCall [return_extended_uchar]
                     │   │       │   ╰── <412> Var [uc]
-                    │   │       ╰── Constant Int [246]
+                    │   │       ╰── <415> Constant Int [246]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [13]
+                    │               ╰── <417> Constant Int [13]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <428>  [!=]
                     │   │       ├── <425> FunctionCall [return_extended_schar]
                     │   │       │   ╰── <424> Var [sc]
-                    │   │       ╰── Constant ULong [18446744073709551606]
+                    │   │       ╰── <427> Constant ULong [18446744073709551606]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [14]
+                    │               ╰── <429> Constant Int [14]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <440>  [!=]
                     │   │       ├── <436> FunctionCall [return_truncated_long]
-                    │   │       │   ╰── Constant Long [5369233654]
+                    │   │       │   ╰── <435> Constant Long [5369233654]
                     │   │       ╰── <439> Var [uc]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [15]
+                    │               ╰── <441> Constant Int [15]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── array
@@ -3131,85 +3131,85 @@ fn test_valid_chars_convert_by_assignment() {
                     │   │       ╰── Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ╰── Constant Int [0]
+                    │           ├── <451> Constant Int [0]
+                    │           ├── <453> Constant Int [0]
+                    │           ╰── <455> Constant Int [0]
                     ├── <465> Assign [=]
                     │   ├── <462> Subscript
                     │   │   ├── <460> Var [array]
-                    │   │   ╰── Constant Int [1]
-                    │   ╰── Constant Int [128]
+                    │   │   ╰── <461> Constant Int [1]
+                    │   ╰── <464> Constant Int [128]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <487>  [||]
                     │   │       ├── <476>  [||]
                     │   │       │   ├── <470> Subscript
                     │   │       │   │   ├── <468> Var [array]
-                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── <469> Constant Int [0]
                     │   │       │   ╰── <475> Subscript
                     │   │       │       ├── <473> Var [array]
-                    │   │       │       ╰── Constant Int [2]
+                    │   │       │       ╰── <474> Constant Int [2]
                     │   │       ╰── <486>  [!=]
                     │   │           ├── <481> Subscript
                     │   │           │   ├── <479> Var [array]
-                    │   │           │   ╰── Constant Int [1]
+                    │   │           │   ╰── <480> Constant Int [1]
                     │   │           ╰── <485> Unary [-]
-                    │   │               ╰── Constant Int [128]
+                    │   │               ╰── <484> Constant Int [128]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [16]
+                    │               ╰── <488> Constant Int [16]
                     ├── <499> Assign [=]
                     │   ├── <496> Subscript
                     │   │   ├── <494> Var [array]
-                    │   │   ╰── Constant Int [1]
-                    │   ╰── Constant ULong [9224497936761618562]
+                    │   │   ╰── <495> Constant Int [1]
+                    │   ╰── <498> Constant ULong [9224497936761618562]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <521>  [||]
                     │   │       ├── <510>  [||]
                     │   │       │   ├── <504> Subscript
                     │   │       │   │   ├── <502> Var [array]
-                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── <503> Constant Int [0]
                     │   │       │   ╰── <509> Subscript
                     │   │       │       ├── <507> Var [array]
-                    │   │       │       ╰── Constant Int [2]
+                    │   │       │       ╰── <508> Constant Int [2]
                     │   │       ╰── <520>  [!=]
                     │   │           ├── <515> Subscript
                     │   │           │   ├── <513> Var [array]
-                    │   │           │   ╰── Constant Int [1]
+                    │   │           │   ╰── <514> Constant Int [1]
                     │   │           ╰── <519> Unary [-]
-                    │   │               ╰── Constant Int [126]
+                    │   │               ╰── <518> Constant Int [126]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [17]
+                    │               ╰── <522> Constant Int [17]
                     ├── <535> Assign [=]
                     │   ├── <530> Subscript
                     │   │   ├── <528> Var [array]
-                    │   │   ╰── Constant Int [1]
+                    │   │   ╰── <529> Constant Int [1]
                     │   ╰── <534> Unary [-]
-                    │       ╰── Constant Double [+2.6e0]
+                    │       ╰── <533> Constant Double [+2.6e0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <557>  [||]
                     │   │       ├── <546>  [||]
                     │   │       │   ├── <540> Subscript
                     │   │       │   │   ├── <538> Var [array]
-                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── <539> Constant Int [0]
                     │   │       │   ╰── <545> Subscript
                     │   │       │       ├── <543> Var [array]
-                    │   │       │       ╰── Constant Int [2]
+                    │   │       │       ╰── <544> Constant Int [2]
                     │   │       ╰── <556>  [!=]
                     │   │           ├── <551> Subscript
                     │   │           │   ├── <549> Var [array]
-                    │   │           │   ╰── Constant Int [1]
+                    │   │           │   ╰── <550> Constant Int [1]
                     │   │           ╰── <555> Unary [-]
-                    │   │               ╰── Constant Int [2]
+                    │   │               ╰── <554> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [18]
+                    │               ╰── <558> Constant Int [18]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── uchar_array
@@ -3219,64 +3219,64 @@ fn test_valid_chars_convert_by_assignment() {
                     │   │       ╰── Unsigned Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ╰── Constant Int [0]
+                    │           ├── <568> Constant Int [0]
+                    │           ├── <570> Constant Int [0]
+                    │           ╰── <572> Constant Int [0]
                     ├── <582> Assign [=]
                     │   ├── <579> Subscript
                     │   │   ├── <577> Var [uchar_array]
-                    │   │   ╰── Constant Int [1]
-                    │   ╰── Constant Long [17592186044416]
+                    │   │   ╰── <578> Constant Int [1]
+                    │   ╰── <581> Constant Long [17592186044416]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <602>  [||]
                     │   │       ├── <593>  [||]
                     │   │       │   ├── <587> Subscript
                     │   │       │   │   ├── <585> Var [uchar_array]
-                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── <586> Constant Int [0]
                     │   │       │   ╰── <592> Subscript
                     │   │       │       ├── <590> Var [uchar_array]
-                    │   │       │       ╰── Constant Int [2]
+                    │   │       │       ╰── <591> Constant Int [2]
                     │   │       ╰── <601>  [!=]
                     │   │           ├── <598> Subscript
                     │   │           │   ├── <596> Var [uchar_array]
-                    │   │           │   ╰── Constant Int [1]
-                    │   │           ╰── Constant Int [0]
+                    │   │           │   ╰── <597> Constant Int [1]
+                    │   │           ╰── <600> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [19]
+                    │               ╰── <603> Constant Int [19]
                     ├── <614> Assign [=]
                     │   ├── <611> Subscript
                     │   │   ├── <609> Var [uchar_array]
-                    │   │   ╰── Constant Int [1]
-                    │   ╰── Constant UInt [2147483898]
+                    │   │   ╰── <610> Constant Int [1]
+                    │   ╰── <613> Constant UInt [2147483898]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <634>  [||]
                     │   │       ├── <625>  [||]
                     │   │       │   ├── <619> Subscript
                     │   │       │   │   ├── <617> Var [uchar_array]
-                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── <618> Constant Int [0]
                     │   │       │   ╰── <624> Subscript
                     │   │       │       ├── <622> Var [uchar_array]
-                    │   │       │       ╰── Constant Int [2]
+                    │   │       │       ╰── <623> Constant Int [2]
                     │   │       ╰── <633>  [!=]
                     │   │           ├── <630> Subscript
                     │   │           │   ├── <628> Var [uchar_array]
-                    │   │           │   ╰── Constant Int [1]
-                    │   │           ╰── Constant Int [250]
+                    │   │           │   ╰── <629> Constant Int [1]
+                    │   │           ╰── <632> Constant Int [250]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [20]
+                    │               ╰── <635> Constant Int [20]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ui
                     │   ├── Type
                     │   │   ╰── Unsigned Int
                     │   ╰── Initializer
-                    │       ╰── Constant UInt [4294967295]
+                    │       ╰── <643> Constant UInt [4294967295]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── uc_static
@@ -3292,7 +3292,7 @@ fn test_valid_chars_convert_by_assignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [21]
+                    │               ╰── <660> Constant Int [21]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── l
@@ -3300,14 +3300,14 @@ fn test_valid_chars_convert_by_assignment() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── <670> Unary [-]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <669> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── s_static
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <677> Constant Int [0]
                     │   ╰── Static
                     ├── <685> Assign [=]
                     │   ├── <681> Var [l]
@@ -3318,9 +3318,9 @@ fn test_valid_chars_convert_by_assignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [22]
+                    │               ╰── <689> Constant Int [22]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <694> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3962,37 +3962,37 @@ fn test_valid_chars_explicit_casts() {
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [127]
+                    │       ╰── <473> Constant Int [127]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <482>  [!=]
                     │   │       ├── <479> FunctionCall [char_to_uchar]
                     │   │       │   ╰── <478> Var [c]
-                    │   │       ╰── Constant Int [127]
+                    │   │       ╰── <481> Constant Int [127]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <483> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <494>  [!=]
                     │   │       ├── <491> FunctionCall [char_to_int]
                     │   │       │   ╰── <490> Var [c]
-                    │   │       ╰── Constant Int [127]
+                    │   │       ╰── <493> Constant Int [127]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <495> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <506>  [!=]
                     │   │       ├── <503> FunctionCall [char_to_ulong]
                     │   │       │   ╰── <502> Var [c]
-                    │   │       ╰── Constant Int [127]
+                    │   │       ╰── <505> Constant Int [127]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <507> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── sc
@@ -4000,128 +4000,128 @@ fn test_valid_chars_explicit_casts() {
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
                     │       ╰── <517> Unary [-]
-                    │           ╰── Constant Int [10]
+                    │           ╰── <516> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <526>  [!=]
                     │   │       ├── <523> FunctionCall [schar_to_uchar]
                     │   │       │   ╰── <522> Var [sc]
-                    │   │       ╰── Constant Int [246]
+                    │   │       ╰── <525> Constant Int [246]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <527> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <540>  [!=]
                     │   │       ├── <535> FunctionCall [schar_to_long]
                     │   │       │   ╰── <534> Var [sc]
                     │   │       ╰── <539> Unary [-]
-                    │   │           ╰── Constant Int [10]
+                    │   │           ╰── <538> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <541> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <552>  [!=]
                     │   │       ├── <549> FunctionCall [schar_to_uint]
                     │   │       │   ╰── <548> Var [sc]
-                    │   │       ╰── Constant UInt [4294967286]
+                    │   │       ╰── <551> Constant UInt [4294967286]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <553> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <566>  [!=]
                     │   │       ├── <561> FunctionCall [schar_to_double]
                     │   │       │   ╰── <560> Var [sc]
                     │   │       ╰── <565> Unary [-]
-                    │   │           ╰── Constant Double [+1e1]
+                    │   │           ╰── <564> Constant Double [+1e1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <567> Constant Int [7]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── uc
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [250]
+                    │       ╰── <575> Constant Int [250]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <584>  [!=]
                     │   │       ├── <581> FunctionCall [uchar_to_int]
                     │   │       │   ╰── <580> Var [uc]
-                    │   │       ╰── Constant Int [250]
+                    │   │       ╰── <583> Constant Int [250]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <585> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <596>  [!=]
                     │   │       ├── <593> FunctionCall [uchar_to_long]
                     │   │       │   ╰── <592> Var [uc]
-                    │   │       ╰── Constant Int [250]
+                    │   │       ╰── <595> Constant Int [250]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <597> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <608>  [!=]
                     │   │       ├── <605> FunctionCall [uchar_to_uint]
                     │   │       │   ╰── <604> Var [uc]
-                    │   │       ╰── Constant Int [250]
+                    │   │       ╰── <607> Constant Int [250]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [10]
+                    │               ╰── <609> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <620>  [!=]
                     │   │       ├── <617> FunctionCall [uchar_to_ulong]
                     │   │       │   ╰── <616> Var [uc]
-                    │   │       ╰── Constant Int [250]
+                    │   │       ╰── <619> Constant Int [250]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [11]
+                    │               ╰── <621> Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <632>  [!=]
                     │   │       ├── <629> FunctionCall [uchar_to_double]
                     │   │       │   ╰── <628> Var [uc]
-                    │   │       ╰── Constant Double [+2.5e2]
+                    │   │       ╰── <631> Constant Double [+2.5e2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [12]
+                    │               ╰── <633> Constant Int [12]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <646>  [!=]
                     │   │       ├── <641> FunctionCall [uchar_to_schar]
                     │   │       │   ╰── <640> Var [uc]
                     │   │       ╰── <645> Unary [-]
-                    │   │           ╰── Constant Int [6]
+                    │   │           ╰── <644> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [13]
+                    │               ╰── <647> Constant Int [13]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <660>  [!=]
                     │   │       ├── <655> FunctionCall [uchar_to_char]
                     │   │       │   ╰── <654> Var [uc]
                     │   │       ╰── <659> Unary [-]
-                    │   │           ╰── Constant Int [6]
+                    │   │           ╰── <658> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [14]
+                    │               ╰── <661> Constant Int [14]
                     ├── <675> Assign [=]
                     │   ├── <667> Var [c]
                     │   ╰── <674> Cast
@@ -4129,17 +4129,17 @@ fn test_valid_chars_explicit_casts() {
                     │       │   ╰── Char
                     │       ╰── Expression
                     │           ╰── <673> Unary [-]
-                    │               ╰── Constant Int [128]
+                    │               ╰── <672> Constant Int [128]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <683>  [!=]
                     │   │       ├── <679> FunctionCall [int_to_char]
-                    │   │       │   ╰── Constant Int [128]
+                    │   │       │   ╰── <678> Constant Int [128]
                     │   │       ╰── <682> Var [c]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [15]
+                    │               ╰── <684> Constant Int [15]
                     ├── <698> Assign [=]
                     │   ├── <690> Var [c]
                     │   ╰── <697> Cast
@@ -4147,17 +4147,17 @@ fn test_valid_chars_explicit_casts() {
                     │       │   ╰── Char
                     │       ╰── Expression
                     │           ╰── <696> Unary [-]
-                    │               ╰── Constant Int [6]
+                    │               ╰── <695> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <706>  [!=]
                     │   │       ├── <702> FunctionCall [uint_to_char]
-                    │   │       │   ╰── Constant UInt [2147483898]
+                    │   │       │   ╰── <701> Constant UInt [2147483898]
                     │   │       ╰── <705> Var [c]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [16]
+                    │               ╰── <707> Constant Int [16]
                     ├── <721> Assign [=]
                     │   ├── <713> Var [c]
                     │   ╰── <720> Cast
@@ -4165,26 +4165,26 @@ fn test_valid_chars_explicit_casts() {
                     │       │   ╰── Char
                     │       ╰── Expression
                     │           ╰── <719> Unary [-]
-                    │               ╰── Constant Int [2]
+                    │               ╰── <718> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <731>  [!=]
                     │   │       ├── <727> FunctionCall [double_to_char]
                     │   │       │   ╰── <726> Unary [-]
-                    │   │       │       ╰── Constant Double [+2.6e0]
+                    │   │       │       ╰── <725> Constant Double [+2.6e0]
                     │   │       ╰── <730> Var [c]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [17]
+                    │               ╰── <732> Constant Int [17]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <739> FunctionCall [long_to_schar]
-                    │   │       ╰── Constant Long [17592186044416]
+                    │   │       ╰── <738> Constant Long [17592186044416]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [18]
+                    │               ╰── <740> Constant Int [18]
                     ├── <754> Assign [=]
                     │   ├── <746> Var [sc]
                     │   ╰── <753> Cast
@@ -4192,76 +4192,76 @@ fn test_valid_chars_explicit_casts() {
                     │       │   ╰── Signed Char
                     │       ╰── Expression
                     │           ╰── <752> Unary [-]
-                    │               ╰── Constant Int [126]
+                    │               ╰── <751> Constant Int [126]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <762>  [!=]
                     │   │       ├── <758> FunctionCall [ulong_to_schar]
-                    │   │       │   ╰── Constant ULong [9224497936761618562]
+                    │   │       │   ╰── <757> Constant ULong [9224497936761618562]
                     │   │       ╰── <761> Var [sc]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [19]
+                    │               ╰── <763> Constant Int [19]
                     ├── <775> Assign [=]
                     │   ├── <769> Var [uc]
                     │   ╰── <774> Cast
                     │       ├── Target
                     │       │   ╰── Unsigned Char
                     │       ╰── Expression
-                    │           ╰── Constant Int [200]
+                    │           ╰── <773> Constant Int [200]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <785>  [!=]
                     │   │       ├── <781> FunctionCall [int_to_uchar]
                     │   │       │   ╰── <780> Unary [-]
-                    │   │       │       ╰── Constant Int [1234488]
+                    │   │       │       ╰── <779> Constant Int [1234488]
                     │   │       ╰── <784> Var [uc]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [20]
+                    │               ╰── <786> Constant Int [20]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <797>  [!=]
                     │   │       ├── <793> FunctionCall [uint_to_uchar]
-                    │   │       │   ╰── Constant Long [4293732808]
+                    │   │       │   ╰── <792> Constant Long [4293732808]
                     │   │       ╰── <796> Var [uc]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [21]
+                    │               ╰── <798> Constant Int [21]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <811>  [!=]
                     │   │       ├── <807> FunctionCall [long_to_uchar]
                     │   │       │   ╰── <806> Unary [-]
-                    │   │       │       ╰── Constant Long [36283884951096]
+                    │   │       │       ╰── <805> Constant Long [36283884951096]
                     │   │       ╰── <810> Var [uc]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [22]
+                    │               ╰── <812> Constant Int [22]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <823>  [!=]
                     │   │       ├── <819> FunctionCall [ulong_to_uchar]
-                    │   │       │   ╰── Constant ULong [9224497936761618632]
+                    │   │       │   ╰── <818> Constant ULong [9224497936761618632]
                     │   │       ╰── <822> Var [uc]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [23]
+                    │               ╰── <824> Constant Int [23]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <835>  [!=]
                     │   │       ├── <831> FunctionCall [double_to_uchar]
-                    │   │       │   ╰── Constant Double [+2.0099e2]
+                    │   │       │   ╰── <830> Constant Double [+2.0099e2]
                     │   │       ╰── <834> Var [uc]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [24]
+                    │               ╰── <836> Constant Int [24]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── null_ptr
@@ -4286,10 +4286,10 @@ fn test_valid_chars_explicit_casts() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [25]
+                    │               ╰── <859> Constant Int [25]
                     ├── <868> Assign [=]
                     │   ├── <865> Var [c]
-                    │   ╰── Constant Int [32]
+                    │   ╰── <867> Constant Int [32]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -4315,7 +4315,7 @@ fn test_valid_chars_explicit_casts() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [26]
+                    │               ╰── <891> Constant Int [26]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <905>  [!=]
@@ -4323,18 +4323,18 @@ fn test_valid_chars_explicit_casts() {
                     │   │       │   ├── Target
                     │   │       │   │   ╰── Char
                     │   │       │   ╰── Expression
-                    │   │       │       ╰── Constant Int [300]
+                    │   │       │       ╰── <898> Constant Int [300]
                     │   │       ╰── <904> Cast
                     │   │           ├── Target
                     │   │           │   ╰── Char
                     │   │           ╰── Expression
-                    │   │               ╰── Constant Int [44]
+                    │   │               ╰── <903> Constant Int [44]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [27]
+                    │               ╰── <906> Constant Int [27]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <911> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4494,7 +4494,7 @@ fn test_valid_chars_integer_promotion() {
             │       │   ├── <109> Var [s]
             │       │   ╰── <115>  [-]
             │       │       ├── <112> Var [s]
-            │       │       ╰── Constant Int [1]
+            │       │       ╰── <114> Constant Int [1]
             │       ╰── Return
             │           ╰── <119> Var [s]
             ╰── Function [main]
@@ -4505,14 +4505,14 @@ fn test_valid_chars_integer_promotion() {
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <130> Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [109]
+                    │       ╰── <136> Constant Int [109]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <149>  [!=]
@@ -4520,61 +4520,61 @@ fn test_valid_chars_integer_promotion() {
                     │   │       │   ├── <141> Var [a]
                     │   │       │   ├── <143> Var [a]
                     │   │       │   ╰── <145> Var [b]
-                    │   │       ╰── Constant Int [309]
+                    │   │       ╰── <148> Constant Int [309]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <150> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── one
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <158> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <169>  [!=]
                     │   │       ├── <164> FunctionCall [negate]
                     │   │       │   ╰── <163> Var [one]
                     │   │       ╰── <168> Unary [-]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <167> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <170> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <183>  [!=]
                     │   │       ├── <178> FunctionCall [complement]
                     │   │       │   ╰── <177> Var [one]
                     │   │       ╰── <182> Unary [-]
-                    │   │           ╰── Constant Int [2]
+                    │   │           ╰── <181> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <184> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── w
                     │   ├── Type
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [127]
+                    │       ╰── <192> Constant Int [127]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
                     │   ├── Type
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <198> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
                     │   ├── Type
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <204> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <217>  [!=]
@@ -4582,10 +4582,10 @@ fn test_valid_chars_integer_promotion() {
                     │   │       │   ├── <209> Var [w]
                     │   │       │   ├── <211> Var [x]
                     │   │       │   ╰── <213> Var [y]
-                    │   │       ╰── Constant Int [65]
+                    │   │       ╰── <216> Constant Int [65]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [4]
+                    │           ╰── <218> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── sc
@@ -4593,14 +4593,14 @@ fn test_valid_chars_integer_promotion() {
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
                     │       ╰── <226> Unary [-]
-                    │           ╰── Constant Int [3]
+                    │           ╰── <225> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── uc
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [250]
+                    │       ╰── <232> Constant Int [250]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <245>  [!=]
@@ -4608,36 +4608,36 @@ fn test_valid_chars_integer_promotion() {
                     │   │       │   ├── <237> Var [sc]
                     │   │       │   ╰── <239> Var [uc]
                     │   │       ╰── <244> Unary [-]
-                    │   │           ╰── Constant Int [750]
+                    │   │           ╰── <243> Constant Int [750]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [5]
+                    │           ╰── <246> Constant Int [5]
                     ├── <255> Assign [=]
                     │   ├── <250> Var [sc]
                     │   ╰── <254> Unary [-]
-                    │       ╰── Constant Int [128]
+                    │       ╰── <253> Constant Int [128]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <263>  [!=]
                     │   │       ├── <258> Var [sc]
                     │   │       ╰── <262> Unary [-]
-                    │   │           ╰── Constant Int [128]
+                    │   │           ╰── <261> Constant Int [128]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <264> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <275>  [!=]
                     │   │       ├── <272> FunctionCall [decrement]
                     │   │       │   ╰── <271> Var [sc]
-                    │   │       ╰── Constant Int [127]
+                    │   │       ╰── <274> Constant Int [127]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <276> Constant Int [7]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <281> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4679,8 +4679,8 @@ fn test_valid_chars_partial_initialization() {
             │   │       ╰── Char
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant Int [1]
-            │           ╰── Constant Int [2]
+            │           ├── <6> Constant Int [1]
+            │           ╰── <8> Constant Int [2]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── static2
@@ -4690,8 +4690,8 @@ fn test_valid_chars_partial_initialization() {
             │   │       ╰── Signed Char
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant Int [3]
-            │           ╰── Constant Int [4]
+            │           ├── <17> Constant Int [3]
+            │           ╰── <19> Constant Int [4]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── static3
@@ -4701,7 +4701,7 @@ fn test_valid_chars_partial_initialization() {
             │   │       ╰── Unsigned Char
             │   ╰── Initializer
             │       ╰── Compound
-            │           ╰── Constant Int [5]
+            │           ╰── <28> Constant Int [5]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -4712,22 +4712,22 @@ fn test_valid_chars_partial_initialization() {
                     │   │       │   │   ├── <42>  [!=]
                     │   │       │   │   │   ├── <39> Subscript
                     │   │       │   │   │   │   ├── <37> Var [static1]
-                    │   │       │   │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   │   ╰── Constant Int [1]
+                    │   │       │   │   │   │   ╰── <38> Constant Int [0]
+                    │   │       │   │   │   ╰── <41> Constant Int [1]
                     │   │       │   │   ╰── <50>  [!=]
                     │   │       │   │       ├── <47> Subscript
                     │   │       │   │       │   ├── <45> Var [static1]
-                    │   │       │   │       │   ╰── Constant Int [1]
-                    │   │       │   │       ╰── Constant Int [2]
+                    │   │       │   │       │   ╰── <46> Constant Int [1]
+                    │   │       │   │       ╰── <49> Constant Int [2]
                     │   │       │   ╰── <56> Subscript
                     │   │       │       ├── <54> Var [static1]
-                    │   │       │       ╰── Constant Int [2]
+                    │   │       │       ╰── <55> Constant Int [2]
                     │   │       ╰── <62> Subscript
                     │   │           ├── <60> Var [static1]
-                    │   │           ╰── Constant Int [3]
+                    │   │           ╰── <61> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <64> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <94>  [||]
@@ -4736,22 +4736,22 @@ fn test_valid_chars_partial_initialization() {
                     │   │       │   │   ├── <73>  [!=]
                     │   │       │   │   │   ├── <70> Subscript
                     │   │       │   │   │   │   ├── <68> Var [static2]
-                    │   │       │   │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   │   ╰── Constant Int [3]
+                    │   │       │   │   │   │   ╰── <69> Constant Int [0]
+                    │   │       │   │   │   ╰── <72> Constant Int [3]
                     │   │       │   │   ╰── <81>  [!=]
                     │   │       │   │       ├── <78> Subscript
                     │   │       │   │       │   ├── <76> Var [static2]
-                    │   │       │   │       │   ╰── Constant Int [1]
-                    │   │       │   │       ╰── Constant Int [4]
+                    │   │       │   │       │   ╰── <77> Constant Int [1]
+                    │   │       │   │       ╰── <80> Constant Int [4]
                     │   │       │   ╰── <87> Subscript
                     │   │       │       ├── <85> Var [static2]
-                    │   │       │       ╰── Constant Int [2]
+                    │   │       │       ╰── <86> Constant Int [2]
                     │   │       ╰── <93> Subscript
                     │   │           ├── <91> Var [static2]
-                    │   │           ╰── Constant Int [3]
+                    │   │           ╰── <92> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [2]
+                    │           ╰── <95> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <116>  [||]
@@ -4759,17 +4759,17 @@ fn test_valid_chars_partial_initialization() {
                     │   │       │   ├── <104>  [!=]
                     │   │       │   │   ├── <101> Subscript
                     │   │       │   │   │   ├── <99> Var [static3]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [5]
+                    │   │       │   │   │   ╰── <100> Constant Int [0]
+                    │   │       │   │   ╰── <103> Constant Int [5]
                     │   │       │   ╰── <109> Subscript
                     │   │       │       ├── <107> Var [static3]
-                    │   │       │       ╰── Constant Int [1]
+                    │   │       │       ╰── <108> Constant Int [1]
                     │   │       ╰── <115> Subscript
                     │   │           ├── <113> Var [static3]
-                    │   │           ╰── Constant Int [2]
+                    │   │           ╰── <114> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [3]
+                    │           ╰── <117> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── auto1
@@ -4780,9 +4780,9 @@ fn test_valid_chars_partial_initialization() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── <127> Unary [-]
-                    │           │   ╰── Constant Int [4]
-                    │           ├── Constant Int [66]
-                    │           ╰── Constant Double [+4e0]
+                    │           │   ╰── <126> Constant Int [4]
+                    │           ├── <129> Constant Int [66]
+                    │           ╰── <131> Constant Double [+4e0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── auto2
@@ -4794,11 +4794,11 @@ fn test_valid_chars_partial_initialization() {
                     │       ╰── Compound
                     │           ├── <143> Subscript
                     │           │   ├── <141> Var [static1]
-                    │           │   ╰── Constant Int [2]
+                    │           │   ╰── <142> Constant Int [2]
                     │           ╰── <150> Unary [-]
                     │               ╰── <149> Subscript
                     │                   ├── <147> Var [static1]
-                    │                   ╰── Constant Int [0]
+                    │                   ╰── <148> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── auto3
@@ -4808,7 +4808,7 @@ fn test_valid_chars_partial_initialization() {
                     │   │       ╰── Unsigned Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ╰── Constant Int [97]
+                    │           ╰── <159> Constant Int [97]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <201>  [||]
@@ -4818,63 +4818,63 @@ fn test_valid_chars_partial_initialization() {
                     │   │       │   │   │   ├── <171>  [!=]
                     │   │       │   │   │   │   ├── <166> Subscript
                     │   │       │   │   │   │   │   ├── <164> Var [auto1]
-                    │   │       │   │   │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   │   │   │   ╰── <165> Constant Int [0]
                     │   │       │   │   │   │   ╰── <170> Unary [-]
-                    │   │       │   │   │   │       ╰── Constant Int [4]
+                    │   │       │   │   │   │       ╰── <169> Constant Int [4]
                     │   │       │   │   │   ╰── <179>  [!=]
                     │   │       │   │   │       ├── <176> Subscript
                     │   │       │   │   │       │   ├── <174> Var [auto1]
-                    │   │       │   │   │       │   ╰── Constant Int [1]
-                    │   │       │   │   │       ╰── Constant Int [66]
+                    │   │       │   │   │       │   ╰── <175> Constant Int [1]
+                    │   │       │   │   │       ╰── <178> Constant Int [66]
                     │   │       │   │   ╰── <188>  [!=]
                     │   │       │   │       ├── <185> Subscript
                     │   │       │   │       │   ├── <183> Var [auto1]
-                    │   │       │   │       │   ╰── Constant Int [2]
-                    │   │       │   │       ╰── Constant Int [4]
+                    │   │       │   │       │   ╰── <184> Constant Int [2]
+                    │   │       │   │       ╰── <187> Constant Int [4]
                     │   │       │   ╰── <194> Subscript
                     │   │       │       ├── <192> Var [auto1]
-                    │   │       │       ╰── Constant Int [3]
+                    │   │       │       ╰── <193> Constant Int [3]
                     │   │       ╰── <200> Subscript
                     │   │           ├── <198> Var [auto1]
-                    │   │           ╰── Constant Int [4]
+                    │   │           ╰── <199> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [4]
+                    │           ╰── <202> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <225>  [||]
                     │   │       ├── <219>  [||]
                     │   │       │   ├── <208> Subscript
                     │   │       │   │   ├── <206> Var [auto2]
-                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── <207> Constant Int [0]
                     │   │       │   ╰── <218>  [!=]
                     │   │       │       ├── <213> Subscript
                     │   │       │       │   ├── <211> Var [auto2]
-                    │   │       │       │   ╰── Constant Int [1]
+                    │   │       │       │   ╰── <212> Constant Int [1]
                     │   │       │       ╰── <217> Unary [-]
-                    │   │       │           ╰── Constant Int [1]
+                    │   │       │           ╰── <216> Constant Int [1]
                     │   │       ╰── <224> Subscript
                     │   │           ├── <222> Var [auto2]
-                    │   │           ╰── Constant Int [2]
+                    │   │           ╰── <223> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [5]
+                    │           ╰── <226> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <241>  [||]
                     │   │       ├── <235>  [!=]
                     │   │       │   ├── <232> Subscript
                     │   │       │   │   ├── <230> Var [auto3]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [97]
+                    │   │       │   │   ╰── <231> Constant Int [0]
+                    │   │       │   ╰── <234> Constant Int [97]
                     │   │       ╰── <240> Subscript
                     │   │           ├── <238> Var [auto3]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <239> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [6]
+                    │           ╰── <242> Constant Int [6]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <245> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4939,17 +4939,17 @@ fn test_valid_chars_push_arg_on_page_boundary() {
             │       ╰── Return
             │           ╰── <35>  [+]
             │               ├── <32> Var [g]
-            │               ╰── Constant Int [1]
+            │               ╰── <34> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── <52> FunctionCall [foo]
-                            ├── Constant Int [0]
-                            ├── Constant Int [0]
-                            ├── Constant Int [0]
-                            ├── Constant Int [0]
-                            ├── Constant Int [0]
-                            ├── Constant Int [0]
+                            ├── <44> Constant Int [0]
+                            ├── <45> Constant Int [0]
+                            ├── <46> Constant Int [0]
+                            ├── <47> Constant Int [0]
+                            ├── <48> Constant Int [0]
+                            ├── <49> Constant Int [0]
                             ╰── <51> Var [zed]
     "#;
     assert_parse(src, expected);
@@ -5005,15 +5005,15 @@ fn test_valid_chars_return_char() {
             ├── Function [return_char]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Long [5369233654]
+            │           ╰── <5> Constant Long [5369233654]
             ├── Function [return_schar]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Long [5369233654]
+            │           ╰── <13> Constant Long [5369233654]
             ├── Function [return_uchar]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Long [5369233654]
+            │           ╰── <21> Constant Long [5369233654]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -5025,11 +5025,11 @@ fn test_valid_chars_return_char() {
                     │   │       ╰── Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [121]
+                    │           ├── <34> Constant Int [121]
                     │           ├── <38> Unary [-]
-                    │           │   ╰── Constant Int [122]
+                    │           │   ╰── <37> Constant Int [122]
                     │           ╰── <42> Unary [-]
-                    │               ╰── Constant Int [3]
+                    │               ╰── <41> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── retval_c
@@ -5047,10 +5047,10 @@ fn test_valid_chars_return_char() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── <60> Unary [-]
-                    │           │   ╰── Constant Int [5]
-                    │           ├── Constant Int [88]
+                    │           │   ╰── <59> Constant Int [5]
+                    │           ├── <62> Constant Int [88]
                     │           ╰── <66> Unary [-]
-                    │               ╰── Constant Int [100]
+                    │               ╰── <65> Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── retval_sc
@@ -5067,9 +5067,9 @@ fn test_valid_chars_return_char() {
                     │   │       ╰── Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [10]
-                    │           ├── Constant Int [11]
-                    │           ╰── Constant Int [12]
+                    │           ├── <82> Constant Int [10]
+                    │           ├── <84> Constant Int [11]
+                    │           ╰── <86> Constant Int [12]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── retval_uc
@@ -5087,9 +5087,9 @@ fn test_valid_chars_return_char() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── <104> Unary [-]
-                    │           │   ╰── Constant Int [5]
+                    │           │   ╰── <103> Constant Int [5]
                     │           ╰── <108> Unary [-]
-                    │               ╰── Constant Int [6]
+                    │               ╰── <107> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <140>  [||]
@@ -5097,34 +5097,34 @@ fn test_valid_chars_return_char() {
                     │   │       │   ├── <118>  [!=]
                     │   │       │   │   ├── <115> Subscript
                     │   │       │   │   │   ├── <113> Var [char_array]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [121]
+                    │   │       │   │   │   ╰── <114> Constant Int [0]
+                    │   │       │   │   ╰── <117> Constant Int [121]
                     │   │       │   ╰── <128>  [!=]
                     │   │       │       ├── <123> Subscript
                     │   │       │       │   ├── <121> Var [char_array]
-                    │   │       │       │   ╰── Constant Int [1]
+                    │   │       │       │   ╰── <122> Constant Int [1]
                     │   │       │       ╰── <127> Unary [-]
-                    │   │       │           ╰── Constant Int [122]
+                    │   │       │           ╰── <126> Constant Int [122]
                     │   │       ╰── <139>  [!=]
                     │   │           ├── <134> Subscript
                     │   │           │   ├── <132> Var [char_array]
-                    │   │           │   ╰── Constant Int [2]
+                    │   │           │   ╰── <133> Constant Int [2]
                     │   │           ╰── <138> Unary [-]
-                    │   │               ╰── Constant Int [3]
+                    │   │               ╰── <137> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <141> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <152>  [!=]
                     │   │       ├── <147> Var [retval_c]
                     │   │       ╰── <151> Unary [-]
-                    │   │           ╰── Constant Int [10]
+                    │   │           ╰── <150> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <153> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <186>  [||]
@@ -5132,34 +5132,34 @@ fn test_valid_chars_return_char() {
                     │   │       │   ├── <166>  [!=]
                     │   │       │   │   ├── <161> Subscript
                     │   │       │   │   │   ├── <159> Var [char_array2]
-                    │   │       │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   │   ╰── <160> Constant Int [0]
                     │   │       │   │   ╰── <165> Unary [-]
-                    │   │       │   │       ╰── Constant Int [5]
+                    │   │       │   │       ╰── <164> Constant Int [5]
                     │   │       │   ╰── <174>  [!=]
                     │   │       │       ├── <171> Subscript
                     │   │       │       │   ├── <169> Var [char_array2]
-                    │   │       │       │   ╰── Constant Int [1]
-                    │   │       │       ╰── Constant Int [88]
+                    │   │       │       │   ╰── <170> Constant Int [1]
+                    │   │       │       ╰── <173> Constant Int [88]
                     │   │       ╰── <185>  [!=]
                     │   │           ├── <180> Subscript
                     │   │           │   ├── <178> Var [char_array2]
-                    │   │           │   ╰── Constant Int [2]
+                    │   │           │   ╰── <179> Constant Int [2]
                     │   │           ╰── <184> Unary [-]
-                    │   │               ╰── Constant Int [100]
+                    │   │               ╰── <183> Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <187> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <198>  [!=]
                     │   │       ├── <193> Var [retval_sc]
                     │   │       ╰── <197> Unary [-]
-                    │   │           ╰── Constant Int [10]
+                    │   │           ╰── <196> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <199> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <228>  [||]
@@ -5167,52 +5167,52 @@ fn test_valid_chars_return_char() {
                     │   │       │   ├── <210>  [!=]
                     │   │       │   │   ├── <207> Subscript
                     │   │       │   │   │   ├── <205> Var [char_array3]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [10]
+                    │   │       │   │   │   ╰── <206> Constant Int [0]
+                    │   │       │   │   ╰── <209> Constant Int [10]
                     │   │       │   ╰── <218>  [!=]
                     │   │       │       ├── <215> Subscript
                     │   │       │       │   ├── <213> Var [char_array3]
-                    │   │       │       │   ╰── Constant Int [1]
-                    │   │       │       ╰── Constant Int [11]
+                    │   │       │       │   ╰── <214> Constant Int [1]
+                    │   │       │       ╰── <217> Constant Int [11]
                     │   │       ╰── <227>  [!=]
                     │   │           ├── <224> Subscript
                     │   │           │   ├── <222> Var [char_array3]
-                    │   │           │   ╰── Constant Int [2]
-                    │   │           ╰── Constant Int [12]
+                    │   │           │   ╰── <223> Constant Int [2]
+                    │   │           ╰── <226> Constant Int [12]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <229> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <238>  [!=]
                     │   │       ├── <235> Var [retval_uc]
-                    │   │       ╰── Constant Int [246]
+                    │   │       ╰── <237> Constant Int [246]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <239> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <263>  [||]
                     │   │       ├── <252>  [!=]
                     │   │       │   ├── <247> Subscript
                     │   │       │   │   ├── <245> Var [char_array4]
-                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── <246> Constant Int [0]
                     │   │       │   ╰── <251> Unary [-]
-                    │   │       │       ╰── Constant Int [5]
+                    │   │       │       ╰── <250> Constant Int [5]
                     │   │       ╰── <262>  [!=]
                     │   │           ├── <257> Subscript
                     │   │           │   ├── <255> Var [char_array4]
-                    │   │           │   ╰── Constant Int [1]
+                    │   │           │   ╰── <256> Constant Int [1]
                     │   │           ╰── <261> Unary [-]
-                    │   │               ╰── Constant Int [6]
+                    │   │               ╰── <260> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <264> Constant Int [7]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <269> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -5388,7 +5388,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │   ├── Type
             │   │   ╰── Unsigned Char
             │   ╰── Initializer
-            │       ╰── Constant Int [5]
+            │       ╰── <48> Constant Int [5]
             ├── Function [main]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -5410,7 +5410,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <72>  [-]
             │       │           ├── <69> Var [glob]
-            │       │           ╰── Constant Int [4]
+            │       │           ╰── <71> Constant Int [4]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── two
@@ -5427,7 +5427,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <93>  [+]
-            │       │           ├── Constant Int [2]
+            │       │           ├── <89> Constant Int [2]
             │       │           ╰── <92> Var [one]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -5445,7 +5445,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <114>  [-]
-            │       │           ├── Constant Int [6]
+            │       │           ├── <110> Constant Int [6]
             │       │           ╰── <113> Var [one]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -5464,7 +5464,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <135>  [+]
             │       │           ├── <132> Var [one]
-            │       │           ╰── Constant Int [6]
+            │       │           ╰── <134> Constant Int [6]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── eight
@@ -5473,7 +5473,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <145>  [*]
             │       │           ├── <142> Var [two]
-            │       │           ╰── Constant Int [4]
+            │       │           ╰── <144> Constant Int [4]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── nine
@@ -5499,7 +5499,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <177>  [-]
-            │       │           ├── Constant Int [16]
+            │       │           ├── <173> Constant Int [16]
             │       │           ╰── <176> Var [five]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -5523,7 +5523,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   ├── <211> Var [ten]
             │       │   ├── <213> Var [eleven]
             │       │   ├── <215> Var [twelve]
-            │       │   ╰── Constant Int [1]
+            │       │   ╰── <216> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── thirteen
@@ -5531,7 +5531,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <226>  [+]
-            │       │           ├── Constant Int [8]
+            │       │           ├── <222> Constant Int [8]
             │       │           ╰── <225> Var [glob]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -5541,7 +5541,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <236>  [+]
             │       │           ├── <233> Var [thirteen]
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <235> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── fifteen
@@ -5549,7 +5549,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <246>  [-]
-            │       │           ├── Constant Int [28]
+            │       │           ├── <242> Constant Int [28]
             │       │           ╰── <245> Var [thirteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -5559,7 +5559,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <256>  [+]
             │       │           ├── <253> Var [fourteen]
-            │       │           ╰── Constant Int [2]
+            │       │           ╰── <255> Constant Int [2]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── seventeen
@@ -5567,7 +5567,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <266>  [+]
-            │       │           ├── Constant Int [4]
+            │       │           ├── <262> Constant Int [4]
             │       │           ╰── <265> Var [thirteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -5576,7 +5576,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <276>  [-]
-            │       │           ├── Constant Int [32]
+            │       │           ├── <272> Constant Int [32]
             │       │           ╰── <275> Var [fourteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -5585,7 +5585,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <286>  [-]
-            │       │           ├── Constant Int [35]
+            │       │           ├── <282> Constant Int [35]
             │       │           ╰── <285> Var [sixteen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -5595,7 +5595,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <296>  [+]
             │       │           ├── <293> Var [fifteen]
-            │       │           ╰── Constant Int [5]
+            │       │           ╰── <295> Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_one
@@ -5605,8 +5605,8 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │       ╰── <309>  [-]
             │       │           ├── <306>  [*]
             │       │           │   ├── <303> Var [thirteen]
-            │       │           │   ╰── Constant Int [2]
-            │       │           ╰── Constant Int [5]
+            │       │           │   ╰── <305> Constant Int [2]
+            │       │           ╰── <308> Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_two
@@ -5615,7 +5615,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <319>  [+]
             │       │           ├── <316> Var [fifteen]
-            │       │           ╰── Constant Int [7]
+            │       │           ╰── <318> Constant Int [7]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── twenty_three
@@ -5623,7 +5623,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <329>  [+]
-            │       │           ├── Constant Int [6]
+            │       │           ├── <325> Constant Int [6]
             │       │           ╰── <328> Var [seventeen]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -5633,7 +5633,7 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   ╰── Initializer
             │       │       ╰── <339>  [+]
             │       │           ├── <336> Var [thirteen]
-            │       │           ╰── Constant Int [11]
+            │       │           ╰── <338> Constant Int [11]
             │       ├── <368> FunctionCall [check_12_ints]
             │       │   ├── <344> Var [thirteen]
             │       │   ├── <346> Var [fourteen]
@@ -5647,19 +5647,19 @@ fn test_valid_chars_rewrite_movz_regression() {
             │       │   ├── <362> Var [twenty_two]
             │       │   ├── <364> Var [twenty_three]
             │       │   ├── <366> Var [twenty_four]
-            │       │   ╰── Constant Int [13]
+            │       │   ╰── <367> Constant Int [13]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <374>  [!=]
             │       │   │       ├── <371> Var [should_spill]
-            │       │   │       ╰── Constant Int [5]
+            │       │   │       ╰── <373> Constant Int [5]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── <377> Unary [-]
-            │       │                   ╰── Constant Int [1]
+            │       │                   ╰── <376> Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <382> Constant Int [0]
             ╰── Function [check_12_ints]
                 ├── Parameters
                 │   ├── Param
@@ -5734,12 +5734,12 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <432> Constant Int [0]
                     ├── <443> Assign [=]
                     │   ├── <436> Var [expected]
                     │   ╰── <442>  [+]
                     │       ├── <439> Var [start]
-                    │       ╰── Constant Int [0]
+                    │       ╰── <441> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <450>  [!=]
@@ -5753,7 +5753,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <458> Var [expected]
                     │   ╰── <464>  [+]
                     │       ├── <461> Var [start]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <463> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <472>  [!=]
@@ -5767,7 +5767,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <480> Var [expected]
                     │   ╰── <486>  [+]
                     │       ├── <483> Var [start]
-                    │       ╰── Constant Int [2]
+                    │       ╰── <485> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <494>  [!=]
@@ -5781,7 +5781,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <502> Var [expected]
                     │   ╰── <508>  [+]
                     │       ├── <505> Var [start]
-                    │       ╰── Constant Int [3]
+                    │       ╰── <507> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <516>  [!=]
@@ -5795,7 +5795,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <524> Var [expected]
                     │   ╰── <530>  [+]
                     │       ├── <527> Var [start]
-                    │       ╰── Constant Int [4]
+                    │       ╰── <529> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <538>  [!=]
@@ -5809,7 +5809,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <546> Var [expected]
                     │   ╰── <552>  [+]
                     │       ├── <549> Var [start]
-                    │       ╰── Constant Int [5]
+                    │       ╰── <551> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <560>  [!=]
@@ -5823,7 +5823,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <568> Var [expected]
                     │   ╰── <574>  [+]
                     │       ├── <571> Var [start]
-                    │       ╰── Constant Int [6]
+                    │       ╰── <573> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <582>  [!=]
@@ -5837,7 +5837,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <590> Var [expected]
                     │   ╰── <596>  [+]
                     │       ├── <593> Var [start]
-                    │       ╰── Constant Int [7]
+                    │       ╰── <595> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <604>  [!=]
@@ -5851,7 +5851,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <612> Var [expected]
                     │   ╰── <618>  [+]
                     │       ├── <615> Var [start]
-                    │       ╰── Constant Int [8]
+                    │       ╰── <617> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <626>  [!=]
@@ -5865,7 +5865,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <634> Var [expected]
                     │   ╰── <640>  [+]
                     │       ├── <637> Var [start]
-                    │       ╰── Constant Int [9]
+                    │       ╰── <639> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <648>  [!=]
@@ -5879,7 +5879,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <656> Var [expected]
                     │   ╰── <662>  [+]
                     │       ├── <659> Var [start]
-                    │       ╰── Constant Int [10]
+                    │       ╰── <661> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <670>  [!=]
@@ -5893,7 +5893,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │   ├── <678> Var [expected]
                     │   ╰── <684>  [+]
                     │       ├── <681> Var [start]
-                    │       ╰── Constant Int [11]
+                    │       ╰── <683> Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <692>  [!=]
@@ -5904,7 +5904,7 @@ fn test_valid_chars_rewrite_movz_regression() {
                     │           ╰── Return
                     │               ╰── <694> Var [expected]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <699> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -5976,214 +5976,214 @@ fn test_valid_chars_static_initializers() {
             │   ├── Type
             │   │   ╰── Char
             │   ╰── Initializer
-            │       ╰── Constant Long [17592186044416]
+            │       ╰── <4> Constant Long [17592186044416]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── from_double
             │   ├── Type
             │   │   ╰── Char
             │   ╰── Initializer
-            │       ╰── Constant Double [+1.56e1]
+            │       ╰── <10> Constant Double [+1.56e1]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── from_uint
             │   ├── Type
             │   │   ╰── Char
             │   ╰── Initializer
-            │       ╰── Constant UInt [2147483777]
+            │       ╰── <16> Constant UInt [2147483777]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── from_ulong
             │   ├── Type
             │   │   ╰── Char
             │   ╰── Initializer
-            │       ╰── Constant ULong [9223372037928517642]
+            │       ╰── <22> Constant ULong [9223372037928517642]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── schar_from_long
             │   ├── Type
             │   │   ╰── Signed Char
             │   ╰── Initializer
-            │       ╰── Constant Long [17592186044419]
+            │       ╰── <28> Constant Long [17592186044419]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── schar_from_uint
             │   ├── Type
             │   │   ╰── Signed Char
             │   ╰── Initializer
-            │       ╰── Constant UInt [2147483898]
+            │       ╰── <34> Constant UInt [2147483898]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── schar_from_ulong
             │   ├── Type
             │   │   ╰── Signed Char
             │   ╰── Initializer
-            │       ╰── Constant ULong [9223372037928517642]
+            │       ╰── <40> Constant ULong [9223372037928517642]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── schar_from_double
             │   ├── Type
             │   │   ╰── Signed Char
             │   ╰── Initializer
-            │       ╰── Constant Double [+1e-10]
+            │       ╰── <46> Constant Double [+1e-10]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── uchar_from_int
             │   ├── Type
             │   │   ╰── Unsigned Char
             │   ╰── Initializer
-            │       ╰── Constant Int [13526]
+            │       ╰── <52> Constant Int [13526]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── uchar_from_uint
             │   ├── Type
             │   │   ╰── Unsigned Char
             │   ╰── Initializer
-            │       ╰── Constant UInt [2147483898]
+            │       ╰── <58> Constant UInt [2147483898]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── uchar_from_long
             │   ├── Type
             │   │   ╰── Unsigned Char
             │   ╰── Initializer
-            │       ╰── Constant Long [1101659111674]
+            │       ╰── <64> Constant Long [1101659111674]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── uchar_from_ulong
             │   ├── Type
             │   │   ╰── Unsigned Char
             │   ╰── Initializer
-            │       ╰── Constant ULong [9223372037928517642]
+            │       ╰── <70> Constant ULong [9223372037928517642]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── uchar_from_double
             │   ├── Type
             │   │   ╰── Unsigned Char
             │   ╰── Initializer
-            │       ╰── Constant Double [+7.77e1]
+            │       ╰── <76> Constant Double [+7.77e1]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <87>  [!=]
                     │   │       ├── <84> Var [from_long]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <86> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <88> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <97>  [!=]
                     │   │       ├── <94> Var [from_double]
-                    │   │       ╰── Constant Int [15]
+                    │   │       ╰── <96> Constant Int [15]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <98> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <109>  [!=]
                     │   │       ├── <104> Var [from_uint]
                     │   │       ╰── <108> Unary [-]
-                    │   │           ╰── Constant Int [127]
+                    │   │           ╰── <107> Constant Int [127]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <110> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <119>  [!=]
                     │   │       ├── <116> Var [from_ulong]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <118> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <120> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <131>  [!=]
                     │   │       ├── <126> Var [schar_from_uint]
                     │   │       ╰── <130> Unary [-]
-                    │   │           ╰── Constant Int [6]
+                    │   │           ╰── <129> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <132> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <141>  [!=]
                     │   │       ├── <138> Var [schar_from_ulong]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <140> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <142> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <151>  [!=]
                     │   │       ├── <148> Var [schar_from_double]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <150> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <152> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <161>  [!=]
                     │   │       ├── <158> Var [uchar_from_int]
-                    │   │       ╰── Constant Int [214]
+                    │   │       ╰── <160> Constant Int [214]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <162> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <171>  [!=]
                     │   │       ├── <168> Var [uchar_from_uint]
-                    │   │       ╰── Constant Int [250]
+                    │   │       ╰── <170> Constant Int [250]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <172> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <181>  [!=]
                     │   │       ├── <178> Var [uchar_from_ulong]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <180> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [10]
+                    │               ╰── <182> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <191>  [!=]
                     │   │       ├── <188> Var [uchar_from_double]
-                    │   │       ╰── Constant Int [77]
+                    │   │       ╰── <190> Constant Int [77]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [11]
+                    │               ╰── <192> Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <201>  [!=]
                     │   │       ├── <198> Var [schar_from_long]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <200> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [12]
+                    │               ╰── <202> Constant Int [12]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <211>  [!=]
                     │   │       ├── <208> Var [uchar_from_long]
-                    │   │       ╰── Constant Int [250]
+                    │   │       ╰── <210> Constant Int [250]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [13]
+                    │               ╰── <212> Constant Int [13]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <217> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -6226,7 +6226,7 @@ fn test_valid_chars_type_specifiers() {
             │   ├── Type
             │   │   ╰── Signed Char
             │   ├── Initializer
-            │   │   ╰── Constant Int [10]
+            │   │   ╰── <5> Constant Int [10]
             │   ╰── Static
             ├── VarDeclaration
             │   ├── Name
@@ -6234,7 +6234,7 @@ fn test_valid_chars_type_specifiers() {
             │   ├── Type
             │   │   ╰── Unsigned Char
             │   ├── Initializer
-            │   │   ╰── Constant Int [20]
+            │   │   ╰── <12> Constant Int [20]
             │   ╰── Static
             ├── VarDeclaration
             │   ├── Name
@@ -6242,7 +6242,7 @@ fn test_valid_chars_type_specifiers() {
             │   ├── Type
             │   │   ╰── Char
             │   ╰── Initializer
-            │       ╰── Constant Int [30]
+            │       ╰── <18> Constant Int [30]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -6267,36 +6267,36 @@ fn test_valid_chars_type_specifiers() {
                     │   ├── Condition
                     │   │   ╰── <44>  [!=]
                     │   │       ├── <41> Var [a]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <43> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <45> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <54>  [!=]
                     │   │       ├── <51> Var [b]
-                    │   │       ╰── Constant Int [20]
+                    │   │       ╰── <53> Constant Int [20]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <55> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <64>  [!=]
                     │   │       ├── <61> Var [c]
-                    │   │       ╰── Constant Int [30]
+                    │   │       ╰── <63> Constant Int [30]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <65> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── loop_counter
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <73> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -6305,34 +6305,34 @@ fn test_valid_chars_type_specifiers() {
                     │   │       ├── Type
                     │   │       │   ╰── Unsigned Char
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <79> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <87>  [<]
                     │   │       ├── <84> Var [d]
-                    │   │       ╰── Constant Int [100]
+                    │   │       ╰── <86> Constant Int [100]
                     │   ├── Condition
                     │   │   ╰── <96> Assign [=]
                     │   │       ├── <89> Var [d]
                     │   │       ╰── <95>  [+]
                     │   │           ├── <92> Var [d]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <94> Constant Int [1]
                     │   ╰── Block
                     │       ╰── <105> Assign [=]
                     │           ├── <98> Var [loop_counter]
                     │           ╰── <104>  [+]
                     │               ├── <101> Var [loop_counter]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <103> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <114>  [!=]
                     │   │       ├── <111> Var [loop_counter]
-                    │   │       ╰── Constant Int [100]
+                    │   │       ╰── <113> Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <115> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <120> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -6369,18 +6369,18 @@ fn test_valid_extra_credit_bitshift_chars() {
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [255]
+                    │       ╰── <8> Constant Int [255]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <19>  [!=]
                     │   │       ├── <16>  [>>]
                     │   │       │   ├── <12> Var [uc]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [31]
+                    │   │       │   ╰── <14> Constant Int [3]
+                    │   │       ╰── <18> Constant Int [31]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <20> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── sc
@@ -6388,14 +6388,14 @@ fn test_valid_extra_credit_bitshift_chars() {
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
                     │       ╰── <30> Unary [-]
-                    │           ╰── Constant Int [127]
+                    │           ╰── <29> Constant Int [127]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [5]
+                    │       ╰── <36> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <50>  [!=]
@@ -6403,11 +6403,11 @@ fn test_valid_extra_credit_bitshift_chars() {
                     │   │       │   ├── <40> Var [sc]
                     │   │       │   ╰── <43> Var [c]
                     │   │       ╰── <49> Unary [-]
-                    │   │           ╰── Constant Int [4]
+                    │   │           ╰── <48> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <51> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <73>  [!=]
@@ -6415,14 +6415,14 @@ fn test_valid_extra_credit_bitshift_chars() {
                     │   │       │   ├── <64> Unary [-]
                     │   │       │   │   ╰── <62>  [<<]
                     │   │       │   │       ├── <58> Var [c]
-                    │   │       │   │       ╰── Constant ULong [3]
-                    │   │       │   ╰── Constant Int [3]
+                    │   │       │   │       ╰── <60> Constant ULong [3]
+                    │   │       │   ╰── <66> Constant Int [3]
                     │   │       ╰── <72> Unary [-]
-                    │   │           ╰── Constant Int [5]
+                    │   │           ╰── <71> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <74> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <95>  [!=]
@@ -6430,16 +6430,16 @@ fn test_valid_extra_credit_bitshift_chars() {
                     │   │       │   ├── <86> Unary [-]
                     │   │       │   │   ╰── <85>  [<<]
                     │   │       │   │       ├── <81> Var [uc]
-                    │   │       │   │       ╰── Constant UInt [5]
-                    │   │       │   ╰── Constant UInt [5]
+                    │   │       │   │       ╰── <83> Constant UInt [5]
+                    │   │       │   ╰── <88> Constant UInt [5]
                     │   │       ╰── <94> Unary [-]
-                    │   │           ╰── Constant Long [255]
+                    │   │           ╰── <93> Constant Long [255]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <96> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <101> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -6479,81 +6479,81 @@ fn test_valid_extra_credit_bitwise_ops_character_constants() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <19>  [!=]
                     │   │       ├── <16>  [^]
                     │   │       │   ├── <12> Var [x]
-                    │   │       │   ╰── Constant Int [65]
-                    │   │       ╰── Constant Int [75]
+                    │   │       │   ╰── <14> Constant Int [65]
+                    │   │       ╰── <18> Constant Int [75]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <20> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Char
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [132]
+                    │   │   ╰── <29> Constant Int [132]
                     │   ╰── Static
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <42>  [!=]
                     │   │       ├── <37>  [|]
-                    │   │       │   ├── Constant Int [33]
+                    │   │       │   ├── <32> Constant Int [33]
                     │   │       │   ╰── <35> Var [c]
                     │   │       ╰── <41> Unary [-]
-                    │   │           ╰── Constant Int [91]
+                    │   │           ╰── <40> Constant Int [91]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <43> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ul
                     │   ├── Type
                     │   │   ╰── Unsigned Long
                     │   ├── Initializer
-                    │   │   ╰── Constant ULong [9259400834947493926]
+                    │   │   ╰── <52> Constant ULong [9259400834947493926]
                     │   ╰── Static
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <63>  [!=]
                     │   │       ├── <60>  [&]
                     │   │       │   ├── <56> Var [ul]
-                    │   │       │   ╰── Constant Int [126]
-                    │   │       ╰── Constant Int [38]
+                    │   │       │   ╰── <58> Constant Int [126]
+                    │   │       ╰── <62> Constant Int [38]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <64> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <77>  [!=]
                     │   │       ├── <74>  [<<]
                     │   │       │   ├── <70> Var [ul]
-                    │   │       │   ╰── Constant Int [32]
-                    │   │       ╰── Constant ULong [4611738958194278400]
+                    │   │       │   ╰── <72> Constant Int [32]
+                    │   │       ╰── <76> Constant ULong [4611738958194278400]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <78> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <90>  [!=]
                     │   │       ├── <87>  [>>]
-                    │   │       │   ├── Constant Int [123]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [15]
+                    │   │       │   ├── <83> Constant Int [123]
+                    │   │       │   ╰── <85> Constant Int [3]
+                    │   │       ╰── <89> Constant Int [15]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <91> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <96> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -6586,7 +6586,7 @@ fn test_valid_extra_credit_bitwise_ops_chars() {
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [135]
+                    │       ╰── <8> Constant Int [135]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -6594,18 +6594,18 @@ fn test_valid_extra_credit_bitwise_ops_chars() {
                     │   │   ╰── Char
                     │   ╰── Initializer
                     │       ╰── <16> Unary [-]
-                    │           ╰── Constant Int [116]
+                    │           ╰── <15> Constant Int [116]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <28>  [!=]
                     │   │       ├── <25>  [&]
                     │   │       │   ├── <20> Var [uc]
                     │   │       │   ╰── <23> Var [c]
-                    │   │       ╰── Constant Int [132]
+                    │   │       ╰── <27> Constant Int [132]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <29> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <45>  [!=]
@@ -6613,26 +6613,26 @@ fn test_valid_extra_credit_bitwise_ops_chars() {
                     │   │       │   ├── <35> Var [uc]
                     │   │       │   ╰── <38> Var [c]
                     │   │       ╰── <44> Unary [-]
-                    │   │           ╰── Constant Int [113]
+                    │   │           ╰── <43> Constant Int [113]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <46> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <63>  [!=]
                     │   │       ├── <60>  [|]
                     │   │       │   ├── <56>  [^]
                     │   │       │   │   ├── <52> Var [c]
-                    │   │       │   │   ╰── Constant UInt [1001]
-                    │   │       │   ╰── Constant Long [360]
-                    │   │       ╰── Constant Long [4294966637]
+                    │   │       │   │   ╰── <54> Constant UInt [1001]
+                    │   │       │   ╰── <58> Constant Long [360]
+                    │   │       ╰── <62> Constant Long [4294966637]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <64> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <69> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -6667,7 +6667,7 @@ fn test_valid_extra_credit_char_consts_as_cases() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [65]
+                    │   │   ╰── <9> Constant Int [65]
                     │   ╰── Static
                     ╰── Switch
                         ├── Expression
@@ -6675,20 +6675,20 @@ fn test_valid_extra_credit_char_consts_as_cases() {
                         ╰── Block
                             ├── Case [100]
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <15> Constant Int [1]
                             ├── Case [65]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <19> Constant Int [0]
                             ├── Case [66]
                             │   ╰── Return
-                            │       ╰── Constant Int [2]
+                            │       ╰── <23> Constant Int [2]
                             ├── Case [2000]
                             │   ╰── Return
-                            │       ╰── Constant Int [3]
+                            │       ╰── <27> Constant Int [3]
                             ╰── Default
                                 ╰── Return
                                     ╰── <32> Unary [-]
-                                        ╰── Constant Int [1]
+                                        ╰── <31> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -6735,7 +6735,7 @@ fn test_valid_extra_credit_compound_assign_chars() {
                     │   ├── Type
                     │   │   ╰── Char
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [100]
+                    │   │   ╰── <9> Constant Int [100]
                     │   ╰── Static
                     ├── VarDeclaration
                     │   ├── Name
@@ -6743,7 +6743,7 @@ fn test_valid_extra_credit_compound_assign_chars() {
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <15> Constant Int [100]
                     ├── <23> Assign [+=]
                     │   ├── <19> Var [c]
                     │   ╰── <22> Var [c2]
@@ -6752,23 +6752,23 @@ fn test_valid_extra_credit_compound_assign_chars() {
                     │   │   ╰── <31>  [!=]
                     │   │       ├── <26> Var [c]
                     │   │       ╰── <30> Unary [-]
-                    │   │           ╰── Constant Int [56]
+                    │   │           ╰── <29> Constant Int [56]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <32> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── uc
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [200]
+                    │   │   ╰── <41> Constant Int [200]
                     │   ╰── Static
                     ├── <50> Assign [=]
                     │   ├── <45> Var [c2]
                     │   ╰── <49> Unary [-]
-                    │       ╰── Constant Int [100]
+                    │       ╰── <48> Constant Int [100]
                     ├── <57> Assign [/=]
                     │   ├── <53> Var [uc]
                     │   ╰── <56> Var [c2]
@@ -6776,30 +6776,30 @@ fn test_valid_extra_credit_compound_assign_chars() {
                     │   ├── Condition
                     │   │   ╰── <63>  [!=]
                     │   │       ├── <60> Var [uc]
-                    │   │       ╰── Constant Int [254]
+                    │   │       ╰── <62> Constant Int [254]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <64> Constant Int [2]
                     ├── <73> Assign [-=]
                     │   ├── <70> Var [uc]
-                    │   ╰── Constant Double [+2.5e2]
+                    │   ╰── <72> Constant Double [+2.5e2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <79>  [!=]
                     │   │       ├── <76> Var [uc]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <78> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <80> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── sc
                     │   ├── Type
                     │   │   ╰── Signed Char
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [70]
+                    │   │   ╰── <89> Constant Int [70]
                     │   ╰── Static
                     ├── <99> Assign [=]
                     │   ├── <93> Var [sc]
@@ -6812,24 +6812,24 @@ fn test_valid_extra_credit_compound_assign_chars() {
                     │   ├── Condition
                     │   │   ╰── <112>  [!=]
                     │   │       ├── <109> Var [sc]
-                    │   │       ╰── Constant Int [80]
+                    │   │       ╰── <111> Constant Int [80]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <113> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <127>  [!=]
                     │   │       ├── <124> Assign [&=]
                     │   │       │   ├── <119> Var [sc]
                     │   │       │   ╰── <122> Var [c]
-                    │   │       ╰── Constant Int [24]
+                    │   │       ╰── <126> Constant Int [24]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <128> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <133> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -6895,13 +6895,13 @@ fn test_valid_extra_credit_compound_bitwise_ops_chars() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── <12> Unary [-]
-                    │           │   ╰── Constant Int [128]
+                    │           │   ╰── <11> Constant Int [128]
                     │           ├── <16> Unary [-]
-                    │           │   ╰── Constant Int [120]
+                    │           │   ╰── <15> Constant Int [120]
                     │           ├── <20> Unary [-]
-                    │           │   ╰── Constant Int [2]
-                    │           ├── Constant Int [1]
-                    │           ╰── Constant Int [120]
+                    │           │   ╰── <19> Constant Int [2]
+                    │           ├── <22> Constant Int [1]
+                    │           ╰── <24> Constant Int [120]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── u_arr
@@ -6911,185 +6911,185 @@ fn test_valid_extra_credit_compound_bitwise_ops_chars() {
                     │   │       ╰── Unsigned Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [170]
-                    │           ├── Constant Int [250]
-                    │           ╰── Constant Int [255]
+                    │           ├── <33> Constant Int [0]
+                    │           ├── <35> Constant Int [170]
+                    │           ├── <37> Constant Int [250]
+                    │           ╰── <39> Constant Int [255]
                     ├── <49> Assign [^=]
                     │   ├── <46> Subscript
                     │   │   ├── <44> Var [arr]
-                    │   │   ╰── Constant Int [0]
-                    │   ╰── Constant Int [12345]
+                    │   │   ╰── <45> Constant Int [0]
+                    │   ╰── <48> Constant Int [12345]
                     ├── <60> Assign [|=]
                     │   ├── <54> Subscript
                     │   │   ├── <52> Var [arr]
-                    │   │   ╰── Constant Int [1]
+                    │   │   ╰── <53> Constant Int [1]
                     │   ╰── <59> Subscript
                     │       ├── <57> Var [u_arr]
-                    │       ╰── Constant Int [3]
+                    │       ╰── <58> Constant Int [3]
                     ├── <77> Assign [&=]
                     │   ├── <65> Subscript
                     │   │   ├── <63> Var [arr]
-                    │   │   ╰── Constant Int [2]
+                    │   │   ╰── <64> Constant Int [2]
                     │   ╰── <76>  [-]
                     │       ├── <70> Subscript
                     │       │   ├── <68> Var [u_arr]
-                    │       │   ╰── Constant Int [1]
+                    │       │   ╰── <69> Constant Int [1]
                     │       ╰── <75> Cast
                     │           ├── Target
                     │           │   ╰── Unsigned Char
                     │           ╰── Expression
-                    │               ╰── Constant Int [185]
+                    │               ╰── <74> Constant Int [185]
                     ├── <85> Assign [<<=]
                     │   ├── <82> Subscript
                     │   │   ├── <80> Var [arr]
-                    │   │   ╰── Constant Int [3]
-                    │   ╰── Constant UInt [7]
+                    │   │   ╰── <81> Constant Int [3]
+                    │   ╰── <84> Constant UInt [7]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
                     │   ├── Type
                     │   │   ╰── Long
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [32]
+                    │   │   ╰── <91> Constant Int [32]
                     │   ╰── Static
                     ├── <100> Assign [>>=]
                     │   ├── <97> Subscript
                     │   │   ├── <95> Var [arr]
-                    │   │   ╰── Constant Int [4]
-                    │   ╰── Constant Int [31]
+                    │   │   ╰── <96> Constant Int [4]
+                    │   ╰── <99> Constant Int [31]
                     ├── <108> Assign [<<=]
                     │   ├── <105> Subscript
                     │   │   ├── <103> Var [u_arr]
-                    │   │   ╰── Constant Int [3]
-                    │   ╰── Constant Int [12]
+                    │   │   ╰── <104> Constant Int [3]
+                    │   ╰── <107> Constant Int [12]
                     ├── <121> Assign [>>=]
                     │   ├── <113> Subscript
                     │   │   ├── <111> Var [u_arr]
-                    │   │   ╰── Constant Int [2]
+                    │   │   ╰── <112> Constant Int [2]
                     │   ╰── <120>  [-]
                     │       ├── <116> Var [x]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <118> Constant Int [1]
                     ├── <131> Assign [|=]
                     │   ├── <126> Subscript
                     │   │   ├── <124> Var [u_arr]
-                    │   │   ╰── Constant Int [1]
+                    │   │   ╰── <125> Constant Int [1]
                     │   ╰── <130> Unary [-]
-                    │       ╰── Constant Int [399]
+                    │       ╰── <129> Constant Int [399]
                     ├── <139> Assign [=]
                     │   ├── <134> Var [x]
                     │   ╰── <138> Unary [-]
-                    │       ╰── Constant Long [4296140120]
+                    │       ╰── <137> Constant Long [4296140120]
                     ├── <148> Assign [^=]
                     │   ├── <144> Subscript
                     │   │   ├── <142> Var [u_arr]
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <143> Constant Int [0]
                     │   ╰── <147> Var [x]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <158>  [!=]
                     │   │       ├── <153> Subscript
                     │   │       │   ├── <151> Var [arr]
-                    │   │       │   ╰── Constant Int [0]
+                    │   │       │   ╰── <152> Constant Int [0]
                     │   │       ╰── <157> Unary [-]
-                    │   │           ╰── Constant Int [71]
+                    │   │           ╰── <156> Constant Int [71]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <159> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <172>  [!=]
                     │   │       ├── <167> Subscript
                     │   │       │   ├── <165> Var [arr]
-                    │   │       │   ╰── Constant Int [1]
+                    │   │       │   ╰── <166> Constant Int [1]
                     │   │       ╰── <171> Unary [-]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <170> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <173> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <186>  [!=]
                     │   │       ├── <181> Subscript
                     │   │       │   ├── <179> Var [arr]
-                    │   │       │   ╰── Constant Int [2]
+                    │   │       │   ╰── <180> Constant Int [2]
                     │   │       ╰── <185> Unary [-]
-                    │   │           ╰── Constant Int [16]
+                    │   │           ╰── <184> Constant Int [16]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <187> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <200>  [!=]
                     │   │       ├── <195> Subscript
                     │   │       │   ├── <193> Var [arr]
-                    │   │       │   ╰── Constant Int [3]
+                    │   │       │   ╰── <194> Constant Int [3]
                     │   │       ╰── <199> Unary [-]
-                    │   │           ╰── Constant Int [128]
+                    │   │           ╰── <198> Constant Int [128]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <201> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <212>  [!=]
                     │   │       ├── <209> Subscript
                     │   │       │   ├── <207> Var [arr]
-                    │   │       │   ╰── Constant Int [4]
-                    │   │       ╰── Constant Int [0]
+                    │   │       │   ╰── <208> Constant Int [4]
+                    │   │       ╰── <211> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <213> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <224>  [!=]
                     │   │       ├── <221> Subscript
                     │   │       │   ├── <219> Var [u_arr]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [168]
+                    │   │       │   ╰── <220> Constant Int [0]
+                    │   │       ╰── <223> Constant Int [168]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <225> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <236>  [!=]
                     │   │       ├── <233> Subscript
                     │   │       │   ├── <231> Var [u_arr]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [251]
+                    │   │       │   ╰── <232> Constant Int [1]
+                    │   │       ╰── <235> Constant Int [251]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <237> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <248>  [!=]
                     │   │       ├── <245> Subscript
                     │   │       │   ├── <243> Var [u_arr]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [0]
+                    │   │       │   ╰── <244> Constant Int [2]
+                    │   │       ╰── <247> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <249> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <260>  [!=]
                     │   │       ├── <257> Subscript
                     │   │       │   ├── <255> Var [u_arr]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [0]
+                    │   │       │   ╰── <256> Constant Int [3]
+                    │   │       ╰── <259> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <261> Constant Int [9]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <266> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -7151,11 +7151,11 @@ fn test_valid_extra_credit_incr_decr_chars() {
                     │   │       ╰── Char
                     │   ├── Initializer
                     │   │   ╰── Compound
-                    │   │       ├── Constant Int [123]
-                    │   │       ├── Constant Int [124]
-                    │   │       ├── Constant Int [125]
-                    │   │       ├── Constant Int [126]
-                    │   │       ╰── Constant Int [127]
+                    │   │       ├── <11> Constant Int [123]
+                    │   │       ├── <13> Constant Int [124]
+                    │   │       ├── <15> Constant Int [125]
+                    │   │       ├── <17> Constant Int [126]
+                    │   │       ╰── <19> Constant Int [127]
                     │   ╰── Static
                     ├── If
                     │   ├── Condition
@@ -7163,117 +7163,117 @@ fn test_valid_extra_credit_incr_decr_chars() {
                     │   │       ├── <28> Postfix [++]
                     │   │       │   ╰── <26> Subscript
                     │   │       │       ├── <24> Var [chars]
-                    │   │       │       ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [123]
+                    │   │       │       ╰── <25> Constant Int [0]
+                    │   │       ╰── <30> Constant Int [123]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <32> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <45>  [!=]
                     │   │       ├── <42> Postfix [--]
                     │   │       │   ╰── <40> Subscript
                     │   │       │       ├── <38> Var [chars]
-                    │   │       │       ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [124]
+                    │   │       │       ╰── <39> Constant Int [1]
+                    │   │       ╰── <44> Constant Int [124]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <46> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <59>  [!=]
                     │   │       ├── <56> Unary [++]
                     │   │       │   ╰── <55> Subscript
                     │   │       │       ├── <53> Var [chars]
-                    │   │       │       ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [126]
+                    │   │       │       ╰── <54> Constant Int [2]
+                    │   │       ╰── <58> Constant Int [126]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <60> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <73>  [!=]
                     │   │       ├── <70> Unary [--]
                     │   │       │   ╰── <69> Subscript
                     │   │       │       ├── <67> Var [chars]
-                    │   │       │       ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [125]
+                    │   │       │       ╰── <68> Constant Int [3]
+                    │   │       ╰── <72> Constant Int [125]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <74> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <89>  [!=]
                     │   │       ├── <84> Unary [++]
                     │   │       │   ╰── <83> Subscript
                     │   │       │       ├── <81> Var [chars]
-                    │   │       │       ╰── Constant Int [4]
+                    │   │       │       ╰── <82> Constant Int [4]
                     │   │       ╰── <88> Unary [-]
-                    │   │           ╰── Constant Int [128]
+                    │   │           ╰── <87> Constant Int [128]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <90> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <101>  [!=]
                     │   │       ├── <98> Subscript
                     │   │       │   ├── <96> Var [chars]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [124]
+                    │   │       │   ╰── <97> Constant Int [0]
+                    │   │       ╰── <100> Constant Int [124]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <102> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <113>  [!=]
                     │   │       ├── <110> Subscript
                     │   │       │   ├── <108> Var [chars]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [123]
+                    │   │       │   ╰── <109> Constant Int [1]
+                    │   │       ╰── <112> Constant Int [123]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <114> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <125>  [!=]
                     │   │       ├── <122> Subscript
                     │   │       │   ├── <120> Var [chars]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [126]
+                    │   │       │   ╰── <121> Constant Int [2]
+                    │   │       ╰── <124> Constant Int [126]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <126> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <137>  [!=]
                     │   │       ├── <134> Subscript
                     │   │       │   ├── <132> Var [chars]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [125]
+                    │   │       │   ╰── <133> Constant Int [3]
+                    │   │       ╰── <136> Constant Int [125]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <138> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <151>  [!=]
                     │   │       ├── <146> Subscript
                     │   │       │   ├── <144> Var [chars]
-                    │   │       │   ╰── Constant Int [4]
+                    │   │       │   ╰── <145> Constant Int [4]
                     │   │       ╰── <150> Unary [-]
-                    │   │           ╰── Constant Int [128]
+                    │   │           ╰── <149> Constant Int [128]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [10]
+                    │               ╰── <152> Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
@@ -7281,20 +7281,20 @@ fn test_valid_extra_credit_incr_decr_chars() {
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
                     │       ╰── <162> Unary [-]
-                    │           ╰── Constant Int [128]
+                    │           ╰── <161> Constant Int [128]
                     ├── <168> Postfix [--]
                     │   ╰── <166> Var [c]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <174>  [!=]
                     │   │       ├── <171> Var [c]
-                    │   │       ╰── Constant Int [127]
+                    │   │       ╰── <173> Constant Int [127]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [11]
+                    │               ╰── <175> Constant Int [11]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <180> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -7348,112 +7348,112 @@ fn test_valid_extra_credit_incr_decr_unsigned_chars() {
                     │   │       ╰── Unsigned Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [2]
-                    │           ├── Constant Int [4]
-                    │           ├── Constant Int [253]
-                    │           ╰── Constant Int [255]
+                    │           ├── <10> Constant Int [0]
+                    │           ├── <12> Constant Int [2]
+                    │           ├── <14> Constant Int [4]
+                    │           ├── <16> Constant Int [253]
+                    │           ╰── <18> Constant Int [255]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <27> Postfix [--]
                     │   │       ╰── <25> Subscript
                     │   │           ├── <23> Var [chars]
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <24> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <28> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <41>  [!=]
                     │   │       ├── <38> Postfix [++]
                     │   │       │   ╰── <36> Subscript
                     │   │       │       ├── <34> Var [chars]
-                    │   │       │       ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [2]
+                    │   │       │       ╰── <35> Constant Int [1]
+                    │   │       ╰── <40> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <42> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <55>  [!=]
                     │   │       ├── <52> Unary [--]
                     │   │       │   ╰── <51> Subscript
                     │   │       │       ├── <49> Var [chars]
-                    │   │       │       ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [252]
+                    │   │       │       ╰── <50> Constant Int [3]
+                    │   │       ╰── <54> Constant Int [252]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <56> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <69>  [!=]
                     │   │       ├── <66> Unary [++]
                     │   │       │   ╰── <65> Subscript
                     │   │       │       ├── <63> Var [chars]
-                    │   │       │       ╰── Constant Int [4]
-                    │   │       ╰── Constant Int [0]
+                    │   │       │       ╰── <64> Constant Int [4]
+                    │   │       ╰── <68> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <70> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <81>  [!=]
                     │   │       ├── <78> Subscript
                     │   │       │   ├── <76> Var [chars]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [255]
+                    │   │       │   ╰── <77> Constant Int [0]
+                    │   │       ╰── <80> Constant Int [255]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <82> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <93>  [!=]
                     │   │       ├── <90> Subscript
                     │   │       │   ├── <88> Var [chars]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [3]
+                    │   │       │   ╰── <89> Constant Int [1]
+                    │   │       ╰── <92> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <94> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <105>  [!=]
                     │   │       ├── <102> Subscript
                     │   │       │   ├── <100> Var [chars]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [4]
+                    │   │       │   ╰── <101> Constant Int [2]
+                    │   │       ╰── <104> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <106> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <117>  [!=]
                     │   │       ├── <114> Subscript
                     │   │       │   ├── <112> Var [chars]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [252]
+                    │   │       │   ╰── <113> Constant Int [3]
+                    │   │       ╰── <116> Constant Int [252]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <118> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <126> Subscript
                     │   │       ├── <124> Var [chars]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <125> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <127> Constant Int [9]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <132> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -7485,23 +7485,23 @@ fn test_valid_extra_credit_promote_switch_cond() {
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <8> Constant Int [100]
                     ╰── Switch
                         ├── Expression
                         │   ╰── <12> Var [c]
                         ╰── Block
                             ├── Case [0]
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <14> Constant Int [1]
                             ├── Case [100]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <18> Constant Int [0]
                             ├── Case [356]
                             │   ╰── Return
-                            │       ╰── Constant Int [2]
+                            │       ╰── <22> Constant Int [2]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant Int [3]
+                                    ╰── <25> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -7530,17 +7530,17 @@ fn test_valid_extra_credit_promote_switch_cond_2() {
                     │   │   ╰── Char
                     │   ╰── Initializer
                     │       ╰── <10> Unary [-]
-                    │           ╰── Constant Int [56]
+                    │           ╰── <9> Constant Int [56]
                     ╰── Switch
                         ├── Expression
                         │   ╰── <14> Var [c]
                         ╰── Block
                             ├── Case [33554632]
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <16> Constant Int [1]
                             ╰── Default
                                 ╰── Return
-                                    ╰── Constant Int [0]
+                                    ╰── <19> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -7568,21 +7568,21 @@ fn test_valid_extra_credit_switch_on_char_const() {
                 ╰── Body
                     ╰── Switch
                         ├── Expression
-                        │   ╰── Constant Int [120]
+                        │   ╰── <5> Constant Int [120]
                         ╰── Block
                             ├── Case [1]
                             │   ╰── Return
-                            │       ╰── Constant Int [1]
+                            │       ╰── <7> Constant Int [1]
                             ├── Case [2]
                             │   ╰── Return
-                            │       ╰── Constant Int [2]
+                            │       ╰── <11> Constant Int [2]
                             ├── Case [120]
                             │   ╰── Return
-                            │       ╰── Constant Int [0]
+                            │       ╰── <15> Constant Int [0]
                             ╰── Default
                                 ╰── Return
                                     ╰── <20> Unary [-]
-                                        ╰── Constant Int [1]
+                                        ╰── <19> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -7677,7 +7677,7 @@ fn test_valid_libraries_char_arguments() {
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [5]
+                    │       ╰── <32> Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── expected_b
@@ -7685,28 +7685,28 @@ fn test_valid_libraries_char_arguments() {
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
                     │       ╰── <40> Unary [-]
-                    │           ╰── Constant Int [12]
+                    │           ╰── <39> Constant Int [12]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── expected_c
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [117]
+                    │       ╰── <46> Constant Int [117]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── expected_d
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [254]
+                    │       ╰── <52> Constant Int [254]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── expected_e
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <58> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── expected_f
@@ -7714,21 +7714,21 @@ fn test_valid_libraries_char_arguments() {
                     │   │   ╰── Char
                     │   ╰── Initializer
                     │       ╰── <66> Unary [-]
-                    │           ╰── Constant Int [20]
+                    │           ╰── <65> Constant Int [20]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── expected_g
                     │   ├── Type
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [60]
+                    │       ╰── <72> Constant Int [60]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── expected_h
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <78> Constant Int [100]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <86>  [!=]
@@ -7737,7 +7737,7 @@ fn test_valid_libraries_char_arguments() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <87> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <97>  [!=]
@@ -7746,7 +7746,7 @@ fn test_valid_libraries_char_arguments() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <98> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <108>  [!=]
@@ -7755,7 +7755,7 @@ fn test_valid_libraries_char_arguments() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <109> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <119>  [!=]
@@ -7764,7 +7764,7 @@ fn test_valid_libraries_char_arguments() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <120> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <130>  [!=]
@@ -7773,7 +7773,7 @@ fn test_valid_libraries_char_arguments() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <131> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <141>  [!=]
@@ -7782,7 +7782,7 @@ fn test_valid_libraries_char_arguments() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <142> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <152>  [!=]
@@ -7791,7 +7791,7 @@ fn test_valid_libraries_char_arguments() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <153> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <163>  [!=]
@@ -7800,9 +7800,9 @@ fn test_valid_libraries_char_arguments() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <164> Constant Int [8]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <169> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -7876,7 +7876,7 @@ fn test_valid_libraries_char_arguments_client() {
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [5]
+                    │       ╰── <37> Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -7884,28 +7884,28 @@ fn test_valid_libraries_char_arguments_client() {
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
                     │       ╰── <45> Unary [-]
-                    │           ╰── Constant Int [12]
+                    │           ╰── <44> Constant Int [12]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── c
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [117]
+                    │       ╰── <51> Constant Int [117]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── d
                     │   ├── Type
                     │   │   ╰── Unsigned Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [254]
+                    │       ╰── <57> Constant Int [254]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── e
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <63> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── f
@@ -7913,21 +7913,21 @@ fn test_valid_libraries_char_arguments_client() {
                     │   │   ╰── Char
                     │   ╰── Initializer
                     │       ╰── <71> Unary [-]
-                    │           ╰── Constant Int [20]
+                    │           ╰── <70> Constant Int [20]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── g
                     │   ├── Type
                     │   │   ╰── Signed Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [60]
+                    │       ╰── <77> Constant Int [60]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── h
                     │   ├── Type
                     │   │   ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [100]
+                    │       ╰── <83> Constant Int [100]
                     ╰── Return
                         ╰── <103> FunctionCall [check_args]
                             ├── <88> Var [a]
@@ -7963,40 +7963,40 @@ fn test_valid_libraries_global_char() {
             │   ├── Type
             │   │   ╰── Char
             │   ╰── Initializer
-            │       ╰── Constant Int [100]
+            │       ╰── <4> Constant Int [100]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── uc
             │   ├── Type
             │   │   ╰── Unsigned Char
             │   ╰── Initializer
-            │       ╰── Constant Int [250]
+            │       ╰── <10> Constant Int [250]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── sc
             │   ├── Type
             │   │   ╰── Signed Char
             │   ╰── Initializer
-            │       ╰── Constant Int [0]
+            │       ╰── <16> Constant Int [0]
             ╰── Function [update_global_chars]
                 ╰── Body
                     ├── <31> Assign [=]
                     │   ├── <24> Var [c]
                     │   ╰── <30>  [+]
                     │       ├── <27> Var [c]
-                    │       ╰── Constant Int [10]
+                    │       ╰── <29> Constant Int [10]
                     ├── <41> Assign [=]
                     │   ├── <34> Var [uc]
                     │   ╰── <40>  [+]
                     │       ├── <37> Var [uc]
-                    │       ╰── Constant Int [10]
+                    │       ╰── <39> Constant Int [10]
                     ├── <51> Assign [=]
                     │   ├── <44> Var [sc]
                     │   ╰── <50>  [-]
                     │       ├── <47> Var [sc]
-                    │       ╰── Constant Int [10]
+                    │       ╰── <49> Constant Int [10]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <53> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -8058,60 +8058,60 @@ fn test_valid_libraries_global_char_client() {
                     │   ├── Condition
                     │   │   ╰── <29>  [!=]
                     │   │       ├── <26> Var [c]
-                    │   │       ╰── Constant Int [100]
+                    │   │       ╰── <28> Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <30> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <39>  [!=]
                     │   │       ├── <36> Var [uc]
-                    │   │       ╰── Constant Int [250]
+                    │   │       ╰── <38> Constant Int [250]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <40> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <49>  [!=]
                     │   │       ├── <46> Var [sc]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <48> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <50> Constant Int [3]
                     ├── <56> FunctionCall [update_global_chars]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <62>  [!=]
                     │   │       ├── <59> Var [c]
-                    │   │       ╰── Constant Int [110]
+                    │   │       ╰── <61> Constant Int [110]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <63> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <72>  [!=]
                     │   │       ├── <69> Var [uc]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <71> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <73> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <84>  [!=]
                     │   │       ├── <79> Var [sc]
                     │   │       ╰── <83> Unary [-]
-                    │   │           ╰── Constant Int [10]
+                    │   │           ╰── <82> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <85> Constant Int [6]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <90> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -8134,15 +8134,15 @@ fn test_valid_libraries_return_char() {
             ├── Function [return_char]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Long [5369233654]
+            │           ╰── <5> Constant Long [5369233654]
             ├── Function [return_schar]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Long [5369233654]
+            │           ╰── <13> Constant Long [5369233654]
             ╰── Function [return_uchar]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Long [5369233654]
+                        ╰── <21> Constant Long [5369233654]
     "#;
     assert_parse(src, expected);
 }
@@ -8202,11 +8202,11 @@ fn test_valid_libraries_return_char_client() {
                     │   │       ╰── Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [121]
+                    │           ├── <25> Constant Int [121]
                     │           ├── <29> Unary [-]
-                    │           │   ╰── Constant Int [122]
+                    │           │   ╰── <28> Constant Int [122]
                     │           ╰── <33> Unary [-]
-                    │               ╰── Constant Int [3]
+                    │               ╰── <32> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── retval_c
@@ -8224,10 +8224,10 @@ fn test_valid_libraries_return_char_client() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── <51> Unary [-]
-                    │           │   ╰── Constant Int [5]
-                    │           ├── Constant Int [88]
+                    │           │   ╰── <50> Constant Int [5]
+                    │           ├── <53> Constant Int [88]
                     │           ╰── <57> Unary [-]
-                    │               ╰── Constant Int [100]
+                    │               ╰── <56> Constant Int [100]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── retval_sc
@@ -8244,9 +8244,9 @@ fn test_valid_libraries_return_char_client() {
                     │   │       ╰── Char
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [10]
-                    │           ├── Constant Int [11]
-                    │           ╰── Constant Int [12]
+                    │           ├── <73> Constant Int [10]
+                    │           ├── <75> Constant Int [11]
+                    │           ╰── <77> Constant Int [12]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── retval_uc
@@ -8264,9 +8264,9 @@ fn test_valid_libraries_return_char_client() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── <95> Unary [-]
-                    │           │   ╰── Constant Int [5]
+                    │           │   ╰── <94> Constant Int [5]
                     │           ╰── <99> Unary [-]
-                    │               ╰── Constant Int [6]
+                    │               ╰── <98> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <131>  [||]
@@ -8274,34 +8274,34 @@ fn test_valid_libraries_return_char_client() {
                     │   │       │   ├── <109>  [!=]
                     │   │       │   │   ├── <106> Subscript
                     │   │       │   │   │   ├── <104> Var [char_array]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [121]
+                    │   │       │   │   │   ╰── <105> Constant Int [0]
+                    │   │       │   │   ╰── <108> Constant Int [121]
                     │   │       │   ╰── <119>  [!=]
                     │   │       │       ├── <114> Subscript
                     │   │       │       │   ├── <112> Var [char_array]
-                    │   │       │       │   ╰── Constant Int [1]
+                    │   │       │       │   ╰── <113> Constant Int [1]
                     │   │       │       ╰── <118> Unary [-]
-                    │   │       │           ╰── Constant Int [122]
+                    │   │       │           ╰── <117> Constant Int [122]
                     │   │       ╰── <130>  [!=]
                     │   │           ├── <125> Subscript
                     │   │           │   ├── <123> Var [char_array]
-                    │   │           │   ╰── Constant Int [2]
+                    │   │           │   ╰── <124> Constant Int [2]
                     │   │           ╰── <129> Unary [-]
-                    │   │               ╰── Constant Int [3]
+                    │   │               ╰── <128> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <132> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <143>  [!=]
                     │   │       ├── <138> Var [retval_c]
                     │   │       ╰── <142> Unary [-]
-                    │   │           ╰── Constant Int [10]
+                    │   │           ╰── <141> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <144> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <177>  [||]
@@ -8309,34 +8309,34 @@ fn test_valid_libraries_return_char_client() {
                     │   │       │   ├── <157>  [!=]
                     │   │       │   │   ├── <152> Subscript
                     │   │       │   │   │   ├── <150> Var [char_array2]
-                    │   │       │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   │   ╰── <151> Constant Int [0]
                     │   │       │   │   ╰── <156> Unary [-]
-                    │   │       │   │       ╰── Constant Int [5]
+                    │   │       │   │       ╰── <155> Constant Int [5]
                     │   │       │   ╰── <165>  [!=]
                     │   │       │       ├── <162> Subscript
                     │   │       │       │   ├── <160> Var [char_array2]
-                    │   │       │       │   ╰── Constant Int [1]
-                    │   │       │       ╰── Constant Int [88]
+                    │   │       │       │   ╰── <161> Constant Int [1]
+                    │   │       │       ╰── <164> Constant Int [88]
                     │   │       ╰── <176>  [!=]
                     │   │           ├── <171> Subscript
                     │   │           │   ├── <169> Var [char_array2]
-                    │   │           │   ╰── Constant Int [2]
+                    │   │           │   ╰── <170> Constant Int [2]
                     │   │           ╰── <175> Unary [-]
-                    │   │               ╰── Constant Int [100]
+                    │   │               ╰── <174> Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <178> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <189>  [!=]
                     │   │       ├── <184> Var [retval_sc]
                     │   │       ╰── <188> Unary [-]
-                    │   │           ╰── Constant Int [10]
+                    │   │           ╰── <187> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <190> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <219>  [||]
@@ -8344,52 +8344,52 @@ fn test_valid_libraries_return_char_client() {
                     │   │       │   ├── <201>  [!=]
                     │   │       │   │   ├── <198> Subscript
                     │   │       │   │   │   ├── <196> Var [char_array3]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [10]
+                    │   │       │   │   │   ╰── <197> Constant Int [0]
+                    │   │       │   │   ╰── <200> Constant Int [10]
                     │   │       │   ╰── <209>  [!=]
                     │   │       │       ├── <206> Subscript
                     │   │       │       │   ├── <204> Var [char_array3]
-                    │   │       │       │   ╰── Constant Int [1]
-                    │   │       │       ╰── Constant Int [11]
+                    │   │       │       │   ╰── <205> Constant Int [1]
+                    │   │       │       ╰── <208> Constant Int [11]
                     │   │       ╰── <218>  [!=]
                     │   │           ├── <215> Subscript
                     │   │           │   ├── <213> Var [char_array3]
-                    │   │           │   ╰── Constant Int [2]
-                    │   │           ╰── Constant Int [12]
+                    │   │           │   ╰── <214> Constant Int [2]
+                    │   │           ╰── <217> Constant Int [12]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <220> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <229>  [!=]
                     │   │       ├── <226> Var [retval_uc]
-                    │   │       ╰── Constant Int [246]
+                    │   │       ╰── <228> Constant Int [246]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <230> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <254>  [||]
                     │   │       ├── <243>  [!=]
                     │   │       │   ├── <238> Subscript
                     │   │       │   │   ├── <236> Var [char_array4]
-                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── <237> Constant Int [0]
                     │   │       │   ╰── <242> Unary [-]
-                    │   │       │       ╰── Constant Int [5]
+                    │   │       │       ╰── <241> Constant Int [5]
                     │   │       ╰── <253>  [!=]
                     │   │           ├── <248> Subscript
                     │   │           │   ├── <246> Var [char_array4]
-                    │   │           │   ╰── Constant Int [1]
+                    │   │           │   ╰── <247> Constant Int [1]
                     │   │           ╰── <252> Unary [-]
-                    │   │               ╰── Constant Int [6]
+                    │   │               ╰── <251> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <255> Constant Int [7]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <260> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -8463,29 +8463,29 @@ fn test_valid_strings_as_initializers_adjacent_strings_in_initializer() {
                     │   │       ╰── <42> "yesno"
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <44> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <53> FunctionCall [strcmp]
                     │   │       ├── <51> Subscript
                     │   │       │   ├── <49> Var [nested_multi_string]
-                    │   │       │   ╰── Constant Int [0]
+                    │   │       │   ╰── <50> Constant Int [0]
                     │   │       ╰── <52> "ab"
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [2]
+                    │           ╰── <54> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <63> FunctionCall [strcmp]
                     │   │       ├── <61> Subscript
                     │   │       │   ├── <59> Var [nested_multi_string]
-                    │   │       │   ╰── Constant Int [1]
+                    │   │       │   ╰── <60> Constant Int [1]
                     │   │       ╰── <62> "cd"
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [3]
+                    │           ╰── <64> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <67> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -8536,69 +8536,69 @@ fn test_valid_strings_as_initializers_array_init_special_chars() {
                     │   │   ╰── <19>  [!=]
                     │   │       ├── <16> Subscript
                     │   │       │   ├── <14> Var [special]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [7]
+                    │   │       │   ╰── <15> Constant Int [0]
+                    │   │       ╰── <18> Constant Int [7]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <20> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <31>  [!=]
                     │   │       ├── <28> Subscript
                     │   │       │   ├── <26> Var [special]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [8]
+                    │   │       │   ╰── <27> Constant Int [1]
+                    │   │       ╰── <30> Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <32> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <43>  [!=]
                     │   │       ├── <40> Subscript
                     │   │       │   ├── <38> Var [special]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [10]
+                    │   │       │   ╰── <39> Constant Int [2]
+                    │   │       ╰── <42> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <44> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <55>  [!=]
                     │   │       ├── <52> Subscript
                     │   │       │   ├── <50> Var [special]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [11]
+                    │   │       │   ╰── <51> Constant Int [3]
+                    │   │       ╰── <54> Constant Int [11]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <56> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <67>  [!=]
                     │   │       ├── <64> Subscript
                     │   │       │   ├── <62> Var [special]
-                    │   │       │   ╰── Constant Int [4]
-                    │   │       ╰── Constant Int [12]
+                    │   │       │   ╰── <63> Constant Int [4]
+                    │   │       ╰── <66> Constant Int [12]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <68> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <79>  [!=]
                     │   │       ├── <76> Subscript
                     │   │       │   ├── <74> Var [special]
-                    │   │       │   ╰── Constant Int [5]
-                    │   │       ╰── Constant Int [9]
+                    │   │       │   ╰── <75> Constant Int [5]
+                    │   │       ╰── <78> Constant Int [9]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <80> Constant Int [6]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <85> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -8634,10 +8634,10 @@ fn test_valid_strings_as_initializers_literals_and_compound_initializers() {
             │   ╰── Initializer
             │       ╰── Compound
             │           ├── Compound
-            │           │   ├── Constant Int [97]
-            │           │   ├── Constant Int [98]
-            │           │   ├── Constant Int [99]
-            │           │   ╰── Constant Int [100]
+            │           │   ├── <8> Constant Int [97]
+            │           │   ├── <10> Constant Int [98]
+            │           │   ├── <12> Constant Int [99]
+            │           │   ╰── <14> Constant Int [100]
             │           ├── <17> "efgh"
             │           ╰── <19> "ijk"
             ╰── Function [main]
@@ -8655,8 +8655,8 @@ fn test_valid_strings_as_initializers_literals_and_compound_initializers() {
                     │       ╰── Compound
                     │           ├── <34> "lmn"
                     │           ╰── Compound
-                    │               ├── Constant Int [111]
-                    │               ╰── Constant Int [112]
+                    │               ├── <36> Constant Int [111]
+                    │               ╰── <38> Constant Int [112]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -8665,17 +8665,17 @@ fn test_valid_strings_as_initializers_literals_and_compound_initializers() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <46> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <54>  [<]
                     │   │       ├── <51> Var [i]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <53> Constant Int [3]
                     │   ├── Condition
                     │   │   ╰── <63> Assign [=]
                     │   │       ├── <56> Var [i]
                     │   │       ╰── <62>  [+]
                     │   │           ├── <59> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <61> Constant Int [1]
                     │   ╰── For
                     │       ├── Init
                     │       │   ╰── VarDeclaration
@@ -8684,17 +8684,17 @@ fn test_valid_strings_as_initializers_literals_and_compound_initializers() {
                     │       │       ├── Type
                     │       │       │   ╰── Int
                     │       │       ╰── Initializer
-                    │       │           ╰── Constant Int [0]
+                    │       │           ╰── <67> Constant Int [0]
                     │       ├── Condition
                     │       │   ╰── <75>  [<]
                     │       │       ├── <72> Var [j]
-                    │       │       ╰── Constant Int [4]
+                    │       │       ╰── <74> Constant Int [4]
                     │       ├── Condition
                     │       │   ╰── <84> Assign [=]
                     │       │       ├── <77> Var [j]
                     │       │       ╰── <83>  [+]
                     │       │           ├── <80> Var [j]
-                    │       │           ╰── Constant Int [1]
+                    │       │           ╰── <82> Constant Int [1]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── <105>  [!=]
@@ -8708,11 +8708,11 @@ fn test_valid_strings_as_initializers_literals_and_compound_initializers() {
                     │           │           ╰── <103>  [+]
                     │           │               ├── <99>  [*]
                     │           │               │   ├── <96> Var [i]
-                    │           │               │   ╰── Constant Int [4]
+                    │           │               │   ╰── <98> Constant Int [4]
                     │           │               ╰── <102> Var [j]
                     │           ╰── Then
                     │               ╰── Return
-                    │                   ╰── Constant Int [1]
+                    │                   ╰── <106> Constant Int [1]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -8721,17 +8721,17 @@ fn test_valid_strings_as_initializers_literals_and_compound_initializers() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <114> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <122>  [<]
                     │   │       ├── <119> Var [i]
-                    │   │       ╰── Constant Int [2]
+                    │   │       ╰── <121> Constant Int [2]
                     │   ├── Condition
                     │   │   ╰── <131> Assign [=]
                     │   │       ├── <124> Var [i]
                     │   │       ╰── <130>  [+]
                     │   │           ├── <127> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <129> Constant Int [1]
                     │   ╰── For
                     │       ├── Init
                     │       │   ╰── VarDeclaration
@@ -8740,17 +8740,17 @@ fn test_valid_strings_as_initializers_literals_and_compound_initializers() {
                     │       │       ├── Type
                     │       │       │   ╰── Int
                     │       │       ╰── Initializer
-                    │       │           ╰── Constant Int [0]
+                    │       │           ╰── <135> Constant Int [0]
                     │       ├── Condition
                     │       │   ╰── <143>  [<]
                     │       │       ├── <140> Var [j]
-                    │       │       ╰── Constant Int [3]
+                    │       │       ╰── <142> Constant Int [3]
                     │       ├── Condition
                     │       │   ╰── <152> Assign [=]
                     │       │       ├── <145> Var [j]
                     │       │       ╰── <151>  [+]
                     │       │           ├── <148> Var [j]
-                    │       │           ╰── Constant Int [1]
+                    │       │           ╰── <150> Constant Int [1]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── <173>  [!=]
@@ -8764,13 +8764,13 @@ fn test_valid_strings_as_initializers_literals_and_compound_initializers() {
                     │           │           ╰── <171>  [+]
                     │           │               ├── <167>  [*]
                     │           │               │   ├── <164> Var [i]
-                    │           │               │   ╰── Constant Int [3]
+                    │           │               │   ╰── <166> Constant Int [3]
                     │           │               ╰── <170> Var [j]
                     │           ╰── Then
                     │               ╰── Return
-                    │                   ╰── Constant Int [2]
+                    │                   ╰── <174> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <179> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -8869,25 +8869,25 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │               │   ├── <20>  [==]
             │               │   │   ├── <17> Subscript
             │               │   │   │   ├── <15> Var [static_arr]
-            │               │   │   │   ╰── Constant Int [0]
-            │               │   │   ╰── Constant Int [104]
+            │               │   │   │   ╰── <16> Constant Int [0]
+            │               │   │   ╰── <19> Constant Int [104]
             │               │   ╰── <28>  [==]
             │               │       ├── <25> Subscript
             │               │       │   ├── <23> Var [static_arr]
-            │               │       │   ╰── Constant Int [1]
-            │               │       ╰── Constant Int [105]
+            │               │       │   ╰── <24> Constant Int [1]
+            │               │       ╰── <27> Constant Int [105]
             │               ╰── <49> Unary [!]
             │                   ╰── <48>  [||]
             │                       ├── <41>  [||]
             │                       │   ├── <35> Subscript
             │                       │   │   ├── <33> Var [static_arr]
-            │                       │   │   ╰── Constant Int [2]
+            │                       │   │   ╰── <34> Constant Int [2]
             │                       │   ╰── <40> Subscript
             │                       │       ├── <38> Var [static_arr]
-            │                       │       ╰── Constant Int [3]
+            │                       │       ╰── <39> Constant Int [3]
             │                       ╰── <46> Subscript
             │                           ├── <44> Var [static_arr]
-            │                           ╰── Constant Int [4]
+            │                           ╰── <45> Constant Int [4]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── nested_static_arr
@@ -8912,17 +8912,17 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <76> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <84>  [<]
             │       │   │       ├── <81> Var [i]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       ╰── <83> Constant Int [3]
             │       │   ├── Condition
             │       │   │   ╰── <93> Assign [=]
             │       │   │       ├── <86> Var [i]
             │       │   │       ╰── <92>  [+]
             │       │   │           ├── <89> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <91> Constant Int [1]
             │       │   ╰── For
             │       │       ├── Init
             │       │       │   ╰── VarDeclaration
@@ -8931,17 +8931,17 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │       │       ├── Type
             │       │       │       │   ╰── Int
             │       │       │       ╰── Initializer
-            │       │       │           ╰── Constant Int [0]
+            │       │       │           ╰── <97> Constant Int [0]
             │       │       ├── Condition
             │       │       │   ╰── <105>  [<]
             │       │       │       ├── <102> Var [j]
-            │       │       │       ╰── Constant Int [4]
+            │       │       │       ╰── <104> Constant Int [4]
             │       │       ├── Condition
             │       │       │   ╰── <114> Assign [=]
             │       │       │       ├── <107> Var [j]
             │       │       │       ╰── <113>  [+]
             │       │       │           ├── <110> Var [j]
-            │       │       │           ╰── Constant Int [1]
+            │       │       │           ╰── <112> Constant Int [1]
             │       │       ╰── Block
             │       │           ├── VarDeclaration
             │       │           │   ├── Name
@@ -8960,36 +8960,36 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │           │   ├── Type
             │       │           │   │   ╰── Signed Char
             │       │           │   ╰── Initializer
-            │       │           │       ╰── Constant Int [0]
+            │       │           │       ╰── <131> Constant Int [0]
             │       │           ├── If
             │       │           │   ├── Condition
             │       │           │   │   ╰── <145>  [&&]
             │       │           │   │       ├── <138>  [==]
             │       │           │   │       │   ├── <135> Var [i]
-            │       │           │   │       │   ╰── Constant Int [1]
+            │       │           │   │       │   ╰── <137> Constant Int [1]
             │       │           │   │       ╰── <144>  [==]
             │       │           │   │           ├── <141> Var [j]
-            │       │           │   │           ╰── Constant Int [0]
+            │       │           │   │           ╰── <143> Constant Int [0]
             │       │           │   ├── Then
             │       │           │   │   ╰── Block
             │       │           │   │       ╰── <150> Assign [=]
             │       │           │   │           ├── <147> Var [expected]
-            │       │           │   │           ╰── Constant Int [98]
+            │       │           │   │           ╰── <149> Constant Int [98]
             │       │           │   ╰── Else
             │       │           │       ╰── If
             │       │           │           ├── Condition
             │       │           │           │   ╰── <165>  [&&]
             │       │           │           │       ├── <158>  [==]
             │       │           │           │       │   ├── <155> Var [i]
-            │       │           │           │       │   ╰── Constant Int [1]
+            │       │           │           │       │   ╰── <157> Constant Int [1]
             │       │           │           │       ╰── <164>  [==]
             │       │           │           │           ├── <161> Var [j]
-            │       │           │           │           ╰── Constant Int [1]
+            │       │           │           │           ╰── <163> Constant Int [1]
             │       │           │           ╰── Then
             │       │           │               ╰── Block
             │       │           │                   ╰── <170> Assign [=]
             │       │           │                       ├── <167> Var [expected]
-            │       │           │                       ╰── Constant Int [99]
+            │       │           │                       ╰── <169> Constant Int [99]
             │       │           ╰── If
             │       │               ├── Condition
             │       │               │   ╰── <181>  [!=]
@@ -8998,9 +8998,9 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │               ╰── Then
             │       │                   ╰── Block
             │       │                       ╰── Return
-            │       │                           ╰── Constant Int [0]
+            │       │                           ╰── <182> Constant Int [0]
             │       ╰── Return
-            │           ╰── Constant Int [1]
+            │           ╰── <191> Constant Int [1]
             ├── Function [test_automatic]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -9018,21 +9018,21 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │               │   ├── <213>  [==]
             │               │   │   ├── <210> Subscript
             │               │   │   │   ├── <208> Var [aut]
-            │               │   │   │   ╰── Constant Int [0]
-            │               │   │   ╰── Constant Int [97]
+            │               │   │   │   ╰── <209> Constant Int [0]
+            │               │   │   ╰── <212> Constant Int [97]
             │               │   ╰── <221>  [==]
             │               │       ├── <218> Subscript
             │               │       │   ├── <216> Var [aut]
-            │               │       │   ╰── Constant Int [1]
-            │               │       ╰── Constant Int [98]
+            │               │       │   ╰── <217> Constant Int [1]
+            │               │       ╰── <220> Constant Int [98]
             │               ╰── <236> Unary [!]
             │                   ╰── <235>  [||]
             │                       ├── <228> Subscript
             │                       │   ├── <226> Var [aut]
-            │                       │   ╰── Constant Int [2]
+            │                       │   ╰── <227> Constant Int [2]
             │                       ╰── <233> Subscript
             │                           ├── <231> Var [aut]
-            │                           ╰── Constant Int [3]
+            │                           ╰── <232> Constant Int [3]
             ├── Function [test_automatic_nested]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -9061,17 +9061,17 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <268> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <276>  [<]
             │       │   │       ├── <273> Var [i]
-            │       │   │       ╰── Constant Int [2]
+            │       │   │       ╰── <275> Constant Int [2]
             │       │   ├── Condition
             │       │   │   ╰── <285> Assign [=]
             │       │   │       ├── <278> Var [i]
             │       │   │       ╰── <284>  [+]
             │       │   │           ├── <281> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <283> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── For
             │       │           ├── Init
@@ -9081,17 +9081,17 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │           │       ├── Type
             │       │           │       │   ╰── Int
             │       │           │       ╰── Initializer
-            │       │           │           ╰── Constant Int [0]
+            │       │           │           ╰── <289> Constant Int [0]
             │       │           ├── Condition
             │       │           │   ╰── <297>  [<]
             │       │           │       ├── <294> Var [j]
-            │       │           │       ╰── Constant Int [2]
+            │       │           │       ╰── <296> Constant Int [2]
             │       │           ├── Condition
             │       │           │   ╰── <306> Assign [=]
             │       │           │       ├── <299> Var [j]
             │       │           │       ╰── <305>  [+]
             │       │           │           ├── <302> Var [j]
-            │       │           │           ╰── Constant Int [1]
+            │       │           │           ╰── <304> Constant Int [1]
             │       │           ╰── Block
             │       │               ╰── For
             │       │                   ├── Init
@@ -9101,17 +9101,17 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │                   │       ├── Type
             │       │                   │       │   ╰── Int
             │       │                   │       ╰── Initializer
-            │       │                   │           ╰── Constant Int [0]
+            │       │                   │           ╰── <310> Constant Int [0]
             │       │                   ├── Condition
             │       │                   │   ╰── <318>  [<]
             │       │                   │       ├── <315> Var [k]
-            │       │                   │       ╰── Constant Int [4]
+            │       │                   │       ╰── <317> Constant Int [4]
             │       │                   ├── Condition
             │       │                   │   ╰── <327> Assign [=]
             │       │                   │       ├── <320> Var [k]
             │       │                   │       ╰── <326>  [+]
             │       │                   │           ├── <323> Var [k]
-            │       │                   │           ╰── Constant Int [1]
+            │       │                   │           ╰── <325> Constant Int [1]
             │       │                   ╰── Block
             │       │                       ├── VarDeclaration
             │       │                       │   ├── Name
@@ -9132,43 +9132,43 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │                       │   ├── Type
             │       │                       │   │   ╰── Signed Char
             │       │                       │   ╰── Initializer
-            │       │                       │       ╰── Constant Int [0]
+            │       │                       │       ╰── <347> Constant Int [0]
             │       │                       ├── If
             │       │                       │   ├── Condition
             │       │                       │   │   ╰── <361>  [&&]
             │       │                       │   │       ├── <354>  [==]
             │       │                       │   │       │   ├── <351> Var [i]
-            │       │                       │   │       │   ╰── Constant Int [0]
+            │       │                       │   │       │   ╰── <353> Constant Int [0]
             │       │                       │   │       ╰── <360>  [==]
             │       │                       │   │           ├── <357> Var [j]
-            │       │                       │   │           ╰── Constant Int [0]
+            │       │                       │   │           ╰── <359> Constant Int [0]
             │       │                       │   ├── Then
             │       │                       │   │   ╰── Block
             │       │                       │   │       ╰── If
             │       │                       │   │           ├── Condition
             │       │                       │   │           │   ╰── <366>  [==]
             │       │                       │   │           │       ├── <363> Var [k]
-            │       │                       │   │           │       ╰── Constant Int [0]
+            │       │                       │   │           │       ╰── <365> Constant Int [0]
             │       │                       │   │           ├── Then
             │       │                       │   │           │   ╰── Block
             │       │                       │   │           │       ╰── <371> Assign [=]
             │       │                       │   │           │           ├── <368> Var [expected]
-            │       │                       │   │           │           ╰── Constant Int [102]
+            │       │                       │   │           │           ╰── <370> Constant Int [102]
             │       │                       │   │           ╰── Else
             │       │                       │   │               ╰── If
             │       │                       │   │                   ├── Condition
             │       │                       │   │                   │   ╰── <386>  [||]
             │       │                       │   │                   │       ├── <379>  [==]
             │       │                       │   │                   │       │   ├── <376> Var [k]
-            │       │                       │   │                   │       │   ╰── Constant Int [1]
+            │       │                       │   │                   │       │   ╰── <378> Constant Int [1]
             │       │                       │   │                   │       ╰── <385>  [==]
             │       │                       │   │                   │           ├── <382> Var [k]
-            │       │                       │   │                   │           ╰── Constant Int [2]
+            │       │                       │   │                   │           ╰── <384> Constant Int [2]
             │       │                       │   │                   ╰── Then
             │       │                       │   │                       ╰── Block
             │       │                       │   │                           ╰── <391> Assign [=]
             │       │                       │   │                               ├── <388> Var [expected]
-            │       │                       │   │                               ╰── Constant Int [111]
+            │       │                       │   │                               ╰── <390> Constant Int [111]
             │       │                       │   ╰── Else
             │       │                       │       ╰── If
             │       │                       │           ├── Condition
@@ -9176,18 +9176,18 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │                       │           │       ├── <410>  [&&]
             │       │                       │           │       │   ├── <403>  [==]
             │       │                       │           │       │   │   ├── <400> Var [i]
-            │       │                       │           │       │   │   ╰── Constant Int [1]
+            │       │                       │           │       │   │   ╰── <402> Constant Int [1]
             │       │                       │           │       │   ╰── <409>  [==]
             │       │                       │           │       │       ├── <406> Var [j]
-            │       │                       │           │       │       ╰── Constant Int [0]
+            │       │                       │           │       │       ╰── <408> Constant Int [0]
             │       │                       │           │       ╰── <416>  [==]
             │       │                       │           │           ├── <413> Var [k]
-            │       │                       │           │           ╰── Constant Int [0]
+            │       │                       │           │           ╰── <415> Constant Int [0]
             │       │                       │           ├── Then
             │       │                       │           │   ╰── Block
             │       │                       │           │       ╰── <422> Assign [=]
             │       │                       │           │           ├── <419> Var [expected]
-            │       │                       │           │           ╰── Constant Int [120]
+            │       │                       │           │           ╰── <421> Constant Int [120]
             │       │                       │           ╰── Else
             │       │                       │               ╰── If
             │       │                       │                   ├── Condition
@@ -9195,18 +9195,18 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │                       │                   │       ├── <437>  [&&]
             │       │                       │                   │       │   ├── <430>  [==]
             │       │                       │                   │       │   │   ├── <427> Var [i]
-            │       │                       │                   │       │   │   ╰── Constant Int [1]
+            │       │                       │                   │       │   │   ╰── <429> Constant Int [1]
             │       │                       │                   │       │   ╰── <436>  [==]
             │       │                       │                   │       │       ├── <433> Var [j]
-            │       │                       │                   │       │       ╰── Constant Int [1]
+            │       │                       │                   │       │       ╰── <435> Constant Int [1]
             │       │                       │                   │       ╰── <443>  [==]
             │       │                       │                   │           ├── <440> Var [k]
-            │       │                       │                   │           ╰── Constant Int [0]
+            │       │                       │                   │           ╰── <442> Constant Int [0]
             │       │                       │                   ├── Then
             │       │                       │                   │   ╰── Block
             │       │                       │                   │       ╰── <449> Assign [=]
             │       │                       │                   │           ├── <446> Var [expected]
-            │       │                       │                   │           ╰── Constant Int [121]
+            │       │                       │                   │           ╰── <448> Constant Int [121]
             │       │                       │                   ╰── Else
             │       │                       │                       ╰── If
             │       │                       │                           ├── Condition
@@ -9214,18 +9214,18 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │                       │                           │       ├── <464>  [&&]
             │       │                       │                           │       │   ├── <457>  [==]
             │       │                       │                           │       │   │   ├── <454> Var [i]
-            │       │                       │                           │       │   │   ╰── Constant Int [1]
+            │       │                       │                           │       │   │   ╰── <456> Constant Int [1]
             │       │                       │                           │       │   ╰── <463>  [==]
             │       │                       │                           │       │       ├── <460> Var [j]
-            │       │                       │                           │       │       ╰── Constant Int [1]
+            │       │                       │                           │       │       ╰── <462> Constant Int [1]
             │       │                       │                           │       ╰── <470>  [==]
             │       │                       │                           │           ├── <467> Var [k]
-            │       │                       │                           │           ╰── Constant Int [1]
+            │       │                       │                           │           ╰── <469> Constant Int [1]
             │       │                       │                           ╰── Then
             │       │                       │                               ╰── Block
             │       │                       │                                   ╰── <476> Assign [=]
             │       │                       │                                       ├── <473> Var [expected]
-            │       │                       │                                       ╰── Constant Int [122]
+            │       │                       │                                       ╰── <475> Constant Int [122]
             │       │                       ╰── If
             │       │                           ├── Condition
             │       │                           │   ╰── <489>  [!=]
@@ -9234,9 +9234,9 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
             │       │                           ╰── Then
             │       │                               ╰── Block
             │       │                                   ╰── Return
-            │       │                                       ╰── Constant Int [0]
+            │       │                                       ╰── <490> Constant Int [0]
             │       ╰── Return
-            │           ╰── Constant Int [1]
+            │           ╰── <504> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -9246,7 +9246,7 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <516> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <524> Unary [!]
@@ -9254,7 +9254,7 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <525> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <533> Unary [!]
@@ -9262,7 +9262,7 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <534> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <542> Unary [!]
@@ -9270,9 +9270,9 @@ fn test_valid_strings_as_initializers_partial_initialize_via_string() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <543> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <548> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -9301,7 +9301,7 @@ fn test_valid_strings_as_initializers_simple() {
                     ╰── Return
                         ╰── <16> Subscript
                             ├── <14> Var [chars]
-                            ╰── Constant Int [2]
+                            ╰── <15> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -9424,23 +9424,23 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │               │   │   ├── <33>  [==]
             │               │   │   │   ├── <30> Subscript
             │               │   │   │   │   ├── <28> Var [flat]
-            │               │   │   │   │   ╰── Constant Int [0]
-            │               │   │   │   ╰── Constant Int [100]
+            │               │   │   │   │   ╰── <29> Constant Int [0]
+            │               │   │   │   ╰── <32> Constant Int [100]
             │               │   │   ╰── <41>  [==]
             │               │   │       ├── <38> Subscript
             │               │   │       │   ├── <36> Var [flat]
-            │               │   │       │   ╰── Constant Int [1]
-            │               │   │       ╰── Constant Int [111]
+            │               │   │       │   ╰── <37> Constant Int [1]
+            │               │   │       ╰── <40> Constant Int [111]
             │               │   ╰── <50>  [==]
             │               │       ├── <47> Subscript
             │               │       │   ├── <45> Var [flat]
-            │               │       │   ╰── Constant Int [2]
-            │               │       ╰── Constant Int [103]
+            │               │       │   ╰── <46> Constant Int [2]
+            │               │       ╰── <49> Constant Int [103]
             │               ╰── <59>  [==]
             │                   ├── <56> Subscript
             │                   │   ├── <54> Var [flat]
-            │                   │   ╰── Constant Int [3]
-            │                   ╰── Constant Int [0]
+            │                   │   ╰── <55> Constant Int [3]
+            │                   ╰── <58> Constant Int [0]
             ├── Function [test_nested_static_with_null_byte]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -9469,58 +9469,58 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │               │   │   │   │   │   │   │   ├── <88> Subscript
             │               │   │   │   │   │   │   │   │   ├── <86> Subscript
             │               │   │   │   │   │   │   │   │   │   ├── <84> Var [nested]
-            │               │   │   │   │   │   │   │   │   │   ╰── Constant Int [0]
-            │               │   │   │   │   │   │   │   │   ╰── Constant Int [0]
-            │               │   │   │   │   │   │   │   ╰── Constant Int [121]
+            │               │   │   │   │   │   │   │   │   │   ╰── <85> Constant Int [0]
+            │               │   │   │   │   │   │   │   │   ╰── <87> Constant Int [0]
+            │               │   │   │   │   │   │   │   ╰── <90> Constant Int [121]
             │               │   │   │   │   │   │   ╰── <101>  [==]
             │               │   │   │   │   │   │       ├── <98> Subscript
             │               │   │   │   │   │   │       │   ├── <96> Subscript
             │               │   │   │   │   │   │       │   │   ├── <94> Var [nested]
-            │               │   │   │   │   │   │       │   │   ╰── Constant Int [0]
-            │               │   │   │   │   │   │       │   ╰── Constant Int [1]
-            │               │   │   │   │   │   │       ╰── Constant Int [101]
+            │               │   │   │   │   │   │       │   │   ╰── <95> Constant Int [0]
+            │               │   │   │   │   │   │       │   ╰── <97> Constant Int [1]
+            │               │   │   │   │   │   │       ╰── <100> Constant Int [101]
             │               │   │   │   │   │   ╰── <112>  [==]
             │               │   │   │   │   │       ├── <109> Subscript
             │               │   │   │   │   │       │   ├── <107> Subscript
             │               │   │   │   │   │       │   │   ├── <105> Var [nested]
-            │               │   │   │   │   │       │   │   ╰── Constant Int [0]
-            │               │   │   │   │   │       │   ╰── Constant Int [2]
-            │               │   │   │   │   │       ╰── Constant Int [115]
+            │               │   │   │   │   │       │   │   ╰── <106> Constant Int [0]
+            │               │   │   │   │   │       │   ╰── <108> Constant Int [2]
+            │               │   │   │   │   │       ╰── <111> Constant Int [115]
             │               │   │   │   │   ╰── <123>  [==]
             │               │   │   │   │       ├── <120> Subscript
             │               │   │   │   │       │   ├── <118> Subscript
             │               │   │   │   │       │   │   ├── <116> Var [nested]
-            │               │   │   │   │       │   │   ╰── Constant Int [0]
-            │               │   │   │   │       │   ╰── Constant Int [3]
-            │               │   │   │   │       ╰── Constant Int [0]
+            │               │   │   │   │       │   │   ╰── <117> Constant Int [0]
+            │               │   │   │   │       │   ╰── <119> Constant Int [3]
+            │               │   │   │   │       ╰── <122> Constant Int [0]
             │               │   │   │   ╰── <134>  [==]
             │               │   │   │       ├── <131> Subscript
             │               │   │   │       │   ├── <129> Subscript
             │               │   │   │       │   │   ├── <127> Var [nested]
-            │               │   │   │       │   │   ╰── Constant Int [1]
-            │               │   │   │       │   ╰── Constant Int [0]
-            │               │   │   │       ╰── Constant Int [121]
+            │               │   │   │       │   │   ╰── <128> Constant Int [1]
+            │               │   │   │       │   ╰── <130> Constant Int [0]
+            │               │   │   │       ╰── <133> Constant Int [121]
             │               │   │   ╰── <145>  [==]
             │               │   │       ├── <142> Subscript
             │               │   │       │   ├── <140> Subscript
             │               │   │       │   │   ├── <138> Var [nested]
-            │               │   │       │   │   ╰── Constant Int [1]
-            │               │   │       │   ╰── Constant Int [1]
-            │               │   │       ╰── Constant Int [117]
+            │               │   │       │   │   ╰── <139> Constant Int [1]
+            │               │   │       │   ╰── <141> Constant Int [1]
+            │               │   │       ╰── <144> Constant Int [117]
             │               │   ╰── <156>  [==]
             │               │       ├── <153> Subscript
             │               │       │   ├── <151> Subscript
             │               │       │   │   ├── <149> Var [nested]
-            │               │       │   │   ╰── Constant Int [1]
-            │               │       │   ╰── Constant Int [2]
-            │               │       ╰── Constant Int [112]
+            │               │       │   │   ╰── <150> Constant Int [1]
+            │               │       │   ╰── <152> Constant Int [2]
+            │               │       ╰── <155> Constant Int [112]
             │               ╰── <167>  [==]
             │                   ├── <164> Subscript
             │                   │   ├── <162> Subscript
             │                   │   │   ├── <160> Var [nested]
-            │                   │   │   ╰── Constant Int [1]
-            │                   │   ╰── Constant Int [3]
-            │                   ╰── Constant Int [0]
+            │                   │   │   ╰── <161> Constant Int [1]
+            │                   │   ╰── <163> Constant Int [3]
+            │                   ╰── <166> Constant Int [0]
             ├── Function [test_flat_auto_with_null_byte]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -9537,13 +9537,13 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │               ├── <191>  [==]
             │               │   ├── <188> Subscript
             │               │   │   ├── <186> Var [flat_auto]
-            │               │   │   ╰── Constant Int [0]
-            │               │   ╰── Constant Int [120]
+            │               │   │   ╰── <187> Constant Int [0]
+            │               │   ╰── <190> Constant Int [120]
             │               ╰── <199>  [==]
             │                   ├── <196> Subscript
             │                   │   ├── <194> Var [flat_auto]
-            │                   │   ╰── Constant Int [1]
-            │                   ╰── Constant Int [0]
+            │                   │   ╰── <195> Constant Int [1]
+            │                   ╰── <198> Constant Int [0]
             ├── Function [test_nested_auto_with_null_byte]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -9578,73 +9578,73 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │               │   │   │   │   │   │   │   │   ├── <235> Subscript
             │               │   │   │   │   │   │   │   │   │   ├── <233> Subscript
             │               │   │   │   │   │   │   │   │   │   │   ├── <231> Var [nested_auto]
-            │               │   │   │   │   │   │   │   │   │   │   ╰── Constant Int [0]
-            │               │   │   │   │   │   │   │   │   │   ╰── Constant Int [0]
-            │               │   │   │   │   │   │   │   │   ╰── Constant Int [0]
-            │               │   │   │   │   │   │   │   ╰── Constant Int [97]
+            │               │   │   │   │   │   │   │   │   │   │   ╰── <232> Constant Int [0]
+            │               │   │   │   │   │   │   │   │   │   ╰── <234> Constant Int [0]
+            │               │   │   │   │   │   │   │   │   ╰── <236> Constant Int [0]
+            │               │   │   │   │   │   │   │   ╰── <239> Constant Int [97]
             │               │   │   │   │   │   │   ╰── <252>  [==]
             │               │   │   │   │   │   │       ├── <249> Subscript
             │               │   │   │   │   │   │       │   ├── <247> Subscript
             │               │   │   │   │   │   │       │   │   ├── <245> Subscript
             │               │   │   │   │   │   │       │   │   │   ├── <243> Var [nested_auto]
-            │               │   │   │   │   │   │       │   │   │   ╰── Constant Int [0]
-            │               │   │   │   │   │   │       │   │   ╰── Constant Int [0]
-            │               │   │   │   │   │   │       │   ╰── Constant Int [1]
-            │               │   │   │   │   │   │       ╰── Constant Int [0]
+            │               │   │   │   │   │   │       │   │   │   ╰── <244> Constant Int [0]
+            │               │   │   │   │   │   │       │   │   ╰── <246> Constant Int [0]
+            │               │   │   │   │   │   │       │   ╰── <248> Constant Int [1]
+            │               │   │   │   │   │   │       ╰── <251> Constant Int [0]
             │               │   │   │   │   │   ╰── <265>  [==]
             │               │   │   │   │   │       ├── <262> Subscript
             │               │   │   │   │   │       │   ├── <260> Subscript
             │               │   │   │   │   │       │   │   ├── <258> Subscript
             │               │   │   │   │   │       │   │   │   ├── <256> Var [nested_auto]
-            │               │   │   │   │   │       │   │   │   ╰── Constant Int [0]
-            │               │   │   │   │   │       │   │   ╰── Constant Int [1]
-            │               │   │   │   │   │       │   ╰── Constant Int [0]
-            │               │   │   │   │   │       ╰── Constant Int [98]
+            │               │   │   │   │   │       │   │   │   ╰── <257> Constant Int [0]
+            │               │   │   │   │   │       │   │   ╰── <259> Constant Int [1]
+            │               │   │   │   │   │       │   ╰── <261> Constant Int [0]
+            │               │   │   │   │   │       ╰── <264> Constant Int [98]
             │               │   │   │   │   ╰── <278>  [==]
             │               │   │   │   │       ├── <275> Subscript
             │               │   │   │   │       │   ├── <273> Subscript
             │               │   │   │   │       │   │   ├── <271> Subscript
             │               │   │   │   │       │   │   │   ├── <269> Var [nested_auto]
-            │               │   │   │   │       │   │   │   ╰── Constant Int [0]
-            │               │   │   │   │       │   │   ╰── Constant Int [1]
-            │               │   │   │   │       │   ╰── Constant Int [1]
-            │               │   │   │   │       ╰── Constant Int [0]
+            │               │   │   │   │       │   │   │   ╰── <270> Constant Int [0]
+            │               │   │   │   │       │   │   ╰── <272> Constant Int [1]
+            │               │   │   │   │       │   ╰── <274> Constant Int [1]
+            │               │   │   │   │       ╰── <277> Constant Int [0]
             │               │   │   │   ╰── <291>  [==]
             │               │   │   │       ├── <288> Subscript
             │               │   │   │       │   ├── <286> Subscript
             │               │   │   │       │   │   ├── <284> Subscript
             │               │   │   │       │   │   │   ├── <282> Var [nested_auto]
-            │               │   │   │       │   │   │   ╰── Constant Int [1]
-            │               │   │   │       │   │   ╰── Constant Int [0]
-            │               │   │   │       │   ╰── Constant Int [0]
-            │               │   │   │       ╰── Constant Int [99]
+            │               │   │   │       │   │   │   ╰── <283> Constant Int [1]
+            │               │   │   │       │   │   ╰── <285> Constant Int [0]
+            │               │   │   │       │   ╰── <287> Constant Int [0]
+            │               │   │   │       ╰── <290> Constant Int [99]
             │               │   │   ╰── <304>  [==]
             │               │   │       ├── <301> Subscript
             │               │   │       │   ├── <299> Subscript
             │               │   │       │   │   ├── <297> Subscript
             │               │   │       │   │   │   ├── <295> Var [nested_auto]
-            │               │   │       │   │   │   ╰── Constant Int [1]
-            │               │   │       │   │   ╰── Constant Int [0]
-            │               │   │       │   ╰── Constant Int [1]
-            │               │   │       ╰── Constant Int [0]
+            │               │   │       │   │   │   ╰── <296> Constant Int [1]
+            │               │   │       │   │   ╰── <298> Constant Int [0]
+            │               │   │       │   ╰── <300> Constant Int [1]
+            │               │   │       ╰── <303> Constant Int [0]
             │               │   ╰── <317>  [==]
             │               │       ├── <314> Subscript
             │               │       │   ├── <312> Subscript
             │               │       │   │   ├── <310> Subscript
             │               │       │   │   │   ├── <308> Var [nested_auto]
-            │               │       │   │   │   ╰── Constant Int [1]
-            │               │       │   │   ╰── Constant Int [1]
-            │               │       │   ╰── Constant Int [0]
-            │               │       ╰── Constant Int [100]
+            │               │       │   │   │   ╰── <309> Constant Int [1]
+            │               │       │   │   ╰── <311> Constant Int [1]
+            │               │       │   ╰── <313> Constant Int [0]
+            │               │       ╰── <316> Constant Int [100]
             │               ╰── <330>  [==]
             │                   ├── <327> Subscript
             │                   │   ├── <325> Subscript
             │                   │   │   ├── <323> Subscript
             │                   │   │   │   ├── <321> Var [nested_auto]
-            │                   │   │   │   ╰── Constant Int [1]
-            │                   │   │   ╰── Constant Int [1]
-            │                   │   ╰── Constant Int [1]
-            │                   ╰── Constant Int [0]
+            │                   │   │   │   ╰── <322> Constant Int [1]
+            │                   │   │   ╰── <324> Constant Int [1]
+            │                   │   ╰── <326> Constant Int [1]
+            │                   ╰── <329> Constant Int [0]
             ├── Function [test_flat_static_without_null_byte]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -9664,23 +9664,23 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │               │   │   ├── <355>  [==]
             │               │   │   │   ├── <352> Subscript
             │               │   │   │   │   ├── <350> Var [letters]
-            │               │   │   │   │   ╰── Constant Int [0]
-            │               │   │   │   ╰── Constant Int [97]
+            │               │   │   │   │   ╰── <351> Constant Int [0]
+            │               │   │   │   ╰── <354> Constant Int [97]
             │               │   │   ╰── <363>  [==]
             │               │   │       ├── <360> Subscript
             │               │   │       │   ├── <358> Var [letters]
-            │               │   │       │   ╰── Constant Int [1]
-            │               │   │       ╰── Constant Int [98]
+            │               │   │       │   ╰── <359> Constant Int [1]
+            │               │   │       ╰── <362> Constant Int [98]
             │               │   ╰── <372>  [==]
             │               │       ├── <369> Subscript
             │               │       │   ├── <367> Var [letters]
-            │               │       │   ╰── Constant Int [2]
-            │               │       ╰── Constant Int [99]
+            │               │       │   ╰── <368> Constant Int [2]
+            │               │       ╰── <371> Constant Int [99]
             │               ╰── <381>  [==]
             │                   ├── <378> Subscript
             │                   │   ├── <376> Var [letters]
-            │                   │   ╰── Constant Int [3]
-            │                   ╰── Constant Int [100]
+            │                   │   ╰── <377> Constant Int [3]
+            │                   ╰── <380> Constant Int [100]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── nested
@@ -9724,7 +9724,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │       │           ╰── Expression
             │       │               ╰── <427> Subscript
             │       │                   ├── <425> Var [nested]
-            │       │                   ╰── Constant Int [0]
+            │       │                   ╰── <426> Constant Int [0]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── word2
@@ -9739,7 +9739,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │       │           ╰── Expression
             │       │               ╰── <441> Subscript
             │       │                   ├── <439> Var [nested]
-            │       │                   ╰── Constant Int [1]
+            │       │                   ╰── <440> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── word3
@@ -9754,7 +9754,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │       │           ╰── Expression
             │       │               ╰── <455> Subscript
             │       │                   ├── <453> Var [nested]
-            │       │                   ╰── Constant Int [2]
+            │       │                   ╰── <454> Constant Int [2]
             │       ╰── Return
             │           ╰── <487> Unary [!]
             │               ╰── <486>  [||]
@@ -9781,7 +9781,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <500> Unary [-]
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <499> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── letters
@@ -9798,7 +9798,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <516> Unary [-]
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <515> Constant Int [1]
             │       ╰── Return
             │           ╰── <571>  [&&]
             │               ├── <561>  [&&]
@@ -9808,31 +9808,31 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │               │   │   │   │   ├── <525>  [==]
             │               │   │   │   │   │   ├── <520> Var [x]
             │               │   │   │   │   │   ╰── <524> Unary [-]
-            │               │   │   │   │   │       ╰── Constant Int [1]
+            │               │   │   │   │   │       ╰── <523> Constant Int [1]
             │               │   │   │   │   ╰── <533>  [==]
             │               │   │   │   │       ├── <528> Var [y]
             │               │   │   │   │       ╰── <532> Unary [-]
-            │               │   │   │   │           ╰── Constant Int [1]
+            │               │   │   │   │           ╰── <531> Constant Int [1]
             │               │   │   │   ╰── <542>  [==]
             │               │   │   │       ├── <539> Subscript
             │               │   │   │       │   ├── <537> Var [letters]
-            │               │   │   │       │   ╰── Constant Int [0]
-            │               │   │   │       ╰── Constant Int [97]
+            │               │   │   │       │   ╰── <538> Constant Int [0]
+            │               │   │   │       ╰── <541> Constant Int [97]
             │               │   │   ╰── <551>  [==]
             │               │   │       ├── <548> Subscript
             │               │   │       │   ├── <546> Var [letters]
-            │               │   │       │   ╰── Constant Int [1]
-            │               │   │       ╰── Constant Int [98]
+            │               │   │       │   ╰── <547> Constant Int [1]
+            │               │   │       ╰── <550> Constant Int [98]
             │               │   ╰── <560>  [==]
             │               │       ├── <557> Subscript
             │               │       │   ├── <555> Var [letters]
-            │               │       │   ╰── Constant Int [2]
-            │               │       ╰── Constant Int [99]
+            │               │       │   ╰── <556> Constant Int [2]
+            │               │       ╰── <559> Constant Int [99]
             │               ╰── <569>  [==]
             │                   ├── <566> Subscript
             │                   │   ├── <564> Var [letters]
-            │                   │   ╰── Constant Int [3]
-            │                   ╰── Constant Int [100]
+            │                   │   ╰── <565> Constant Int [3]
+            │                   ╰── <568> Constant Int [100]
             ├── Function [test_nested_auto_without_null_byte]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -9876,7 +9876,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │       │           ╰── Expression
             │       │               ╰── <616> Subscript
             │       │                   ├── <614> Var [nested]
-            │       │                   ╰── Constant Int [0]
+            │       │                   ╰── <615> Constant Int [0]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── word2
@@ -9891,7 +9891,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │       │           ╰── Expression
             │       │               ╰── <630> Subscript
             │       │                   ├── <628> Var [nested]
-            │       │                   ╰── Constant Int [1]
+            │       │                   ╰── <629> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── word3
@@ -9906,7 +9906,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             │       │           ╰── Expression
             │       │               ╰── <644> Subscript
             │       │                   ├── <642> Var [nested]
-            │       │                   ╰── Constant Int [2]
+            │       │                   ╰── <643> Constant Int [2]
             │       ╰── Return
             │           ╰── <676> Unary [!]
             │               ╰── <675>  [||]
@@ -9933,7 +9933,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <688> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <696> Unary [!]
@@ -9941,7 +9941,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <697> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <705> Unary [!]
@@ -9949,7 +9949,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <706> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <714> Unary [!]
@@ -9957,7 +9957,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <715> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <723> Unary [!]
@@ -9965,7 +9965,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <724> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <732> Unary [!]
@@ -9973,7 +9973,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <733> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <741> Unary [!]
@@ -9981,7 +9981,7 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <742> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <750> Unary [!]
@@ -9989,9 +9989,9 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <751> Constant Int [8]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <756> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10049,8 +10049,8 @@ fn test_valid_strings_as_initializers_test_alignment() {
             │           ╰── <27>  [==]
             │               ├── <23>  [%]
             │               │   ├── <20> Var [l]
-            │               │   ╰── Constant Int [16]
-            │               ╰── Constant Int [0]
+            │               │   ╰── <22> Constant Int [16]
+            │               ╰── <25> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── flat_static
@@ -10110,7 +10110,7 @@ fn test_valid_strings_as_initializers_test_alignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <86> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <100> Unary [!]
@@ -10124,7 +10124,7 @@ fn test_valid_strings_as_initializers_test_alignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <101> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <115> Unary [!]
@@ -10138,7 +10138,7 @@ fn test_valid_strings_as_initializers_test_alignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <116> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <130> Unary [!]
@@ -10152,9 +10152,9 @@ fn test_valid_strings_as_initializers_test_alignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <131> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <136> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10212,23 +10212,23 @@ fn test_valid_strings_as_initializers_transfer_by_eightbyte() {
                     │   │   ╰── <37> FunctionCall [strcmp]
                     │   │       ├── <35> Subscript
                     │   │       │   ├── <33> Var [strings]
-                    │   │       │   ╰── Constant Int [0]
+                    │   │       │   ╰── <34> Constant Int [0]
                     │   │       ╰── <36> "abcdefghijkl"
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <38> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <49>  [!=]
                     │   │       ├── <46> Subscript
                     │   │       │   ├── <44> Subscript
                     │   │       │   │   ├── <42> Var [strings]
-                    │   │       │   │   ╰── Constant Int [1]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [122]
+                    │   │       │   │   ╰── <43> Constant Int [1]
+                    │   │       │   ╰── <45> Constant Int [0]
+                    │   │       ╰── <48> Constant Int [122]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [2]
+                    │           ╰── <50> Constant Int [2]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -10237,30 +10237,30 @@ fn test_valid_strings_as_initializers_transfer_by_eightbyte() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <56> Constant Int [1]
                     │   ├── Condition
                     │   │   ╰── <64>  [<]
                     │   │       ├── <61> Var [i]
-                    │   │       ╰── Constant Int [13]
+                    │   │       ╰── <63> Constant Int [13]
                     │   ├── Condition
                     │   │   ╰── <73> Assign [=]
                     │   │       ├── <66> Var [i]
                     │   │       ╰── <72>  [+]
                     │   │           ├── <69> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <71> Constant Int [1]
                     │   ╰── Block
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── <80> Subscript
                     │           │       ├── <77> Subscript
                     │           │       │   ├── <75> Var [strings]
-                    │           │       │   ╰── Constant Int [1]
+                    │           │       │   ╰── <76> Constant Int [1]
                     │           │       ╰── <79> Var [i]
                     │           ╰── Then
                     │               ╰── Return
-                    │                   ╰── Constant Int [3]
+                    │                   ╰── <81> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <87> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10308,8 +10308,8 @@ fn test_valid_strings_as_initializers_write_to_array() {
                     ├── <33> Assign [=]
                     │   ├── <30> Subscript
                     │   │   ├── <28> Var [flat_arr]
-                    │   │   ╰── Constant Int [2]
-                    │   ╰── Constant Int [120]
+                    │   │   ╰── <29> Constant Int [2]
+                    │   ╰── <32> Constant Int [120]
                     ├── <38> FunctionCall [puts]
                     │   ╰── <37> Var [flat_arr]
                     ├── VarDeclaration
@@ -10328,24 +10328,24 @@ fn test_valid_strings_as_initializers_write_to_array() {
                     ├── <58> FunctionCall [puts]
                     │   ╰── <57> Subscript
                     │       ├── <55> Var [nested_array]
-                    │       ╰── Constant Int [0]
+                    │       ╰── <56> Constant Int [0]
                     ├── <65> FunctionCall [puts]
                     │   ╰── <64> Subscript
                     │       ├── <62> Var [nested_array]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <63> Constant Int [1]
                     ├── <75> Assign [=]
                     │   ├── <72> Subscript
                     │   │   ├── <70> Subscript
                     │   │   │   ├── <68> Var [nested_array]
-                    │   │   │   ╰── Constant Int [0]
-                    │   │   ╰── Constant Int [0]
-                    │   ╰── Constant Int [74]
+                    │   │   │   ╰── <69> Constant Int [0]
+                    │   │   ╰── <71> Constant Int [0]
+                    │   ╰── <74> Constant Int [74]
                     ├── <82> FunctionCall [puts]
                     │   ╰── <81> Subscript
                     │       ├── <79> Var [nested_array]
-                    │       ╰── Constant Int [0]
+                    │       ╰── <80> Constant Int [0]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <84> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10403,7 +10403,7 @@ fn test_valid_strings_as_lvalues_addr_of_string() {
                     │   ╰── Initializer
                     │       ╰── <42>  [+]
                     │           ├── <39> Var [str]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <41> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── last_byte_pointer
@@ -10418,19 +10418,19 @@ fn test_valid_strings_as_lvalues_addr_of_string() {
                     │           │   │       ╰── Char
                     │           │   ╰── Expression
                     │           │       ╰── <53> Var [one_past_the_end]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <56> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <65>  [!=]
                     │   │       ├── <62> Dereference
                     │   │       │   ╰── <61> Var [last_byte_pointer]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <64> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <66> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <71> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10468,7 +10468,7 @@ fn test_valid_strings_as_lvalues_adjacent_strings() {
                     ├── <24> FunctionCall [puts]
                     │   ╰── <23> Var [strings]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <26> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10530,45 +10530,45 @@ fn test_valid_strings_as_lvalues_array_of_strings() {
                     │   │   ╰── <38> FunctionCall [strcmp]
                     │   │       ├── <36> Subscript
                     │   │       │   ├── <34> Var [strings]
-                    │   │       │   ╰── Constant Int [0]
+                    │   │       │   ╰── <35> Constant Int [0]
                     │   │       ╰── <37> "yes"
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <39> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <50> FunctionCall [strcmp]
                     │   │       ├── <48> Subscript
                     │   │       │   ├── <46> Var [strings]
-                    │   │       │   ╰── Constant Int [1]
+                    │   │       │   ╰── <47> Constant Int [1]
                     │   │       ╰── <49> "no"
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <51> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <62> FunctionCall [strcmp]
                     │   │       ├── <60> Subscript
                     │   │       │   ├── <58> Var [strings]
-                    │   │       │   ╰── Constant Int [2]
+                    │   │       │   ╰── <59> Constant Int [2]
                     │   │       ╰── <61> "maybe"
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <63> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <71> Subscript
                     │   │       ├── <69> Var [strings]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <70> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <72> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <77> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10619,12 +10619,12 @@ fn test_valid_strings_as_lvalues_cast_string_pointer() {
                     │   │   ╰── <30>  [!=]
                     │   │       ├── <27> Subscript
                     │   │       │   ├── <25> Var [uc]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [115]
+                    │   │       │   ╰── <26> Constant Int [3]
+                    │   │       ╰── <29> Constant Int [115]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <31> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── sc
@@ -10643,14 +10643,14 @@ fn test_valid_strings_as_lvalues_cast_string_pointer() {
                     │   │   ╰── <54>  [!=]
                     │   │       ├── <51> Subscript
                     │   │       │   ├── <49> Var [sc]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [115]
+                    │   │       │   ╰── <50> Constant Int [3]
+                    │   │       ╰── <53> Constant Int [115]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <55> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <60> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10679,7 +10679,7 @@ fn test_valid_strings_as_lvalues_empty_string() {
                     ╰── Return
                         ╰── <15> Subscript
                             ├── <13> Var [empty]
-                            ╰── Constant Int [0]
+                            ╰── <14> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10715,12 +10715,12 @@ fn test_valid_strings_as_lvalues_pointer_operations() {
                     │   │   ╰── <10>  [!=]
                     │   │       ├── <7> Subscript
                     │   │       │   ├── <5> "abcdefg"
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [99]
+                    │   │       │   ╰── <6> Constant Int [2]
+                    │   │       ╰── <9> Constant Int [99]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <11> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr
@@ -10730,37 +10730,37 @@ fn test_valid_strings_as_lvalues_pointer_operations() {
                     │   ╰── Initializer
                     │       ╰── <23>  [+]
                     │           ├── <20> "This is a string!"
-                    │           ╰── Constant Int [10]
+                    │           ╰── <22> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <31>  [!=]
                     │   │       ├── <28> Dereference
                     │   │       │   ╰── <27> Var [ptr]
-                    │   │       ╰── Constant Int [115]
+                    │   │       ╰── <30> Constant Int [115]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <32> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <43>  [!=]
                     │   │       ├── <40> Subscript
                     │   │       │   ├── <38> Var [ptr]
-                    │   │       │   ╰── Constant Int [6]
-                    │   │       ╰── Constant Int [33]
+                    │   │       │   ╰── <39> Constant Int [6]
+                    │   │       ╰── <42> Constant Int [33]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <44> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <52> Subscript
                     │   │       ├── <50> Var [ptr]
-                    │   │       ╰── Constant Int [7]
+                    │   │       ╰── <51> Constant Int [7]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <53> Constant Int [4]
                     ╰── If
                         ├── Condition
                         │   ╰── <60> Unary [!]
@@ -10768,7 +10768,7 @@ fn test_valid_strings_as_lvalues_pointer_operations() {
                         ╰── Then
                             ╰── Block
                                 ╰── Return
-                                    ╰── Constant Int [5]
+                                    ╰── <61> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -10796,7 +10796,7 @@ fn test_valid_strings_as_lvalues_simple() {
                     ╰── Return
                         ╰── <15> Subscript
                             ├── <13> Var [x]
-                            ╰── Constant Int [2]
+                            ╰── <14> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -10876,18 +10876,18 @@ fn test_valid_strings_as_lvalues_standard_library_calls() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <49> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <60>  [>=]
                     │   │       ├── <57> FunctionCall [strcmp]
                     │   │       │   ├── <55> "ab"
                     │   │       │   ╰── <56> "xy"
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <59> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <61> Constant Int [2]
                     ├── <68> FunctionCall [puts]
                     │   ╰── <67> "Hello, World!"
                     ├── If
@@ -10897,7 +10897,7 @@ fn test_valid_strings_as_lvalues_standard_library_calls() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <73> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
@@ -10910,13 +10910,13 @@ fn test_valid_strings_as_lvalues_standard_library_calls() {
                     │   ├── Condition
                     │   │   ╰── <90>  [!=]
                     │   │       ├── <87> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <89> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <91> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <96> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -11000,32 +11000,32 @@ fn test_valid_strings_as_lvalues_string_special_characters() {
                     │   │   ╰── <40>  [!=]
                     │   │       ├── <37> Subscript
                     │   │       │   ├── <35> Var [escape_sequence]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [7]
+                    │   │       │   ╰── <36> Constant Int [0]
+                    │   │       ╰── <39> Constant Int [7]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <41> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <52>  [!=]
                     │   │       ├── <49> Subscript
                     │   │       │   ├── <47> Var [escape_sequence]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [8]
+                    │   │       │   ╰── <48> Constant Int [1]
+                    │   │       ╰── <51> Constant Int [8]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <53> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <61> Subscript
                     │   │       ├── <59> Var [escape_sequence]
-                    │   │       ╰── Constant Int [2]
+                    │   │       ╰── <60> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <62> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── with_double_quote
@@ -11039,12 +11039,12 @@ fn test_valid_strings_as_lvalues_string_special_characters() {
                     │   │   ╰── <80>  [!=]
                     │   │       ├── <77> Subscript
                     │   │       │   ├── <75> Var [with_double_quote]
-                    │   │       │   ╰── Constant Int [5]
-                    │   │       ╰── Constant Int [34]
+                    │   │       │   ╰── <76> Constant Int [5]
+                    │   │       ╰── <79> Constant Int [34]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <81> Constant Int [4]
                     ├── <89> FunctionCall [puts]
                     │   ╰── <88> Var [with_double_quote]
                     ├── VarDeclaration
@@ -11060,12 +11060,12 @@ fn test_valid_strings_as_lvalues_string_special_characters() {
                     │   │   ╰── <104>  [!=]
                     │   │       ├── <101> Subscript
                     │   │       │   ├── <99> Var [with_backslash]
-                    │   │       │   ╰── Constant Int [5]
-                    │   │       ╰── Constant Int [92]
+                    │   │       │   ╰── <100> Constant Int [5]
+                    │   │       ╰── <103> Constant Int [92]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <105> Constant Int [5]
                     ├── <113> FunctionCall [puts]
                     │   ╰── <112> Var [with_backslash]
                     ├── VarDeclaration
@@ -11082,12 +11082,12 @@ fn test_valid_strings_as_lvalues_string_special_characters() {
                     │   │   ╰── <128>  [!=]
                     │   │       ├── <125> Subscript
                     │   │       │   ├── <123> Var [with_newline]
-                    │   │       │   ╰── Constant Int [4]
-                    │   │       ╰── Constant Int [10]
+                    │   │       │   ╰── <124> Constant Int [4]
+                    │   │       ╰── <127> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <129> Constant Int [6]
                     ├── <137> FunctionCall [puts]
                     │   ╰── <136> Var [with_newline]
                     ├── VarDeclaration
@@ -11106,13 +11106,13 @@ fn test_valid_strings_as_lvalues_string_special_characters() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <151> Constant Int [7]
                     ├── <158> FunctionCall [puts]
                     │   ╰── <157> "Testing, 123."
                     ├── <162> FunctionCall [puts]
                     │   ╰── <161> "^@1 _\]"
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <164> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -11191,24 +11191,24 @@ fn test_valid_strings_as_lvalues_strings_in_function_calls() {
             │       │   │   ╰── <42>  [||]
             │       │   │       ├── <35>  [==]
             │       │   │       │   ├── <32> Var [s1]
-            │       │   │       │   ╰── Constant Int [0]
+            │       │   │       │   ╰── <34> Constant Int [0]
             │       │   │       ╰── <41>  [==]
             │       │   │           ├── <38> Var [s2]
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <40> Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <43> Constant Int [0]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <54>  [!=]
             │       │   │       ├── <51> FunctionCall [strlen]
             │       │   │       │   ╰── <50> Var [s1]
-            │       │   │       ╰── Constant Int [45]
+            │       │   │       ╰── <53> Constant Int [45]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <55> Constant Int [0]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <84>  [||]
@@ -11216,33 +11216,33 @@ fn test_valid_strings_as_lvalues_strings_in_function_calls() {
             │       │   │       │   ├── <66>  [!=]
             │       │   │       │   │   ├── <63> Subscript
             │       │   │       │   │   │   ├── <61> Var [s1]
-            │       │   │       │   │   │   ╰── Constant Int [41]
-            │       │   │       │   │   ╰── Constant Int [100]
+            │       │   │       │   │   │   ╰── <62> Constant Int [41]
+            │       │   │       │   │   ╰── <65> Constant Int [100]
             │       │   │       │   ╰── <74>  [!=]
             │       │   │       │       ├── <71> Subscript
             │       │   │       │       │   ├── <69> Var [s1]
-            │       │   │       │       │   ╰── Constant Int [42]
-            │       │   │       │       ╰── Constant Int [111]
+            │       │   │       │       │   ╰── <70> Constant Int [42]
+            │       │   │       │       ╰── <73> Constant Int [111]
             │       │   │       ╰── <83>  [!=]
             │       │   │           ├── <80> Subscript
             │       │   │           │   ├── <78> Var [s1]
-            │       │   │           │   ╰── Constant Int [43]
-            │       │   │           ╰── Constant Int [103]
+            │       │   │           │   ╰── <79> Constant Int [43]
+            │       │   │           ╰── <82> Constant Int [103]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <85> Constant Int [0]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <93> Subscript
             │       │   │       ├── <91> Var [s2]
-            │       │   │       ╰── Constant Int [0]
+            │       │   │       ╰── <92> Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <94> Constant Int [0]
             │       ╰── Return
-            │           ╰── Constant Int [1]
+            │           ╰── <99> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -11252,7 +11252,7 @@ fn test_valid_strings_as_lvalues_strings_in_function_calls() {
                     │   │   ╰── Pointer
                     │   │       ╰── Char
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <111> Constant Int [0]
                     ├── <119> Assign [=]
                     │   ├── <115> Var [ptr]
                     │   ╰── <118> FunctionCall [return_string]
@@ -11262,7 +11262,7 @@ fn test_valid_strings_as_lvalues_strings_in_function_calls() {
                     │   │       ╰── <123> Var [ptr]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <125> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <149>  [||]
@@ -11270,20 +11270,20 @@ fn test_valid_strings_as_lvalues_strings_in_function_calls() {
                     │   │       │   ├── <134>  [!=]
                     │   │       │   │   ├── <131> Subscript
                     │   │       │   │   │   ├── <129> Var [ptr]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [73]
+                    │   │       │   │   │   ╰── <130> Constant Int [0]
+                    │   │       │   │   ╰── <133> Constant Int [73]
                     │   │       │   ╰── <142>  [!=]
                     │   │       │       ├── <139> Subscript
                     │   │       │       │   ├── <137> Var [ptr]
-                    │   │       │       │   ╰── Constant Int [1]
-                    │   │       │       ╰── Constant Int [39]
+                    │   │       │       │   ╰── <138> Constant Int [1]
+                    │   │       │       ╰── <141> Constant Int [39]
                     │   │       ╰── <148> Subscript
                     │   │           ├── <146> Var [ptr]
-                    │   │           ╰── Constant Int [13]
+                    │   │           ╰── <147> Constant Int [13]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <150> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <160> Unary [!]
@@ -11293,9 +11293,9 @@ fn test_valid_strings_as_lvalues_strings_in_function_calls() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <161> Constant Int [3]
                     ├── Return
-                    │   ╰── Constant Int [0]
+                    │   ╰── <166> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr2
@@ -11304,21 +11304,21 @@ fn test_valid_strings_as_lvalues_strings_in_function_calls() {
                     │           ╰── Char
                     ├── <188> Assign [=]
                     │   ├── <174> Var [ptr2]
-                    │   ╰── <{node_id}> Conditional [?]
-                    │       ├── Constant Int [1]
+                    │   ╰── <187> Conditional [?]
+                    │       ├── <176> Constant Int [1]
                     │       ├── Then
                     │       │   ╰── <181>  [+]
                     │       │       ├── <178> Var [ptr]
-                    │       │       ╰── Constant Int [2]
+                    │       │       ╰── <180> Constant Int [2]
                     │       ╰── Else
                     │           ╰── <186>  [+]
                     │               ├── <183> Var [ptr]
-                    │               ╰── Constant Int [4]
+                    │               ╰── <185> Constant Int [4]
                     ╰── Return
                         ╰── <195>  [==]
                             ├── <192> Dereference
                             │   ╰── <191> Var [ptr2]
-                            ╰── Constant Int [109]
+                            ╰── <194> Constant Int [109]
     "#;
     assert_parse(src, expected);
 }

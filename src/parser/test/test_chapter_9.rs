@@ -16,9 +16,9 @@ fn test_invalid_declarations_assign_to_fun_call() {
                 ╰── Body
                     ├── <14> Assign [=]
                     │   ├── <11> FunctionCall [x]
-                    │   ╰── Constant Int [1]
+                    │   ╰── <13> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <16> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -52,8 +52,8 @@ fn test_invalid_declarations_decl_params_with_same_name() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── <19> FunctionCall [foo]
-            │               ├── Constant Int [1]
-            │               ╰── Constant Int [2]
+            │               ├── <17> Constant Int [1]
+            │               ╰── <18> Constant Int [2]
             ╰── Function [foo]
                 ├── Parameters
                 │   ├── Param
@@ -96,13 +96,13 @@ fn test_invalid_declarations_extra_credit_call_label_as_function() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── Label [a]
                     │   ╰── <20> Assign [=]
                     │       ├── <13> Var [x]
                     │       ╰── <19>  [+]
                     │           ├── <16> Var [x]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <18> Constant Int [1]
                     ├── <24> FunctionCall [a]
                     ╰── Return
                         ╰── <27> Var [x]
@@ -126,9 +126,9 @@ fn test_invalid_declarations_extra_credit_compound_assign_to_fun_call() {
                 ╰── Body
                     ├── <14> Assign [+=]
                     │   ├── <11> FunctionCall [x]
-                    │   ╰── Constant Int [1]
+                    │   ╰── <13> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <16> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -188,7 +188,7 @@ fn test_invalid_declarations_nested_function_definition() {
                     ├── Function [foo]
                     │   ╰── Body
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <9> Constant Int [1]
                     ╰── Return
                         ╰── <14> FunctionCall [foo]
     "#;
@@ -227,8 +227,8 @@ fn test_invalid_declarations_params_with_same_name() {
                 ╰── Body
                     ╰── Return
                         ╰── <23> FunctionCall [foo]
-                            ├── Constant Int [1]
-                            ╰── Constant Int [2]
+                            ├── <21> Constant Int [1]
+                            ╰── <22> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -256,13 +256,13 @@ fn test_invalid_declarations_redefine_fun_as_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [1]
+            │       │       ╰── <13> Constant Int [1]
             │       ╰── Return
             │           ╰── <17> Var [foo]
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [1]
+                        ╰── <25> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -294,14 +294,14 @@ fn test_invalid_declarations_redefine_parameter() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [5]
+            │       │       ╰── <11> Constant Int [5]
             │       ╰── Return
             │           ╰── <15> Var [a]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── <25> FunctionCall [foo]
-                            ╰── Constant Int [3]
+                            ╰── <24> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -328,14 +328,14 @@ fn test_invalid_declarations_redefine_var_as_fun() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [1]
+            │       │       ╰── <8> Constant Int [1]
             │       ├── Function [foo]
             │       ╰── Return
             │           ╰── <17> Var [foo]
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [1]
+                        ╰── <25> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -356,7 +356,7 @@ fn test_invalid_declarations_undeclared_fun() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── <7> FunctionCall [foo]
-            │               ╰── Constant Int [3]
+            │               ╰── <6> Constant Int [3]
             ╰── Function [foo]
                 ├── Parameters
                 │   ╰── Param
@@ -366,7 +366,7 @@ fn test_invalid_declarations_undeclared_fun() {
                 │           ╰── Int
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [1]
+                        ╰── <18> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -395,7 +395,7 @@ fn test_invalid_declarations_wrong_parameter_names() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── <15> FunctionCall [foo]
-            │               ╰── Constant Int [3]
+            │               ╰── <14> Constant Int [3]
             ╰── Function [foo]
                 ├── Parameters
                 │   ╰── Param
@@ -428,12 +428,12 @@ fn test_invalid_labels_extra_credit_goto_cross_function() {
             │   ╰── Body
             │       ╰── Label [label]
             │           ╰── Return
-            │               ╰── Constant Int [0]
+            │               ╰── <6> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── Goto [label]
                     ╰── Return
-                        ╰── Constant Int [1]
+                        ╰── <17> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -454,12 +454,12 @@ fn test_invalid_labels_extra_credit_goto_function() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [3]
+            │           ╰── <5> Constant Int [3]
             ╰── Function [main]
                 ╰── Body
                     ├── Goto [foo]
                     ╰── Return
-                        ╰── Constant Int [3]
+                        ╰── <15> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -638,12 +638,12 @@ fn test_invalid_types_assign_fun_to_variable() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <13> Constant Int [10]
                     ├── <21> Assign [=]
                     │   ├── <17> Var [a]
                     │   ╰── <20> Var [x]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <23> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -664,9 +664,9 @@ fn test_invalid_types_assign_value_to_function() {
                     ├── Function [x]
                     ├── <14> Assign [=]
                     │   ├── <11> Var [x]
-                    │   ╰── Constant Int [3]
+                    │   ╰── <13> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <16> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -691,7 +691,7 @@ fn test_invalid_types_call_variable_as_function() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <13> Constant Int [0]
                     ╰── Return
                         ╰── <17> FunctionCall [x]
     "#;
@@ -721,7 +721,7 @@ fn test_invalid_types_conflicting_function_declarations() {
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [5]
+            │           ╰── <13> Constant Int [5]
             ╰── Function [foo]
                 ├── Parameters
                 │   ├── Param
@@ -736,7 +736,7 @@ fn test_invalid_types_conflicting_function_declarations() {
                 │           ╰── Int
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [4]
+                        ╰── <27> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -770,7 +770,7 @@ fn test_invalid_types_conflicting_local_function_declaration() {
             │           ╰── <24>  [+]
             │               ├── <19> FunctionCall [bar]
             │               ╰── <23> FunctionCall [foo]
-            │                   ╰── Constant Int [1]
+            │                   ╰── <22> Constant Int [1]
             ╰── Function [bar]
                 ╰── Body
                     ├── Function [foo]
@@ -787,8 +787,8 @@ fn test_invalid_types_conflicting_local_function_declaration() {
                     │               ╰── Int
                     ╰── Return
                         ╰── <46> FunctionCall [foo]
-                            ├── Constant Int [1]
-                            ╰── Constant Int [2]
+                            ├── <44> Constant Int [1]
+                            ╰── <45> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -814,10 +814,10 @@ fn test_invalid_types_divide_by_function() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <17>  [/]
-                    │           ├── Constant Int [10]
+                    │           ├── <13> Constant Int [10]
                     │           ╰── <16> Var [x]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <20> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -838,9 +838,9 @@ fn test_invalid_types_extra_credit_bitwise_op_function() {
                 ╰── Body
                     ├── <14>  [>>]
                     │   ├── <11> Var [x]
-                    │   ╰── Constant Int [2]
+                    │   ╰── <13> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <16> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -861,9 +861,9 @@ fn test_invalid_types_extra_credit_compound_assign_function_lhs() {
                 ╰── Body
                     ├── <14> Assign [+=]
                     │   ├── <11> Var [x]
-                    │   ╰── Constant Int [3]
+                    │   ╰── <13> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <16> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -889,12 +889,12 @@ fn test_invalid_types_extra_credit_compound_assign_function_rhs() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <13> Constant Int [3]
                     ├── <21> Assign [+=]
                     │   ├── <17> Var [a]
                     │   ╰── <20> Var [x]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <23> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -916,7 +916,7 @@ fn test_invalid_types_extra_credit_postfix_incr_fun_name() {
                     ├── <13> Postfix [++]
                     │   ╰── <11> Var [x]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <15> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -938,7 +938,7 @@ fn test_invalid_types_extra_credit_prefix_decr_fun_name() {
                     ├── <13> Unary [--]
                     │   ╰── <12> Var [x]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <15> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -961,7 +961,7 @@ fn test_invalid_types_extra_credit_switch_on_function() {
                         ├── Expression
                         │   ╰── <11> Var [f]
                         ╰── Return
-                            ╰── Constant Int [0]
+                            ╰── <12> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -985,7 +985,7 @@ fn test_invalid_types_multiple_function_definitions() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [3]
+            │           ╰── <5> Constant Int [3]
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
@@ -993,7 +993,7 @@ fn test_invalid_types_multiple_function_definitions() {
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [4]
+                        ╰── <22> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -1018,7 +1018,7 @@ fn test_invalid_types_multiple_function_definitions_2() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [3]
+            │           ╰── <5> Constant Int [3]
             ├── Function [main]
             │   ╰── Body
             │       ├── Function [foo]
@@ -1027,7 +1027,7 @@ fn test_invalid_types_multiple_function_definitions_2() {
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [4]
+                        ╰── <27> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -1060,12 +1060,12 @@ fn test_invalid_types_too_few_args() {
             │       ╰── Return
             │           ╰── <15>  [+]
             │               ├── <12> Var [a]
-            │               ╰── Constant Int [1]
+            │               ╰── <14> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── <25> FunctionCall [foo]
-                            ╰── Constant Int [1]
+                            ╰── <24> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -1093,13 +1093,13 @@ fn test_invalid_types_too_many_args() {
             │       ╰── Return
             │           ╰── <12>  [+]
             │               ├── <9> Var [a]
-            │               ╰── Constant Int [1]
+            │               ╰── <11> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── <23> FunctionCall [foo]
-                            ├── Constant Int [1]
-                            ╰── Constant Int [2]
+                            ├── <21> Constant Int [1]
+                            ╰── <22> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -1158,22 +1158,22 @@ fn test_valid_arguments_in_registers_dont_clobber_edx() {
             │               │   │   │   ├── <34>  [&&]
             │               │   │   │   │   ├── <27>  [==]
             │               │   │   │   │   │   ├── <24> Var [a]
-            │               │   │   │   │   │   ╰── Constant Int [1]
+            │               │   │   │   │   │   ╰── <26> Constant Int [1]
             │               │   │   │   │   ╰── <33>  [==]
             │               │   │   │   │       ├── <30> Var [b]
-            │               │   │   │   │       ╰── Constant Int [2]
+            │               │   │   │   │       ╰── <32> Constant Int [2]
             │               │   │   │   ╰── <40>  [==]
             │               │   │   │       ├── <37> Var [c]
-            │               │   │   │       ╰── Constant Int [3]
+            │               │   │   │       ╰── <39> Constant Int [3]
             │               │   │   ╰── <47>  [==]
             │               │   │       ├── <44> Var [d]
-            │               │   │       ╰── Constant Int [4]
+            │               │   │       ╰── <46> Constant Int [4]
             │               │   ╰── <54>  [==]
             │               │       ├── <51> Var [e]
-            │               │       ╰── Constant Int [5]
+            │               │       ╰── <53> Constant Int [5]
             │               ╰── <61>  [==]
             │                   ├── <58> Var [f]
-            │                   ╰── Constant Int [6]
+            │                   ╰── <60> Constant Int [6]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -1182,16 +1182,16 @@ fn test_valid_arguments_in_registers_dont_clobber_edx() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [4]
+                    │       ╰── <73> Constant Int [4]
                     ╰── Return
                         ╰── <87> FunctionCall [x]
-                            ├── Constant Int [1]
-                            ├── Constant Int [2]
-                            ├── Constant Int [3]
-                            ├── Constant Int [4]
-                            ├── Constant Int [5]
+                            ├── <77> Constant Int [1]
+                            ├── <78> Constant Int [2]
+                            ├── <79> Constant Int [3]
+                            ├── <80> Constant Int [4]
+                            ├── <81> Constant Int [5]
                             ╰── <86>  [/]
-                                ├── Constant Int [24]
+                                ├── <82> Constant Int [24]
                                 ╰── <85> Var [a]
     "#;
     assert_parse(src, expected);
@@ -1237,9 +1237,9 @@ fn test_valid_arguments_in_registers_expression_args() {
                     │   ╰── Initializer
                     │       ╰── <33> FunctionCall [sub]
                     │           ├── <31>  [+]
-                    │           │   ├── Constant Int [1]
-                    │           │   ╰── Constant Int [2]
-                    │           ╰── Constant Int [1]
+                    │           │   ├── <28> Constant Int [1]
+                    │           │   ╰── <30> Constant Int [2]
+                    │           ╰── <32> Constant Int [1]
                     ╰── Return
                         ╰── <37> Var [sum]
     "#;
@@ -1276,10 +1276,10 @@ fn test_valid_arguments_in_registers_fibonacci() {
             │           │   ╰── <19>  [||]
             │           │       ├── <12>  [==]
             │           │       │   ├── <9> Var [n]
-            │           │       │   ╰── Constant Int [0]
+            │           │       │   ╰── <11> Constant Int [0]
             │           │       ╰── <18>  [==]
             │           │           ├── <15> Var [n]
-            │           │           ╰── Constant Int [1]
+            │           │           ╰── <17> Constant Int [1]
             │           ├── Then
             │           │   ╰── Block
             │           │       ╰── Return
@@ -1291,11 +1291,11 @@ fn test_valid_arguments_in_registers_fibonacci() {
             │                           ├── <31> FunctionCall [fib]
             │                           │   ╰── <30>  [-]
             │                           │       ├── <27> Var [n]
-            │                           │       ╰── Constant Int [1]
+            │                           │       ╰── <29> Constant Int [1]
             │                           ╰── <39> FunctionCall [fib]
             │                               ╰── <38>  [-]
             │                                   ├── <35> Var [n]
-            │                                   ╰── Constant Int [2]
+            │                                   ╰── <37> Constant Int [2]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -1304,7 +1304,7 @@ fn test_valid_arguments_in_registers_fibonacci() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [6]
+                    │       ╰── <54> Constant Int [6]
                     ╰── Return
                         ╰── <60> FunctionCall [fib]
                             ╰── <59> Var [n]
@@ -1341,8 +1341,8 @@ fn test_valid_arguments_in_registers_forward_decl_multi_arg() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── <19> FunctionCall [foo]
-            │               ├── Constant Int [2]
-            │               ╰── Constant Int [1]
+            │               ├── <17> Constant Int [2]
+            │               ╰── <18> Constant Int [1]
             ╰── Function [foo]
                 ├── Parameters
                 │   ├── Param
@@ -1397,33 +1397,33 @@ fn test_valid_arguments_in_registers_hello_world() {
             ╰── Function [main]
                 ╰── Body
                     ├── <15> FunctionCall [putchar]
-                    │   ╰── Constant Int [72]
+                    │   ╰── <14> Constant Int [72]
                     ├── <19> FunctionCall [putchar]
-                    │   ╰── Constant Int [101]
+                    │   ╰── <18> Constant Int [101]
                     ├── <23> FunctionCall [putchar]
-                    │   ╰── Constant Int [108]
+                    │   ╰── <22> Constant Int [108]
                     ├── <27> FunctionCall [putchar]
-                    │   ╰── Constant Int [108]
+                    │   ╰── <26> Constant Int [108]
                     ├── <31> FunctionCall [putchar]
-                    │   ╰── Constant Int [111]
+                    │   ╰── <30> Constant Int [111]
                     ├── <35> FunctionCall [putchar]
-                    │   ╰── Constant Int [44]
+                    │   ╰── <34> Constant Int [44]
                     ├── <39> FunctionCall [putchar]
-                    │   ╰── Constant Int [32]
+                    │   ╰── <38> Constant Int [32]
                     ├── <43> FunctionCall [putchar]
-                    │   ╰── Constant Int [87]
+                    │   ╰── <42> Constant Int [87]
                     ├── <47> FunctionCall [putchar]
-                    │   ╰── Constant Int [111]
+                    │   ╰── <46> Constant Int [111]
                     ├── <51> FunctionCall [putchar]
-                    │   ╰── Constant Int [114]
+                    │   ╰── <50> Constant Int [114]
                     ├── <55> FunctionCall [putchar]
-                    │   ╰── Constant Int [108]
+                    │   ╰── <54> Constant Int [108]
                     ├── <59> FunctionCall [putchar]
-                    │   ╰── Constant Int [100]
+                    │   ╰── <58> Constant Int [100]
                     ├── <63> FunctionCall [putchar]
-                    │   ╰── Constant Int [33]
+                    │   ╰── <62> Constant Int [33]
                     ╰── <67> FunctionCall [putchar]
-                        ╰── Constant Int [10]
+                        ╰── <66> Constant Int [10]
     "#;
     assert_parse(src, expected);
 }
@@ -1450,7 +1450,7 @@ fn test_valid_arguments_in_registers_param_shadows_local_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [10]
+            │       │       ╰── <8> Constant Int [10]
             │       ├── Function [f]
             │       │   ╰── Parameters
             │       │       ╰── Param
@@ -1472,7 +1472,7 @@ fn test_valid_arguments_in_registers_param_shadows_local_var() {
                     ╰── Return
                         ╰── <37>  [*]
                             ├── <34> Var [a]
-                            ╰── Constant Int [2]
+                            ╰── <36> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -1495,7 +1495,7 @@ fn test_valid_arguments_in_registers_parameter_shadows_function() {
             ├── Function [a]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [1]
+            │           ╰── <5> Constant Int [1]
             ├── Function [b]
             │   ├── Parameters
             │   │   ╰── Param
@@ -1512,7 +1512,7 @@ fn test_valid_arguments_in_registers_parameter_shadows_function() {
                         ╰── <31>  [+]
                             ├── <26> FunctionCall [a]
                             ╰── <30> FunctionCall [b]
-                                ╰── Constant Int [2]
+                                ╰── <29> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -1540,12 +1540,12 @@ fn test_valid_arguments_in_registers_parameter_shadows_own_function() {
             │       ╰── Return
             │           ╰── <12>  [*]
             │               ├── <9> Var [a]
-            │               ╰── Constant Int [2]
+            │               ╰── <11> Constant Int [2]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── <22> FunctionCall [a]
-                            ╰── Constant Int [1]
+                            ╰── <21> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -1598,21 +1598,21 @@ fn test_valid_arguments_in_registers_parameters_are_preserved() {
             │       │   │       │   ├── <28>  [&&]
             │       │   │       │   │   ├── <21>  [==]
             │       │   │       │   │   │   ├── <18> Var [w]
-            │       │   │       │   │   │   ╰── Constant Int [2]
+            │       │   │       │   │   │   ╰── <20> Constant Int [2]
             │       │   │       │   │   ╰── <27>  [==]
             │       │   │       │   │       ├── <24> Var [x]
-            │       │   │       │   │       ╰── Constant Int [4]
+            │       │   │       │   │       ╰── <26> Constant Int [4]
             │       │   │       │   ╰── <34>  [==]
             │       │   │       │       ├── <31> Var [y]
-            │       │   │       │       ╰── Constant Int [6]
+            │       │   │       │       ╰── <33> Constant Int [6]
             │       │   │       ╰── <41>  [==]
             │       │   │           ├── <38> Var [z]
-            │       │   │           ╰── Constant Int [8]
+            │       │   │           ╰── <40> Constant Int [8]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <43> Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <46> Constant Int [0]
             ├── Function [f]
             │   ├── Parameters
             │   │   ├── Param
@@ -1645,16 +1645,16 @@ fn test_valid_arguments_in_registers_parameters_are_preserved() {
             │       │       ╰── <90> FunctionCall [g]
             │       │           ├── <74>  [*]
             │       │           │   ├── <71> Var [a]
-            │       │           │   ╰── Constant Int [2]
+            │       │           │   ╰── <73> Constant Int [2]
             │       │           ├── <79>  [*]
             │       │           │   ├── <76> Var [b]
-            │       │           │   ╰── Constant Int [2]
+            │       │           │   ╰── <78> Constant Int [2]
             │       │           ├── <84>  [*]
             │       │           │   ├── <81> Var [c]
-            │       │           │   ╰── Constant Int [2]
+            │       │           │   ╰── <83> Constant Int [2]
             │       │           ╰── <89>  [*]
             │       │               ├── <86> Var [d]
-            │       │               ╰── Constant Int [2]
+            │       │               ╰── <88> Constant Int [2]
             │       ╰── Return
             │           ╰── <126>  [&&]
             │               ├── <118>  [&&]
@@ -1662,27 +1662,27 @@ fn test_valid_arguments_in_registers_parameters_are_preserved() {
             │               │   │   ├── <104>  [&&]
             │               │   │   │   ├── <97>  [==]
             │               │   │   │   │   ├── <94> Var [result]
-            │               │   │   │   │   ╰── Constant Int [1]
+            │               │   │   │   │   ╰── <96> Constant Int [1]
             │               │   │   │   ╰── <103>  [==]
             │               │   │   │       ├── <100> Var [a]
-            │               │   │   │       ╰── Constant Int [1]
+            │               │   │   │       ╰── <102> Constant Int [1]
             │               │   │   ╰── <110>  [==]
             │               │   │       ├── <107> Var [b]
-            │               │   │       ╰── Constant Int [2]
+            │               │   │       ╰── <109> Constant Int [2]
             │               │   ╰── <117>  [==]
             │               │       ├── <114> Var [c]
-            │               │       ╰── Constant Int [3]
+            │               │       ╰── <116> Constant Int [3]
             │               ╰── <124>  [==]
             │                   ├── <121> Var [d]
-            │                   ╰── Constant Int [4]
+            │                   ╰── <123> Constant Int [4]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── <139> FunctionCall [f]
-                            ├── Constant Int [1]
-                            ├── Constant Int [2]
-                            ├── Constant Int [3]
-                            ╰── Constant Int [4]
+                            ├── <135> Constant Int [1]
+                            ├── <136> Constant Int [2]
+                            ├── <137> Constant Int [3]
+                            ╰── <138> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -1709,13 +1709,13 @@ fn test_valid_arguments_in_registers_single_arg() {
             │   ╰── Body
             │       ╰── Return
             │           ╰── <12>  [*]
-            │               ├── Constant Int [2]
+            │               ├── <8> Constant Int [2]
             │               ╰── <11> Var [x]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── <22> FunctionCall [twice]
-                            ╰── Constant Int [3]
+                            ╰── <21> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -1737,7 +1737,7 @@ fn test_valid_extra_credit_compound_assign_function_result() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [2]
+            │           ╰── <5> Constant Int [2]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -1746,7 +1746,7 @@ fn test_valid_extra_credit_compound_assign_function_result() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <16> Constant Int [3]
                     ├── <24> Assign [-=]
                     │   ├── <20> Var [x]
                     │   ╰── <23> FunctionCall [foo]
@@ -1810,22 +1810,22 @@ fn test_valid_extra_credit_dont_clobber_ecx() {
             │               │   │   │   ├── <34>  [&&]
             │               │   │   │   │   ├── <27>  [==]
             │               │   │   │   │   │   ├── <24> Var [a]
-            │               │   │   │   │   │   ╰── Constant Int [1]
+            │               │   │   │   │   │   ╰── <26> Constant Int [1]
             │               │   │   │   │   ╰── <33>  [==]
             │               │   │   │   │       ├── <30> Var [b]
-            │               │   │   │   │       ╰── Constant Int [2]
+            │               │   │   │   │       ╰── <32> Constant Int [2]
             │               │   │   │   ╰── <40>  [==]
             │               │   │   │       ├── <37> Var [c]
-            │               │   │   │       ╰── Constant Int [3]
+            │               │   │   │       ╰── <39> Constant Int [3]
             │               │   │   ╰── <47>  [==]
             │               │   │       ├── <44> Var [d]
-            │               │   │       ╰── Constant Int [4]
+            │               │   │       ╰── <46> Constant Int [4]
             │               │   ╰── <54>  [==]
             │               │       ├── <51> Var [e]
-            │               │       ╰── Constant Int [5]
+            │               │       ╰── <53> Constant Int [5]
             │               ╰── <61>  [==]
             │                   ├── <58> Var [f]
-            │                   ╰── Constant Int [6]
+            │                   ╰── <60> Constant Int [6]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -1834,19 +1834,19 @@ fn test_valid_extra_credit_dont_clobber_ecx() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [4]
+                    │       ╰── <73> Constant Int [4]
                     ╰── Return
                         ╰── <91> FunctionCall [x]
-                            ├── Constant Int [1]
-                            ├── Constant Int [2]
-                            ├── Constant Int [3]
-                            ├── Constant Int [4]
-                            ├── Constant Int [5]
+                            ├── <77> Constant Int [1]
+                            ├── <78> Constant Int [2]
+                            ├── <79> Constant Int [3]
+                            ├── <80> Constant Int [4]
+                            ├── <81> Constant Int [5]
                             ╰── <90>  [>>]
-                                ├── Constant Int [24]
+                                ├── <82> Constant Int [24]
                                 ╰── <89>  [/]
                                     ├── <85> Var [a]
-                                    ╰── Constant Int [2]
+                                    ╰── <87> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -1874,15 +1874,15 @@ fn test_valid_extra_credit_goto_label_multiple_functions() {
             │   ╰── Body
             │       ├── Goto [label]
             │       ├── Return
-            │       │   ╰── Constant Int [0]
+            │       │   ╰── <7> Constant Int [0]
             │       ╰── Label [label]
             │           ╰── Return
-            │               ╰── Constant Int [5]
+            │               ╰── <10> Constant Int [5]
             ╰── Function [main]
                 ╰── Body
                     ├── Goto [label]
                     ├── Return
-                    │   ╰── Constant Int [0]
+                    │   ╰── <21> Constant Int [0]
                     ╰── Label [label]
                         ╰── Return
                             ╰── <25> FunctionCall [foo]
@@ -1909,10 +1909,10 @@ fn test_valid_extra_credit_goto_shared_name() {
             │   ╰── Body
             │       ├── Goto [foo]
             │       ├── Return
-            │       │   ╰── Constant Int [0]
+            │       │   ╰── <7> Constant Int [0]
             │       ╰── Label [foo]
             │           ╰── Return
-            │               ╰── Constant Int [1]
+            │               ╰── <10> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -1944,17 +1944,17 @@ fn test_valid_extra_credit_label_naming_scheme() {
             │       ╰── Label [_label]
             │           ╰── Label [label_]
             │               ╰── Return
-            │                   ╰── Constant Int [0]
+            │                   ╰── <7> Constant Int [0]
             ├── Function [main_]
             │   ╰── Body
             │       ╰── Label [label]
             │           ╰── Return
-            │               ╰── Constant Int [0]
+            │               ╰── <18> Constant Int [0]
             ╰── Function [_main]
                 ╰── Body
                     ╰── Label [label]
                         ╰── Return
-                            ╰── Constant Int [0]
+                            ╰── <28> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2015,8 +2015,8 @@ fn test_valid_libraries_addition_client() {
                 ╰── Body
                     ╰── Return
                         ╰── <19> FunctionCall [add]
-                            ├── Constant Int [1]
-                            ╰── Constant Int [2]
+                            ├── <17> Constant Int [1]
+                            ╰── <18> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -2050,10 +2050,10 @@ fn test_valid_libraries_many_args() {
             │           │   ╰── <19>  [||]
             │           │       ├── <12>  [==]
             │           │       │   ├── <9> Var [n]
-            │           │       │   ╰── Constant Int [0]
+            │           │       │   ╰── <11> Constant Int [0]
             │           │       ╰── <18>  [==]
             │           │           ├── <15> Var [n]
-            │           │           ╰── Constant Int [1]
+            │           │           ╰── <17> Constant Int [1]
             │           ├── Then
             │           │   ╰── Block
             │           │       ╰── Return
@@ -2065,11 +2065,11 @@ fn test_valid_libraries_many_args() {
             │                           ├── <31> FunctionCall [fib]
             │                           │   ╰── <30>  [-]
             │                           │       ├── <27> Var [n]
-            │                           │       ╰── Constant Int [1]
+            │                           │       ╰── <29> Constant Int [1]
             │                           ╰── <39> FunctionCall [fib]
             │                               ╰── <38>  [-]
             │                                   ├── <35> Var [n]
-            │                                   ╰── Constant Int [2]
+            │                                   ╰── <37> Constant Int [2]
             ╰── Function [multiply_many_args]
                 ├── Parameters
                 │   ├── Param
@@ -2214,14 +2214,14 @@ fn test_valid_libraries_many_args_client() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <47> FunctionCall [fib]
-                    │           ╰── Constant Int [4]
+                    │           ╰── <46> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── seven
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [7]
+                    │       ╰── <53> Constant Int [7]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── eight
@@ -2229,7 +2229,7 @@ fn test_valid_libraries_many_args_client() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <61> FunctionCall [fib]
-                    │           ╰── Constant Int [6]
+                    │           ╰── <60> Constant Int [6]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
@@ -2238,37 +2238,37 @@ fn test_valid_libraries_many_args_client() {
                     │   ╰── Initializer
                     │       ╰── <79> FunctionCall [multiply_many_args]
                     │           ├── <69> Var [x]
-                    │           ├── Constant Int [2]
-                    │           ├── Constant Int [3]
-                    │           ├── Constant Int [4]
-                    │           ├── Constant Int [5]
-                    │           ├── Constant Int [6]
+                    │           ├── <70> Constant Int [2]
+                    │           ├── <71> Constant Int [3]
+                    │           ├── <72> Constant Int [4]
+                    │           ├── <73> Constant Int [5]
+                    │           ├── <74> Constant Int [6]
                     │           ├── <76> Var [seven]
                     │           ╰── <78> Var [eight]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <86>  [!=]
                     │   │       ├── <83> Var [x]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <85> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <87> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <96>  [!=]
                     │   │       ├── <93> Var [y]
-                    │   │       ╰── Constant Int [589680]
+                    │   │       ╰── <95> Constant Int [589680]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <97> Constant Int [2]
                     ╰── Return
                         ╰── <111>  [+]
                             ├── <103> Var [x]
                             ╰── <110>  [%]
                                 ├── <106> Var [y]
-                                ╰── Constant Int [256]
+                                ╰── <108> Constant Int [256]
     "#;
     assert_parse(src, expected);
 }
@@ -2325,24 +2325,24 @@ fn test_valid_libraries_no_function_calls_division() {
                     │   │       │   │   ├── <39>  [&&]
                     │   │       │   │   │   ├── <32>  [==]
                     │   │       │   │   │   │   ├── <29> Var [a]
-                    │   │       │   │   │   │   ╰── Constant Int [10]
+                    │   │       │   │   │   │   ╰── <31> Constant Int [10]
                     │   │       │   │   │   ╰── <38>  [==]
                     │   │       │   │   │       ├── <35> Var [b]
-                    │   │       │   │   │       ╰── Constant Int [2]
+                    │   │       │   │   │       ╰── <37> Constant Int [2]
                     │   │       │   │   ╰── <45>  [==]
                     │   │       │   │       ├── <42> Var [c]
-                    │   │       │   │       ╰── Constant Int [100]
+                    │   │       │   │       ╰── <44> Constant Int [100]
                     │   │       │   ╰── <52>  [==]
                     │   │       │       ├── <49> Var [d]
-                    │   │       │       ╰── Constant Int [4]
+                    │   │       │       ╰── <51> Constant Int [4]
                     │   │       ╰── <59>  [==]
                     │   │           ├── <56> Var [x]
-                    │   │           ╰── Constant Int [5]
+                    │   │           ╰── <58> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <61> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <64> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2383,10 +2383,10 @@ fn test_valid_libraries_no_function_calls_division_client() {
                 ╰── Body
                     ╰── Return
                         ╰── <27> FunctionCall [f]
-                            ├── Constant Int [10]
-                            ├── Constant Int [2]
-                            ├── Constant Int [100]
-                            ╰── Constant Int [4]
+                            ├── <23> Constant Int [10]
+                            ├── <24> Constant Int [2]
+                            ├── <25> Constant Int [100]
+                            ╰── <26> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -2463,7 +2463,7 @@ fn test_valid_libraries_no_function_calls_local_stack_variables() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <35> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <111>  [&&]
@@ -2477,46 +2477,46 @@ fn test_valid_libraries_no_function_calls_local_stack_variables() {
                     │   │       │   │   │   │   │   │   │   ├── <49>  [&&]
                     │   │       │   │   │   │   │   │   │   │   ├── <42>  [==]
                     │   │       │   │   │   │   │   │   │   │   │   ├── <39> Var [reg1]
-                    │   │       │   │   │   │   │   │   │   │   │   ╰── Constant Int [1]
+                    │   │       │   │   │   │   │   │   │   │   │   ╰── <41> Constant Int [1]
                     │   │       │   │   │   │   │   │   │   │   ╰── <48>  [==]
                     │   │       │   │   │   │   │   │   │   │       ├── <45> Var [reg2]
-                    │   │       │   │   │   │   │   │   │   │       ╰── Constant Int [2]
+                    │   │       │   │   │   │   │   │   │   │       ╰── <47> Constant Int [2]
                     │   │       │   │   │   │   │   │   │   ╰── <55>  [==]
                     │   │       │   │   │   │   │   │   │       ├── <52> Var [reg3]
-                    │   │       │   │   │   │   │   │   │       ╰── Constant Int [3]
+                    │   │       │   │   │   │   │   │   │       ╰── <54> Constant Int [3]
                     │   │       │   │   │   │   │   │   ╰── <62>  [==]
                     │   │       │   │   │   │   │   │       ├── <59> Var [reg4]
-                    │   │       │   │   │   │   │   │       ╰── Constant Int [4]
+                    │   │       │   │   │   │   │   │       ╰── <61> Constant Int [4]
                     │   │       │   │   │   │   │   ╰── <69>  [==]
                     │   │       │   │   │   │   │       ├── <66> Var [reg5]
-                    │   │       │   │   │   │   │       ╰── Constant Int [5]
+                    │   │       │   │   │   │   │       ╰── <68> Constant Int [5]
                     │   │       │   │   │   │   ╰── <76>  [==]
                     │   │       │   │   │   │       ├── <73> Var [reg6]
-                    │   │       │   │   │   │       ╰── Constant Int [6]
+                    │   │       │   │   │   │       ╰── <75> Constant Int [6]
                     │   │       │   │   │   ╰── <85>  [==]
                     │   │       │   │   │       ├── <80> Var [stack1]
                     │   │       │   │   │       ╰── <84> Unary [-]
-                    │   │       │   │   │           ╰── Constant Int [1]
+                    │   │       │   │   │           ╰── <83> Constant Int [1]
                     │   │       │   │   ╰── <94>  [==]
                     │   │       │   │       ├── <89> Var [stack2]
                     │   │       │   │       ╰── <93> Unary [-]
-                    │   │       │   │           ╰── Constant Int [2]
+                    │   │       │   │           ╰── <92> Constant Int [2]
                     │   │       │   ╰── <103>  [==]
                     │   │       │       ├── <98> Var [stack3]
                     │   │       │       ╰── <102> Unary [-]
-                    │   │       │           ╰── Constant Int [3]
+                    │   │       │           ╰── <101> Constant Int [3]
                     │   │       ╰── <110>  [==]
                     │   │           ├── <107> Var [x]
-                    │   │           ╰── Constant Int [10]
+                    │   │           ╰── <109> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── <116> Assign [=]
                     │           │   ├── <113> Var [stack2]
-                    │           │   ╰── Constant Int [100]
+                    │           │   ╰── <115> Constant Int [100]
                     │           ╰── Return
                     │               ╰── <119> Var [stack2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <124> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2583,18 +2583,18 @@ fn test_valid_libraries_no_function_calls_local_stack_variables_client() {
                 ╰── Body
                     ╰── Return
                         ╰── <53> FunctionCall [f]
-                            ├── Constant Int [1]
-                            ├── Constant Int [2]
-                            ├── Constant Int [3]
-                            ├── Constant Int [4]
-                            ├── Constant Int [5]
-                            ├── Constant Int [6]
+                            ├── <38> Constant Int [1]
+                            ├── <39> Constant Int [2]
+                            ├── <40> Constant Int [3]
+                            ├── <41> Constant Int [4]
+                            ├── <42> Constant Int [5]
+                            ├── <43> Constant Int [6]
                             ├── <46> Unary [-]
-                            │   ╰── Constant Int [1]
+                            │   ╰── <45> Constant Int [1]
                             ├── <49> Unary [-]
-                            │   ╰── Constant Int [2]
+                            │   ╰── <48> Constant Int [2]
                             ╰── <52> Unary [-]
-                                ╰── Constant Int [3]
+                                ╰── <51> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -2628,7 +2628,7 @@ fn test_valid_libraries_system_call() {
                         ╰── <22> FunctionCall [putchar]
                             ╰── <21>  [+]
                                 ├── <18> Var [b]
-                                ╰── Constant Int [2]
+                                ╰── <20> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -2654,9 +2654,9 @@ fn test_valid_libraries_system_call_client() {
             ╰── Function [main]
                 ╰── Body
                     ├── <15> FunctionCall [incr_and_print]
-                    │   ╰── Constant Int [70]
+                    │   ╰── <14> Constant Int [70]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <17> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2682,7 +2682,7 @@ fn test_valid_no_arguments_forward_decl() {
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [3]
+                        ╰── <19> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -2713,21 +2713,21 @@ fn test_valid_no_arguments_function_shadows_variable() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [3]
+            │       │       ╰── <8> Constant Int [3]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── bar
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [4]
+            │       │       ╰── <14> Constant Int [4]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <25>  [>]
             │       │   │       ├── <22>  [+]
             │       │   │       │   ├── <18> Var [foo]
             │       │   │       │   ╰── <21> Var [bar]
-            │       │   │       ╰── Constant Int [0]
+            │       │   │       ╰── <24> Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ├── Function [foo]
@@ -2741,7 +2741,7 @@ fn test_valid_no_arguments_function_shadows_variable() {
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [8]
+                        ╰── <54> Constant Int [8]
     "#;
     assert_parse(src, expected);
 }
@@ -2769,7 +2769,7 @@ fn test_valid_no_arguments_multiple_declarations() {
             ╰── Function [f]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [3]
+                        ╰── <24> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -2795,12 +2795,12 @@ fn test_valid_no_arguments_no_return_value() {
             │           ├── Type
             │           │   ╰── Int
             │           ╰── Initializer
-            │               ╰── Constant Int [1]
+            │               ╰── <8> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ├── <18> FunctionCall [foo]
                     ╰── Return
-                        ╰── Constant Int [3]
+                        ╰── <20> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -2820,7 +2820,7 @@ fn test_valid_no_arguments_precedence() {
             ├── Function [three]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [3]
+            │           ╰── <5> Constant Int [3]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
@@ -2848,12 +2848,12 @@ fn test_valid_no_arguments_use_function_in_expression() {
             ├── Function [bar]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [9]
+            │           ╰── <5> Constant Int [9]
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
             │           ╰── <17>  [*]
-            │               ├── Constant Int [2]
+            │               ├── <13> Constant Int [2]
             │               ╰── <16> FunctionCall [bar]
             ╰── Function [main]
                 ╰── Body
@@ -2862,7 +2862,7 @@ fn test_valid_no_arguments_use_function_in_expression() {
                             ├── <26> FunctionCall [foo]
                             ╰── <32>  [/]
                                 ├── <29> FunctionCall [bar]
-                                ╰── Constant Int [3]
+                                ╰── <31> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -2899,7 +2899,7 @@ fn test_valid_no_arguments_variable_shadows_function() {
             │       │   ├── Condition
             │       │   │   ╰── <21>  [>]
             │       │   │       ├── <18> Var [x]
-            │       │   │       ╰── Constant Int [0]
+            │       │   │       ╰── <20> Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ├── VarDeclaration
@@ -2908,7 +2908,7 @@ fn test_valid_no_arguments_variable_shadows_function() {
             │       │           │   ├── Type
             │       │           │   │   ╰── Int
             │       │           │   ╰── Initializer
-            │       │           │       ╰── Constant Int [3]
+            │       │           │       ╰── <25> Constant Int [3]
             │       │           ╰── <37> Assign [=]
             │       │               ├── <29> Var [x]
             │       │               ╰── <36>  [+]
@@ -2919,7 +2919,7 @@ fn test_valid_no_arguments_variable_shadows_function() {
             ╰── Function [foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [4]
+                        ╰── <51> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -2998,14 +2998,14 @@ fn test_valid_stack_arguments_call_putchar() {
                 ╰── Body
                     ╰── Return
                         ╰── <64> FunctionCall [foo]
-                            ├── Constant Int [1]
-                            ├── Constant Int [2]
-                            ├── Constant Int [3]
-                            ├── Constant Int [4]
-                            ├── Constant Int [5]
-                            ├── Constant Int [6]
-                            ├── Constant Int [7]
-                            ╰── Constant Int [65]
+                            ├── <56> Constant Int [1]
+                            ├── <57> Constant Int [2]
+                            ├── <58> Constant Int [3]
+                            ├── <59> Constant Int [4]
+                            ├── <60> Constant Int [5]
+                            ├── <61> Constant Int [6]
+                            ├── <62> Constant Int [7]
+                            ╰── <63> Constant Int [65]
     "#;
     assert_parse(src, expected);
 }
@@ -3076,40 +3076,40 @@ fn test_valid_stack_arguments_lots_of_arguments() {
             │               │   │   │   │   │   ├── <40>  [&&]
             │               │   │   │   │   │   │   ├── <33>  [==]
             │               │   │   │   │   │   │   │   ├── <30> Var [a]
-            │               │   │   │   │   │   │   │   ╰── Constant Int [1]
+            │               │   │   │   │   │   │   │   ╰── <32> Constant Int [1]
             │               │   │   │   │   │   │   ╰── <39>  [==]
             │               │   │   │   │   │   │       ├── <36> Var [b]
-            │               │   │   │   │   │   │       ╰── Constant Int [2]
+            │               │   │   │   │   │   │       ╰── <38> Constant Int [2]
             │               │   │   │   │   │   ╰── <46>  [==]
             │               │   │   │   │   │       ├── <43> Var [c]
-            │               │   │   │   │   │       ╰── Constant Int [3]
+            │               │   │   │   │   │       ╰── <45> Constant Int [3]
             │               │   │   │   │   ╰── <53>  [==]
             │               │   │   │   │       ├── <50> Var [d]
-            │               │   │   │   │       ╰── Constant Int [4]
+            │               │   │   │   │       ╰── <52> Constant Int [4]
             │               │   │   │   ╰── <60>  [==]
             │               │   │   │       ├── <57> Var [e]
-            │               │   │   │       ╰── Constant Int [5]
+            │               │   │   │       ╰── <59> Constant Int [5]
             │               │   │   ╰── <67>  [==]
             │               │   │       ├── <64> Var [f]
-            │               │   │       ╰── Constant Int [6]
+            │               │   │       ╰── <66> Constant Int [6]
             │               │   ╰── <74>  [==]
             │               │       ├── <71> Var [g]
-            │               │       ╰── Constant Int [7]
+            │               │       ╰── <73> Constant Int [7]
             │               ╰── <81>  [==]
             │                   ├── <78> Var [h]
-            │                   ╰── Constant Int [8]
+            │                   ╰── <80> Constant Int [8]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── <100> FunctionCall [foo]
-                            ├── Constant Int [1]
-                            ├── Constant Int [2]
-                            ├── Constant Int [3]
-                            ├── Constant Int [4]
-                            ├── Constant Int [5]
-                            ├── Constant Int [6]
-                            ├── Constant Int [7]
-                            ╰── Constant Int [8]
+                            ├── <92> Constant Int [1]
+                            ├── <93> Constant Int [2]
+                            ├── <94> Constant Int [3]
+                            ├── <95> Constant Int [4]
+                            ├── <96> Constant Int [5]
+                            ├── <97> Constant Int [6]
+                            ├── <98> Constant Int [7]
+                            ╰── <99> Constant Int [8]
     "#;
     assert_parse(src, expected);
 }
@@ -3225,26 +3225,26 @@ fn test_valid_stack_arguments_stack_alignment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <69> Constant Int [3]
                     ├── <81> FunctionCall [even_arguments]
-                    │   ├── Constant Int [1]
-                    │   ├── Constant Int [2]
-                    │   ├── Constant Int [3]
-                    │   ├── Constant Int [4]
-                    │   ├── Constant Int [5]
-                    │   ├── Constant Int [6]
-                    │   ├── Constant Int [7]
-                    │   ╰── Constant Int [8]
+                    │   ├── <73> Constant Int [1]
+                    │   ├── <74> Constant Int [2]
+                    │   ├── <75> Constant Int [3]
+                    │   ├── <76> Constant Int [4]
+                    │   ├── <77> Constant Int [5]
+                    │   ├── <78> Constant Int [6]
+                    │   ├── <79> Constant Int [7]
+                    │   ╰── <80> Constant Int [8]
                     ├── <93> FunctionCall [odd_arguments]
-                    │   ├── Constant Int [1]
-                    │   ├── Constant Int [2]
-                    │   ├── Constant Int [3]
-                    │   ├── Constant Int [4]
-                    │   ├── Constant Int [5]
-                    │   ├── Constant Int [6]
-                    │   ├── Constant Int [7]
-                    │   ├── Constant Int [8]
-                    │   ╰── Constant Int [9]
+                    │   ├── <84> Constant Int [1]
+                    │   ├── <85> Constant Int [2]
+                    │   ├── <86> Constant Int [3]
+                    │   ├── <87> Constant Int [4]
+                    │   ├── <88> Constant Int [5]
+                    │   ├── <89> Constant Int [6]
+                    │   ├── <90> Constant Int [7]
+                    │   ├── <91> Constant Int [8]
+                    │   ╰── <92> Constant Int [9]
                     ╰── Return
                         ╰── <96> Var [x]
     "#;
@@ -3357,7 +3357,7 @@ fn test_valid_stack_arguments_test_for_memory_leaks() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <66> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -3366,40 +3366,40 @@ fn test_valid_stack_arguments_test_for_memory_leaks() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <72> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <80>  [<]
                     │   │       ├── <77> Var [i]
-                    │   │       ╰── Constant Int [10000000]
+                    │   │       ╰── <79> Constant Int [10000000]
                     │   ├── Condition
                     │   │   ╰── <89> Assign [=]
                     │   │       ├── <82> Var [i]
                     │   │       ╰── <88>  [+]
                     │   │           ├── <85> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <87> Constant Int [1]
                     │   ╰── Block
                     │       ╰── <111> Assign [=]
                     │           ├── <91> Var [ret]
                     │           ╰── <110> FunctionCall [lots_of_args]
-                    │               ├── Constant Int [1]
-                    │               ├── Constant Int [2]
-                    │               ├── Constant Int [3]
-                    │               ├── Constant Int [4]
-                    │               ├── Constant Int [5]
-                    │               ├── Constant Int [6]
-                    │               ├── Constant Int [7]
-                    │               ├── Constant Int [8]
-                    │               ├── Constant Int [9]
-                    │               ├── Constant Int [10]
-                    │               ├── Constant Int [11]
+                    │               ├── <94> Constant Int [1]
+                    │               ├── <95> Constant Int [2]
+                    │               ├── <96> Constant Int [3]
+                    │               ├── <97> Constant Int [4]
+                    │               ├── <98> Constant Int [5]
+                    │               ├── <99> Constant Int [6]
+                    │               ├── <100> Constant Int [7]
+                    │               ├── <101> Constant Int [8]
+                    │               ├── <102> Constant Int [9]
+                    │               ├── <103> Constant Int [10]
+                    │               ├── <104> Constant Int [11]
                     │               ├── <106> Var [ret]
-                    │               ├── Constant Int [13]
-                    │               ├── Constant Int [14]
-                    │               ╰── Constant Int [15]
+                    │               ├── <107> Constant Int [13]
+                    │               ├── <108> Constant Int [14]
+                    │               ╰── <109> Constant Int [15]
                     ╰── Return
                         ╰── <120>  [==]
                             ├── <117> Var [ret]
-                            ╰── Constant Int [150000000]
+                            ╰── <119> Constant Int [150000000]
     "#;
     assert_parse(src, expected);
 }

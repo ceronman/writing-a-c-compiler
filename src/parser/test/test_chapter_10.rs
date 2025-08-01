@@ -19,7 +19,7 @@ fn test_invalid_declarations_conflicting_local_declarations() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
@@ -51,7 +51,7 @@ fn test_invalid_declarations_extern_follows_local_var() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── x
@@ -83,7 +83,7 @@ fn test_invalid_declarations_extern_follows_static_local_var() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <9> Constant Int [0]
                     │   ╰── Static
                     ├── VarDeclaration
                     │   ├── Name
@@ -115,7 +115,7 @@ fn test_invalid_declarations_local_var_follows_extern() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [10]
+            │       ╰── <4> Constant Int [10]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -165,7 +165,7 @@ fn test_invalid_declarations_out_of_scope_extern_var() {
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant Int [1]
+                    ╰── <20> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -202,7 +202,7 @@ fn test_invalid_declarations_redefine_param_as_identifier_with_linkage() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <22> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -227,7 +227,7 @@ fn test_invalid_declarations_undeclared_global_variable() {
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant Int [0]
+                    ╰── <13> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -249,12 +249,12 @@ fn test_invalid_labels_extra_credit_goto_global_var() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [10]
+            │       ╰── <4> Constant Int [10]
             ╰── Function [main]
                 ╰── Body
                     ├── Goto [x]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <13> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -425,7 +425,7 @@ fn test_invalid_types_conflicting_function_linkage() {
             ╰── Function [static foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <20> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -451,7 +451,7 @@ fn test_invalid_types_conflicting_function_linkage_2() {
             ╰── Function [static foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <20> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -473,18 +473,18 @@ fn test_invalid_types_conflicting_global_definitions() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [3]
+            │       ╰── <4> Constant Int [3]
             ├── Function [main]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <11> Constant Int [0]
             ╰── VarDeclaration
                 ├── Name
                 │   ╰── foo
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant Int [4]
+                    ╰── <18> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -517,7 +517,7 @@ fn test_invalid_types_conflicting_variable_linkage() {
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant Int [3]
+                    ╰── <18> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -544,7 +544,7 @@ fn test_invalid_types_conflicting_variable_linkage_2() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [3]
+            │       │       ╰── <8> Constant Int [3]
             │       ├── Block
             │       │   ╰── VarDeclaration
             │       │       ├── Name
@@ -560,7 +560,7 @@ fn test_invalid_types_conflicting_variable_linkage_2() {
                 ├── Type
                 │   ╰── Int
                 ├── Initializer
-                │   ╰── Constant Int [10]
+                │   ╰── <27> Constant Int [10]
                 ╰── Static
     "#;
     assert_parse(src, expected);
@@ -587,7 +587,7 @@ fn test_invalid_types_extern_for_loop_counter() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -596,24 +596,24 @@ fn test_invalid_types_extern_for_loop_counter() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ├── Initializer
-                    │   │       │   ╰── Constant Int [0]
+                    │   │       │   ╰── <15> Constant Int [0]
                     │   │       ╰── Extern
                     │   ├── Condition
                     │   │   ╰── <23>  [<]
                     │   │       ├── <20> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <22> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <32> Assign [=]
                     │   │       ├── <25> Var [i]
                     │   │       ╰── <31>  [+]
                     │   │           ├── <28> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <30> Constant Int [1]
                     │   ╰── Block
                     │       ╰── <41> Assign [=]
                     │           ├── <34> Var [x]
                     │           ╰── <40>  [+]
                     │               ├── <37> Var [x]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <39> Constant Int [1]
                     ╰── Return
                         ╰── <47> Var [x]
     "#;
@@ -638,7 +638,7 @@ fn test_invalid_types_extern_variable_initializer() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <9> Constant Int [0]
                     │   ╰── Extern
                     ╰── Return
                         ╰── <13> Var [i]
@@ -667,19 +667,19 @@ fn test_invalid_types_extra_credit_static_var_case() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <9> Constant Int [0]
                     │   ╰── Static
                     ├── Switch
                     │   ├── Expression
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <12> Constant Int [0]
                     │   ╰── Block
                     │       ╰── Case [invalid]
                     │           ├── Value
                     │           │   ╰── <14> Var [i]
                     │           ╰── Return
-                    │               ╰── Constant Int [0]
+                    │               ╰── <15> Constant Int [0]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <21> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -701,7 +701,7 @@ fn test_invalid_types_non_constant_static_initializer() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [10]
+            │       ╰── <4> Constant Int [10]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── b
@@ -709,7 +709,7 @@ fn test_invalid_types_non_constant_static_initializer() {
             │   │   ╰── Int
             │   ╰── Initializer
             │       ╰── <14>  [+]
-            │           ├── Constant Int [1]
+            │           ├── <10> Constant Int [1]
             │           ╰── <13> Var [a]
             ╰── Function [main]
                 ╰── Body
@@ -738,7 +738,7 @@ fn test_invalid_types_non_constant_static_local_initializer() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <8> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
@@ -747,7 +747,7 @@ fn test_invalid_types_non_constant_static_local_initializer() {
                     │   ├── Initializer
                     │   │   ╰── <19>  [*]
                     │   │       ├── <16> Var [a]
-                    │   │       ╰── Constant Int [2]
+                    │   │       ╰── <18> Constant Int [2]
                     │   ╰── Static
                     ╰── Return
                         ╰── <23> Var [b]
@@ -772,12 +772,12 @@ fn test_invalid_types_redeclare_file_scope_var_as_fun() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [10]
+            │       ╰── <4> Constant Int [10]
             ╰── Function [main]
                 ╰── Body
                     ├── Function [foo]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <16> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -802,7 +802,7 @@ fn test_invalid_types_redeclare_fun_as_file_scope_var() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <14> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -823,7 +823,7 @@ fn test_invalid_types_redeclare_fun_as_var() {
             ├── Function [foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <5> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -833,7 +833,7 @@ fn test_invalid_types_redeclare_fun_as_var() {
                     │   │   ╰── Int
                     │   ╰── Extern
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <18> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -859,7 +859,7 @@ fn test_invalid_types_static_block_scope_function_declaration() {
             ╰── Function [static foo]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <21> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -885,7 +885,7 @@ fn test_invalid_types_static_for_loop_counter() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -894,24 +894,24 @@ fn test_invalid_types_static_for_loop_counter() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ├── Initializer
-                    │   │       │   ╰── Constant Int [0]
+                    │   │       │   ╰── <15> Constant Int [0]
                     │   │       ╰── Static
                     │   ├── Condition
                     │   │   ╰── <23>  [<]
                     │   │       ├── <20> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <22> Constant Int [10]
                     │   ├── Condition
                     │   │   ╰── <32> Assign [=]
                     │   │       ├── <25> Var [i]
                     │   │       ╰── <31>  [+]
                     │   │           ├── <28> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <30> Constant Int [1]
                     │   ╰── Block
                     │       ╰── <41> Assign [=]
                     │           ├── <34> Var [x]
                     │           ╰── <40>  [+]
                     │               ├── <37> Var [x]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <39> Constant Int [1]
                     ╰── Return
                         ╰── <47> Var [x]
     "#;
@@ -969,7 +969,7 @@ fn test_valid_distinct_local_and_extern() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [5]
+            │       ╰── <4> Constant Int [5]
             ├── Function [return_a]
             │   ╰── Body
             │       ╰── Return
@@ -982,7 +982,7 @@ fn test_valid_distinct_local_and_extern() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <23> Constant Int [3]
                     ├── Block
                     │   ├── VarDeclaration
                     │   │   ├── Name
@@ -994,13 +994,13 @@ fn test_valid_distinct_local_and_extern() {
                     │   │   ├── Condition
                     │   │   │   ╰── <35>  [!=]
                     │   │   │       ├── <32> Var [a]
-                    │   │   │       ╰── Constant Int [5]
+                    │   │   │       ╰── <34> Constant Int [5]
                     │   │   ╰── Then
                     │   │       ╰── Return
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <36> Constant Int [1]
                     │   ╰── <43> Assign [=]
                     │       ├── <40> Var [a]
-                    │       ╰── Constant Int [4]
+                    │       ╰── <42> Constant Int [4]
                     ╰── Return
                         ╰── <52>  [+]
                             ├── <48> Var [a]
@@ -1034,14 +1034,14 @@ fn test_valid_extern_block_scope_variable() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [1]
+            │       │       ╰── <8> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── foo
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [0]
+            │       │       ╰── <14> Constant Int [0]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <18> Var [outer]
@@ -1062,14 +1062,14 @@ fn test_valid_extern_block_scope_variable() {
             │       │           ╰── Return
             │       │               ╰── <30> Var [foo]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <35> Constant Int [0]
             ╰── VarDeclaration
                 ├── Name
                 │   ╰── foo
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant Int [3]
+                    ╰── <42> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -1100,36 +1100,36 @@ fn test_valid_extra_credit_bitwise_ops_file_scope_vars() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [1]
+            │       ╰── <4> Constant Int [1]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── y
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [0]
+            │       ╰── <10> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── <23> Assign [=]
                     │   ├── <18> Var [y]
                     │   ╰── <22> Unary [-]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <21> Constant Int [1]
                     ├── <37> Assign [=]
                     │   ├── <26> Var [x]
                     │   ╰── <36>  [|]
                     │       ├── <33>  [<<]
                     │       │   ├── <29> Var [x]
-                    │       │   ╰── Constant Int [1]
-                    │       ╰── Constant Int [1]
+                    │       │   ╰── <31> Constant Int [1]
+                    │       ╰── <35> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <43>  [!=]
                     │   │       ├── <40> Var [x]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <42> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <44> Constant Int [1]
                     ├── <67> Assign [=]
                     │   ├── <50> Var [y]
                     │   ╰── <66>  [>>]
@@ -1137,21 +1137,21 @@ fn test_valid_extra_credit_bitwise_ops_file_scope_vars() {
                     │       │   ├── <59>  [&]
                     │       │   │   ├── <53> Var [y]
                     │       │   │   ╰── <57> Unary [-]
-                    │       │   │       ╰── Constant Int [5]
-                    │       │   ╰── Constant Int [12]
-                    │       ╰── Constant Int [2]
+                    │       │   │       ╰── <56> Constant Int [5]
+                    │       │   ╰── <61> Constant Int [12]
+                    │       ╰── <65> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <75>  [!=]
                     │   │       ├── <70> Var [y]
                     │   │       ╰── <74> Unary [-]
-                    │   │           ╰── Constant Int [3]
+                    │   │           ╰── <73> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <76> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <81> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1198,7 +1198,7 @@ fn test_valid_extra_credit_compound_assignment_static_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [0]
+            │       │   │   ╰── <9> Constant Int [0]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -1206,7 +1206,7 @@ fn test_valid_extra_credit_compound_assignment_static_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [0]
+            │       │   │   ╰── <16> Constant Int [0]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -1214,7 +1214,7 @@ fn test_valid_extra_credit_compound_assignment_static_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [1]
+            │       │   │   ╰── <23> Constant Int [1]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -1222,11 +1222,11 @@ fn test_valid_extra_credit_compound_assignment_static_var() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [48]
+            │       │   │   ╰── <30> Constant Int [48]
             │       │   ╰── Static
             │       ├── <37> Assign [+=]
             │       │   ├── <34> Var [i]
-            │       │   ╰── Constant Int [1]
+            │       │   ╰── <36> Constant Int [1]
             │       ├── <44> Assign [-=]
             │       │   ├── <40> Var [j]
             │       │   ╰── <43> Var [i]
@@ -1235,47 +1235,47 @@ fn test_valid_extra_credit_compound_assignment_static_var() {
             │       │   ╰── <50> Var [j]
             │       ├── <57> Assign [/=]
             │       │   ├── <54> Var [l]
-            │       │   ╰── Constant Int [2]
+            │       │   ╰── <56> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <63>  [!=]
             │       │   │       ├── <60> Var [i]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       ╰── <62> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <64> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <75>  [!=]
             │       │   │       ├── <70> Var [j]
             │       │   │       ╰── <74> Unary [-]
-            │       │   │           ╰── Constant Int [6]
+            │       │   │           ╰── <73> Constant Int [6]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [2]
+            │       │               ╰── <76> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <87>  [!=]
             │       │   │       ├── <82> Var [k]
             │       │   │       ╰── <86> Unary [-]
-            │       │   │           ╰── Constant Int [18]
+            │       │   │           ╰── <85> Constant Int [18]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <88> Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <97>  [!=]
             │       │   │       ├── <94> Var [l]
-            │       │   │       ╰── Constant Int [6]
+            │       │   │       ╰── <96> Constant Int [6]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [4]
+            │       │               ╰── <98> Constant Int [4]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <103> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── <112> FunctionCall [f]
@@ -1307,7 +1307,7 @@ fn test_valid_extra_credit_goto_skip_static_initializer() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [10]
+                    │   │   ╰── <11> Constant Int [10]
                     │   ╰── Static
                     ╰── Label [end]
                         ╰── Return
@@ -1355,21 +1355,21 @@ fn test_valid_extra_credit_increment_global_vars() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [0]
+            │       ╰── <4> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── j
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [0]
+            │       ╰── <10> Constant Int [0]
             ├── Function [incr_i]
             │   ╰── Body
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <21>  [==]
             │       │   │       ├── <18> Var [i]
-            │       │   │       ╰── Constant Int [1]
+            │       │   │       ╰── <20> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ├── <25> Postfix [++]
@@ -1377,7 +1377,7 @@ fn test_valid_extra_credit_increment_global_vars() {
             │       │           ╰── <30> Unary [++]
             │       │               ╰── <29> Var [i]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <35> Constant Int [0]
             ├── Function [decr_j]
             │   ╰── Body
             │       ├── If
@@ -1385,50 +1385,50 @@ fn test_valid_extra_credit_increment_global_vars() {
             │       │   │   ╰── <49>  [==]
             │       │   │       ├── <44> Var [j]
             │       │   │       ╰── <48> Unary [-]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <47> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── <53> Postfix [--]
             │       │               ╰── <51> Var [j]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <58> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
-                    ├── <{node_id}> Conditional [?]
+                    ├── <73> Conditional [?]
                     │   ├── <69> Postfix [++]
                     │   │   ╰── <67> Var [i]
                     │   ├── Then
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <70> Constant Int [0]
                     │   ╰── Else
                     │       ╰── <72> FunctionCall [incr_i]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <79>  [!=]
                     │   │       ├── <76> Var [i]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <78> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
-                    ├── <{node_id}> Conditional [?]
+                    │               ╰── <80> Constant Int [1]
+                    ├── <92> Conditional [?]
                     │   ├── <88> Unary [--]
                     │   │   ╰── <87> Var [j]
                     │   ├── Then
                     │   │   ╰── <90> FunctionCall [decr_j]
                     │   ╰── Else
-                    │       ╰── Constant Int [0]
+                    │       ╰── <91> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <100>  [!=]
                     │   │       ├── <95> Var [j]
                     │   │       ╰── <99> Unary [-]
-                    │   │           ╰── Constant Int [2]
+                    │   │           ╰── <98> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <101> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <106> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1463,7 +1463,7 @@ fn test_valid_extra_credit_label_file_scope_var_same_name() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <12> Constant Int [10]
                     ├── Goto [x]
                     ├── Return
                     │   ╰── <18> Var [x]
@@ -1502,12 +1502,12 @@ fn test_valid_extra_credit_label_static_var_same_name() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [5]
+                    │   │   ╰── <9> Constant Int [5]
                     │   ╰── Static
                     ├── Goto [x]
                     ├── <18> Assign [=]
                     │   ├── <15> Var [x]
-                    │   ╰── Constant Int [0]
+                    │   ╰── <17> Constant Int [0]
                     ╰── Label [x]
                         ╰── Return
                             ╰── <22> Var [x]
@@ -1534,10 +1534,10 @@ fn test_valid_extra_credit_libraries_same_label_same_fun() {
             │   ╰── Body
             │       ├── Goto [x]
             │       ├── Return
-            │       │   ╰── Constant Int [0]
+            │       │   ╰── <8> Constant Int [0]
             │       ╰── Label [x]
             │           ╰── Return
-            │               ╰── Constant Int [2]
+            │               ╰── <11> Constant Int [2]
             ╰── Function [f_caller]
                 ╰── Body
                     ╰── Return
@@ -1573,10 +1573,10 @@ fn test_valid_extra_credit_libraries_same_label_same_fun_client() {
             │   ╰── Body
             │       ├── Goto [x]
             │       ├── Return
-            │       │   ╰── Constant Int [0]
+            │       │   ╰── <7> Constant Int [0]
             │       ╰── Label [x]
             │           ╰── Return
-            │               ╰── Constant Int [1]
+            │               ╰── <10> Constant Int [1]
             ├── Function [f_caller]
             ╰── Function [main]
                 ╰── Body
@@ -1584,22 +1584,22 @@ fn test_valid_extra_credit_libraries_same_label_same_fun_client() {
                     │   ├── Condition
                     │   │   ╰── <28>  [!=]
                     │   │       ├── <25> FunctionCall [f]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <27> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <29> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <38>  [!=]
                     │   │       ├── <35> FunctionCall [f_caller]
-                    │   │       ╰── Constant Int [2]
+                    │   │       ╰── <37> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <39> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <44> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1642,16 +1642,16 @@ fn test_valid_extra_credit_switch_on_extern() {
             │           ╰── Block
             │               ├── Case [0]
             │               │   ╰── Return
-            │               │       ╰── Constant Int [1]
+            │               │       ╰── <21> Constant Int [1]
             │               ├── Case [1]
             │               │   ╰── Return
-            │               │       ╰── Constant Int [2]
+            │               │       ╰── <25> Constant Int [2]
             │               ├── Case [4]
             │               │   ╰── Return
-            │               │       ╰── Constant Int [0]
+            │               │       ╰── <29> Constant Int [0]
             │               ╰── Default
             │                   ╰── Return
-            │                       ╰── Constant Int [4]
+            │                       ╰── <32> Constant Int [4]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── x
@@ -1661,9 +1661,9 @@ fn test_valid_extra_credit_switch_on_extern() {
                 ╰── Body
                     ├── <52> Assign [=]
                     │   ├── <49> Var [x]
-                    │   ╰── Constant Int [4]
+                    │   ╰── <51> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <54> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1697,14 +1697,14 @@ fn test_valid_extra_credit_switch_skip_extern_decl() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [10]
+            │       │       ╰── <8> Constant Int [10]
             │       ├── Switch
             │       │   ├── Expression
             │       │   │   ╰── <12> Var [a]
             │       │   ╰── Block
             │       │       ├── Case [1]
             │       │       │   ╰── Return
-            │       │       │       ╰── Constant Int [1]
+            │       │       │       ╰── <14> Constant Int [1]
             │       │       ├── VarDeclaration
             │       │       │   ├── Name
             │       │       │   │   ╰── x
@@ -1713,31 +1713,31 @@ fn test_valid_extra_credit_switch_skip_extern_decl() {
             │       │       │   ╰── Extern
             │       │       ├── Case [2]
             │       │       │   ╰── Return
-            │       │       │       ╰── Constant Int [2]
+            │       │       │       ╰── <23> Constant Int [2]
             │       │       ├── Case [10]
             │       │       │   ╰── If
             │       │       │       ├── Condition
             │       │       │       │   ╰── <34>  [==]
             │       │       │       │       ├── <31>  [*]
             │       │       │       │       │   ├── <28> Var [x]
-            │       │       │       │       │   ╰── Constant Int [2]
-            │       │       │       │       ╰── Constant Int [30]
+            │       │       │       │       │   ╰── <30> Constant Int [2]
+            │       │       │       │       ╰── <33> Constant Int [30]
             │       │       │       ╰── Then
             │       │       │           ╰── Block
             │       │       │               ╰── Return
-            │       │       │                   ╰── Constant Int [0]
+            │       │       │                   ╰── <35> Constant Int [0]
             │       │       ╰── Default
             │       │           ╰── Return
-            │       │               ╰── Constant Int [5]
+            │       │               ╰── <41> Constant Int [5]
             │       ╰── Return
-            │           ╰── Constant Int [6]
+            │           ╰── <47> Constant Int [6]
             ╰── VarDeclaration
                 ├── Name
                 │   ╰── x
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant Int [15]
+                    ╰── <54> Constant Int [15]
     "#;
     assert_parse(src, expected);
 }
@@ -1765,7 +1765,7 @@ fn test_valid_extra_credit_switch_skip_static_initializer() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [3]
+            │       ╰── <4> Constant Int [3]
             ╰── Function [main]
                 ╰── Body
                     ├── Switch
@@ -1780,16 +1780,16 @@ fn test_valid_extra_credit_switch_skip_static_initializer() {
                     │       │   ├── Type
                     │       │   │   ╰── Int
                     │       │   ├── Initializer
-                    │       │   │   ╰── Constant Int [10]
+                    │       │   │   ╰── <20> Constant Int [10]
                     │       │   ╰── Static
                     │       ├── <27> Assign [=]
                     │       │   ├── <24> Var [x]
-                    │       │   ╰── Constant Int [0]
+                    │       │   ╰── <26> Constant Int [0]
                     │       ╰── Case [3]
                     │           ╰── Return
                     │               ╰── <31> Var [x]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <37> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1906,8 +1906,8 @@ fn test_valid_libraries_external_linkage_function_client() {
             │       │               ╰── Int
             │       ╰── Return
             │           ╰── <31> FunctionCall [sum]
-            │               ├── Constant Int [1]
-            │               ╰── Constant Int [2]
+            │               ├── <29> Constant Int [1]
+            │               ╰── <30> Constant Int [2]
             ├── Function [extern sum]
             │   ╰── Parameters
             │       ├── Param
@@ -1940,12 +1940,12 @@ fn test_valid_libraries_external_linkage_function_client() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [3]
+            │       │       ╰── <65> Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <72>  [>]
             │       │   │       ├── <69> Var [sum]
-            │       │   │       ╰── Constant Int [2]
+            │       │   │       ╰── <71> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ├── Function [extern sum]
@@ -1962,30 +1962,30 @@ fn test_valid_libraries_external_linkage_function_client() {
             │       │           │               ╰── Int
             │       │           ╰── Return
             │       │               ╰── <88> FunctionCall [sum]
-            │       │                   ├── Constant Int [3]
-            │       │                   ╰── Constant Int [4]
+            │       │                   ├── <86> Constant Int [3]
+            │       │                   ╰── <87> Constant Int [4]
             │       ╰── Return
-            │           ╰── Constant Int [1]
+            │           ╰── <93> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <105>  [!=]
                     │   │       ├── <102> FunctionCall [add_three_and_four]
-                    │   │       ╰── Constant Int [7]
+                    │   │       ╰── <104> Constant Int [7]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <106> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <113>  [!=]
                     │   │       ├── <110> FunctionCall [add_one_and_two]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <112> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <114> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <117> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2043,23 +2043,23 @@ fn test_valid_libraries_external_tentative_var_client() {
                     │   ├── Condition
                     │   │   ╰── <19>  [!=]
                     │   │       ├── <16> Var [x]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <18> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <20> Constant Int [1]
                     ├── <27> Assign [=]
                     │   ├── <24> Var [x]
-                    │   ╰── Constant Int [3]
+                    │   ╰── <26> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <33>  [!=]
                     │   │       ├── <30> FunctionCall [read_x]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <32> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <34> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <37> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2087,12 +2087,12 @@ fn test_valid_libraries_external_var_scoping() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [4]
+                    │       ╰── <8> Constant Int [4]
                     ╰── If
                         ├── Condition
                         │   ╰── <15>  [==]
                         │       ├── <12> Var [x]
-                        │       ╰── Constant Int [4]
+                        │       ╰── <14> Constant Int [4]
                         ├── Then
                         │   ╰── Block
                         │       ├── VarDeclaration
@@ -2107,7 +2107,7 @@ fn test_valid_libraries_external_var_scoping() {
                             ╰── Block
                                 ╰── Return
                                     ╰── <28> Unary [-]
-                                        ╰── Constant Int [1]
+                                        ╰── <27> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -2138,7 +2138,7 @@ fn test_valid_libraries_external_var_scoping_client() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [10]
+            │       ╰── <4> Constant Int [10]
             ├── Function [read_x]
             ╰── Function [main]
                 ╰── Body
@@ -2148,22 +2148,22 @@ fn test_valid_libraries_external_var_scoping_client() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <19> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <26>  [==]
                     │   │       ├── <23> Var [x]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <25> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── If
                     │           │   ├── Condition
                     │           │   │   ╰── <31>  [!=]
                     │           │   │       ├── <28> FunctionCall [read_x]
-                    │           │   │       ╰── Constant Int [10]
+                    │           │   │       ╰── <30> Constant Int [10]
                     │           │   ╰── Then
                     │           │       ╰── Return
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <32> Constant Int [1]
                     │           ├── VarDeclaration
                     │           │   ├── Name
                     │           │   │   ╰── x
@@ -2174,14 +2174,14 @@ fn test_valid_libraries_external_var_scoping_client() {
                     │           │   ├── Condition
                     │           │   │   ╰── <44>  [!=]
                     │           │   │       ├── <41> Var [x]
-                    │           │   │       ╰── Constant Int [10]
+                    │           │   │       ╰── <43> Constant Int [10]
                     │           │   ╰── Then
                     │           │       ╰── Return
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <45> Constant Int [1]
                     │           ╰── Return
-                    │               ╰── Constant Int [0]
+                    │               ╰── <48> Constant Int [0]
                     ╰── Return
-                        ╰── Constant Int [1]
+                        ╰── <53> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -2231,7 +2231,7 @@ fn test_valid_libraries_external_variable() {
             │       │   ├── <22> Var [x]
             │       │   ╰── <25> Var [new_val]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <28> Constant Int [0]
             ├── Function [read_x]
             │   ╰── Body
             │       ╰── Return
@@ -2242,7 +2242,7 @@ fn test_valid_libraries_external_variable() {
                 ├── Type
                 │   ╰── Int
                 ╰── Initializer
-                    ╰── Constant Int [3]
+                    ╰── <44> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -2293,57 +2293,57 @@ fn test_valid_libraries_external_variable_client() {
                     │   ├── Condition
                     │   │   ╰── <27>  [!=]
                     │   │       ├── <24> Var [x]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <26> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <28> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <35>  [!=]
                     │   │       ├── <32> FunctionCall [read_x]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <34> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <36> Constant Int [1]
                     ├── <43> Assign [=]
                     │   ├── <40> Var [x]
-                    │   ╰── Constant Int [4]
+                    │   ╰── <42> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <49>  [!=]
                     │   │       ├── <46> Var [x]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <48> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <50> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <57>  [!=]
                     │   │       ├── <54> FunctionCall [read_x]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <56> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <58> Constant Int [1]
                     ├── <63> FunctionCall [update_x]
-                    │   ╰── Constant Int [5]
+                    │   ╰── <62> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <69>  [!=]
                     │   │       ├── <66> Var [x]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <68> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <70> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <77>  [!=]
                     │   │       ├── <74> FunctionCall [read_x]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <76> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <78> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <81> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2364,7 +2364,7 @@ fn test_valid_libraries_internal_hides_external_linkage() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [10]
+            │       ╰── <4> Constant Int [10]
             ╰── Function [read_x]
                 ╰── Body
                     ╰── Return
@@ -2403,7 +2403,7 @@ fn test_valid_libraries_internal_hides_external_linkage_client() {
             │   ├── Type
             │   │   ╰── Int
             │   ├── Initializer
-            │   │   ╰── Constant Int [1]
+            │   │   ╰── <5> Constant Int [1]
             │   ╰── Static
             ├── Function [read_internal_x]
             ├── Function [read_x]
@@ -2419,31 +2419,31 @@ fn test_valid_libraries_internal_hides_external_linkage_client() {
             │       │   ├── Condition
             │       │   │   ╰── <31>  [!=]
             │       │   │       ├── <28> Var [x]
-            │       │   │       ╰── Constant Int [1]
+            │       │   │       ╰── <30> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <32> Constant Int [1]
             │       ├── <39> Assign [=]
             │       │   ├── <36> Var [x]
-            │       │   ╰── Constant Int [2]
+            │       │   ╰── <38> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <45>  [!=]
             │       │   │       ├── <42> FunctionCall [read_internal_x]
-            │       │   │       ╰── Constant Int [2]
+            │       │   │       ╰── <44> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <46> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <53>  [!=]
             │       │   │       ├── <50> FunctionCall [read_x]
-            │       │   │       ╰── Constant Int [10]
+            │       │   │       ╰── <52> Constant Int [10]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <54> Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <57> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── x
@@ -2500,13 +2500,13 @@ fn test_valid_libraries_internal_linkage_function() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <50> Constant Int [0]
                     │   ╰── Static
                     ├── <61> Assign [=]
                     │   ├── <54> Var [i]
                     │   ╰── <60>  [+]
                     │       ├── <57> Var [i]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <59> Constant Int [1]
                     ╰── Return
                         ╰── <64> Var [i]
     "#;
@@ -2543,32 +2543,32 @@ fn test_valid_libraries_internal_linkage_function_client() {
             │       │   ├── Condition
             │       │   │   ╰── <25>  [!=]
             │       │   │       ├── <22> FunctionCall [call_static_my_fun]
-            │       │   │       ╰── Constant Int [1]
+            │       │   │       ╰── <24> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <26> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <33>  [!=]
             │       │   │       ├── <30> FunctionCall [my_fun]
-            │       │   │       ╰── Constant Int [100]
+            │       │   │       ╰── <32> Constant Int [100]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <34> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <41>  [!=]
             │       │   │       ├── <38> FunctionCall [call_static_my_fun_2]
-            │       │   │       ╰── Constant Int [2]
+            │       │   │       ╰── <40> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <42> Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <45> Constant Int [0]
             ╰── Function [my_fun]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [100]
+                        ╰── <53> Constant Int [100]
     "#;
     assert_parse(src, expected);
 }
@@ -2619,7 +2619,7 @@ fn test_valid_libraries_internal_linkage_var() {
             │       │   ├── <28> Var [x]
             │       │   ╰── <31> Var [new_val]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <34> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── x
@@ -2632,7 +2632,7 @@ fn test_valid_libraries_internal_linkage_var() {
             │   ├── Type
             │   │   ╰── Int
             │   ├── Initializer
-            │   │   ╰── Constant Int [5]
+            │   │   ╰── <47> Constant Int [5]
             │   ╰── Static
             ╰── VarDeclaration
                 ├── Name
@@ -2699,18 +2699,18 @@ fn test_valid_libraries_internal_linkage_var_client() {
             │       │   ├── Condition
             │       │   │   ╰── <32>  [!=]
             │       │   │       ├── <29> Var [x]
-            │       │   │       ╰── Constant Int [0]
+            │       │   │       ╰── <31> Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <33> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <40>  [!=]
             │       │   │       ├── <37> FunctionCall [read_x]
-            │       │   │       ╰── Constant Int [5]
+            │       │   │       ╰── <39> Constant Int [5]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <41> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── x
@@ -2718,44 +2718,44 @@ fn test_valid_libraries_internal_linkage_var_client() {
             │       │   │   ╰── Int
             │       │   ╰── Extern
             │       ├── <51> FunctionCall [update_x]
-            │       │   ╰── Constant Int [10]
+            │       │   ╰── <50> Constant Int [10]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <57>  [!=]
             │       │   │       ├── <54> FunctionCall [read_x]
-            │       │   │       ╰── Constant Int [10]
+            │       │   │       ╰── <56> Constant Int [10]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <58> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <65>  [!=]
             │       │   │       ├── <62> Var [x]
-            │       │   │       ╰── Constant Int [0]
+            │       │   │       ╰── <64> Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <66> Constant Int [1]
             │       ├── <73> Assign [=]
             │       │   ├── <70> Var [x]
-            │       │   ╰── Constant Int [20]
+            │       │   ╰── <72> Constant Int [20]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <79>  [!=]
             │       │   │       ├── <76> Var [x]
-            │       │   │       ╰── Constant Int [20]
+            │       │   │       ╰── <78> Constant Int [20]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <80> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <87>  [!=]
             │       │   │       ├── <84> FunctionCall [read_x]
-            │       │   │       ╰── Constant Int [10]
+            │       │   │       ╰── <86> Constant Int [10]
             │       │   ╰── Then
             │       │       ╰── Return
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <88> Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <91> Constant Int [0]
             ╰── VarDeclaration
                 ├── Name
                 │   ╰── x
@@ -2800,7 +2800,7 @@ fn test_valid_multiple_static_file_scope_vars() {
                 ├── Type
                 │   ╰── Int
                 ├── Initializer
-                │   ╰── Constant Int [4]
+                │   ╰── <24> Constant Int [4]
                 ╰── Static
     "#;
     assert_parse(src, expected);
@@ -2833,13 +2833,13 @@ fn test_valid_multiple_static_local() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [3]
+            │       │   │   ╰── <9> Constant Int [3]
             │       │   ╰── Static
             │       ├── <20> Assign [=]
             │       │   ├── <13> Var [a]
             │       │   ╰── <19>  [*]
             │       │       ├── <16> Var [a]
-            │       │       ╰── Constant Int [2]
+            │       │       ╰── <18> Constant Int [2]
             │       ╰── Return
             │           ╰── <23> Var [a]
             ├── Function [bar]
@@ -2850,13 +2850,13 @@ fn test_valid_multiple_static_local() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [4]
+            │       │   │   ╰── <35> Constant Int [4]
             │       │   ╰── Static
             │       ├── <46> Assign [=]
             │       │   ├── <39> Var [a]
             │       │   ╰── <45>  [+]
             │       │       ├── <42> Var [a]
-            │       │       ╰── Constant Int [1]
+            │       │       ╰── <44> Constant Int [1]
             │       ╰── Return
             │           ╰── <49> Var [a]
             ╰── Function [main]
@@ -2933,17 +2933,17 @@ fn test_valid_push_arg_on_page_boundary() {
             │       ╰── Return
             │           ╰── <35>  [+]
             │               ├── <32> Var [g]
-            │               ╰── Constant Int [1]
+            │               ╰── <34> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── <52> FunctionCall [foo]
-                            ├── Constant Int [0]
-                            ├── Constant Int [0]
-                            ├── Constant Int [0]
-                            ├── Constant Int [0]
-                            ├── Constant Int [0]
-                            ├── Constant Int [0]
+                            ├── <44> Constant Int [0]
+                            ├── <45> Constant Int [0]
+                            ├── <46> Constant Int [0]
+                            ├── <47> Constant Int [0]
+                            ├── <48> Constant Int [0]
+                            ├── <49> Constant Int [0]
                             ╰── <51> Var [zed]
     "#;
     assert_parse(src, expected);
@@ -3039,10 +3039,10 @@ fn test_valid_shadow_static_local_var() {
                     │   ├── Condition
                     │   │   ╰── <57>  [!=]
                     │   │       ├── <54> Var [i]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <56> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <58> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── result
@@ -3050,68 +3050,68 @@ fn test_valid_shadow_static_local_var() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <67> FunctionCall [update_static_or_global]
-                    │           ├── Constant Int [1]
-                    │           ╰── Constant Int [10]
+                    │           ├── <65> Constant Int [1]
+                    │           ╰── <66> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <74>  [!=]
                     │   │       ├── <71> Var [result]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ╰── <73> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <75> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <82>  [!=]
                     │   │       ├── <79> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <81> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <83> Constant Int [1]
                     ├── <93> Assign [=]
                     │   ├── <87> Var [result]
                     │   ╰── <92> FunctionCall [update_static_or_global]
-                    │       ├── Constant Int [0]
-                    │       ╰── Constant Int [9]
+                    │       ├── <90> Constant Int [0]
+                    │       ╰── <91> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <99>  [!=]
                     │   │       ├── <96> Var [result]
-                    │   │       ╰── Constant Int [9]
+                    │   │       ╰── <98> Constant Int [9]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <100> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <107>  [!=]
                     │   │       ├── <104> Var [i]
-                    │   │       ╰── Constant Int [10]
+                    │   │       ╰── <106> Constant Int [10]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <108> Constant Int [1]
                     ├── <118> Assign [=]
                     │   ├── <112> Var [result]
                     │   ╰── <117> FunctionCall [update_static_or_global]
-                    │       ├── Constant Int [1]
-                    │       ╰── Constant Int [11]
+                    │       ├── <115> Constant Int [1]
+                    │       ╰── <116> Constant Int [11]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <124>  [!=]
                     │   │       ├── <121> Var [result]
-                    │   │       ╰── Constant Int [9]
+                    │   │       ╰── <123> Constant Int [9]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <125> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <132>  [!=]
                     │   │       ├── <129> Var [i]
-                    │   │       ╰── Constant Int [11]
+                    │   │       ╰── <131> Constant Int [11]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <133> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <136> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3154,7 +3154,7 @@ fn test_valid_static_local_multiple_scopes() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [65]
+            │       │   │   ╰── <17> Constant Int [65]
             │       │   ╰── Static
             │       ├── <23> FunctionCall [putchar]
             │       │   ╰── <22> Var [i]
@@ -3163,14 +3163,14 @@ fn test_valid_static_local_multiple_scopes() {
             │       │   │   ├── <26> Var [i]
             │       │   │   ╰── <32>  [+]
             │       │   │       ├── <29> Var [i]
-            │       │   │       ╰── Constant Int [1]
+            │       │   │       ╰── <31> Constant Int [1]
             │       │   ├── VarDeclaration
             │       │   │   ├── Name
             │       │   │   │   ╰── i
             │       │   │   ├── Type
             │       │   │   │   ╰── Int
             │       │   │   ├── Initializer
-            │       │   │   │   ╰── Constant Int [97]
+            │       │   │   │   ╰── <39> Constant Int [97]
             │       │   │   ╰── Static
             │       │   ├── <45> FunctionCall [putchar]
             │       │   │   ╰── <44> Var [i]
@@ -3178,11 +3178,11 @@ fn test_valid_static_local_multiple_scopes() {
             │       │       ├── <48> Var [i]
             │       │       ╰── <54>  [+]
             │       │           ├── <51> Var [i]
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <53> Constant Int [1]
             │       ├── <61> FunctionCall [putchar]
-            │       │   ╰── Constant Int [10]
+            │       │   ╰── <60> Constant Int [10]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <63> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ╰── For
@@ -3193,17 +3193,17 @@ fn test_valid_static_local_multiple_scopes() {
                         │       ├── Type
                         │       │   ╰── Int
                         │       ╰── Initializer
-                        │           ╰── Constant Int [0]
+                        │           ╰── <74> Constant Int [0]
                         ├── Condition
                         │   ╰── <82>  [<]
                         │       ├── <79> Var [i]
-                        │       ╰── Constant Int [26]
+                        │       ╰── <81> Constant Int [26]
                         ├── Condition
                         │   ╰── <91> Assign [=]
                         │       ├── <84> Var [i]
                         │       ╰── <90>  [+]
                         │           ├── <87> Var [i]
-                        │           ╰── Constant Int [1]
+                        │           ╰── <89> Constant Int [1]
                         ╰── <93> FunctionCall [print_letters]
     "#;
     assert_parse(src, expected);
@@ -3238,7 +3238,7 @@ fn test_valid_static_local_uninitialized() {
             │       │   ├── <11> Var [x]
             │       │   ╰── <17>  [+]
             │       │       ├── <14> Var [x]
-            │       │       ╰── Constant Int [1]
+            │       │       ╰── <16> Constant Int [1]
             │       ╰── Return
             │           ╰── <21> Var [x]
             ╰── Function [main]
@@ -3256,17 +3256,17 @@ fn test_valid_static_local_uninitialized() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <36> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <44>  [<]
                     │   │       ├── <41> Var [i]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <43> Constant Int [4]
                     │   ├── Condition
                     │   │   ╰── <53> Assign [=]
                     │   │       ├── <46> Var [i]
                     │   │       ╰── <52>  [+]
                     │   │           ├── <49> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <51> Constant Int [1]
                     │   ╰── <59> Assign [=]
                     │       ├── <55> Var [ret]
                     │       ╰── <58> FunctionCall [foo]
@@ -3310,22 +3310,22 @@ fn test_valid_static_recursive_call() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [0]
+            │       │   │   ╰── <17> Constant Int [0]
             │       │   ╰── Static
             │       ├── <26> FunctionCall [putchar]
             │       │   ╰── <25>  [+]
             │       │       ├── <22> Var [count]
-            │       │       ╰── Constant Int [65]
+            │       │       ╰── <24> Constant Int [65]
             │       ├── <36> Assign [=]
             │       │   ├── <29> Var [count]
             │       │   ╰── <35>  [+]
             │       │       ├── <32> Var [count]
-            │       │       ╰── Constant Int [1]
+            │       │       ╰── <34> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <42>  [<]
             │       │   │       ├── <39> Var [count]
-            │       │   │       ╰── Constant Int [26]
+            │       │   │       ╰── <41> Constant Int [26]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── <44> FunctionCall [print_alphabet]
@@ -3355,7 +3355,7 @@ fn test_valid_static_then_extern() {
             │   ├── Type
             │   │   ╰── Int
             │   ├── Initializer
-            │   │   ╰── Constant Int [3]
+            │   │   ╰── <5> Constant Int [3]
             │   ╰── Static
             ├── Function [main]
             │   ╰── Body
@@ -3393,7 +3393,7 @@ fn test_valid_static_variables_in_expressions() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [2]
+                    │   │   ╰── <9> Constant Int [2]
                     │   ╰── Static
                     ├── VarDeclaration
                     │   ├── Name
@@ -3401,7 +3401,7 @@ fn test_valid_static_variables_in_expressions() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [3]
+                    │   │   ╰── <16> Constant Int [3]
                     │   ╰── Static
                     ├── VarDeclaration
                     │   ├── Name
@@ -3418,9 +3418,9 @@ fn test_valid_static_variables_in_expressions() {
                     │   │       ╰── <32> Var [cmp]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [1]
+                    │           ╰── <34> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <37> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3466,22 +3466,22 @@ fn test_valid_tentative_definition() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <21> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <29>  [<]
             │       │   │       ├── <26> Var [i]
-            │       │   │       ╰── Constant Int [5]
+            │       │   │       ╰── <28> Constant Int [5]
             │       │   ├── Condition
             │       │   │   ╰── <38> Assign [=]
             │       │   │       ├── <31> Var [i]
             │       │   │       ╰── <37>  [+]
             │       │   │           ├── <34> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <36> Constant Int [1]
             │       │   ╰── <47> Assign [=]
             │       │       ├── <40> Var [foo]
             │       │       ╰── <46>  [+]
             │       │           ├── <43> Var [foo]
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <45> Constant Int [1]
             │       ╰── Return
             │           ╰── <51> Var [foo]
             ╰── VarDeclaration
@@ -3511,14 +3511,14 @@ fn test_valid_type_before_storage_class() {
             ├── Function [static foo]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [3]
+            │           ╰── <6> Constant Int [3]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── bar
             │   ├── Type
             │   │   ╰── Int
             │   ├── Initializer
-            │   │   ╰── Constant Int [4]
+            │   │   ╰── <14> Constant Int [4]
             │   ╰── Static
             ╰── Function [main]
                 ╰── Body

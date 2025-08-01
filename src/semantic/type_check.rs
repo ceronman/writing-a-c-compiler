@@ -573,10 +573,8 @@ impl TypeChecker {
                     Type::UInt => Constant::UInt(case_constant as u32),
                     Type::Long => Constant::Long(case_constant as i64),
                     Type::ULong => Constant::ULong(case_constant),
-                    Type::Double | Type::Function(_) => unreachable!(),
                     Type::Pointer(_) => Constant::ULong(case_constant),
-                    Type::Array(_, _) => unreachable!(),
-                    Type::Void => todo!(),
+                    _ => unreachable!(),
                 };
 
                 if switch_cases.values.iter().any(|(v, _)| *v == case_value) {

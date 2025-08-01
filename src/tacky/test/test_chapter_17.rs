@@ -138,13 +138,13 @@ fn test_valid_extra_credit_sizeof_compound() {
         
           end_if_0:
             tmp.6 = sign_extend 4
-            tmp.5 = 8UL != tmp.6
+            tmp.5 = 4UL != tmp.6
             if !tmp.5 jump end_if_2
             return 2
         
           end_if_2:
             tmp.8 = sign_extend 1
-            tmp.7 = 4UL != tmp.8
+            tmp.7 = 1UL != tmp.8
             if !tmp.7 jump end_if_4
             return 3
         
@@ -253,7 +253,7 @@ fn test_valid_extra_credit_sizeof_compound_bitwise() {
             tmp.1 = sign_extend tmp.0
             l.2 = tmp.1
             tmp.3 = sign_extend 1
-            tmp.2 = 8UL != tmp.3
+            tmp.2 = 1UL != tmp.3
             if !tmp.2 jump end_if_0
             return 1
         
@@ -265,7 +265,7 @@ fn test_valid_extra_credit_sizeof_compound_bitwise() {
         
           end_if_2:
             tmp.7 = sign_extend 4
-            tmp.6 = 8UL != tmp.7
+            tmp.6 = 4UL != tmp.7
             if !tmp.6 jump end_if_4
             return 3
         
@@ -1343,13 +1343,13 @@ fn test_valid_void_ternary() {
             incr_j()
         
           end_if_2:
-            tmp.4 = i != 5
-            if !tmp.4 jump end_if_4
+            tmp.2 = i != 5
+            if !tmp.2 jump end_if_4
             return 1
         
           end_if_4:
-            tmp.5 = j != 6
-            if !tmp.5 jump end_if_6
+            tmp.3 = j != 6
+            if !tmp.3 jump end_if_6
             return 2
         
           end_if_6:
@@ -1368,13 +1368,13 @@ fn test_valid_void_ternary() {
           end_if_10:
         
           end_if_8:
-            tmp.8 = i != 6
-            if !tmp.8 jump end_if_12
+            tmp.4 = i != 6
+            if !tmp.4 jump end_if_12
             return 3
         
           end_if_12:
-            tmp.9 = j != 6
-            if !tmp.9 jump end_if_14
+            tmp.5 = j != 6
+            if !tmp.5 jump end_if_14
             return 4
         
           end_if_14:
@@ -1574,54 +1574,56 @@ fn test_valid_void_pointer_array_of_pointers_to_void() {
             arr.4[8] = tmp.3
             tmp.4 = sign_extend 0
             arr.4[16] = tmp.4
-            tmp.5 = arr.4
-            arr.4[24] = tmp.5
-            tmp.6 = &arr.4
-            tmp.7 = sign_extend 0
-            tmp.8 = add_ptr(tmp.6, index=tmp.7, scale=8)
-            tmp.9 = *tmp.8
-            tmp.10 = tmp.9
-            l.5 = tmp.10
-            tmp.11 = *l.5
-            if !tmp.11 jump end_if_0
+            tmp.5 = &arr.4
+            tmp.6 = tmp.5
+            arr.4[24] = tmp.6
+            tmp.7 = &arr.4
+            tmp.8 = sign_extend 0
+            tmp.9 = add_ptr(tmp.7, index=tmp.8, scale=8)
+            tmp.10 = *tmp.9
+            tmp.11 = tmp.10
+            l.5 = tmp.11
+            tmp.12 = *l.5
+            if !tmp.12 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.12 = &arr.4
-            tmp.13 = sign_extend 1
-            tmp.14 = add_ptr(tmp.12, index=tmp.13, scale=8)
-            tmp.15 = *tmp.14
-            tmp.16 = tmp.15
-            tmp.17 = *tmp.16
-            elem_1_val.6 = tmp.17
-            tmp.18 = elem_1_val.6 != 10
-            if !tmp.18 jump end_if_2
+            tmp.13 = &arr.4
+            tmp.14 = sign_extend 1
+            tmp.15 = add_ptr(tmp.13, index=tmp.14, scale=8)
+            tmp.16 = *tmp.15
+            tmp.17 = tmp.16
+            tmp.18 = *tmp.17
+            elem_1_val.6 = tmp.18
+            tmp.19 = elem_1_val.6 != 10
+            if !tmp.19 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.19 = &arr.4
-            tmp.20 = sign_extend 2
-            tmp.21 = add_ptr(tmp.19, index=tmp.20, scale=8)
-            tmp.22 = *tmp.21
-            if !tmp.22 jump end_if_4
+            tmp.20 = &arr.4
+            tmp.21 = sign_extend 2
+            tmp.22 = add_ptr(tmp.20, index=tmp.21, scale=8)
+            tmp.23 = *tmp.22
+            if !tmp.23 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.23 = &arr.4
-            tmp.24 = sign_extend 3
-            tmp.25 = add_ptr(tmp.23, index=tmp.24, scale=8)
-            tmp.26 = *tmp.25
-            tmp.28 = arr.4
-            tmp.27 = tmp.26 != tmp.28
-            if !tmp.27 jump end_if_6
+            tmp.24 = &arr.4
+            tmp.25 = sign_extend 3
+            tmp.26 = add_ptr(tmp.24, index=tmp.25, scale=8)
+            tmp.27 = *tmp.26
+            tmp.29 = &arr.4
+            tmp.30 = tmp.29
+            tmp.28 = tmp.27 != tmp.30
+            if !tmp.28 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.29 = &arr.4
-            tmp.30 = sign_extend 0
-            tmp.31 = add_ptr(tmp.29, index=tmp.30, scale=8)
-            tmp.32 = *tmp.31
-            free(tmp.32)
+            tmp.31 = &arr.4
+            tmp.32 = sign_extend 0
+            tmp.33 = add_ptr(tmp.31, index=tmp.32, scale=8)
+            tmp.34 = *tmp.33
+            free(tmp.34)
             return 0
             return 0
         }
@@ -1670,36 +1672,39 @@ fn test_valid_void_pointer_common_pointer_type() {
             return 1
         
           end_if_0:
-            tmp.8 = array.4
-            tmp.7 = void_ptr.3 == tmp.8
+            tmp.8 = &array.4
+            tmp.9 = tmp.8
+            tmp.7 = void_ptr.3 == tmp.9
             if !tmp.7 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.10 = array.4
-            tmp.9 = void_ptr.3 != tmp.10
-            tmp.11 = ! tmp.9
-            if !tmp.11 jump end_if_4
+            tmp.11 = &array.4
+            tmp.12 = tmp.11
+            tmp.10 = void_ptr.3 != tmp.12
+            tmp.13 = ! tmp.10
+            if !tmp.13 jump end_if_4
             return 3
         
           end_if_4:
             if !null_ptr.5 jump else_7
-            tmp.12 = void_ptr.3
+            tmp.14 = void_ptr.3
             jump end_if_6
         
           else_7:
-            tmp.13 = array.4
-            tmp.12 = tmp.13
+            tmp.15 = &array.4
+            tmp.16 = tmp.15
+            tmp.14 = tmp.16
         
           end_if_6:
-            tmp.14 = tmp.12
-            my_array.6 = tmp.14
-            tmp.15 = sign_extend 1
-            tmp.16 = add_ptr(my_array.6, index=tmp.15, scale=4)
-            tmp.17 = *tmp.16
-            array_element.7 = tmp.17
-            tmp.18 = array_element.7 != 2
-            if !tmp.18 jump end_if_8
+            tmp.17 = tmp.14
+            my_array.6 = tmp.17
+            tmp.18 = sign_extend 1
+            tmp.19 = add_ptr(my_array.6, index=tmp.18, scale=4)
+            tmp.20 = *tmp.19
+            array_element.7 = tmp.20
+            tmp.21 = array_element.7 != 2
+            if !tmp.21 jump end_if_8
             return 4
         
           end_if_8:
@@ -2050,20 +2055,24 @@ fn test_valid_void_pointer_conversion_by_assignment() {
             arr3.27[8] = tmp.120
             tmp.121 = sign_extend 4
             arr3.27[16] = tmp.121
-            tmp.122 = arr1.25
-            tmp.123 = arr2.26
-            tmp.124 = memcmp(tmp.122, tmp.123, 24UL)
-            tmp.125 = tmp.124 != 0
-            if !tmp.125 jump end_if_22
+            tmp.122 = &arr1.25
+            tmp.123 = tmp.122
+            tmp.124 = &arr2.26
+            tmp.125 = tmp.124
+            tmp.126 = memcmp(tmp.123, tmp.125, 24UL)
+            tmp.127 = tmp.126 != 0
+            if !tmp.127 jump end_if_22
             return 10
         
           end_if_22:
-            tmp.126 = arr1.25
-            tmp.127 = arr3.27
-            tmp.128 = memcmp(tmp.126, tmp.127, 24UL)
-            tmp.130 = - 1
-            tmp.129 = tmp.128 != tmp.130
-            if !tmp.129 jump end_if_24
+            tmp.128 = &arr1.25
+            tmp.129 = tmp.128
+            tmp.130 = &arr3.27
+            tmp.131 = tmp.130
+            tmp.132 = memcmp(tmp.129, tmp.131, 24UL)
+            tmp.134 = - 1
+            tmp.133 = tmp.132 != tmp.134
+            if !tmp.133 jump end_if_24
             return 11
         
           end_if_24:

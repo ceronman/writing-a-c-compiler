@@ -247,7 +247,7 @@ fn test_invalid_types_add_two_pointers() {
                     │   │   ╰── Pointer
                     │   │       ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
@@ -255,13 +255,13 @@ fn test_invalid_types_add_two_pointers() {
                     │   │   ╰── Pointer
                     │   │       ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <16> Constant Int [0]
                     ╰── Return
                         ╰── <28>  [==]
                             ├── <24>  [+]
                             │   ├── <20> Var [x]
                             │   ╰── <23> Var [y]
-                            ╰── Constant Int [0]
+                            ╰── <26> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -287,10 +287,10 @@ fn test_invalid_types_assign_incompatible_pointer_types() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ├── Constant Int [3]
-                    │           ╰── Constant Int [4]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ├── <14> Constant Int [3]
+                    │           ╰── <16> Constant Int [4]
                     ╰── VarDeclaration
                         ├── Name
                         │   ╰── arr
@@ -330,9 +330,9 @@ fn test_invalid_types_assign_to_array() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── arr2
@@ -342,16 +342,16 @@ fn test_invalid_types_assign_to_array() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [4]
-                    │           ├── Constant Int [5]
-                    │           ╰── Constant Int [6]
+                    │           ├── <23> Constant Int [4]
+                    │           ├── <25> Constant Int [5]
+                    │           ╰── <27> Constant Int [6]
                     ├── <36> Assign [=]
                     │   ├── <32> Var [arr]
                     │   ╰── <35> Var [arr2]
                     ╰── Return
                         ╰── <41> Subscript
                             ├── <39> Var [arr]
-                            ╰── Constant Int [0]
+                            ╰── <40> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -383,8 +383,8 @@ fn test_invalid_types_assign_to_array_2() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ╰── Compound
-                    │               ├── Constant Int [1]
-                    │               ╰── Constant Int [2]
+                    │               ├── <12> Constant Int [1]
+                    │               ╰── <14> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── dim
@@ -394,17 +394,17 @@ fn test_invalid_types_assign_to_array_2() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [3]
-                    │           ╰── Constant Int [4]
+                    │           ├── <24> Constant Int [3]
+                    │           ╰── <26> Constant Int [4]
                     ├── <37> Assign [=]
                     │   ├── <33> Subscript
                     │   │   ├── <31> Var [dim2]
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <32> Constant Int [0]
                     │   ╰── <36> Var [dim]
                     ╰── Return
                         ╰── <42> Subscript
                             ├── <40> Var [dim]
-                            ╰── Constant Int [0]
+                            ╰── <41> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -431,9 +431,9 @@ fn test_invalid_types_assign_to_array_3() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr_to_array
@@ -477,8 +477,8 @@ fn test_invalid_types_bad_arg_type() {
             │           ╰── <15> Subscript
             │               ├── <13> Subscript
             │               │   ├── <11> Var [x]
-            │               │   ╰── Constant Int [0]
-            │               ╰── Constant Int [0]
+            │               │   ╰── <12> Constant Int [0]
+            │               ╰── <14> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -490,7 +490,7 @@ fn test_invalid_types_bad_arg_type() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ╰── Constant Int [10]
+                    │           ╰── <28> Constant Int [10]
                     ╰── Return
                         ╰── <36> FunctionCall [foo]
                             ╰── <35> AddressOf
@@ -619,7 +619,7 @@ fn test_invalid_types_compare_different_pointer_types() {
                     │   ├── Type
                     │   │   ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr
@@ -630,7 +630,7 @@ fn test_invalid_types_compare_different_pointer_types() {
                     │       ╰── <20>  [+]
                     │           ├── <17> AddressOf
                     │           │   ╰── <16> Var [x]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <19> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── array_ptr
@@ -706,11 +706,11 @@ fn test_invalid_types_compare_pointer_to_int() {
                     │   │   ╰── Pointer
                     │   │       ╰── Long
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ╰── Return
                         ╰── <16>  [<=]
                             ├── <13> Var [l]
-                            ╰── Constant ULong [100]
+                            ╰── <15> Constant ULong [100]
     "#;
     assert_parse(src, expected);
 }
@@ -735,11 +735,11 @@ fn test_invalid_types_compare_pointer_to_zero() {
                     │   │   ╰── Pointer
                     │   │       ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ╰── Return
                         ╰── <16>  [>]
                             ├── <13> Var [x]
-                            ╰── Constant Int [0]
+                            ╰── <15> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -764,9 +764,9 @@ fn test_invalid_types_compound_initializer_for_scalar() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <8> Constant Int [1]
+                    │           ├── <10> Constant Int [2]
+                    │           ╰── <12> Constant Int [3]
                     ╰── Return
                         ╰── <17> Var [x]
     "#;
@@ -793,9 +793,9 @@ fn test_invalid_types_compound_initializer_for_static_scalar() {
                     │   │   ╰── Int
                     │   ├── Initializer
                     │   │   ╰── Compound
-                    │   │       ├── Constant Int [1]
-                    │   │       ├── Constant Int [2]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ├── <9> Constant Int [1]
+                    │   │       ├── <11> Constant Int [2]
+                    │   │       ╰── <13> Constant Int [3]
                     │   ╰── Static
                     ╰── Return
                         ╰── <18> Var [x]
@@ -824,15 +824,15 @@ fn test_invalid_types_compound_initializer_too_long_static() {
                     │   │       ╰── Int
                     │   ├── Initializer
                     │   │   ╰── Compound
-                    │   │       ├── Constant Int [1]
-                    │   │       ├── Constant Int [2]
-                    │   │       ├── Constant Int [3]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ├── <11> Constant Int [1]
+                    │   │       ├── <13> Constant Int [2]
+                    │   │       ├── <15> Constant Int [3]
+                    │   │       ╰── <17> Constant Int [4]
                     │   ╰── Static
                     ╰── Return
                         ╰── <24> Subscript
                             ├── <22> Var [arr]
-                            ╰── Constant Int [2]
+                            ╰── <23> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -858,14 +858,14 @@ fn test_invalid_types_compound_inititializer_too_long() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ├── Constant Int [3]
-                    │           ╰── Constant Int [4]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ├── <14> Constant Int [3]
+                    │           ╰── <16> Constant Int [4]
                     ╰── Return
                         ╰── <23> Subscript
                             ├── <21> Var [arr]
-                            ╰── Constant Int [2]
+                            ╰── <22> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -893,7 +893,7 @@ fn test_invalid_types_conflicting_array_declarations() {
             │       ╰── Return
             │           ╰── <14> Subscript
             │               ├── <12> Var [arr]
-            │               ╰── Constant Int [0]
+            │               ╰── <13> Constant Int [0]
             ╰── VarDeclaration
                 ├── Name
                 │   ╰── arr
@@ -960,13 +960,13 @@ fn test_invalid_types_double_subscript() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [4]
-                    │           ├── Constant Int [5]
-                    │           ╰── Constant Int [6]
+                    │           ├── <10> Constant Int [4]
+                    │           ├── <12> Constant Int [5]
+                    │           ╰── <14> Constant Int [6]
                     ╰── Return
                         ╰── <21> Subscript
                             ├── <19> Var [arr]
-                            ╰── Constant Double [+2e0]
+                            ╰── <20> Constant Double [+2e0]
     "#;
     assert_parse(src, expected);
 }
@@ -995,9 +995,9 @@ fn test_invalid_types_extra_credit_compound_add_double_to_pointer() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── elem
@@ -1008,9 +1008,9 @@ fn test_invalid_types_extra_credit_compound_add_double_to_pointer() {
                     │       ╰── <23> Var [arr]
                     ├── <30> Assign [+=]
                     │   ├── <27> Var [elem]
-                    │   ╰── Constant Double [+1e0]
+                    │   ╰── <29> Constant Double [+1e0]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <32> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1040,9 +1040,9 @@ fn test_invalid_types_extra_credit_compound_add_two_pointers() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── elem0
@@ -1060,12 +1060,12 @@ fn test_invalid_types_extra_credit_compound_add_two_pointers() {
                     │   ╰── Initializer
                     │       ╰── <34>  [+]
                     │           ├── <31> Var [arr]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <33> Constant Int [1]
                     ├── <42> Assign [+=]
                     │   ├── <38> Var [elem0]
                     │   ╰── <41> Var [elem1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <44> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1092,13 +1092,13 @@ fn test_invalid_types_extra_credit_compound_assign_to_array() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ├── <22> Assign [-=]
                     │   ├── <19> Var [arr]
-                    │   ╰── Constant Int [1]
-                    ╰── Constant Int [0]
+                    │   ╰── <21> Constant Int [1]
+                    ╰── <24> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1128,18 +1128,18 @@ fn test_invalid_types_extra_credit_compound_assign_to_nested_array() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── Compound
-                    │           │   ├── Constant Int [1]
-                    │           │   ╰── Constant Int [2]
+                    │           │   ├── <12> Constant Int [1]
+                    │           │   ╰── <14> Constant Int [2]
                     │           ╰── Compound
-                    │               ├── Constant Int [3]
-                    │               ╰── Constant Int [4]
+                    │               ├── <17> Constant Int [3]
+                    │               ╰── <19> Constant Int [4]
                     ├── <30> Assign [+=]
                     │   ├── <27> Subscript
                     │   │   ├── <25> Var [arr]
-                    │   │   ╰── Constant Int [1]
-                    │   ╰── Constant Int [1]
+                    │   │   ╰── <26> Constant Int [1]
+                    │   ╰── <29> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <32> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1169,9 +1169,9 @@ fn test_invalid_types_extra_credit_compound_sub_pointer_from_int() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── elem
@@ -1181,19 +1181,19 @@ fn test_invalid_types_extra_credit_compound_sub_pointer_from_int() {
                     │   ╰── Initializer
                     │       ╰── <26>  [+]
                     │           ├── <23> Var [arr]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <25> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <32> Constant Int [0]
                     ├── <40> Assign [-=]
                     │   ├── <36> Var [i]
                     │   ╰── <39> Var [elem]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <42> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1220,13 +1220,13 @@ fn test_invalid_types_extra_credit_postfix_incr_array() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ├── <21> Postfix [++]
                     │   ╰── <19> Var [arr]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <23> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1256,19 +1256,19 @@ fn test_invalid_types_extra_credit_postfix_incr_nested_array() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── Compound
-                    │           │   ├── Constant Int [1]
-                    │           │   ├── Constant Int [2]
-                    │           │   ╰── Constant Int [3]
+                    │           │   ├── <12> Constant Int [1]
+                    │           │   ├── <14> Constant Int [2]
+                    │           │   ╰── <16> Constant Int [3]
                     │           ╰── Compound
-                    │               ├── Constant Int [4]
-                    │               ├── Constant Int [5]
-                    │               ╰── Constant Int [6]
+                    │               ├── <19> Constant Int [4]
+                    │               ├── <21> Constant Int [5]
+                    │               ╰── <23> Constant Int [6]
                     ├── <33> Postfix [++]
                     │   ╰── <31> Subscript
                     │       ├── <29> Var [arr]
-                    │       ╰── Constant Int [2]
+                    │       ╰── <30> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <35> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1295,13 +1295,13 @@ fn test_invalid_types_extra_credit_prefix_decr_array() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ├── <21> Unary [--]
                     │   ╰── <20> Var [arr]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <23> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1331,19 +1331,19 @@ fn test_invalid_types_extra_credit_prefix_decr_nested_array() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── Compound
-                    │           │   ├── Constant Int [1]
-                    │           │   ├── Constant Int [2]
-                    │           │   ╰── Constant Int [3]
+                    │           │   ├── <12> Constant Int [1]
+                    │           │   ├── <14> Constant Int [2]
+                    │           │   ╰── <16> Constant Int [3]
                     │           ╰── Compound
-                    │               ├── Constant Int [4]
-                    │               ├── Constant Int [5]
-                    │               ╰── Constant Int [6]
+                    │               ├── <19> Constant Int [4]
+                    │               ├── <21> Constant Int [5]
+                    │               ╰── <23> Constant Int [6]
                     ├── <33> Unary [--]
                     │   ╰── <32> Subscript
                     │       ├── <30> Var [arr]
-                    │       ╰── Constant Int [2]
+                    │       ╰── <31> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <35> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1374,18 +1374,18 @@ fn test_invalid_types_extra_credit_switch_on_array() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ├── Switch
                     │   ├── Expression
                     │   │   ╰── <19> Var [arr]
                     │   ╰── Block
                     │       ╰── Default
                     │           ╰── Return
-                    │               ╰── Constant Int [0]
+                    │               ╰── <20> Constant Int [0]
                     ╰── Return
-                        ╰── Constant Int [1]
+                        ╰── <26> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -1424,9 +1424,9 @@ fn test_invalid_types_incompatible_elem_type_compound_init() {
                         │           ╰── Int
                         ╰── Initializer
                             ╰── Compound
-                                ├── Constant Int [0]
-                                ├── Constant Int [0]
-                                ╰── Constant Double [+1e0]
+                                ├── <11> Constant Int [0]
+                                ├── <13> Constant Int [0]
+                                ╰── <15> Constant Double [+1e0]
     "#;
     assert_parse(src, expected);
 }
@@ -1453,13 +1453,13 @@ fn test_invalid_types_incompatible_elem_type_static_compound_init() {
             │   │           ╰── Int
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant Int [0]
-            │           ├── Constant Int [0]
-            │           ╰── Constant Double [+1e0]
+            │           ├── <7> Constant Int [0]
+            │           ├── <9> Constant Int [0]
+            │           ╰── <11> Constant Double [+1e0]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <19> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1485,11 +1485,11 @@ fn test_invalid_types_null_ptr_array_initializer() {
                     │   │       ├── 1
                     │   │       ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <10> Constant Int [0]
                     ╰── Return
                         ╰── <16> Subscript
                             ├── <14> Var [arr]
-                            ╰── Constant Int [0]
+                            ╰── <15> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1515,12 +1515,12 @@ fn test_invalid_types_null_ptr_static_array_initializer() {
                     │   │       ├── 1
                     │   │       ╰── Int
                     │   ├── Initializer
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <11> Constant Int [0]
                     │   ╰── Static
                     ╰── Return
                         ╰── <17> Subscript
                             ├── <15> Var [arr]
-                            ╰── Constant Int [0]
+                            ╰── <16> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1546,11 +1546,11 @@ fn test_invalid_types_scalar_initializer_for_array() {
                     │   │       ├── 1
                     │   │       ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [4]
+                    │       ╰── <10> Constant Int [4]
                     ╰── Return
                         ╰── <16> Subscript
                             ├── <14> Var [arr]
-                            ╰── Constant Int [0]
+                            ╰── <15> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1575,11 +1575,11 @@ fn test_invalid_types_scalar_initializer_for_static_array() {
             │   │       ├── 3
             │   │       ╰── Double
             │   ╰── Initializer
-            │       ╰── Constant Double [+1e0]
+            │       ╰── <6> Constant Double [+1e0]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <13> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1617,18 +1617,18 @@ fn test_invalid_types_static_non_const_array() {
             │       │   │       ├── <15> Var [p]
             │       │   │       ├── <21>  [+]
             │       │   │       │   ├── <18> Var [p]
-            │       │   │       │   ╰── Constant Int [1]
-            │       │   │       ╰── Constant Int [0]
+            │       │   │       │   ╰── <20> Constant Int [1]
+            │       │   │       ╰── <23> Constant Int [0]
             │       │   ╰── Static
             │       ╰── Return
             │           ╰── <30> Subscript
             │               ├── <28> Var [arr]
-            │               ╰── Constant Int [2]
+            │               ╰── <29> Constant Int [2]
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
                         ╰── <40> FunctionCall [foo]
-                            ╰── Constant Int [5]
+                            ╰── <39> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -1704,13 +1704,13 @@ fn test_invalid_types_sub_double_from_ptr() {
                     │   │   ╰── Pointer
                     │   │       ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ╰── Return
                         ╰── <20>  [==]
                             ├── <16>  [-]
                             │   ├── <13> Var [y]
-                            │   ╰── Constant Double [+0e0]
-                            ╰── Constant Double [+0e0]
+                            │   ╰── <15> Constant Double [+0e0]
+                            ╰── <18> Constant Double [+0e0]
     "#;
     assert_parse(src, expected);
 }
@@ -1735,13 +1735,13 @@ fn test_invalid_types_sub_ptr_from_int() {
                     │   │   ╰── Pointer
                     │   │       ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ╰── Return
                         ╰── <19>  [==]
                             ├── <16>  [-]
-                            │   ├── Constant Int [0]
+                            │   ├── <12> Constant Int [0]
                             │   ╰── <15> Var [x]
-                            ╰── Constant Int [0]
+                            ╰── <18> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1767,7 +1767,7 @@ fn test_invalid_types_subscript_both_pointers() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [10]
+                    │       ╰── <8> Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr
@@ -1784,7 +1784,7 @@ fn test_invalid_types_subscript_both_pointers() {
                     │   │   ╰── Pointer
                     │   │       ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <24> Constant Int [0]
                     ╰── Return
                         ╰── <31> Subscript
                             ├── <28> Var [ptr]
@@ -1811,11 +1811,11 @@ fn test_invalid_types_subscript_non_ptr() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <8> Constant Int [3]
                     ╰── Return
                         ╰── <14> Subscript
                             ├── <12> Var [a]
-                            ╰── Constant Int [4]
+                            ╰── <13> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -1887,8 +1887,8 @@ fn test_valid_allocation_test_alignment() {
             │           ╰── <27>  [==]
             │               ├── <23>  [%]
             │               │   ├── <20> Var [addr]
-            │               │   ╰── Constant Int [16]
-            │               ╰── Constant Int [0]
+            │               │   ╰── <22> Constant Int [16]
+            │               ╰── <25> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -1900,7 +1900,7 @@ fn test_valid_allocation_test_alignment() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ╰── Constant Int [0]
+                    │           ╰── <40> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── arr2
@@ -1910,7 +1910,7 @@ fn test_valid_allocation_test_alignment() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ╰── Constant Int [0]
+                    │           ╰── <49> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── arr3
@@ -1923,7 +1923,7 @@ fn test_valid_allocation_test_alignment() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ╰── Compound
-                    │               ╰── Constant Int [0]
+                    │               ╰── <60> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <70> Unary [!]
@@ -1932,7 +1932,7 @@ fn test_valid_allocation_test_alignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <71> Constant Int [1]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -1941,17 +1941,17 @@ fn test_valid_allocation_test_alignment() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <79> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <87>  [<]
                     │   │       ├── <84> Var [i]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <86> Constant Int [5]
                     │   ├── Condition
                     │   │   ╰── <96> Assign [=]
                     │   │       ├── <89> Var [i]
                     │   │       ╰── <95>  [+]
                     │   │           ├── <92> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <94> Constant Int [1]
                     │   ╰── <105> Assign [=]
                     │       ├── <101> Subscript
                     │       │   ├── <98> Var [arr]
@@ -1965,7 +1965,7 @@ fn test_valid_allocation_test_alignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <114> Constant Int [2]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -1974,17 +1974,17 @@ fn test_valid_allocation_test_alignment() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <122> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <130>  [<]
                     │   │       ├── <127> Var [i]
-                    │   │       ╰── Constant Int [7]
+                    │   │       ╰── <129> Constant Int [7]
                     │   ├── Condition
                     │   │   ╰── <139> Assign [=]
                     │   │       ├── <132> Var [i]
                     │   │       ╰── <138>  [+]
                     │   │           ├── <135> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <137> Constant Int [1]
                     │   ╰── If
                     │       ├── Condition
                     │       │   ╰── <144> Subscript
@@ -1992,7 +1992,7 @@ fn test_valid_allocation_test_alignment() {
                     │       │       ╰── <143> Var [i]
                     │       ╰── Then
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <145> Constant Int [3]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -2001,17 +2001,17 @@ fn test_valid_allocation_test_alignment() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <152> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <160>  [<]
                     │   │       ├── <157> Var [i]
-                    │   │       ╰── Constant Int [7]
+                    │   │       ╰── <159> Constant Int [7]
                     │   ├── Condition
                     │   │   ╰── <169> Assign [=]
                     │   │       ├── <162> Var [i]
                     │   │       ╰── <168>  [+]
                     │   │           ├── <165> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <167> Constant Int [1]
                     │   ╰── Block
                     │       ╰── <180> Assign [=]
                     │           ├── <174> Subscript
@@ -2032,7 +2032,7 @@ fn test_valid_allocation_test_alignment() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <195> Constant Int [4]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -2041,17 +2041,17 @@ fn test_valid_allocation_test_alignment() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <203> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <211>  [<]
                     │   │       ├── <208> Var [i]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <210> Constant Int [5]
                     │   ├── Condition
                     │   │   ╰── <220> Assign [=]
                     │   │       ├── <213> Var [i]
                     │   │       ╰── <219>  [+]
                     │   │           ├── <216> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <218> Constant Int [1]
                     │   ╰── Block
                     │       ╰── If
                     │           ├── Condition
@@ -2063,7 +2063,7 @@ fn test_valid_allocation_test_alignment() {
                     │           ╰── Then
                     │               ╰── Block
                     │                   ╰── Return
-                    │                       ╰── Constant Int [5]
+                    │                       ╰── <230> Constant Int [5]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -2072,17 +2072,17 @@ fn test_valid_allocation_test_alignment() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <241> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <249>  [<]
                     │   │       ├── <246> Var [i]
-                    │   │       ╰── Constant Int [2]
+                    │   │       ╰── <248> Constant Int [2]
                     │   ├── Condition
                     │   │   ╰── <258> Assign [=]
                     │   │       ├── <251> Var [i]
                     │   │       ╰── <257>  [+]
                     │   │           ├── <254> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <256> Constant Int [1]
                     │   ╰── For
                     │       ├── Init
                     │       │   ╰── VarDeclaration
@@ -2091,17 +2091,17 @@ fn test_valid_allocation_test_alignment() {
                     │       │       ├── Type
                     │       │       │   ╰── Int
                     │       │       ╰── Initializer
-                    │       │           ╰── Constant Int [0]
+                    │       │           ╰── <262> Constant Int [0]
                     │       ├── Condition
                     │       │   ╰── <270>  [<]
                     │       │       ├── <267> Var [j]
-                    │       │       ╰── Constant Int [2]
+                    │       │       ╰── <269> Constant Int [2]
                     │       ├── Condition
                     │       │   ╰── <279> Assign [=]
                     │       │       ├── <272> Var [j]
                     │       │       ╰── <278>  [+]
                     │       │           ├── <275> Var [j]
-                    │       │           ╰── Constant Int [1]
+                    │       │           ╰── <277> Constant Int [1]
                     │       ╰── If
                     │           ├── Condition
                     │           │   ╰── <290>  [!=]
@@ -2110,12 +2110,12 @@ fn test_valid_allocation_test_alignment() {
                     │           │       │   │   ├── <281> Var [arr3]
                     │           │       │   │   ╰── <283> Var [i]
                     │           │       │   ╰── <286> Var [j]
-                    │           │       ╰── Constant Int [0]
+                    │           │       ╰── <289> Constant Int [0]
                     │           ╰── Then
                     │               ╰── Return
-                    │                   ╰── Constant Int [6]
+                    │                   ╰── <291> Constant Int [6]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <296> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2143,8 +2143,8 @@ fn test_valid_casts_cast_array_of_pointers() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ╰── Constant Int [2]
+                    │           ├── <10> Constant Int [1]
+                    │           ╰── <12> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr_arr
@@ -2159,7 +2159,7 @@ fn test_valid_casts_cast_array_of_pointers() {
                     │       ╰── Compound
                     │           ├── <27> AddressOf
                     │           │   ╰── <26> Var [simple_array]
-                    │           ├── Constant Int [0]
+                    │           ├── <29> Constant Int [0]
                     │           ╰── <33> AddressOf
                     │               ╰── <32> Var [simple_array]
                     ├── VarDeclaration
@@ -2226,13 +2226,13 @@ fn test_valid_casts_implicit_and_explicit_conversions() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── <12> Unary [-]
-                    │           │   ╰── Constant Int [1]
+                    │           │   ╰── <11> Constant Int [1]
                     │           ├── <16> Unary [-]
-                    │           │   ╰── Constant Int [2]
+                    │           │   ╰── <15> Constant Int [2]
                     │           ├── <20> Unary [-]
-                    │           │   ╰── Constant Int [3]
+                    │           │   ╰── <19> Constant Int [3]
                     │           ╰── <24> Unary [-]
-                    │               ╰── Constant Int [4]
+                    │               ╰── <23> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <37>  [!=]
@@ -2246,7 +2246,7 @@ fn test_valid_casts_implicit_and_explicit_conversions() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <38> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <56>  [!=]
@@ -2263,7 +2263,7 @@ fn test_valid_casts_implicit_and_explicit_conversions() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <57> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── unsigned_arr
@@ -2282,25 +2282,25 @@ fn test_valid_casts_implicit_and_explicit_conversions() {
                     │   │   ╰── <80>  [!=]
                     │   │       ├── <77> Subscript
                     │   │       │   ├── <75> Var [unsigned_arr]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant ULong [18446744073709551615]
+                    │   │       │   ╰── <76> Constant Int [0]
+                    │   │       ╰── <79> Constant ULong [18446744073709551615]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <81> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <92>  [!=]
                     │   │       ├── <89> Subscript
                     │   │       │   ├── <87> Var [unsigned_arr]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant ULong [18446744073709551612]
+                    │   │       │   ╰── <88> Constant Int [3]
+                    │   │       ╰── <91> Constant ULong [18446744073709551612]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <93> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <98> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2350,13 +2350,13 @@ fn test_valid_casts_multi_dim_casts() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── Compound
-                    │           │   ├── Constant Int [0]
-                    │           │   ├── Constant Int [1]
-                    │           │   ╰── Constant Int [2]
+                    │           │   ├── <12> Constant Int [0]
+                    │           │   ├── <14> Constant Int [1]
+                    │           │   ╰── <16> Constant Int [2]
                     │           ╰── Compound
-                    │               ├── Constant Int [3]
-                    │               ├── Constant Int [4]
-                    │               ╰── Constant Int [5]
+                    │               ├── <19> Constant Int [3]
+                    │               ├── <21> Constant Int [4]
+                    │               ╰── <23> Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── array_pointer
@@ -2395,25 +2395,25 @@ fn test_valid_casts_multi_dim_casts() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <66> Constant Int [1]
                     ├── <79> Assign [=]
                     │   ├── <72> Var [row_pointer]
                     │   ╰── <78>  [+]
                     │       ├── <75> Var [row_pointer]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <77> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <89>  [!=]
                     │   │       ├── <86> Subscript
                     │   │       │   ├── <84> Subscript
                     │   │       │   │   ├── <82> Var [row_pointer]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [4]
+                    │   │       │   │   ╰── <83> Constant Int [0]
+                    │   │       │   ╰── <85> Constant Int [1]
+                    │   │       ╰── <88> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <90> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── elem_ptr
@@ -2432,31 +2432,31 @@ fn test_valid_casts_multi_dim_casts() {
                     │   │   ╰── <112>  [!=]
                     │   │       ├── <109> Dereference
                     │   │       │   ╰── <108> Var [elem_ptr]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <111> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <113> Constant Int [3]
                     ├── <126> Assign [=]
                     │   ├── <119> Var [elem_ptr]
                     │   ╰── <125>  [+]
                     │       ├── <122> Var [elem_ptr]
-                    │       ╰── Constant Int [2]
+                    │       ╰── <124> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <133>  [!=]
                     │   │       ├── <130> Dereference
                     │   │       │   ╰── <129> Var [elem_ptr]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <132> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <134> Constant Int [4]
                     ├── <147> Assign [=]
                     │   ├── <140> Var [row_pointer]
                     │   ╰── <146>  [-]
                     │       ├── <143> Var [row_pointer]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <145> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <163>  [!=]
@@ -2474,9 +2474,9 @@ fn test_valid_casts_multi_dim_casts() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <164> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <169> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2539,10 +2539,10 @@ fn test_valid_declarators_array_as_argument() {
             │       ├── <16> Assign [=]
             │       │   ├── <13> Subscript
             │       │   │   ├── <11> Var [a]
-            │       │   │   ╰── Constant Int [4]
-            │       │   ╰── Constant Int [0]
+            │       │   │   ╰── <12> Constant Int [4]
+            │       │   ╰── <15> Constant Int [0]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <18> Constant Int [0]
             ├── Function [nested_array_param]
             │   ├── Parameters
             │   │   ╰── Param
@@ -2559,11 +2559,11 @@ fn test_valid_declarators_array_as_argument() {
             │       │   ├── <38> Subscript
             │       │   │   ├── <36> Subscript
             │       │   │   │   ├── <34> Var [a]
-            │       │   │   │   ╰── Constant Int [1]
-            │       │   │   ╰── Constant Int [1]
-            │       │   ╰── Constant Int [1]
+            │       │   │   │   ╰── <35> Constant Int [1]
+            │       │   │   ╰── <37> Constant Int [1]
+            │       │   ╰── <40> Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <43> Constant Int [0]
             ├── Function [array_param]
             │   ╰── Parameters
             │       ╰── Param
@@ -2614,25 +2614,25 @@ fn test_valid_declarators_array_as_argument() {
             │       │   │       ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [8]
-            │       │           ├── Constant Int [7]
-            │       │           ├── Constant Int [6]
-            │       │           ├── Constant Int [5]
-            │       │           ├── Constant Int [4]
-            │       │           ├── Constant Int [3]
-            │       │           ├── Constant Int [2]
-            │       │           ╰── Constant Int [1]
+            │       │           ├── <100> Constant Int [8]
+            │       │           ├── <102> Constant Int [7]
+            │       │           ├── <104> Constant Int [6]
+            │       │           ├── <106> Constant Int [5]
+            │       │           ├── <108> Constant Int [4]
+            │       │           ├── <110> Constant Int [3]
+            │       │           ├── <112> Constant Int [2]
+            │       │           ╰── <114> Constant Int [1]
             │       ├── <121> FunctionCall [array_param]
             │       │   ╰── <120> Var [arr]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <126> Subscript
             │       │   │       ├── <124> Var [arr]
-            │       │   │       ╰── Constant Int [4]
+            │       │   │       ╰── <125> Constant Int [4]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <127> Constant Int [1]
             │       ├── For
             │       │   ├── Init
             │       │   │   ╰── VarDeclaration
@@ -2641,34 +2641,34 @@ fn test_valid_declarators_array_as_argument() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <135> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <143>  [<]
             │       │   │       ├── <140> Var [i]
-            │       │   │       ╰── Constant Int [8]
+            │       │   │       ╰── <142> Constant Int [8]
             │       │   ├── Condition
             │       │   │   ╰── <152> Assign [=]
             │       │   │       ├── <145> Var [i]
             │       │   │       ╰── <151>  [+]
             │       │   │           ├── <148> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <150> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── If
             │       │           ├── Condition
             │       │           │   ╰── <171>  [&&]
             │       │           │       ├── <157>  [!=]
             │       │           │       │   ├── <154> Var [i]
-            │       │           │       │   ╰── Constant Int [4]
+            │       │           │       │   ╰── <156> Constant Int [4]
             │       │           │       ╰── <170>  [!=]
             │       │           │           ├── <163> Subscript
             │       │           │           │   ├── <160> Var [arr]
             │       │           │           │   ╰── <162> Var [i]
             │       │           │           ╰── <169>  [-]
-            │       │           │               ├── Constant Int [8]
+            │       │           │               ├── <165> Constant Int [8]
             │       │           │               ╰── <168> Var [i]
             │       │           ╰── Then
             │       │               ╰── Return
-            │       │                   ╰── Constant Int [2]
+            │       │                   ╰── <172> Constant Int [2]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── nested_arr
@@ -2682,32 +2682,32 @@ fn test_valid_declarators_array_as_argument() {
             │       │       ╰── Compound
             │       │           ├── Compound
             │       │           │   ├── <187> Unary [-]
-            │       │           │   │   ╰── Constant Int [1]
+            │       │           │   │   ╰── <186> Constant Int [1]
             │       │           │   ├── <191> Unary [-]
-            │       │           │   │   ╰── Constant Int [1]
+            │       │           │   │   ╰── <190> Constant Int [1]
             │       │           │   ╰── <195> Unary [-]
-            │       │           │       ╰── Constant Int [1]
+            │       │           │       ╰── <194> Constant Int [1]
             │       │           ├── Compound
             │       │           │   ├── <200> Unary [-]
-            │       │           │   │   ╰── Constant Int [2]
+            │       │           │   │   ╰── <199> Constant Int [2]
             │       │           │   ├── <204> Unary [-]
-            │       │           │   │   ╰── Constant Int [2]
+            │       │           │   │   ╰── <203> Constant Int [2]
             │       │           │   ╰── <208> Unary [-]
-            │       │           │       ╰── Constant Int [2]
+            │       │           │       ╰── <207> Constant Int [2]
             │       │           ├── Compound
             │       │           │   ├── <213> Unary [-]
-            │       │           │   │   ╰── Constant Int [3]
+            │       │           │   │   ╰── <212> Constant Int [3]
             │       │           │   ├── <217> Unary [-]
-            │       │           │   │   ╰── Constant Int [3]
+            │       │           │   │   ╰── <216> Constant Int [3]
             │       │           │   ╰── <221> Unary [-]
-            │       │           │       ╰── Constant Int [3]
+            │       │           │       ╰── <220> Constant Int [3]
             │       │           ╰── Compound
             │       │               ├── <226> Unary [-]
-            │       │               │   ╰── Constant Int [4]
+            │       │               │   ╰── <225> Constant Int [4]
             │       │               ├── <230> Unary [-]
-            │       │               │   ╰── Constant Int [4]
+            │       │               │   ╰── <229> Constant Int [4]
             │       │               ╰── <234> Unary [-]
-            │       │                   ╰── Constant Int [4]
+            │       │                   ╰── <233> Constant Int [4]
             │       ├── <242> FunctionCall [nested_array_param]
             │       │   ╰── <241> Var [nested_arr]
             │       ├── If
@@ -2716,13 +2716,13 @@ fn test_valid_declarators_array_as_argument() {
             │       │   │       ├── <249> Subscript
             │       │   │       │   ├── <247> Subscript
             │       │   │       │   │   ├── <245> Var [nested_arr]
-            │       │   │       │   │   ╰── Constant Int [1]
-            │       │   │       │   ╰── Constant Int [1]
-            │       │   │       ╰── Constant Int [1]
+            │       │   │       │   │   ╰── <246> Constant Int [1]
+            │       │   │       │   ╰── <248> Constant Int [1]
+            │       │   │       ╰── <251> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <253> Constant Int [3]
             │       ├── For
             │       │   ├── Init
             │       │   │   ╰── VarDeclaration
@@ -2731,17 +2731,17 @@ fn test_valid_declarators_array_as_argument() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <261> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <269>  [<]
             │       │   │       ├── <266> Var [i]
-            │       │   │       ╰── Constant Int [4]
+            │       │   │       ╰── <268> Constant Int [4]
             │       │   ├── Condition
             │       │   │   ╰── <278> Assign [=]
             │       │   │       ├── <271> Var [i]
             │       │   │       ╰── <277>  [+]
             │       │   │           ├── <274> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <276> Constant Int [1]
             │       │   ╰── Block
             │       │       ├── VarDeclaration
             │       │       │   ├── Name
@@ -2751,7 +2751,7 @@ fn test_valid_declarators_array_as_argument() {
             │       │       │   ╰── Initializer
             │       │       │       ╰── <288>  [-]
             │       │       │           ├── <284> Unary [-]
-            │       │       │           │   ╰── Constant Int [1]
+            │       │       │           │   ╰── <283> Constant Int [1]
             │       │       │           ╰── <287> Var [i]
             │       │       ╰── For
             │       │           ├── Init
@@ -2761,17 +2761,17 @@ fn test_valid_declarators_array_as_argument() {
             │       │           │       ├── Type
             │       │           │       │   ╰── Int
             │       │           │       ╰── Initializer
-            │       │           │           ╰── Constant Int [0]
+            │       │           │           ╰── <294> Constant Int [0]
             │       │           ├── Condition
             │       │           │   ╰── <302>  [<]
             │       │           │       ├── <299> Var [j]
-            │       │           │       ╰── Constant Int [3]
+            │       │           │       ╰── <301> Constant Int [3]
             │       │           ├── Condition
             │       │           │   ╰── <311> Assign [=]
             │       │           │       ├── <304> Var [j]
             │       │           │       ╰── <310>  [+]
             │       │           │           ├── <307> Var [j]
-            │       │           │           ╰── Constant Int [1]
+            │       │           │           ╰── <309> Constant Int [1]
             │       │           ╰── Block
             │       │               ╰── If
             │       │                   ├── Condition
@@ -2779,10 +2779,10 @@ fn test_valid_declarators_array_as_argument() {
             │       │                   │       ├── <324>  [||]
             │       │                   │       │   ├── <316>  [!=]
             │       │                   │       │   │   ├── <313> Var [i]
-            │       │                   │       │   │   ╰── Constant Int [1]
+            │       │                   │       │   │   ╰── <315> Constant Int [1]
             │       │                   │       │   ╰── <322>  [!=]
             │       │                   │       │       ├── <319> Var [j]
-            │       │                   │       │       ╰── Constant Int [1]
+            │       │                   │       │       ╰── <321> Constant Int [1]
             │       │                   │       ╰── <338>  [!=]
             │       │                   │           ├── <333> Subscript
             │       │                   │           │   ├── <330> Subscript
@@ -2793,9 +2793,9 @@ fn test_valid_declarators_array_as_argument() {
             │       │                   ╰── Then
             │       │                       ╰── Block
             │       │                           ╰── Return
-            │       │                               ╰── Constant Int [4]
+            │       │                               ╰── <340> Constant Int [4]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <351> Constant Int [0]
             ╰── Function [array_param]
                 ╰── Parameters
                     ╰── Param
@@ -2831,7 +2831,7 @@ fn test_valid_declarators_big_array() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <14> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -2911,10 +2911,10 @@ fn test_valid_declarators_equivalent_declarators() {
             │   │       ╰── Long
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant Int [1]
-            │           ├── Constant Int [2]
-            │           ├── Constant Int [3]
-            │           ╰── Constant Int [4]
+            │           ├── <7> Constant Int [1]
+            │           ├── <9> Constant Int [2]
+            │           ├── <11> Constant Int [3]
+            │           ╰── <13> Constant Int [4]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── arr
@@ -2943,7 +2943,7 @@ fn test_valid_declarators_equivalent_declarators() {
             │   │               ├── 6
             │   │               ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [0]
+            │       ╰── <44> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── array_of_pointers
@@ -2954,9 +2954,9 @@ fn test_valid_declarators_equivalent_declarators() {
             │   │           ╰── Int
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant Int [0]
-            │           ├── Constant Int [0]
-            │           ╰── Constant Int [0]
+            │           ├── <53> Constant Int [0]
+            │           ├── <55> Constant Int [0]
+            │           ╰── <57> Constant Int [0]
             ├── Function [test_arr]
             │   ╰── Body
             │       ├── For
@@ -2967,17 +2967,17 @@ fn test_valid_declarators_equivalent_declarators() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <68> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <76>  [<]
             │       │   │       ├── <73> Var [i]
-            │       │   │       ╰── Constant Int [4]
+            │       │   │       ╰── <75> Constant Int [4]
             │       │   ├── Condition
             │       │   │   ╰── <85> Assign [=]
             │       │   │       ├── <78> Var [i]
             │       │   │       ╰── <84>  [+]
             │       │   │           ├── <81> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <83> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── If
             │       │           ├── Condition
@@ -2987,13 +2987,13 @@ fn test_valid_declarators_equivalent_declarators() {
             │       │           │       │   ╰── <89> Var [i]
             │       │           │       ╰── <96>  [+]
             │       │           │           ├── <93> Var [i]
-            │       │           │           ╰── Constant Int [1]
+            │       │           │           ╰── <95> Constant Int [1]
             │       │           ╰── Then
             │       │               ╰── Block
             │       │                   ╰── Return
-            │       │                       ╰── Constant Int [1]
+            │       │                       ╰── <98> Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <106> Constant Int [0]
             ├── Function [test_ptr_to_arr]
             │   ╰── Body
             │       ├── If
@@ -3002,7 +3002,7 @@ fn test_valid_declarators_equivalent_declarators() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [2]
+            │       │               ╰── <116> Constant Int [2]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── nested_arr
@@ -3022,25 +3022,25 @@ fn test_valid_declarators_equivalent_declarators() {
             │       │   │   ├── <143> Subscript
             │       │   │   │   ├── <141> Subscript
             │       │   │   │   │   ├── <139> Var [ptr_to_arr]
-            │       │   │   │   │   ╰── Constant Int [0]
-            │       │   │   │   ╰── Constant Int [2]
-            │       │   │   ╰── Constant Int [4]
-            │       │   ╰── Constant Int [100]
+            │       │   │   │   │   ╰── <140> Constant Int [0]
+            │       │   │   │   ╰── <142> Constant Int [2]
+            │       │   │   ╰── <144> Constant Int [4]
+            │       │   ╰── <147> Constant Int [100]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <158>  [!=]
             │       │   │       ├── <155> Subscript
             │       │   │       │   ├── <153> Subscript
             │       │   │       │   │   ├── <151> Var [nested_arr]
-            │       │   │       │   │   ╰── Constant Int [2]
-            │       │   │       │   ╰── Constant Int [4]
-            │       │   │       ╰── Constant Int [100]
+            │       │   │       │   │   ╰── <152> Constant Int [2]
+            │       │   │       │   ╰── <154> Constant Int [4]
+            │       │   │       ╰── <157> Constant Int [100]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <159> Constant Int [3]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <164> Constant Int [0]
             ├── Function [test_array_of_pointers]
             │   ├── Parameters
             │   │   ╰── Param
@@ -3067,17 +3067,17 @@ fn test_valid_declarators_equivalent_declarators() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <189> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <197>  [<]
             │       │   │       ├── <194> Var [i]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       ╰── <196> Constant Int [3]
             │       │   ├── Condition
             │       │   │   ╰── <206> Assign [=]
             │       │   │       ├── <199> Var [i]
             │       │   │       ╰── <205>  [+]
             │       │   │           ├── <202> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <204> Constant Int [1]
             │       │   ╰── Block
             │       │       ├── If
             │       │       │   ├── Condition
@@ -3086,7 +3086,7 @@ fn test_valid_declarators_equivalent_declarators() {
             │       │       │   │       ╰── <210> Var [i]
             │       │       │   ╰── Then
             │       │       │       ╰── Return
-            │       │       │           ╰── Constant Int [4]
+            │       │       │           ╰── <212> Constant Int [4]
             │       │       ╰── <223> Assign [=]
             │       │           ├── <219> Subscript
             │       │           │   ├── <216> Var [array_of_pointers]
@@ -3096,19 +3096,19 @@ fn test_valid_declarators_equivalent_declarators() {
             │       │   ├── <233> Subscript
             │       │   │   ├── <231> Subscript
             │       │   │   │   ├── <229> Var [array_of_pointers]
-            │       │   │   │   ╰── Constant Int [2]
-            │       │   │   ╰── Constant Int [0]
-            │       │   ╰── Constant Int [11]
+            │       │   │   │   ╰── <230> Constant Int [2]
+            │       │   │   ╰── <232> Constant Int [0]
+            │       │   ╰── <235> Constant Int [11]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <243>  [!=]
             │       │   │       ├── <240> Dereference
             │       │   │       │   ╰── <239> Var [ptr]
-            │       │   │       ╰── Constant Int [11]
+            │       │   │       ╰── <242> Constant Int [11]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [5]
+            │       │               ╰── <244> Constant Int [5]
             │       ├── For
             │       │   ├── Init
             │       │   │   ╰── VarDeclaration
@@ -3117,17 +3117,17 @@ fn test_valid_declarators_equivalent_declarators() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <252> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <260>  [<]
             │       │   │       ├── <257> Var [i]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       ╰── <259> Constant Int [3]
             │       │   ├── Condition
             │       │   │   ╰── <269> Assign [=]
             │       │   │       ├── <262> Var [i]
             │       │   │       ╰── <268>  [+]
             │       │   │           ├── <265> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <267> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── If
             │       │           ├── Condition
@@ -3136,14 +3136,14 @@ fn test_valid_declarators_equivalent_declarators() {
             │       │           │       │   ├── <274> Subscript
             │       │           │       │   │   ├── <271> Var [array_of_pointers]
             │       │           │       │   │   ╰── <273> Var [i]
-            │       │           │       │   ╰── Constant Int [0]
-            │       │           │       ╰── Constant Int [11]
+            │       │           │       │   ╰── <275> Constant Int [0]
+            │       │           │       ╰── <278> Constant Int [11]
             │       │           ╰── Then
             │       │               ╰── Block
             │       │                   ╰── Return
-            │       │                       ╰── Constant Int [6]
+            │       │                       ╰── <280> Constant Int [6]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <288> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -3176,7 +3176,7 @@ fn test_valid_declarators_equivalent_declarators() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <329> Constant Int [0]
                     ├── <340> Assign [=]
                     │   ├── <333> Var [check]
                     │   ╰── <339> FunctionCall [test_array_of_pointers]
@@ -3190,7 +3190,7 @@ fn test_valid_declarators_equivalent_declarators() {
                     │           ╰── Return
                     │               ╰── <345> Var [check]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <350> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3219,7 +3219,7 @@ fn test_valid_declarators_for_loop_array() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -3231,19 +3231,19 @@ fn test_valid_declarators_for_loop_array() {
                     │   │       │       ╰── Int
                     │   │       ╰── Initializer
                     │   │           ╰── Compound
-                    │   │               ├── Constant Int [1]
-                    │   │               ├── Constant Int [2]
-                    │   │               ╰── Constant Int [3]
+                    │   │               ├── <16> Constant Int [1]
+                    │   │               ├── <18> Constant Int [2]
+                    │   │               ╰── <20> Constant Int [3]
                     │   ├── Condition
                     │   │   ╰── <29>  [<]
                     │   │       ├── <26> Var [counter]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <28> Constant Int [3]
                     │   ├── Condition
                     │   │   ╰── <38> Assign [=]
                     │   │       ├── <31> Var [counter]
                     │   │       ╰── <37>  [+]
                     │   │           ├── <34> Var [counter]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <36> Constant Int [1]
                     │   ╰── Block
                     │       ╰── If
                     │           ├── Condition
@@ -3253,13 +3253,13 @@ fn test_valid_declarators_for_loop_array() {
                     │           │       │   ╰── <42> Var [counter]
                     │           │       ╰── <49>  [+]
                     │           │           ├── <46> Var [counter]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <48> Constant Int [1]
                     │           ╰── Then
                     │               ╰── Block
                     │                   ╰── Return
-                    │                       ╰── Constant Int [1]
+                    │                       ╰── <51> Constant Int [1]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <59> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3298,9 +3298,9 @@ fn test_valid_declarators_return_nested_array() {
             │   │       ╰── Int
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant Int [1]
-            │           ├── Constant Int [1]
-            │           ╰── Constant Int [1]
+            │           ├── <6> Constant Int [1]
+            │           ├── <8> Constant Int [1]
+            │           ╰── <10> Constant Int [1]
             ├── Function [foo]
             │   ├── Parameters
             │   │   ├── Param
@@ -3317,12 +3317,12 @@ fn test_valid_declarators_return_nested_array() {
             │       ├── <35> Assign [=]
             │       │   ├── <31> Subscript
             │       │   │   ├── <29> Var [arr]
-            │       │   │   ╰── Constant Int [1]
+            │       │   │   ╰── <30> Constant Int [1]
             │       │   ╰── <34> Var [x]
             │       ├── <44> Assign [=]
             │       │   ├── <40> Subscript
             │       │   │   ├── <38> Var [arr]
-            │       │   │   ╰── Constant Int [2]
+            │       │   │   ╰── <39> Constant Int [2]
             │       │   ╰── <43> Var [y]
             │       ╰── Return
             │           ╰── <48> AddressOf
@@ -3339,49 +3339,49 @@ fn test_valid_declarators_return_nested_array() {
                     │   │           ╰── Int
                     │   ╰── Initializer
                     │       ╰── <66> FunctionCall [foo]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <64> Constant Int [2]
+                    │           ╰── <65> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <77>  [!=]
                     │   │       ├── <74> Subscript
                     │   │       │   ├── <72> Subscript
                     │   │       │   │   ├── <70> Var [arr]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [1]
+                    │   │       │   │   ╰── <71> Constant Int [0]
+                    │   │       │   ╰── <73> Constant Int [0]
+                    │   │       ╰── <76> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <78> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <91>  [!=]
                     │   │       ├── <88> Subscript
                     │   │       │   ├── <86> Subscript
                     │   │       │   │   ├── <84> Var [arr]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [2]
+                    │   │       │   │   ╰── <85> Constant Int [0]
+                    │   │       │   ╰── <87> Constant Int [1]
+                    │   │       ╰── <90> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <92> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <105>  [!=]
                     │   │       ├── <102> Subscript
                     │   │       │   ├── <100> Subscript
                     │   │       │   │   ├── <98> Var [arr]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [3]
+                    │   │       │   │   ╰── <99> Constant Int [0]
+                    │   │       │   ╰── <101> Constant Int [2]
+                    │   │       ╰── <104> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <106> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <111> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3425,96 +3425,96 @@ fn test_valid_extra_credit_bitwise_subscript() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── <12> Unary [-]
-                    │           │   ╰── Constant Int [10]
-                    │           ├── Constant Int [10]
+                    │           │   ╰── <11> Constant Int [10]
+                    │           ├── <14> Constant Int [10]
                     │           ├── <18> Unary [-]
-                    │           │   ╰── Constant Int [11]
-                    │           ├── Constant Int [11]
+                    │           │   ╰── <17> Constant Int [11]
+                    │           ├── <20> Constant Int [11]
                     │           ├── <24> Unary [-]
-                    │           │   ╰── Constant Int [12]
-                    │           ╰── Constant Int [12]
+                    │           │   ╰── <23> Constant Int [12]
+                    │           ╰── <26> Constant Int [12]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <43>  [!=]
                     │   │       ├── <40>  [&]
                     │   │       │   ├── <33> Subscript
                     │   │       │   │   ├── <31> Var [arr]
-                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── <32> Constant Int [0]
                     │   │       │   ╰── <38> Subscript
                     │   │       │       ├── <36> Var [arr]
-                    │   │       │       ╰── Constant Int [5]
-                    │   │       ╰── Constant Int [4]
+                    │   │       │       ╰── <37> Constant Int [5]
+                    │   │       ╰── <42> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <44> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <64>  [!=]
                     │   │       ├── <59>  [|]
                     │   │       │   ├── <52> Subscript
                     │   │       │   │   ├── <50> Var [arr]
-                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── <51> Constant Int [1]
                     │   │       │   ╰── <57> Subscript
                     │   │       │       ├── <55> Var [arr]
-                    │   │       │       ╰── Constant Int [4]
+                    │   │       │       ╰── <56> Constant Int [4]
                     │   │       ╰── <63> Unary [-]
-                    │   │           ╰── Constant Int [2]
+                    │   │           ╰── <62> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <65> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <85>  [!=]
                     │   │       ├── <80>  [^]
                     │   │       │   ├── <73> Subscript
                     │   │       │   │   ├── <71> Var [arr]
-                    │   │       │   │   ╰── Constant Int [2]
+                    │   │       │   │   ╰── <72> Constant Int [2]
                     │   │       │   ╰── <78> Subscript
                     │   │       │       ├── <76> Var [arr]
-                    │   │       │       ╰── Constant Int [3]
+                    │   │       │       ╰── <77> Constant Int [3]
                     │   │       ╰── <84> Unary [-]
-                    │   │           ╰── Constant Int [2]
+                    │   │           ╰── <83> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <86> Constant Int [3]
                     ├── <97> Assign [=]
                     │   ├── <94> Subscript
                     │   │   ├── <92> Var [arr]
-                    │   │   ╰── Constant Int [0]
-                    │   ╰── Constant Int [2041302511]
+                    │   │   ╰── <93> Constant Int [0]
+                    │   ╰── <96> Constant Int [2041302511]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <112>  [!=]
                     │   │       ├── <109>  [>>]
                     │   │       │   ├── <102> Subscript
                     │   │       │   │   ├── <100> Var [arr]
-                    │   │       │   │   ╰── Constant Int [0]
+                    │   │       │   │   ╰── <101> Constant Int [0]
                     │   │       │   ╰── <107> Subscript
                     │   │       │       ├── <105> Var [arr]
-                    │   │       │       ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [1993459]
+                    │   │       │       ╰── <106> Constant Int [1]
+                    │   │       ╰── <111> Constant Int [1993459]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <113> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <128>  [!=]
                     │   │       ├── <125>  [<<]
                     │   │       │   ├── <121> Subscript
                     │   │       │   │   ├── <119> Var [arr]
-                    │   │       │   │   ╰── Constant Int [5]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [96]
+                    │   │       │   │   ╰── <120> Constant Int [5]
+                    │   │       │   ╰── <123> Constant Int [3]
+                    │   │       ╰── <127> Constant Int [96]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <129> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <134> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3560,13 +3560,13 @@ fn test_valid_extra_credit_compound_assign_and_increment() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── <12> Unary [-]
-                    │           │   ╰── Constant Int [1]
+                    │           │   ╰── <11> Constant Int [1]
                     │           ├── <16> Unary [-]
-                    │           │   ╰── Constant Int [2]
+                    │           │   ╰── <15> Constant Int [2]
                     │           ├── <20> Unary [-]
-                    │           │   ╰── Constant Int [3]
+                    │           │   ╰── <19> Constant Int [3]
                     │           ╰── <24> Unary [-]
-                    │               ╰── Constant Int [4]
+                    │               ╰── <23> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr
@@ -3581,7 +3581,7 @@ fn test_valid_extra_credit_compound_assign_and_increment() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <39> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <59>  [!=]
@@ -3591,33 +3591,33 @@ fn test_valid_extra_credit_compound_assign_and_increment() {
                     │   │       │   │   │   ╰── <43> Var [ptr]
                     │   │       │   │   ╰── <49> Postfix [++]
                     │   │       │   │       ╰── <47> Var [idx]
-                    │   │       │   ╰── Constant Int [3]
+                    │   │       │   ╰── <52> Constant Int [3]
                     │   │       ╰── <58> Unary [-]
-                    │   │           ╰── Constant Int [9]
+                    │   │           ╰── <57> Constant Int [9]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <60> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <72>  [!=]
                     │   │       ├── <67> Dereference
                     │   │       │   ╰── <66> Var [ptr]
                     │   │       ╰── <71> Unary [-]
-                    │   │           ╰── Constant Int [2]
+                    │   │           ╰── <70> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <73> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <82>  [!=]
                     │   │       ├── <79> Var [idx]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <81> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <83> Constant Int [3]
                     ├── <91> Postfix [--]
                     │   ╰── <89> Var [idx]
                     ├── If
@@ -3626,12 +3626,12 @@ fn test_valid_extra_credit_compound_assign_and_increment() {
                     │   │       ├── <99> Subscript
                     │   │       │   ├── <97> Unary [--]
                     │   │       │   │   ╰── <95> Var [ptr]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [4]
+                    │   │       │   ╰── <98> Constant Int [3]
+                    │   │       ╰── <101> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <103> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <147>  [||]
@@ -3640,32 +3640,32 @@ fn test_valid_extra_credit_compound_assign_and_increment() {
                     │   │       │   │   ├── <116>  [!=]
                     │   │       │   │   │   ├── <111> Subscript
                     │   │       │   │   │   │   ├── <109> Var [arr]
-                    │   │       │   │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   │   │   ╰── <110> Constant Int [0]
                     │   │       │   │   │   ╰── <115> Unary [-]
-                    │   │       │   │   │       ╰── Constant Int [1]
+                    │   │       │   │   │       ╰── <114> Constant Int [1]
                     │   │       │   │   ╰── <126>  [!=]
                     │   │       │   │       ├── <121> Subscript
                     │   │       │   │       │   ├── <119> Var [arr]
-                    │   │       │   │       │   ╰── Constant Int [1]
+                    │   │       │   │       │   ╰── <120> Constant Int [1]
                     │   │       │   │       ╰── <125> Unary [-]
-                    │   │       │   │           ╰── Constant Int [2]
+                    │   │       │   │           ╰── <124> Constant Int [2]
                     │   │       │   ╰── <137>  [!=]
                     │   │       │       ├── <132> Subscript
                     │   │       │       │   ├── <130> Var [arr]
-                    │   │       │       │   ╰── Constant Int [2]
+                    │   │       │       │   ╰── <131> Constant Int [2]
                     │   │       │       ╰── <136> Unary [-]
-                    │   │       │           ╰── Constant Int [9]
+                    │   │       │           ╰── <135> Constant Int [9]
                     │   │       ╰── <146>  [!=]
                     │   │           ├── <143> Subscript
                     │   │           │   ├── <141> Var [arr]
-                    │   │           │   ╰── Constant Int [3]
-                    │   │           ╰── Constant Int [0]
+                    │   │           │   ╰── <142> Constant Int [3]
+                    │   │           ╰── <145> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <148> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <153> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3715,9 +3715,9 @@ fn test_valid_extra_credit_compound_assign_array_of_pointers() {
                     │   │               ╰── Int
                     │   ├── Initializer
                     │   │   ╰── Compound
-                    │   │       ├── Constant Int [0]
-                    │   │       ├── Constant Int [0]
-                    │   │       ╰── Constant Int [0]
+                    │   │       ├── <15> Constant Int [0]
+                    │   │       ├── <17> Constant Int [0]
+                    │   │       ╰── <19> Constant Int [0]
                     │   ╰── Static
                     ├── VarDeclaration
                     │   ├── Name
@@ -3728,10 +3728,10 @@ fn test_valid_extra_credit_compound_assign_array_of_pointers() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [100]
-                    │           ├── Constant Int [101]
-                    │           ├── Constant Int [102]
-                    │           ╰── Constant Int [103]
+                    │           ├── <28> Constant Int [100]
+                    │           ├── <30> Constant Int [101]
+                    │           ├── <32> Constant Int [102]
+                    │           ╰── <34> Constant Int [103]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── nested_array
@@ -3744,42 +3744,42 @@ fn test_valid_extra_credit_compound_assign_array_of_pointers() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── Compound
-                    │           │   ├── Constant Int [200]
-                    │           │   ├── Constant Int [201]
-                    │           │   ├── Constant Int [202]
-                    │           │   ╰── Constant Int [203]
+                    │           │   ├── <45> Constant Int [200]
+                    │           │   ├── <47> Constant Int [201]
+                    │           │   ├── <49> Constant Int [202]
+                    │           │   ╰── <51> Constant Int [203]
                     │           ╰── Compound
-                    │               ├── Constant Int [300]
-                    │               ├── Constant Int [301]
-                    │               ├── Constant Int [302]
-                    │               ╰── Constant Int [303]
+                    │               ├── <54> Constant Int [300]
+                    │               ├── <56> Constant Int [301]
+                    │               ├── <58> Constant Int [302]
+                    │               ╰── <60> Constant Int [303]
                     ├── <73> Assign [=]
                     │   ├── <68> Subscript
                     │   │   ├── <66> Var [array_of_pointers]
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <67> Constant Int [0]
                     │   ╰── <72> AddressOf
                     │       ╰── <71> Var [array1]
                     ├── <85> Assign [=]
                     │   ├── <78> Subscript
                     │   │   ├── <76> Var [array_of_pointers]
-                    │   │   ╰── Constant Int [1]
+                    │   │   ╰── <77> Constant Int [1]
                     │   ╰── <84> AddressOf
                     │       ╰── <83> Subscript
                     │           ├── <81> Var [nested_array]
-                    │           ╰── Constant Int [0]
+                    │           ╰── <82> Constant Int [0]
                     ├── <97> Assign [=]
                     │   ├── <90> Subscript
                     │   │   ├── <88> Var [array_of_pointers]
-                    │   │   ╰── Constant Int [2]
+                    │   │   ╰── <89> Constant Int [2]
                     │   ╰── <96> AddressOf
                     │       ╰── <95> Subscript
                     │           ├── <93> Var [nested_array]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <94> Constant Int [1]
                     ├── <105> Assign [+=]
                     │   ├── <102> Subscript
                     │   │   ├── <100> Var [array_of_pointers]
-                    │   │   ╰── Constant Int [0]
-                    │   ╰── Constant Int [1]
+                    │   │   ╰── <101> Constant Int [0]
+                    │   ╰── <104> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <119>  [!=]
@@ -3787,25 +3787,25 @@ fn test_valid_extra_credit_compound_assign_array_of_pointers() {
                     │   │       │   ├── <114> Subscript
                     │   │       │   │   ├── <110> Subscript
                     │   │       │   │   │   ├── <108> Var [array_of_pointers]
-                    │   │       │   │   │   ╰── Constant Int [0]
+                    │   │       │   │   │   ╰── <109> Constant Int [0]
                     │   │       │   │   ╰── <113> Unary [-]
-                    │   │       │   │       ╰── Constant Int [1]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [103]
+                    │   │       │   │       ╰── <112> Constant Int [1]
+                    │   │       │   ╰── <115> Constant Int [3]
+                    │   │       ╰── <118> Constant Int [103]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <120> Constant Int [1]
                     ├── <131> Assign [+=]
                     │   ├── <128> Subscript
                     │   │   ├── <126> Var [array_of_pointers]
-                    │   │   ╰── Constant Int [1]
-                    │   ╰── Constant Int [1]
+                    │   │   ╰── <127> Constant Int [1]
+                    │   ╰── <130> Constant Int [1]
                     ├── <139> Assign [-=]
                     │   ├── <136> Subscript
                     │   │   ├── <134> Var [array_of_pointers]
-                    │   │   ╰── Constant Int [2]
-                    │   ╰── Constant Int [1]
+                    │   │   ╰── <135> Constant Int [2]
+                    │   ╰── <138> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <151>  [!=]
@@ -3813,14 +3813,14 @@ fn test_valid_extra_credit_compound_assign_array_of_pointers() {
                     │   │       │   ├── <146> Subscript
                     │   │       │   │   ├── <144> Subscript
                     │   │       │   │   │   ├── <142> Var [array_of_pointers]
-                    │   │       │   │   │   ╰── Constant Int [1]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [303]
+                    │   │       │   │   │   ╰── <143> Constant Int [1]
+                    │   │       │   │   ╰── <145> Constant Int [0]
+                    │   │       │   ╰── <147> Constant Int [3]
+                    │   │       ╰── <150> Constant Int [303]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <152> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <167>  [!=]
@@ -3828,16 +3828,16 @@ fn test_valid_extra_credit_compound_assign_array_of_pointers() {
                     │   │       │   ├── <162> Subscript
                     │   │       │   │   ├── <160> Subscript
                     │   │       │   │   │   ├── <158> Var [array_of_pointers]
-                    │   │       │   │   │   ╰── Constant Int [2]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [203]
+                    │   │       │   │   │   ╰── <159> Constant Int [2]
+                    │   │       │   │   ╰── <161> Constant Int [0]
+                    │   │       │   ╰── <163> Constant Int [3]
+                    │   │       ╰── <166> Constant Int [203]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <168> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <173> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -3897,13 +3897,13 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
             │   ╰── Initializer
             │       ╰── Compound
             │           ├── Compound
-            │           │   ├── Constant Int [1]
-            │           │   ├── Constant Int [2]
-            │           │   ╰── Constant Int [3]
+            │           │   ├── <8> Constant Int [1]
+            │           │   ├── <10> Constant Int [2]
+            │           │   ╰── <12> Constant Int [3]
             │           ╰── Compound
-            │               ├── Constant Int [4]
-            │               ├── Constant Int [5]
-            │               ╰── Constant Int [6]
+            │               ├── <15> Constant Int [4]
+            │               ├── <17> Constant Int [5]
+            │               ╰── <19> Constant Int [6]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── dbl_nested_arr
@@ -3916,21 +3916,21 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
             │   ╰── Initializer
             │       ╰── Compound
             │           ├── Compound
-            │           │   ├── Constant Double [+1e2]
-            │           │   ╰── Constant Double [+1.01e2]
+            │           │   ├── <31> Constant Double [+1e2]
+            │           │   ╰── <33> Constant Double [+1.01e2]
             │           ├── Compound
-            │           │   ├── Constant Double [+1.02e2]
-            │           │   ╰── Constant Double [+1.03e2]
+            │           │   ├── <36> Constant Double [+1.02e2]
+            │           │   ╰── <38> Constant Double [+1.03e2]
             │           ╰── Compound
-            │               ├── Constant Double [+1.04e2]
-            │               ╰── Constant Double [+1.05e2]
+            │               ├── <41> Constant Double [+1.04e2]
+            │               ╰── <43> Constant Double [+1.05e2]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── unsigned_index
             │   ├── Type
             │   │   ╰── Unsigned Int
             │   ╰── Initializer
-            │       ╰── Constant Int [10]
+            │       ╰── <51> Constant Int [10]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -3940,32 +3940,32 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
                     │   │       │   ├── <67> Subscript
                     │   │       │   │   ├── <61> Subscript
                     │   │       │   │   │   ├── <59> Var [long_nested_arr]
-                    │   │       │   │   │   ╰── Constant Int [1]
+                    │   │       │   │   │   ╰── <60> Constant Int [1]
                     │   │       │   │   ╰── <66>  [-]
                     │   │       │   │       ├── <63> Var [unsigned_index]
-                    │   │       │   │       ╰── Constant Int [8]
+                    │   │       │   │       ╰── <65> Constant Int [8]
                     │   │       │   ╰── <71> Unary [-]
-                    │   │       │       ╰── Constant Int [1]
+                    │   │       │       ╰── <70> Constant Int [1]
                     │   │       ╰── <77> Unary [-]
-                    │   │           ╰── Constant Int [6]
+                    │   │           ╰── <76> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <79> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <94>  [!=]
                     │   │       ├── <89> Subscript
                     │   │       │   ├── <87> Subscript
                     │   │       │   │   ├── <85> Var [long_nested_arr]
-                    │   │       │   │   ╰── Constant Int [1]
-                    │   │       │   ╰── Constant Int [2]
+                    │   │       │   │   ╰── <86> Constant Int [1]
+                    │   │       │   ╰── <88> Constant Int [2]
                     │   │       ╰── <93> Unary [-]
-                    │   │           ╰── Constant Int [6]
+                    │   │           ╰── <92> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <95> Constant Int [2]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -3974,15 +3974,15 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <103> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <111>  [<]
                     │   │       ├── <108> Var [i]
-                    │   │       ╰── Constant Int [2]
+                    │   │       ╰── <110> Constant Int [2]
                     │   ├── Condition
                     │   │   ╰── <116> Assign [+=]
                     │   │       ├── <113> Var [i]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <115> Constant Int [1]
                     │   ╰── Block
                     │       ╰── For
                     │           ├── Init
@@ -3992,25 +3992,25 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
                     │           │       ├── Type
                     │           │       │   ╰── Int
                     │           │       ╰── Initializer
-                    │           │           ╰── Constant Int [0]
+                    │           │           ╰── <120> Constant Int [0]
                     │           ├── Condition
                     │           │   ╰── <128>  [<]
                     │           │       ├── <125> Var [j]
-                    │           │       ╰── Constant Int [3]
+                    │           │       ╰── <127> Constant Int [3]
                     │           ├── Condition
                     │           │   ╰── <133> Assign [+=]
                     │           │       ├── <130> Var [j]
-                    │           │       ╰── Constant Int [1]
+                    │           │       ╰── <132> Constant Int [1]
                     │           ╰── Block
                     │               ├── If
                     │               │   ├── Condition
                     │               │   │   ╰── <145>  [&&]
                     │               │   │       ├── <138>  [==]
                     │               │   │       │   ├── <135> Var [i]
-                    │               │   │       │   ╰── Constant Int [1]
+                    │               │   │       │   ╰── <137> Constant Int [1]
                     │               │   │       ╰── <144>  [==]
                     │               │   │           ├── <141> Var [j]
-                    │               │   │           ╰── Constant Int [2]
+                    │               │   │           ╰── <143> Constant Int [2]
                     │               │   ╰── Then
                     │               │       ╰── Block
                     │               │           ╰── Break
@@ -4024,9 +4024,9 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
                     │               │           ├── <161>  [+]
                     │               │           │   ├── <157>  [*]
                     │               │           │   │   ├── <154> Var [i]
-                    │               │           │   │   ╰── Constant Int [3]
+                    │               │           │   │   ╰── <156> Constant Int [3]
                     │               │           │   ╰── <160> Var [j]
-                    │               │           ╰── Constant Int [1]
+                    │               │           ╰── <163> Constant Int [1]
                     │               ╰── If
                     │                   ├── Condition
                     │                   │   ╰── <178>  [!=]
@@ -4039,7 +4039,7 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
                     │                   ╰── Then
                     │                       ╰── Block
                     │                           ╰── Return
-                    │                               ╰── Constant Int [3]
+                    │                               ╰── <179> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <202>  [!=]
@@ -4047,14 +4047,14 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
                     │   │       │   ├── <195> Subscript
                     │   │       │   │   ├── <193> Subscript
                     │   │       │   │   │   ├── <191> Var [dbl_nested_arr]
-                    │   │       │   │   │   ╰── Constant Int [1]
-                    │   │       │   │   ╰── Constant Int [1]
-                    │   │       │   ╰── Constant Double [+1e2]
-                    │   │       ╰── Constant Double [+2.03e2]
+                    │   │       │   │   │   ╰── <192> Constant Int [1]
+                    │   │       │   │   ╰── <194> Constant Int [1]
+                    │   │       │   ╰── <197> Constant Double [+1e2]
+                    │   │       ╰── <201> Constant Double [+2.03e2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <203> Constant Int [4]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -4063,15 +4063,15 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <211> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <219>  [<]
                     │   │       ├── <216> Var [i]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <218> Constant Int [3]
                     │   ├── Condition
                     │   │   ╰── <224> Assign [+=]
                     │   │       ├── <221> Var [i]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <223> Constant Int [1]
                     │   ╰── Block
                     │       ╰── For
                     │           ├── Init
@@ -4081,25 +4081,25 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
                     │           │       ├── Type
                     │           │       │   ╰── Int
                     │           │       ╰── Initializer
-                    │           │           ╰── Constant Int [0]
+                    │           │           ╰── <228> Constant Int [0]
                     │           ├── Condition
                     │           │   ╰── <236>  [<]
                     │           │       ├── <233> Var [j]
-                    │           │       ╰── Constant Int [2]
+                    │           │       ╰── <235> Constant Int [2]
                     │           ├── Condition
                     │           │   ╰── <241> Assign [+=]
                     │           │       ├── <238> Var [j]
-                    │           │       ╰── Constant Int [1]
+                    │           │       ╰── <240> Constant Int [1]
                     │           ╰── Block
                     │               ├── If
                     │               │   ├── Condition
                     │               │   │   ╰── <253>  [&&]
                     │               │   │       ├── <246>  [==]
                     │               │   │       │   ├── <243> Var [i]
-                    │               │   │       │   ╰── Constant Int [1]
+                    │               │   │       │   ╰── <245> Constant Int [1]
                     │               │   │       ╰── <252>  [==]
                     │               │   │           ├── <249> Var [j]
-                    │               │   │           ╰── Constant Int [1]
+                    │               │   │           ╰── <251> Constant Int [1]
                     │               │   ╰── Then
                     │               │       ╰── Block
                     │               │           ╰── Continue
@@ -4111,10 +4111,10 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
                     │               │   ╰── Initializer
                     │               │       ╰── <272>  [+]
                     │               │           ├── <268>  [+]
-                    │               │           │   ├── Constant Int [100]
+                    │               │           │   ├── <261> Constant Int [100]
                     │               │           │   ╰── <267>  [*]
                     │               │           │       ├── <264> Var [i]
-                    │               │           │       ╰── Constant Int [2]
+                    │               │           │       ╰── <266> Constant Int [2]
                     │               │           ╰── <271> Var [j]
                     │               ╰── If
                     │                   ├── Condition
@@ -4128,9 +4128,9 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
                     │                   ╰── Then
                     │                       ╰── Block
                     │                           ╰── Return
-                    │                               ╰── Constant Int [5]
+                    │                               ╰── <287> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <298> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4189,24 +4189,24 @@ fn test_valid_extra_credit_compound_assign_to_subscripted_val() {
             │   │       ╰── Unsigned Int
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant UInt [4294967295]
-            │           ├── Constant UInt [4294967294]
-            │           ├── Constant UInt [4294967293]
-            │           ╰── Constant UInt [4294967292]
+            │           ├── <6> Constant UInt [4294967295]
+            │           ├── <8> Constant UInt [4294967294]
+            │           ├── <10> Constant UInt [4294967293]
+            │           ╰── <12> Constant UInt [4294967292]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── idx
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [2]
+            │       ╰── <19> Constant Int [2]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── long_idx
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant Int [1]
+            │       ╰── <25> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ├── <39> Assign [=]
@@ -4216,33 +4216,33 @@ fn test_valid_extra_credit_compound_assign_to_subscripted_val() {
                     ├── <47> Assign [+=]
                     │   ├── <44> Subscript
                     │   │   ├── <42> Var [unsigned_arr]
-                    │   │   ╰── Constant Int [1]
-                    │   ╰── Constant Int [2]
+                    │   │   ╰── <43> Constant Int [1]
+                    │   ╰── <46> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <52> Subscript
                     │   │       ├── <50> Var [unsigned_arr]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <51> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <53> Constant Int [1]
                     ├── <65> Assign [-=]
                     │   ├── <62> Subscript
                     │   │   ├── <59> Var [unsigned_arr]
                     │   │   ╰── <61> Var [idx]
-                    │   ╰── Constant Double [+1e1]
+                    │   ╰── <64> Constant Double [+1e1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <74>  [!=]
                     │   │       ├── <71> Subscript
                     │   │       │   ├── <68> Var [unsigned_arr]
                     │   │       │   ╰── <70> Var [idx]
-                    │   │       ╰── Constant UInt [4294967283]
+                    │   │       ╰── <73> Constant UInt [4294967283]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <75> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── unsigned_ptr
@@ -4252,43 +4252,43 @@ fn test_valid_extra_credit_compound_assign_to_subscripted_val() {
                     │   ╰── Initializer
                     │       ╰── <88>  [+]
                     │           ├── <85> Var [unsigned_arr]
-                    │           ╰── Constant Int [4]
+                    │           ╰── <87> Constant Int [4]
                     ├── <98> Assign [/=]
                     │   ├── <95> Subscript
                     │   │   ├── <92> Var [unsigned_ptr]
                     │   │   ╰── <94> Var [long_idx]
-                    │   ╰── Constant Int [10]
+                    │   ╰── <97> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <106>  [!=]
                     │   │       ├── <103> Subscript
                     │   │       │   ├── <101> Var [unsigned_arr]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant UInt [429496729]
+                    │   │       │   ╰── <102> Constant Int [3]
+                    │   │       ╰── <105> Constant UInt [429496729]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <107> Constant Int [3]
                     ├── <125> Assign [*=]
                     │   ├── <119> Subscript
                     │   │   ├── <113> Var [unsigned_ptr]
                     │   │   ╰── <118> Assign [*=]
                     │   │       ├── <115> Var [long_idx]
-                    │   │       ╰── Constant Int [2]
+                    │   │       ╰── <117> Constant Int [2]
                     │   ╰── <124> Subscript
                     │       ├── <122> Var [unsigned_arr]
-                    │       ╰── Constant Int [0]
+                    │       ╰── <123> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <133>  [!=]
                     │   │       ├── <130> Subscript
                     │   │       │   ├── <128> Var [unsigned_arr]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [13]
+                    │   │       │   ╰── <129> Constant Int [2]
+                    │   │       ╰── <132> Constant Int [13]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <134> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <154>  [!=]
@@ -4298,56 +4298,56 @@ fn test_valid_extra_credit_compound_assign_to_subscripted_val() {
                     │   │       │   │   ╰── <146>  [+]
                     │   │       │   │       ├── <142> Var [idx]
                     │   │       │   │       ╰── <145> Var [long_idx]
-                    │   │       │   ╰── Constant Int [10]
-                    │   │       ╰── Constant Int [5]
+                    │   │       │   ╰── <149> Constant Int [10]
+                    │   │       ╰── <153> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <155> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <166>  [!=]
                     │   │       ├── <163> Subscript
                     │   │       │   ├── <161> Var [unsigned_arr]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant UInt [5]
+                    │   │       │   ╰── <162> Constant Int [0]
+                    │   │       ╰── <165> Constant UInt [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <167> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <175> Subscript
                     │   │       ├── <173> Var [unsigned_arr]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <174> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <176> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <187>  [!=]
                     │   │       ├── <184> Subscript
                     │   │       │   ├── <182> Var [unsigned_arr]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [13]
+                    │   │       │   ╰── <183> Constant Int [2]
+                    │   │       ╰── <186> Constant Int [13]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <188> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <199>  [!=]
                     │   │       ├── <196> Subscript
                     │   │       │   ├── <194> Var [unsigned_arr]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant UInt [429496729]
+                    │   │       │   ╰── <195> Constant Int [3]
+                    │   │       ╰── <198> Constant UInt [429496729]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <200> Constant Int [9]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <205> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4399,98 +4399,98 @@ fn test_valid_extra_credit_compound_bitwise_subscript() {
                     │   │       ╰── Unsigned Long
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Long [2147483648]
-                    │           ├── Constant ULong [18446744069414584320]
-                    │           ├── Constant ULong [9223372036854775808]
-                    │           ╰── Constant Long [1085102592571150095]
+                    │           ├── <10> Constant Long [2147483648]
+                    │           ├── <12> Constant ULong [18446744069414584320]
+                    │           ├── <14> Constant ULong [9223372036854775808]
+                    │           ╰── <16> Constant Long [1085102592571150095]
                     ├── <29> Assign [&=]
                     │   ├── <23> Subscript
                     │   │   ├── <21> Var [arr]
-                    │   │   ╰── Constant Int [1]
+                    │   │   ╰── <22> Constant Int [1]
                     │   ╰── <28> Subscript
                     │       ├── <26> Var [arr]
-                    │       ╰── Constant Int [3]
+                    │       ╰── <27> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <37>  [!=]
                     │   │       ├── <34> Subscript
                     │   │       │   ├── <32> Var [arr]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Long [1085102592318504960]
+                    │   │       │   ╰── <33> Constant Int [1]
+                    │   │       ╰── <36> Constant Long [1085102592318504960]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <38> Constant Int [1]
                     ├── <52> Assign [|=]
                     │   ├── <46> Subscript
                     │   │   ├── <44> Var [arr]
-                    │   │   ╰── Constant Int [0]
+                    │   │   ╰── <45> Constant Int [0]
                     │   ╰── <51> Subscript
                     │       ├── <49> Var [arr]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <50> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <60>  [!=]
                     │   │       ├── <57> Subscript
                     │   │       │   ├── <55> Var [arr]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant ULong [1085102594465988608]
+                    │   │       │   ╰── <56> Constant Int [0]
+                    │   │       ╰── <59> Constant ULong [1085102594465988608]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <61> Constant Int [2]
                     ├── <75> Assign [^=]
                     │   ├── <69> Subscript
                     │   │   ├── <67> Var [arr]
-                    │   │   ╰── Constant Int [2]
+                    │   │   ╰── <68> Constant Int [2]
                     │   ╰── <74> Subscript
                     │       ├── <72> Var [arr]
-                    │       ╰── Constant Int [3]
+                    │       ╰── <73> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <83>  [!=]
                     │   │       ├── <80> Subscript
                     │   │       │   ├── <78> Var [arr]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant ULong [10308474629425925903]
+                    │   │       │   ╰── <79> Constant Int [2]
+                    │   │       ╰── <82> Constant ULong [10308474629425925903]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <84> Constant Int [3]
                     ├── <95> Assign [>>=]
                     │   ├── <92> Subscript
                     │   │   ├── <90> Var [arr]
-                    │   │   ╰── Constant Int [3]
-                    │   ╰── Constant Int [25]
+                    │   │   ╰── <91> Constant Int [3]
+                    │   ╰── <94> Constant Int [25]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <103>  [!=]
                     │   │       ├── <100> Subscript
                     │   │       │   ├── <98> Var [arr]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Long [32338577287]
+                    │   │       │   ╰── <99> Constant Int [3]
+                    │   │       ╰── <102> Constant Long [32338577287]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <104> Constant Int [4]
                     ├── <115> Assign [<<=]
                     │   ├── <112> Subscript
                     │   │   ├── <110> Var [arr]
-                    │   │   ╰── Constant Int [1]
-                    │   ╰── Constant Int [12]
+                    │   │   ╰── <111> Constant Int [1]
+                    │   ╰── <114> Constant Int [12]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <123>  [!=]
                     │   │       ├── <120> Subscript
                     │   │       │   ├── <118> Var [arr]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant ULong [17361640446303928320]
+                    │   │       │   ╰── <119> Constant Int [1]
+                    │   │       ╰── <122> Constant ULong [17361640446303928320]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <124> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <129> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4528,11 +4528,11 @@ fn test_valid_extra_credit_compound_lval_evaluated_once() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [0]
+            │       │   │   ╰── <9> Constant Int [0]
             │       │   ╰── Static
             │       ├── <16> Assign [+=]
             │       │   ├── <13> Var [count]
-            │       │   ╰── Constant Int [1]
+            │       │   ╰── <15> Constant Int [1]
             │       ╰── Return
             │           ╰── <19> Var [count]
             ╰── Function [main]
@@ -4546,21 +4546,21 @@ fn test_valid_extra_credit_compound_lval_evaluated_once() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [10]
-                    │           ├── Constant Int [11]
-                    │           ├── Constant Int [12]
-                    │           ╰── Constant Int [13]
+                    │           ├── <32> Constant Int [10]
+                    │           ├── <34> Constant Int [11]
+                    │           ├── <36> Constant Int [12]
+                    │           ╰── <38> Constant Int [13]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <49>  [!=]
                     │   │       ├── <46> Subscript
                     │   │       │   ├── <43> Var [arr]
                     │   │       │   ╰── <45> FunctionCall [get_call_count]
-                    │   │       ╰── Constant Int [11]
+                    │   │       ╰── <48> Constant Int [11]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <50> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── end_ptr
@@ -4570,32 +4570,32 @@ fn test_valid_extra_credit_compound_lval_evaluated_once() {
                     │   ╰── Initializer
                     │       ╰── <63>  [+]
                     │           ├── <60> Var [arr]
-                    │           ╰── Constant Int [4]
+                    │           ╰── <62> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <79>  [!=]
                     │   │       ├── <76> Subscript
                     │   │       │   ├── <71>  [-]
                     │   │       │   │   ├── <67> Var [end_ptr]
-                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── <69> Constant Int [1]
                     │   │       │   ╰── <75> Unary [-]
                     │   │       │       ╰── <74> FunctionCall [get_call_count]
-                    │   │       ╰── Constant Int [11]
+                    │   │       ╰── <78> Constant Int [11]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <80> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <89>  [!=]
                     │   │       ├── <86> FunctionCall [get_call_count]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <88> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <90> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <95> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4646,17 +4646,17 @@ fn test_valid_extra_credit_compound_nested_pointer_assignment() {
             │   │   ╰── Compound
             │   │       ├── Compound
             │   │       │   ├── Compound
-            │   │       │   │   ├── Constant Int [10]
-            │   │       │   │   ├── Constant Int [9]
-            │   │       │   │   ╰── Constant Int [8]
+            │   │       │   │   ├── <11> Constant Int [10]
+            │   │       │   │   ├── <13> Constant Int [9]
+            │   │       │   │   ╰── <15> Constant Int [8]
             │   │       │   ╰── Compound
-            │   │       │       ├── Constant Int [1]
-            │   │       │       ╰── Constant Int [2]
+            │   │       │       ├── <18> Constant Int [1]
+            │   │       │       ╰── <20> Constant Int [2]
             │   │       ╰── Compound
             │   │           ╰── Compound
-            │   │               ├── Constant Int [100]
-            │   │               ├── Constant Int [99]
-            │   │               ╰── Constant Int [98]
+            │   │               ├── <24> Constant Int [100]
+            │   │               ├── <26> Constant Int [99]
+            │   │               ╰── <28> Constant Int [98]
             │   ╰── Static
             ╰── Function [main]
                 ╰── Body
@@ -4674,18 +4674,18 @@ fn test_valid_extra_credit_compound_nested_pointer_assignment() {
                     │       ╰── <48> Var [nested_arr]
                     ├── <55> Assign [+=]
                     │   ├── <52> Var [outer_ptr]
-                    │   ╰── Constant Int [1]
+                    │   ╰── <54> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <65>  [!=]
                     │   │       ├── <58> Var [outer_ptr]
                     │   │       ╰── <64>  [+]
                     │   │           ├── <61> Var [nested_arr]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <63> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <66> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <81>  [!=]
@@ -4693,14 +4693,14 @@ fn test_valid_extra_credit_compound_nested_pointer_assignment() {
                     │   │       │   ├── <76> Subscript
                     │   │       │   │   ├── <74> Subscript
                     │   │       │   │   │   ├── <72> Var [outer_ptr]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [100]
+                    │   │       │   │   │   ╰── <73> Constant Int [0]
+                    │   │       │   │   ╰── <75> Constant Int [0]
+                    │   │       │   ╰── <77> Constant Int [0]
+                    │   │       ╰── <80> Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <82> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── inner_ptr
@@ -4713,24 +4713,24 @@ fn test_valid_extra_credit_compound_nested_pointer_assignment() {
                     │       ╰── <100>  [+]
                     │           ├── <97> Subscript
                     │           │   ├── <95> Var [nested_arr]
-                    │           │   ╰── Constant Int [0]
-                    │           ╰── Constant Int [4]
+                    │           │   ╰── <96> Constant Int [0]
+                    │           ╰── <99> Constant Int [4]
                     ├── <107> Assign [-=]
                     │   ├── <104> Var [inner_ptr]
-                    │   ╰── Constant Int [3]
+                    │   ╰── <106> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <117>  [!=]
                     │   │       ├── <114> Subscript
                     │   │       │   ├── <112> Subscript
                     │   │       │   │   ├── <110> Var [inner_ptr]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [2]
+                    │   │       │   │   ╰── <111> Constant Int [0]
+                    │   │       │   ╰── <113> Constant Int [1]
+                    │   │       ╰── <116> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <118> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── idx
@@ -4742,10 +4742,10 @@ fn test_valid_extra_credit_compound_nested_pointer_assignment() {
                     │           │   ├── <131> Subscript
                     │           │   │   ├── <129> Subscript
                     │           │   │   │   ├── <127> Var [nested_arr]
-                    │           │   │   │   ╰── Constant Int [0]
-                    │           │   │   ╰── Constant Int [0]
-                    │           │   ╰── Constant Int [0]
-                    │           ╰── Constant Int [9]
+                    │           │   │   │   ╰── <128> Constant Int [0]
+                    │           │   │   ╰── <130> Constant Int [0]
+                    │           │   ╰── <132> Constant Int [0]
+                    │           ╰── <135> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <154>  [!=]
@@ -4756,12 +4756,12 @@ fn test_valid_extra_credit_compound_nested_pointer_assignment() {
                     │   │           ╰── <152> Subscript
                     │   │               ├── <150> Subscript
                     │   │               │   ├── <148> Var [nested_arr]
-                    │   │               │   ╰── Constant Int [0]
-                    │   │               ╰── Constant Int [2]
+                    │   │               │   ╰── <149> Constant Int [0]
+                    │   │               ╰── <151> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <155> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <171>  [!=]
@@ -4769,15 +4769,15 @@ fn test_valid_extra_credit_compound_nested_pointer_assignment() {
                     │   │       │   ├── <165> Subscript
                     │   │       │   │   ├── <161> Var [inner_ptr]
                     │   │       │   │   ╰── <164> Unary [-]
-                    │   │       │   │       ╰── Constant Int [2]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [9]
+                    │   │       │   │       ╰── <163> Constant Int [2]
+                    │   │       │   ╰── <166> Constant Int [1]
+                    │   │       ╰── <169> Constant Int [9]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <172> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <177> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4889,7 +4889,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [4]
+            │       ╰── <4> Constant Int [4]
             ├── Function [int_array]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -4901,12 +4901,12 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             │       │   │       ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [1]
-            │       │           ├── Constant Int [2]
-            │       │           ├── Constant Int [3]
-            │       │           ├── Constant Int [4]
-            │       │           ├── Constant Int [5]
-            │       │           ╰── Constant Int [6]
+            │       │           ├── <16> Constant Int [1]
+            │       │           ├── <18> Constant Int [2]
+            │       │           ├── <20> Constant Int [3]
+            │       │           ├── <22> Constant Int [4]
+            │       │           ├── <24> Constant Int [5]
+            │       │           ╰── <26> Constant Int [6]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr
@@ -4921,68 +4921,68 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             │       │   │       ├── <44> Dereference
             │       │   │       │   ╰── <43> Assign [+=]
             │       │   │       │       ├── <39> Var [ptr]
-            │       │   │       │       ╰── Constant Int [5]
-            │       │   │       ╰── Constant Int [6]
+            │       │   │       │       ╰── <41> Constant Int [5]
+            │       │   │       ╰── <46> Constant Int [6]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <48> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <59>  [!=]
             │       │   │       ├── <56> Subscript
             │       │   │       │   ├── <54> Var [ptr]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant Int [6]
+            │       │   │       │   ╰── <55> Constant Int [0]
+            │       │   │       ╰── <58> Constant Int [6]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [2]
+            │       │               ╰── <60> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <73>  [!=]
             │       │   │       ├── <66> Var [ptr]
             │       │   │       ╰── <72>  [+]
             │       │   │           ├── <69> Var [arr]
-            │       │   │           ╰── Constant Int [5]
+            │       │   │           ╰── <71> Constant Int [5]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <74> Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <88>  [!=]
             │       │   │       ├── <85> Dereference
             │       │   │       │   ╰── <84> Assign [-=]
             │       │   │       │       ├── <80> Var [ptr]
-            │       │   │       │       ╰── Constant Int [3]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       │       ╰── <82> Constant Int [3]
+            │       │   │       ╰── <87> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [4]
+            │       │               ╰── <89> Constant Int [4]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <100>  [!=]
             │       │   │       ├── <97> Subscript
             │       │   │       │   ├── <95> Var [ptr]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       │   ╰── <96> Constant Int [0]
+            │       │   │       ╰── <99> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [5]
+            │       │               ╰── <101> Constant Int [5]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <114>  [!=]
             │       │   │       ├── <107> Var [ptr]
             │       │   │       ╰── <113>  [+]
             │       │   │           ├── <110> Var [arr]
-            │       │   │           ╰── Constant Int [2]
+            │       │   │           ╰── <112> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [6]
+            │       │               ╰── <115> Constant Int [6]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <136>  [!=]
@@ -4990,56 +4990,56 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             │       │   │       │   ├── <121> Var [ptr]
             │       │   │       │   ╰── <127>  [-]
             │       │   │       │       ├── <124> Var [i]
-            │       │   │       │       ╰── Constant Int [1]
+            │       │   │       │       ╰── <126> Constant Int [1]
             │       │   │       ╰── <135>  [+]
             │       │   │           ├── <132> Var [arr]
-            │       │   │           ╰── Constant Int [5]
+            │       │   │           ╰── <134> Constant Int [5]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [7]
+            │       │               ╰── <137> Constant Int [7]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <147>  [!=]
             │       │   │       ├── <144> Dereference
             │       │   │       │   ╰── <143> Var [ptr]
-            │       │   │       ╰── Constant Int [6]
+            │       │   │       ╰── <146> Constant Int [6]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [8]
+            │       │               ╰── <148> Constant Int [8]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <170>  [!=]
             │       │   │       ├── <163> Assign [-=]
             │       │   │       │   ├── <154> Var [ptr]
             │       │   │       │   ╰── <161>  [+]
-            │       │   │       │       ├── Constant UInt [4294967295]
+            │       │   │       │       ├── <156> Constant UInt [4294967295]
             │       │   │       │       ╰── <159> Var [i]
             │       │   │       ╰── <169>  [+]
             │       │   │           ├── <166> Var [arr]
-            │       │   │           ╰── Constant Int [2]
+            │       │   │           ╰── <168> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [9]
+            │       │               ╰── <171> Constant Int [9]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <181>  [!=]
             │       │   │       ├── <178> Dereference
             │       │   │       │   ╰── <177> Var [ptr]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       ╰── <180> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [10]
+            │       │               ╰── <182> Constant Int [10]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── l
             │       │   ├── Type
             │       │   │   ╰── Long
             │       │   ╰── Initializer
-            │       │       ╰── Constant Long [9223372036854775807]
+            │       │       ╰── <190> Constant Long [9223372036854775807]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <209>  [!=]
@@ -5047,26 +5047,26 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             │       │   │       │   ├── <194> Var [ptr]
             │       │   │       │   ╰── <200>  [-]
             │       │   │       │       ├── <197> Var [l]
-            │       │   │       │       ╰── Constant Long [9223372036854775806]
+            │       │   │       │       ╰── <199> Constant Long [9223372036854775806]
             │       │   │       ╰── <208>  [+]
             │       │   │           ├── <205> Var [arr]
-            │       │   │           ╰── Constant Int [3]
+            │       │   │           ╰── <207> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [11]
+            │       │               ╰── <210> Constant Int [11]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <220>  [!=]
             │       │   │       ├── <217> Dereference
             │       │   │       │   ╰── <216> Var [ptr]
-            │       │   │       ╰── Constant Int [4]
+            │       │   │       ╰── <219> Constant Int [4]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [12]
+            │       │               ╰── <221> Constant Int [12]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <226> Constant Int [0]
             ├── Function [double_array]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -5078,12 +5078,12 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             │       │   │       ╰── Double
             │       │   ├── Initializer
             │       │   │   ╰── Compound
-            │       │   │       ├── Constant Double [+1e0]
-            │       │   │       ├── Constant Double [+2e0]
-            │       │   │       ├── Constant Double [+3e0]
-            │       │   │       ├── Constant Double [+4e0]
-            │       │   │       ├── Constant Double [+5e0]
-            │       │   │       ╰── Constant Double [+6e0]
+            │       │   │       ├── <240> Constant Double [+1e0]
+            │       │   │       ├── <242> Constant Double [+2e0]
+            │       │   │       ├── <244> Constant Double [+3e0]
+            │       │   │       ├── <246> Constant Double [+4e0]
+            │       │   │       ├── <248> Constant Double [+5e0]
+            │       │   │       ╰── <250> Constant Double [+6e0]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -5099,68 +5099,68 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             │       │   │       ├── <268> Dereference
             │       │   │       │   ╰── <267> Assign [+=]
             │       │   │       │       ├── <263> Var [ptr]
-            │       │   │       │       ╰── Constant Int [5]
-            │       │   │       ╰── Constant Int [6]
+            │       │   │       │       ╰── <265> Constant Int [5]
+            │       │   │       ╰── <270> Constant Int [6]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <272> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <283>  [!=]
             │       │   │       ├── <280> Subscript
             │       │   │       │   ├── <278> Var [ptr]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant Int [6]
+            │       │   │       │   ╰── <279> Constant Int [0]
+            │       │   │       ╰── <282> Constant Int [6]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [2]
+            │       │               ╰── <284> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <297>  [!=]
             │       │   │       ├── <290> Var [ptr]
             │       │   │       ╰── <296>  [+]
             │       │   │           ├── <293> Var [arr]
-            │       │   │           ╰── Constant Int [5]
+            │       │   │           ╰── <295> Constant Int [5]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <298> Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <312>  [!=]
             │       │   │       ├── <309> Dereference
             │       │   │       │   ╰── <308> Assign [-=]
             │       │   │       │       ├── <304> Var [ptr]
-            │       │   │       │       ╰── Constant Int [3]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       │       ╰── <306> Constant Int [3]
+            │       │   │       ╰── <311> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [4]
+            │       │               ╰── <313> Constant Int [4]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <324>  [!=]
             │       │   │       ├── <321> Subscript
             │       │   │       │   ├── <319> Var [ptr]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       │   ╰── <320> Constant Int [0]
+            │       │   │       ╰── <323> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [5]
+            │       │               ╰── <325> Constant Int [5]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <338>  [!=]
             │       │   │       ├── <331> Var [ptr]
             │       │   │       ╰── <337>  [+]
             │       │   │           ├── <334> Var [arr]
-            │       │   │           ╰── Constant Int [2]
+            │       │   │           ╰── <336> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [6]
+            │       │               ╰── <339> Constant Int [6]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <360>  [!=]
@@ -5168,56 +5168,56 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             │       │   │       │   ├── <345> Var [ptr]
             │       │   │       │   ╰── <351>  [-]
             │       │   │       │       ├── <348> Var [i]
-            │       │   │       │       ╰── Constant Int [1]
+            │       │   │       │       ╰── <350> Constant Int [1]
             │       │   │       ╰── <359>  [+]
             │       │   │           ├── <356> Var [arr]
-            │       │   │           ╰── Constant Int [5]
+            │       │   │           ╰── <358> Constant Int [5]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [7]
+            │       │               ╰── <361> Constant Int [7]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <371>  [!=]
             │       │   │       ├── <368> Dereference
             │       │   │       │   ╰── <367> Var [ptr]
-            │       │   │       ╰── Constant Int [6]
+            │       │   │       ╰── <370> Constant Int [6]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [8]
+            │       │               ╰── <372> Constant Int [8]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <394>  [!=]
             │       │   │       ├── <387> Assign [-=]
             │       │   │       │   ├── <378> Var [ptr]
             │       │   │       │   ╰── <385>  [+]
-            │       │   │       │       ├── Constant UInt [4294967295]
+            │       │   │       │       ├── <380> Constant UInt [4294967295]
             │       │   │       │       ╰── <383> Var [i]
             │       │   │       ╰── <393>  [+]
             │       │   │           ├── <390> Var [arr]
-            │       │   │           ╰── Constant Int [2]
+            │       │   │           ╰── <392> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [9]
+            │       │               ╰── <395> Constant Int [9]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <405>  [!=]
             │       │   │       ├── <402> Dereference
             │       │   │       │   ╰── <401> Var [ptr]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       ╰── <404> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [10]
+            │       │               ╰── <406> Constant Int [10]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── l
             │       │   ├── Type
             │       │   │   ╰── Long
             │       │   ╰── Initializer
-            │       │       ╰── Constant Long [9223372036854775807]
+            │       │       ╰── <414> Constant Long [9223372036854775807]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <433>  [!=]
@@ -5225,26 +5225,26 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             │       │   │       │   ├── <418> Var [ptr]
             │       │   │       │   ╰── <424>  [-]
             │       │   │       │       ├── <421> Var [l]
-            │       │   │       │       ╰── Constant Long [9223372036854775806]
+            │       │   │       │       ╰── <423> Constant Long [9223372036854775806]
             │       │   │       ╰── <432>  [+]
             │       │   │           ├── <429> Var [arr]
-            │       │   │           ╰── Constant Int [3]
+            │       │   │           ╰── <431> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [11]
+            │       │               ╰── <434> Constant Int [11]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <444>  [!=]
             │       │   │       ├── <441> Dereference
             │       │   │       │   ╰── <440> Var [ptr]
-            │       │   │       ╰── Constant Int [4]
+            │       │   │       ╰── <443> Constant Int [4]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [12]
+            │       │               ╰── <445> Constant Int [12]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <450> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -5271,9 +5271,9 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
                     │           ╰── Return
                     │               ╰── <486>  [+]
                     │                   ├── <483> Var [result]
-                    │                   ╰── Constant Int [12]
+                    │                   ╰── <485> Constant Int [12]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <491> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -5338,36 +5338,36 @@ fn test_valid_extra_credit_incr_and_decr_nested_pointers() {
                     │       ╰── Compound
                     │           ├── Compound
                     │           │   ├── Compound
-                    │           │   │   ├── Constant Int [1]
-                    │           │   │   ├── Constant Int [2]
-                    │           │   │   ├── Constant Int [3]
-                    │           │   │   ╰── Constant Int [4]
+                    │           │   │   ├── <14> Constant Int [1]
+                    │           │   │   ├── <16> Constant Int [2]
+                    │           │   │   ├── <18> Constant Int [3]
+                    │           │   │   ╰── <20> Constant Int [4]
                     │           │   ├── Compound
-                    │           │   │   ├── Constant Int [5]
-                    │           │   │   ├── Constant Int [6]
-                    │           │   │   ├── Constant Int [7]
-                    │           │   │   ╰── Constant Int [8]
+                    │           │   │   ├── <23> Constant Int [5]
+                    │           │   │   ├── <25> Constant Int [6]
+                    │           │   │   ├── <27> Constant Int [7]
+                    │           │   │   ╰── <29> Constant Int [8]
                     │           │   ╰── Compound
-                    │           │       ├── Constant Int [9]
-                    │           │       ├── Constant Int [10]
-                    │           │       ├── Constant Int [11]
-                    │           │       ╰── Constant Int [12]
+                    │           │       ├── <32> Constant Int [9]
+                    │           │       ├── <34> Constant Int [10]
+                    │           │       ├── <36> Constant Int [11]
+                    │           │       ╰── <38> Constant Int [12]
                     │           ╰── Compound
                     │               ├── Compound
-                    │               │   ├── Constant Int [13]
-                    │               │   ├── Constant Int [14]
-                    │               │   ├── Constant Int [15]
-                    │               │   ╰── Constant Int [16]
+                    │               │   ├── <42> Constant Int [13]
+                    │               │   ├── <44> Constant Int [14]
+                    │               │   ├── <46> Constant Int [15]
+                    │               │   ╰── <48> Constant Int [16]
                     │               ├── Compound
-                    │               │   ├── Constant Int [17]
-                    │               │   ├── Constant Int [18]
-                    │               │   ├── Constant Int [19]
-                    │               │   ╰── Constant Int [20]
+                    │               │   ├── <51> Constant Int [17]
+                    │               │   ├── <53> Constant Int [18]
+                    │               │   ├── <55> Constant Int [19]
+                    │               │   ╰── <57> Constant Int [20]
                     │               ╰── Compound
-                    │                   ├── Constant Int [21]
-                    │                   ├── Constant Int [22]
-                    │                   ├── Constant Int [23]
-                    │                   ╰── Constant Int [24]
+                    │                   ├── <60> Constant Int [21]
+                    │                   ├── <62> Constant Int [22]
+                    │                   ├── <64> Constant Int [23]
+                    │                   ╰── <66> Constant Int [24]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── outer_ptr
@@ -5381,7 +5381,7 @@ fn test_valid_extra_credit_incr_and_decr_nested_pointers() {
                     │   ╰── Initializer
                     │       ╰── <85>  [+]
                     │           ├── <82> Var [arr]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <84> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <98>  [!=]
@@ -5390,28 +5390,28 @@ fn test_valid_extra_credit_incr_and_decr_nested_pointers() {
                     │   │       ╰── <97> AddressOf
                     │   │           ╰── <96> Subscript
                     │   │               ├── <94> Var [arr]
-                    │   │               ╰── Constant Int [1]
+                    │   │               ╰── <95> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <99> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <117>  [!=]
                     │   │       ├── <109> Subscript
                     │   │       │   ├── <107> Subscript
                     │   │       │   │   ├── <105> Var [outer_ptr]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [1]
+                    │   │       │   │   ╰── <106> Constant Int [0]
+                    │   │       │   ╰── <108> Constant Int [1]
                     │   │       ╰── <116> Subscript
                     │   │           ├── <114> Subscript
                     │   │           │   ├── <112> Var [arr]
-                    │   │           │   ╰── Constant Int [0]
-                    │   │           ╰── Constant Int [1]
+                    │   │           │   ╰── <113> Constant Int [0]
+                    │   │           ╰── <115> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <118> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <136>  [!=]
@@ -5420,14 +5420,14 @@ fn test_valid_extra_credit_incr_and_decr_nested_pointers() {
                     │   │       │   │   ├── <129> Subscript
                     │   │       │   │   │   ├── <127> Unary [++]
                     │   │       │   │   │   │   ╰── <125> Var [outer_ptr]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [2]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [24]
+                    │   │       │   │   │   ╰── <128> Constant Int [0]
+                    │   │       │   │   ╰── <130> Constant Int [2]
+                    │   │       │   ╰── <132> Constant Int [3]
+                    │   │       ╰── <135> Constant Int [24]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <137> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <152>  [!=]
@@ -5435,14 +5435,14 @@ fn test_valid_extra_credit_incr_and_decr_nested_pointers() {
                     │   │       │   ├── <147> Subscript
                     │   │       │   │   ├── <145> Subscript
                     │   │       │   │   │   ├── <143> Var [outer_ptr]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [2]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [24]
+                    │   │       │   │   │   ╰── <144> Constant Int [0]
+                    │   │       │   │   ╰── <146> Constant Int [2]
+                    │   │       │   ╰── <148> Constant Int [3]
+                    │   │       ╰── <151> Constant Int [24]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <153> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── inner_ptr
@@ -5455,8 +5455,8 @@ fn test_valid_extra_credit_incr_and_decr_nested_pointers() {
                     │       ╰── <171>  [+]
                     │           ├── <168> Subscript
                     │           │   ├── <166> Var [arr]
-                    │           │   ╰── Constant Int [0]
-                    │           ╰── Constant Int [1]
+                    │           │   ╰── <167> Constant Int [0]
+                    │           ╰── <170> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <184>  [!=]
@@ -5464,26 +5464,26 @@ fn test_valid_extra_credit_incr_and_decr_nested_pointers() {
                     │   │       │   ├── <179> Subscript
                     │   │       │   │   ├── <177> Postfix [++]
                     │   │       │   │   │   ╰── <175> Var [inner_ptr]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [7]
+                    │   │       │   │   ╰── <178> Constant Int [0]
+                    │   │       │   ╰── <180> Constant Int [2]
+                    │   │       ╰── <183> Constant Int [7]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <185> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <198>  [!=]
                     │   │       ├── <195> Subscript
                     │   │       │   ├── <193> Subscript
                     │   │       │   │   ├── <191> Var [inner_ptr]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [11]
+                    │   │       │   │   ╰── <192> Constant Int [0]
+                    │   │       │   ╰── <194> Constant Int [2]
+                    │   │       ╰── <197> Constant Int [11]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <199> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <215>  [!=]
@@ -5491,13 +5491,13 @@ fn test_valid_extra_credit_incr_and_decr_nested_pointers() {
                     │   │       │   ├── <210> Subscript
                     │   │       │   │   ├── <208> Unary [--]
                     │   │       │   │   │   ╰── <206> Var [inner_ptr]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [6]
+                    │   │       │   │   ╰── <209> Constant Int [0]
+                    │   │       │   ╰── <211> Constant Int [1]
+                    │   │       ╰── <214> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <216> Constant Int [7]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── scalar_ptr
@@ -5508,33 +5508,33 @@ fn test_valid_extra_credit_incr_and_decr_nested_pointers() {
                     │       ╰── <230> Subscript
                     │           ├── <228> Subscript
                     │           │   ├── <226> Var [arr]
-                    │           │   ╰── Constant Int [1]
-                    │           ╰── Constant Int [2]
+                    │           │   ╰── <227> Constant Int [1]
+                    │           ╰── <229> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <241>  [!=]
                     │   │       ├── <238> Subscript
                     │   │       │   ├── <236> Postfix [--]
                     │   │       │   │   ╰── <234> Var [scalar_ptr]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [23]
+                    │   │       │   ╰── <237> Constant Int [2]
+                    │   │       ╰── <240> Constant Int [23]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <242> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <253>  [!=]
                     │   │       ├── <250> Subscript
                     │   │       │   ├── <248> Var [scalar_ptr]
-                    │   │       │   ╰── Constant Int [2]
-                    │   │       ╰── Constant Int [22]
+                    │   │       │   ╰── <249> Constant Int [2]
+                    │   │       ╰── <252> Constant Int [22]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <254> Constant Int [9]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <259> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -5592,9 +5592,9 @@ fn test_valid_extra_credit_incr_and_decr_pointers() {
                     │   │       ╰── Double
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Double [+0e0]
-                    │           ├── Constant Double [+1e0]
-                    │           ╰── Constant Double [+2e0]
+                    │           ├── <10> Constant Double [+0e0]
+                    │           ├── <12> Constant Double [+1e0]
+                    │           ╰── <14> Constant Double [+2e0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr
@@ -5610,21 +5610,21 @@ fn test_valid_extra_credit_incr_and_decr_pointers() {
                     │   │       │   ╰── <28> Var [ptr]
                     │   │       ╰── <35>  [+]
                     │   │           ├── <32> Var [x]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <34> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <37> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <47>  [!=]
                     │   │       ├── <44> Dereference
                     │   │       │   ╰── <43> Var [ptr]
-                    │   │       ╰── Constant Double [+1e0]
+                    │   │       ╰── <46> Constant Double [+1e0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <48> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <63>  [!=]
@@ -5632,32 +5632,32 @@ fn test_valid_extra_credit_incr_and_decr_pointers() {
                     │   │       │   ╰── <54> Var [ptr]
                     │   │       ╰── <62>  [+]
                     │   │           ├── <59> Var [x]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <61> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <64> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <77>  [!=]
                     │   │       ├── <70> Var [ptr]
                     │   │       ╰── <76>  [+]
                     │   │           ├── <73> Var [x]
-                    │   │           ╰── Constant Int [2]
+                    │   │           ╰── <75> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <78> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <88>  [!=]
                     │   │       ├── <85> Dereference
                     │   │       │   ╰── <84> Var [ptr]
-                    │   │       ╰── Constant Double [+2e0]
+                    │   │       ╰── <87> Constant Double [+2e0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <89> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <104>  [!=]
@@ -5665,21 +5665,21 @@ fn test_valid_extra_credit_incr_and_decr_pointers() {
                     │   │       │   ╰── <96> Var [ptr]
                     │   │       ╰── <103>  [+]
                     │   │           ├── <100> Var [x]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <102> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <105> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <115>  [!=]
                     │   │       ├── <112> Dereference
                     │   │       │   ╰── <111> Var [ptr]
-                    │   │       ╰── Constant Double [+1e0]
+                    │   │       ╰── <114> Constant Double [+1e0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <116> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <131>  [!=]
@@ -5687,21 +5687,21 @@ fn test_valid_extra_credit_incr_and_decr_pointers() {
                     │   │       │   ╰── <122> Var [ptr]
                     │   │       ╰── <130>  [+]
                     │   │           ├── <127> Var [x]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <129> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <132> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <142>  [!=]
                     │   │       ├── <139> Dereference
                     │   │       │   ╰── <138> Var [ptr]
-                    │   │       ╰── Constant Double [+0e0]
+                    │   │       ╰── <141> Constant Double [+0e0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <143> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <153>  [!=]
@@ -5710,9 +5710,9 @@ fn test_valid_extra_credit_incr_and_decr_pointers() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [10]
+                    │               ╰── <154> Constant Int [10]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <159> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -5752,21 +5752,21 @@ fn test_valid_extra_credit_incr_decr_subscripted_vals() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [2]
+            │       ╰── <4> Constant Int [2]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── j
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [1]
+            │       ╰── <10> Constant Int [1]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── k
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [0]
+            │       ╰── <16> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -5784,25 +5784,25 @@ fn test_valid_extra_credit_incr_decr_subscripted_vals() {
                     │       ╰── Compound
                     │           ├── Compound
                     │           │   ├── Compound
-                    │           │   │   ├── Constant Int [1]
-                    │           │   │   ╰── Constant Int [2]
+                    │           │   │   ├── <32> Constant Int [1]
+                    │           │   │   ╰── <34> Constant Int [2]
                     │           │   ╰── Compound
-                    │           │       ├── Constant Int [3]
-                    │           │       ╰── Constant Int [4]
+                    │           │       ├── <37> Constant Int [3]
+                    │           │       ╰── <39> Constant Int [4]
                     │           ├── Compound
                     │           │   ├── Compound
-                    │           │   │   ├── Constant Int [5]
-                    │           │   │   ╰── Constant Int [6]
+                    │           │   │   ├── <43> Constant Int [5]
+                    │           │   │   ╰── <45> Constant Int [6]
                     │           │   ╰── Compound
-                    │           │       ├── Constant Int [7]
-                    │           │       ╰── Constant Int [8]
+                    │           │       ├── <48> Constant Int [7]
+                    │           │       ╰── <50> Constant Int [8]
                     │           ╰── Compound
                     │               ├── Compound
-                    │               │   ├── Constant Int [9]
-                    │               │   ╰── Constant Int [10]
+                    │               │   ├── <54> Constant Int [9]
+                    │               │   ╰── <56> Constant Int [10]
                     │               ╰── Compound
-                    │                   ├── Constant Int [11]
-                    │                   ╰── Constant Int [12]
+                    │                   ├── <59> Constant Int [11]
+                    │                   ╰── <61> Constant Int [12]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <82>  [!=]
@@ -5814,11 +5814,11 @@ fn test_valid_extra_credit_incr_decr_subscripted_vals() {
                     │   │       │       │   │   ╰── <70> Var [i]
                     │   │       │       │   ╰── <73> Var [j]
                     │   │       │       ╰── <76> Var [k]
-                    │   │       ╰── Constant Int [11]
+                    │   │       ╰── <81> Constant Int [11]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <83> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <101>  [!=]
@@ -5829,11 +5829,11 @@ fn test_valid_extra_credit_incr_decr_subscripted_vals() {
                     │   │       │   │   │   ╰── <91> Var [i]
                     │   │       │   │   ╰── <94> Var [j]
                     │   │       │   ╰── <97> Var [k]
-                    │   │       ╰── Constant Int [12]
+                    │   │       ╰── <100> Constant Int [12]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <102> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <128>  [!=]
@@ -5848,11 +5848,11 @@ fn test_valid_extra_credit_incr_decr_subscripted_vals() {
                     │   │       │       │       ╰── <116> Var [j]
                     │   │       │       ╰── <123> Unary [++]
                     │   │       │           ╰── <122> Var [k]
-                    │   │       ╰── Constant Int [9]
+                    │   │       ╰── <127> Constant Int [9]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <129> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <147>  [!=]
@@ -5863,11 +5863,11 @@ fn test_valid_extra_credit_incr_decr_subscripted_vals() {
                     │   │       │   │   │   ╰── <137> Var [i]
                     │   │       │   │   ╰── <140> Var [j]
                     │   │       │   ╰── <143> Var [k]
-                    │   │       ╰── Constant Int [6]
+                    │   │       ╰── <146> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <148> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <168>  [!=]
@@ -5879,13 +5879,13 @@ fn test_valid_extra_credit_incr_decr_subscripted_vals() {
                     │   │       │       │   │   ╰── <157> Var [i]
                     │   │       │       │   ╰── <160> Var [j]
                     │   │       │       ╰── <163> Var [k]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <167> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <169> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <174> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -5933,7 +5933,7 @@ fn test_valid_extra_credit_postfix_prefix_precedence() {
             │   ├── Type
             │   │   ╰── Int
             │   ╰── Initializer
-            │       ╰── Constant Int [3]
+            │       ╰── <4> Constant Int [3]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -5945,11 +5945,11 @@ fn test_valid_extra_credit_postfix_prefix_precedence() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ├── Constant Int [3]
-                    │           ├── Constant Int [4]
-                    │           ╰── Constant Int [5]
+                    │           ├── <16> Constant Int [1]
+                    │           ├── <18> Constant Int [2]
+                    │           ├── <20> Constant Int [3]
+                    │           ├── <22> Constant Int [4]
+                    │           ╰── <24> Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr
@@ -5959,7 +5959,7 @@ fn test_valid_extra_credit_postfix_prefix_precedence() {
                     │   ╰── Initializer
                     │       ╰── <36>  [+]
                     │           ├── <33> Var [arr]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <35> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── result
@@ -5975,21 +5975,21 @@ fn test_valid_extra_credit_postfix_prefix_precedence() {
                     │   ├── Condition
                     │   │   ╰── <57>  [!=]
                     │   │       ├── <54> Var [result]
-                    │   │       ╰── Constant Int [6]
+                    │   │       ╰── <56> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <58> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <68>  [!=]
                     │   │       ├── <65> Dereference
                     │   │       │   ╰── <64> Var [ptr]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <67> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <69> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <79>  [!=]
@@ -5998,28 +5998,28 @@ fn test_valid_extra_credit_postfix_prefix_precedence() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <80> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <92>  [!=]
                     │   │       ├── <89> Dereference
                     │   │       │   ╰── <88> Postfix [++]
                     │   │       │       ╰── <86> Var [ptr]
-                    │   │       ╰── Constant Int [1]
+                    │   │       ╰── <91> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <93> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <103>  [!=]
                     │   │       ├── <100> Dereference
                     │   │       │   ╰── <99> Var [ptr]
-                    │   │       ╰── Constant Int [2]
+                    │   │       ╰── <102> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <104> Constant Int [5]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -6028,11 +6028,11 @@ fn test_valid_extra_credit_postfix_prefix_precedence() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <112> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <120>  [<]
                     │   │       ├── <117> Var [i]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <119> Constant Int [4]
                     │   ├── Condition
                     │   │   ╰── <124> Postfix [++]
                     │   │       ╰── <122> Var [i]
@@ -6045,24 +6045,24 @@ fn test_valid_extra_credit_postfix_prefix_precedence() {
                     │           │       │   ╰── <128> Var [i]
                     │           │       ╰── <135>  [+]
                     │           │           ├── <132> Var [i]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <134> Constant Int [1]
                     │           ╰── Then
                     │               ╰── Block
                     │                   ╰── Return
-                    │                       ╰── Constant Int [6]
+                    │                       ╰── <137> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <151>  [!=]
                     │   │       ├── <148> Subscript
                     │   │       │   ├── <146> Var [arr]
-                    │   │       │   ╰── Constant Int [4]
-                    │   │       ╰── Constant Int [6]
+                    │   │       │   ╰── <147> Constant Int [4]
+                    │   │       ╰── <150> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <152> Constant Int [7]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <157> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -6155,27 +6155,27 @@ fn test_valid_initialization_automatic() {
             │       │   │       ╰── Unsigned Long
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant ULong [18446744073709551615]
-            │       │           ├── Constant ULong [9223372036854775807]
-            │       │           ╰── Constant ULong [100]
+            │       │           ├── <10> Constant ULong [18446744073709551615]
+            │       │           ├── <12> Constant ULong [9223372036854775807]
+            │       │           ╰── <14> Constant ULong [100]
             │       ╰── Return
             │           ╰── <43>  [&&]
             │               ├── <33>  [&&]
             │               │   ├── <24>  [==]
             │               │   │   ├── <21> Subscript
             │               │   │   │   ├── <19> Var [arr]
-            │               │   │   │   ╰── Constant Int [0]
-            │               │   │   ╰── Constant ULong [18446744073709551615]
+            │               │   │   │   ╰── <20> Constant Int [0]
+            │               │   │   ╰── <23> Constant ULong [18446744073709551615]
             │               │   ╰── <32>  [==]
             │               │       ├── <29> Subscript
             │               │       │   ├── <27> Var [arr]
-            │               │       │   ╰── Constant Int [1]
-            │               │       ╰── Constant ULong [9223372036854775807]
+            │               │       │   ╰── <28> Constant Int [1]
+            │               │       ╰── <31> Constant ULong [9223372036854775807]
             │               ╰── <41>  [==]
             │                   ├── <38> Subscript
             │                   │   ├── <36> Var [arr]
-            │                   │   ╰── Constant Int [2]
-            │                   ╰── Constant ULong [100]
+            │                   │   ╰── <37> Constant Int [2]
+            │                   ╰── <40> Constant ULong [100]
             ├── Function [test_partial]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -6187,8 +6187,8 @@ fn test_valid_initialization_automatic() {
             │       │   │       ╰── Double
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Double [+1e0]
-            │       │           ╰── Constant Double [+1.23e6]
+            │       │           ├── <56> Constant Double [+1e0]
+            │       │           ╰── <58> Constant Double [+1.23e6]
             │       ╰── Return
             │           ╰── <102>  [&&]
             │               ├── <93>  [&&]
@@ -6197,25 +6197,25 @@ fn test_valid_initialization_automatic() {
             │               │   │   │   ├── <68>  [==]
             │               │   │   │   │   ├── <65> Subscript
             │               │   │   │   │   │   ├── <63> Var [arr]
-            │               │   │   │   │   │   ╰── Constant Int [0]
-            │               │   │   │   │   ╰── Constant Double [+1e0]
+            │               │   │   │   │   │   ╰── <64> Constant Int [0]
+            │               │   │   │   │   ╰── <67> Constant Double [+1e0]
             │               │   │   │   ╰── <76>  [==]
             │               │   │   │       ├── <73> Subscript
             │               │   │   │       │   ├── <71> Var [arr]
-            │               │   │   │       │   ╰── Constant Int [1]
-            │               │   │   │       ╰── Constant Double [+1.23e6]
+            │               │   │   │       │   ╰── <72> Constant Int [1]
+            │               │   │   │       ╰── <75> Constant Double [+1.23e6]
             │               │   │   ╰── <84> Unary [!]
             │               │   │       ╰── <83> Subscript
             │               │   │           ├── <81> Var [arr]
-            │               │   │           ╰── Constant Int [2]
+            │               │   │           ╰── <82> Constant Int [2]
             │               │   ╰── <92> Unary [!]
             │               │       ╰── <91> Subscript
             │               │           ├── <89> Var [arr]
-            │               │           ╰── Constant Int [3]
+            │               │           ╰── <90> Constant Int [3]
             │               ╰── <100> Unary [!]
             │                   ╰── <99> Subscript
             │                       ├── <97> Var [arr]
-            │                       ╰── Constant Int [4]
+            │                       ╰── <98> Constant Int [4]
             ├── Function [test_non_constant]
             │   ├── Parameters
             │   │   ├── Param
@@ -6233,7 +6233,7 @@ fn test_valid_initialization_automatic() {
             │       ├── <122> Assign [=]
             │       │   ├── <119> Dereference
             │       │   │   ╰── <118> Var [ptr]
-            │       │   ╰── Constant Int [1]
+            │       │   ╰── <121> Constant Int [1]
             │       ├── Function [extern three]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -6256,7 +6256,7 @@ fn test_valid_initialization_automatic() {
             │       │           ├── <147> Var [negative_7billion]
             │       │           ├── <153>  [*]
             │       │           │   ├── <150> FunctionCall [three]
-            │       │           │   ╰── Constant Long [7]
+            │       │           │   ╰── <152> Constant Long [7]
             │       │           ├── <162> Unary [-]
             │       │           │   ╰── <161> Cast
             │       │           │       ├── Target
@@ -6266,12 +6266,12 @@ fn test_valid_initialization_automatic() {
             │       │           │               ╰── <159> Var [ptr]
             │       │           ╰── <173>  [+]
             │       │               ├── <165> Var [var]
-            │       │               ╰── <{node_id}> Conditional [?]
+            │       │               ╰── <172> Conditional [?]
             │       │                   ├── <168> Var [negative_7billion]
             │       │                   ├── Then
-            │       │                   │   ╰── Constant Int [2]
+            │       │                   │   ╰── <169> Constant Int [2]
             │       │                   ╰── Else
-            │       │                       ╰── Constant Int [3]
+            │       │                       ╰── <170> Constant Int [3]
             │       ╰── Return
             │           ╰── <226>  [&&]
             │               ├── <216>  [&&]
@@ -6280,42 +6280,42 @@ fn test_valid_initialization_automatic() {
             │               │   │   │   ├── <185>  [==]
             │               │   │   │   │   ├── <180> Subscript
             │               │   │   │   │   │   ├── <178> Var [arr]
-            │               │   │   │   │   │   ╰── Constant Int [0]
+            │               │   │   │   │   │   ╰── <179> Constant Int [0]
             │               │   │   │   │   ╰── <184> Unary [-]
-            │               │   │   │   │       ╰── Constant Long [7000000000]
+            │               │   │   │   │       ╰── <183> Constant Long [7000000000]
             │               │   │   │   ╰── <193>  [==]
             │               │   │   │       ├── <190> Subscript
             │               │   │   │       │   ├── <188> Var [arr]
-            │               │   │   │       │   ╰── Constant Int [1]
-            │               │   │   │       ╰── Constant Long [21]
+            │               │   │   │       │   ╰── <189> Constant Int [1]
+            │               │   │   │       ╰── <192> Constant Long [21]
             │               │   │   ╰── <204>  [==]
             │               │   │       ├── <199> Subscript
             │               │   │       │   ├── <197> Var [arr]
-            │               │   │       │   ╰── Constant Int [2]
+            │               │   │       │   ╰── <198> Constant Int [2]
             │               │   │       ╰── <203> Unary [-]
-            │               │   │           ╰── Constant Long [1]
+            │               │   │           ╰── <202> Constant Long [1]
             │               │   ╰── <215>  [==]
             │               │       ├── <210> Subscript
             │               │       │   ├── <208> Var [arr]
-            │               │       │   ╰── Constant Int [3]
+            │               │       │   ╰── <209> Constant Int [3]
             │               │       ╰── <214> Unary [-]
-            │               │           ╰── Constant Long [20999999998]
+            │               │           ╰── <213> Constant Long [20999999998]
             │               ╰── <224>  [==]
             │                   ├── <221> Subscript
             │                   │   ├── <219> Var [arr]
-            │                   │   ╰── Constant Int [4]
-            │                   ╰── Constant Long [0]
+            │                   │   ╰── <220> Constant Int [4]
+            │                   ╰── <223> Constant Long [0]
             ├── Function [three]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [3]
+            │           ╰── <234> Constant Int [3]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── global_one
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant Long [1]
+            │       ╰── <241> Constant Long [1]
             ├── Function [test_type_conversion]
             │   ├── Parameters
             │   │   ╰── Param
@@ -6329,7 +6329,7 @@ fn test_valid_initialization_automatic() {
             │       │   ├── <254> Dereference
             │       │   │   ╰── <253> Var [ptr]
             │       │   ╰── <258> Unary [-]
-            │       │       ╰── Constant Int [100]
+            │       │       ╰── <257> Constant Int [100]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── arr
@@ -6339,14 +6339,14 @@ fn test_valid_initialization_automatic() {
             │       │   │       ╰── Unsigned Long
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Double [+3.4587645138215895e18]
+            │       │           ├── <266> Constant Double [+3.4587645138215895e18]
             │       │           ├── <270> Dereference
             │       │           │   ╰── <269> Var [ptr]
             │       │           ├── <275> Cast
             │       │           │   ├── Target
             │       │           │   │   ╰── Unsigned Int
             │       │           │   ╰── Expression
-            │       │           │       ╰── Constant ULong [18446744073709551615]
+            │       │           │       ╰── <274> Constant ULong [18446744073709551615]
             │       │           ╰── <280> Unary [-]
             │       │               ╰── <279> Var [global_one]
             │       ╰── Return
@@ -6356,23 +6356,23 @@ fn test_valid_initialization_automatic() {
             │               │   │   ├── <290>  [==]
             │               │   │   │   ├── <287> Subscript
             │               │   │   │   │   ├── <285> Var [arr]
-            │               │   │   │   │   ╰── Constant Int [0]
-            │               │   │   │   ╰── Constant ULong [3458764513821589504]
+            │               │   │   │   │   ╰── <286> Constant Int [0]
+            │               │   │   │   ╰── <289> Constant ULong [3458764513821589504]
             │               │   │   ╰── <298>  [==]
             │               │   │       ├── <295> Subscript
             │               │   │       │   ├── <293> Var [arr]
-            │               │   │       │   ╰── Constant Int [1]
-            │               │   │       ╰── Constant ULong [18446744073709551516]
+            │               │   │       │   ╰── <294> Constant Int [1]
+            │               │   │       ╰── <297> Constant ULong [18446744073709551516]
             │               │   ╰── <307>  [==]
             │               │       ├── <304> Subscript
             │               │       │   ├── <302> Var [arr]
-            │               │       │   ╰── Constant Int [2]
-            │               │       ╰── Constant UInt [4294967295]
+            │               │       │   ╰── <303> Constant Int [2]
+            │               │       ╰── <306> Constant UInt [4294967295]
             │               ╰── <316>  [==]
             │                   ├── <313> Subscript
             │                   │   ├── <311> Var [arr]
-            │                   │   ╰── Constant Int [3]
-            │                   ╰── Constant ULong [18446744073709551615]
+            │                   │   ╰── <312> Constant Int [3]
+            │                   ╰── <315> Constant ULong [18446744073709551615]
             ├── Function [test_preserve_stack]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -6382,7 +6382,7 @@ fn test_valid_initialization_automatic() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <331> Unary [-]
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <330> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── arr
@@ -6394,7 +6394,7 @@ fn test_valid_initialization_automatic() {
             │       │       ╰── Compound
             │       │           ├── <343>  [*]
             │       │           │   ├── <340> Var [global_one]
-            │       │           │   ╰── Constant Long [2]
+            │       │           │   ╰── <342> Constant Long [2]
             │       │           ╰── <350>  [+]
             │       │               ├── <346> Var [global_one]
             │       │               ╰── <349> FunctionCall [three]
@@ -6404,43 +6404,43 @@ fn test_valid_initialization_automatic() {
             │       │   ├── Type
             │       │   │   ╰── Unsigned Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Long [2684366905]
+            │       │       ╰── <357> Constant Long [2684366905]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <366>  [!=]
             │       │   │       ├── <361> Var [i]
             │       │   │       ╰── <365> Unary [-]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <364> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <367> Constant Int [0]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <376>  [!=]
             │       │   │       ├── <373> Var [u]
-            │       │   │       ╰── Constant Long [2684366905]
+            │       │   │       ╰── <375> Constant Long [2684366905]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <377> Constant Int [0]
             │       ╰── Return
             │           ╰── <406>  [&&]
             │               ├── <397>  [&&]
             │               │   ├── <388>  [==]
             │               │   │   ├── <385> Subscript
             │               │   │   │   ├── <383> Var [arr]
-            │               │   │   │   ╰── Constant Int [0]
-            │               │   │   ╰── Constant Int [2]
+            │               │   │   │   ╰── <384> Constant Int [0]
+            │               │   │   ╰── <387> Constant Int [2]
             │               │   ╰── <396>  [==]
             │               │       ├── <393> Subscript
             │               │       │   ├── <391> Var [arr]
-            │               │       │   ╰── Constant Int [1]
-            │               │       ╰── Constant Int [4]
+            │               │       │   ╰── <392> Constant Int [1]
+            │               │       ╰── <395> Constant Int [4]
             │               ╰── <404> Unary [!]
             │                   ╰── <403> Subscript
             │                       ├── <401> Var [arr]
-            │                       ╰── Constant Int [2]
+            │                       ╰── <402> Constant Int [2]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -6450,7 +6450,7 @@ fn test_valid_initialization_automatic() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <418> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <426> Unary [!]
@@ -6458,7 +6458,7 @@ fn test_valid_initialization_automatic() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <427> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── negative_seven_billion
@@ -6466,14 +6466,14 @@ fn test_valid_initialization_automatic() {
                     │   │   ╰── Long
                     │   ╰── Initializer
                     │       ╰── <437> Unary [-]
-                    │           ╰── Constant Long [7000000000]
+                    │           ╰── <436> Constant Long [7000000000]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── i
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <443> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <454> Unary [!]
@@ -6484,7 +6484,7 @@ fn test_valid_initialization_automatic() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <455> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <466> Unary [!]
@@ -6494,7 +6494,7 @@ fn test_valid_initialization_automatic() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <467> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <475> Unary [!]
@@ -6502,9 +6502,9 @@ fn test_valid_initialization_automatic() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <476> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <481> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -6616,17 +6616,17 @@ fn test_valid_initialization_automatic_nested() {
             │       │   ╰── Initializer
             │       │       ╰── Compound
             │       │           ├── Compound
-            │       │           │   ├── Constant Int [1]
-            │       │           │   ├── Constant Int [2]
-            │       │           │   ╰── Constant Int [3]
+            │       │           │   ├── <12> Constant Int [1]
+            │       │           │   ├── <14> Constant Int [2]
+            │       │           │   ╰── <16> Constant Int [3]
             │       │           ├── Compound
-            │       │           │   ├── Constant Int [4]
-            │       │           │   ├── Constant Int [5]
-            │       │           │   ╰── Constant Int [6]
+            │       │           │   ├── <19> Constant Int [4]
+            │       │           │   ├── <21> Constant Int [5]
+            │       │           │   ╰── <23> Constant Int [6]
             │       │           ╰── Compound
-            │       │               ├── Constant Int [7]
-            │       │               ├── Constant Int [8]
-            │       │               ╰── Constant Int [9]
+            │       │               ├── <26> Constant Int [7]
+            │       │               ├── <28> Constant Int [8]
+            │       │               ╰── <30> Constant Int [9]
             │       ├── For
             │       │   ├── Init
             │       │   │   ╰── VarDeclaration
@@ -6635,17 +6635,17 @@ fn test_valid_initialization_automatic_nested() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <38> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <46>  [<]
             │       │   │       ├── <43> Var [i]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       ╰── <45> Constant Int [3]
             │       │   ├── Condition
             │       │   │   ╰── <55> Assign [=]
             │       │   │       ├── <48> Var [i]
             │       │   │       ╰── <54>  [+]
             │       │   │           ├── <51> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <53> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── For
             │       │           ├── Init
@@ -6655,17 +6655,17 @@ fn test_valid_initialization_automatic_nested() {
             │       │           │       ├── Type
             │       │           │       │   ╰── Int
             │       │           │       ╰── Initializer
-            │       │           │           ╰── Constant Int [0]
+            │       │           │           ╰── <59> Constant Int [0]
             │       │           ├── Condition
             │       │           │   ╰── <67>  [<]
             │       │           │       ├── <64> Var [j]
-            │       │           │       ╰── Constant Int [3]
+            │       │           │       ╰── <66> Constant Int [3]
             │       │           ├── Condition
             │       │           │   ╰── <76> Assign [=]
             │       │           │       ├── <69> Var [j]
             │       │           │       ╰── <75>  [+]
             │       │           │           ├── <72> Var [j]
-            │       │           │           ╰── Constant Int [1]
+            │       │           │           ╰── <74> Constant Int [1]
             │       │           ╰── Block
             │       │               ╰── If
             │       │                   ├── Condition
@@ -6679,15 +6679,15 @@ fn test_valid_initialization_automatic_nested() {
             │       │                   │           ├── <94>  [+]
             │       │                   │           │   ├── <90>  [*]
             │       │                   │           │   │   ├── <87> Var [i]
-            │       │                   │           │   │   ╰── Constant Int [3]
+            │       │                   │           │   │   ╰── <89> Constant Int [3]
             │       │                   │           │   ╰── <93> Var [j]
-            │       │                   │           ╰── Constant Int [1]
+            │       │                   │           ╰── <96> Constant Int [1]
             │       │                   ╰── Then
             │       │                       ╰── Block
             │       │                           ╰── Return
-            │       │                               ╰── Constant Int [0]
+            │       │                               ╰── <99> Constant Int [0]
             │       ╰── Return
-            │           ╰── Constant Int [1]
+            │           ╰── <110> Constant Int [1]
             ├── Function [test_partial]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -6705,21 +6705,21 @@ fn test_valid_initialization_automatic_nested() {
             │       │       ╰── Compound
             │       │           ├── Compound
             │       │           │   ╰── Compound
-            │       │           │       ├── Constant Int [1]
-            │       │           │       ├── Constant Int [2]
-            │       │           │       ╰── Constant Int [3]
+            │       │           │       ├── <127> Constant Int [1]
+            │       │           │       ├── <129> Constant Int [2]
+            │       │           │       ╰── <131> Constant Int [3]
             │       │           ╰── Compound
             │       │               ╰── Compound
-            │       │                   ├── Constant Int [4]
-            │       │                   ├── Constant Int [5]
-            │       │                   ╰── Constant Int [6]
+            │       │                   ├── <135> Constant Int [4]
+            │       │                   ├── <137> Constant Int [5]
+            │       │                   ╰── <139> Constant Int [6]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── expected
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Int [1]
+            │       │       ╰── <148> Constant Int [1]
             │       ├── For
             │       │   ├── Init
             │       │   │   ╰── VarDeclaration
@@ -6728,17 +6728,17 @@ fn test_valid_initialization_automatic_nested() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <154> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <162>  [<]
             │       │   │       ├── <159> Var [i]
-            │       │   │       ╰── Constant Int [4]
+            │       │   │       ╰── <161> Constant Int [4]
             │       │   ├── Condition
             │       │   │   ╰── <171> Assign [=]
             │       │   │       ├── <164> Var [i]
             │       │   │       ╰── <170>  [+]
             │       │   │           ├── <167> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <169> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── For
             │       │           ├── Init
@@ -6748,17 +6748,17 @@ fn test_valid_initialization_automatic_nested() {
             │       │           │       ├── Type
             │       │           │       │   ╰── Int
             │       │           │       ╰── Initializer
-            │       │           │           ╰── Constant Int [0]
+            │       │           │           ╰── <175> Constant Int [0]
             │       │           ├── Condition
             │       │           │   ╰── <183>  [<]
             │       │           │       ├── <180> Var [j]
-            │       │           │       ╰── Constant Int [2]
+            │       │           │       ╰── <182> Constant Int [2]
             │       │           ├── Condition
             │       │           │   ╰── <192> Assign [=]
             │       │           │       ├── <185> Var [j]
             │       │           │       ╰── <191>  [+]
             │       │           │           ├── <188> Var [j]
-            │       │           │           ╰── Constant Int [1]
+            │       │           │           ╰── <190> Constant Int [1]
             │       │           ╰── Block
             │       │               ╰── For
             │       │                   ├── Init
@@ -6768,17 +6768,17 @@ fn test_valid_initialization_automatic_nested() {
             │       │                   │       ├── Type
             │       │                   │       │   ╰── Int
             │       │                   │       ╰── Initializer
-            │       │                   │           ╰── Constant Int [0]
+            │       │                   │           ╰── <196> Constant Int [0]
             │       │                   ├── Condition
             │       │                   │   ╰── <204>  [<]
             │       │                   │       ├── <201> Var [k]
-            │       │                   │       ╰── Constant Int [6]
+            │       │                   │       ╰── <203> Constant Int [6]
             │       │                   ├── Condition
             │       │                   │   ╰── <213> Assign [=]
             │       │                   │       ├── <206> Var [k]
             │       │                   │       ╰── <212>  [+]
             │       │                   │           ├── <209> Var [k]
-            │       │                   │           ╰── Constant Int [1]
+            │       │                   │           ╰── <211> Constant Int [1]
             │       │                   ╰── Block
             │       │                       ├── VarDeclaration
             │       │                       │   ├── Name
@@ -6799,13 +6799,13 @@ fn test_valid_initialization_automatic_nested() {
             │       │                           │       ├── <241>  [||]
             │       │                           │       │   ├── <234>  [>]
             │       │                           │       │   │   ├── <231> Var [i]
-            │       │                           │       │   │   ╰── Constant Int [1]
+            │       │                           │       │   │   ╰── <233> Constant Int [1]
             │       │                           │       │   ╰── <240>  [>]
             │       │                           │       │       ├── <237> Var [j]
-            │       │                           │       │       ╰── Constant Int [0]
+            │       │                           │       │       ╰── <239> Constant Int [0]
             │       │                           │       ╰── <247>  [>]
             │       │                           │           ├── <244> Var [k]
-            │       │                           │           ╰── Constant Int [2]
+            │       │                           │           ╰── <246> Constant Int [2]
             │       │                           ├── Then
             │       │                           │   ╰── Block
             │       │                           │       ╰── If
@@ -6814,7 +6814,7 @@ fn test_valid_initialization_automatic_nested() {
             │       │                           │           ╰── Then
             │       │                           │               ╰── Block
             │       │                           │                   ╰── Return
-            │       │                           │                       ╰── Constant Int [0]
+            │       │                           │                       ╰── <251> Constant Int [0]
             │       │                           ╰── Else
             │       │                               ╰── Block
             │       │                                   ├── If
@@ -6825,14 +6825,14 @@ fn test_valid_initialization_automatic_nested() {
             │       │                                   │   ╰── Then
             │       │                                   │       ╰── Block
             │       │                                   │           ╰── Return
-            │       │                                   │               ╰── Constant Int [0]
+            │       │                                   │               ╰── <264> Constant Int [0]
             │       │                                   ╰── <277> Assign [=]
             │       │                                       ├── <270> Var [expected]
             │       │                                       ╰── <276>  [+]
             │       │                                           ├── <273> Var [expected]
-            │       │                                           ╰── Constant Int [1]
+            │       │                                           ╰── <275> Constant Int [1]
             │       ╰── Return
-            │           ╰── Constant Int [1]
+            │           ╰── <291> Constant Int [1]
             ├── Function [test_non_constant_and_type_conversion]
             │   ╰── Body
             │       ├── Function [extern three]
@@ -6842,7 +6842,7 @@ fn test_valid_initialization_automatic_nested() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [2000]
+            │       │   │   ╰── <309> Constant Int [2000]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -6851,7 +6851,7 @@ fn test_valid_initialization_automatic_nested() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <317> Unary [-]
-            │       │           ╰── Constant Int [4]
+            │       │           ╰── <316> Constant Int [4]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr
@@ -6888,28 +6888,28 @@ fn test_valid_initialization_automatic_nested() {
             │       │   │       │   │   ├── <359> Subscript
             │       │   │       │   │   │   ├── <357> Subscript
             │       │   │       │   │   │   │   ├── <355> Var [arr]
-            │       │   │       │   │   │   │   ╰── Constant Int [0]
-            │       │   │       │   │   │   ╰── Constant Int [0]
-            │       │   │       │   │   ╰── Constant Double [+2e3]
+            │       │   │       │   │   │   │   ╰── <356> Constant Int [0]
+            │       │   │       │   │   │   ╰── <358> Constant Int [0]
+            │       │   │       │   │   ╰── <361> Constant Double [+2e3]
             │       │   │       │   ╰── <374>  [!=]
             │       │   │       │       ├── <369> Subscript
             │       │   │       │       │   ├── <367> Subscript
             │       │   │       │       │   │   ├── <365> Var [arr]
-            │       │   │       │       │   │   ╰── Constant Int [0]
-            │       │   │       │       │   ╰── Constant Int [1]
+            │       │   │       │       │   │   ╰── <366> Constant Int [0]
+            │       │   │       │       │   ╰── <368> Constant Int [1]
             │       │   │       │       ╰── <373> Unary [-]
-            │       │   │       │           ╰── Constant Double [+5e2]
+            │       │   │       │           ╰── <372> Constant Double [+5e2]
             │       │   │       ╰── <385>  [!=]
             │       │   │           ├── <382> Subscript
             │       │   │           │   ├── <380> Subscript
             │       │   │           │   │   ├── <378> Var [arr]
-            │       │   │           │   │   ╰── Constant Int [1]
-            │       │   │           │   ╰── Constant Int [0]
-            │       │   │           ╰── Constant Double [+3e0]
+            │       │   │           │   │   ╰── <379> Constant Int [1]
+            │       │   │           │   ╰── <381> Constant Int [0]
+            │       │   │           ╰── <384> Constant Double [+3e0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <387> Constant Int [0]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <413>  [||]
@@ -6917,35 +6917,35 @@ fn test_valid_initialization_automatic_nested() {
             │       │   │       │   ├── <397> Subscript
             │       │   │       │   │   ├── <395> Subscript
             │       │   │       │   │   │   ├── <393> Var [arr]
-            │       │   │       │   │   │   ╰── Constant Int [1]
-            │       │   │       │   │   ╰── Constant Int [1]
+            │       │   │       │   │   │   ╰── <394> Constant Int [1]
+            │       │   │       │   │   ╰── <396> Constant Int [1]
             │       │   │       │   ╰── <404> Subscript
             │       │   │       │       ├── <402> Subscript
             │       │   │       │       │   ├── <400> Var [arr]
-            │       │   │       │       │   ╰── Constant Int [2]
-            │       │   │       │       ╰── Constant Int [0]
+            │       │   │       │       │   ╰── <401> Constant Int [2]
+            │       │   │       │       ╰── <403> Constant Int [0]
             │       │   │       ╰── <412> Subscript
             │       │   │           ├── <410> Subscript
             │       │   │           │   ├── <408> Var [arr]
-            │       │   │           │   ╰── Constant Int [2]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           │   ╰── <409> Constant Int [2]
+            │       │   │           ╰── <411> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <414> Constant Int [0]
             │       ╰── Return
-            │           ╰── Constant Int [1]
+            │           ╰── <419> Constant Int [1]
             ├── Function [three]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant UInt [3]
+            │           ╰── <427> Constant UInt [3]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── one
             │   ├── Type
             │   │   ╰── Long
             │   ╰── Initializer
-            │       ╰── Constant Long [1]
+            │       ╰── <434> Constant Long [1]
             ├── Function [test_preserve_stack]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -6955,7 +6955,7 @@ fn test_valid_initialization_automatic_nested() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <446> Unary [-]
-            │       │           ╰── Constant Int [1]
+            │       │           ╰── <445> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── arr
@@ -6970,7 +6970,7 @@ fn test_valid_initialization_automatic_nested() {
             │       │           ├── Compound
             │       │           │   ╰── <460>  [*]
             │       │           │       ├── <457> Var [one]
-            │       │           │       ╰── Constant Long [2]
+            │       │           │       ╰── <459> Constant Long [2]
             │       │           ╰── Compound
             │       │               ╰── <468>  [+]
             │       │                   ├── <464> Var [one]
@@ -6981,26 +6981,26 @@ fn test_valid_initialization_automatic_nested() {
             │       │   ├── Type
             │       │   │   ╰── Unsigned Int
             │       │   ╰── Initializer
-            │       │       ╰── Constant Long [2684366905]
+            │       │       ╰── <476> Constant Long [2684366905]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <485>  [!=]
             │       │   │       ├── <480> Var [i]
             │       │   │       ╰── <484> Unary [-]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <483> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <486> Constant Int [0]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <495>  [!=]
             │       │   │       ├── <492> Var [u]
-            │       │   │       ╰── Constant Long [2684366905]
+            │       │   │       ╰── <494> Constant Long [2684366905]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <496> Constant Int [0]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <531>  [||]
@@ -7009,29 +7009,29 @@ fn test_valid_initialization_automatic_nested() {
             │       │   │       │   │   ├── <506> Subscript
             │       │   │       │   │   │   ├── <504> Subscript
             │       │   │       │   │   │   │   ├── <502> Var [arr]
-            │       │   │       │   │   │   │   ╰── Constant Int [0]
-            │       │   │       │   │   │   ╰── Constant Int [0]
-            │       │   │       │   │   ╰── Constant Int [2]
+            │       │   │       │   │   │   │   ╰── <503> Constant Int [0]
+            │       │   │       │   │   │   ╰── <505> Constant Int [0]
+            │       │   │       │   │   ╰── <508> Constant Int [2]
             │       │   │       │   ╰── <519>  [!=]
             │       │   │       │       ├── <516> Subscript
             │       │   │       │       │   ├── <514> Subscript
             │       │   │       │       │   │   ├── <512> Var [arr]
-            │       │   │       │       │   │   ╰── Constant Int [1]
-            │       │   │       │       │   ╰── Constant Int [0]
-            │       │   │       │       ╰── Constant Int [4]
+            │       │   │       │       │   │   ╰── <513> Constant Int [1]
+            │       │   │       │       │   ╰── <515> Constant Int [0]
+            │       │   │       │       ╰── <518> Constant Int [4]
             │       │   │       ╰── <530>  [!=]
             │       │   │           ├── <527> Subscript
             │       │   │           │   ├── <525> Subscript
             │       │   │           │   │   ├── <523> Var [arr]
-            │       │   │           │   │   ╰── Constant Int [2]
-            │       │   │           │   ╰── Constant Int [0]
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           │   │   ╰── <524> Constant Int [2]
+            │       │   │           │   ╰── <526> Constant Int [0]
+            │       │   │           ╰── <529> Constant Int [0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [0]
+            │       │               ╰── <532> Constant Int [0]
             │       ╰── Return
-            │           ╰── Constant Int [1]
+            │           ╰── <537> Constant Int [1]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -7041,7 +7041,7 @@ fn test_valid_initialization_automatic_nested() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <549> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <557> Unary [!]
@@ -7049,7 +7049,7 @@ fn test_valid_initialization_automatic_nested() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <558> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <566> Unary [!]
@@ -7057,7 +7057,7 @@ fn test_valid_initialization_automatic_nested() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <567> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <575> Unary [!]
@@ -7065,9 +7065,9 @@ fn test_valid_initialization_automatic_nested() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <576> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <581> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -7202,9 +7202,9 @@ fn test_valid_initialization_static() {
             │   │       ╰── Double
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant Double [+1e0]
-            │           ├── Constant Double [+2e0]
-            │           ╰── Constant Double [+3e0]
+            │           ├── <6> Constant Double [+1e0]
+            │           ├── <8> Constant Double [+2e0]
+            │           ╰── <10> Constant Double [+3e0]
             ├── Function [check_double_arr]
             │   ├── Parameters
             │   │   ╰── Param
@@ -7219,36 +7219,36 @@ fn test_valid_initialization_static() {
             │       │   │   ╰── <28>  [!=]
             │       │   │       ├── <25> Subscript
             │       │   │       │   ├── <23> Var [arr]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant Double [+1e0]
+            │       │   │       │   ╰── <24> Constant Int [0]
+            │       │   │       ╰── <27> Constant Double [+1e0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <29> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <40>  [!=]
             │       │   │       ├── <37> Subscript
             │       │   │       │   ├── <35> Var [arr]
-            │       │   │       │   ╰── Constant Int [1]
-            │       │   │       ╰── Constant Double [+2e0]
+            │       │   │       │   ╰── <36> Constant Int [1]
+            │       │   │       ╰── <39> Constant Double [+2e0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [2]
+            │       │               ╰── <41> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <52>  [!=]
             │       │   │       ├── <49> Subscript
             │       │   │       │   ├── <47> Var [arr]
-            │       │   │       │   ╰── Constant Int [2]
-            │       │   │       ╰── Constant Double [+3e0]
+            │       │   │       │   ╰── <48> Constant Int [2]
+            │       │   │       ╰── <51> Constant Double [+3e0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <53> Constant Int [3]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <58> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── uint_arr
@@ -7258,9 +7258,9 @@ fn test_valid_initialization_static() {
             │   │       ╰── Unsigned Int
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant UInt [1]
-            │           ├── Constant UInt [0]
-            │           ╰── Constant UInt [2147497230]
+            │           ├── <67> Constant UInt [1]
+            │           ├── <69> Constant UInt [0]
+            │           ╰── <71> Constant UInt [2147497230]
             ├── Function [check_uint_arr]
             │   ├── Parameters
             │   │   ╰── Param
@@ -7275,47 +7275,47 @@ fn test_valid_initialization_static() {
             │       │   │   ╰── <89>  [!=]
             │       │   │       ├── <86> Subscript
             │       │   │       │   ├── <84> Var [arr]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant UInt [1]
+            │       │   │       │   ╰── <85> Constant Int [0]
+            │       │   │       ╰── <88> Constant UInt [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [4]
+            │       │               ╰── <90> Constant Int [4]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <98> Subscript
             │       │   │       ├── <96> Var [arr]
-            │       │   │       ╰── Constant Int [1]
+            │       │   │       ╰── <97> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [5]
+            │       │               ╰── <99> Constant Int [5]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <110>  [!=]
             │       │   │       ├── <107> Subscript
             │       │   │       │   ├── <105> Var [arr]
-            │       │   │       │   ╰── Constant Int [2]
-            │       │   │       ╰── Constant UInt [2147497230]
+            │       │   │       │   ╰── <106> Constant Int [2]
+            │       │   │       ╰── <109> Constant UInt [2147497230]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [6]
+            │       │               ╰── <111> Constant Int [6]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <125>  [||]
             │       │   │       ├── <119> Subscript
             │       │   │       │   ├── <117> Var [arr]
-            │       │   │       │   ╰── Constant Int [3]
+            │       │   │       │   ╰── <118> Constant Int [3]
             │       │   │       ╰── <124> Subscript
             │       │   │           ├── <122> Var [arr]
-            │       │   │           ╰── Constant Int [4]
+            │       │   │           ╰── <123> Constant Int [4]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [7]
+            │       │               ╰── <126> Constant Int [7]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <131> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── long_arr
@@ -7340,17 +7340,17 @@ fn test_valid_initialization_static() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <152> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <160>  [<]
             │       │   │       ├── <157> Var [i]
-            │       │   │       ╰── Constant Int [1000]
+            │       │   │       ╰── <159> Constant Int [1000]
             │       │   ├── Condition
             │       │   │   ╰── <169> Assign [=]
             │       │   │       ├── <162> Var [i]
             │       │   │       ╰── <168>  [+]
             │       │   │           ├── <165> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <167> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── If
             │       │           ├── Condition
@@ -7360,9 +7360,9 @@ fn test_valid_initialization_static() {
             │       │           ╰── Then
             │       │               ╰── Block
             │       │                   ╰── Return
-            │       │                       ╰── Constant Int [8]
+            │       │                       ╰── <175> Constant Int [8]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <183> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── ulong_arr
@@ -7372,10 +7372,10 @@ fn test_valid_initialization_static() {
             │   │       ╰── Unsigned Long
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant Double [+1e2]
-            │           ├── Constant Int [11]
-            │           ├── Constant Long [12345]
-            │           ╰── Constant UInt [4294967295]
+            │           ├── <192> Constant Double [+1e2]
+            │           ├── <194> Constant Int [11]
+            │           ├── <196> Constant Long [12345]
+            │           ╰── <198> Constant UInt [4294967295]
             ├── Function [check_ulong_arr]
             │   ├── Parameters
             │   │   ╰── Param
@@ -7390,47 +7390,47 @@ fn test_valid_initialization_static() {
             │       │   │   ╰── <216>  [!=]
             │       │   │       ├── <213> Subscript
             │       │   │       │   ├── <211> Var [arr]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant ULong [100]
+            │       │   │       │   ╰── <212> Constant Int [0]
+            │       │   │       ╰── <215> Constant ULong [100]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [9]
+            │       │               ╰── <217> Constant Int [9]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <228>  [!=]
             │       │   │       ├── <225> Subscript
             │       │   │       │   ├── <223> Var [arr]
-            │       │   │       │   ╰── Constant Int [1]
-            │       │   │       ╰── Constant ULong [11]
+            │       │   │       │   ╰── <224> Constant Int [1]
+            │       │   │       ╰── <227> Constant ULong [11]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [10]
+            │       │               ╰── <229> Constant Int [10]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <240>  [!=]
             │       │   │       ├── <237> Subscript
             │       │   │       │   ├── <235> Var [arr]
-            │       │   │       │   ╰── Constant Int [2]
-            │       │   │       ╰── Constant ULong [12345]
+            │       │   │       │   ╰── <236> Constant Int [2]
+            │       │   │       ╰── <239> Constant ULong [12345]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [11]
+            │       │               ╰── <241> Constant Int [11]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <252>  [!=]
             │       │   │       ├── <249> Subscript
             │       │   │       │   ├── <247> Var [arr]
-            │       │   │       │   ╰── Constant Int [3]
-            │       │   │       ╰── Constant ULong [4294967295]
+            │       │   │       │   ╰── <248> Constant Int [3]
+            │       │   │       ╰── <251> Constant ULong [4294967295]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [12]
+            │       │               ╰── <253> Constant Int [12]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <258> Constant Int [0]
             ├── Function [test_global]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -7482,7 +7482,7 @@ fn test_valid_initialization_static() {
             │       │           ╰── Return
             │       │               ╰── <329> Var [check]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <334> Constant Int [0]
             ├── Function [test_local]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -7494,9 +7494,9 @@ fn test_valid_initialization_static() {
             │       │   │       ╰── Double
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Double [+1e0]
-            │       │           ├── Constant Double [+2e0]
-            │       │           ╰── Constant Double [+3e0]
+            │       │           ├── <347> Constant Double [+1e0]
+            │       │           ├── <349> Constant Double [+2e0]
+            │       │           ╰── <351> Constant Double [+3e0]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── local_uint_arr
@@ -7506,9 +7506,9 @@ fn test_valid_initialization_static() {
             │       │   │       ╰── Unsigned Int
             │       │   ├── Initializer
             │       │   │   ╰── Compound
-            │       │   │       ├── Constant UInt [1]
-            │       │   │       ├── Constant UInt [0]
-            │       │   │       ╰── Constant UInt [2147497230]
+            │       │   │       ├── <361> Constant UInt [1]
+            │       │   │       ├── <363> Constant UInt [0]
+            │       │   │       ╰── <365> Constant UInt [2147497230]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -7527,10 +7527,10 @@ fn test_valid_initialization_static() {
             │       │   │       ╰── Unsigned Long
             │       │   ├── Initializer
             │       │   │   ╰── Compound
-            │       │   │       ├── Constant Double [+1e2]
-            │       │   │       ├── Constant Int [11]
-            │       │   │       ├── Constant Long [12345]
-            │       │   │       ╰── Constant UInt [4294967295]
+            │       │   │       ├── <382> Constant Double [+1e2]
+            │       │   │       ├── <384> Constant Int [11]
+            │       │   │       ├── <386> Constant Long [12345]
+            │       │   │       ╰── <388> Constant UInt [4294967295]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -7547,7 +7547,7 @@ fn test_valid_initialization_static() {
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── <407>  [+]
-            │       │                   ├── Constant Int [100]
+            │       │                   ├── <403> Constant Int [100]
             │       │                   ╰── <406> Var [check]
             │       ├── <419> Assign [=]
             │       │   ├── <413> Var [check]
@@ -7560,7 +7560,7 @@ fn test_valid_initialization_static() {
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── <427>  [+]
-            │       │                   ├── Constant Int [100]
+            │       │                   ├── <423> Constant Int [100]
             │       │                   ╰── <426> Var [check]
             │       ├── <439> Assign [=]
             │       │   ├── <433> Var [check]
@@ -7573,7 +7573,7 @@ fn test_valid_initialization_static() {
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── <447>  [+]
-            │       │                   ├── Constant Int [100]
+            │       │                   ├── <443> Constant Int [100]
             │       │                   ╰── <446> Var [check]
             │       ├── <459> Assign [=]
             │       │   ├── <453> Var [check]
@@ -7586,10 +7586,10 @@ fn test_valid_initialization_static() {
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── <467>  [+]
-            │       │                   ├── Constant Int [100]
+            │       │                   ├── <463> Constant Int [100]
             │       │                   ╰── <466> Var [check]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <472> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -7737,11 +7737,11 @@ fn test_valid_initialization_static_nested() {
             │   ╰── Initializer
             │       ╰── Compound
             │           ├── Compound
-            │           │   ├── Constant Double [+1.1e0]
-            │           │   ╰── Constant Double [+2.2e0]
+            │           │   ├── <8> Constant Double [+1.1e0]
+            │           │   ╰── <10> Constant Double [+2.2e0]
             │           ╰── Compound
-            │               ├── Constant Double [+3.3e0]
-            │               ╰── Constant Double [+4.4e0]
+            │               ├── <13> Constant Double [+3.3e0]
+            │               ╰── <15> Constant Double [+4.4e0]
             ├── Function [check_double_arr]
             │   ├── Parameters
             │   │   ╰── Param
@@ -7759,54 +7759,54 @@ fn test_valid_initialization_static_nested() {
             │       │   │       ├── <36> Subscript
             │       │   │       │   ├── <34> Subscript
             │       │   │       │   │   ├── <32> Var [arr]
-            │       │   │       │   │   ╰── Constant Int [0]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant Double [+1.1e0]
+            │       │   │       │   │   ╰── <33> Constant Int [0]
+            │       │   │       │   ╰── <35> Constant Int [0]
+            │       │   │       ╰── <38> Constant Double [+1.1e0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <40> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <53>  [!=]
             │       │   │       ├── <50> Subscript
             │       │   │       │   ├── <48> Subscript
             │       │   │       │   │   ├── <46> Var [arr]
-            │       │   │       │   │   ╰── Constant Int [0]
-            │       │   │       │   ╰── Constant Int [1]
-            │       │   │       ╰── Constant Double [+2.2e0]
+            │       │   │       │   │   ╰── <47> Constant Int [0]
+            │       │   │       │   ╰── <49> Constant Int [1]
+            │       │   │       ╰── <52> Constant Double [+2.2e0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [2]
+            │       │               ╰── <54> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <67>  [!=]
             │       │   │       ├── <64> Subscript
             │       │   │       │   ├── <62> Subscript
             │       │   │       │   │   ├── <60> Var [arr]
-            │       │   │       │   │   ╰── Constant Int [1]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant Double [+3.3e0]
+            │       │   │       │   │   ╰── <61> Constant Int [1]
+            │       │   │       │   ╰── <63> Constant Int [0]
+            │       │   │       ╰── <66> Constant Double [+3.3e0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <68> Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <81>  [!=]
             │       │   │       ├── <78> Subscript
             │       │   │       │   ├── <76> Subscript
             │       │   │       │   │   ├── <74> Var [arr]
-            │       │   │       │   │   ╰── Constant Int [1]
-            │       │   │       │   ╰── Constant Int [1]
-            │       │   │       ╰── Constant Double [+4.4e0]
+            │       │   │       │   │   ╰── <75> Constant Int [1]
+            │       │   │       │   ╰── <77> Constant Int [1]
+            │       │   │       ╰── <80> Constant Double [+4.4e0]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [4]
+            │       │               ╰── <82> Constant Int [4]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <87> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── long_arr
@@ -7839,17 +7839,17 @@ fn test_valid_initialization_static_nested() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <117> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <125>  [<]
             │       │   │       ├── <122> Var [i]
-            │       │   │       ╰── Constant Int [30]
+            │       │   │       ╰── <124> Constant Int [30]
             │       │   ├── Condition
             │       │   │   ╰── <134> Assign [=]
             │       │   │       ├── <127> Var [i]
             │       │   │       ╰── <133>  [+]
             │       │   │           ├── <130> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <132> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── For
             │       │           ├── Init
@@ -7859,17 +7859,17 @@ fn test_valid_initialization_static_nested() {
             │       │           │       ├── Type
             │       │           │       │   ╰── Int
             │       │           │       ╰── Initializer
-            │       │           │           ╰── Constant Int [0]
+            │       │           │           ╰── <138> Constant Int [0]
             │       │           ├── Condition
             │       │           │   ╰── <146>  [<]
             │       │           │       ├── <143> Var [j]
-            │       │           │       ╰── Constant Int [50]
+            │       │           │       ╰── <145> Constant Int [50]
             │       │           ├── Condition
             │       │           │   ╰── <155> Assign [=]
             │       │           │       ├── <148> Var [j]
             │       │           │       ╰── <154>  [+]
             │       │           │           ├── <151> Var [j]
-            │       │           │           ╰── Constant Int [1]
+            │       │           │           ╰── <153> Constant Int [1]
             │       │           ╰── Block
             │       │               ╰── For
             │       │                   ├── Init
@@ -7879,17 +7879,17 @@ fn test_valid_initialization_static_nested() {
             │       │                   │       ├── Type
             │       │                   │       │   ╰── Int
             │       │                   │       ╰── Initializer
-            │       │                   │           ╰── Constant Int [0]
+            │       │                   │           ╰── <159> Constant Int [0]
             │       │                   ├── Condition
             │       │                   │   ╰── <167>  [<]
             │       │                   │       ├── <164> Var [k]
-            │       │                   │       ╰── Constant Int [40]
+            │       │                   │       ╰── <166> Constant Int [40]
             │       │                   ├── Condition
             │       │                   │   ╰── <176> Assign [=]
             │       │                   │       ├── <169> Var [k]
             │       │                   │       ╰── <175>  [+]
             │       │                   │           ├── <172> Var [k]
-            │       │                   │           ╰── Constant Int [1]
+            │       │                   │           ╰── <174> Constant Int [1]
             │       │                   ╰── Block
             │       │                       ╰── If
             │       │                           ├── Condition
@@ -7903,9 +7903,9 @@ fn test_valid_initialization_static_nested() {
             │       │                           ╰── Then
             │       │                               ╰── Block
             │       │                                   ╰── Return
-            │       │                                       ╰── Constant Int [5]
+            │       │                                       ╰── <188> Constant Int [5]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <202> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── ulong_arr
@@ -7921,12 +7921,12 @@ fn test_valid_initialization_static_nested() {
             │       ╰── Compound
             │           ├── Compound
             │           │   ├── Compound
-            │           │   │   ╰── Constant Double [+1.0003e3]
+            │           │   │   ╰── <215> Constant Double [+1.0003e3]
             │           │   ╰── Compound
-            │           │       ╰── Constant UInt [12]
+            │           │       ╰── <218> Constant UInt [12]
             │           ╰── Compound
             │               ╰── Compound
-            │                   ╰── Constant Int [2]
+            │                   ╰── <222> Constant Int [2]
             ├── Function [check_ulong_arr]
             │   ├── Parameters
             │   │   ╰── Param
@@ -7948,17 +7948,17 @@ fn test_valid_initialization_static_nested() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <244> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <252>  [<]
             │       │   │       ├── <249> Var [i]
-            │       │   │       ╰── Constant Int [4]
+            │       │   │       ╰── <251> Constant Int [4]
             │       │   ├── Condition
             │       │   │   ╰── <261> Assign [=]
             │       │   │       ├── <254> Var [i]
             │       │   │       ╰── <260>  [+]
             │       │   │           ├── <257> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <259> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── For
             │       │           ├── Init
@@ -7968,17 +7968,17 @@ fn test_valid_initialization_static_nested() {
             │       │           │       ├── Type
             │       │           │       │   ╰── Int
             │       │           │       ╰── Initializer
-            │       │           │           ╰── Constant Int [0]
+            │       │           │           ╰── <265> Constant Int [0]
             │       │           ├── Condition
             │       │           │   ╰── <273>  [<]
             │       │           │       ├── <270> Var [j]
-            │       │           │       ╰── Constant Int [6]
+            │       │           │       ╰── <272> Constant Int [6]
             │       │           ├── Condition
             │       │           │   ╰── <282> Assign [=]
             │       │           │       ├── <275> Var [j]
             │       │           │       ╰── <281>  [+]
             │       │           │           ├── <278> Var [j]
-            │       │           │           ╰── Constant Int [1]
+            │       │           │           ╰── <280> Constant Int [1]
             │       │           ╰── Block
             │       │               ╰── For
             │       │                   ├── Init
@@ -7988,17 +7988,17 @@ fn test_valid_initialization_static_nested() {
             │       │                   │       ├── Type
             │       │                   │       │   ╰── Int
             │       │                   │       ╰── Initializer
-            │       │                   │           ╰── Constant Int [0]
+            │       │                   │           ╰── <286> Constant Int [0]
             │       │                   ├── Condition
             │       │                   │   ╰── <294>  [<]
             │       │                   │       ├── <291> Var [k]
-            │       │                   │       ╰── Constant Int [2]
+            │       │                   │       ╰── <293> Constant Int [2]
             │       │                   ├── Condition
             │       │                   │   ╰── <303> Assign [=]
             │       │                   │       ├── <296> Var [k]
             │       │                   │       ╰── <302>  [+]
             │       │                   │           ├── <299> Var [k]
-            │       │                   │           ╰── Constant Int [1]
+            │       │                   │           ╰── <301> Constant Int [1]
             │       │                   ╰── Block
             │       │                       ├── VarDeclaration
             │       │                       │   ├── Name
@@ -8019,24 +8019,24 @@ fn test_valid_initialization_static_nested() {
             │       │                           │       ├── <331>  [&&]
             │       │                           │       │   ├── <324>  [==]
             │       │                           │       │   │   ├── <321> Var [i]
-            │       │                           │       │   │   ╰── Constant Int [0]
+            │       │                           │       │   │   ╰── <323> Constant Int [0]
             │       │                           │       │   ╰── <330>  [==]
             │       │                           │       │       ├── <327> Var [j]
-            │       │                           │       │       ╰── Constant Int [0]
+            │       │                           │       │       ╰── <329> Constant Int [0]
             │       │                           │       ╰── <337>  [==]
             │       │                           │           ├── <334> Var [k]
-            │       │                           │           ╰── Constant Int [0]
+            │       │                           │           ╰── <336> Constant Int [0]
             │       │                           ├── Then
             │       │                           │   ╰── Block
             │       │                           │       ╰── If
             │       │                           │           ├── Condition
             │       │                           │           │   ╰── <343>  [!=]
             │       │                           │           │       ├── <340> Var [val]
-            │       │                           │           │       ╰── Constant ULong [1000]
+            │       │                           │           │       ╰── <342> Constant ULong [1000]
             │       │                           │           ╰── Then
             │       │                           │               ╰── Block
             │       │                           │                   ╰── Return
-            │       │                           │                       ╰── Constant Int [6]
+            │       │                           │                       ╰── <344> Constant Int [6]
             │       │                           ╰── Else
             │       │                               ╰── If
             │       │                                   ├── Condition
@@ -8044,24 +8044,24 @@ fn test_valid_initialization_static_nested() {
             │       │                                   │       ├── <362>  [&&]
             │       │                                   │       │   ├── <355>  [==]
             │       │                                   │       │   │   ├── <352> Var [i]
-            │       │                                   │       │   │   ╰── Constant Int [0]
+            │       │                                   │       │   │   ╰── <354> Constant Int [0]
             │       │                                   │       │   ╰── <361>  [==]
             │       │                                   │       │       ├── <358> Var [j]
-            │       │                                   │       │       ╰── Constant Int [1]
+            │       │                                   │       │       ╰── <360> Constant Int [1]
             │       │                                   │       ╰── <368>  [==]
             │       │                                   │           ├── <365> Var [k]
-            │       │                                   │           ╰── Constant Int [0]
+            │       │                                   │           ╰── <367> Constant Int [0]
             │       │                                   ├── Then
             │       │                                   │   ╰── Block
             │       │                                   │       ╰── If
             │       │                                   │           ├── Condition
             │       │                                   │           │   ╰── <374>  [!=]
             │       │                                   │           │       ├── <371> Var [val]
-            │       │                                   │           │       ╰── Constant ULong [12]
+            │       │                                   │           │       ╰── <373> Constant ULong [12]
             │       │                                   │           ╰── Then
             │       │                                   │               ╰── Block
             │       │                                   │                   ╰── Return
-            │       │                                   │                       ╰── Constant Int [7]
+            │       │                                   │                       ╰── <375> Constant Int [7]
             │       │                                   ╰── Else
             │       │                                       ╰── If
             │       │                                           ├── Condition
@@ -8069,24 +8069,24 @@ fn test_valid_initialization_static_nested() {
             │       │                                           │       ├── <393>  [&&]
             │       │                                           │       │   ├── <386>  [==]
             │       │                                           │       │   │   ├── <383> Var [i]
-            │       │                                           │       │   │   ╰── Constant Int [1]
+            │       │                                           │       │   │   ╰── <385> Constant Int [1]
             │       │                                           │       │   ╰── <392>  [==]
             │       │                                           │       │       ├── <389> Var [j]
-            │       │                                           │       │       ╰── Constant Int [0]
+            │       │                                           │       │       ╰── <391> Constant Int [0]
             │       │                                           │       ╰── <399>  [==]
             │       │                                           │           ├── <396> Var [k]
-            │       │                                           │           ╰── Constant Int [0]
+            │       │                                           │           ╰── <398> Constant Int [0]
             │       │                                           ├── Then
             │       │                                           │   ╰── Block
             │       │                                           │       ╰── If
             │       │                                           │           ├── Condition
             │       │                                           │           │   ╰── <405>  [!=]
             │       │                                           │           │       ├── <402> Var [val]
-            │       │                                           │           │       ╰── Constant ULong [2]
+            │       │                                           │           │       ╰── <404> Constant ULong [2]
             │       │                                           │           ╰── Then
             │       │                                           │               ╰── Block
             │       │                                           │                   ╰── Return
-            │       │                                           │                       ╰── Constant Int [8]
+            │       │                                           │                       ╰── <406> Constant Int [8]
             │       │                                           ╰── Else
             │       │                                               ╰── Block
             │       │                                                   ╰── If
@@ -8095,9 +8095,9 @@ fn test_valid_initialization_static_nested() {
             │       │                                                       ╰── Then
             │       │                                                           ╰── Block
             │       │                                                               ╰── Return
-            │       │                                                                   ╰── Constant Int [9]
+            │       │                                                                   ╰── <415> Constant Int [9]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <434> Constant Int [0]
             ├── Function [test_global]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -8138,7 +8138,7 @@ fn test_valid_initialization_static_nested() {
             │       │           ╰── Return
             │       │               ╰── <488> Var [check]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <493> Constant Int [0]
             ├── Function [test_local]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -8153,11 +8153,11 @@ fn test_valid_initialization_static_nested() {
             │       │   ├── Initializer
             │       │   │   ╰── Compound
             │       │   │       ├── Compound
-            │       │   │       │   ├── Constant Double [+1.1e0]
-            │       │   │       │   ╰── Constant Double [+2.2e0]
+            │       │   │       │   ├── <509> Constant Double [+1.1e0]
+            │       │   │       │   ╰── <511> Constant Double [+2.2e0]
             │       │   │       ╰── Compound
-            │       │   │           ├── Constant Double [+3.3e0]
-            │       │   │           ╰── Constant Double [+4.4e0]
+            │       │   │           ├── <514> Constant Double [+3.3e0]
+            │       │   │           ╰── <516> Constant Double [+4.4e0]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -8174,7 +8174,7 @@ fn test_valid_initialization_static_nested() {
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── <536>  [+]
-            │       │                   ├── Constant Int [100]
+            │       │                   ├── <532> Constant Int [100]
             │       │                   ╰── <535> Var [check]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -8199,7 +8199,7 @@ fn test_valid_initialization_static_nested() {
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── <567>  [+]
-            │       │                   ├── Constant Int [100]
+            │       │                   ├── <563> Constant Int [100]
             │       │                   ╰── <566> Var [check]
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -8216,12 +8216,12 @@ fn test_valid_initialization_static_nested() {
             │       │   │   ╰── Compound
             │       │   │       ├── Compound
             │       │   │       │   ├── Compound
-            │       │   │       │   │   ╰── Constant Double [+1.0003e3]
+            │       │   │       │   │   ╰── <582> Constant Double [+1.0003e3]
             │       │   │       │   ╰── Compound
-            │       │   │       │       ╰── Constant UInt [12]
+            │       │   │       │       ╰── <585> Constant UInt [12]
             │       │   │       ╰── Compound
             │       │   │           ╰── Compound
-            │       │   │               ╰── Constant Int [2]
+            │       │   │               ╰── <589> Constant Int [2]
             │       │   ╰── Static
             │       ├── <602> Assign [=]
             │       │   ├── <596> Var [check]
@@ -8234,10 +8234,10 @@ fn test_valid_initialization_static_nested() {
             │       │       ╰── Block
             │       │           ╰── Return
             │       │               ╰── <610>  [+]
-            │       │                   ├── Constant Int [100]
+            │       │                   ├── <606> Constant Int [100]
             │       │                   ╰── <609> Var [check]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <615> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -8303,13 +8303,13 @@ fn test_valid_initialization_trailing_comma_initializer() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <24> Constant Int [1]
+                    │           ├── <26> Constant Int [2]
+                    │           ╰── <28> Constant Int [3]
                     ╰── Return
                         ╰── <35> Subscript
                             ├── <33> Var [arr]
-                            ╰── Constant Int [2]
+                            ╰── <34> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -8336,10 +8336,10 @@ fn test_valid_libraries_global_array() {
             │   │       ╰── Long
             │   ╰── Initializer
             │       ╰── Compound
-            │           ├── Constant Int [1]
-            │           ├── Constant Int [2]
-            │           ├── Constant Int [3]
-            │           ╰── Constant Int [4]
+            │           ├── <6> Constant Int [1]
+            │           ├── <8> Constant Int [2]
+            │           ├── <10> Constant Int [3]
+            │           ╰── <12> Constant Int [4]
             ╰── Function [double_each_element]
                 ╰── Body
                     ├── For
@@ -8350,17 +8350,17 @@ fn test_valid_libraries_global_array() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <23> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <31>  [<]
                     │   │       ├── <28> Var [i]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <30> Constant Int [4]
                     │   ├── Condition
                     │   │   ╰── <40> Assign [=]
                     │   │       ├── <33> Var [i]
                     │   │       ╰── <39>  [+]
                     │   │           ├── <36> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <38> Constant Int [1]
                     │   ╰── Block
                     │       ╰── <55> Assign [=]
                     │           ├── <45> Subscript
@@ -8370,9 +8370,9 @@ fn test_valid_libraries_global_array() {
                     │               ├── <51> Subscript
                     │               │   ├── <48> Var [arr]
                     │               │   ╰── <50> Var [i]
-                    │               ╰── Constant Int [2]
+                    │               ╰── <53> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <60> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -8419,17 +8419,17 @@ fn test_valid_libraries_global_array_client() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <20> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <28>  [<]
                     │   │       ├── <25> Var [i]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <27> Constant Int [4]
                     │   ├── Condition
                     │   │   ╰── <37> Assign [=]
                     │   │       ├── <30> Var [i]
                     │   │       ╰── <36>  [+]
                     │   │           ├── <33> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <35> Constant Int [1]
                     │   ╰── Block
                     │       ╰── If
                     │           ├── Condition
@@ -8439,13 +8439,13 @@ fn test_valid_libraries_global_array_client() {
                     │           │       │   ╰── <41> Var [i]
                     │           │       ╰── <48>  [+]
                     │           │           ├── <45> Var [i]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <47> Constant Int [1]
                     │           ╰── Then
                     │               ╰── Block
                     │                   ╰── Return
                     │                       ╰── <54>  [+]
                     │                           ├── <51> Var [i]
-                    │                           ╰── Constant Int [1]
+                    │                           ╰── <53> Constant Int [1]
                     ├── <63> FunctionCall [double_each_element]
                     ├── For
                     │   ├── Init
@@ -8455,17 +8455,17 @@ fn test_valid_libraries_global_array_client() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <68> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <76>  [<]
                     │   │       ├── <73> Var [i]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <75> Constant Int [4]
                     │   ├── Condition
                     │   │   ╰── <85> Assign [=]
                     │   │       ├── <78> Var [i]
                     │   │       ╰── <84>  [+]
                     │   │           ├── <81> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <83> Constant Int [1]
                     │   ╰── Block
                     │       ╰── If
                     │           ├── Condition
@@ -8476,16 +8476,16 @@ fn test_valid_libraries_global_array_client() {
                     │           │       ╰── <100>  [*]
                     │           │           ├── <97>  [+]
                     │           │           │   ├── <93> Var [i]
-                    │           │           │   ╰── Constant Int [1]
-                    │           │           ╰── Constant Int [2]
+                    │           │           │   ╰── <95> Constant Int [1]
+                    │           │           ╰── <99> Constant Int [2]
                     │           ╰── Then
                     │               ╰── Block
                     │                   ╰── Return
                     │                       ╰── <106>  [+]
                     │                           ├── <103> Var [i]
-                    │                           ╰── Constant Int [5]
+                    │                           ╰── <105> Constant Int [5]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <114> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -8587,20 +8587,20 @@ fn test_valid_libraries_return_pointer_to_array_client() {
                     │       ╰── Compound
                     │           ├── Compound
                     │           │   ╰── Compound
-                    │           │       ╰── Constant Int [0]
+                    │           │       ╰── <35> Constant Int [0]
                     │           ╰── Compound
                     │               ├── Compound
                     │               │   ├── <41> Unary [-]
-                    │               │   │   ╰── Constant Int [12]
+                    │               │   │   ╰── <40> Constant Int [12]
                     │               │   ├── <45> Unary [-]
-                    │               │   │   ╰── Constant Int [13]
+                    │               │   │   ╰── <44> Constant Int [13]
                     │               │   ├── <49> Unary [-]
-                    │               │   │   ╰── Constant Int [14]
+                    │               │   │   ╰── <48> Constant Int [14]
                     │               │   ╰── <53> Unary [-]
-                    │               │       ╰── Constant Int [15]
+                    │               │       ╰── <52> Constant Int [15]
                     │               ╰── Compound
                     │                   ╰── <58> Unary [-]
-                    │                       ╰── Constant Int [16]
+                    │                       ╰── <57> Constant Int [16]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── row_pointer
@@ -8612,7 +8612,7 @@ fn test_valid_libraries_return_pointer_to_array_client() {
                     │   ╰── Initializer
                     │       ╰── <75> FunctionCall [return_row]
                     │           ├── <73> Var [nested_array]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <74> Constant Int [1]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -8621,17 +8621,17 @@ fn test_valid_libraries_return_pointer_to_array_client() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <81> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <89>  [<]
                     │   │       ├── <86> Var [i]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <88> Constant Int [3]
                     │   ├── Condition
                     │   │   ╰── <98> Assign [=]
                     │   │       ├── <91> Var [i]
                     │   │       ╰── <97>  [+]
                     │   │           ├── <94> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <96> Constant Int [1]
                     │   ╰── Block
                     │       ╰── For
                     │           ├── Init
@@ -8641,17 +8641,17 @@ fn test_valid_libraries_return_pointer_to_array_client() {
                     │           │       ├── Type
                     │           │       │   ╰── Int
                     │           │       ╰── Initializer
-                    │           │           ╰── Constant Int [0]
+                    │           │           ╰── <102> Constant Int [0]
                     │           ├── Condition
                     │           │   ╰── <110>  [<]
                     │           │       ├── <107> Var [j]
-                    │           │       ╰── Constant Int [4]
+                    │           │       ╰── <109> Constant Int [4]
                     │           ├── Condition
                     │           │   ╰── <119> Assign [=]
                     │           │       ├── <112> Var [j]
                     │           │       ╰── <118>  [+]
                     │           │           ├── <115> Var [j]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <117> Constant Int [1]
                     │           ╰── Block
                     │               ╰── If
                     │                   ├── Condition
@@ -8665,20 +8665,20 @@ fn test_valid_libraries_return_pointer_to_array_client() {
                     │                   │           ├── <135> Subscript
                     │                   │           │   ├── <132> Subscript
                     │                   │           │   │   ├── <130> Var [nested_array]
-                    │                   │           │   │   ╰── Constant Int [1]
+                    │                   │           │   │   ╰── <131> Constant Int [1]
                     │                   │           │   ╰── <134> Var [i]
                     │                   │           ╰── <137> Var [j]
                     │                   ╰── Then
                     │                       ╰── Block
                     │                           ╰── Return
-                    │                               ╰── Constant Int [1]
+                    │                               ╰── <140> Constant Int [1]
                     ├── <159> Assign [=]
                     │   ├── <156> Subscript
                     │   │   ├── <154> Subscript
                     │   │   │   ├── <152> Var [row_pointer]
-                    │   │   │   ╰── Constant Int [2]
-                    │   │   ╰── Constant Int [1]
-                    │   ╰── Constant Int [100]
+                    │   │   │   ╰── <153> Constant Int [2]
+                    │   │   ╰── <155> Constant Int [1]
+                    │   ╰── <158> Constant Int [100]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <171>  [!=]
@@ -8686,16 +8686,16 @@ fn test_valid_libraries_return_pointer_to_array_client() {
                     │   │       │   ├── <166> Subscript
                     │   │       │   │   ├── <164> Subscript
                     │   │       │   │   │   ├── <162> Var [nested_array]
-                    │   │       │   │   │   ╰── Constant Int [1]
-                    │   │       │   │   ╰── Constant Int [2]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [100]
+                    │   │       │   │   │   ╰── <163> Constant Int [1]
+                    │   │       │   │   ╰── <165> Constant Int [2]
+                    │   │       │   ╰── <167> Constant Int [1]
+                    │   │       ╰── <170> Constant Int [100]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <172> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <177> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -8749,17 +8749,17 @@ fn test_valid_libraries_set_array_val() {
             │       │   │       ├── Type
             │       │   │       │   ╰── Int
             │       │   │       ╰── Initializer
-            │       │   │           ╰── Constant Int [0]
+            │       │   │           ╰── <15> Constant Int [0]
             │       │   ├── Condition
             │       │   │   ╰── <23>  [<]
             │       │   │       ├── <20> Var [i]
-            │       │   │       ╰── Constant Int [5]
+            │       │   │       ╰── <22> Constant Int [5]
             │       │   ├── Condition
             │       │   │   ╰── <32> Assign [=]
             │       │   │       ├── <25> Var [i]
             │       │   │       ╰── <31>  [+]
             │       │   │           ├── <28> Var [i]
-            │       │   │           ╰── Constant Int [1]
+            │       │   │           ╰── <30> Constant Int [1]
             │       │   ╰── Block
             │       │       ╰── If
             │       │           ├── Condition
@@ -8769,14 +8769,14 @@ fn test_valid_libraries_set_array_val() {
             │       │           ╰── Then
             │       │               ╰── Block
             │       │                   ╰── Return
-            │       │                       ╰── Constant Int [1]
+            │       │                       ╰── <38> Constant Int [1]
             │       ├── <53> Assign [=]
             │       │   ├── <50> Subscript
             │       │   │   ├── <47> Var [arr]
             │       │   │   ╰── <49> Var [idx]
-            │       │   ╰── Constant Int [8]
+            │       │   ╰── <52> Constant Int [8]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <55> Constant Int [0]
             ╰── Function [set_nested_element]
                 ├── Parameters
                 │   ├── Param
@@ -8806,17 +8806,17 @@ fn test_valid_libraries_set_array_val() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <79> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <87>  [<]
                     │   │       ├── <84> Var [x]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <86> Constant Int [3]
                     │   ├── Condition
                     │   │   ╰── <96> Assign [=]
                     │   │       ├── <89> Var [x]
                     │   │       ╰── <95>  [+]
                     │   │           ├── <92> Var [x]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <94> Constant Int [1]
                     │   ╰── Block
                     │       ╰── For
                     │           ├── Init
@@ -8826,17 +8826,17 @@ fn test_valid_libraries_set_array_val() {
                     │           │       ├── Type
                     │           │       │   ╰── Int
                     │           │       ╰── Initializer
-                    │           │           ╰── Constant Int [0]
+                    │           │           ╰── <100> Constant Int [0]
                     │           ├── Condition
                     │           │   ╰── <108>  [<]
                     │           │       ├── <105> Var [y]
-                    │           │       ╰── Constant Int [2]
+                    │           │       ╰── <107> Constant Int [2]
                     │           ├── Condition
                     │           │   ╰── <117> Assign [=]
                     │           │       ├── <110> Var [y]
                     │           │       ╰── <116>  [+]
                     │           │           ├── <113> Var [y]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <115> Constant Int [1]
                     │           ╰── Block
                     │               ├── VarDeclaration
                     │               │   ├── Name
@@ -8847,9 +8847,9 @@ fn test_valid_libraries_set_array_val() {
                     │               │       ╰── <134>  [+]
                     │               │           ├── <130>  [+]
                     │               │           │   ├── <123> Unary [-]
-                    │               │           │   │   ╰── Constant Int [10]
+                    │               │           │   │   ╰── <122> Constant Int [10]
                     │               │           │   ╰── <129>  [*]
-                    │               │           │       ├── Constant Int [2]
+                    │               │           │       ├── <125> Constant Int [2]
                     │               │           │       ╰── <128> Var [x]
                     │               │           ╰── <133> Var [y]
                     │               ╰── If
@@ -8864,16 +8864,16 @@ fn test_valid_libraries_set_array_val() {
                     │                   ╰── Then
                     │                       ╰── Block
                     │                           ╰── Return
-                    │                               ╰── Constant Int [4]
+                    │                               ╰── <149> Constant Int [4]
                     ├── <170> Assign [=]
                     │   ├── <167> Subscript
                     │   │   ├── <164> Subscript
                     │   │   │   ├── <161> Var [arr]
                     │   │   │   ╰── <163> Var [i]
                     │   │   ╰── <166> Var [j]
-                    │   ╰── Constant Int [10]
+                    │   ╰── <169> Constant Int [10]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <172> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -8964,11 +8964,11 @@ fn test_valid_libraries_set_array_val_client() {
                     │   │       ╰── Double
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Double [+0e0]
-                    │           ├── Constant Double [+0e0]
-                    │           ├── Constant Double [+0e0]
-                    │           ├── Constant Double [+0e0]
-                    │           ╰── Constant Double [+0e0]
+                    │           ├── <40> Constant Double [+0e0]
+                    │           ├── <42> Constant Double [+0e0]
+                    │           ├── <44> Constant Double [+0e0]
+                    │           ├── <46> Constant Double [+0e0]
+                    │           ╰── <48> Constant Double [+0e0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── check
@@ -8977,7 +8977,7 @@ fn test_valid_libraries_set_array_val_client() {
                     │   ╰── Initializer
                     │       ╰── <59> FunctionCall [set_nth_element]
                     │           ├── <57> Var [arr]
-                    │           ╰── Constant Int [4]
+                    │           ╰── <58> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <63> Var [check]
@@ -8993,17 +8993,17 @@ fn test_valid_libraries_set_array_val_client() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <73> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <81>  [<]
                     │   │       ├── <78> Var [i]
-                    │   │       ╰── Constant Int [4]
+                    │   │       ╰── <80> Constant Int [4]
                     │   ├── Condition
                     │   │   ╰── <90> Assign [=]
                     │   │       ├── <83> Var [i]
                     │   │       ╰── <89>  [+]
                     │   │           ├── <86> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <88> Constant Int [1]
                     │   ╰── Block
                     │       ╰── If
                     │           ├── Condition
@@ -9011,21 +9011,21 @@ fn test_valid_libraries_set_array_val_client() {
                     │           │       ├── <95> Subscript
                     │           │       │   ├── <92> Var [arr]
                     │           │       │   ╰── <94> Var [i]
-                    │           │       ╰── Constant Int [0]
+                    │           │       ╰── <97> Constant Int [0]
                     │           ╰── Then
                     │               ╰── Block
                     │                   ╰── Return
-                    │                       ╰── Constant Int [2]
+                    │                       ╰── <99> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <113>  [!=]
                     │   │       ├── <110> Subscript
                     │   │       │   ├── <108> Var [arr]
-                    │   │       │   ╰── Constant Int [4]
-                    │   │       ╰── Constant Int [8]
+                    │   │       │   ╰── <109> Constant Int [4]
+                    │   │       ╰── <112> Constant Int [8]
                     │   ╰── Then
                     │       ╰── Return
-                    │           ╰── Constant Int [3]
+                    │           ╰── <114> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── nested_arr
@@ -9039,25 +9039,25 @@ fn test_valid_libraries_set_array_val_client() {
                     │       ╰── Compound
                     │           ├── Compound
                     │           │   ├── <126> Unary [-]
-                    │           │   │   ╰── Constant Int [10]
+                    │           │   │   ╰── <125> Constant Int [10]
                     │           │   ╰── <130> Unary [-]
-                    │           │       ╰── Constant Int [9]
+                    │           │       ╰── <129> Constant Int [9]
                     │           ├── Compound
                     │           │   ├── <135> Unary [-]
-                    │           │   │   ╰── Constant Int [8]
+                    │           │   │   ╰── <134> Constant Int [8]
                     │           │   ╰── <139> Unary [-]
-                    │           │       ╰── Constant Int [7]
+                    │           │       ╰── <138> Constant Int [7]
                     │           ╰── Compound
                     │               ├── <144> Unary [-]
-                    │               │   ╰── Constant Int [6]
+                    │               │   ╰── <143> Constant Int [6]
                     │               ╰── <148> Unary [-]
-                    │                   ╰── Constant Int [5]
+                    │                   ╰── <147> Constant Int [5]
                     ├── <162> Assign [=]
                     │   ├── <154> Var [check]
                     │   ╰── <161> FunctionCall [set_nested_element]
                     │       ├── <158> Var [nested_arr]
-                    │       ├── Constant Int [2]
-                    │       ╰── Constant Int [1]
+                    │       ├── <159> Constant Int [2]
+                    │       ╰── <160> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <165> Var [check]
@@ -9073,17 +9073,17 @@ fn test_valid_libraries_set_array_val_client() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <175> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <183>  [<]
                     │   │       ├── <180> Var [i]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <182> Constant Int [3]
                     │   ├── Condition
                     │   │   ╰── <192> Assign [=]
                     │   │       ├── <185> Var [i]
                     │   │       ╰── <191>  [+]
                     │   │           ├── <188> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <190> Constant Int [1]
                     │   ╰── Block
                     │       ╰── For
                     │           ├── Init
@@ -9093,27 +9093,27 @@ fn test_valid_libraries_set_array_val_client() {
                     │           │       ├── Type
                     │           │       │   ╰── Int
                     │           │       ╰── Initializer
-                    │           │           ╰── Constant Int [0]
+                    │           │           ╰── <196> Constant Int [0]
                     │           ├── Condition
                     │           │   ╰── <204>  [<]
                     │           │       ├── <201> Var [j]
-                    │           │       ╰── Constant Int [2]
+                    │           │       ╰── <203> Constant Int [2]
                     │           ├── Condition
                     │           │   ╰── <213> Assign [=]
                     │           │       ├── <206> Var [j]
                     │           │       ╰── <212>  [+]
                     │           │           ├── <209> Var [j]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <211> Constant Int [1]
                     │           ╰── Block
                     │               ╰── If
                     │                   ├── Condition
                     │                   │   ╰── <225>  [&&]
                     │                   │       ├── <218>  [==]
                     │                   │       │   ├── <215> Var [i]
-                    │                   │       │   ╰── Constant Int [2]
+                    │                   │       │   ╰── <217> Constant Int [2]
                     │                   │       ╰── <224>  [==]
                     │                   │           ├── <221> Var [j]
-                    │                   │           ╰── Constant Int [1]
+                    │                   │           ╰── <223> Constant Int [1]
                     │                   ├── Then
                     │                   │   ╰── Block
                     │                   │       ╰── If
@@ -9124,11 +9124,11 @@ fn test_valid_libraries_set_array_val_client() {
                     │                   │           │       │   │   ├── <227> Var [nested_arr]
                     │                   │           │       │   │   ╰── <229> Var [i]
                     │                   │           │       │   ╰── <232> Var [j]
-                    │                   │           │       ╰── Constant Int [10]
+                    │                   │           │       ╰── <235> Constant Int [10]
                     │                   │           ╰── Then
                     │                   │               ╰── Block
                     │                   │                   ╰── Return
-                    │                   │                       ╰── Constant Int [5]
+                    │                   │                       ╰── <237> Constant Int [5]
                     │                   ╰── Else
                     │                       ╰── Block
                     │                           ├── VarDeclaration
@@ -9140,9 +9140,9 @@ fn test_valid_libraries_set_array_val_client() {
                     │                           │       ╰── <260>  [+]
                     │                           │           ├── <256>  [+]
                     │                           │           │   ├── <249> Unary [-]
-                    │                           │           │   │   ╰── Constant Int [10]
+                    │                           │           │   │   ╰── <248> Constant Int [10]
                     │                           │           │   ╰── <255>  [*]
-                    │                           │           │       ├── Constant Int [2]
+                    │                           │           │       ├── <251> Constant Int [2]
                     │                           │           │       ╰── <254> Var [i]
                     │                           │           ╰── <259> Var [j]
                     │                           ╰── If
@@ -9157,9 +9157,9 @@ fn test_valid_libraries_set_array_val_client() {
                     │                               ╰── Then
                     │                                   ╰── Block
                     │                                       ╰── Return
-                    │                                           ╰── Constant Int [6]
+                    │                                           ╰── <275> Constant Int [6]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <289> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -9193,42 +9193,42 @@ fn test_valid_pointer_arithmetic_add_dereference_and_assign() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ╰── Constant Int [2]
+                    │           ├── <10> Constant Int [1]
+                    │           ╰── <12> Constant Int [2]
                     ├── <21> Assign [=]
                     │   ├── <18> Dereference
                     │   │   ╰── <17> Var [arr]
-                    │   ╰── Constant Int [3]
+                    │   ╰── <20> Constant Int [3]
                     ├── <32> Assign [=]
                     │   ├── <29> Dereference
                     │   │   ╰── <28>  [+]
                     │   │       ├── <24> Var [arr]
-                    │   │       ╰── Constant Int [1]
-                    │   ╰── Constant Int [4]
+                    │   │       ╰── <26> Constant Int [1]
+                    │   ╰── <31> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <40>  [!=]
                     │   │       ├── <37> Subscript
                     │   │       │   ├── <35> Var [arr]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [3]
+                    │   │       │   ╰── <36> Constant Int [0]
+                    │   │       ╰── <39> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <41> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <52>  [!=]
                     │   │       ├── <49> Subscript
                     │   │       │   ├── <47> Var [arr]
-                    │   │       │   ╰── Constant Int [1]
-                    │   │       ╰── Constant Int [4]
+                    │   │       │   ╰── <48> Constant Int [1]
+                    │   │       ╰── <51> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <53> Constant Int [2]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <58> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -9444,7 +9444,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Initializer
                     │       ╰── <157>  [+]
                     │           ├── <154> Var [arr]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <156> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── elem_4
@@ -9454,7 +9454,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Initializer
                     │       ╰── <168>  [+]
                     │           ├── <165> Var [arr]
-                    │           ╰── Constant Int [4]
+                    │           ╰── <167> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <176> FunctionCall [gt]
@@ -9463,7 +9463,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <177> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <190> Unary [!]
@@ -9473,7 +9473,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <191> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <204> Unary [!]
@@ -9483,7 +9483,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <205> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <215> FunctionCall [le]
@@ -9492,7 +9492,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <216> Constant Int [4]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── one_past_the_end
@@ -9502,7 +9502,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Initializer
                     │       ╰── <229>  [+]
                     │           ├── <226> Var [arr]
-                    │           ╰── Constant Int [5]
+                    │           ╰── <228> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <240> Unary [!]
@@ -9512,18 +9512,18 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <241> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <254>  [!=]
                     │   │       ├── <247> Var [one_past_the_end]
                     │   │       ╰── <253>  [+]
                     │   │           ├── <250> Var [elem_4]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <252> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <255> Constant Int [6]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── nested_arr
@@ -9544,8 +9544,8 @@ fn test_valid_pointer_arithmetic_compare() {
                     │           ├── <278> Dereference
                     │           │   ╰── <277>  [+]
                     │           │       ├── <273> Var [nested_arr]
-                    │           │       ╰── Constant Int [3]
-                    │           ╰── Constant Int [2]
+                    │           │       ╰── <275> Constant Int [3]
+                    │           ╰── <280> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── elem_3_3
@@ -9557,8 +9557,8 @@ fn test_valid_pointer_arithmetic_compare() {
                     │           ├── <294> Dereference
                     │           │   ╰── <293>  [+]
                     │           │       ├── <289> Var [nested_arr]
-                    │           │       ╰── Constant Int [3]
-                    │           ╰── Constant Int [3]
+                    │           │       ╰── <291> Constant Int [3]
+                    │           ╰── <296> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <305> FunctionCall [lt]
@@ -9567,7 +9567,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <306> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <318> Unary [!]
@@ -9577,7 +9577,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <319> Constant Int [8]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── subarray_0
@@ -9599,7 +9599,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Initializer
                     │       ╰── <346>  [+]
                     │           ├── <343> Var [nested_arr]
-                    │           ╰── Constant Int [3]
+                    │           ╰── <345> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── subarray_one_past_the_end
@@ -9611,7 +9611,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Initializer
                     │       ╰── <360>  [+]
                     │           ├── <357> Var [nested_arr]
-                    │           ╰── Constant Int [4]
+                    │           ╰── <359> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <368> FunctionCall [ge_nested]
@@ -9620,7 +9620,7 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <369> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <382> Unary [!]
@@ -9630,20 +9630,20 @@ fn test_valid_pointer_arithmetic_compare() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [10]
+                    │               ╰── <383> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <396>  [!=]
                     │   │       ├── <389> Var [subarray_3]
                     │   │       ╰── <395>  [-]
                     │   │           ├── <392> Var [subarray_one_past_the_end]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <394> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [11]
+                    │               ╰── <397> Constant Int [11]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <402> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -9795,17 +9795,17 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Long
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [3]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ╰── Constant Int [13]
+            │       │           ├── <10> Constant Int [0]
+            │       │           ├── <12> Constant Int [0]
+            │       │           ├── <14> Constant Int [3]
+            │       │           ├── <16> Constant Int [0]
+            │       │           ├── <18> Constant Int [0]
+            │       │           ├── <20> Constant Int [0]
+            │       │           ├── <22> Constant Int [0]
+            │       │           ├── <24> Constant Int [0]
+            │       │           ├── <26> Constant Int [0]
+            │       │           ├── <28> Constant Int [0]
+            │       │           ╰── <30> Constant Int [13]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr
@@ -9815,12 +9815,12 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <42>  [+]
             │       │           ├── <39> Var [long_arr]
-            │       │           ╰── Constant Int [10]
+            │       │           ╰── <41> Constant Int [10]
             │       ╰── Return
             │           ╰── <50>  [==]
             │               ├── <47> Dereference
             │               │   ╰── <46> Var [ptr]
-            │               ╰── Constant Int [13]
+            │               ╰── <49> Constant Int [13]
             ├── Function [test_add_negative_index]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -9832,17 +9832,17 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Unsigned Int
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [2]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ╰── Constant Int [42]
+            │       │           ├── <63> Constant Int [0]
+            │       │           ├── <65> Constant Int [0]
+            │       │           ├── <67> Constant Int [2]
+            │       │           ├── <69> Constant Int [0]
+            │       │           ├── <71> Constant Int [0]
+            │       │           ├── <73> Constant Int [0]
+            │       │           ├── <75> Constant Int [0]
+            │       │           ├── <77> Constant Int [0]
+            │       │           ├── <79> Constant Int [0]
+            │       │           ├── <81> Constant Int [0]
+            │       │           ╰── <83> Constant Int [42]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── end_ptr
@@ -9852,7 +9852,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <95>  [+]
             │       │           ├── <92> Var [unsigned_arr]
-            │       │           ╰── Constant Int [12]
+            │       │           ╰── <94> Constant Int [12]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr
@@ -9863,12 +9863,12 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │       ╰── <108>  [+]
             │       │           ├── <103> Var [end_ptr]
             │       │           ╰── <107> Unary [-]
-            │       │               ╰── Constant Int [10]
+            │       │               ╰── <106> Constant Int [10]
             │       ╰── Return
             │           ╰── <116>  [==]
             │               ├── <113> Dereference
             │               │   ╰── <112> Var [ptr]
-            │               ╰── Constant Int [2]
+            │               ╰── <115> Constant Int [2]
             ├── Function [test_add_pointer_to_int]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -9880,9 +9880,9 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [98]
-            │       │           ╰── Constant Int [99]
+            │       │           ├── <129> Constant Int [0]
+            │       │           ├── <131> Constant Int [98]
+            │       │           ╰── <133> Constant Int [99]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr1
@@ -9892,7 +9892,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <145>  [+]
             │       │           ├── <142> Var [int_arr]
-            │       │           ╰── Constant Int [2]
+            │       │           ╰── <144> Constant Int [2]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr2
@@ -9901,7 +9901,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <156>  [+]
-            │       │           ├── Constant Int [2]
+            │       │           ├── <152> Constant Int [2]
             │       │           ╰── <155> Var [int_arr]
             │       ╰── Return
             │           ╰── <173>  [&&]
@@ -9911,7 +9911,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │               ╰── <171>  [==]
             │                   ├── <168> Dereference
             │                   │   ╰── <167> Var [ptr2]
-            │                   ╰── Constant Int [99]
+            │                   ╰── <170> Constant Int [99]
             ├── Function [test_add_different_index_types]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -9923,12 +9923,12 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Double
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ╰── Constant Double [+6e0]
+            │       │           ├── <186> Constant Int [0]
+            │       │           ├── <188> Constant Int [0]
+            │       │           ├── <190> Constant Int [0]
+            │       │           ├── <192> Constant Int [0]
+            │       │           ├── <194> Constant Int [0]
+            │       │           ╰── <196> Constant Double [+6e0]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr1
@@ -9938,7 +9938,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <208>  [+]
             │       │           ├── <205> Var [double_arr]
-            │       │           ╰── Constant Int [5]
+            │       │           ╰── <207> Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr2
@@ -9948,7 +9948,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <219>  [+]
             │       │           ├── <216> Var [double_arr]
-            │       │           ╰── Constant Long [5]
+            │       │           ╰── <218> Constant Long [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr3
@@ -9958,7 +9958,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <230>  [+]
             │       │           ├── <227> Var [double_arr]
-            │       │           ╰── Constant UInt [5]
+            │       │           ╰── <229> Constant UInt [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr4
@@ -9968,7 +9968,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <241>  [+]
             │       │           ├── <238> Var [double_arr]
-            │       │           ╰── Constant ULong [5]
+            │       │           ╰── <240> Constant ULong [5]
             │       ╰── Return
             │           ╰── <274>  [&&]
             │               ├── <265>  [&&]
@@ -9985,7 +9985,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │               ╰── <272>  [==]
             │                   ├── <269> Dereference
             │                   │   ╰── <268> Var [ptr4]
-            │                   ╰── Constant Double [+6e0]
+            │                   ╰── <271> Constant Double [+6e0]
             ├── Function [test_add_complex_expressions]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -10001,7 +10001,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │   ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <292> Unary [-]
-            │       │           ╰── Constant Int [2]
+            │       │           ╰── <291> Constant Int [2]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── small_int_ptr
@@ -10037,10 +10037,10 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Int
             │       │   ├── Initializer
             │       │   │   ╰── Compound
-            │       │   │       ├── Constant Int [1]
-            │       │   │       ├── Constant Int [2]
-            │       │   │       ├── Constant Int [3]
-            │       │   │       ╰── Constant Int [4]
+            │       │   │       ├── <338> Constant Int [1]
+            │       │   │       ├── <340> Constant Int [2]
+            │       │   │       ├── <342> Constant Int [3]
+            │       │   │       ╰── <344> Constant Int [4]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -10054,7 +10054,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │           │   ├── <353> FunctionCall [return_one]
             │       │           │   ╰── <358> Dereference
             │       │           │       ╰── <356> Var [small_int_ptr]
-            │       │           ╰── <{node_id}> Conditional [?]
+            │       │           ╰── <372> Conditional [?]
             │       │               ├── <362> Var [flag]
             │       │               ├── Then
             │       │               │   ╰── <366> FunctionCall [get_elem1_ptr]
@@ -10068,15 +10068,15 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │               │   ├── <377> Var [ptr]
             │               │   ╰── <383>  [+]
             │               │       ├── <380> Var [arr]
-            │               │       ╰── Constant Int [1]
+            │               │       ╰── <382> Constant Int [1]
             │               ╰── <391>  [==]
             │                   ├── <388> Dereference
             │                   │   ╰── <387> Var [ptr]
-            │                   ╰── Constant Int [2]
+            │                   ╰── <390> Constant Int [2]
             ├── Function [return_one]
             │   ╰── Body
             │       ╰── Return
-            │           ╰── Constant Int [1]
+            │           ╰── <401> Constant Int [1]
             ├── Function [get_elem1_ptr]
             │   ├── Parameters
             │   │   ╰── Param
@@ -10089,7 +10089,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       ╰── Return
             │           ╰── <418>  [+]
             │               ├── <415> Var [arr]
-            │               ╰── Constant Int [1]
+            │               ╰── <417> Constant Int [1]
             ├── Function [get_elem2_ptr]
             │   ├── Parameters
             │   │   ╰── Param
@@ -10102,7 +10102,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       ╰── Return
             │           ╰── <435>  [+]
             │               ├── <432> Var [arr]
-            │               ╰── Constant Int [2]
+            │               ╰── <434> Constant Int [2]
             ├── Function [test_add_multi_dimensional]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -10111,7 +10111,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [2]
+            │       │   │   ╰── <447> Constant Int [2]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -10125,17 +10125,17 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── Compound
             │       │           ├── Compound
-            │       │           │   ├── Constant Int [1]
-            │       │           │   ├── Constant Int [2]
-            │       │           │   ╰── Constant Int [3]
+            │       │           │   ├── <457> Constant Int [1]
+            │       │           │   ├── <459> Constant Int [2]
+            │       │           │   ╰── <461> Constant Int [3]
             │       │           ├── Compound
-            │       │           │   ├── Constant Int [4]
-            │       │           │   ├── Constant Int [5]
-            │       │           │   ╰── Constant Int [6]
+            │       │           │   ├── <464> Constant Int [4]
+            │       │           │   ├── <466> Constant Int [5]
+            │       │           │   ╰── <468> Constant Int [6]
             │       │           ╰── Compound
-            │       │               ├── Constant Int [7]
-            │       │               ├── Constant Int [8]
-            │       │               ╰── Constant Int [9]
+            │       │               ├── <471> Constant Int [7]
+            │       │               ├── <473> Constant Int [8]
+            │       │               ╰── <475> Constant Int [9]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── row_pointer
@@ -10153,7 +10153,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │               ├── <498> Dereference
             │               │   ╰── <497> Dereference
             │               │       ╰── <496> Var [row_pointer]
-            │               ╰── Constant Int [7]
+            │               ╰── <500> Constant Int [7]
             ├── Function [test_add_to_subarray_pointer]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -10162,7 +10162,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [2]
+            │       │   │   ╰── <513> Constant Int [2]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -10176,17 +10176,17 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── Compound
             │       │           ├── Compound
-            │       │           │   ├── Constant Int [1]
-            │       │           │   ├── Constant Int [2]
-            │       │           │   ╰── Constant Int [3]
+            │       │           │   ├── <523> Constant Int [1]
+            │       │           │   ├── <525> Constant Int [2]
+            │       │           │   ╰── <527> Constant Int [3]
             │       │           ├── Compound
-            │       │           │   ├── Constant Int [4]
-            │       │           │   ├── Constant Int [5]
-            │       │           │   ╰── Constant Int [6]
+            │       │           │   ├── <530> Constant Int [4]
+            │       │           │   ├── <532> Constant Int [5]
+            │       │           │   ╰── <534> Constant Int [6]
             │       │           ╰── Compound
-            │       │               ├── Constant Int [7]
-            │       │               ├── Constant Int [8]
-            │       │               ╰── Constant Int [9]
+            │       │               ├── <537> Constant Int [7]
+            │       │               ├── <539> Constant Int [8]
+            │       │               ╰── <541> Constant Int [9]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── row1
@@ -10197,7 +10197,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │       ╰── <556> Dereference
             │       │           ╰── <555>  [+]
             │       │               ├── <551> Var [nested_arr]
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <553> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── elem_ptr
@@ -10212,7 +10212,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │           ╰── <576>  [==]
             │               ├── <573> Dereference
             │               │   ╰── <572> Var [elem_ptr]
-            │               ╰── Constant Int [6]
+            │               ╰── <575> Constant Int [6]
             ├── Function [test_subtract_from_pointer]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -10224,11 +10224,11 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Long
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [10]
-            │       │           ├── Constant Int [9]
-            │       │           ├── Constant Int [8]
-            │       │           ├── Constant Int [7]
-            │       │           ╰── Constant Int [6]
+            │       │           ├── <589> Constant Int [10]
+            │       │           ├── <591> Constant Int [9]
+            │       │           ├── <593> Constant Int [8]
+            │       │           ├── <595> Constant Int [7]
+            │       │           ╰── <597> Constant Int [6]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── one_past_the_end
@@ -10238,14 +10238,14 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <609>  [+]
             │       │           ├── <606> Var [long_arr]
-            │       │           ╰── Constant Int [5]
+            │       │           ╰── <608> Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── index
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [3]
+            │       │   │   ╰── <616> Constant Int [3]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -10261,7 +10261,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │           ╰── <636>  [==]
             │               ├── <633> Dereference
             │               │   ╰── <632> Var [subtraction_result]
-            │               ╰── Constant Int [8]
+            │               ╰── <635> Constant Int [8]
             ├── Function [test_subtract_negative_index]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -10273,11 +10273,11 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Unsigned Int
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [100]
-            │       │           ├── Constant Int [101]
-            │       │           ├── Constant Int [102]
-            │       │           ├── Constant Int [103]
-            │       │           ╰── Constant Int [104]
+            │       │           ├── <649> Constant Int [100]
+            │       │           ├── <651> Constant Int [101]
+            │       │           ├── <653> Constant Int [102]
+            │       │           ├── <655> Constant Int [103]
+            │       │           ╰── <657> Constant Int [104]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr
@@ -10288,12 +10288,12 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │       ╰── <672>  [-]
             │       │           ├── <666> Var [arr]
             │       │           ╰── <671> Unary [-]
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <669> Constant Int [3]
             │       ╰── Return
             │           ╰── <680>  [==]
             │               ├── <677> Dereference
             │               │   ╰── <676> Var [ptr]
-            │               ╰── Constant Int [103]
+            │               ╰── <679> Constant Int [103]
             ├── Function [test_subtract_different_index_types]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -10305,13 +10305,13 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Double
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ├── Constant Int [0]
-            │       │           ╰── Constant Double [+6e0]
+            │       │           ├── <693> Constant Int [0]
+            │       │           ├── <695> Constant Int [0]
+            │       │           ├── <697> Constant Int [0]
+            │       │           ├── <699> Constant Int [0]
+            │       │           ├── <701> Constant Int [0]
+            │       │           ├── <703> Constant Int [0]
+            │       │           ╰── <705> Constant Double [+6e0]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── end_ptr
@@ -10321,7 +10321,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <717>  [+]
             │       │           ├── <714> Var [double_arr]
-            │       │           ╰── Constant Int [11]
+            │       │           ╰── <716> Constant Int [11]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr1
@@ -10331,7 +10331,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <728>  [-]
             │       │           ├── <725> Var [end_ptr]
-            │       │           ╰── Constant Int [5]
+            │       │           ╰── <727> Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr2
@@ -10341,7 +10341,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <739>  [-]
             │       │           ├── <736> Var [end_ptr]
-            │       │           ╰── Constant Long [5]
+            │       │           ╰── <738> Constant Long [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr3
@@ -10351,7 +10351,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <750>  [-]
             │       │           ├── <747> Var [end_ptr]
-            │       │           ╰── Constant UInt [5]
+            │       │           ╰── <749> Constant UInt [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── ptr4
@@ -10361,7 +10361,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <761>  [-]
             │       │           ├── <758> Var [end_ptr]
-            │       │           ╰── Constant ULong [5]
+            │       │           ╰── <760> Constant ULong [5]
             │       ╰── Return
             │           ╰── <794>  [&&]
             │               ├── <785>  [&&]
@@ -10378,7 +10378,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │               ╰── <792>  [==]
             │                   ├── <789> Dereference
             │                   │   ╰── <788> Var [ptr4]
-            │                   ╰── Constant Double [+6e0]
+            │                   ╰── <791> Constant Double [+6e0]
             ├── Function [test_subtract_complex_expressions]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -10387,7 +10387,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [1]
+            │       │   │   ╰── <806> Constant Int [1]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -10395,7 +10395,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [4]
+            │       │   │   ╰── <813> Constant Int [4]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -10406,10 +10406,10 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Int
             │       │   ├── Initializer
             │       │   │   ╰── Compound
-            │       │   │       ├── Constant Int [1]
-            │       │   │       ├── Constant Int [2]
-            │       │   │       ├── Constant Int [3]
-            │       │   │       ╰── Constant Int [4]
+            │       │   │       ├── <822> Constant Int [1]
+            │       │   │       ├── <824> Constant Int [2]
+            │       │   │       ├── <826> Constant Int [3]
+            │       │   │       ╰── <828> Constant Int [4]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -10419,7 +10419,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   │       ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── <857>  [-]
-            │       │           ├── <{node_id}> Conditional [?]
+            │       │           ├── <847> Conditional [?]
             │       │           │   ├── <837> Var [flag]
             │       │           │   ├── Then
             │       │           │   │   ╰── <841> FunctionCall [get_elem1_ptr]
@@ -10430,12 +10430,12 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │           ╰── <856>  [/]
             │       │               ├── <850> Var [four]
             │       │               ╰── <854> Unary [-]
-            │       │                   ╰── Constant Int [2]
+            │       │                   ╰── <853> Constant Int [2]
             │       ╰── Return
             │           ╰── <866>  [==]
             │               ├── <862> Dereference
             │               │   ╰── <861> Var [ptr]
-            │               ╰── Constant Int [4]
+            │               ╰── <864> Constant Int [4]
             ├── Function [test_subtract_multi_dimensional]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -10444,7 +10444,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [1]
+            │       │   │   ╰── <878> Constant Int [1]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -10458,17 +10458,17 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── Compound
             │       │           ├── Compound
-            │       │           │   ├── Constant Int [1]
-            │       │           │   ├── Constant Int [2]
-            │       │           │   ╰── Constant Int [3]
+            │       │           │   ├── <888> Constant Int [1]
+            │       │           │   ├── <890> Constant Int [2]
+            │       │           │   ╰── <892> Constant Int [3]
             │       │           ├── Compound
-            │       │           │   ├── Constant Int [4]
-            │       │           │   ├── Constant Int [5]
-            │       │           │   ╰── Constant Int [6]
+            │       │           │   ├── <895> Constant Int [4]
+            │       │           │   ├── <897> Constant Int [5]
+            │       │           │   ╰── <899> Constant Int [6]
             │       │           ╰── Compound
-            │       │               ├── Constant Int [7]
-            │       │               ├── Constant Int [8]
-            │       │               ╰── Constant Int [9]
+            │       │               ├── <902> Constant Int [7]
+            │       │               ├── <904> Constant Int [8]
+            │       │               ╰── <906> Constant Int [9]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── last_row_pointer
@@ -10480,7 +10480,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │       │   ╰── Initializer
             │       │       ╰── <922>  [+]
             │       │           ├── <919> Var [nested_arr]
-            │       │           ╰── Constant Int [2]
+            │       │           ╰── <921> Constant Int [2]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── row_pointer
@@ -10498,7 +10498,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
             │               ├── <943> Dereference
             │               │   ╰── <942> Dereference
             │               │       ╰── <941> Var [row_pointer]
-            │               ╰── Constant Int [4]
+            │               ╰── <945> Constant Int [4]
             ╰── Function [main]
                 ╰── Body
                     ├── If
@@ -10508,7 +10508,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <959> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <967> Unary [!]
@@ -10516,7 +10516,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <968> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <976> Unary [!]
@@ -10524,7 +10524,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <977> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <985> Unary [!]
@@ -10532,7 +10532,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <986> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <994> Unary [!]
@@ -10540,7 +10540,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <995> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <1003> Unary [!]
@@ -10548,7 +10548,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <1004> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <1012> Unary [!]
@@ -10556,7 +10556,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <1013> Constant Int [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <1021> Unary [!]
@@ -10564,7 +10564,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [8]
+                    │               ╰── <1022> Constant Int [8]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <1030> Unary [!]
@@ -10572,7 +10572,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [9]
+                    │               ╰── <1031> Constant Int [9]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <1039> Unary [!]
@@ -10580,7 +10580,7 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [10]
+                    │               ╰── <1040> Constant Int [10]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <1048> Unary [!]
@@ -10588,9 +10588,9 @@ fn test_valid_pointer_arithmetic_pointer_add() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [11]
+                    │               ╰── <1049> Constant Int [11]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <1054> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10731,11 +10731,11 @@ fn test_valid_pointer_arithmetic_pointer_diff() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [5]
-                    │           ├── Constant Int [4]
-                    │           ├── Constant Int [3]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [1]
+                    │           ├── <114> Constant Int [5]
+                    │           ├── <116> Constant Int [4]
+                    │           ├── <118> Constant Int [3]
+                    │           ├── <120> Constant Int [2]
+                    │           ╰── <122> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── end_of_array
@@ -10745,18 +10745,18 @@ fn test_valid_pointer_arithmetic_pointer_diff() {
                     │   ╰── Initializer
                     │       ╰── <134>  [+]
                     │           ├── <131> Var [arr]
-                    │           ╰── Constant Int [5]
+                    │           ╰── <133> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <145>  [!=]
                     │   │       ├── <142> FunctionCall [get_ptr_diff]
                     │   │       │   ├── <139> Var [arr]
                     │   │       │   ╰── <141> Var [end_of_array]
-                    │   │       ╰── Constant Int [5]
+                    │   │       ╰── <144> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <146> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── long_arr
@@ -10770,14 +10770,14 @@ fn test_valid_pointer_arithmetic_pointer_diff() {
                     │   │       ├── <165> FunctionCall [get_long_ptr_diff]
                     │   │       │   ├── <162>  [+]
                     │   │       │   │   ├── <159> Var [long_arr]
-                    │   │       │   │   ╰── Constant Int [3]
+                    │   │       │   │   ╰── <161> Constant Int [3]
                     │   │       │   ╰── <164> Var [long_arr]
                     │   │       ╰── <169> Unary [-]
-                    │   │           ╰── Constant Int [3]
+                    │   │           ╰── <168> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <171> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── multidim
@@ -10799,18 +10799,18 @@ fn test_valid_pointer_arithmetic_pointer_diff() {
                     │   │       │   ├── <196>  [+]
                     │   │       │   │   ├── <193> Subscript
                     │   │       │   │   │   ├── <191> Var [multidim]
-                    │   │       │   │   │   ╰── Constant Int [2]
-                    │   │       │   │   ╰── Constant Int [1]
+                    │   │       │   │   │   ╰── <192> Constant Int [2]
+                    │   │       │   │   ╰── <195> Constant Int [1]
                     │   │       │   ╰── <203>  [+]
                     │   │       │       ├── <200> Subscript
                     │   │       │       │   ├── <198> Var [multidim]
-                    │   │       │       │   ╰── Constant Int [2]
-                    │   │       │       ╰── Constant Int [4]
-                    │   │       ╰── Constant Int [3]
+                    │   │       │       │   ╰── <199> Constant Int [2]
+                    │   │       │       ╰── <202> Constant Int [4]
+                    │   │       ╰── <206> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <208> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <234>  [!=]
@@ -10819,22 +10819,22 @@ fn test_valid_pointer_arithmetic_pointer_diff() {
                     │   │       │   │   ├── <219> Subscript
                     │   │       │   │   │   ├── <217> Subscript
                     │   │       │   │   │   │   ├── <215> Var [multidim]
-                    │   │       │   │   │   │   ╰── Constant Int [2]
-                    │   │       │   │   │   ╰── Constant Int [2]
-                    │   │       │   │   ╰── Constant Int [2]
+                    │   │       │   │   │   │   ╰── <216> Constant Int [2]
+                    │   │       │   │   │   ╰── <218> Constant Int [2]
+                    │   │       │   │   ╰── <221> Constant Int [2]
                     │   │       │   ╰── <228> Subscript
                     │   │       │       ├── <226> Subscript
                     │   │       │       │   ├── <224> Var [multidim]
-                    │   │       │       │   ╰── Constant Int [2]
-                    │   │       │       ╰── Constant Int [2]
+                    │   │       │       │   ╰── <225> Constant Int [2]
+                    │   │       │       ╰── <227> Constant Int [2]
                     │   │       ╰── <233> Unary [-]
-                    │   │           ╰── Constant Int [2]
+                    │   │           ╰── <232> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <235> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <240> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -10891,17 +10891,17 @@ fn test_valid_subscripting_addition_subscript_equivalence() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <16> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <24>  [<]
                     │   │       ├── <21> Var [i]
-                    │   │       ╰── Constant Int [300]
+                    │   │       ╰── <23> Constant Int [300]
                     │   ├── Condition
                     │   │   ╰── <33> Assign [=]
                     │   │       ├── <26> Var [i]
                     │   │       ╰── <32>  [+]
                     │   │           ├── <29> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <31> Constant Int [1]
                     │   ╰── Block
                     │       ╰── For
                     │           ├── Init
@@ -10911,17 +10911,17 @@ fn test_valid_subscripting_addition_subscript_equivalence() {
                     │           │       ├── Type
                     │           │       │   ╰── Int
                     │           │       ╰── Initializer
-                    │           │           ╰── Constant Int [0]
+                    │           │           ╰── <37> Constant Int [0]
                     │           ├── Condition
                     │           │   ╰── <45>  [<]
                     │           │       ├── <42> Var [j]
-                    │           │       ╰── Constant Int [5]
+                    │           │       ╰── <44> Constant Int [5]
                     │           ├── Condition
                     │           │   ╰── <54> Assign [=]
                     │           │       ├── <47> Var [j]
                     │           │       ╰── <53>  [+]
                     │           │           ├── <50> Var [j]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <52> Constant Int [1]
                     │           ╰── Block
                     │               ╰── <73> Assign [=]
                     │                   ├── <62> Subscript
@@ -10932,7 +10932,7 @@ fn test_valid_subscripting_addition_subscript_equivalence() {
                     │                   ╰── <72>  [+]
                     │                       ├── <68>  [*]
                     │                       │   ├── <65> Var [i]
-                    │                       │   ╰── Constant Int [5]
+                    │                       │   ╰── <67> Constant Int [5]
                     │                       ╰── <71> Var [j]
                     ├── If
                     │   ├── Condition
@@ -10942,17 +10942,17 @@ fn test_valid_subscripting_addition_subscript_equivalence() {
                     │   │       │       ├── <87> Dereference
                     │   │       │       │   ╰── <86>  [+]
                     │   │       │       │       ├── <82> Var [x]
-                    │   │       │       │       ╰── Constant Int [20]
-                    │   │       │       ╰── Constant Int [3]
+                    │   │       │       │       ╰── <84> Constant Int [20]
+                    │   │       │       ╰── <89> Constant Int [3]
                     │   │       ╰── <99> Subscript
                     │   │           ├── <97> Subscript
                     │   │           │   ├── <95> Var [x]
-                    │   │           │   ╰── Constant Int [20]
-                    │   │           ╰── Constant Int [3]
+                    │   │           │   ╰── <96> Constant Int [20]
+                    │   │           ╰── <98> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <101> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <128>  [!=]
@@ -10962,18 +10962,18 @@ fn test_valid_subscripting_addition_subscript_equivalence() {
                     │   │       │           ├── <112> Dereference
                     │   │       │           │   ╰── <111>  [+]
                     │   │       │           │       ├── <107> Var [x]
-                    │   │       │           │       ╰── Constant Int [290]
-                    │   │       │           ╰── Constant Int [3]
+                    │   │       │           │       ╰── <109> Constant Int [290]
+                    │   │       │           ╰── <114> Constant Int [3]
                     │   │       ╰── <127> AddressOf
                     │   │           ╰── <126> Subscript
                     │   │               ├── <124> Subscript
                     │   │               │   ├── <122> Var [x]
-                    │   │               │   ╰── Constant Int [290]
-                    │   │               ╰── Constant Int [3]
+                    │   │               │   ╰── <123> Constant Int [290]
+                    │   │               ╰── <125> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <129> Constant Int [2]
                     ├── For
                     │   ├── Init
                     │   │   ╰── VarDeclaration
@@ -10982,17 +10982,17 @@ fn test_valid_subscripting_addition_subscript_equivalence() {
                     │   │       ├── Type
                     │   │       │   ╰── Int
                     │   │       ╰── Initializer
-                    │   │           ╰── Constant Int [0]
+                    │   │           ╰── <137> Constant Int [0]
                     │   ├── Condition
                     │   │   ╰── <145>  [<]
                     │   │       ├── <142> Var [i]
-                    │   │       ╰── Constant Int [300]
+                    │   │       ╰── <144> Constant Int [300]
                     │   ├── Condition
                     │   │   ╰── <154> Assign [=]
                     │   │       ├── <147> Var [i]
                     │   │       ╰── <153>  [+]
                     │   │           ├── <150> Var [i]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <152> Constant Int [1]
                     │   ╰── Block
                     │       ╰── For
                     │           ├── Init
@@ -11002,17 +11002,17 @@ fn test_valid_subscripting_addition_subscript_equivalence() {
                     │           │       ├── Type
                     │           │       │   ╰── Int
                     │           │       ╰── Initializer
-                    │           │           ╰── Constant Int [0]
+                    │           │           ╰── <158> Constant Int [0]
                     │           ├── Condition
                     │           │   ╰── <166>  [<]
                     │           │       ├── <163> Var [j]
-                    │           │       ╰── Constant Int [5]
+                    │           │       ╰── <165> Constant Int [5]
                     │           ├── Condition
                     │           │   ╰── <175> Assign [=]
                     │           │       ├── <168> Var [j]
                     │           │       ╰── <174>  [+]
                     │           │           ├── <171> Var [j]
-                    │           │           ╰── Constant Int [1]
+                    │           │           ╰── <173> Constant Int [1]
                     │           ╰── Block
                     │               ╰── If
                     │                   ├── Condition
@@ -11032,31 +11032,31 @@ fn test_valid_subscripting_addition_subscript_equivalence() {
                     │                   ╰── Then
                     │                       ╰── Block
                     │                           ╰── Return
-                    │                               ╰── Constant Int [3]
+                    │                               ╰── <200> Constant Int [3]
                     ├── <225> Assign [=]
                     │   ├── <222> Dereference
                     │   │   ╰── <221>  [+]
                     │   │       ├── <217> Dereference
                     │   │       │   ╰── <216>  [+]
                     │   │       │       ├── <212> Var [x]
-                    │   │       │       ╰── Constant Int [275]
-                    │   │       ╰── Constant Int [4]
-                    │   ╰── Constant ULong [22000]
+                    │   │       │       ╰── <214> Constant Int [275]
+                    │   │       ╰── <219> Constant Int [4]
+                    │   ╰── <224> Constant ULong [22000]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <235>  [!=]
                     │   │       ├── <232> Subscript
                     │   │       │   ├── <230> Subscript
                     │   │       │   │   ├── <228> Var [x]
-                    │   │       │   │   ╰── Constant Int [275]
-                    │   │       │   ╰── Constant Int [4]
-                    │   │       ╰── Constant ULong [22000]
+                    │   │       │   │   ╰── <229> Constant Int [275]
+                    │   │       │   ╰── <231> Constant Int [4]
+                    │   │       ╰── <234> Constant ULong [22000]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <236> Constant Int [4]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <241> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -11102,21 +11102,21 @@ fn test_valid_subscripting_array_of_pointers_to_arrays() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [0]
+                    │       ╰── <8> Constant Int [0]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [1]
+                    │       ╰── <14> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── z
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [2]
+                    │       ╰── <20> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── arr
@@ -11173,7 +11173,7 @@ fn test_valid_subscripting_array_of_pointers_to_arrays() {
                     │   │   ╰── <102>  [!=]
                     │   │       ├── <90> Subscript
                     │   │       │   ├── <88> Var [array_of_pointers]
-                    │   │       │   ╰── Constant Int [0]
+                    │   │       │   ╰── <89> Constant Int [0]
                     │   │       ╰── <101> Cast
                     │   │           ├── Target
                     │   │           │   ╰── Pointer
@@ -11186,13 +11186,13 @@ fn test_valid_subscripting_array_of_pointers_to_arrays() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <103> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <123>  [!=]
                     │   │       ├── <111> Subscript
                     │   │       │   ├── <109> Var [array_of_pointers]
-                    │   │       │   ╰── Constant Int [1]
+                    │   │       │   ╰── <110> Constant Int [1]
                     │   │       ╰── <122> Cast
                     │   │           ├── Target
                     │   │           │   ╰── Pointer
@@ -11205,13 +11205,13 @@ fn test_valid_subscripting_array_of_pointers_to_arrays() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <124> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <144>  [!=]
                     │   │       ├── <132> Subscript
                     │   │       │   ├── <130> Var [array_of_pointers]
-                    │   │       │   ╰── Constant Int [2]
+                    │   │       │   ╰── <131> Constant Int [2]
                     │   │       ╰── <143> Cast
                     │   │           ├── Target
                     │   │           │   ╰── Pointer
@@ -11224,7 +11224,7 @@ fn test_valid_subscripting_array_of_pointers_to_arrays() {
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <145> Constant Int [3]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <162>  [!=]
@@ -11232,15 +11232,15 @@ fn test_valid_subscripting_array_of_pointers_to_arrays() {
                     │   │       │   ├── <155> Subscript
                     │   │       │   │   ├── <153> Subscript
                     │   │       │   │   │   ├── <151> Var [array_of_pointers]
-                    │   │       │   │   │   ╰── Constant Int [1]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [0]
+                    │   │       │   │   │   ╰── <152> Constant Int [1]
+                    │   │       │   │   ╰── <154> Constant Int [0]
+                    │   │       │   ╰── <156> Constant Int [0]
                     │   │       ╰── <161> AddressOf
                     │   │           ╰── <160> Var [z]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <163> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <180>  [!=]
@@ -11248,15 +11248,15 @@ fn test_valid_subscripting_array_of_pointers_to_arrays() {
                     │   │       │   ├── <173> Subscript
                     │   │       │   │   ├── <171> Subscript
                     │   │       │   │   │   ├── <169> Var [array_of_pointers]
-                    │   │       │   │   │   ╰── Constant Int [1]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [1]
+                    │   │       │   │   │   ╰── <170> Constant Int [1]
+                    │   │       │   │   ╰── <172> Constant Int [0]
+                    │   │       │   ╰── <174> Constant Int [1]
                     │   │       ╰── <179> AddressOf
                     │   │           ╰── <178> Var [y]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <181> Constant Int [5]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <198>  [!=]
@@ -11265,17 +11265,17 @@ fn test_valid_subscripting_array_of_pointers_to_arrays() {
                     │   │       │   │   ├── <191> Subscript
                     │   │       │   │   │   ├── <189> Subscript
                     │   │       │   │   │   │   ├── <187> Var [array_of_pointers]
-                    │   │       │   │   │   │   ╰── Constant Int [2]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [2]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [2]
+                    │   │       │   │   │   │   ╰── <188> Constant Int [2]
+                    │   │       │   │   │   ╰── <190> Constant Int [0]
+                    │   │       │   │   ╰── <192> Constant Int [2]
+                    │   │       │   ╰── <194> Constant Int [0]
+                    │   │       ╰── <197> Constant Int [2]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <199> Constant Int [6]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <204> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -11387,9 +11387,9 @@ fn test_valid_subscripting_complex_operands() {
             │       │   │       ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [1]
-            │       │           ├── Constant Int [2]
-            │       │           ╰── Constant Int [3]
+            │       │           ├── <13> Constant Int [1]
+            │       │           ├── <15> Constant Int [2]
+            │       │           ╰── <17> Constant Int [3]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── val
@@ -11402,27 +11402,27 @@ fn test_valid_subscripting_complex_operands() {
             │       │               ├── <27> Var [idx]
             │       │               ╰── <33>  [+]
             │       │                   ├── <30> Var [idx]
-            │       │                   ╰── Constant Int [2]
+            │       │                   ╰── <32> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <42>  [!=]
             │       │   │       ├── <39> Var [idx]
-            │       │   │       ╰── Constant Int [1]
+            │       │   │       ╰── <41> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <43> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <52>  [!=]
             │       │   │       ├── <49> Var [val]
-            │       │   │       ╰── Constant Int [2]
+            │       │   │       ╰── <51> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [2]
+            │       │               ╰── <53> Constant Int [2]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <58> Constant Int [0]
             ├── Function [static_index]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -11431,7 +11431,7 @@ fn test_valid_subscripting_complex_operands() {
             │       │   ├── Type
             │       │   │   ╰── Int
             │       │   ├── Initializer
-            │       │   │   ╰── Constant Int [0]
+            │       │   │   ╰── <70> Constant Int [0]
             │       │   ╰── Static
             │       ├── VarDeclaration
             │       │   ├── Name
@@ -11444,7 +11444,7 @@ fn test_valid_subscripting_complex_operands() {
             │       │   ├── <81> Var [index]
             │       │   ╰── <87>  [+]
             │       │       ├── <84> Var [index]
-            │       │       ╰── Constant Int [1]
+            │       │       ╰── <86> Constant Int [1]
             │       ╰── Return
             │           ╰── <91> Var [retval]
             ├── Function [funcall_in_index]
@@ -11458,9 +11458,9 @@ fn test_valid_subscripting_complex_operands() {
             │       │   │       ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [1]
-            │       │           ├── Constant Int [2]
-            │       │           ╰── Constant Int [3]
+            │       │           ├── <104> Constant Int [1]
+            │       │           ├── <106> Constant Int [2]
+            │       │           ╰── <108> Constant Int [3]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── v1
@@ -11483,22 +11483,22 @@ fn test_valid_subscripting_complex_operands() {
             │       │   ├── Condition
             │       │   │   ╰── <136>  [!=]
             │       │   │       ├── <133> Var [v1]
-            │       │   │       ╰── Constant Int [1]
+            │       │   │       ╰── <135> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <137> Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <146>  [!=]
             │       │   │       ├── <143> Var [v2]
-            │       │   │       ╰── Constant Int [2]
+            │       │   │       ╰── <145> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [4]
+            │       │               ╰── <147> Constant Int [4]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <152> Constant Int [0]
             ├── Function [subscript_inception]
             │   ├── Parameters
             │   │   ├── Param
@@ -11536,10 +11536,10 @@ fn test_valid_subscripting_complex_operands() {
             │       │   │       ╰── Long
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [4]
-            │       │           ├── Constant Int [3]
-            │       │           ├── Constant Int [2]
-            │       │           ╰── Constant Int [1]
+            │       │           ├── <191> Constant Int [4]
+            │       │           ├── <193> Constant Int [3]
+            │       │           ├── <195> Constant Int [2]
+            │       │           ╰── <197> Constant Int [1]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── indices
@@ -11549,34 +11549,34 @@ fn test_valid_subscripting_complex_operands() {
             │       │   │       ╰── Int
             │       │   ╰── Initializer
             │       │       ╰── Compound
-            │       │           ├── Constant Int [1]
-            │       │           ╰── Constant Int [2]
+            │       │           ├── <206> Constant Int [1]
+            │       │           ╰── <208> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <221>  [!=]
             │       │   │       ├── <218> FunctionCall [subscript_inception]
             │       │   │       │   ├── <214> Var [arr]
             │       │   │       │   ├── <216> Var [indices]
-            │       │   │       │   ╰── Constant Int [1]
-            │       │   │       ╰── Constant Int [2]
+            │       │   │       │   ╰── <217> Constant Int [1]
+            │       │   │       ╰── <220> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [5]
+            │       │               ╰── <222> Constant Int [5]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <236>  [!=]
             │       │   │       ├── <233> FunctionCall [subscript_inception]
             │       │   │       │   ├── <229> Var [arr]
             │       │   │       │   ├── <231> Var [indices]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant Int [3]
+            │       │   │       │   ╰── <232> Constant Int [0]
+            │       │   │       ╰── <235> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [6]
+            │       │               ╰── <237> Constant Int [6]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <242> Constant Int [0]
             ├── Function [get_array]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -11594,21 +11594,21 @@ fn test_valid_subscripting_complex_operands() {
             │       ├── <273> Assign [=]
             │       │   ├── <270> Subscript
             │       │   │   ├── <268> FunctionCall [get_array]
-            │       │   │   ╰── Constant Int [2]
-            │       │   ╰── Constant Int [1]
+            │       │   │   ╰── <269> Constant Int [2]
+            │       │   ╰── <272> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <281>  [!=]
             │       │   │       ├── <278> Subscript
             │       │   │       │   ├── <276> FunctionCall [get_array]
-            │       │   │       │   ╰── Constant Int [2]
-            │       │   │       ╰── Constant Int [1]
+            │       │   │       │   ╰── <277> Constant Int [2]
+            │       │   │       ╰── <280> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [7]
+            │       │               ╰── <282> Constant Int [7]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <287> Constant Int [0]
             ├── Function [negate_subscript]
             │   ├── Parameters
             │   │   ├── Param
@@ -11639,9 +11639,9 @@ fn test_valid_subscripting_complex_operands() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [8]
+            │       │               ╰── <316> Constant Int [8]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <321> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -11652,7 +11652,7 @@ fn test_valid_subscripting_complex_operands() {
                     │   ╰── Initializer
                     │       ╰── <336> FunctionCall [assign_in_index]
                     │           ╰── <335> Unary [-]
-                    │               ╰── Constant Int [1]
+                    │               ╰── <334> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <340> Var [check]
@@ -11699,17 +11699,17 @@ fn test_valid_subscripting_complex_operands() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [1]
-                    │           ╰── Constant Int [2]
+                    │           ├── <397> Constant Int [0]
+                    │           ├── <399> Constant Int [1]
+                    │           ╰── <401> Constant Int [2]
                     ├── <417> Assign [=]
                     │   ├── <406> Var [check]
                     │   ╰── <416> FunctionCall [negate_subscript]
                     │       ├── <413>  [+]
                     │       │   ├── <410> Var [arr]
-                    │       │   ╰── Constant Int [2]
-                    │       ├── Constant Int [2]
-                    │       ╰── Constant Int [0]
+                    │       │   ╰── <412> Constant Int [2]
+                    │       ├── <414> Constant Int [2]
+                    │       ╰── <415> Constant Int [0]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <420> Var [check]
@@ -11718,7 +11718,7 @@ fn test_valid_subscripting_complex_operands() {
                     │           ╰── Return
                     │               ╰── <422> Var [check]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <427> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -11744,13 +11744,13 @@ fn test_valid_subscripting_simple() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ╰── Return
                         ╰── <21> Subscript
                             ├── <19> Var [arr]
-                            ╰── Constant Int [2]
+                            ╰── <20> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -11882,7 +11882,7 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   ╰── Initializer
             │       │       ╰── <18> Subscript
             │       │           ├── <16> Var [arr]
-            │       │           ╰── Constant Int [5]
+            │       │           ╰── <17> Constant Int [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── val2
@@ -11891,7 +11891,7 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   ╰── Initializer
             │       │       ╰── <27> Subscript
             │       │           ├── <25> Var [arr]
-            │       │           ╰── Constant UInt [5]
+            │       │           ╰── <26> Constant UInt [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── val3
@@ -11900,7 +11900,7 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   ╰── Initializer
             │       │       ╰── <36> Subscript
             │       │           ├── <34> Var [arr]
-            │       │           ╰── Constant Long [5]
+            │       │           ╰── <35> Constant Long [5]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── val4
@@ -11909,7 +11909,7 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   ╰── Initializer
             │       │       ╰── <45> Subscript
             │       │           ├── <43> Var [arr]
-            │       │           ╰── Constant ULong [5]
+            │       │           ╰── <44> Constant ULong [5]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <53>  [!=]
@@ -11918,7 +11918,7 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [1]
+            │       │               ╰── <54> Constant Int [1]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <64>  [!=]
@@ -11927,7 +11927,7 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [2]
+            │       │               ╰── <65> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <75>  [!=]
@@ -11936,7 +11936,7 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [3]
+            │       │               ╰── <76> Constant Int [3]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <86>  [!=]
@@ -11945,9 +11945,9 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [4]
+            │       │               ╰── <87> Constant Int [4]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <92> Constant Int [0]
             ├── Function [reverse_subscript]
             │   ├── Parameters
             │   │   ├── Param
@@ -11967,40 +11967,40 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   │   ╰── <114>  [!=]
             │       │   │       ├── <110> Subscript
             │       │   │       │   ├── <108> Var [arr]
-            │       │   │       │   ╰── Constant Int [3]
+            │       │   │       │   ╰── <109> Constant Int [3]
             │       │   │       ╰── <113> Var [expected]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [5]
+            │       │               ╰── <115> Constant Int [5]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <127>  [!=]
             │       │   │       ├── <123> Subscript
-            │       │   │       │   ├── Constant Int [3]
+            │       │   │       │   ├── <120> Constant Int [3]
             │       │   │       │   ╰── <122> Var [arr]
             │       │   │       ╰── <126> Var [expected]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [6]
+            │       │               ╰── <128> Constant Int [6]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <144>  [!=]
             │       │   │       ├── <137> AddressOf
             │       │   │       │   ╰── <136> Subscript
-            │       │   │       │       ├── Constant Int [3]
+            │       │   │       │       ├── <133> Constant Int [3]
             │       │   │       │       ╰── <135> Var [arr]
             │       │   │       ╰── <143> AddressOf
             │       │   │           ╰── <142> Subscript
             │       │   │               ├── <140> Var [arr]
-            │       │   │               ╰── Constant Int [3]
+            │       │   │               ╰── <141> Constant Int [3]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [7]
+            │       │               ╰── <145> Constant Int [7]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <150> Constant Int [0]
             ├── VarDeclaration
             │   ├── Name
             │   │   ╰── static_array
@@ -12010,9 +12010,9 @@ fn test_valid_subscripting_simple_subscripts() {
             │   │       ╰── Double
             │   ├── Initializer
             │   │   ╰── Compound
-            │   │       ├── Constant Double [+1e-1]
-            │   │       ├── Constant Double [+2e-1]
-            │   │       ╰── Constant Double [+3e-1]
+            │   │       ├── <160> Constant Double [+1e-1]
+            │   │       ├── <162> Constant Double [+2e-1]
+            │   │       ╰── <164> Constant Double [+3e-1]
             │   ╰── Static
             ├── Function [subscript_static]
             │   ╰── Body
@@ -12021,36 +12021,36 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   │   ╰── <178>  [!=]
             │       │   │       ├── <175> Subscript
             │       │   │       │   ├── <173> Var [static_array]
-            │       │   │       │   ╰── Constant Int [0]
-            │       │   │       ╰── Constant Double [+1e-1]
+            │       │   │       │   ╰── <174> Constant Int [0]
+            │       │   │       ╰── <177> Constant Double [+1e-1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [8]
+            │       │               ╰── <179> Constant Int [8]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <190>  [!=]
             │       │   │       ├── <187> Subscript
             │       │   │       │   ├── <185> Var [static_array]
-            │       │   │       │   ╰── Constant Int [1]
-            │       │   │       ╰── Constant Double [+2e-1]
+            │       │   │       │   ╰── <186> Constant Int [1]
+            │       │   │       ╰── <189> Constant Double [+2e-1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [9]
+            │       │               ╰── <191> Constant Int [9]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <202>  [!=]
             │       │   │       ├── <199> Subscript
             │       │   │       │   ├── <197> Var [static_array]
-            │       │   │       │   ╰── Constant Int [2]
-            │       │   │       ╰── Constant Double [+3e-1]
+            │       │   │       │   ╰── <198> Constant Int [2]
+            │       │   │       ╰── <201> Constant Double [+3e-1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [10]
+            │       │               ╰── <203> Constant Int [10]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <208> Constant Int [0]
             ├── Function [update_element]
             │   ├── Parameters
             │   │   ├── Param
@@ -12068,25 +12068,25 @@ fn test_valid_subscripting_simple_subscripts() {
             │       ├── <235> Assign [=]
             │       │   ├── <226> Subscript
             │       │   │   ├── <224> Var [arr]
-            │       │   │   ╰── Constant Int [10]
+            │       │   │   ╰── <225> Constant Int [10]
             │       │   ╰── <234>  [*]
             │       │       ├── <231> Subscript
             │       │       │   ├── <229> Var [arr]
-            │       │       │   ╰── Constant Int [10]
-            │       │       ╰── Constant Int [2]
+            │       │       │   ╰── <230> Constant Int [10]
+            │       │       ╰── <233> Constant Int [2]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <244>  [!=]
             │       │   │       ├── <240> Subscript
             │       │   │       │   ├── <238> Var [arr]
-            │       │   │       │   ╰── Constant Int [10]
+            │       │   │       │   ╰── <239> Constant Int [10]
             │       │   │       ╰── <243> Var [expected]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [11]
+            │       │               ╰── <245> Constant Int [11]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <250> Constant Int [0]
             ├── Function [increment_static_element]
             │   ╰── Body
             │       ├── VarDeclaration
@@ -12100,12 +12100,12 @@ fn test_valid_subscripting_simple_subscripts() {
             │       ├── <278> Assign [=]
             │       │   ├── <269> Subscript
             │       │   │   ├── <267> Var [arr]
-            │       │   │   ╰── Constant Int [3]
+            │       │   │   ╰── <268> Constant Int [3]
             │       │   ╰── <277>  [+]
             │       │       ├── <274> Subscript
             │       │       │   ├── <272> Var [arr]
-            │       │       │   ╰── Constant Int [3]
-            │       │       ╰── Constant Int [1]
+            │       │       │   ╰── <273> Constant Int [3]
+            │       │       ╰── <276> Constant Int [1]
             │       ╰── Return
             │           ╰── <281> Var [arr]
             ├── Function [check_increment_static_element]
@@ -12123,29 +12123,29 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   │   ╰── <303>  [!=]
             │       │   │       ├── <300> Subscript
             │       │   │       │   ├── <298> Var [arr1]
-            │       │   │       │   ╰── Constant Int [3]
-            │       │   │       ╰── Constant Int [1]
+            │       │   │       │   ╰── <299> Constant Int [3]
+            │       │   │       ╰── <302> Constant Int [1]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [12]
+            │       │               ╰── <304> Constant Int [12]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <324>  [||]
             │       │   │       ├── <318>  [||]
             │       │   │       │   ├── <312> Subscript
             │       │   │       │   │   ├── <310> Var [arr1]
-            │       │   │       │   │   ╰── Constant Int [0]
+            │       │   │       │   │   ╰── <311> Constant Int [0]
             │       │   │       │   ╰── <317> Subscript
             │       │   │       │       ├── <315> Var [arr1]
-            │       │   │       │       ╰── Constant Int [1]
+            │       │   │       │       ╰── <316> Constant Int [1]
             │       │   │       ╰── <323> Subscript
             │       │   │           ├── <321> Var [arr1]
-            │       │   │           ╰── Constant Int [2]
+            │       │   │           ╰── <322> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [13]
+            │       │               ╰── <325> Constant Int [13]
             │       ├── VarDeclaration
             │       │   ├── Name
             │       │   │   ╰── arr2
@@ -12162,20 +12162,20 @@ fn test_valid_subscripting_simple_subscripts() {
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [14]
+            │       │               ╰── <344> Constant Int [14]
             │       ├── If
             │       │   ├── Condition
             │       │   │   ╰── <355>  [!=]
             │       │   │       ├── <352> Subscript
             │       │   │       │   ├── <350> Var [arr1]
-            │       │   │       │   ╰── Constant Int [3]
-            │       │   │       ╰── Constant Int [2]
+            │       │   │       │   ╰── <351> Constant Int [3]
+            │       │   │       ╰── <354> Constant Int [2]
             │       │   ╰── Then
             │       │       ╰── Block
             │       │           ╰── Return
-            │       │               ╰── Constant Int [15]
+            │       │               ╰── <356> Constant Int [15]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <361> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -12187,12 +12187,12 @@ fn test_valid_subscripting_simple_subscripts() {
                     │   │       ╰── Unsigned Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ╰── Constant UInt [7]
+                    │           ├── <374> Constant Int [0]
+                    │           ├── <376> Constant Int [0]
+                    │           ├── <378> Constant Int [0]
+                    │           ├── <380> Constant Int [0]
+                    │           ├── <382> Constant Int [0]
+                    │           ╰── <384> Constant UInt [7]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── check
@@ -12201,7 +12201,7 @@ fn test_valid_subscripting_simple_subscripts() {
                     │   ╰── Initializer
                     │       ╰── <395> FunctionCall [integer_types]
                     │           ├── <393> Var [unsigned_arr]
-                    │           ╰── Constant UInt [7]
+                    │           ╰── <394> Constant UInt [7]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <399> Var [check]
@@ -12218,15 +12218,15 @@ fn test_valid_subscripting_simple_subscripts() {
                     │   │       ╰── Long
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [100]
-                    │           ├── Constant Int [102]
-                    │           ├── Constant Int [104]
-                    │           ╰── Constant Int [106]
+                    │           ├── <411> Constant Int [100]
+                    │           ├── <413> Constant Int [102]
+                    │           ├── <415> Constant Int [104]
+                    │           ╰── <417> Constant Int [106]
                     ├── <429> Assign [=]
                     │   ├── <422> Var [check]
                     │   ╰── <428> FunctionCall [reverse_subscript]
                     │       ├── <426> Var [long_arr]
-                    │       ╰── Constant Int [106]
+                    │       ╰── <427> Constant Int [106]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <432> Var [check]
@@ -12253,22 +12253,22 @@ fn test_valid_subscripting_simple_subscripts() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ├── Constant Int [0]
-                    │           ╰── Constant Int [15]
+                    │           ├── <459> Constant Int [0]
+                    │           ├── <461> Constant Int [0]
+                    │           ├── <463> Constant Int [0]
+                    │           ├── <465> Constant Int [0]
+                    │           ├── <467> Constant Int [0]
+                    │           ├── <469> Constant Int [0]
+                    │           ├── <471> Constant Int [0]
+                    │           ├── <473> Constant Int [0]
+                    │           ├── <475> Constant Int [0]
+                    │           ├── <477> Constant Int [0]
+                    │           ╰── <479> Constant Int [15]
                     ├── <491> Assign [=]
                     │   ├── <484> Var [check]
                     │   ╰── <490> FunctionCall [update_element]
                     │       ├── <488> Var [int_arr]
-                    │       ╰── Constant Int [30]
+                    │       ╰── <489> Constant Int [30]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <494> Var [check]
@@ -12287,7 +12287,7 @@ fn test_valid_subscripting_simple_subscripts() {
                     │           ╰── Return
                     │               ╰── <511> Var [check]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <516> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -12427,7 +12427,7 @@ fn test_valid_subscripting_subscript_nested() {
             │       │   │   ╰── <63> Var [j]
             │       │   ╰── <67> Var [new_val]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <70> Constant Int [0]
             ├── Function [read_nested_negated]
             │   ├── Parameters
             │   │   ├── Param
@@ -12515,15 +12515,15 @@ fn test_valid_subscripting_subscript_nested() {
             │   │   ╰── Compound
             │   │       ├── Compound
             │   │       │   ├── Compound
-            │   │       │   │   ├── Constant Int [1]
-            │   │       │   │   ╰── Constant Int [2]
+            │   │       │   │   ├── <159> Constant Int [1]
+            │   │       │   │   ╰── <161> Constant Int [2]
             │   │       │   ╰── Compound
-            │   │       │       ╰── Constant Int [3]
+            │   │       │       ╰── <164> Constant Int [3]
             │   │       ╰── Compound
             │   │           ├── Compound
-            │   │           │   ╰── Constant Int [4]
+            │   │           │   ╰── <168> Constant Int [4]
             │   │           ╰── Compound
-            │   │               ╰── Constant Int [5]
+            │   │               ╰── <171> Constant Int [5]
             │   ╰── Static
             ├── Function [read_static_nested]
             │   ├── Parameters
@@ -12595,7 +12595,7 @@ fn test_valid_subscripting_subscript_nested() {
             │       │   │   ╰── <251> Var [k]
             │       │   ╰── <255> Var [val]
             │       ╰── Return
-            │           ╰── Constant Int [0]
+            │           ╰── <258> Constant Int [0]
             ├── Function [get_subarray]
             │   ├── Parameters
             │   │   ├── Param
@@ -12631,59 +12631,59 @@ fn test_valid_subscripting_subscript_nested() {
                     │   ╰── Initializer
                     │       ╰── Compound
                     │           ├── Compound
-                    │           │   ├── Constant Int [1]
-                    │           │   ├── Constant Int [2]
-                    │           │   ╰── Constant Int [3]
+                    │           │   ├── <296> Constant Int [1]
+                    │           │   ├── <298> Constant Int [2]
+                    │           │   ╰── <300> Constant Int [3]
                     │           ╰── Compound
-                    │               ├── Constant Int [4]
-                    │               ├── Constant Int [5]
-                    │               ╰── Constant Int [6]
+                    │               ├── <303> Constant Int [4]
+                    │               ├── <305> Constant Int [5]
+                    │               ╰── <307> Constant Int [6]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <320> Unary [!]
                     │   │       ╰── <319> FunctionCall [read_nested]
                     │   │           ├── <315> Var [nested_arr]
-                    │   │           ├── Constant Int [1]
-                    │   │           ├── Constant Int [2]
-                    │   │           ╰── Constant Int [6]
+                    │   │           ├── <316> Constant Int [1]
+                    │   │           ├── <317> Constant Int [2]
+                    │   │           ╰── <318> Constant Int [6]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <321> Constant Int [1]
                     ├── <334> FunctionCall [write_nested]
                     │   ├── <328> Var [nested_arr]
-                    │   ├── Constant Int [1]
-                    │   ├── Constant Int [2]
+                    │   ├── <329> Constant Int [1]
+                    │   ├── <330> Constant Int [2]
                     │   ╰── <333> Unary [-]
-                    │       ╰── Constant Int [1]
+                    │       ╰── <332> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <346>  [!=]
                     │   │       ├── <341> Subscript
                     │   │       │   ├── <339> Subscript
                     │   │       │   │   ├── <337> Var [nested_arr]
-                    │   │       │   │   ╰── Constant Int [1]
-                    │   │       │   ╰── Constant Int [2]
+                    │   │       │   │   ╰── <338> Constant Int [1]
+                    │   │       │   ╰── <340> Constant Int [2]
                     │   │       ╰── <345> Unary [-]
-                    │   │           ╰── Constant Int [1]
+                    │   │           ╰── <344> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <347> Constant Int [2]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <363> Unary [!]
                     │   │       ╰── <362> FunctionCall [read_nested_negated]
                     │   │           ├── <358>  [+]
                     │   │           │   ├── <355> Var [nested_arr]
-                    │   │           │   ╰── Constant Int [2]
-                    │   │           ├── Constant Int [2]
-                    │   │           ├── Constant Int [0]
-                    │   │           ╰── Constant Int [1]
+                    │   │           │   ╰── <357> Constant Int [2]
+                    │   │           ├── <359> Constant Int [2]
+                    │   │           ├── <360> Constant Int [0]
+                    │   │           ╰── <361> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <364> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr
@@ -12694,37 +12694,37 @@ fn test_valid_subscripting_subscript_nested() {
                     │       ╰── <380>  [+]
                     │           ├── <377> Subscript
                     │           │   ├── <374> Var [nested_arr]
-                    │           │   ╰── Constant Int [0]
-                    │           ╰── Constant Int [1]
+                    │           │   ╰── <375> Constant Int [0]
+                    │           ╰── <379> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <392> Unary [!]
                     │   │       ╰── <391> FunctionCall [get_nested_addr]
                     │   │           ├── <386> Var [nested_arr]
-                    │   │           ├── Constant Int [0]
-                    │   │           ├── Constant Int [1]
+                    │   │           ├── <387> Constant Int [0]
+                    │   │           ├── <388> Constant Int [1]
                     │   │           ╰── <390> Var [ptr]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [4]
+                    │               ╰── <393> Constant Int [4]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <405> Unary [!]
                     │   │       ╰── <404> FunctionCall [read_static_nested]
-                    │   │           ├── Constant Int [1]
-                    │   │           ├── Constant Int [1]
-                    │   │           ├── Constant Int [0]
-                    │   │           ╰── Constant Int [5]
+                    │   │           ├── <400> Constant Int [1]
+                    │   │           ├── <401> Constant Int [1]
+                    │   │           ├── <402> Constant Int [0]
+                    │   │           ╰── <403> Constant Int [5]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [5]
+                    │               ╰── <406> Constant Int [5]
                     ├── <416> FunctionCall [write_nested_complex]
-                    │   ├── Constant Int [0]
-                    │   ├── Constant Int [2]
-                    │   ├── Constant Int [3]
-                    │   ╰── Constant Int [111]
+                    │   ├── <412> Constant Int [0]
+                    │   ├── <413> Constant Int [2]
+                    │   ├── <414> Constant Int [3]
+                    │   ╰── <415> Constant Int [111]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <428>  [!=]
@@ -12732,14 +12732,14 @@ fn test_valid_subscripting_subscript_nested() {
                     │   │       │   ├── <423> Subscript
                     │   │       │   │   ├── <421> Subscript
                     │   │       │   │   │   ├── <419> FunctionCall [get_array]
-                    │   │       │   │   │   ╰── Constant Int [0]
-                    │   │       │   │   ╰── Constant Int [2]
-                    │   │       │   ╰── Constant Int [3]
-                    │   │       ╰── Constant Int [111]
+                    │   │       │   │   │   ╰── <420> Constant Int [0]
+                    │   │       │   │   ╰── <422> Constant Int [2]
+                    │   │       │   ╰── <424> Constant Int [3]
+                    │   │       ╰── <427> Constant Int [111]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [6]
+                    │               ╰── <429> Constant Int [6]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── row_1
@@ -12749,25 +12749,25 @@ fn test_valid_subscripting_subscript_nested() {
                     │   ╰── Initializer
                     │       ╰── <442> FunctionCall [get_subarray]
                     │           ├── <440> Var [nested_arr]
-                    │           ╰── Constant Int [1]
+                    │           ╰── <441> Constant Int [1]
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <458>  [!=]
                     │   │       ├── <449>  [+]
                     │   │       │   ├── <446> Var [row_1]
-                    │   │       │   ╰── Constant Int [1]
+                    │   │       │   ╰── <448> Constant Int [1]
                     │   │       ╰── <457> AddressOf
                     │   │           ╰── <456> Subscript
                     │   │               ├── <454> Subscript
                     │   │               │   ├── <452> Var [nested_arr]
-                    │   │               │   ╰── Constant Int [1]
-                    │   │               ╰── Constant Int [1]
+                    │   │               │   ╰── <453> Constant Int [1]
+                    │   │               ╰── <455> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [7]
+                    │               ╰── <459> Constant Int [7]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <464> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -12811,8 +12811,8 @@ fn test_valid_subscripting_subscript_pointer() {
             │           ╰── <15> Subscript
             │               ├── <13> Subscript
             │               │   ├── <11> Var [x]
-            │               │   ╰── Constant Int [0]
-            │               ╰── Constant Int [0]
+            │               │   ╰── <12> Constant Int [0]
+            │               ╰── <14> Constant Int [0]
             ╰── Function [main]
                 ╰── Body
                     ├── VarDeclaration
@@ -12821,7 +12821,7 @@ fn test_valid_subscripting_subscript_pointer() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── Constant Int [3]
+                    │       ╰── <26> Constant Int [3]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr
@@ -12836,12 +12836,12 @@ fn test_valid_subscripting_subscript_pointer() {
                     │   │   ╰── <44>  [!=]
                     │   │       ├── <41> Subscript
                     │   │       │   ├── <39> Var [ptr]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [3]
+                    │   │       │   ╰── <40> Constant Int [0]
+                    │   │       ╰── <43> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [1]
+                    │               ╰── <45> Constant Int [1]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── ptr_ptr
@@ -12858,13 +12858,13 @@ fn test_valid_subscripting_subscript_pointer() {
                     │   │       ├── <65> Subscript
                     │   │       │   ├── <63> Subscript
                     │   │       │   │   ├── <61> Var [ptr_ptr]
-                    │   │       │   │   ╰── Constant Int [0]
-                    │   │       │   ╰── Constant Int [0]
-                    │   │       ╰── Constant Int [3]
+                    │   │       │   │   ╰── <62> Constant Int [0]
+                    │   │       │   ╰── <64> Constant Int [0]
+                    │   │       ╰── <67> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [2]
+                    │               ╰── <69> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── dereferenced
@@ -12877,13 +12877,13 @@ fn test_valid_subscripting_subscript_pointer() {
                     │   ├── Condition
                     │   │   ╰── <87>  [!=]
                     │   │       ├── <84> Var [dereferenced]
-                    │   │       ╰── Constant Int [3]
+                    │   │       ╰── <86> Constant Int [3]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Return
-                    │               ╰── Constant Int [3]
+                    │               ╰── <88> Constant Int [3]
                     ╰── Return
-                        ╰── Constant Int [0]
+                        ╰── <93> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -12909,17 +12909,17 @@ fn test_valid_subscripting_subscript_precedence() {
                     │   │       ╰── Int
                     │   ╰── Initializer
                     │       ╰── Compound
-                    │           ├── Constant Int [1]
-                    │           ├── Constant Int [2]
-                    │           ╰── Constant Int [3]
+                    │           ├── <10> Constant Int [1]
+                    │           ├── <12> Constant Int [2]
+                    │           ╰── <14> Constant Int [3]
                     ╰── Return
                         ╰── <29>  [==]
                             ├── <23> Unary [-]
                             │   ╰── <22> Subscript
                             │       ├── <20> Var [arr]
-                            │       ╰── Constant Int [2]
+                            │       ╰── <21> Constant Int [2]
                             ╰── <27> Unary [-]
-                                ╰── Constant Int [3]
+                                ╰── <26> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }

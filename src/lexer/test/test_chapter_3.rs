@@ -1,5 +1,5 @@
 use crate::lexer::TokenKind::*;
-use crate::lexer::{IntKind, tokenize};
+use crate::lexer::{tokenize, IntKind};
 
 #[test]
 fn test_valid_add() {
