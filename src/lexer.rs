@@ -53,6 +53,7 @@ pub enum TokenKind {
     Static,
     Extern,
     Sizeof,
+    Struct,
 
     Plus,
     PlusPlus,
@@ -60,6 +61,7 @@ pub enum TokenKind {
     Minus,
     MinusMinus,
     MinusEqual,
+    Arrow,
     Star,
     StarEqual,
     Slash,
@@ -100,6 +102,7 @@ pub enum TokenKind {
     Colon,
     Semicolon,
     Comma,
+    Dot,
 
     Eof,
     Error,
@@ -146,12 +149,14 @@ impl Display for TokenKind {
             TokenKind::Static => "'static'",
             TokenKind::Extern => "'extern'",
             TokenKind::Sizeof => "'sizeof'",
+            TokenKind::Struct => "'struct'",
             TokenKind::Plus => "'+'",
             TokenKind::PlusPlus => "'++'",
             TokenKind::PlusEqual => "'+='",
             TokenKind::Minus => "'-'",
             TokenKind::MinusMinus => "'--'",
             TokenKind::MinusEqual => "'-='",
+            TokenKind::Arrow => "'->'",
             TokenKind::Star => "'*'",
             TokenKind::StarEqual => "'*='",
             TokenKind::Slash => "'/'",
@@ -189,6 +194,7 @@ impl Display for TokenKind {
             TokenKind::Colon => "':'",
             TokenKind::Semicolon => "';'",
             TokenKind::Comma => "','",
+            TokenKind::Dot => "'.'",
             TokenKind::Eof => "end of file",
             TokenKind::Error => "error token",
         };
@@ -245,6 +251,7 @@ impl<'src> Lexer<'src> {
             '-' => match self.peek() {
                 Some('-') => self.eat_and(TokenKind::MinusMinus),
                 Some('=') => self.eat_and(TokenKind::MinusEqual),
+                Some('>') => self.eat_and(TokenKind::Arrow),
                 _ => TokenKind::Minus,
             },
             '*' => match self.peek() {
@@ -305,7 +312,12 @@ impl<'src> Lexer<'src> {
                 Some('=') => self.eat_and(TokenKind::LessEqual),
                 _ => TokenKind::Less,
             },
-            '0'..='9' | '.' => self.constant(c),
+            '0'..='9' => self.constant(c),
+            '.' => if let Some('0'..='9') = self.peek() {
+                self.constant(c)
+            } else {
+                TokenKind::Dot
+            },
             '\'' => self.char_literal(),
             '"' => self.string_literal(),
             c if c == '_' || c.is_alphabetic() => self.identifier(),
@@ -415,6 +427,7 @@ impl<'src> Lexer<'src> {
             "static" => TokenKind::Static,
             "extern" => TokenKind::Extern,
             "sizeof" => TokenKind::Sizeof,
+            "struct" => TokenKind::Struct,
             _ => TokenKind::Identifier,
         }
     }

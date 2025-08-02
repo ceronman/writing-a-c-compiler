@@ -41,7 +41,7 @@ pub fn generate_lexer_tests(path: &Path, source: &str) -> Result<()> {
             .truncate(true)
             .write(true)
             .open(&output)?;
-        writeln!(file, "use crate::lexer::{{IntKind, tokenize}};")?;
+        writeln!(file, "use crate::lexer::{{tokenize, IntKind}};")?;
         writeln!(file, "use crate::lexer::TokenKind::*;")?;
     }
     let name = test_name(path);
