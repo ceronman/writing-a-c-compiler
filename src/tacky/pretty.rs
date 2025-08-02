@@ -314,6 +314,9 @@ fn pp_type(file: &mut impl Write, ty: &ast::Type) -> Result<()> {
             pp_type(file, inner.as_ref())?;
             write!(file, ")")
         }
+        ast::Type::Struct(name) => {
+            write!(file, "Struct({name})")
+        }
     }?;
     Ok(())
 }

@@ -199,6 +199,7 @@ impl TackyGenerator {
                 ast::BlockItem::Decl(decl) => match decl.as_ref() {
                     ast::Declaration::Var(decl) => self.emit_var_declaration(decl),
                     ast::Declaration::Function(_) => {}
+                    ast::Declaration::Struct(_) => todo!()
                 },
             }
         }
@@ -300,6 +301,7 @@ impl TackyGenerator {
                 }
                 return;
             }
+            Type::Struct(_) => todo!()
         };
         self.instructions.push(Instruction::CopyToOffset {
             src: Val::Constant(constant),
@@ -952,7 +954,8 @@ impl TackyGenerator {
                     self.semantics.expr_type(e).size()
                 };
                 return ExprResult::Operand(Val::Constant(Constant::ULong(size as u64)));
-            }
+            },
+            ast::Expression::Dot { .. } | ast::Expression::Arrow { .. } => todo!()
         };
         ExprResult::Operand(result)
     }

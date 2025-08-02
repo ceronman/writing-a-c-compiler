@@ -26,6 +26,7 @@ impl Resolver {
             match decl.as_mut() {
                 Declaration::Var(d) => self.resolve_file_var_declaration(d)?,
                 Declaration::Function(d) => self.resolve_function_declaration(d)?,
+                Declaration::Struct(d) => todo!()
             };
         }
         self.end_scope();
@@ -46,6 +47,7 @@ impl Resolver {
         match decl {
             Declaration::Var(decl) => self.resolve_local_var_declaration(decl),
             Declaration::Function(decl) => self.resolve_function_declaration(decl),
+            Declaration::Struct(d) => todo!()
         }
     }
     fn resolve_file_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
@@ -303,6 +305,7 @@ impl Resolver {
                 self.resolve_expression(expr1)?;
                 self.resolve_expression(expr2)?;
             }
+            Expression::Dot{ .. } | Expression::Arrow { .. } => todo!(),
             Expression::Constant(_) | Expression::String(_) | Expression::SizeOfType(_) => {}
         }
         Ok(())

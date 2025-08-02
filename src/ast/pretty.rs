@@ -1,4 +1,4 @@
-use crate::ast::{AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Initializer, Node, NodeId, PostfixOp, Program, Statement, StorageClass, Type, UnaryOp, VarDeclaration};
+use crate::ast::{AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, Field, ForInit, FunctionDeclaration, Identifier, Initializer, Node, NodeId, PostfixOp, Program, Statement, StorageClass, StructDeclaration, Type, UnaryOp, VarDeclaration};
 use std::io::Write;
 
 struct PrettyAst {
@@ -26,7 +26,26 @@ impl PrettyAst {
         match declaration {
             Declaration::Var(d) => Self::from_var_declaration(d),
             Declaration::Function(d) => Self::from_function_declaration(d),
+            Declaration::Struct(d) => Self::from_struct_declaration(d)
         }
+    }
+    fn from_struct_declaration(s: &StructDeclaration) -> PrettyAst {
+        Self::new(
+            format!(
+                "Struct [{}]",
+                &s.name.symbol
+            ),
+            s.fields.iter().map(Self::from_field),
+        )
+    }
+    fn from_field(field: &Node<Field>) -> PrettyAst {
+        Self::new(
+            "Field",
+            vec![
+                Self::new("Name", vec![Self::from_identifier(&field.name)]),
+                Self::new("Type", vec![Self::from_type(&field.ty)]),
+            ],
+        )
     }
     fn from_function_declaration(function: &FunctionDeclaration) -> PrettyAst {
         let mut children = Vec::new();
@@ -276,6 +295,14 @@ impl PrettyAst {
                 format!("<{node_id}> SizeOfExpr"),
                 vec![Self::from_expression(ty)],
             ),
+            Expression::Dot { structure, member } => Self::new(
+                format!("<{node_id}> Dot"),
+                vec![Self::from_expression(structure), Self::from_identifier(member)],
+            ),
+            Expression::Arrow { pointer, member } => Self::new(
+                format!("<{node_id}> Arrow"),
+                vec![Self::from_expression(&pointer), Self::from_identifier(member)],
+            ),
         }
     }
     fn from_block_item(item: &BlockItem) -> PrettyAst {
@@ -326,6 +353,7 @@ impl PrettyAst {
                     Self::from_type(t.as_ref()),
                 ],
             ),
+            Type::Struct(name) => Self::new(format!("Struct [{name}]"), vec![])
         }
     }
 

@@ -1,11 +1,7 @@
 #[cfg(test)]
 mod test;
 
-use crate::ast::{
-    AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
-    FunctionDeclaration, FunctionType, Identifier, Initializer, Node, PostfixOp, Program,
-    Statement, StorageClass, Type, UnaryOp, VarDeclaration,
-};
+use crate::ast::{AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, Field, ForInit, FunctionDeclaration, FunctionType, Identifier, Initializer, Node, PostfixOp, Program, Statement, StorageClass, StructDeclaration, Type, UnaryOp, VarDeclaration};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{IntKind, Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
@@ -33,6 +29,7 @@ impl TokenKind {
                 | TokenKind::Unsigned
                 | TokenKind::Signed
                 | TokenKind::Void
+                | TokenKind::Struct
         )
     }
 }
@@ -106,7 +103,34 @@ impl<'src> Parser<'src> {
 
     fn declaration(&mut self) -> Result<Node<Declaration>> {
         let begin = self.current.span;
-        let (ty, storage_class) = self.type_and_storage()?;
+        let (ty, storage_class) = if self.matches(TokenKind::Struct) {
+            let name = self.identifier()?;
+            if let TokenKind::Semicolon | TokenKind::OpenBrace = self.current.kind {
+                let mut fields = Vec::new();
+                if self.matches(TokenKind::OpenBrace) {
+                    if self.matches(TokenKind::CloseBrace) {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Parse,
+                            msg: "Expected struct field but found '}}'".into(),
+                            span: self.current.span,
+                        });
+                    }
+                    while !self.matches(TokenKind::CloseBrace) {
+                        let field = self.field()?;
+                        fields.push(field);
+                    }
+                }
+                let end = self.expect(TokenKind::Semicolon)?.span;
+                return Ok(self.node(begin + end, Declaration::Struct(StructDeclaration {
+                    name,
+                    fields
+                })))
+            } else {
+                (self.node(begin + name.span, Type::Struct(name.data.symbol)), None)
+            }
+        } else  {
+            self.type_and_storage()?
+        };
         let declarator = self.parse_declarator()?;
         let (name, ty, params) = Self::process_declarator(declarator, ty)?;
 
@@ -153,6 +177,25 @@ impl<'src> Parser<'src> {
                 }),
             ))
         }
+    }
+
+    fn field(&mut self) -> Result<Node<Field>> {
+        let base_ty = self.type_specifier()?;
+        let begin = base_ty.span;
+        let declarator = self.parse_declarator()?;
+        if let Declarator::Function { .. } = declarator.as_ref() {
+            return Err(CompilerError {
+                kind: ErrorKind::Parse,
+                msg: "Structs can't have fields".into(),
+                span: declarator.span,
+            });
+        }
+        let (name, ty, _) = Self::process_declarator(declarator, base_ty)?;
+        let end = self.expect(TokenKind::Semicolon)?.span;
+        Ok(self.node(begin + end, Field {
+            name,
+            ty
+        }))
     }
 
     fn initializer(&mut self) -> Result<Node<Initializer>> {
@@ -351,6 +394,10 @@ impl<'src> Parser<'src> {
 
     fn type_from_list(&mut self, span: Span, types: &[TokenKind]) -> Result<Node<Type>> {
         match types {
+            [TokenKind::Struct] => {
+                let name = self.identifier()?.data.symbol;
+                return Ok(self.node(span, Type::Struct(name)));
+            }
             [TokenKind::Double] => {
                 return Ok(self.node(span, Type::Double));
             }
@@ -764,6 +811,26 @@ impl<'src> Parser<'src> {
                 let index = self.expression()?;
                 let end = self.expect(TokenKind::CloseBracket)?.span;
                 expr = self.node(expr.span + end, Expression::Subscript(expr, index));
+                continue;
+            }
+
+            if self.matches(TokenKind::Dot) {
+                let precedence = 14;
+                if precedence < min_precedence {
+                    break;
+                }
+                let member = self.identifier()?;
+                expr = self.node(expr.span + member.span, Expression::Dot{ structure: expr, member });
+                continue;
+            }
+
+            if self.matches(TokenKind::Arrow) {
+                let precedence = 14;
+                if precedence < min_precedence {
+                    break;
+                }
+                let member = self.identifier()?;
+                expr = self.node(expr.span + member.span, Expression::Arrow { pointer: expr, member });
                 continue;
             }
 

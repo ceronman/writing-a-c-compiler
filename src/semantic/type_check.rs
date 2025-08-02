@@ -44,6 +44,7 @@ impl TypeChecker {
             match decl.as_ref() {
                 Declaration::Var(v) => self.check_file_var_declaration(v)?,
                 Declaration::Function(f) => self.check_function_declaration(f, true)?,
+                Declaration::Struct(d) => todo!()
             }
         }
         Ok(())
@@ -649,6 +650,7 @@ impl TypeChecker {
         match decl.as_ref() {
             Declaration::Var(d) => self.check_local_var_declaration(d),
             Declaration::Function(d) => self.check_function_declaration(d, false),
+            Declaration::Struct(d) => todo!()
         }
     }
 
@@ -1168,6 +1170,7 @@ impl TypeChecker {
                 )?;
                 Type::ULong
             }
+            Expression::Dot { .. } | Expression::Arrow { .. } => todo!()
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)

@@ -128,6 +128,14 @@ pub enum Expression {
     Subscript(Node<Expression>, Node<Expression>),
     SizeOfExpr(Node<Expression>),
     SizeOfType(Node<Type>),
+    Dot {
+        structure: Node<Expression>,
+        member: Node<Identifier>
+    },
+    Arrow {
+        pointer: Node<Expression>,
+        member: Node<Identifier>,
+    }
 }
 
 impl Expression {
@@ -161,6 +169,7 @@ pub struct Block {
 pub enum Declaration {
     Var(VarDeclaration),
     Function(FunctionDeclaration),
+    Struct(StructDeclaration)
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -176,6 +185,7 @@ pub enum Type {
     Function(FunctionType),
     Pointer(Box<Type>),
     Array(Box<Type>, usize),
+    Struct(Symbol),
     Void,
 }
 
@@ -200,6 +210,18 @@ pub struct FunctionDeclaration {
     pub body: Option<Node<Block>>,
     pub ty: FunctionType,
     pub storage_class: Option<Node<StorageClass>>,
+}
+
+#[derive(Debug)]
+pub struct StructDeclaration {
+    pub name: Node<Identifier>,
+    pub fields: Vec<Node<Field>>
+}
+
+#[derive(Debug)]
+pub struct Field {
+    pub name: Node<Identifier>,
+    pub ty: Node<Type>,
 }
 
 #[derive(Debug)]
@@ -332,6 +354,10 @@ impl Type {
         matches!(self, Type::Function(_))
     }
 
+    pub fn is_struct(&self) -> bool {
+        matches!(self, Type::Struct(_))
+    }
+
     pub fn is_arithmetic(&self) -> bool {
         matches!(
             self,
@@ -393,6 +419,7 @@ impl Type {
             Type::Pointer(_) => 8,
             Type::Array(ty, size) => ty.size() * size,
             Type::Void => 1,
+            Type::Struct(_) => todo!(),
         }
     }
 
@@ -403,6 +430,7 @@ impl Type {
             Type::Function(_) => panic!("Function types don't have a sign"),
             Type::Array(_, _) => panic!("Arrays don't have a sign"),
             Type::Void => panic!("Void doesn't have a sign"),
+            Type::Struct(_) => panic!("Struct doesn't have a sign"),
         }
     }
 }

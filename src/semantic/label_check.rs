@@ -23,6 +23,7 @@ impl LabelChecker {
             match decl.as_mut() {
                 Declaration::Var(_) => {}
                 Declaration::Function(d) => self.check_function_declaration(d)?,
+                Declaration::Struct(d) => todo!()
             }
         }
 

@@ -93,6 +93,7 @@ impl Type {
                 };
                 AsmType::ByteArray { size, alignment }
             }
+            Type::Struct(name) => todo!()
         }
     }
 }
