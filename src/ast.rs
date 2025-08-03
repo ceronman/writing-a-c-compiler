@@ -172,6 +172,7 @@ pub enum Declaration {
     Struct(StructDeclaration)
 }
 
+// TODO: Refactor TypeSpecifier with Node and Type comparable
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Type {
     Char,

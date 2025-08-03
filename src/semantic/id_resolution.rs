@@ -1,18 +1,18 @@
-use crate::ast::{
-    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier,
-    Initializer, InnerRef, Node, Program, Statement, StorageClass, VarDeclaration,
-};
+use crate::ast::{Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Initializer, InnerRef, Node, Program, Statement, StorageClass, StructDeclaration, Type, VarDeclaration};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
 use std::collections::{HashMap, VecDeque};
+use crate::lexer::Span;
 
 #[derive(Default)]
 struct Resolver {
     scopes: VecDeque<Scope>,
+    structs_scopes: VecDeque<StructScope>,
     counter: usize,
 }
 
 type Scope = HashMap<Symbol, Resolution>;
+type StructScope = HashMap<Symbol, Symbol>;
 
 struct Resolution {
     name: Symbol,
@@ -26,7 +26,7 @@ impl Resolver {
             match decl.as_mut() {
                 Declaration::Var(d) => self.resolve_file_var_declaration(d)?,
                 Declaration::Function(d) => self.resolve_function_declaration(d)?,
-                Declaration::Struct(d) => todo!()
+                Declaration::Struct(d) => self.resolve_struct_declaration(d)?,
             };
         }
         self.end_scope();
@@ -47,10 +47,12 @@ impl Resolver {
         match decl {
             Declaration::Var(decl) => self.resolve_local_var_declaration(decl),
             Declaration::Function(decl) => self.resolve_function_declaration(decl),
-            Declaration::Struct(d) => todo!()
+            Declaration::Struct(decl) => self.resolve_struct_declaration(decl),
         }
     }
+
     fn resolve_file_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
+        self.resolve_type(&mut decl.ty, decl.name.span)?;
         let scope = self.scopes.front_mut().expect("Invalid scope state");
         scope.insert(
             decl.name.symbol.clone(),
@@ -63,6 +65,7 @@ impl Resolver {
     }
 
     fn resolve_local_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
+        self.resolve_type(&mut decl.ty, decl.name.span)?;
         let symbol = &decl.name.symbol;
         let unique_name = self.make_name(symbol);
         let scope = self.scopes.front_mut().expect("Invalid scope state");
@@ -113,6 +116,10 @@ impl Resolver {
     }
 
     fn resolve_function_declaration(&mut self, decl: &mut FunctionDeclaration) -> Result<()> {
+        self.resolve_type(&mut decl.ty.ret, decl.name.span)?;
+        for param in &mut decl.ty.params {
+            self.resolve_type(param, decl.name.span)?;
+        }
         let symbol = &decl.name.symbol;
         let scope = self.scopes.front_mut().expect("Invalid scope state");
         if let Some(resolution) = scope.get(symbol)
@@ -163,6 +170,56 @@ impl Resolver {
             },
         );
         Ok(())
+    }
+
+    fn resolve_struct_declaration(&mut self, decl: &mut StructDeclaration) -> Result<()> {
+        let tag = &decl.name.symbol;
+        let unique_name = self.make_name(tag);
+        let scope = self.structs_scopes.front_mut().expect("Invalid scope state");
+        if scope.contains_key(tag) {
+            return Err(CompilerError {
+                kind: ErrorKind::Resolve,
+                msg: format!("Structure '{tag}' was already declared"),
+                span: decl.name.span,
+            });
+        }
+        scope.insert(tag.clone(), unique_name.clone());
+        decl.name.symbol = unique_name;
+        for field in &mut decl.fields {
+            let span = field.span;
+            self.resolve_type(&mut field.ty, span)?;
+        }
+        Ok(())
+    }
+
+    // TODO: Make Type have proper spans
+    fn resolve_type(&mut self, ty: &mut Type, span: Span) -> Result<()> {
+        match ty {
+            Type::Struct(tag) => {
+                for scope in &self.structs_scopes {
+                    if let Some(declared) = scope.get(tag) {
+                        *tag = declared.clone();
+                        return Ok(())
+                    }
+                }
+                Err(CompilerError {
+                    kind: ErrorKind::Resolve,
+                    msg: format!("Undeclared structure type '{tag}'"),
+                    span,
+                })
+            }
+            Type::Pointer(inner) | Type::Array(inner, _) => {
+                self.resolve_type(&mut *inner, span)
+            },
+            Type::Function(f) => {
+                self.resolve_type(&mut f.ret, span)?;
+                for param in &mut f.params {
+                    self.resolve_type(param, span)?;
+                }
+                Ok(())
+            }
+            _ => Ok(())
+        }
     }
 
     fn resolve_statement(&mut self, stmt: &mut Node<Statement>) -> Result<()> {
@@ -295,18 +352,30 @@ impl Resolver {
                     span: name.span,
                 });
             }
-            Expression::Cast { expr, .. }
-            | Expression::Dereference(expr)
+
+            Expression::Cast { target, expr } => {
+                let span = target.span;
+                self.resolve_type(target, span)?;
+                self.resolve_expression(expr)?;
+            }
+
+            Expression::SizeOfType(ty) => {
+                let span = ty.span;
+                self.resolve_type(ty, span)?;
+            }
+
+            Expression::Dereference(expr)
             | Expression::AddressOf(expr)
-            | Expression::SizeOfExpr(expr) => {
+            | Expression::SizeOfExpr(expr)
+            | Expression::Arrow { pointer: expr, ..}
+            | Expression::Dot { structure: expr, ..} => {
                 self.resolve_expression(expr)?;
             }
             Expression::Subscript(expr1, expr2) => {
                 self.resolve_expression(expr1)?;
                 self.resolve_expression(expr2)?;
             }
-            Expression::Dot{ .. } | Expression::Arrow { .. } => todo!(),
-            Expression::Constant(_) | Expression::String(_) | Expression::SizeOfType(_) => {}
+            Expression::Constant(_) | Expression::String(_) => {}
         }
         Ok(())
     }
@@ -319,10 +388,12 @@ impl Resolver {
 
     fn begin_scope(&mut self) {
         self.scopes.push_front(HashMap::new());
+        self.structs_scopes.push_front(HashMap::new());
     }
 
     fn end_scope(&mut self) {
         self.scopes.pop_front().expect("No scope to end!");
+        self.structs_scopes.pop_front().expect("No scope to end!");
     }
 }
 
