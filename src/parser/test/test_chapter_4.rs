@@ -86,17 +86,17 @@ fn test_valid_and_false() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <23>  [+]
-                            ├── <16>  [+]
-                            │   ├── <9>  [&&]
-                            │   │   ├── <5> Constant Int [10]
-                            │   │   ╰── <7> Constant Int [0]
-                            │   ╰── <15>  [&&]
-                            │       ├── <11> Constant Int [0]
-                            │       ╰── <13> Constant Int [4]
-                            ╰── <22>  [&&]
-                                ├── <18> Constant Int [0]
-                                ╰── <20> Constant Int [0]
+                        ╰── <24>  [+]
+                            ├── <17>  [+]
+                            │   ├── <10>  [&&]
+                            │   │   ├── <6> Constant Int [10]
+                            │   │   ╰── <8> Constant Int [0]
+                            │   ╰── <16>  [&&]
+                            │       ├── <12> Constant Int [0]
+                            │       ╰── <14> Constant Int [4]
+                            ╰── <23>  [&&]
+                                ├── <19> Constant Int [0]
+                                ╰── <21> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -113,11 +113,11 @@ fn test_valid_and_short_circuit() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <12>  [&&]
-                            ├── <5> Constant Int [0]
-                            ╰── <11>  [/]
-                                ├── <7> Constant Int [1]
-                                ╰── <9> Constant Int [0]
+                        ╰── <13>  [&&]
+                            ├── <6> Constant Int [0]
+                            ╰── <12>  [/]
+                                ├── <8> Constant Int [1]
+                                ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -134,10 +134,10 @@ fn test_valid_and_true() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <10>  [&&]
-                            ├── <5> Constant Int [1]
-                            ╰── <9> Unary [-]
-                                ╰── <8> Constant Int [1]
+                        ╰── <11>  [&&]
+                            ├── <6> Constant Int [1]
+                            ╰── <10> Unary [-]
+                                ╰── <9> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -154,13 +154,13 @@ fn test_valid_associativity() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <14>  [<=]
-                            ├── <11>  [>]
-                            │   ├── <8>  [>=]
-                            │   │   ├── <5> Constant Int [5]
-                            │   │   ╰── <7> Constant Int [0]
-                            │   ╰── <10> Constant Int [1]
-                            ╰── <13> Constant Int [0]
+                        ╰── <15>  [<=]
+                            ├── <12>  [>]
+                            │   ├── <9>  [>=]
+                            │   │   ├── <6> Constant Int [5]
+                            │   │   ╰── <8> Constant Int [0]
+                            │   ╰── <11> Constant Int [1]
+                            ╰── <14> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -177,15 +177,15 @@ fn test_valid_compare_arithmetic_results() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <18>  [==]
-                            ├── <12>  [*]
-                            │   ├── <7> Unary [~]
-                            │   │   ╰── <6> Constant Int [2]
-                            │   ╰── <11> Unary [-]
-                            │       ╰── <10> Constant Int [2]
-                            ╰── <17>  [+]
-                                ├── <14> Constant Int [1]
-                                ╰── <16> Constant Int [5]
+                        ╰── <19>  [==]
+                            ├── <13>  [*]
+                            │   ├── <8> Unary [~]
+                            │   │   ╰── <7> Constant Int [2]
+                            │   ╰── <12> Unary [-]
+                            │       ╰── <11> Constant Int [2]
+                            ╰── <18>  [+]
+                                ├── <15> Constant Int [1]
+                                ╰── <17> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -202,9 +202,9 @@ fn test_valid_eq_false() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <8>  [==]
-                            ├── <5> Constant Int [1]
-                            ╰── <7> Constant Int [2]
+                        ╰── <9>  [==]
+                            ├── <6> Constant Int [1]
+                            ╰── <8> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -221,11 +221,11 @@ fn test_valid_eq_precedence() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <11>  [!=]
-                            ├── <8>  [==]
-                            │   ├── <5> Constant Int [3]
-                            │   ╰── <7> Constant Int [1]
-                            ╰── <10> Constant Int [2]
+                        ╰── <12>  [!=]
+                            ├── <9>  [==]
+                            │   ├── <6> Constant Int [3]
+                            │   ╰── <8> Constant Int [1]
+                            ╰── <11> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -242,9 +242,9 @@ fn test_valid_eq_true() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <8>  [==]
-                            ├── <5> Constant Int [1]
-                            ╰── <7> Constant Int [1]
+                        ╰── <9>  [==]
+                            ├── <6> Constant Int [1]
+                            ╰── <8> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -261,11 +261,11 @@ fn test_valid_extra_credit_bitwise_and_precedence() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <11>  [&]
-                            ├── <5> Constant Int [5]
-                            ╰── <10>  [==]
-                                ├── <7> Constant Int [7]
-                                ╰── <9> Constant Int [5]
+                        ╰── <12>  [&]
+                            ├── <6> Constant Int [5]
+                            ╰── <11>  [==]
+                                ├── <8> Constant Int [7]
+                                ╰── <10> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -282,11 +282,11 @@ fn test_valid_extra_credit_bitwise_or_precedence() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <11>  [|]
-                            ├── <5> Constant Int [5]
-                            ╰── <10>  [!=]
-                                ├── <7> Constant Int [7]
-                                ╰── <9> Constant Int [5]
+                        ╰── <12>  [|]
+                            ├── <6> Constant Int [5]
+                            ╰── <11>  [!=]
+                                ├── <8> Constant Int [7]
+                                ╰── <10> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -303,13 +303,13 @@ fn test_valid_extra_credit_bitwise_shift_precedence() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <14>  [<=]
-                            ├── <8>  [>>]
-                            │   ├── <5> Constant Int [20]
-                            │   ╰── <7> Constant Int [4]
-                            ╰── <13>  [<<]
-                                ├── <10> Constant Int [3]
-                                ╰── <12> Constant Int [1]
+                        ╰── <15>  [<=]
+                            ├── <9>  [>>]
+                            │   ├── <6> Constant Int [20]
+                            │   ╰── <8> Constant Int [4]
+                            ╰── <14>  [<<]
+                                ├── <11> Constant Int [3]
+                                ╰── <13> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -326,11 +326,11 @@ fn test_valid_extra_credit_bitwise_xor_precedence() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <11>  [^]
-                            ├── <5> Constant Int [5]
-                            ╰── <10>  [<]
-                                ├── <7> Constant Int [7]
-                                ╰── <9> Constant Int [5]
+                        ╰── <12>  [^]
+                            ├── <6> Constant Int [5]
+                            ╰── <11>  [<]
+                                ├── <8> Constant Int [7]
+                                ╰── <10> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -347,9 +347,9 @@ fn test_valid_ge_false() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <8>  [>=]
-                            ├── <5> Constant Int [1]
-                            ╰── <7> Constant Int [2]
+                        ╰── <9>  [>=]
+                            ├── <6> Constant Int [1]
+                            ╰── <8> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -366,14 +366,14 @@ fn test_valid_ge_true() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <18>  [+]
-                            ├── <9>  [>=]
-                            │   ├── <5> Constant Int [1]
-                            │   ╰── <7> Constant Int [1]
-                            ╰── <17>  [>=]
-                                ├── <11> Constant Int [1]
-                                ╰── <15> Unary [-]
-                                    ╰── <14> Constant Int [4]
+                        ╰── <19>  [+]
+                            ├── <10>  [>=]
+                            │   ├── <6> Constant Int [1]
+                            │   ╰── <8> Constant Int [1]
+                            ╰── <18>  [>=]
+                                ├── <12> Constant Int [1]
+                                ╰── <16> Unary [-]
+                                    ╰── <15> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -390,13 +390,13 @@ fn test_valid_gt_false() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <16>  [+]
-                            ├── <9>  [>]
-                            │   ├── <5> Constant Int [1]
-                            │   ╰── <7> Constant Int [2]
-                            ╰── <15>  [>]
-                                ├── <11> Constant Int [1]
-                                ╰── <13> Constant Int [1]
+                        ╰── <17>  [+]
+                            ├── <10>  [>]
+                            │   ├── <6> Constant Int [1]
+                            │   ╰── <8> Constant Int [2]
+                            ╰── <16>  [>]
+                                ├── <12> Constant Int [1]
+                                ╰── <14> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -413,9 +413,9 @@ fn test_valid_gt_true() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <8>  [>]
-                            ├── <5> Constant Int [15]
-                            ╰── <7> Constant Int [10]
+                        ╰── <9>  [>]
+                            ├── <6> Constant Int [15]
+                            ╰── <8> Constant Int [10]
     "#;
     assert_parse(src, expected);
 }
@@ -432,10 +432,10 @@ fn test_valid_le_false() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <10>  [<=]
-                            ├── <5> Constant Int [1]
-                            ╰── <9> Unary [-]
-                                ╰── <8> Constant Int [1]
+                        ╰── <11>  [<=]
+                            ├── <6> Constant Int [1]
+                            ╰── <10> Unary [-]
+                                ╰── <9> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -452,13 +452,13 @@ fn test_valid_le_true() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <16>  [+]
-                            ├── <9>  [<=]
-                            │   ├── <5> Constant Int [0]
-                            │   ╰── <7> Constant Int [2]
-                            ╰── <15>  [<=]
-                                ├── <11> Constant Int [0]
-                                ╰── <13> Constant Int [0]
+                        ╰── <17>  [+]
+                            ├── <10>  [<=]
+                            │   ├── <6> Constant Int [0]
+                            │   ╰── <8> Constant Int [2]
+                            ╰── <16>  [<=]
+                                ├── <12> Constant Int [0]
+                                ╰── <14> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -475,9 +475,9 @@ fn test_valid_lt_false() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <8>  [<]
-                            ├── <5> Constant Int [2]
-                            ╰── <7> Constant Int [1]
+                        ╰── <9>  [<]
+                            ├── <6> Constant Int [2]
+                            ╰── <8> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -494,9 +494,9 @@ fn test_valid_lt_true() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <8>  [<]
-                            ├── <5> Constant Int [1]
-                            ╰── <7> Constant Int [2]
+                        ╰── <9>  [<]
+                            ├── <6> Constant Int [1]
+                            ╰── <8> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -513,13 +513,13 @@ fn test_valid_multi_short_circuit() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <15>  [||]
-                            ├── <5> Constant Int [0]
-                            ╰── <14>  [&&]
-                                ├── <7> Constant Int [0]
-                                ╰── <13>  [/]
-                                    ├── <9> Constant Int [1]
-                                    ╰── <11> Constant Int [0]
+                        ╰── <16>  [||]
+                            ├── <6> Constant Int [0]
+                            ╰── <15>  [&&]
+                                ├── <8> Constant Int [0]
+                                ╰── <14>  [/]
+                                    ├── <10> Constant Int [1]
+                                    ╰── <12> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -536,9 +536,9 @@ fn test_valid_ne_false() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <8>  [!=]
-                            ├── <5> Constant Int [0]
-                            ╰── <7> Constant Int [0]
+                        ╰── <9>  [!=]
+                            ├── <6> Constant Int [0]
+                            ╰── <8> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -555,11 +555,11 @@ fn test_valid_ne_true() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <12>  [!=]
-                            ├── <7> Unary [-]
-                            │   ╰── <6> Constant Int [1]
-                            ╰── <11> Unary [-]
-                                ╰── <10> Constant Int [2]
+                        ╰── <13>  [!=]
+                            ├── <8> Unary [-]
+                            │   ╰── <7> Constant Int [1]
+                            ╰── <12> Unary [-]
+                                ╰── <11> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -576,9 +576,9 @@ fn test_valid_nested_ops() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <9> Unary [!]
-                            ╰── <8> Unary [-]
-                                ╰── <7> Constant Int [3]
+                        ╰── <10> Unary [!]
+                            ╰── <9> Unary [-]
+                                ╰── <8> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -595,8 +595,8 @@ fn test_valid_not() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <7> Unary [!]
-                            ╰── <6> Constant Int [5]
+                        ╰── <8> Unary [!]
+                            ╰── <7> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -613,10 +613,10 @@ fn test_valid_not_sum() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <11> Unary [!]
-                            ╰── <10>  [-]
-                                ├── <6> Constant Int [4]
-                                ╰── <8> Constant Int [4]
+                        ╰── <12> Unary [!]
+                            ╰── <11>  [-]
+                                ├── <7> Constant Int [4]
+                                ╰── <9> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -633,10 +633,10 @@ fn test_valid_not_sum_2() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <11> Unary [!]
-                            ╰── <10>  [-]
-                                ├── <6> Constant Int [3]
-                                ╰── <8> Constant Int [44]
+                        ╰── <12> Unary [!]
+                            ╰── <11>  [-]
+                                ├── <7> Constant Int [3]
+                                ╰── <9> Constant Int [44]
     "#;
     assert_parse(src, expected);
 }
@@ -653,8 +653,8 @@ fn test_valid_not_zero() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <7> Unary [!]
-                            ╰── <6> Constant Int [0]
+                        ╰── <8> Unary [!]
+                            ╰── <7> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -671,15 +671,15 @@ fn test_valid_operate_on_booleans() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <20>  [-]
-                            ├── <11> Unary [~]
-                            │   ╰── <10>  [&&]
-                            │       ├── <6> Constant Int [0]
-                            │       ╰── <8> Constant Int [1]
-                            ╰── <19> Unary [-]
-                                ╰── <18>  [||]
-                                    ├── <14> Constant Int [4]
-                                    ╰── <16> Constant Int [3]
+                        ╰── <21>  [-]
+                            ├── <12> Unary [~]
+                            │   ╰── <11>  [&&]
+                            │       ├── <7> Constant Int [0]
+                            │       ╰── <9> Constant Int [1]
+                            ╰── <20> Unary [-]
+                                ╰── <19>  [||]
+                                    ├── <15> Constant Int [4]
+                                    ╰── <17> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -696,9 +696,9 @@ fn test_valid_or_false() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <8>  [||]
-                            ├── <5> Constant Int [0]
-                            ╰── <7> Constant Int [0]
+                        ╰── <9>  [||]
+                            ├── <6> Constant Int [0]
+                            ╰── <8> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -715,11 +715,11 @@ fn test_valid_or_short_circuit() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <12>  [||]
-                            ├── <5> Constant Int [1]
-                            ╰── <11>  [/]
-                                ├── <7> Constant Int [1]
-                                ╰── <9> Constant Int [0]
+                        ╰── <13>  [||]
+                            ├── <6> Constant Int [1]
+                            ╰── <12>  [/]
+                                ├── <8> Constant Int [1]
+                                ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -736,17 +736,17 @@ fn test_valid_or_true() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <23>  [+]
-                            ├── <16>  [+]
-                            │   ├── <9>  [||]
-                            │   │   ├── <5> Constant Int [4]
-                            │   │   ╰── <7> Constant Int [0]
-                            │   ╰── <15>  [||]
-                            │       ├── <11> Constant Int [0]
-                            │       ╰── <13> Constant Int [3]
-                            ╰── <22>  [||]
-                                ├── <18> Constant Int [5]
-                                ╰── <20> Constant Int [5]
+                        ╰── <24>  [+]
+                            ├── <17>  [+]
+                            │   ├── <10>  [||]
+                            │   │   ├── <6> Constant Int [4]
+                            │   │   ╰── <8> Constant Int [0]
+                            │   ╰── <16>  [||]
+                            │       ├── <12> Constant Int [0]
+                            │       ╰── <14> Constant Int [3]
+                            ╰── <23>  [||]
+                                ├── <19> Constant Int [5]
+                                ╰── <21> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -763,11 +763,11 @@ fn test_valid_precedence() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <11>  [||]
-                            ├── <5> Constant Int [1]
-                            ╰── <10>  [&&]
-                                ├── <7> Constant Int [0]
-                                ╰── <9> Constant Int [2]
+                        ╰── <12>  [||]
+                            ├── <6> Constant Int [1]
+                            ╰── <11>  [&&]
+                                ├── <8> Constant Int [0]
+                                ╰── <10> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -784,11 +784,11 @@ fn test_valid_precedence_2() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <12>  [&&]
-                            ├── <9>  [||]
-                            │   ├── <5> Constant Int [1]
-                            │   ╰── <7> Constant Int [0]
-                            ╰── <11> Constant Int [0]
+                        ╰── <13>  [&&]
+                            ├── <10>  [||]
+                            │   ├── <6> Constant Int [1]
+                            │   ╰── <8> Constant Int [0]
+                            ╰── <12> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -805,11 +805,11 @@ fn test_valid_precedence_3() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <11>  [==]
-                            ├── <5> Constant Int [2]
-                            ╰── <10>  [>=]
-                                ├── <7> Constant Int [2]
-                                ╰── <9> Constant Int [0]
+                        ╰── <12>  [==]
+                            ├── <6> Constant Int [2]
+                            ╰── <11>  [>=]
+                                ├── <8> Constant Int [2]
+                                ╰── <10> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -826,11 +826,11 @@ fn test_valid_precedence_4() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <11>  [||]
-                            ├── <8>  [==]
-                            │   ├── <5> Constant Int [2]
-                            │   ╰── <7> Constant Int [2]
-                            ╰── <10> Constant Int [0]
+                        ╰── <12>  [||]
+                            ├── <9>  [==]
+                            │   ├── <6> Constant Int [2]
+                            │   ╰── <8> Constant Int [2]
+                            ╰── <11> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -847,19 +847,19 @@ fn test_valid_precedence_5() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <24>  [+]
-                            ├── <21>  [&&]
-                            │   ├── <8>  [==]
-                            │   │   ├── <5> Constant Int [0]
-                            │   │   ╰── <7> Constant Int [0]
-                            │   ╰── <19>  [==]
-                            │       ├── <10> Constant Int [3]
-                            │       ╰── <18>  [>]
-                            │           ├── <15>  [+]
-                            │           │   ├── <12> Constant Int [2]
-                            │           │   ╰── <14> Constant Int [1]
-                            │           ╰── <17> Constant Int [1]
-                            ╰── <23> Constant Int [1]
+                        ╰── <25>  [+]
+                            ├── <22>  [&&]
+                            │   ├── <9>  [==]
+                            │   │   ├── <6> Constant Int [0]
+                            │   │   ╰── <8> Constant Int [0]
+                            │   ╰── <20>  [==]
+                            │       ├── <11> Constant Int [3]
+                            │       ╰── <19>  [>]
+                            │           ├── <16>  [+]
+                            │           │   ├── <13> Constant Int [2]
+                            │           │   ╰── <15> Constant Int [1]
+                            │           ╰── <18> Constant Int [1]
+                            ╰── <24> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }

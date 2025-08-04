@@ -120,14 +120,14 @@ pub enum Expression {
         args: Vec<Node<Expression>>,
     },
     Cast {
-        target: Node<Type>,
+        target: Node<TypeSpec>,
         expr: Node<Expression>,
     },
     Dereference(Node<Expression>),
     AddressOf(Node<Expression>),
     Subscript(Node<Expression>, Node<Expression>),
     SizeOfExpr(Node<Expression>),
-    SizeOfType(Node<Type>),
+    SizeOfType(Node<TypeSpec>),
     Dot {
         structure: Node<Expression>,
         member: Node<Identifier>
@@ -172,9 +172,8 @@ pub enum Declaration {
     Struct(StructDeclaration)
 }
 
-// TODO: Refactor TypeSpecifier with Node and Type comparable
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub enum Type {
+#[derive(Debug)]
+pub enum TypeSpec {
     Char,
     SChar,
     UChar,
@@ -183,24 +182,24 @@ pub enum Type {
     Long,
     ULong,
     Double,
-    Function(FunctionType),
-    Pointer(Box<Type>),
-    Array(Box<Type>, usize),
-    Struct(Symbol),
+    Function(FunctionTypeSpec),
+    Pointer(Node<TypeSpec>),
+    Array(Node<TypeSpec>, usize),
+    Struct(Node<Identifier>),
     Void,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct FunctionType {
-    pub params: Vec<Type>,
-    pub ret: Box<Type>,
+#[derive(Debug)]
+pub struct FunctionTypeSpec {
+    pub params: Vec<Node<TypeSpec>>,
+    pub ret: Node<TypeSpec>
 }
 
 #[derive(Debug)]
 pub struct VarDeclaration {
     pub name: Node<Identifier>,
     pub init: Option<Node<Initializer>>,
-    pub ty: Type, // TODO: Use Node here for better errors
+    pub ty: Node<TypeSpec>,
     pub storage_class: Option<Node<StorageClass>>,
 }
 
@@ -209,7 +208,7 @@ pub struct FunctionDeclaration {
     pub name: Node<Identifier>,
     pub params: Vec<Node<Identifier>>,
     pub body: Option<Node<Block>>,
-    pub ty: FunctionType,
+    pub ty: FunctionTypeSpec,
     pub storage_class: Option<Node<StorageClass>>,
 }
 
@@ -222,7 +221,7 @@ pub struct StructDeclaration {
 #[derive(Debug)]
 pub struct Field {
     pub name: Node<Identifier>,
-    pub ty: Node<Type>,
+    pub ty: Node<TypeSpec>,
 }
 
 #[derive(Debug)]
@@ -325,125 +324,14 @@ impl<T> InnerRef<T> for Option<Node<T>> {
     }
 }
 
-impl Type {
-    pub fn is_char(&self) -> bool {
-        matches!(self, Type::Char | Type::SChar | Type::UChar)
-    }
-
-    pub fn is_int(&self) -> bool {
-        matches!(
-            self,
-            Type::Char
-                | Type::SChar
-                | Type::UChar
-                | Type::Int
-                | Type::UInt
-                | Type::Long
-                | Type::ULong
-        )
-    }
-
-    pub fn is_double(&self) -> bool {
-        matches!(self, Type::Double)
-    }
-
-    pub fn is_void(&self) -> bool {
-        matches!(self, Type::Void)
-    }
-
-    pub fn is_function(&self) -> bool {
-        matches!(self, Type::Function(_))
-    }
-
-    pub fn is_struct(&self) -> bool {
-        matches!(self, Type::Struct(_))
-    }
-
-    pub fn is_arithmetic(&self) -> bool {
-        matches!(
-            self,
-            Type::Char
-                | Type::SChar
-                | Type::UChar
-                | Type::Int
-                | Type::UInt
-                | Type::Long
-                | Type::ULong
-                | Type::Double
-        )
-    }
-
-    pub fn is_scalar(&self) -> bool {
-        matches!(
-            self,
-            Type::Char
-                | Type::SChar
-                | Type::UChar
-                | Type::Int
-                | Type::UInt
-                | Type::Long
-                | Type::ULong
-                | Type::Double
-                | Type::Pointer(_)
-        )
-    }
-
-    pub fn is_complete(&self) -> bool {
-        !matches!(self, Type::Void)
-    }
-
-    pub fn is_pointer(&self) -> bool {
-        matches!(self, Type::Pointer(_))
-    }
-
-    pub fn is_pointer_to_void(&self) -> bool {
-        matches!(self, Type::Pointer(inner) if inner.is_void())
-    }
-
-    pub fn is_pointer_to_incomplete(&self) -> bool {
-        matches!(self, Type::Pointer(inner) if !inner.is_complete())
-    }
-
-    pub fn is_array(&self) -> bool {
-        matches!(self, Type::Array(_, _))
-    }
-
-    pub fn size(&self) -> usize {
-        match self {
-            Type::Char | Type::UChar | Type::SChar => 1,
-            Type::Int => 4,
-            Type::UInt => 4,
-            Type::Long => 8,
-            Type::ULong => 8,
-            Type::Double => 8,
-            Type::Function(_) => panic!("Size of a function type"),
-            Type::Pointer(_) => 8,
-            Type::Array(ty, size) => ty.size() * size,
-            Type::Void => 1,
-            Type::Struct(_) => todo!(),
-        }
-    }
-
-    pub fn is_signed(&self) -> bool {
-        match self {
-            Type::Int | Type::Long | Type::Char | Type::SChar => true,
-            Type::UInt | Type::ULong | Type::Double | Type::Pointer(_) | Type::UChar => false,
-            Type::Function(_) => panic!("Function types don't have a sign"),
-            Type::Array(_, _) => panic!("Arrays don't have a sign"),
-            Type::Void => panic!("Void doesn't have a sign"),
-            Type::Struct(_) => panic!("Struct doesn't have a sign"),
-        }
-    }
-}
-
 impl Constant {
-    pub fn from_char(c: char, ty: &Type) -> Constant {
-        match ty {
-            Type::Char | Type::SChar => Constant::Char(c as i8),
-            Type::UChar => Constant::UChar(c as u8),
-            _ => panic!("Cannot convert char to {ty:?}"),
+    pub fn is_int(&self) -> bool {
+        match self {
+            Constant::Double(_) => false,
+            _ => true,
         }
     }
+
     pub fn as_u64(&self) -> u64 {
         match self {
             Constant::Char(v) => *v as u64,
@@ -453,22 +341,6 @@ impl Constant {
             Constant::Long(v) => *v as u64,
             Constant::ULong(v) => *v,
             Constant::Double(v) => *v as u64,
-        }
-    }
-
-    pub fn is_int(&self) -> bool {
-        self.ty().is_int()
-    }
-
-    pub fn ty(&self) -> Type {
-        match self {
-            Constant::Char(_) => Type::Char,
-            Constant::UChar(_) => Type::UChar,
-            Constant::Int(_) => Type::Int,
-            Constant::UInt(_) => Type::UInt,
-            Constant::Long(_) => Type::Long,
-            Constant::ULong(_) => Type::ULong,
-            Constant::Double(_) => Type::Double,
         }
     }
 }

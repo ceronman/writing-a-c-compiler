@@ -439,7 +439,7 @@ fn test_invalid_types_function_returns_array() {
     assert_error(
         r#"
         int(foo(void))[3][4];
-          //^^^ A function cannot return array
+      //^^^^^^^^^^^^^^^^^^^^ A function cannot return array
     "#,
     );
 }

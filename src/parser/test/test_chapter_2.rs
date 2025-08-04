@@ -99,8 +99,8 @@ fn test_valid_bitwise() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <7> Unary [~]
-                            ╰── <6> Constant Int [12]
+                        ╰── <8> Unary [~]
+                            ╰── <7> Constant Int [12]
     "#;
     assert_parse(src, expected);
 }
@@ -117,9 +117,9 @@ fn test_valid_bitwise_int_min() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <9> Unary [~]
-                            ╰── <8> Unary [-]
-                                ╰── <7> Constant Int [2147483647]
+                        ╰── <10> Unary [~]
+                            ╰── <9> Unary [-]
+                                ╰── <8> Constant Int [2147483647]
     "#;
     assert_parse(src, expected);
 }
@@ -136,8 +136,8 @@ fn test_valid_bitwise_zero() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <7> Unary [~]
-                            ╰── <6> Constant Int [0]
+                        ╰── <8> Unary [~]
+                            ╰── <7> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -154,8 +154,8 @@ fn test_valid_neg() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <7> Unary [-]
-                            ╰── <6> Constant Int [5]
+                        ╰── <8> Unary [-]
+                            ╰── <7> Constant Int [5]
     "#;
     assert_parse(src, expected);
 }
@@ -172,8 +172,8 @@ fn test_valid_neg_zero() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <7> Unary [-]
-                            ╰── <6> Constant Int [0]
+                        ╰── <8> Unary [-]
+                            ╰── <7> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -190,8 +190,8 @@ fn test_valid_negate_int_max() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <7> Unary [-]
-                            ╰── <6> Constant Int [2147483647]
+                        ╰── <8> Unary [-]
+                            ╰── <7> Constant Int [2147483647]
     "#;
     assert_parse(src, expected);
 }
@@ -208,9 +208,9 @@ fn test_valid_nested_ops() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <9> Unary [~]
-                            ╰── <8> Unary [-]
-                                ╰── <7> Constant Int [3]
+                        ╰── <10> Unary [~]
+                            ╰── <9> Unary [-]
+                                ╰── <8> Constant Int [3]
     "#;
     assert_parse(src, expected);
 }
@@ -227,9 +227,9 @@ fn test_valid_nested_ops_2() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <9> Unary [-]
-                            ╰── <8> Unary [~]
-                                ╰── <7> Constant Int [0]
+                        ╰── <10> Unary [-]
+                            ╰── <9> Unary [~]
+                                ╰── <8> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -246,8 +246,8 @@ fn test_valid_parens() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <8> Unary [-]
-                            ╰── <6> Constant Int [2]
+                        ╰── <9> Unary [-]
+                            ╰── <7> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -264,8 +264,8 @@ fn test_valid_parens_2() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <8> Unary [~]
-                            ╰── <7> Constant Int [2]
+                        ╰── <9> Unary [~]
+                            ╰── <8> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -282,9 +282,9 @@ fn test_valid_parens_3() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <10> Unary [-]
-                            ╰── <9> Unary [-]
-                                ╰── <7> Constant Int [4]
+                        ╰── <11> Unary [-]
+                            ╰── <10> Unary [-]
+                                ╰── <8> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -302,8 +302,8 @@ fn test_valid_redundant_parens() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <11> Unary [-]
-                            ╰── <10> Constant Int [10]
+                        ╰── <12> Unary [-]
+                            ╰── <11> Constant Int [10]
     "#;
     assert_parse(src, expected);
 }

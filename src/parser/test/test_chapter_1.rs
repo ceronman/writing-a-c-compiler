@@ -157,7 +157,7 @@ fn test_valid_multi_digit() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <5> Constant Int [100]
+                        ╰── <6> Constant Int [100]
     "#;
     assert_parse(src, expected);
 }
@@ -181,7 +181,7 @@ fn test_valid_newlines() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <5> Constant Int [0]
+                        ╰── <6> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -196,7 +196,7 @@ fn test_valid_no_newlines() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <5> Constant Int [0]
+                        ╰── <6> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -213,7 +213,7 @@ fn test_valid_return_0() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <5> Constant Int [0]
+                        ╰── <6> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -230,7 +230,7 @@ fn test_valid_return_2() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <5> Constant Int [2]
+                        ╰── <6> Constant Int [2]
     "#;
     assert_parse(src, expected);
 }
@@ -245,7 +245,7 @@ fn test_valid_spaces() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <5> Constant Int [0]
+                        ╰── <6> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -260,7 +260,7 @@ fn test_valid_tabs() {
             ╰── Function [main]
                 ╰── Body
                     ╰── Return
-                        ╰── <5> Constant Int [0]
+                        ╰── <6> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }

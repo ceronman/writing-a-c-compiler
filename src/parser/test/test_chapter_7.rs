@@ -109,20 +109,20 @@ fn test_invalid_semantics_double_define_after_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [3]
+                    │       ╰── <9> Constant Int [3]
                     ├── Block
-                    │   ╰── <15> Assign [=]
-                    │       ├── <12> Var [a]
-                    │       ╰── <14> Constant Int [5]
+                    │   ╰── <16> Assign [=]
+                    │       ├── <13> Var [a]
+                    │       ╰── <15> Constant Int [5]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── a
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <22> Constant Int [2]
+                    │       ╰── <23> Constant Int [2]
                     ╰── Return
-                        ╰── <26> Var [a]
+                        ╰── <27> Var [a]
     "#;
     assert_parse(src, expected);
 }
@@ -150,7 +150,7 @@ fn test_invalid_semantics_extra_credit_different_labels_same_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <11> Constant Int [10]
+                    │       ╰── <12> Constant Int [10]
                     ├── Label [label2]
                     │   ╰── Empty
                     ├── VarDeclaration
@@ -159,9 +159,9 @@ fn test_invalid_semantics_extra_credit_different_labels_same_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <20> Constant Int [11]
+                    │       ╰── <21> Constant Int [11]
                     ╰── Return
-                        ╰── <23> Constant Int [1]
+                        ╰── <24> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -195,29 +195,29 @@ fn test_invalid_semantics_extra_credit_duplicate_labels_different_scopes() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ╰── If
                         ├── Condition
-                        │   ╰── <12> Var [x]
+                        │   ╰── <13> Var [x]
                         ├── Then
                         │   ╰── Block
-                        │       ├── <17> Assign [=]
-                        │       │   ├── <14> Var [x]
-                        │       │   ╰── <16> Constant Int [5]
+                        │       ├── <18> Assign [=]
+                        │       │   ├── <15> Var [x]
+                        │       │   ╰── <17> Constant Int [5]
                         │       ├── Goto [l]
                         │       ├── Return
-                        │       │   ╰── <21> Constant Int [0]
+                        │       │   ╰── <22> Constant Int [0]
                         │       ╰── Label [l]
                         │           ╰── Return
-                        │               ╰── <25> Var [x]
+                        │               ╰── <26> Var [x]
                         ╰── Else
                             ╰── Block
                                 ├── Goto [l]
                                 ├── Return
-                                │   ╰── <32> Constant Int [0]
+                                │   ╰── <33> Constant Int [0]
                                 ╰── Label [l]
                                     ╰── Return
-                                        ╰── <36> Var [x]
+                                        ╰── <37> Var [x]
     "#;
     assert_parse(src, expected);
 }
@@ -245,24 +245,24 @@ fn test_invalid_semantics_extra_credit_goto_use_before_declare() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <15>  [!=]
-                    │   │       ├── <12> Var [x]
-                    │   │       ╰── <14> Constant Int [0]
+                    │   │   ╰── <16>  [!=]
+                    │   │       ├── <13> Var [x]
+                    │   │       ╰── <15> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ╰── Label [return_y]
                     │               ╰── Return
-                    │                   ╰── <18> Var [y]
+                    │                   ╰── <19> Var [y]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── y
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <27> Constant Int [4]
+                    │       ╰── <28> Constant Int [4]
                     ╰── Goto [return_y]
     "#;
     assert_parse(src, expected);
@@ -289,9 +289,9 @@ fn test_invalid_semantics_out_of_scope() {
                     │       ├── Type
                     │       │   ╰── Int
                     │       ╰── Initializer
-                    │           ╰── <8> Constant Int [2]
+                    │           ╰── <9> Constant Int [2]
                     ╰── Return
-                        ╰── <14> Var [a]
+                        ╰── <15> Var [a]
     "#;
     assert_parse(src, expected);
 }
@@ -318,16 +318,16 @@ fn test_invalid_semantics_use_before_declare() {
                     │   ╰── Type
                     │       ╰── Int
                     ├── Block
-                    │   ╰── <13> Assign [=]
-                    │       ├── <10> Var [b]
-                    │       ╰── <12> Constant Int [10]
+                    │   ╰── <14> Assign [=]
+                    │       ├── <11> Var [b]
+                    │       ╰── <13> Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ╰── Type
                     │       ╰── Int
                     ╰── Return
-                        ╰── <22> Var [b]
+                        ╰── <23> Var [b]
     "#;
     assert_parse(src, expected);
 }
@@ -353,7 +353,7 @@ fn test_valid_assign_to_self() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [3]
+                    │       ╰── <9> Constant Int [3]
                     ╰── Block
                         ├── VarDeclaration
                         │   ├── Name
@@ -361,11 +361,11 @@ fn test_valid_assign_to_self() {
                         │   ├── Type
                         │   │   ╰── Int
                         │   ╰── Initializer
-                        │       ╰── <18> Assign [=]
-                        │           ├── <15> Var [a]
-                        │           ╰── <17> Constant Int [4]
+                        │       ╰── <19> Assign [=]
+                        │           ├── <16> Var [a]
+                        │           ╰── <18> Constant Int [4]
                         ╰── Return
-                            ╰── <22> Var [a]
+                            ╰── <23> Var [a]
     "#;
     assert_parse(src, expected);
 }
@@ -391,7 +391,7 @@ fn test_valid_assign_to_self_2() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [3]
+                    │       ╰── <9> Constant Int [3]
                     ├── Block
                     │   ╰── VarDeclaration
                     │       ├── Name
@@ -399,11 +399,11 @@ fn test_valid_assign_to_self_2() {
                     │       ├── Type
                     │       │   ╰── Int
                     │       ╰── Initializer
-                    │           ╰── <18> Assign [=]
-                    │               ├── <15> Var [a]
-                    │               ╰── <17> Constant Int [4]
+                    │           ╰── <19> Assign [=]
+                    │               ├── <16> Var [a]
+                    │               ╰── <18> Constant Int [4]
                     ╰── Return
-                        ╰── <24> Var [a]
+                        ╰── <25> Var [a]
     "#;
     assert_parse(src, expected);
 }
@@ -435,11 +435,11 @@ fn test_valid_declaration_only() {
                     │       ├── Type
                     │       │   ╰── Int
                     │       ╰── Initializer
-                    │           ╰── <16> Assign [=]
-                    │               ├── <13> Var [a]
-                    │               ╰── <15> Constant Int [1]
+                    │           ╰── <17> Assign [=]
+                    │               ├── <14> Var [a]
+                    │               ╰── <16> Constant Int [1]
                     ╰── Return
-                        ╰── <22> Var [a]
+                        ╰── <23> Var [a]
     "#;
     assert_parse(src, expected);
 }
@@ -465,7 +465,7 @@ fn test_valid_empty_blocks() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [10]
+                    │       ╰── <9> Constant Int [10]
                     ├── Block
                     ├── VarDeclaration
                     │   ├── Name
@@ -473,15 +473,15 @@ fn test_valid_empty_blocks() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <19>  [*]
-                    │           ├── <16> Constant Int [10]
-                    │           ╰── <18> Constant Int [2]
+                    │       ╰── <20>  [*]
+                    │           ├── <17> Constant Int [10]
+                    │           ╰── <19> Constant Int [2]
                     ├── Block
                     │   ╰── Block
                     ╰── Return
-                        ╰── <31>  [+]
-                            ├── <27> Var [ten]
-                            ╰── <30> Var [twenty]
+                        ╰── <32>  [+]
+                            ├── <28> Var [ten]
+                            ╰── <31> Var [twenty]
     "#;
     assert_parse(src, expected);
 }
@@ -511,36 +511,36 @@ fn test_valid_extra_credit_compound_subtract_in_block() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [5]
+                    │       ╰── <9> Constant Int [5]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <15>  [>]
-                    │   │       ├── <12> Var [a]
-                    │   │       ╰── <14> Constant Int [4]
+                    │   │   ╰── <16>  [>]
+                    │   │       ├── <13> Var [a]
+                    │   │       ╰── <15> Constant Int [4]
                     │   ╰── Then
                     │       ╰── Block
-                    │           ├── <20> Assign [-=]
-                    │           │   ├── <17> Var [a]
-                    │           │   ╰── <19> Constant Int [4]
+                    │           ├── <21> Assign [-=]
+                    │           │   ├── <18> Var [a]
+                    │           │   ╰── <20> Constant Int [4]
                     │           ├── VarDeclaration
                     │           │   ├── Name
                     │           │   │   ╰── a
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── <25> Constant Int [5]
+                    │           │       ╰── <26> Constant Int [5]
                     │           ╰── If
                     │               ├── Condition
-                    │               │   ╰── <32>  [>]
-                    │               │       ├── <29> Var [a]
-                    │               │       ╰── <31> Constant Int [4]
+                    │               │   ╰── <33>  [>]
+                    │               │       ├── <30> Var [a]
+                    │               │       ╰── <32> Constant Int [4]
                     │               ╰── Then
                     │                   ╰── Block
-                    │                       ╰── <37> Assign [-=]
-                    │                           ├── <34> Var [a]
-                    │                           ╰── <36> Constant Int [4]
+                    │                       ╰── <38> Assign [-=]
+                    │                           ├── <35> Var [a]
+                    │                           ╰── <37> Constant Int [4]
                     ╰── Return
-                        ╰── <46> Var [a]
+                        ╰── <47> Var [a]
     "#;
     assert_parse(src, expected);
 }
@@ -569,24 +569,24 @@ fn test_valid_extra_credit_goto_before_declaration() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ╰── Block
                         ├── If
                         │   ├── Condition
-                        │   │   ╰── <15>  [!=]
-                        │   │       ├── <12> Var [a]
-                        │   │       ╰── <14> Constant Int [0]
+                        │   │   ╰── <16>  [!=]
+                        │   │       ├── <13> Var [a]
+                        │   │       ╰── <15> Constant Int [0]
                         │   ╰── Then
                         │       ╰── Label [return_a]
                         │           ╰── Return
-                        │               ╰── <18> Var [a]
+                        │               ╰── <19> Var [a]
                         ├── VarDeclaration
                         │   ├── Name
                         │   │   ╰── a
                         │   ├── Type
                         │   │   ╰── Int
                         │   ╰── Initializer
-                        │       ╰── <25> Constant Int [4]
+                        │       ╰── <26> Constant Int [4]
                         ╰── Goto [return_a]
     "#;
     assert_parse(src, expected);
@@ -616,7 +616,7 @@ fn test_valid_extra_credit_goto_inner_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [5]
+                    │       ╰── <9> Constant Int [5]
                     ├── Goto [inner]
                     ╰── Block
                         ├── VarDeclaration
@@ -625,13 +625,13 @@ fn test_valid_extra_credit_goto_inner_scope() {
                         │   ├── Type
                         │   │   ╰── Int
                         │   ╰── Initializer
-                        │       ╰── <16> Constant Int [0]
+                        │       ╰── <17> Constant Int [0]
                         ├── Label [inner]
-                        │   ╰── <24> Assign [=]
-                        │       ├── <21> Var [x]
-                        │       ╰── <23> Constant Int [1]
+                        │   ╰── <25> Assign [=]
+                        │       ├── <22> Var [x]
+                        │       ╰── <24> Constant Int [1]
                         ╰── Return
-                            ╰── <28> Var [x]
+                            ╰── <29> Var [x]
     "#;
     assert_parse(src, expected);
 }
@@ -662,17 +662,17 @@ fn test_valid_extra_credit_goto_outer_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [10]
+                    │       ╰── <9> Constant Int [10]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <14> Constant Int [0]
+                    │       ╰── <15> Constant Int [0]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <18> Var [a]
+                    │   │   ╰── <19> Var [a]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── VarDeclaration
@@ -681,23 +681,23 @@ fn test_valid_extra_credit_goto_outer_scope() {
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── <22> Constant Int [1]
-                    │           ├── <30> Assign [=]
-                    │           │   ├── <26> Var [b]
-                    │           │   ╰── <29> Var [a]
+                    │           │       ╰── <23> Constant Int [1]
+                    │           ├── <31> Assign [=]
+                    │           │   ├── <27> Var [b]
+                    │           │   ╰── <30> Var [a]
                     │           ╰── Goto [end]
-                    ├── <41> Assign [=]
-                    │   ├── <38> Var [a]
-                    │   ╰── <40> Constant Int [9]
+                    ├── <42> Assign [=]
+                    │   ├── <39> Var [a]
+                    │   ╰── <41> Constant Int [9]
                     ╰── Label [end]
                         ╰── Return
-                            ╰── <56>  [&&]
-                                ├── <48>  [==]
-                                │   ├── <45> Var [a]
-                                │   ╰── <47> Constant Int [10]
-                                ╰── <54>  [==]
-                                    ├── <51> Var [b]
-                                    ╰── <53> Constant Int [1]
+                            ╰── <57>  [&&]
+                                ├── <49>  [==]
+                                │   ├── <46> Var [a]
+                                │   ╰── <48> Constant Int [10]
+                                ╰── <55>  [==]
+                                    ├── <52> Var [b]
+                                    ╰── <54> Constant Int [1]
     "#;
     assert_parse(src, expected);
 }
@@ -735,10 +735,10 @@ fn test_valid_extra_credit_goto_sibling_scope() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <11> Constant Int [1]
+                    │   │   ╰── <12> Constant Int [1]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── VarDeclaration
@@ -747,23 +747,23 @@ fn test_valid_extra_credit_goto_sibling_scope() {
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── <15> Constant Int [5]
+                    │           │       ╰── <16> Constant Int [5]
                     │           ├── Goto [other_if]
-                    │           ├── <24> Assign [=]
-                    │           │   ├── <21> Var [sum]
-                    │           │   ╰── <23> Constant Int [0]
+                    │           ├── <25> Assign [=]
+                    │           │   ├── <22> Var [sum]
+                    │           │   ╰── <24> Constant Int [0]
                     │           ├── Label [first_if]
-                    │           │   ╰── <31> Assign [=]
-                    │           │       ├── <28> Var [a]
-                    │           │       ╰── <30> Constant Int [5]
-                    │           ╰── <43> Assign [=]
-                    │               ├── <35> Var [sum]
-                    │               ╰── <42>  [+]
-                    │                   ├── <38> Var [sum]
-                    │                   ╰── <41> Var [a]
+                    │           │   ╰── <32> Assign [=]
+                    │           │       ├── <29> Var [a]
+                    │           │       ╰── <31> Constant Int [5]
+                    │           ╰── <44> Assign [=]
+                    │               ├── <36> Var [sum]
+                    │               ╰── <43>  [+]
+                    │                   ├── <39> Var [sum]
+                    │                   ╰── <42> Var [a]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <48> Constant Int [0]
+                    │   │   ╰── <49> Constant Int [0]
                     │   ╰── Then
                     │       ╰── Block
                     │           ├── Label [other_if]
@@ -774,18 +774,18 @@ fn test_valid_extra_credit_goto_sibling_scope() {
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── <55> Constant Int [6]
-                    │           ├── <67> Assign [=]
-                    │           │   ├── <59> Var [sum]
-                    │           │   ╰── <66>  [+]
-                    │           │       ├── <62> Var [sum]
-                    │           │       ╰── <65> Var [a]
+                    │           │       ╰── <56> Constant Int [6]
+                    │           ├── <68> Assign [=]
+                    │           │   ├── <60> Var [sum]
+                    │           │   ╰── <67>  [+]
+                    │           │       ├── <63> Var [sum]
+                    │           │       ╰── <66> Var [a]
                     │           ├── Goto [first_if]
-                    │           ╰── <75> Assign [=]
-                    │               ├── <72> Var [sum]
-                    │               ╰── <74> Constant Int [0]
+                    │           ╰── <76> Assign [=]
+                    │               ├── <73> Var [sum]
+                    │               ╰── <75> Constant Int [0]
                     ╰── Return
-                        ╰── <81> Var [sum]
+                        ╰── <82> Var [sum]
     "#;
     assert_parse(src, expected);
 }
@@ -814,38 +814,38 @@ fn test_valid_hidden_then_visible() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [2]
+                    │       ╰── <9> Constant Int [2]
                     ├── VarDeclaration
                     │   ├── Name
                     │   │   ╰── b
                     │   ╰── Type
                     │       ╰── Int
                     ├── Block
-                    │   ├── <21> Assign [=]
-                    │   │   ├── <16> Var [a]
-                    │   │   ╰── <20> Unary [-]
-                    │   │       ╰── <19> Constant Int [4]
+                    │   ├── <22> Assign [=]
+                    │   │   ├── <17> Var [a]
+                    │   │   ╰── <21> Unary [-]
+                    │   │       ╰── <20> Constant Int [4]
                     │   ├── VarDeclaration
                     │   │   ├── Name
                     │   │   │   ╰── a
                     │   │   ├── Type
                     │   │   │   ╰── Int
                     │   │   ╰── Initializer
-                    │   │       ╰── <26> Constant Int [7]
-                    │   ╰── <37> Assign [=]
-                    │       ├── <30> Var [b]
-                    │       ╰── <36>  [+]
-                    │           ├── <33> Var [a]
-                    │           ╰── <35> Constant Int [1]
+                    │   │       ╰── <27> Constant Int [7]
+                    │   ╰── <38> Assign [=]
+                    │       ├── <31> Var [b]
+                    │       ╰── <37>  [+]
+                    │           ├── <34> Var [a]
+                    │           ╰── <36> Constant Int [1]
                     ╰── Return
-                        ╰── <54>  [&&]
-                            ├── <45>  [==]
-                            │   ├── <42> Var [b]
-                            │   ╰── <44> Constant Int [8]
-                            ╰── <53>  [==]
-                                ├── <48> Var [a]
-                                ╰── <52> Unary [-]
-                                    ╰── <51> Constant Int [4]
+                        ╰── <55>  [&&]
+                            ├── <46>  [==]
+                            │   ├── <43> Var [b]
+                            │   ╰── <45> Constant Int [8]
+                            ╰── <54>  [==]
+                                ├── <49> Var [a]
+                                ╰── <53> Unary [-]
+                                    ╰── <52> Constant Int [4]
     "#;
     assert_parse(src, expected);
 }
@@ -871,7 +871,7 @@ fn test_valid_hidden_variable() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [2]
+                    │       ╰── <9> Constant Int [2]
                     ╰── Block
                         ├── VarDeclaration
                         │   ├── Name
@@ -879,9 +879,9 @@ fn test_valid_hidden_variable() {
                         │   ├── Type
                         │   │   ╰── Int
                         │   ╰── Initializer
-                        │       ╰── <14> Constant Int [1]
+                        │       ╰── <15> Constant Int [1]
                         ╰── Return
-                            ╰── <18> Var [a]
+                            ╰── <19> Var [a]
     "#;
     assert_parse(src, expected);
 }
@@ -907,7 +907,7 @@ fn test_valid_inner_uninitialized() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [4]
+                    │       ╰── <9> Constant Int [4]
                     ├── Block
                     │   ╰── VarDeclaration
                     │       ├── Name
@@ -915,7 +915,7 @@ fn test_valid_inner_uninitialized() {
                     │       ╰── Type
                     │           ╰── Int
                     ╰── Return
-                        ╰── <18> Var [x]
+                        ╰── <19> Var [x]
     "#;
     assert_parse(src, expected);
 }
@@ -946,7 +946,7 @@ fn test_valid_multiple_vars_same_name() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ├── Block
                     │   ├── VarDeclaration
                     │   │   ├── Name
@@ -954,10 +954,10 @@ fn test_valid_multiple_vars_same_name() {
                     │   │   ├── Type
                     │   │   │   ╰── Int
                     │   │   ╰── Initializer
-                    │   │       ╰── <14> Constant Int [4]
-                    │   ╰── <22> Assign [=]
-                    │       ├── <18> Var [a]
-                    │       ╰── <21> Var [b]
+                    │   │       ╰── <15> Constant Int [4]
+                    │   ╰── <23> Assign [=]
+                    │       ├── <19> Var [a]
+                    │       ╰── <22> Var [b]
                     ├── Block
                     │   ├── VarDeclaration
                     │   │   ├── Name
@@ -965,14 +965,14 @@ fn test_valid_multiple_vars_same_name() {
                     │   │   ├── Type
                     │   │   │   ╰── Int
                     │   │   ╰── Initializer
-                    │   │       ╰── <29> Constant Int [2]
-                    │   ╰── <41> Assign [=]
-                    │       ├── <33> Var [a]
-                    │       ╰── <40>  [-]
-                    │           ├── <36> Var [a]
-                    │           ╰── <39> Var [b]
+                    │   │       ╰── <30> Constant Int [2]
+                    │   ╰── <42> Assign [=]
+                    │       ├── <34> Var [a]
+                    │       ╰── <41>  [-]
+                    │           ├── <37> Var [a]
+                    │           ╰── <40> Var [b]
                     ╰── Return
-                        ╰── <46> Var [a]
+                        ╰── <47> Var [a]
     "#;
     assert_parse(src, expected);
 }
@@ -1006,10 +1006,10 @@ fn test_valid_nested_if() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <8> Constant Int [0]
+                    │       ╰── <9> Constant Int [0]
                     ├── If
                     │   ├── Condition
-                    │   │   ╰── <12> Var [a]
+                    │   │   ╰── <13> Var [a]
                     │   ├── Then
                     │   │   ╰── Block
                     │   │       ├── VarDeclaration
@@ -1018,9 +1018,9 @@ fn test_valid_nested_if() {
                     │   │       │   ├── Type
                     │   │       │   │   ╰── Int
                     │   │       │   ╰── Initializer
-                    │   │       │       ╰── <16> Constant Int [2]
+                    │   │       │       ╰── <17> Constant Int [2]
                     │   │       ╰── Return
-                    │   │           ╰── <20> Var [b]
+                    │   │           ╰── <21> Var [b]
                     │   ╰── Else
                     │       ╰── Block
                     │           ├── VarDeclaration
@@ -1029,23 +1029,23 @@ fn test_valid_nested_if() {
                     │           │   ├── Type
                     │           │   │   ╰── Int
                     │           │   ╰── Initializer
-                    │           │       ╰── <27> Constant Int [3]
+                    │           │       ╰── <28> Constant Int [3]
                     │           ╰── If
                     │               ├── Condition
-                    │               │   ╰── <35>  [<]
-                    │               │       ├── <31> Var [a]
-                    │               │       ╰── <34> Var [c]
+                    │               │   ╰── <36>  [<]
+                    │               │       ├── <32> Var [a]
+                    │               │       ╰── <35> Var [c]
                     │               ├── Then
                     │               │   ╰── Block
                     │               │       ╰── Return
-                    │               │           ╰── <39> Unary [!]
-                    │               │               ╰── <38> Var [a]
+                    │               │           ╰── <40> Unary [!]
+                    │               │               ╰── <39> Var [a]
                     │               ╰── Else
                     │                   ╰── Block
                     │                       ╰── Return
-                    │                           ╰── <43> Constant Int [5]
+                    │                           ╰── <44> Constant Int [5]
                     ╰── Return
-                        ╰── <52> Var [a]
+                        ╰── <53> Var [a]
     "#;
     assert_parse(src, expected);
 }
@@ -1118,7 +1118,7 @@ fn test_valid_similar_var_names() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <16> Constant Int [1]
+                    │       ╰── <17> Constant Int [1]
                     ├── Block
                     │   ├── VarDeclaration
                     │   │   ├── Name
@@ -1126,14 +1126,14 @@ fn test_valid_similar_var_names() {
                     │   │   ├── Type
                     │   │   │   ╰── Int
                     │   │   ╰── Initializer
-                    │   │       ╰── <22> Constant Int [2]
+                    │   │       ╰── <23> Constant Int [2]
                     │   ├── VarDeclaration
                     │   │   ├── Name
                     │   │   │   ╰── a1
                     │   │   ├── Type
                     │   │   │   ╰── Int
                     │   │   ╰── Initializer
-                    │   │       ╰── <28> Constant Int [2]
+                    │   │       ╰── <29> Constant Int [2]
                     │   ├── Block
                     │   │   ├── VarDeclaration
                     │   │   │   ├── Name
@@ -1189,33 +1189,33 @@ fn test_valid_similar_var_names() {
                     │   │                                   │   ├── Type
                     │   │                                   │   │   ╰── Int
                     │   │                                   │   ╰── Initializer
-                    │   │                                   │       ╰── <66> Constant Int [20]
-                    │   │                                   ├── <74> Assign [=]
-                    │   │                                   │   ├── <70> Var [result]
-                    │   │                                   │   ╰── <73> Var [a]
+                    │   │                                   │       ╰── <67> Constant Int [20]
+                    │   │                                   ├── <75> Assign [=]
+                    │   │                                   │   ├── <71> Var [result]
+                    │   │                                   │   ╰── <74> Var [a]
                     │   │                                   ╰── Block
                     │   │                                       ├── VarDeclaration
                     │   │                                       │   ├── Name
                     │   │                                       │   │   ╰── a
                     │   │                                       │   ╰── Type
                     │   │                                       │       ╰── Int
-                    │   │                                       ├── <84> Assign [=]
-                    │   │                                       │   ├── <81> Var [a]
-                    │   │                                       │   ╰── <83> Constant Int [5]
-                    │   │                                       ╰── <95> Assign [=]
-                    │   │                                           ├── <87> Var [result]
-                    │   │                                           ╰── <94>  [+]
-                    │   │                                               ├── <90> Var [result]
-                    │   │                                               ╰── <93> Var [a]
-                    │   ╰── <126> Assign [=]
-                    │       ├── <118> Var [result]
-                    │       ╰── <125>  [+]
-                    │           ├── <121> Var [result]
-                    │           ╰── <124> Var [a1]
+                    │   │                                       ├── <85> Assign [=]
+                    │   │                                       │   ├── <82> Var [a]
+                    │   │                                       │   ╰── <84> Constant Int [5]
+                    │   │                                       ╰── <96> Assign [=]
+                    │   │                                           ├── <88> Var [result]
+                    │   │                                           ╰── <95>  [+]
+                    │   │                                               ├── <91> Var [result]
+                    │   │                                               ╰── <94> Var [a]
+                    │   ╰── <127> Assign [=]
+                    │       ├── <119> Var [result]
+                    │       ╰── <126>  [+]
+                    │           ├── <122> Var [result]
+                    │           ╰── <125> Var [a1]
                     ╰── Return
-                        ╰── <135>  [+]
-                            ├── <131> Var [result]
-                            ╰── <134> Var [a1]
+                        ╰── <136>  [+]
+                            ├── <132> Var [result]
+                            ╰── <135> Var [a1]
     "#;
     assert_parse(src, expected);
 }
@@ -1244,12 +1244,12 @@ fn test_valid_use_in_inner_scope() {
                     │   ╰── Type
                     │       ╰── Int
                     ├── Block
-                    │   ╰── <13> Assign [=]
-                    │       ├── <10> Var [x]
-                    │       ╰── <12> Constant Int [3]
+                    │   ╰── <14> Assign [=]
+                    │       ├── <11> Var [x]
+                    │       ╰── <13> Constant Int [3]
                     ╰── Block
                         ╰── Return
-                            ╰── <18> Var [x]
+                            ╰── <19> Var [x]
     "#;
     assert_parse(src, expected);
 }

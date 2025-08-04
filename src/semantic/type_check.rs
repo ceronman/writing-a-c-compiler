@@ -1,13 +1,7 @@
-use crate::ast::{
-    AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
-    FunctionDeclaration, FunctionType, Initializer, InnerRef, Node, NodeId, Program, Statement,
-    StorageClass, Type, UnaryOp, VarDeclaration,
-};
+use crate::ast::{AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration, FunctionTypeSpec, Initializer, InnerRef, Node, NodeId, Program, Statement, StorageClass, TypeSpec, UnaryOp, VarDeclaration};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
-use crate::semantic::{
-    Attributes, InitialValue, SemanticData, StaticInit, SwitchCases, SymbolData,
-};
+use crate::semantic::{Attributes, FunctionType, InitialValue, SemanticData, StaticInit, SwitchCases, SymbolData, Type};
 use std::collections::{BTreeMap, HashMap, VecDeque};
 
 impl SymbolData {
@@ -52,8 +46,8 @@ impl TypeChecker {
 
     fn check_local_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let name = decl.name.symbol.clone();
-        Self::validate_type_specifier(&decl.ty, decl.name.span)?; // FIXME: We need a span to the type
-        Self::error_if(decl.ty.is_void(), decl.name.span, "Illegal void variable")?;
+        Self::validate_type_specifier(&decl.ty)?;
+        Self::error_if(decl.ty.to_semantic().is_void(), decl.name.span, "Illegal void variable")?;
         if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             if let Some(init) = &decl.init {
                 return Err(CompilerError {
@@ -64,7 +58,7 @@ impl TypeChecker {
                 });
             }
             if let Some(data) = self.symbols.get(&name) {
-                if data.ty != decl.ty {
+                if data.ty != decl.ty.to_semantic() {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: format!("Name '{name}' was already declared"),
@@ -74,17 +68,17 @@ impl TypeChecker {
             } else {
                 self.symbols.insert(
                     decl.name.symbol.clone(),
-                    SymbolData::global(decl.ty.clone()),
+                    SymbolData::global(decl.ty.to_semantic()),
                 );
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
             let initial_value = if let Some(init) = &decl.init {
                 InitialValue::Initial(Self::check_static_initializer(init, &decl.ty)?)
             } else {
-                InitialValue::single(StaticInit::ZeroInit(decl.ty.size()))
+                InitialValue::single(StaticInit::ZeroInit(decl.ty.to_semantic().size()))
             };
             if let Some(data) = self.symbols.get(&name) {
-                if data.ty != decl.ty {
+                if data.ty != decl.ty.to_semantic() {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: format!("Name '{name}' was previously declared with a different type"),
@@ -95,7 +89,7 @@ impl TypeChecker {
                 self.symbols.insert(
                     decl.name.symbol.clone(),
                     SymbolData {
-                        ty: decl.ty.clone(),
+                        ty: decl.ty.to_semantic(),
                         attrs: Attributes::Static {
                             initial_value,
                             global: false,
@@ -105,7 +99,7 @@ impl TypeChecker {
             }
         } else {
             self.symbols
-                .insert(decl.name.symbol.clone(), SymbolData::local(decl.ty.clone()));
+                .insert(decl.name.symbol.clone(), SymbolData::local(decl.ty.to_semantic()));
             if let Some(init) = &decl.init {
                 self.check_initializer(init, &decl.ty)?;
             }
@@ -115,14 +109,14 @@ impl TypeChecker {
 
     fn check_static_initializer(
         init: &Node<Initializer>,
-        target: &Type,
+        target: &Node<TypeSpec>,
     ) -> Result<Vec<StaticInit>> {
         match init.as_ref() {
             Initializer::Single(expr) => match expr.as_ref() {
                 Expression::String(s) => {
-                    match target {
-                        Type::Array(inner_ty, size) => {
-                            if !inner_ty.is_char() {
+                    match target.as_ref() {
+                        TypeSpec::Array(inner_ty, size) => {
+                            if !inner_ty.to_semantic().is_char() {
                                 return Err(CompilerError {
                                         kind: ErrorKind::Type,
                                         msg: "Can't initialize a non-character type with a string literal".into(),
@@ -149,8 +143,8 @@ impl TypeChecker {
                             }
                             Ok(result)
                         }
-                        Type::Pointer(inner_ty) => {
-                            if let Type::Char = **inner_ty {
+                        TypeSpec::Pointer(inner_ty) => {
+                            if let TypeSpec::Char = inner_ty.as_ref() {
                                 Ok(vec![StaticInit::Pointer(s.clone())])
                             } else {
                                 Err(CompilerError {
@@ -168,30 +162,30 @@ impl TypeChecker {
                     }
                 }
                 Expression::Constant(c) => {
-                    let static_init = match (c, target) {
-                        (c, Type::Char | Type::SChar) if c.is_int() => {
+                    let static_init = match (c, target.as_ref()) {
+                        (c, TypeSpec::Char | TypeSpec::SChar) if c.is_int() => {
                             StaticInit::Char(c.as_u64() as i8)
                         }
-                        (c, Type::UChar) if c.is_int() => StaticInit::UChar(c.as_u64() as u8),
-                        (c, Type::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
-                        (c, Type::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
-                        (c, Type::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
-                        (c, Type::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
-                        (c, Type::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
+                        (c, TypeSpec::UChar) if c.is_int() => StaticInit::UChar(c.as_u64() as u8),
+                        (c, TypeSpec::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
+                        (c, TypeSpec::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
+                        (c, TypeSpec::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
+                        (c, TypeSpec::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
+                        (c, TypeSpec::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
                         (
                             Constant::Double(value),
-                            Type::Int | Type::Char | Type::SChar | Type::UChar,
+                            TypeSpec::Int | TypeSpec::Char | TypeSpec::SChar | TypeSpec::UChar,
                         ) => StaticInit::Int(*value as i32),
-                        (Constant::Double(value), Type::UInt) => StaticInit::UInt(*value as u32),
-                        (Constant::Double(value), Type::Long) => StaticInit::Long(*value as i64),
-                        (Constant::Double(value), Type::ULong) => StaticInit::ULong(*value as u64),
-                        (Constant::Double(value), Type::Double) => StaticInit::Double(*value),
+                        (Constant::Double(value), TypeSpec::UInt) => StaticInit::UInt(*value as u32),
+                        (Constant::Double(value), TypeSpec::Long) => StaticInit::Long(*value as i64),
+                        (Constant::Double(value), TypeSpec::ULong) => StaticInit::ULong(*value as u64),
+                        (Constant::Double(value), TypeSpec::Double) => StaticInit::Double(*value),
                         (
                             Constant::Int(0)
                             | Constant::Long(0)
                             | Constant::UInt(0)
                             | Constant::ULong(0),
-                            Type::Pointer(_),
+                            TypeSpec::Pointer(_),
                         ) => StaticInit::ULong(0),
                         _ => {
                             return Err(CompilerError {
@@ -210,7 +204,7 @@ impl TypeChecker {
                 }),
             },
             Initializer::Compound(initializers) => {
-                let Type::Array(inner_ty, size) = target else {
+                let TypeSpec::Array(inner_ty, size) = target.as_ref() else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Cannot initialize a scalar value with a compound initializer".into(),
@@ -230,7 +224,7 @@ impl TypeChecker {
                     let inner_inits = Self::check_static_initializer(initializer, inner_ty)?;
                     static_inits.extend(inner_inits);
                 }
-                let padding = (size - initializers.len()) * inner_ty.size();
+                let padding = (size - initializers.len()) * inner_ty.to_semantic().size();
                 if padding > 0 {
                     static_inits.push(StaticInit::ZeroInit(padding));
                 }
@@ -239,13 +233,13 @@ impl TypeChecker {
         }
     }
 
-    fn check_initializer(&mut self, init: &Node<Initializer>, target: &Type) -> Result<Type> {
+    fn check_initializer(&mut self, init: &Node<Initializer>, target: &Node<TypeSpec>) -> Result<Type> {
         match init.as_ref() {
             Initializer::Single(expr) => {
                 let init_ty = if let Expression::String(s) = expr.as_ref()
-                    && let Type::Array(inner_ty, size) = target
+                    && let TypeSpec::Array(inner_ty, size) = target.as_ref()
                 {
-                    if !inner_ty.is_char() {
+                    if !inner_ty.to_semantic().is_char() {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Can't initialize a non-character type with a string literal"
@@ -262,15 +256,15 @@ impl TypeChecker {
                             span: init.span,
                         });
                     }
-                    self.expression_types.insert(expr.id, target.clone());
-                    target.clone()
+                    self.expression_types.insert(expr.id, target.to_semantic());
+                    target.to_semantic()
                 } else {
                     self.check_and_convert_expr(expr)?
                 };
-                self.convert_by_assignment(expr, &init_ty, target)
+                self.convert_by_assignment(expr, &init_ty, &target.to_semantic())
             }
             Initializer::Compound(initializers) => {
-                let Type::Array(inner_ty, size) = target else {
+                let TypeSpec::Array(inner_ty, size) = target.as_ref() else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Cannot initialize a scalar value with a compound initializer".into(),
@@ -287,14 +281,14 @@ impl TypeChecker {
                 for inner_innit in initializers {
                     self.check_initializer(inner_innit, inner_ty)?;
                 }
-                Ok(target.clone())
+                Ok(target.to_semantic())
             }
         }
     }
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
-        Self::validate_type_specifier(&decl.ty, decl.name.span)?; // FIXME: span should be in type
-        Self::error_if(decl.ty.is_void(), decl.name.span, "Illegal void variable")?;
+        Self::validate_type_specifier(&decl.ty)?;
+        Self::error_if(decl.ty.to_semantic().is_void(), decl.name.span, "Illegal void variable")?;
         let mut initial_value = if let Some(init) = &decl.init {
             InitialValue::Initial(Self::check_static_initializer(init, &decl.ty)?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
@@ -305,7 +299,7 @@ impl TypeChecker {
         let mut global = !matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
         let name = decl.name.symbol.clone();
         if let Some(data) = self.symbols.get(&name) {
-            if data.ty != decl.ty {
+            if data.ty != decl.ty.to_semantic() {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
                     msg: format!("Variable '{name}' is already declared with a different type"),
@@ -349,7 +343,7 @@ impl TypeChecker {
             };
         }
         let data = SymbolData {
-            ty: decl.ty.clone(),
+            ty: decl.ty.to_semantic(),
             attrs: Attributes::Static {
                 initial_value,
                 global,
@@ -365,20 +359,22 @@ impl TypeChecker {
         top_level: bool,
     ) -> Result<()> {
         let name = decl.name.symbol.clone();
-        let mut function_ty = decl.ty.clone();
+        let mut function_ty = decl.ty.to_semantic();
 
-        // TODO: Make this error point to the span of the actual return type
         Self::error_if(
             function_ty.ret.is_array(),
-            decl.name.span,
+            decl.ty.ret.span,
             "A function cannot return array",
         )?;
-        Self::validate_type_specifier(&function_ty.ret, decl.name.span)?; // FIXME: span should be in type
+
+        Self::validate_type_specifier(&decl.ty.ret)?;
+        for param in &decl.ty.params {
+            Self::validate_type_specifier(param)?;
+        }
 
         // Replace array params with pointers
         for param in &mut function_ty.params {
             Self::error_if(param.is_void(), decl.name.span, "Illegal void parameter")?;
-            Self::validate_type_specifier(param, decl.name.span)?; // FIXME: span should be in type
             if let Type::Array(inner, _) = param {
                 *param = Type::Pointer(inner.clone());
             }
@@ -454,29 +450,29 @@ impl TypeChecker {
                     SymbolData::local(param_ty.clone()),
                 );
             }
-            self.check_block(&decl.ty, body)?;
+            self.check_block(&decl.ty.to_semantic(), body)?;
         }
         Ok(())
     }
 
-    fn validate_type_specifier(ty: &Type, span: Span) -> Result<()> {
-        match ty {
-            Type::Array(inner, _) => {
+    fn validate_type_specifier(ty: &Node<TypeSpec>) -> Result<()> {
+        match ty.as_ref() {
+            TypeSpec::Array(inner, _) => {
                 Self::error_if(
-                    !inner.is_complete(),
-                    span,
+                    !inner.to_semantic().is_complete(),
+                    ty.span,
                     "Illegal array of incomplete types",
                 )?;
-                Self::validate_type_specifier(inner, span)?;
+                Self::validate_type_specifier(inner)?;
             }
-            Type::Pointer(inner) => {
-                Self::validate_type_specifier(inner, span)?;
+            TypeSpec::Pointer(inner) => {
+                Self::validate_type_specifier(inner)?;
             }
-            Type::Function(f) => {
+            TypeSpec::Function(f) => {
                 for param in &f.params {
-                    Self::validate_type_specifier(param, span)?;
+                    Self::validate_type_specifier(param)?;
                 }
-                Self::validate_type_specifier(&f.ret, span)?;
+                Self::validate_type_specifier(&f.ret)?;
             }
             _ => {}
         }
@@ -1061,25 +1057,26 @@ impl TypeChecker {
                 *function_ty.ret.clone()
             }
             Expression::Cast { target, expr } => {
-                Self::validate_type_specifier(target, target.span)?;
+                Self::validate_type_specifier(target)?;
                 let ty = self.check_and_convert_expr(expr)?;
                 Self::error_if(
-                    target.is_pointer() && ty.is_double(),
+                    target.to_semantic().is_pointer() && ty.is_double(),
                     expr.span,
                     "Cannot cast a double to a pointer",
                 )?;
                 Self::error_if(
-                    target.is_double() && ty.is_pointer(),
+                    target.to_semantic().is_double() && ty.is_pointer(),
                     expr.span,
                     "Cannot cast a pointer to a double",
                 )?;
-                Self::error_if(target.is_array(), expr.span, "Cannot cast to an array type")?;
+                Self::error_if(target.to_semantic().is_array(), expr.span, "Cannot cast to an array type")?;
 
-                if target.is_void() {
-                    *target.data.clone()
+                // TODO: weird control flow
+                if target.to_semantic().is_void() {
+                    target.to_semantic()
                 } else {
                     Self::error_if(
-                        !target.is_scalar(),
+                        !target.to_semantic().is_scalar(),
                         target.span,
                         "Cannot cast a value to a non-scalar type",
                     )?;
@@ -1088,7 +1085,7 @@ impl TypeChecker {
                         expr.span,
                         "Cannot cast non-scalar expression",
                     )?;
-                    *target.data.clone()
+                    target.to_semantic()
                 }
             }
             Expression::Dereference(inner) => {
@@ -1153,9 +1150,9 @@ impl TypeChecker {
                 }
             }
             Expression::SizeOfType(ty) => {
-                Self::validate_type_specifier(ty, ty.span)?;
+                Self::validate_type_specifier(ty)?;
                 Self::error_if(
-                    !ty.is_complete(),
+                    !ty.to_semantic().is_complete(),
                     ty.span,
                     "Cannot get size of an incomplete type",
                 )?;

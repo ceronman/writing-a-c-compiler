@@ -1,4 +1,4 @@
-use crate::ast::{AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, Field, ForInit, FunctionDeclaration, Identifier, Initializer, Node, NodeId, PostfixOp, Program, Statement, StorageClass, StructDeclaration, Type, UnaryOp, VarDeclaration};
+use crate::ast::{AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, Field, ForInit, FunctionDeclaration, Identifier, Initializer, Node, NodeId, PostfixOp, Program, Statement, StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration};
 use std::io::Write;
 
 struct PrettyAst {
@@ -327,33 +327,33 @@ impl PrettyAst {
         }
     }
 
-    fn from_type(ty: &Type) -> PrettyAst {
-        match ty {
-            Type::Int => Self::new("Int", vec![]),
-            Type::Long => Self::new("Long", vec![]),
-            Type::Char => Self::new("Char", vec![]),
-            Type::SChar => Self::new("Signed Char", vec![]),
-            Type::UChar => Self::new("Unsigned Char", vec![]),
-            Type::ULong => Self::new("Unsigned Long", vec![]),
-            Type::UInt => Self::new("Unsigned Int", vec![]),
-            Type::Double => Self::new("Double", vec![]),
-            Type::Void => Self::new("Void", vec![]),
-            Type::Function(f) => Self::new(
+    fn from_type(ty: &Node<TypeSpec>) -> PrettyAst {
+        match ty.as_ref() {
+            TypeSpec::Int => Self::new("Int", vec![]),
+            TypeSpec::Long => Self::new("Long", vec![]),
+            TypeSpec::Char => Self::new("Char", vec![]),
+            TypeSpec::SChar => Self::new("Signed Char", vec![]),
+            TypeSpec::UChar => Self::new("Unsigned Char", vec![]),
+            TypeSpec::ULong => Self::new("Unsigned Long", vec![]),
+            TypeSpec::UInt => Self::new("Unsigned Int", vec![]),
+            TypeSpec::Double => Self::new("Double", vec![]),
+            TypeSpec::Void => Self::new("Void", vec![]),
+            TypeSpec::Function(f) => Self::new(
                 "FunctionType",
                 vec![
                     Self::new("Return", vec![Self::from_type(&f.ret)]),
                     Self::new("Params", f.params.iter().map(Self::from_type)),
                 ],
             ),
-            Type::Pointer(t) => Self::new("Pointer", vec![Self::from_type(t.as_ref())]),
-            Type::Array(t, size) => Self::new(
+            TypeSpec::Pointer(t) => Self::new("Pointer", vec![Self::from_type(t)]),
+            TypeSpec::Array(t, size) => Self::new(
                 "Array",
                 vec![
                     Self::new(format!("{size}"), vec![]),
-                    Self::from_type(t.as_ref()),
+                    Self::from_type(t),
                 ],
             ),
-            Type::Struct(name) => Self::new(format!("Struct [{name}]"), vec![])
+            TypeSpec::Struct(name) => Self::new(format!("Struct [{}]", name.symbol), vec![])
         }
     }
 

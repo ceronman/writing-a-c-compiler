@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test;
 
-use crate::ast::{AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, Field, ForInit, FunctionDeclaration, FunctionType, Identifier, Initializer, Node, PostfixOp, Program, Statement, StorageClass, StructDeclaration, Type, UnaryOp, VarDeclaration};
+use crate::ast::{AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, Field, ForInit, FunctionDeclaration, FunctionTypeSpec, Identifier, Initializer, Node, PostfixOp, Program, Statement, StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{IntKind, Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
@@ -48,7 +48,7 @@ enum Declarator {
 }
 
 struct Param {
-    ty: Node<Type>,
+    ty: Node<TypeSpec>,
     declarator: Node<Declarator>,
 }
 
@@ -126,15 +126,15 @@ impl<'src> Parser<'src> {
                     fields
                 })))
             } else {
-                (self.node(begin + name.span, Type::Struct(name.data.symbol)), None)
+                (self.node(begin + name.span, TypeSpec::Struct(name)), None)
             }
         } else  {
             self.type_and_storage()?
         };
         let declarator = self.parse_declarator()?;
-        let (name, ty, params) = Self::process_declarator(declarator, ty)?;
+        let (name, ty, params) = self.process_declarator(declarator, ty)?;
 
-        if let Type::Function(function_ty) = *ty.data {
+        if let TypeSpec::Function(function_ty) = *ty.data {
             if let TokenKind::OpenBrace = self.current.kind {
                 let body = self.block()?;
                 Ok(self.node(
@@ -172,7 +172,7 @@ impl<'src> Parser<'src> {
                 Declaration::Var(VarDeclaration {
                     name,
                     init,
-                    ty: *ty.data,
+                    ty,
                     storage_class,
                 }),
             ))
@@ -190,7 +190,7 @@ impl<'src> Parser<'src> {
                 span: declarator.span,
             });
         }
-        let (name, ty, _) = Self::process_declarator(declarator, base_ty)?;
+        let (name, ty, _) = self.process_declarator(declarator, base_ty)?;
         let end = self.expect(TokenKind::Semicolon)?.span;
         Ok(self.node(begin + end, Field {
             name,
@@ -318,38 +318,37 @@ impl<'src> Parser<'src> {
     }
 
     fn process_declarator(
+        &mut self,
         declarator: Node<Declarator>,
-        base_type: Node<Type>,
-    ) -> Result<(Node<Identifier>, Node<Type>, Vec<Node<Identifier>>)> {
+        base_type: Node<TypeSpec>,
+    ) -> Result<(Node<Identifier>, Node<TypeSpec>, Vec<Node<Identifier>>)> {
         // TODO make type less complex
         match *declarator.data {
             Declarator::Identifier(name) => Ok((name, base_type, vec![])),
             Declarator::Pointer(declarator) => {
-                let derived_type = Node {
-                    id: base_type.id,
-                    span: base_type.span,
-                    data: Box::new(Type::Pointer(base_type.data)),
-                };
-                Self::process_declarator(declarator, derived_type)
+                let derived_type = self.node(
+                    base_type.span + declarator.span,
+                    TypeSpec::Pointer(base_type)
+                );
+                self.process_declarator(declarator, derived_type)
             }
             Declarator::Array {
                 size,
                 declarator: inner,
             } => {
-                let derived_type = Node {
-                    id: base_type.id,
-                    span: base_type.span,
-                    data: Box::new(Type::Array(base_type.data, size)),
-                };
-                Self::process_declarator(inner, derived_type)
+                let derived_type = self.node(
+                    base_type.span + declarator.span,
+                    TypeSpec::Array(base_type, size)
+                );
+                self.process_declarator(inner, derived_type)
             }
             Declarator::Function { params, declarator } => {
                 let mut param_names = Vec::new();
                 let mut param_types = Vec::new();
                 if let Declarator::Identifier(name) = *declarator.data {
                     for Param { ty, declarator } in params {
-                        let (param_name, param_type, _) = Self::process_declarator(declarator, ty)?;
-                        if let Type::Function(_) = param_type.as_ref() {
+                        let (param_name, param_type, _) = self.process_declarator(declarator, ty)?;
+                        if let TypeSpec::Function { .. } = param_type.as_ref() {
                             return Err(CompilerError {
                                 kind: ErrorKind::Parse,
                                 msg: "Function pointers in parameters are not supported".into(),
@@ -357,17 +356,17 @@ impl<'src> Parser<'src> {
                             });
                         }
                         param_names.push(param_name);
-                        param_types.push(*param_type.data);
+                        param_types.push(param_type);
                     }
-                    let function_type = FunctionType {
+                    let span = base_type.span;
+                    let function_type = FunctionTypeSpec {
                         params: param_types,
-                        ret: base_type.data,
+                        ret: base_type,
                     };
-                    let derived_type = Node {
-                        id: base_type.id,
-                        span: base_type.span,
-                        data: Box::new(Type::Function(function_type)),
-                    };
+                    let derived_type = self.node(
+                        span + declarator.span,
+                        TypeSpec::Function(function_type)
+                    );
                     Ok((name, derived_type, param_names))
                 } else {
                     Err(CompilerError {
@@ -380,7 +379,7 @@ impl<'src> Parser<'src> {
         }
     }
 
-    fn type_specifier(&mut self) -> Result<Node<Type>> {
+    fn type_specifier(&mut self) -> Result<Node<TypeSpec>> {
         let mut types = Vec::new();
         let begin = self.current.span;
         let mut end = self.current.span;
@@ -392,17 +391,17 @@ impl<'src> Parser<'src> {
         self.type_from_list(begin + end, &types)
     }
 
-    fn type_from_list(&mut self, span: Span, types: &[TokenKind]) -> Result<Node<Type>> {
+    fn type_from_list(&mut self, span: Span, types: &[TokenKind]) -> Result<Node<TypeSpec>> {
         match types {
             [TokenKind::Struct] => {
-                let name = self.identifier()?.data.symbol;
-                return Ok(self.node(span, Type::Struct(name)));
+                let name = self.identifier()?;
+                return Ok(self.node(span, TypeSpec::Struct(name)));
             }
             [TokenKind::Double] => {
-                return Ok(self.node(span, Type::Double));
+                return Ok(self.node(span, TypeSpec::Double));
             }
             [TokenKind::Void] => {
-                return Ok(self.node(span, Type::Void));
+                return Ok(self.node(span, TypeSpec::Void));
             }
             _ => {}
         }
@@ -432,14 +431,14 @@ impl<'src> Parser<'src> {
         }
 
         let ty = match (signed, unsigned, char, int, long) {
-            (0, 0, 1, 0, 0) => Type::Char,
-            (1, 0, 1, 0, 0) => Type::SChar,
-            (0, 1, 1, 0, 0) => Type::UChar,
-            (0, 1, 0, 0 | 1, 1) => Type::ULong,
-            (0, 1, 0, 0 | 1, 0) => Type::UInt,
-            (0 | 1, 0, 0, 0 | 1, 1) => Type::Long,
-            (0 | 1, 0, 0, 1, 0) => Type::Int,
-            (1, 0, 0, 0, 0) => Type::Int,
+            (0, 0, 1, 0, 0) => TypeSpec::Char,
+            (1, 0, 1, 0, 0) => TypeSpec::SChar,
+            (0, 1, 1, 0, 0) => TypeSpec::UChar,
+            (0, 1, 0, 0 | 1, 1) => TypeSpec::ULong,
+            (0, 1, 0, 0 | 1, 0) => TypeSpec::UInt,
+            (0 | 1, 0, 0, 0 | 1, 1) => TypeSpec::Long,
+            (0 | 1, 0, 0, 1, 0) => TypeSpec::Int,
+            (1, 0, 0, 0, 0) => TypeSpec::Int,
             (0, 0, 0, 0, 0) => {
                 return Err(CompilerError {
                     kind: ErrorKind::Parse,
@@ -459,7 +458,7 @@ impl<'src> Parser<'src> {
         Ok(self.node(span, ty))
     }
 
-    fn type_and_storage(&mut self) -> Result<(Node<Type>, Option<Node<StorageClass>>)> {
+    fn type_and_storage(&mut self) -> Result<(Node<TypeSpec>, Option<Node<StorageClass>>)> {
         let begin = self.current.span;
         let mut end = self.current.span;
         let mut types = Vec::new();
@@ -952,15 +951,15 @@ impl<'src> Parser<'src> {
     }
 
     fn process_abstract_declaration(
-        base_ty: Node<Type>,
+        base_ty: Node<TypeSpec>,
         declarator: Node<AbstractDeclarator>,
-    ) -> Node<Type> {
+    ) -> Node<TypeSpec> {
         match *declarator.data {
             AbstractDeclarator::Pointer(inner) => {
                 let derived_type = Node {
                     id: declarator.id,
                     span: declarator.span,
-                    data: Box::new(Type::Pointer(base_ty.data)),
+                    data: Box::new(TypeSpec::Pointer(base_ty)),
                 };
                 Self::process_abstract_declaration(derived_type, inner)
             }
@@ -968,7 +967,7 @@ impl<'src> Parser<'src> {
                 let derived_type = Node {
                     id: declarator.id,
                     span: declarator.span,
-                    data: Box::new(Type::Array(base_ty.data, size)),
+                    data: Box::new(TypeSpec::Array(base_ty, size)),
                 };
                 Self::process_abstract_declaration(derived_type, inner)
             }

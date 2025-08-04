@@ -1,4 +1,4 @@
-use crate::semantic::StaticInit;
+use crate::semantic::{StaticInit, Type};
 use crate::{ast, tacky};
 use std::io::Write;
 
@@ -291,30 +291,30 @@ fn pp_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
     Ok(())
 }
 
-fn pp_type(file: &mut impl Write, ty: &ast::Type) -> Result<()> {
+fn pp_type(file: &mut impl Write, ty: &Type) -> Result<()> {
     match ty {
-        ast::Type::Char => write!(file, "Char"),
-        ast::Type::SChar => write!(file, "Signed Char"),
-        ast::Type::UChar => write!(file, "Unsigned Char"),
-        ast::Type::Int => write!(file, "Int"),
-        ast::Type::Long => write!(file, "Long"),
-        ast::Type::UInt => write!(file, "Unsigned Int"),
-        ast::Type::ULong => write!(file, "Unsigned Long"),
-        ast::Type::Function(_) => write!(file, "Function(...)"),
-        ast::Type::Double => write!(file, "Double"),
-        ast::Type::Void => write!(file, "Void"),
-        ast::Type::Pointer(referenced) => {
+        Type::Char => write!(file, "Char"),
+        Type::SChar => write!(file, "Signed Char"),
+        Type::UChar => write!(file, "Unsigned Char"),
+        Type::Int => write!(file, "Int"),
+        Type::Long => write!(file, "Long"),
+        Type::UInt => write!(file, "Unsigned Int"),
+        Type::ULong => write!(file, "Unsigned Long"),
+        Type::Function(_) => write!(file, "Function(...)"),
+        Type::Double => write!(file, "Double"),
+        Type::Void => write!(file, "Void"),
+        Type::Pointer(referenced) => {
             write!(file, "Pointer(")?;
             pp_type(file, referenced.as_ref())?;
             write!(file, ")")
         }
-        ast::Type::Array(inner, size) => {
+        Type::Array(inner, size) => {
             write!(file, "Array(")?;
             write!(file, "{size},")?;
             pp_type(file, inner.as_ref())?;
             write!(file, ")")
         }
-        ast::Type::Struct(name) => {
+        Type::Struct(name) => {
             write!(file, "Struct({name})")
         }
     }?;

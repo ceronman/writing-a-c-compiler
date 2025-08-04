@@ -1,8 +1,7 @@
-use crate::ast::{Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Initializer, InnerRef, Node, Program, Statement, StorageClass, StructDeclaration, Type, VarDeclaration};
+use crate::ast::{Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Initializer, InnerRef, Node, Program, Statement, StorageClass, StructDeclaration, TypeSpec, VarDeclaration};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
 use std::collections::{HashMap, VecDeque};
-use crate::lexer::Span;
 
 #[derive(Default)]
 struct Resolver {
@@ -52,7 +51,7 @@ impl Resolver {
     }
 
     fn resolve_file_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
-        self.resolve_type(&mut decl.ty, decl.name.span)?;
+        self.resolve_type(&mut decl.ty)?;
         let scope = self.scopes.front_mut().expect("Invalid scope state");
         scope.insert(
             decl.name.symbol.clone(),
@@ -65,7 +64,7 @@ impl Resolver {
     }
 
     fn resolve_local_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
-        self.resolve_type(&mut decl.ty, decl.name.span)?;
+        self.resolve_type(&mut decl.ty)?;
         let symbol = &decl.name.symbol;
         let unique_name = self.make_name(symbol);
         let scope = self.scopes.front_mut().expect("Invalid scope state");
@@ -116,9 +115,9 @@ impl Resolver {
     }
 
     fn resolve_function_declaration(&mut self, decl: &mut FunctionDeclaration) -> Result<()> {
-        self.resolve_type(&mut decl.ty.ret, decl.name.span)?;
+        self.resolve_type(&mut decl.ty.ret)?;
         for param in &mut decl.ty.params {
-            self.resolve_type(param, decl.name.span)?;
+            self.resolve_type(param)?;
         }
         let symbol = &decl.name.symbol;
         let scope = self.scopes.front_mut().expect("Invalid scope state");
@@ -186,35 +185,34 @@ impl Resolver {
         scope.insert(tag.clone(), unique_name.clone());
         decl.name.symbol = unique_name;
         for field in &mut decl.fields {
-            let span = field.span;
-            self.resolve_type(&mut field.ty, span)?;
+            self.resolve_type(&mut field.ty)?;
         }
         Ok(())
     }
 
     // TODO: Make Type have proper spans
-    fn resolve_type(&mut self, ty: &mut Type, span: Span) -> Result<()> {
-        match ty {
-            Type::Struct(tag) => {
+    fn resolve_type(&mut self, ty: &mut Node<TypeSpec>) -> Result<()> {
+        match ty.as_mut() {
+            TypeSpec::Struct(tag) => {
                 for scope in &self.structs_scopes {
-                    if let Some(declared) = scope.get(tag) {
-                        *tag = declared.clone();
+                    if let Some(declared) = scope.get(&tag.symbol) {
+                        tag.symbol = declared.clone();
                         return Ok(())
                     }
                 }
                 Err(CompilerError {
                     kind: ErrorKind::Resolve,
-                    msg: format!("Undeclared structure type '{tag}'"),
-                    span,
+                    msg: format!("Undeclared structure type '{}'", tag.symbol),
+                    span: ty.span,
                 })
             }
-            Type::Pointer(inner) | Type::Array(inner, _) => {
-                self.resolve_type(&mut *inner, span)
+            TypeSpec::Pointer(inner) | TypeSpec::Array(inner, _) => {
+                self.resolve_type(inner)
             },
-            Type::Function(f) => {
-                self.resolve_type(&mut f.ret, span)?;
+            TypeSpec::Function(f) => {
+                self.resolve_type(&mut f.ret)?;
                 for param in &mut f.params {
-                    self.resolve_type(param, span)?;
+                    self.resolve_type(param)?;
                 }
                 Ok(())
             }
@@ -354,14 +352,12 @@ impl Resolver {
             }
 
             Expression::Cast { target, expr } => {
-                let span = target.span;
-                self.resolve_type(target, span)?;
+                self.resolve_type(target)?;
                 self.resolve_expression(expr)?;
             }
 
             Expression::SizeOfType(ty) => {
-                let span = ty.span;
-                self.resolve_type(ty, span)?;
+                self.resolve_type(ty)?;
             }
 
             Expression::Dereference(expr)

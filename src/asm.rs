@@ -5,8 +5,8 @@ use crate::asm::ir::{
     AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
     StaticVariable, TopLevel, UnaryOp,
 };
-use crate::ast::{Constant, Type};
-use crate::semantic::{Attributes, SemanticData, StaticInit};
+use crate::ast::{Constant};
+use crate::semantic::{Attributes, SemanticData, StaticInit, Type};
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;

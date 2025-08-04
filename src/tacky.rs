@@ -4,7 +4,7 @@ pub mod pretty;
 mod test;
 
 use crate::ast;
-use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData};
+use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData, Type};
 use crate::symbol::Symbol;
 use std::collections::HashMap;
 
@@ -33,14 +33,14 @@ pub struct Function {
 pub struct StaticVariable {
     pub name: Symbol,
     pub global: bool,
-    pub ty: ast::Type,
+    pub ty: Type,
     pub init: Vec<StaticInit>,
 }
 
 #[derive(Debug, Clone)]
 pub struct StaticConstant {
     pub name: Symbol,
-    pub ty: ast::Type,
+    pub ty: Type,
     pub init: StaticInit,
 }
 
@@ -133,7 +133,6 @@ pub enum Instruction {
 }
 
 pub type Constant = ast::Constant;
-pub type Type = ast::Type;
 
 #[derive(Debug, Clone)]
 pub enum Val {
@@ -210,7 +209,7 @@ impl TackyGenerator {
             return;
         }
         if let Some(init) = &decl.init {
-            self.emit_initializer(0, 0, &decl.name.symbol, init, &decl.ty);
+            self.emit_initializer(0, 0, &decl.name.symbol, init, &decl.ty.to_semantic());
         }
     }
 
@@ -892,11 +891,11 @@ impl TackyGenerator {
                 expr: inner,
             } => {
                 let result = self.emit_expr(inner);
-                if target.is_void() {
+                if target.to_semantic().is_void() {
                     return ExprResult::Operand(Val::Var("DUMMY".into()));
                 } else {
                     let inner_ty = self.semantics.expr_type(inner).clone();
-                    self.cast(result, &inner_ty, target)
+                    self.cast(result, &inner_ty, &target.to_semantic())
                 }
             }
 
@@ -943,7 +942,7 @@ impl TackyGenerator {
                 return ExprResult::Dereference(dst);
             }
             ast::Expression::SizeOfType(ty) => {
-                return ExprResult::Operand(Val::Constant(Constant::ULong(ty.size() as u64)));
+                return ExprResult::Operand(Val::Constant(Constant::ULong(ty.to_semantic().size() as u64)));
             }
             ast::Expression::SizeOfExpr(e) => {
                 let size = if let Some(target) = self.semantics.implicit_casts.get(&e.id).cloned() {

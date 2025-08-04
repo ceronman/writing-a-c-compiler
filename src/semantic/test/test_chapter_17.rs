@@ -344,7 +344,7 @@ fn test_invalid_types_incomplete_types_void_array() {
         r#"
         int main(void) {
             void arr[3];
-               //^^^ Illegal array of incomplete types
+          //^^^^^^^^^^^ Illegal array of incomplete types
             return 0;
         }
     "#,
@@ -357,7 +357,7 @@ fn test_invalid_types_incomplete_types_void_array_in_cast() {
         r#"
         int main(void) {
             (void(*)[3]) 4;
-                //^^ Illegal array of incomplete types
+               //^^^^^^ Illegal array of incomplete types
             return 0;
         }
     "#,
@@ -369,7 +369,7 @@ fn test_invalid_types_incomplete_types_void_array_in_param_type() {
     assert_error(
         r#"
         int arr(void foo[3]) { return 3; }
-          //^^^ Illegal array of incomplete types
+              //^^^^^^^^^^^ Illegal array of incomplete types
         int main(void) { return 0; }
     "#,
     );
@@ -380,7 +380,7 @@ fn test_invalid_types_incomplete_types_void_array_nested_in_declaration() {
     assert_error(
         r#"
         extern void (*ptr)[3][4];
-                    //^^^ Illegal array of incomplete types
+      //^^^^^^^^^^^^^^^^^^^^^^^^ Illegal array of incomplete types
         void *foo(void) {
             return ptr;
         }
@@ -395,7 +395,7 @@ fn test_invalid_types_incomplete_types_void_array_pointer_in_declaration() {
         void *malloc(unsigned long size);
         int main(void) {
             void (*ptr)[3] = malloc(3);
-                 //^^^ Illegal array of incomplete types
+          //^^^^^^^^^^^^^^ Illegal array of incomplete types
             return ptr == 0;
         }
     "#,
@@ -408,7 +408,7 @@ fn test_invalid_types_incomplete_types_void_array_pointer_in_param_type() {
         r#"
         
         int foo(void (*bad_array)[3]) {
-          //^^^ Illegal array of incomplete types
+              //^^^^^^^^^^^^^^^^^^^^ Illegal array of incomplete types
             return bad_array == 0;
         }
         int main(void) {
