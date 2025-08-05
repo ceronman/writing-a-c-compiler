@@ -130,12 +130,12 @@ pub enum Expression {
     SizeOfType(Node<TypeSpec>),
     Dot {
         structure: Node<Expression>,
-        member: Node<Identifier>
+        member: Node<Identifier>,
     },
     Arrow {
         pointer: Node<Expression>,
         member: Node<Identifier>,
-    }
+    },
 }
 
 impl Expression {
@@ -169,7 +169,7 @@ pub struct Block {
 pub enum Declaration {
     Var(VarDeclaration),
     Function(FunctionDeclaration),
-    Struct(StructDeclaration)
+    Struct(StructDeclaration),
 }
 
 #[derive(Debug)]
@@ -192,14 +192,14 @@ pub enum TypeSpec {
 #[derive(Debug)]
 pub struct FunctionTypeSpec {
     pub params: Vec<Node<TypeSpec>>,
-    pub ret: Node<TypeSpec>
+    pub ret: Node<TypeSpec>,
 }
 
 #[derive(Debug)]
 pub struct VarDeclaration {
     pub name: Node<Identifier>,
     pub init: Option<Node<Initializer>>,
-    pub ty: Node<TypeSpec>,
+    pub type_spec: Node<TypeSpec>,
     pub storage_class: Option<Node<StorageClass>>,
 }
 
@@ -208,20 +208,20 @@ pub struct FunctionDeclaration {
     pub name: Node<Identifier>,
     pub params: Vec<Node<Identifier>>,
     pub body: Option<Node<Block>>,
-    pub ty: FunctionTypeSpec,
+    pub type_spec: FunctionTypeSpec,
     pub storage_class: Option<Node<StorageClass>>,
 }
 
 #[derive(Debug)]
 pub struct StructDeclaration {
     pub name: Node<Identifier>,
-    pub fields: Vec<Node<Field>>
+    pub fields: Vec<Node<Field>>,
 }
 
 #[derive(Debug)]
 pub struct Field {
     pub name: Node<Identifier>,
-    pub ty: Node<TypeSpec>,
+    pub type_spec: Node<TypeSpec>,
 }
 
 #[derive(Debug)]
@@ -326,10 +326,7 @@ impl<T> InnerRef<T> for Option<Node<T>> {
 
 impl Constant {
     pub fn is_int(&self) -> bool {
-        match self {
-            Constant::Double(_) => false,
-            _ => true,
-        }
+        !matches!(self, Constant::Double(_))
     }
 
     pub fn as_u64(&self) -> u64 {

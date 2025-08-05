@@ -198,7 +198,7 @@ impl TackyGenerator {
                 ast::BlockItem::Decl(decl) => match decl.as_ref() {
                     ast::Declaration::Var(decl) => self.emit_var_declaration(decl),
                     ast::Declaration::Function(_) => {}
-                    ast::Declaration::Struct(_) => todo!()
+                    ast::Declaration::Struct(_) => todo!(),
                 },
             }
         }
@@ -209,7 +209,7 @@ impl TackyGenerator {
             return;
         }
         if let Some(init) = &decl.init {
-            self.emit_initializer(0, 0, &decl.name.symbol, init, &decl.ty.to_semantic());
+            self.emit_initializer(0, 0, &decl.name.symbol, init, &decl.type_spec.ty());
         }
     }
 
@@ -300,7 +300,7 @@ impl TackyGenerator {
                 }
                 return;
             }
-            Type::Struct(_) => todo!()
+            Type::Struct(_) => todo!(),
         };
         self.instructions.push(Instruction::CopyToOffset {
             src: Val::Constant(constant),
@@ -891,11 +891,11 @@ impl TackyGenerator {
                 expr: inner,
             } => {
                 let result = self.emit_expr(inner);
-                if target.to_semantic().is_void() {
+                if target.ty().is_void() {
                     return ExprResult::Operand(Val::Var("DUMMY".into()));
                 } else {
                     let inner_ty = self.semantics.expr_type(inner).clone();
-                    self.cast(result, &inner_ty, &target.to_semantic())
+                    self.cast(result, &inner_ty, &target.ty())
                 }
             }
 
@@ -942,7 +942,7 @@ impl TackyGenerator {
                 return ExprResult::Dereference(dst);
             }
             ast::Expression::SizeOfType(ty) => {
-                return ExprResult::Operand(Val::Constant(Constant::ULong(ty.to_semantic().size() as u64)));
+                return ExprResult::Operand(Val::Constant(Constant::ULong(ty.ty().size() as u64)));
             }
             ast::Expression::SizeOfExpr(e) => {
                 let size = if let Some(target) = self.semantics.implicit_casts.get(&e.id).cloned() {
@@ -953,8 +953,8 @@ impl TackyGenerator {
                     self.semantics.expr_type(e).size()
                 };
                 return ExprResult::Operand(Val::Constant(Constant::ULong(size as u64)));
-            },
-            ast::Expression::Dot { .. } | ast::Expression::Arrow { .. } => todo!()
+            }
+            ast::Expression::Dot { .. } | ast::Expression::Arrow { .. } => todo!(),
         };
         ExprResult::Operand(result)
     }

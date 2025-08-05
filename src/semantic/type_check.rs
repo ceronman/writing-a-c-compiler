@@ -1,7 +1,13 @@
-use crate::ast::{AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration, FunctionTypeSpec, Initializer, InnerRef, Node, NodeId, Program, Statement, StorageClass, TypeSpec, UnaryOp, VarDeclaration};
+use crate::ast::{
+    AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
+    FunctionDeclaration, Initializer, InnerRef, Node, NodeId, Program, Statement, StorageClass,
+    TypeSpec, UnaryOp, VarDeclaration,
+};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
-use crate::semantic::{Attributes, FunctionType, InitialValue, SemanticData, StaticInit, SwitchCases, SymbolData, Type};
+use crate::semantic::{
+    Attributes, FunctionType, InitialValue, SemanticData, StaticInit, SwitchCases, SymbolData, Type,
+};
 use std::collections::{BTreeMap, HashMap, VecDeque};
 
 impl SymbolData {
@@ -38,7 +44,7 @@ impl TypeChecker {
             match decl.as_ref() {
                 Declaration::Var(v) => self.check_file_var_declaration(v)?,
                 Declaration::Function(f) => self.check_function_declaration(f, true)?,
-                Declaration::Struct(d) => todo!()
+                Declaration::Struct(_d) => todo!(),
             }
         }
         Ok(())
@@ -46,8 +52,12 @@ impl TypeChecker {
 
     fn check_local_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let name = decl.name.symbol.clone();
-        Self::validate_type_specifier(&decl.ty)?;
-        Self::error_if(decl.ty.to_semantic().is_void(), decl.name.span, "Illegal void variable")?;
+        Self::validate_type_specifier(&decl.type_spec)?;
+        Self::error_if(
+            decl.type_spec.ty().is_void(),
+            decl.name.span,
+            "Illegal void variable",
+        )?;
         if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             if let Some(init) = &decl.init {
                 return Err(CompilerError {
@@ -58,7 +68,7 @@ impl TypeChecker {
                 });
             }
             if let Some(data) = self.symbols.get(&name) {
-                if data.ty != decl.ty.to_semantic() {
+                if data.ty != decl.type_spec.ty() {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: format!("Name '{name}' was already declared"),
@@ -68,17 +78,17 @@ impl TypeChecker {
             } else {
                 self.symbols.insert(
                     decl.name.symbol.clone(),
-                    SymbolData::global(decl.ty.to_semantic()),
+                    SymbolData::global(decl.type_spec.ty()),
                 );
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
             let initial_value = if let Some(init) = &decl.init {
-                InitialValue::Initial(Self::check_static_initializer(init, &decl.ty)?)
+                InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec)?)
             } else {
-                InitialValue::single(StaticInit::ZeroInit(decl.ty.to_semantic().size()))
+                InitialValue::single(StaticInit::ZeroInit(decl.type_spec.ty().size()))
             };
             if let Some(data) = self.symbols.get(&name) {
-                if data.ty != decl.ty.to_semantic() {
+                if data.ty != decl.type_spec.ty() {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: format!("Name '{name}' was previously declared with a different type"),
@@ -89,7 +99,7 @@ impl TypeChecker {
                 self.symbols.insert(
                     decl.name.symbol.clone(),
                     SymbolData {
-                        ty: decl.ty.to_semantic(),
+                        ty: decl.type_spec.ty(),
                         attrs: Attributes::Static {
                             initial_value,
                             global: false,
@@ -98,10 +108,12 @@ impl TypeChecker {
                 );
             }
         } else {
-            self.symbols
-                .insert(decl.name.symbol.clone(), SymbolData::local(decl.ty.to_semantic()));
+            self.symbols.insert(
+                decl.name.symbol.clone(),
+                SymbolData::local(decl.type_spec.ty()),
+            );
             if let Some(init) = &decl.init {
-                self.check_initializer(init, &decl.ty)?;
+                self.check_initializer(init, &decl.type_spec)?;
             }
         }
         Ok(())
@@ -115,8 +127,8 @@ impl TypeChecker {
             Initializer::Single(expr) => match expr.as_ref() {
                 Expression::String(s) => {
                     match target.as_ref() {
-                        TypeSpec::Array(inner_ty, size) => {
-                            if !inner_ty.to_semantic().is_char() {
+                        TypeSpec::Array(inner, size) => {
+                            if !inner.ty().is_char() {
                                 return Err(CompilerError {
                                         kind: ErrorKind::Type,
                                         msg: "Can't initialize a non-character type with a string literal".into(),
@@ -143,8 +155,8 @@ impl TypeChecker {
                             }
                             Ok(result)
                         }
-                        TypeSpec::Pointer(inner_ty) => {
-                            if let TypeSpec::Char = inner_ty.as_ref() {
+                        TypeSpec::Pointer(inner) => {
+                            if let TypeSpec::Char = inner.as_ref() {
                                 Ok(vec![StaticInit::Pointer(s.clone())])
                             } else {
                                 Err(CompilerError {
@@ -171,14 +183,22 @@ impl TypeChecker {
                         (c, TypeSpec::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
                         (c, TypeSpec::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
                         (c, TypeSpec::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
-                        (c, TypeSpec::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
+                        (c, TypeSpec::Double) if c.is_int() => {
+                            StaticInit::Double(c.as_u64() as f64)
+                        }
                         (
                             Constant::Double(value),
                             TypeSpec::Int | TypeSpec::Char | TypeSpec::SChar | TypeSpec::UChar,
                         ) => StaticInit::Int(*value as i32),
-                        (Constant::Double(value), TypeSpec::UInt) => StaticInit::UInt(*value as u32),
-                        (Constant::Double(value), TypeSpec::Long) => StaticInit::Long(*value as i64),
-                        (Constant::Double(value), TypeSpec::ULong) => StaticInit::ULong(*value as u64),
+                        (Constant::Double(value), TypeSpec::UInt) => {
+                            StaticInit::UInt(*value as u32)
+                        }
+                        (Constant::Double(value), TypeSpec::Long) => {
+                            StaticInit::Long(*value as i64)
+                        }
+                        (Constant::Double(value), TypeSpec::ULong) => {
+                            StaticInit::ULong(*value as u64)
+                        }
                         (Constant::Double(value), TypeSpec::Double) => StaticInit::Double(*value),
                         (
                             Constant::Int(0)
@@ -204,27 +224,26 @@ impl TypeChecker {
                 }),
             },
             Initializer::Compound(initializers) => {
-                let TypeSpec::Array(inner_ty, size) = target.as_ref() else {
+                let TypeSpec::Array(inner, size) = target.as_ref() else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Cannot initialize a scalar value with a compound initializer".into(),
                         span: init.span,
                     });
                 };
-                let size = *size;
-                if initializers.len() > size {
+                if initializers.len() > *size {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Wrong number of element in the initializer".into(),
                         span: init.span,
                     });
                 }
-                let mut static_inits = Vec::with_capacity(size);
+                let mut static_inits = Vec::with_capacity(*size);
                 for initializer in initializers {
-                    let inner_inits = Self::check_static_initializer(initializer, inner_ty)?;
+                    let inner_inits = Self::check_static_initializer(initializer, inner)?;
                     static_inits.extend(inner_inits);
                 }
-                let padding = (size - initializers.len()) * inner_ty.to_semantic().size();
+                let padding = (size - initializers.len()) * inner.ty().size();
                 if padding > 0 {
                     static_inits.push(StaticInit::ZeroInit(padding));
                 }
@@ -233,13 +252,17 @@ impl TypeChecker {
         }
     }
 
-    fn check_initializer(&mut self, init: &Node<Initializer>, target: &Node<TypeSpec>) -> Result<Type> {
+    fn check_initializer(
+        &mut self,
+        init: &Node<Initializer>,
+        target: &Node<TypeSpec>,
+    ) -> Result<Type> {
         match init.as_ref() {
             Initializer::Single(expr) => {
                 let init_ty = if let Expression::String(s) = expr.as_ref()
-                    && let TypeSpec::Array(inner_ty, size) = target.as_ref()
+                    && let TypeSpec::Array(inner, size) = target.as_ref()
                 {
-                    if !inner_ty.to_semantic().is_char() {
+                    if !inner.ty().is_char() {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Can't initialize a non-character type with a string literal"
@@ -256,12 +279,12 @@ impl TypeChecker {
                             span: init.span,
                         });
                     }
-                    self.expression_types.insert(expr.id, target.to_semantic());
-                    target.to_semantic()
+                    self.expression_types.insert(expr.id, target.ty());
+                    target.ty()
                 } else {
                     self.check_and_convert_expr(expr)?
                 };
-                self.convert_by_assignment(expr, &init_ty, &target.to_semantic())
+                self.convert_by_assignment(expr, &init_ty, &target.ty())
             }
             Initializer::Compound(initializers) => {
                 let TypeSpec::Array(inner_ty, size) = target.as_ref() else {
@@ -281,16 +304,20 @@ impl TypeChecker {
                 for inner_innit in initializers {
                     self.check_initializer(inner_innit, inner_ty)?;
                 }
-                Ok(target.to_semantic())
+                Ok(target.ty())
             }
         }
     }
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
-        Self::validate_type_specifier(&decl.ty)?;
-        Self::error_if(decl.ty.to_semantic().is_void(), decl.name.span, "Illegal void variable")?;
+        Self::validate_type_specifier(&decl.type_spec)?;
+        Self::error_if(
+            decl.type_spec.ty().is_void(),
+            decl.name.span,
+            "Illegal void variable",
+        )?;
         let mut initial_value = if let Some(init) = &decl.init {
-            InitialValue::Initial(Self::check_static_initializer(init, &decl.ty)?)
+            InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec)?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             InitialValue::NoInitializer
         } else {
@@ -299,7 +326,7 @@ impl TypeChecker {
         let mut global = !matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
         let name = decl.name.symbol.clone();
         if let Some(data) = self.symbols.get(&name) {
-            if data.ty != decl.ty.to_semantic() {
+            if data.ty != decl.type_spec.ty() {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
                     msg: format!("Variable '{name}' is already declared with a different type"),
@@ -343,7 +370,7 @@ impl TypeChecker {
             };
         }
         let data = SymbolData {
-            ty: decl.ty.to_semantic(),
+            ty: decl.type_spec.ty(),
             attrs: Attributes::Static {
                 initial_value,
                 global,
@@ -359,16 +386,16 @@ impl TypeChecker {
         top_level: bool,
     ) -> Result<()> {
         let name = decl.name.symbol.clone();
-        let mut function_ty = decl.ty.to_semantic();
+        let mut function_ty = decl.type_spec.ty();
 
         Self::error_if(
             function_ty.ret.is_array(),
-            decl.ty.ret.span,
+            decl.type_spec.ret.span,
             "A function cannot return array",
         )?;
 
-        Self::validate_type_specifier(&decl.ty.ret)?;
-        for param in &decl.ty.params {
+        Self::validate_type_specifier(&decl.type_spec.ret)?;
+        for param in &decl.type_spec.params {
             Self::validate_type_specifier(param)?;
         }
 
@@ -450,7 +477,7 @@ impl TypeChecker {
                     SymbolData::local(param_ty.clone()),
                 );
             }
-            self.check_block(&decl.ty.to_semantic(), body)?;
+            self.check_block(&decl.type_spec.ty(), body)?;
         }
         Ok(())
     }
@@ -459,7 +486,7 @@ impl TypeChecker {
         match ty.as_ref() {
             TypeSpec::Array(inner, _) => {
                 Self::error_if(
-                    !inner.to_semantic().is_complete(),
+                    !inner.ty().is_complete(),
                     ty.span,
                     "Illegal array of incomplete types",
                 )?;
@@ -646,7 +673,7 @@ impl TypeChecker {
         match decl.as_ref() {
             Declaration::Var(d) => self.check_local_var_declaration(d),
             Declaration::Function(d) => self.check_function_declaration(d, false),
-            Declaration::Struct(d) => todo!()
+            Declaration::Struct(_d) => todo!(),
         }
     }
 
@@ -1058,35 +1085,35 @@ impl TypeChecker {
             }
             Expression::Cast { target, expr } => {
                 Self::validate_type_specifier(target)?;
+                let target_ty = target.ty();
                 let ty = self.check_and_convert_expr(expr)?;
                 Self::error_if(
-                    target.to_semantic().is_pointer() && ty.is_double(),
+                    target_ty.is_pointer() && ty.is_double(),
                     expr.span,
                     "Cannot cast a double to a pointer",
                 )?;
                 Self::error_if(
-                    target.to_semantic().is_double() && ty.is_pointer(),
+                    target_ty.is_double() && ty.is_pointer(),
                     expr.span,
                     "Cannot cast a pointer to a double",
                 )?;
-                Self::error_if(target.to_semantic().is_array(), expr.span, "Cannot cast to an array type")?;
+                Self::error_if(
+                    target_ty.is_array(),
+                    expr.span,
+                    "Cannot cast to an array type",
+                )?;
 
-                // TODO: weird control flow
-                if target.to_semantic().is_void() {
-                    target.to_semantic()
-                } else {
-                    Self::error_if(
-                        !target.to_semantic().is_scalar(),
-                        target.span,
-                        "Cannot cast a value to a non-scalar type",
-                    )?;
-                    Self::error_if(
-                        !ty.is_scalar(),
-                        expr.span,
-                        "Cannot cast non-scalar expression",
-                    )?;
-                    target.to_semantic()
-                }
+                Self::error_if(
+                    !target_ty.is_void() && !target_ty.is_scalar(),
+                    target.span,
+                    "Cannot cast a value to a non-scalar type",
+                )?;
+                Self::error_if(
+                    !target_ty.is_void() && !ty.is_scalar(),
+                    expr.span,
+                    "Cannot cast non-scalar expression",
+                )?;
+                target_ty
             }
             Expression::Dereference(inner) => {
                 let inner_ty = self.check_and_convert_expr(inner)?;
@@ -1149,11 +1176,11 @@ impl TypeChecker {
                     }
                 }
             }
-            Expression::SizeOfType(ty) => {
-                Self::validate_type_specifier(ty)?;
+            Expression::SizeOfType(target) => {
+                Self::validate_type_specifier(target)?;
                 Self::error_if(
-                    !ty.to_semantic().is_complete(),
-                    ty.span,
+                    !target.ty().is_complete(),
+                    target.span,
                     "Cannot get size of an incomplete type",
                 )?;
                 Type::ULong
@@ -1167,7 +1194,7 @@ impl TypeChecker {
                 )?;
                 Type::ULong
             }
-            Expression::Dot { .. } | Expression::Arrow { .. } => todo!()
+            Expression::Dot { .. } | Expression::Arrow { .. } => todo!(),
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)

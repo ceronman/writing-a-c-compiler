@@ -5,7 +5,7 @@ use crate::asm::ir::{
     AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
     StaticVariable, TopLevel, UnaryOp,
 };
-use crate::ast::{Constant};
+use crate::ast::Constant;
 use crate::semantic::{Attributes, SemanticData, StaticInit, Type};
 use crate::symbol::Symbol;
 use crate::tacky;
@@ -93,7 +93,7 @@ impl Type {
                 };
                 AsmType::ByteArray { size, alignment }
             }
-            Type::Struct(name) => todo!()
+            Type::Struct(_name) => todo!(),
         }
     }
 }

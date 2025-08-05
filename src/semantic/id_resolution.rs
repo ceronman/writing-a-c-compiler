@@ -1,4 +1,8 @@
-use crate::ast::{Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier, Initializer, InnerRef, Node, Program, Statement, StorageClass, StructDeclaration, TypeSpec, VarDeclaration};
+use crate::ast::{
+    Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier,
+    Initializer, InnerRef, Node, Program, Statement, StorageClass, StructDeclaration, TypeSpec,
+    VarDeclaration,
+};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
 use std::collections::{HashMap, VecDeque};
@@ -51,7 +55,7 @@ impl Resolver {
     }
 
     fn resolve_file_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
-        self.resolve_type(&mut decl.ty)?;
+        self.resolve_type(&mut decl.type_spec)?;
         let scope = self.scopes.front_mut().expect("Invalid scope state");
         scope.insert(
             decl.name.symbol.clone(),
@@ -64,7 +68,7 @@ impl Resolver {
     }
 
     fn resolve_local_var_declaration(&mut self, decl: &mut VarDeclaration) -> Result<()> {
-        self.resolve_type(&mut decl.ty)?;
+        self.resolve_type(&mut decl.type_spec)?;
         let symbol = &decl.name.symbol;
         let unique_name = self.make_name(symbol);
         let scope = self.scopes.front_mut().expect("Invalid scope state");
@@ -115,8 +119,8 @@ impl Resolver {
     }
 
     fn resolve_function_declaration(&mut self, decl: &mut FunctionDeclaration) -> Result<()> {
-        self.resolve_type(&mut decl.ty.ret)?;
-        for param in &mut decl.ty.params {
+        self.resolve_type(&mut decl.type_spec.ret)?;
+        for param in &mut decl.type_spec.params {
             self.resolve_type(param)?;
         }
         let symbol = &decl.name.symbol;
@@ -174,7 +178,10 @@ impl Resolver {
     fn resolve_struct_declaration(&mut self, decl: &mut StructDeclaration) -> Result<()> {
         let tag = &decl.name.symbol;
         let unique_name = self.make_name(tag);
-        let scope = self.structs_scopes.front_mut().expect("Invalid scope state");
+        let scope = self
+            .structs_scopes
+            .front_mut()
+            .expect("Invalid scope state");
         if scope.contains_key(tag) {
             return Err(CompilerError {
                 kind: ErrorKind::Resolve,
@@ -185,19 +192,18 @@ impl Resolver {
         scope.insert(tag.clone(), unique_name.clone());
         decl.name.symbol = unique_name;
         for field in &mut decl.fields {
-            self.resolve_type(&mut field.ty)?;
+            self.resolve_type(&mut field.type_spec)?;
         }
         Ok(())
     }
 
-    // TODO: Make Type have proper spans
     fn resolve_type(&mut self, ty: &mut Node<TypeSpec>) -> Result<()> {
         match ty.as_mut() {
             TypeSpec::Struct(tag) => {
                 for scope in &self.structs_scopes {
                     if let Some(declared) = scope.get(&tag.symbol) {
                         tag.symbol = declared.clone();
-                        return Ok(())
+                        return Ok(());
                     }
                 }
                 Err(CompilerError {
@@ -206,9 +212,7 @@ impl Resolver {
                     span: ty.span,
                 })
             }
-            TypeSpec::Pointer(inner) | TypeSpec::Array(inner, _) => {
-                self.resolve_type(inner)
-            },
+            TypeSpec::Pointer(inner) | TypeSpec::Array(inner, _) => self.resolve_type(inner),
             TypeSpec::Function(f) => {
                 self.resolve_type(&mut f.ret)?;
                 for param in &mut f.params {
@@ -216,7 +220,7 @@ impl Resolver {
                 }
                 Ok(())
             }
-            _ => Ok(())
+            _ => Ok(()),
         }
     }
 
@@ -363,8 +367,10 @@ impl Resolver {
             Expression::Dereference(expr)
             | Expression::AddressOf(expr)
             | Expression::SizeOfExpr(expr)
-            | Expression::Arrow { pointer: expr, ..}
-            | Expression::Dot { structure: expr, ..} => {
+            | Expression::Arrow { pointer: expr, .. }
+            | Expression::Dot {
+                structure: expr, ..
+            } => {
                 self.resolve_expression(expr)?;
             }
             Expression::Subscript(expr1, expr2) => {

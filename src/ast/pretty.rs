@@ -1,4 +1,8 @@
-use crate::ast::{AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, Field, ForInit, FunctionDeclaration, Identifier, Initializer, Node, NodeId, PostfixOp, Program, Statement, StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration};
+use crate::ast::{
+    AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, Field, ForInit,
+    FunctionDeclaration, Identifier, Initializer, Node, NodeId, PostfixOp, Program, Statement,
+    StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration,
+};
 use std::io::Write;
 
 struct PrettyAst {
@@ -26,15 +30,12 @@ impl PrettyAst {
         match declaration {
             Declaration::Var(d) => Self::from_var_declaration(d),
             Declaration::Function(d) => Self::from_function_declaration(d),
-            Declaration::Struct(d) => Self::from_struct_declaration(d)
+            Declaration::Struct(d) => Self::from_struct_declaration(d),
         }
     }
     fn from_struct_declaration(s: &StructDeclaration) -> PrettyAst {
         Self::new(
-            format!(
-                "Struct [{}]",
-                &s.name.symbol
-            ),
+            format!("Struct [{}]", &s.name.symbol),
             s.fields.iter().map(Self::from_field),
         )
     }
@@ -43,7 +44,7 @@ impl PrettyAst {
             "Field",
             vec![
                 Self::new("Name", vec![Self::from_identifier(&field.name)]),
-                Self::new("Type", vec![Self::from_type(&field.ty)]),
+                Self::new("Type", vec![Self::from_type(&field.type_spec)]),
             ],
         )
     }
@@ -56,7 +57,7 @@ impl PrettyAst {
                 function
                     .params
                     .iter()
-                    .zip(function.ty.params.iter())
+                    .zip(function.type_spec.params.iter())
                     .map(|(name, ty)| {
                         Self::new(
                             "Param",
@@ -86,7 +87,7 @@ impl PrettyAst {
     fn from_var_declaration(declaration: &VarDeclaration) -> PrettyAst {
         let mut children = vec![
             Self::new("Name", vec![Self::from_identifier(&declaration.name)]),
-            Self::new("Type", vec![Self::from_type(&declaration.ty)]),
+            Self::new("Type", vec![Self::from_type(&declaration.type_spec)]),
         ];
         if let Some(init) = &declaration.init {
             children.push(Self::new("Initializer", vec![Self::from_initializer(init)]));
@@ -297,11 +298,17 @@ impl PrettyAst {
             ),
             Expression::Dot { structure, member } => Self::new(
                 format!("<{node_id}> Dot"),
-                vec![Self::from_expression(structure), Self::from_identifier(member)],
+                vec![
+                    Self::from_expression(structure),
+                    Self::from_identifier(member),
+                ],
             ),
             Expression::Arrow { pointer, member } => Self::new(
                 format!("<{node_id}> Arrow"),
-                vec![Self::from_expression(&pointer), Self::from_identifier(member)],
+                vec![
+                    Self::from_expression(pointer),
+                    Self::from_identifier(member),
+                ],
             ),
         }
     }
@@ -321,7 +328,9 @@ impl PrettyAst {
             Constant::Long(v) => Self::new(format!("<{node_id}> Constant Long [{}]", *v), vec![]),
             Constant::UInt(v) => Self::new(format!("<{node_id}> Constant UInt [{}]", *v), vec![]),
             Constant::ULong(v) => Self::new(format!("<{node_id}> Constant ULong [{}]", *v), vec![]),
-            Constant::Double(v) => Self::new(format!("<{node_id}> Constant Double [{:+e}]", *v), vec![]),
+            Constant::Double(v) => {
+                Self::new(format!("<{node_id}> Constant Double [{:+e}]", *v), vec![])
+            }
             Constant::Char(v) => Self::new(format!("<{node_id}> Constant Char [{}]", *v), vec![]),
             Constant::UChar(v) => Self::new(format!("<{node_id}> Constant UChar [{}]", *v), vec![]),
         }
@@ -348,12 +357,9 @@ impl PrettyAst {
             TypeSpec::Pointer(t) => Self::new("Pointer", vec![Self::from_type(t)]),
             TypeSpec::Array(t, size) => Self::new(
                 "Array",
-                vec![
-                    Self::new(format!("{size}"), vec![]),
-                    Self::from_type(t),
-                ],
+                vec![Self::new(format!("{size}"), vec![]), Self::from_type(t)],
             ),
-            TypeSpec::Struct(name) => Self::new(format!("Struct [{}]", name.symbol), vec![])
+            TypeSpec::Struct(name) => Self::new(format!("Struct [{}]", name.symbol), vec![]),
         }
     }
 

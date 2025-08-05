@@ -21,9 +21,8 @@ impl LabelChecker {
             self.labels.clear();
             debug_assert!(self.label_stack.is_empty());
             match decl.as_mut() {
-                Declaration::Var(_) => {}
                 Declaration::Function(d) => self.check_function_declaration(d)?,
-                Declaration::Struct(d) => todo!()
+                Declaration::Struct(_) | Declaration::Var(_) => {}
             }
         }
 

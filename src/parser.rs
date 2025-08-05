@@ -1,7 +1,11 @@
 #[cfg(test)]
 mod test;
 
-use crate::ast::{AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, Field, ForInit, FunctionDeclaration, FunctionTypeSpec, Identifier, Initializer, Node, PostfixOp, Program, Statement, StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration};
+use crate::ast::{
+    AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, Field, ForInit,
+    FunctionDeclaration, FunctionTypeSpec, Identifier, Initializer, Node, PostfixOp, Program,
+    Statement, StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration,
+};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{IntKind, Lexer, Span, Token, TokenKind};
 use crate::symbol::Symbol;
@@ -45,6 +49,12 @@ enum Declarator {
         params: Vec<Param>,
         declarator: Node<Declarator>,
     },
+}
+
+struct ProcessedDeclarator {
+    name: Node<Identifier>,
+    type_spec: Node<TypeSpec>,
+    param_names: Vec<Node<Identifier>>,
 }
 
 struct Param {
@@ -121,29 +131,29 @@ impl<'src> Parser<'src> {
                     }
                 }
                 let end = self.expect(TokenKind::Semicolon)?.span;
-                return Ok(self.node(begin + end, Declaration::Struct(StructDeclaration {
-                    name,
-                    fields
-                })))
+                return Ok(self.node(
+                    begin + end,
+                    Declaration::Struct(StructDeclaration { name, fields }),
+                ));
             } else {
                 (self.node(begin + name.span, TypeSpec::Struct(name)), None)
             }
-        } else  {
+        } else {
             self.type_and_storage()?
         };
         let declarator = self.parse_declarator()?;
-        let (name, ty, params) = self.process_declarator(declarator, ty)?;
+        let processed = self.process_declarator(declarator, ty)?;
 
-        if let TypeSpec::Function(function_ty) = *ty.data {
+        if let TypeSpec::Function(function_ty) = *processed.type_spec.data {
             if let TokenKind::OpenBrace = self.current.kind {
                 let body = self.block()?;
                 Ok(self.node(
                     begin + body.span,
                     Declaration::Function(FunctionDeclaration {
-                        name,
-                        params,
+                        name: processed.name,
+                        params: processed.param_names,
                         body: Some(body),
-                        ty: function_ty,
+                        type_spec: function_ty,
                         storage_class,
                     }),
                 ))
@@ -152,10 +162,10 @@ impl<'src> Parser<'src> {
                 Ok(self.node(
                     begin + end,
                     Declaration::Function(FunctionDeclaration {
-                        name,
-                        params,
+                        name: processed.name,
+                        params: processed.param_names,
                         body: None,
-                        ty: function_ty,
+                        type_spec: function_ty,
                         storage_class,
                     }),
                 ))
@@ -170,9 +180,9 @@ impl<'src> Parser<'src> {
             Ok(self.node(
                 begin + end,
                 Declaration::Var(VarDeclaration {
-                    name,
+                    name: processed.name,
                     init,
-                    ty,
+                    type_spec: processed.type_spec,
                     storage_class,
                 }),
             ))
@@ -190,12 +200,11 @@ impl<'src> Parser<'src> {
                 span: declarator.span,
             });
         }
-        let (name, ty, _) = self.process_declarator(declarator, base_ty)?;
+        let ProcessedDeclarator {
+            name, type_spec, ..
+        } = self.process_declarator(declarator, base_ty)?;
         let end = self.expect(TokenKind::Semicolon)?.span;
-        Ok(self.node(begin + end, Field {
-            name,
-            ty
-        }))
+        Ok(self.node(begin + end, Field { name, type_spec }))
     }
 
     fn initializer(&mut self) -> Result<Node<Initializer>> {
@@ -320,15 +329,18 @@ impl<'src> Parser<'src> {
     fn process_declarator(
         &mut self,
         declarator: Node<Declarator>,
-        base_type: Node<TypeSpec>,
-    ) -> Result<(Node<Identifier>, Node<TypeSpec>, Vec<Node<Identifier>>)> {
-        // TODO make type less complex
+        type_spec: Node<TypeSpec>,
+    ) -> Result<ProcessedDeclarator> {
         match *declarator.data {
-            Declarator::Identifier(name) => Ok((name, base_type, vec![])),
+            Declarator::Identifier(name) => Ok(ProcessedDeclarator {
+                name,
+                type_spec,
+                param_names: vec![],
+            }),
             Declarator::Pointer(declarator) => {
                 let derived_type = self.node(
-                    base_type.span + declarator.span,
-                    TypeSpec::Pointer(base_type)
+                    type_spec.span + declarator.span,
+                    TypeSpec::Pointer(type_spec),
                 );
                 self.process_declarator(declarator, derived_type)
             }
@@ -337,8 +349,8 @@ impl<'src> Parser<'src> {
                 declarator: inner,
             } => {
                 let derived_type = self.node(
-                    base_type.span + declarator.span,
-                    TypeSpec::Array(base_type, size)
+                    type_spec.span + declarator.span,
+                    TypeSpec::Array(type_spec, size),
                 );
                 self.process_declarator(inner, derived_type)
             }
@@ -347,27 +359,29 @@ impl<'src> Parser<'src> {
                 let mut param_types = Vec::new();
                 if let Declarator::Identifier(name) = *declarator.data {
                     for Param { ty, declarator } in params {
-                        let (param_name, param_type, _) = self.process_declarator(declarator, ty)?;
-                        if let TypeSpec::Function { .. } = param_type.as_ref() {
+                        let processed = self.process_declarator(declarator, ty)?;
+                        if let TypeSpec::Function { .. } = processed.type_spec.as_ref() {
                             return Err(CompilerError {
                                 kind: ErrorKind::Parse,
                                 msg: "Function pointers in parameters are not supported".into(),
-                                span: param_type.span,
+                                span: processed.type_spec.span,
                             });
                         }
-                        param_names.push(param_name);
-                        param_types.push(param_type);
+                        param_names.push(processed.name);
+                        param_types.push(processed.type_spec);
                     }
-                    let span = base_type.span;
+                    let span = type_spec.span;
                     let function_type = FunctionTypeSpec {
                         params: param_types,
-                        ret: base_type,
+                        ret: type_spec,
                     };
-                    let derived_type = self.node(
-                        span + declarator.span,
-                        TypeSpec::Function(function_type)
-                    );
-                    Ok((name, derived_type, param_names))
+                    let type_spec =
+                        self.node(span + declarator.span, TypeSpec::Function(function_type));
+                    Ok(ProcessedDeclarator {
+                        name,
+                        type_spec,
+                        param_names,
+                    })
                 } else {
                     Err(CompilerError {
                         kind: ErrorKind::Parse,
@@ -819,7 +833,13 @@ impl<'src> Parser<'src> {
                     break;
                 }
                 let member = self.identifier()?;
-                expr = self.node(expr.span + member.span, Expression::Dot{ structure: expr, member });
+                expr = self.node(
+                    expr.span + member.span,
+                    Expression::Dot {
+                        structure: expr,
+                        member,
+                    },
+                );
                 continue;
             }
 
@@ -829,7 +849,13 @@ impl<'src> Parser<'src> {
                     break;
                 }
                 let member = self.identifier()?;
-                expr = self.node(expr.span + member.span, Expression::Arrow { pointer: expr, member });
+                expr = self.node(
+                    expr.span + member.span,
+                    Expression::Arrow {
+                        pointer: expr,
+                        member,
+                    },
+                );
                 continue;
             }
 

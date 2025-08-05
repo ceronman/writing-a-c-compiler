@@ -1,4 +1,4 @@
-use crate::ast::{Constant, Expression, FunctionTypeSpec, TypeSpec, NodeId, Program, Node};
+use crate::ast::{Constant, Expression, FunctionTypeSpec, Node, NodeId, Program, TypeSpec};
 use crate::error::Result;
 use crate::symbol::Symbol;
 use std::collections::{BTreeMap, HashMap};
@@ -145,7 +145,7 @@ impl Type {
 }
 
 impl TypeSpec {
-    pub fn to_semantic(&self) -> Type {
+    pub fn ty(&self) -> Type {
         match self {
             TypeSpec::Char => Type::Char,
             TypeSpec::SChar => Type::SChar,
@@ -155,9 +155,9 @@ impl TypeSpec {
             TypeSpec::Long => Type::Long,
             TypeSpec::ULong => Type::ULong,
             TypeSpec::Double => Type::Double,
-            TypeSpec::Function(ty) => Type::Function(ty.to_semantic()),
-            TypeSpec::Pointer(ty) => Type::Pointer(ty.to_semantic().into()),
-            TypeSpec::Array(ty, size) => Type::Array(ty.to_semantic().into(), *size),
+            TypeSpec::Function(ty) => Type::Function(ty.ty()),
+            TypeSpec::Pointer(ty) => Type::Pointer(ty.ty().into()),
+            TypeSpec::Array(ty, size) => Type::Array(ty.ty().into(), *size),
             TypeSpec::Struct(tag) => Type::Struct(tag.symbol.clone()),
             TypeSpec::Void => Type::Void,
         }
@@ -165,10 +165,10 @@ impl TypeSpec {
 }
 
 impl FunctionTypeSpec {
-    fn to_semantic(&self) -> FunctionType {
+    fn ty(&self) -> FunctionType {
         FunctionType {
-            params: self.params.iter().map(|t|t.to_semantic()).collect(),
-            ret: self.ret.to_semantic().into(),
+            params: self.params.iter().map(|t| t.ty()).collect(),
+            ret: self.ret.ty().into(),
         }
     }
 }
