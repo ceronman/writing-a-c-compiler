@@ -12,6 +12,7 @@ mod tempfile;
 
 #[cfg(feature = "test_gen")]
 mod testgen;
+mod alignment;
 
 use crate::tempfile::TempPath;
 use std::fs;

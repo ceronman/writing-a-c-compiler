@@ -1,5 +1,5 @@
 use crate::ast::{Constant, Expression, FunctionTypeSpec, Node, NodeId, Program, TypeSpec};
-use crate::error::Result;
+use crate::error::{CompilerError, ErrorKind, Result};
 use crate::symbol::Symbol;
 use std::collections::{BTreeMap, HashMap};
 
@@ -31,6 +31,20 @@ pub enum Type {
 pub struct FunctionType {
     pub params: Vec<Type>,
     pub ret: Box<Type>,
+}
+
+#[derive(Debug, Clone)]
+pub struct StructDef {
+    pub alignment: u8,
+    pub size: usize,
+    pub fields: BTreeMap<Symbol, StructField>
+}
+
+#[derive(Debug, Clone)]
+pub struct StructField {
+    pub name: Symbol,
+    pub ty: Type,
+    pub offset: usize,
 }
 
 impl Type {
@@ -195,10 +209,16 @@ impl Constant {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TypeTable {
+    pub structs: HashMap<Symbol, StructDef>,
+}
+
 #[derive(Debug, Clone)]
 pub struct SemanticData {
     pub symbols: BTreeMap<Symbol, SymbolData>,
     pub expression_types: HashMap<NodeId, Type>,
+    pub type_table: TypeTable,
     pub implicit_casts: HashMap<NodeId, Type>,
     pub pointer_decays: HashMap<NodeId, Type>,
     pub switch_cases: HashMap<NodeId, SwitchCases>,

@@ -1,14 +1,10 @@
-use crate::ast::{
-    AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
-    FunctionDeclaration, Initializer, InnerRef, Node, NodeId, Program, Statement, StorageClass,
-    TypeSpec, UnaryOp, VarDeclaration,
-};
+use std::cmp;
+use crate::ast::{AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration, Initializer, InnerRef, Node, NodeId, Program, Statement, StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
-use crate::semantic::{
-    Attributes, FunctionType, InitialValue, SemanticData, StaticInit, SwitchCases, SymbolData, Type,
-};
+use crate::semantic::{Attributes, FunctionType, InitialValue, SemanticData, StaticInit, StructDef, StructField, SwitchCases, SymbolData, Type, TypeTable};
 use std::collections::{BTreeMap, HashMap, VecDeque};
+use crate::alignment::align_offset;
 
 impl SymbolData {
     fn local(ty: Type) -> Self {
@@ -28,10 +24,12 @@ impl SymbolData {
     }
 }
 
+// TODO: fields are duplicated with semantic data
 #[derive(Default)]
 struct TypeChecker {
     symbols: BTreeMap<String, SymbolData>,
     expression_types: HashMap<NodeId, Type>,
+    type_table: TypeTable,
     implicit_casts: HashMap<NodeId, Type>,
     pointer_decays: HashMap<NodeId, Type>,
     switch_stack: VecDeque<SwitchCases>,
@@ -44,7 +42,7 @@ impl TypeChecker {
             match decl.as_ref() {
                 Declaration::Var(v) => self.check_file_var_declaration(v)?,
                 Declaration::Function(f) => self.check_function_declaration(f, true)?,
-                Declaration::Struct(_d) => todo!(),
+                Declaration::Struct(d) => self.check_struct_declaration(d)?,
             }
         }
         Ok(())
@@ -479,6 +477,37 @@ impl TypeChecker {
             }
             self.check_block(&decl.type_spec.ty(), body)?;
         }
+        Ok(())
+    }
+
+    fn check_struct_declaration(&mut self, decl: &StructDeclaration) -> Result<()> {
+        // Incomplete declarations are ignored
+        if decl.fields.is_empty() {
+            return Ok(())
+        }
+
+        let mut fields = BTreeMap::new();
+        let mut size = 0;
+        let mut alignment = 1;
+        for field_node in &decl.fields {
+            let ty = field_node.type_spec.ty();
+            let field_alignment = ty.alignment(&self.type_table);
+            let field_offset = align_offset(size, field_alignment);
+            let field = StructField {
+                name: field_node.name.symbol.clone(),
+                ty: ty.clone(),
+                offset: field_offset
+            };
+            fields.insert(field_node.name.symbol.clone(), field);
+            alignment = cmp::max(alignment, field_alignment);
+            size = field_offset + ty.al_size(&self.type_table);
+        }
+        let size = align_offset(size, alignment);
+        self.type_table.structs.insert(decl.name.symbol.clone(), StructDef {
+            alignment,
+            size,
+            fields,
+        });
         Ok(())
     }
 
@@ -1309,6 +1338,7 @@ pub fn check(program: &Node<Program>) -> Result<SemanticData> {
     Ok(SemanticData {
         symbols: type_checker.symbols,
         expression_types: type_checker.expression_types,
+        type_table: type_checker.type_table,
         pointer_decays: type_checker.pointer_decays,
         implicit_casts: type_checker.implicit_casts,
         switch_cases: type_checker.switch_cases,
