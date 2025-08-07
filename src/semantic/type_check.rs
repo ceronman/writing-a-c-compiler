@@ -50,7 +50,7 @@ impl TypeChecker {
 
     fn check_local_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let name = decl.name.symbol.clone();
-        Self::validate_type_specifier(&decl.type_spec)?;
+        self.validate_type_specifier(&decl.type_spec)?;
         Self::error_if(
             decl.type_spec.ty().is_void(),
             decl.name.span,
@@ -308,7 +308,7 @@ impl TypeChecker {
     }
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
-        Self::validate_type_specifier(&decl.type_spec)?;
+        self.validate_type_specifier(&decl.type_spec)?;
         Self::error_if(
             decl.type_spec.ty().is_void(),
             decl.name.span,
@@ -392,9 +392,9 @@ impl TypeChecker {
             "A function cannot return array",
         )?;
 
-        Self::validate_type_specifier(&decl.type_spec.ret)?;
+        self.validate_type_specifier(&decl.type_spec.ret)?;
         for param in &decl.type_spec.params {
-            Self::validate_type_specifier(param)?;
+            self.validate_type_specifier(param)?;
         }
 
         // Replace array params with pointers
@@ -511,24 +511,24 @@ impl TypeChecker {
         Ok(())
     }
 
-    fn validate_type_specifier(ty: &Node<TypeSpec>) -> Result<()> {
+    fn validate_type_specifier(&self, ty: &Node<TypeSpec>) -> Result<()> {
         match ty.as_ref() {
             TypeSpec::Array(inner, _) => {
                 Self::error_if(
-                    !inner.ty().is_complete(),
+                    !inner.ty().is_complete(&self.type_table),
                     ty.span,
                     "Illegal array of incomplete types",
                 )?;
-                Self::validate_type_specifier(inner)?;
+                self.validate_type_specifier(inner)?;
             }
             TypeSpec::Pointer(inner) => {
-                Self::validate_type_specifier(inner)?;
+                self.validate_type_specifier(inner)?;
             }
             TypeSpec::Function(f) => {
                 for param in &f.params {
-                    Self::validate_type_specifier(param)?;
+                    self.validate_type_specifier(param)?;
                 }
-                Self::validate_type_specifier(&f.ret)?;
+                self.validate_type_specifier(&f.ret)?;
             }
             _ => {}
         }
@@ -748,7 +748,7 @@ impl TypeChecker {
                         "Expression is not assignable",
                     )?;
                     Self::error_if(
-                        operand_ty.is_pointer_to_incomplete(),
+                        operand_ty.is_pointer_to_incomplete(&self.type_table),
                         expr.span,
                         "Illegal operation on pointer to void type",
                     )?;
@@ -799,7 +799,7 @@ impl TypeChecker {
                     "Expression is not assignable",
                 )?;
                 Self::error_if(
-                    operand_ty.is_pointer_to_incomplete(),
+                    operand_ty.is_pointer_to_incomplete(&self.type_table),
                     expr.span,
                     "Illegal operation on pointer to void type",
                 )?;
@@ -840,12 +840,12 @@ impl TypeChecker {
                     }
                     BinaryOp::Add => {
                         Self::error_if(
-                            left_ty.is_pointer_to_incomplete(),
+                            left_ty.is_pointer_to_incomplete(&self.type_table),
                             left.span,
                             "Cannot add pointers to incomplete types",
                         )?;
                         Self::error_if(
-                            right_ty.is_pointer_to_incomplete(),
+                            right_ty.is_pointer_to_incomplete(&self.type_table),
                             right.span,
                             "Cannot add pointers to incomplete types",
                         )?;
@@ -863,7 +863,7 @@ impl TypeChecker {
                     BinaryOp::Subtract => match (&left_ty, &right_ty) {
                         (Type::Pointer(left_inner), Type::Pointer(right_inner)) => {
                             Self::error_if(
-                                !left_inner.is_complete(),
+                                !left_inner.is_complete(&self.type_table),
                                 left.span,
                                 "Incomplete pointer type",
                             )?;
@@ -875,7 +875,7 @@ impl TypeChecker {
                         }
                         (Type::Pointer(left_inner), right_ty) => {
                             Self::error_if(
-                                !left_inner.is_complete(),
+                                !left_inner.is_complete(&self.type_table),
                                 left.span,
                                 "Incomplete pointer type",
                             )?;
@@ -911,7 +911,7 @@ impl TypeChecker {
                             });
                         };
                         Self::error_if(
-                            !left_inner.is_complete(),
+                            !left_inner.is_complete(&self.type_table),
                             right.span,
                             "Operator is invalid",
                         )?;
@@ -1025,7 +1025,7 @@ impl TypeChecker {
                             "Assign compound operation on a pointer requires integer operand",
                         )?;
                         Self::error_if(
-                            left_ty.is_pointer_to_incomplete(),
+                            left_ty.is_pointer_to_incomplete(&self.type_table),
                             left.span,
                             "Cannot assign to a pointer of an incomplete type",
                         )?;
@@ -1113,7 +1113,7 @@ impl TypeChecker {
                 *function_ty.ret.clone()
             }
             Expression::Cast { target, expr } => {
-                Self::validate_type_specifier(target)?;
+                self.validate_type_specifier(target)?;
                 let target_ty = target.ty();
                 let ty = self.check_and_convert_expr(expr)?;
                 Self::error_if(
@@ -1182,7 +1182,7 @@ impl TypeChecker {
                 match (&ty1, &ty2) {
                     (Type::Pointer(referenced), _) if ty2.is_int() => {
                         Self::error_if(
-                            !referenced.is_complete(),
+                            !referenced.is_complete(&self.type_table),
                             expr1.span,
                             "Cannot subscript a pointer to void type",
                         )?;
@@ -1190,7 +1190,7 @@ impl TypeChecker {
                     }
                     (_, Type::Pointer(referenced)) if ty1.is_int() => {
                         Self::error_if(
-                            !referenced.is_complete(),
+                            !referenced.is_complete(&self.type_table),
                             expr2.span,
                             "Cannot subscript a pointer to void type",
                         )?;
@@ -1206,9 +1206,9 @@ impl TypeChecker {
                 }
             }
             Expression::SizeOfType(target) => {
-                Self::validate_type_specifier(target)?;
+                self.validate_type_specifier(target)?;
                 Self::error_if(
-                    !target.ty().is_complete(),
+                    !target.ty().is_complete(&self.type_table),
                     target.span,
                     "Cannot get size of an incomplete type",
                 )?;
@@ -1217,7 +1217,7 @@ impl TypeChecker {
             Expression::SizeOfExpr(expr) => {
                 let ty = self.check_expression(expr)?;
                 Self::error_if(
-                    !ty.is_complete(),
+                    !ty.is_complete(&self.type_table),
                     expr.span,
                     "Cannot get size of an incomplete type",
                 )?;

@@ -1,5 +1,5 @@
 use crate::ast::{Constant, Expression, FunctionTypeSpec, Node, NodeId, Program, TypeSpec};
-use crate::error::{CompilerError, ErrorKind, Result};
+use crate::error::Result;
 use crate::symbol::Symbol;
 use std::collections::{BTreeMap, HashMap};
 
@@ -110,8 +110,12 @@ impl Type {
         )
     }
 
-    pub fn is_complete(&self) -> bool {
-        !matches!(self, Type::Void)
+    pub fn is_complete(&self, type_table: &TypeTable) -> bool {
+        match self {
+            Type::Void => false,
+            Type::Struct(name) => type_table.structs.contains_key(name),
+            _ => true
+        }
     }
 
     pub fn is_pointer(&self) -> bool {
@@ -122,8 +126,8 @@ impl Type {
         matches!(self, Type::Pointer(inner) if inner.is_void())
     }
 
-    pub fn is_pointer_to_incomplete(&self) -> bool {
-        matches!(self, Type::Pointer(inner) if !inner.is_complete())
+    pub fn is_pointer_to_incomplete(&self, type_table: &TypeTable) -> bool {
+        matches!(self, Type::Pointer(inner) if !inner.is_complete(&type_table))
     }
 
     pub fn is_array(&self) -> bool {
