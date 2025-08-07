@@ -51,9 +51,11 @@ impl TypeChecker {
     fn check_local_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         let name = decl.name.symbol.clone();
         self.validate_type_specifier(&decl.type_spec)?;
+        let ty = decl.type_spec.ty();
+        let ty_span = decl.type_spec.span;
         Self::error_if(
             decl.type_spec.ty().is_void(),
-            decl.name.span,
+            ty_span,
             "Illegal void variable",
         )?;
         if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
@@ -66,7 +68,7 @@ impl TypeChecker {
                 });
             }
             if let Some(data) = self.symbols.get(&name) {
-                if data.ty != decl.type_spec.ty() {
+                if data.ty != ty {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: format!("Name '{name}' was already declared"),
@@ -80,6 +82,7 @@ impl TypeChecker {
                 );
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
+            Self::error_if(ty.is_incomplete_struct(&self.type_table), ty_span, "Incomplete struct type")?;
             let initial_value = if let Some(init) = &decl.init {
                 InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec)?)
             } else {
@@ -94,6 +97,7 @@ impl TypeChecker {
                     });
                 }
             } else {
+                Self::error_if(ty.is_incomplete_struct(&self.type_table), ty_span, "Incomplete struct type")?;
                 self.symbols.insert(
                     decl.name.symbol.clone(),
                     SymbolData {
@@ -106,6 +110,7 @@ impl TypeChecker {
                 );
             }
         } else {
+            Self::error_if(ty.is_incomplete_struct(&self.type_table), ty_span, "Incomplete struct type")?;
             self.symbols.insert(
                 decl.name.symbol.clone(),
                 SymbolData::local(decl.type_spec.ty()),
@@ -309,16 +314,16 @@ impl TypeChecker {
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
         self.validate_type_specifier(&decl.type_spec)?;
-        Self::error_if(
-            decl.type_spec.ty().is_void(),
-            decl.name.span,
-            "Illegal void variable",
-        )?;
+        let ty = decl.type_spec.ty();
+        let ty_span = decl.type_spec.span;
+        Self::error_if(ty.is_void(), ty_span, "Illegal void variable")?;
         let mut initial_value = if let Some(init) = &decl.init {
+            Self::error_if(ty.is_incomplete_struct(&self.type_table), ty_span, "Incomplete struct type")?;
             InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec)?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             InitialValue::NoInitializer
         } else {
+            Self::error_if(ty.is_incomplete_struct(&self.type_table), ty_span, "Incomplete struct type")?;
             InitialValue::Tentative
         };
         let mut global = !matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
@@ -469,12 +474,16 @@ impl TypeChecker {
                     span: decl.name.span,
                 });
             }
+
             for (param_name, param_ty) in decl.params.iter().zip(function_ty.params.iter()) {
+                // TODO: make error exactly on the type span
+                Self::error_if(param_ty.is_incomplete_struct(&self.type_table), param_name.span, "Struct type is not complete")?;
                 self.symbols.insert(
                     param_name.symbol.clone(),
                     SymbolData::local(param_ty.clone()),
                 );
             }
+            Self::error_if(function_ty.ret.is_incomplete_struct(&self.type_table), decl.type_spec.ret.span, "Struct type is not complete")?;
             self.check_block(&decl.type_spec.ty(), body)?;
         }
         Ok(())
@@ -708,14 +717,24 @@ impl TypeChecker {
 
     fn check_and_convert_expr(&mut self, expr: &Node<Expression>) -> Result<Type> {
         let ty = self.check_expression(expr)?;
-        if let Type::Array(inner, ..) = ty {
-            // Pointer decay
-            let pointer_ty = Type::Pointer(inner);
-            self.pointer_decays.insert(expr.id, pointer_ty.clone());
-            self.expression_types.insert(expr.id, pointer_ty.clone());
-            Ok(pointer_ty)
-        } else {
-            Ok(ty)
+        match ty {
+            Type::Array(inner, ..) => {
+                // Pointer decay
+                let pointer_ty = Type::Pointer(inner);
+                self.pointer_decays.insert(expr.id, pointer_ty.clone());
+                self.expression_types.insert(expr.id, pointer_ty.clone());
+                Ok(pointer_ty)
+            }
+            Type::Struct(_) if !ty.is_complete(&self.type_table) => {
+                Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: "Incomplete struct type".to_string(),
+                    span: expr.span,
+                })
+            }
+            _ => {
+                Ok(ty)
+            }
         }
     }
 
@@ -741,6 +760,7 @@ impl TypeChecker {
             Expression::Unary { op, expr } => match op.as_ref() {
                 UnaryOp::Increment | UnaryOp::Decrement => {
                     let operand_ty = self.check_expression(expr)?;
+                    Self::error_if(operand_ty.is_incomplete_struct(&self.type_table), expr.span, "Struct is not complete")?;
                     Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
                     Self::error_if(
                         !Self::is_lvalue(expr),
@@ -792,6 +812,7 @@ impl TypeChecker {
             },
             Expression::Postfix { expr, .. } => {
                 let operand_ty = self.check_expression(expr)?;
+                Self::error_if(operand_ty.is_incomplete_struct(&self.type_table), expr.span, "Struct is not complete")?;
                 Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
                 Self::error_if(
                     !Self::is_lvalue(expr),
@@ -979,6 +1000,7 @@ impl TypeChecker {
 
             Expression::Assignment { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
+                Self::error_if(left_ty.is_incomplete_struct(&self.type_table), expr.span, "Struct is not complete")?;
                 Self::error_if(!left_ty.is_scalar(), left.span, "Type is not assignable")?;
                 Self::error_if(
                     !Self::is_lvalue(left),

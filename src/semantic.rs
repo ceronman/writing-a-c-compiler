@@ -81,6 +81,10 @@ impl Type {
         matches!(self, Type::Struct(_))
     }
 
+    pub fn is_incomplete_struct(&self, type_table: &TypeTable) -> bool {
+        self.is_struct() && !self.is_complete(type_table)
+    }
+
     pub fn is_arithmetic(&self) -> bool {
         matches!(
             self,
