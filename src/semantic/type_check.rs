@@ -1,10 +1,17 @@
-use std::cmp;
-use crate::ast::{AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit, FunctionDeclaration, Initializer, InnerRef, Node, NodeId, Program, Statement, StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration};
+use crate::alignment::align_offset;
+use crate::ast::{
+    AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
+    FunctionDeclaration, Identifier, Initializer, InnerRef, Node, NodeId, Program, Statement,
+    StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration,
+};
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
-use crate::semantic::{Attributes, FunctionType, InitialValue, SemanticData, StaticInit, StructDef, StructField, SwitchCases, SymbolData, Type, TypeTable};
+use crate::semantic::{
+    Attributes, FunctionType, InitialValue, SemanticData, StaticInit, StructDef, StructField,
+    SwitchCases, SymbolData, Type, TypeTable,
+};
+use std::cmp;
 use std::collections::{BTreeMap, HashMap, VecDeque};
-use crate::alignment::align_offset;
 
 impl SymbolData {
     fn local(ty: Type) -> Self {
@@ -82,7 +89,11 @@ impl TypeChecker {
                 );
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
-            Self::error_if(ty.is_incomplete_struct(&self.type_table), ty_span, "Incomplete struct type")?;
+            Self::error_if(
+                ty.is_incomplete_struct(&self.type_table),
+                ty_span,
+                "Incomplete struct type",
+            )?;
             let initial_value = if let Some(init) = &decl.init {
                 InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec)?)
             } else {
@@ -97,7 +108,11 @@ impl TypeChecker {
                     });
                 }
             } else {
-                Self::error_if(ty.is_incomplete_struct(&self.type_table), ty_span, "Incomplete struct type")?;
+                Self::error_if(
+                    ty.is_incomplete_struct(&self.type_table),
+                    ty_span,
+                    "Incomplete struct type",
+                )?;
                 self.symbols.insert(
                     decl.name.symbol.clone(),
                     SymbolData {
@@ -110,7 +125,11 @@ impl TypeChecker {
                 );
             }
         } else {
-            Self::error_if(ty.is_incomplete_struct(&self.type_table), ty_span, "Incomplete struct type")?;
+            Self::error_if(
+                ty.is_incomplete_struct(&self.type_table),
+                ty_span,
+                "Incomplete struct type",
+            )?;
             self.symbols.insert(
                 decl.name.symbol.clone(),
                 SymbolData::local(decl.type_spec.ty()),
@@ -318,12 +337,20 @@ impl TypeChecker {
         let ty_span = decl.type_spec.span;
         Self::error_if(ty.is_void(), ty_span, "Illegal void variable")?;
         let mut initial_value = if let Some(init) = &decl.init {
-            Self::error_if(ty.is_incomplete_struct(&self.type_table), ty_span, "Incomplete struct type")?;
+            Self::error_if(
+                ty.is_incomplete_struct(&self.type_table),
+                ty_span,
+                "Incomplete struct type",
+            )?;
             InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec)?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             InitialValue::NoInitializer
         } else {
-            Self::error_if(ty.is_incomplete_struct(&self.type_table), ty_span, "Incomplete struct type")?;
+            Self::error_if(
+                ty.is_incomplete_struct(&self.type_table),
+                ty_span,
+                "Incomplete struct type",
+            )?;
             InitialValue::Tentative
         };
         let mut global = !matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
@@ -477,13 +504,21 @@ impl TypeChecker {
 
             for (param_name, param_ty) in decl.params.iter().zip(function_ty.params.iter()) {
                 // TODO: make error exactly on the type span
-                Self::error_if(param_ty.is_incomplete_struct(&self.type_table), param_name.span, "Struct type is not complete")?;
+                Self::error_if(
+                    param_ty.is_incomplete_struct(&self.type_table),
+                    param_name.span,
+                    "Struct type is not complete",
+                )?;
                 self.symbols.insert(
                     param_name.symbol.clone(),
                     SymbolData::local(param_ty.clone()),
                 );
             }
-            Self::error_if(function_ty.ret.is_incomplete_struct(&self.type_table), decl.type_spec.ret.span, "Struct type is not complete")?;
+            Self::error_if(
+                function_ty.ret.is_incomplete_struct(&self.type_table),
+                decl.type_spec.ret.span,
+                "Struct type is not complete",
+            )?;
             self.check_block(&decl.type_spec.ty(), body)?;
         }
         Ok(())
@@ -492,31 +527,45 @@ impl TypeChecker {
     fn check_struct_declaration(&mut self, decl: &StructDeclaration) -> Result<()> {
         // Incomplete declarations are ignored
         if decl.fields.is_empty() {
-            return Ok(())
+            return Ok(());
         }
 
         let mut fields = BTreeMap::new();
         let mut size = 0;
         let mut alignment = 1;
         for field_node in &decl.fields {
+            self.validate_type_specifier(&field_node.type_spec)?;
             let ty = field_node.type_spec.ty();
             let field_alignment = ty.alignment(&self.type_table);
             let field_offset = align_offset(size, field_alignment);
             let field = StructField {
                 name: field_node.name.symbol.clone(),
                 ty: ty.clone(),
-                offset: field_offset
+                offset: field_offset,
             };
+            if fields.contains_key(&field.name) {
+                return Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: format!(
+                        "Field name `{}` already exists in the struct definition",
+                        field.name
+                    ),
+                    span: field_node.name.span,
+                });
+            }
             fields.insert(field_node.name.symbol.clone(), field);
             alignment = cmp::max(alignment, field_alignment);
             size = field_offset + ty.al_size(&self.type_table);
         }
         let size = align_offset(size, alignment);
-        self.type_table.structs.insert(decl.name.symbol.clone(), StructDef {
-            alignment,
-            size,
-            fields,
-        });
+        self.type_table.structs.insert(
+            decl.name.symbol.clone(),
+            StructDef {
+                alignment,
+                size,
+                fields,
+            },
+        );
         Ok(())
     }
 
@@ -725,16 +774,12 @@ impl TypeChecker {
                 self.expression_types.insert(expr.id, pointer_ty.clone());
                 Ok(pointer_ty)
             }
-            Type::Struct(_) if !ty.is_complete(&self.type_table) => {
-                Err(CompilerError {
-                    kind: ErrorKind::Type,
-                    msg: "Incomplete struct type".to_string(),
-                    span: expr.span,
-                })
-            }
-            _ => {
-                Ok(ty)
-            }
+            Type::Struct(_) if !ty.is_complete(&self.type_table) => Err(CompilerError {
+                kind: ErrorKind::Type,
+                msg: "Incomplete struct type".to_string(),
+                span: expr.span,
+            }),
+            _ => Ok(ty),
         }
     }
 
@@ -760,7 +805,11 @@ impl TypeChecker {
             Expression::Unary { op, expr } => match op.as_ref() {
                 UnaryOp::Increment | UnaryOp::Decrement => {
                     let operand_ty = self.check_expression(expr)?;
-                    Self::error_if(operand_ty.is_incomplete_struct(&self.type_table), expr.span, "Struct is not complete")?;
+                    Self::error_if(
+                        operand_ty.is_incomplete_struct(&self.type_table),
+                        expr.span,
+                        "Struct is not complete",
+                    )?;
                     Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
                     Self::error_if(
                         !Self::is_lvalue(expr),
@@ -812,7 +861,11 @@ impl TypeChecker {
             },
             Expression::Postfix { expr, .. } => {
                 let operand_ty = self.check_expression(expr)?;
-                Self::error_if(operand_ty.is_incomplete_struct(&self.type_table), expr.span, "Struct is not complete")?;
+                Self::error_if(
+                    operand_ty.is_incomplete_struct(&self.type_table),
+                    expr.span,
+                    "Struct is not complete",
+                )?;
                 Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
                 Self::error_if(
                     !Self::is_lvalue(expr),
@@ -1000,7 +1053,11 @@ impl TypeChecker {
 
             Expression::Assignment { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
-                Self::error_if(left_ty.is_incomplete_struct(&self.type_table), expr.span, "Struct is not complete")?;
+                Self::error_if(
+                    left_ty.is_incomplete_struct(&self.type_table),
+                    expr.span,
+                    "Struct is not complete",
+                )?;
                 Self::error_if(!left_ty.is_scalar(), left.span, "Type is not assignable")?;
                 Self::error_if(
                     !Self::is_lvalue(left),
@@ -1092,6 +1149,8 @@ impl TypeChecker {
                         self.common_pointer_type(then_expr, &then_ty, else_expr, &else_ty)?
                     } else if then_ty.is_arithmetic() && else_ty.is_arithmetic() {
                         Self::common_type(&then_ty, &else_ty)
+                    } else if then_ty == else_ty {
+                        then_ty.clone()
                     } else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
@@ -1245,20 +1304,71 @@ impl TypeChecker {
                 )?;
                 Type::ULong
             }
-            Expression::Dot { .. } | Expression::Arrow { .. } => todo!(),
+            Expression::Dot { structure, member } => {
+                let ty = self.check_and_convert_expr(structure)?;
+                self.check_struct_field(structure, &ty, member)?
+            }
+            Expression::Arrow { pointer, member } => {
+                let ty = self.check_and_convert_expr(pointer)?;
+                let Type::Pointer(inner_ty) = ty else {
+                    return Err(CompilerError {
+                        kind: ErrorKind::Type,
+                        msg: "Type is not a pointer".to_string(),
+                        span: pointer.span,
+                    });
+                };
+                self.check_struct_field(pointer, &inner_ty, member)?
+            }
         };
         self.expression_types.insert(expr.id, ty.clone());
         Ok(ty)
     }
 
+    fn check_struct_field(
+        &self,
+        structure: &Node<Expression>,
+        ty: &Type,
+        member: &Node<Identifier>,
+    ) -> Result<Type> {
+        let Type::Struct(name) = ty else {
+            return Err(CompilerError {
+                kind: ErrorKind::Type,
+                msg: "Type is not a struct".to_string(),
+                span: structure.span,
+            });
+        };
+        let struct_def = self
+            .type_table
+            .structs
+            .get(name)
+            .ok_or_else(|| CompilerError {
+                kind: ErrorKind::Type,
+                msg: "Type is not a struct".to_string(),
+                span: structure.span,
+            })?;
+        let field_name = &member.symbol;
+        let field = struct_def
+            .fields
+            .get(field_name)
+            .ok_or_else(|| CompilerError {
+                kind: ErrorKind::Type,
+                msg: format!("Structure '{name}' does not have field {field_name}"),
+                span: structure.span,
+            })?;
+        Ok(field.ty.clone())
+    }
+
     fn is_lvalue(expr: &Expression) -> bool {
-        matches!(
-            expr,
+        match expr {
             Expression::Var(_)
-                | Expression::Dereference(_)
-                | Expression::Subscript(_, _)
-                | Expression::String(_)
-        )
+            | Expression::Dereference(_)
+            | Expression::Subscript(_, _)
+            | Expression::String(_)
+            | Expression::Arrow { .. } => true,
+
+            Expression::Dot { structure, .. } => Self::is_lvalue(structure),
+            _ => false,
+        }
     }
 
     fn error_if(condition: bool, span: Span, err: &str) -> Result<()> {

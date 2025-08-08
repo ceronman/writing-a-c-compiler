@@ -628,7 +628,7 @@ fn test_invalid_types_void_assign_to_void_var() {
     assert_error(
         r#"
         extern void v1;
-                  //^^ Illegal void variable
+      //^^^^^^^^^^^ Illegal void variable
         int main(void) {
           v1 = (void)0;
           return 0;
@@ -658,7 +658,7 @@ fn test_invalid_types_void_define_void() {
         r#"
         int main(void) {
             void x;
-               //^ Illegal void variable
+          //^^^^ Illegal void variable
             return 0;
         }
     "#,
@@ -670,7 +670,7 @@ fn test_invalid_types_void_initialized_void() {
     assert_error(
         r#"
         extern void v = 0;
-                  //^ Illegal void variable
+      //^^^^^^^^^^^ Illegal void variable
         int main(void) { return 0; }
     "#,
     );
