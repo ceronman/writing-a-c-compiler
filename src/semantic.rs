@@ -37,7 +37,7 @@ pub struct FunctionType {
 pub struct StructDef {
     pub alignment: u8,
     pub size: usize,
-    pub fields: BTreeMap<Symbol, StructField>
+    pub fields: Vec<StructField>,
 }
 
 #[derive(Debug, Clone)]
@@ -118,7 +118,7 @@ impl Type {
         match self {
             Type::Void => false,
             Type::Struct(name) => type_table.structs.contains_key(name),
-            _ => true
+            _ => true,
         }
     }
 

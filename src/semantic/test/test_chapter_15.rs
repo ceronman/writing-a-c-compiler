@@ -197,7 +197,7 @@ fn test_invalid_types_compound_initializer_for_scalar() {
         int main(void)
         {
             int x = {1, 2, 3};
-                  //^^^^^^^^ Cannot initialize a scalar value with a compound initializer
+                  //^^^^^^^^^ Cannot initialize a scalar value with a compound initializer
             return x;
         }
     "#,
@@ -211,7 +211,7 @@ fn test_invalid_types_compound_initializer_for_static_scalar() {
         int main(void)
         {
             static int x = {1, 2, 3};
-                         //^^^^^^^^ Cannot initialize a scalar value with a compound initializer
+                         //^^^^^^^^^ Cannot initialize a scalar value with a compound initializer
             return x;
         }
     "#,
@@ -224,7 +224,7 @@ fn test_invalid_types_compound_initializer_too_long_static() {
         r#"
         int main(void) {
             static int arr[3] = {1, 2, 3, 4};
-                              //^^^^^^^^^^^ Wrong number of element in the initializer
+                              //^^^^^^^^^^^^ Too many elements in the initializer
             return arr[2];
         }
     "#,
@@ -237,7 +237,7 @@ fn test_invalid_types_compound_inititializer_too_long() {
         r#"
         int main(void) {
             int arr[3] = {1, 2, 3, 4};
-                       //^^^^^^^^^^^ Wrong number of element in the initializer
+                       //^^^^^^^^^^^^ Too many elements in the initializer
             return arr[2];
         }
     "#,

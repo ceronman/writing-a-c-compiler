@@ -95,7 +95,7 @@ impl TypeChecker {
                 "Incomplete struct type",
             )?;
             let initial_value = if let Some(init) = &decl.init {
-                InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec)?)
+                InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec.ty())?)
             } else {
                 InitialValue::single(StaticInit::ZeroInit(decl.type_spec.ty().size()))
             };
@@ -135,7 +135,7 @@ impl TypeChecker {
                 SymbolData::local(decl.type_spec.ty()),
             );
             if let Some(init) = &decl.init {
-                self.check_initializer(init, &decl.type_spec)?;
+                self.check_initializer(init, &decl.type_spec.ty())?;
             }
         }
         Ok(())
@@ -143,14 +143,14 @@ impl TypeChecker {
 
     fn check_static_initializer(
         init: &Node<Initializer>,
-        target: &Node<TypeSpec>,
+        target: &Type,
     ) -> Result<Vec<StaticInit>> {
         match init.as_ref() {
             Initializer::Single(expr) => match expr.as_ref() {
                 Expression::String(s) => {
-                    match target.as_ref() {
-                        TypeSpec::Array(inner, size) => {
-                            if !inner.ty().is_char() {
+                    match target {
+                        Type::Array(inner_ty, size) => {
+                            if !inner_ty.is_char() {
                                 return Err(CompilerError {
                                         kind: ErrorKind::Type,
                                         msg: "Can't initialize a non-character type with a string literal".into(),
@@ -177,8 +177,8 @@ impl TypeChecker {
                             }
                             Ok(result)
                         }
-                        TypeSpec::Pointer(inner) => {
-                            if let TypeSpec::Char = inner.as_ref() {
+                        Type::Pointer(inner_ty) => {
+                            if let Type::Char = **inner_ty {
                                 Ok(vec![StaticInit::Pointer(s.clone())])
                             } else {
                                 Err(CompilerError {
@@ -196,38 +196,30 @@ impl TypeChecker {
                     }
                 }
                 Expression::Constant(c) => {
-                    let static_init = match (c, target.as_ref()) {
-                        (c, TypeSpec::Char | TypeSpec::SChar) if c.is_int() => {
+                    let static_init = match (c, target) {
+                        (c, Type::Char | Type::SChar) if c.is_int() => {
                             StaticInit::Char(c.as_u64() as i8)
                         }
-                        (c, TypeSpec::UChar) if c.is_int() => StaticInit::UChar(c.as_u64() as u8),
-                        (c, TypeSpec::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
-                        (c, TypeSpec::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
-                        (c, TypeSpec::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
-                        (c, TypeSpec::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
-                        (c, TypeSpec::Double) if c.is_int() => {
-                            StaticInit::Double(c.as_u64() as f64)
-                        }
+                        (c, Type::UChar) if c.is_int() => StaticInit::UChar(c.as_u64() as u8),
+                        (c, Type::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
+                        (c, Type::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
+                        (c, Type::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
+                        (c, Type::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
+                        (c, Type::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
                         (
                             Constant::Double(value),
-                            TypeSpec::Int | TypeSpec::Char | TypeSpec::SChar | TypeSpec::UChar,
+                            Type::Int | Type::Char | Type::SChar | Type::UChar,
                         ) => StaticInit::Int(*value as i32),
-                        (Constant::Double(value), TypeSpec::UInt) => {
-                            StaticInit::UInt(*value as u32)
-                        }
-                        (Constant::Double(value), TypeSpec::Long) => {
-                            StaticInit::Long(*value as i64)
-                        }
-                        (Constant::Double(value), TypeSpec::ULong) => {
-                            StaticInit::ULong(*value as u64)
-                        }
-                        (Constant::Double(value), TypeSpec::Double) => StaticInit::Double(*value),
+                        (Constant::Double(value), Type::UInt) => StaticInit::UInt(*value as u32),
+                        (Constant::Double(value), Type::Long) => StaticInit::Long(*value as i64),
+                        (Constant::Double(value), Type::ULong) => StaticInit::ULong(*value as u64),
+                        (Constant::Double(value), Type::Double) => StaticInit::Double(*value),
                         (
                             Constant::Int(0)
                             | Constant::Long(0)
                             | Constant::UInt(0)
                             | Constant::ULong(0),
-                            TypeSpec::Pointer(_),
+                            Type::Pointer(_),
                         ) => StaticInit::ULong(0),
                         _ => {
                             return Err(CompilerError {
@@ -245,46 +237,42 @@ impl TypeChecker {
                     span: init.span,
                 }),
             },
-            Initializer::Compound(initializers) => {
-                let TypeSpec::Array(inner, size) = target.as_ref() else {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Cannot initialize a scalar value with a compound initializer".into(),
-                        span: init.span,
-                    });
-                };
-                if initializers.len() > *size {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Wrong number of element in the initializer".into(),
-                        span: init.span,
-                    });
+            Initializer::Compound(initializers) => match target {
+                Type::Array(inner_ty, size) => {
+                    if initializers.len() > *size {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Too many elements in the initializer".into(),
+                            span: init.span,
+                        });
+                    }
+                    let mut static_inits = Vec::with_capacity(*size);
+                    for initializer in initializers {
+                        let inner_inits = Self::check_static_initializer(initializer, inner_ty)?;
+                        static_inits.extend(inner_inits);
+                    }
+                    let padding = (size - initializers.len()) * inner_ty.size();
+                    if padding > 0 {
+                        static_inits.push(StaticInit::ZeroInit(padding));
+                    }
+                    Ok(static_inits)
                 }
-                let mut static_inits = Vec::with_capacity(*size);
-                for initializer in initializers {
-                    let inner_inits = Self::check_static_initializer(initializer, inner)?;
-                    static_inits.extend(inner_inits);
-                }
-                let padding = (size - initializers.len()) * inner.ty().size();
-                if padding > 0 {
-                    static_inits.push(StaticInit::ZeroInit(padding));
-                }
-                Ok(static_inits)
-            }
+                _ => Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: "Cannot initialize a scalar value with a compound initializer".into(),
+                    span: init.span,
+                }),
+            },
         }
     }
 
-    fn check_initializer(
-        &mut self,
-        init: &Node<Initializer>,
-        target: &Node<TypeSpec>,
-    ) -> Result<Type> {
+    fn check_initializer(&mut self, init: &Node<Initializer>, target: &Type) -> Result<()> {
         match init.as_ref() {
             Initializer::Single(expr) => {
                 let init_ty = if let Expression::String(s) = expr.as_ref()
-                    && let TypeSpec::Array(inner, size) = target.as_ref()
+                    && let Type::Array(inner_ty, size) = target
                 {
-                    if !inner.ty().is_char() {
+                    if !inner_ty.is_char() {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Can't initialize a non-character type with a string literal"
@@ -301,34 +289,60 @@ impl TypeChecker {
                             span: init.span,
                         });
                     }
-                    self.expression_types.insert(expr.id, target.ty());
-                    target.ty()
+                    self.expression_types.insert(expr.id, target.clone());
+                    target.clone()
                 } else {
                     self.check_and_convert_expr(expr)?
                 };
-                self.convert_by_assignment(expr, &init_ty, &target.ty())
+                self.convert_by_assignment(expr, &init_ty, &target)?;
             }
-            Initializer::Compound(initializers) => {
-                let TypeSpec::Array(inner_ty, size) = target.as_ref() else {
+            Initializer::Compound(initializers) => match target {
+                Type::Array(inner_ty, size) => {
+                    if initializers.len() > *size {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Too many elements in the initializer".into(),
+                            span: init.span,
+                        });
+                    }
+                    for inner_innit in initializers {
+                        self.check_initializer(inner_innit, inner_ty)?;
+                    }
+                }
+                Type::Struct(tag) => {
+                    let Some(struct_def) = self.type_table.structs.get(tag) else {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Unknown structure type to initialize".into(),
+                            span: init.span,
+                        });
+                    };
+                    if initializers.len() > struct_def.fields.len() {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Too many elements in the initializer".into(),
+                            span: init.span,
+                        });
+                    }
+                    let field_tys = struct_def
+                        .fields
+                        .iter()
+                        .map(|f| f.ty.clone())
+                        .collect::<Vec<_>>();
+                    for (inner_init, field_ty) in initializers.iter().zip(field_tys.iter()) {
+                        self.check_initializer(inner_init, field_ty)?;
+                    }
+                }
+                _ => {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Cannot initialize a scalar value with a compound initializer".into(),
                         span: init.span,
                     });
-                };
-                if initializers.len() > *size {
-                    return Err(CompilerError {
-                        kind: ErrorKind::Type,
-                        msg: "Wrong number of element in the initializer".into(),
-                        span: init.span,
-                    });
                 }
-                for inner_innit in initializers {
-                    self.check_initializer(inner_innit, inner_ty)?;
-                }
-                Ok(target.ty())
-            }
+            },
         }
+        Ok(())
     }
 
     fn check_file_var_declaration(&mut self, decl: &VarDeclaration) -> Result<()> {
@@ -342,7 +356,7 @@ impl TypeChecker {
                 ty_span,
                 "Incomplete struct type",
             )?;
-            InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec)?)
+            InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec.ty())?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             InitialValue::NoInitializer
         } else {
@@ -530,7 +544,7 @@ impl TypeChecker {
             return Ok(());
         }
 
-        let mut fields = BTreeMap::new();
+        let mut fields: Vec<StructField> = Vec::new();
         let mut size = 0;
         let mut alignment = 1;
         for field_node in &decl.fields {
@@ -543,7 +557,7 @@ impl TypeChecker {
                 ty: ty.clone(),
                 offset: field_offset,
             };
-            if fields.contains_key(&field.name) {
+            if fields.iter().any(|f| f.name == field.name) {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
                     msg: format!(
@@ -553,7 +567,7 @@ impl TypeChecker {
                     span: field_node.name.span,
                 });
             }
-            fields.insert(field_node.name.symbol.clone(), field);
+            fields.push(field);
             alignment = cmp::max(alignment, field_alignment);
             size = field_offset + ty.al_size(&self.type_table);
         }
@@ -760,7 +774,7 @@ impl TypeChecker {
         match decl.as_ref() {
             Declaration::Var(d) => self.check_local_var_declaration(d),
             Declaration::Function(d) => self.check_function_declaration(d, false),
-            Declaration::Struct(_d) => todo!(),
+            Declaration::Struct(d) => self.check_struct_declaration(d),
         }
     }
 
@@ -1349,7 +1363,8 @@ impl TypeChecker {
         let field_name = &member.symbol;
         let field = struct_def
             .fields
-            .get(field_name)
+            .iter()
+            .find(|&f| &f.name == field_name)
             .ok_or_else(|| CompilerError {
                 kind: ErrorKind::Type,
                 msg: format!("Structure '{name}' does not have field {field_name}"),

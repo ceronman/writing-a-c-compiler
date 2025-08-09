@@ -223,7 +223,7 @@ impl<'src> Parser<'src> {
                         continue;
                     }
                 }
-                self.expect(TokenKind::CloseBrace)?;
+                end = self.expect(TokenKind::CloseBrace)?.span;
                 break;
             }
             Ok(self.node(begin + end, Initializer::Compound(initializers)))

@@ -71,7 +71,7 @@ fn test_invalid_types_compound_initializer_for_pointer() {
         
         int main(void) {
             char *ptr = {'a', 'b', 'c'};
-                      //^^^^^^^^^^^^^^ Cannot initialize a scalar value with a compound initializer
+                      //^^^^^^^^^^^^^^^ Cannot initialize a scalar value with a compound initializer
             return 0;
         }
     "#,
