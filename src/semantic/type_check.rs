@@ -6,6 +6,7 @@ use crate::ast::{
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
+use crate::semantic::StaticInit::ZeroInit;
 use crate::semantic::{
     Attributes, FunctionType, InitialValue, SemanticData, StaticInit, StructDef, StructField,
     SwitchCases, SymbolData, Type, TypeTable,
@@ -95,9 +96,9 @@ impl TypeChecker {
                 "Incomplete struct type",
             )?;
             let initial_value = if let Some(init) = &decl.init {
-                InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec.ty())?)
+                InitialValue::Initial(self.check_static_initializer(init, &decl.type_spec.ty())?)
             } else {
-                InitialValue::single(StaticInit::ZeroInit(decl.type_spec.ty().size()))
+                InitialValue::single(ZeroInit(decl.type_spec.ty().al_size(&self.type_table)))
             };
             if let Some(data) = self.symbols.get(&name) {
                 if data.ty != decl.type_spec.ty() {
@@ -142,6 +143,7 @@ impl TypeChecker {
     }
 
     fn check_static_initializer(
+        &self,
         init: &Node<Initializer>,
         target: &Type,
     ) -> Result<Vec<StaticInit>> {
@@ -248,12 +250,43 @@ impl TypeChecker {
                     }
                     let mut static_inits = Vec::with_capacity(*size);
                     for initializer in initializers {
-                        let inner_inits = Self::check_static_initializer(initializer, inner_ty)?;
+                        let inner_inits = self.check_static_initializer(initializer, inner_ty)?;
                         static_inits.extend(inner_inits);
                     }
-                    let padding = (size - initializers.len()) * inner_ty.size();
+                    let padding = (size - initializers.len()) * inner_ty.al_size(&self.type_table);
                     if padding > 0 {
-                        static_inits.push(StaticInit::ZeroInit(padding));
+                        static_inits.push(ZeroInit(padding));
+                    }
+                    Ok(static_inits)
+                }
+                Type::Struct(tag) => {
+                    let Some(struct_def) = self.type_table.structs.get(tag) else {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Unknown structure type to initialize".into(),
+                            span: init.span,
+                        });
+                    };
+                    if initializers.len() > struct_def.fields.len() {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Too many elements in the initializer".into(),
+                            span: init.span,
+                        });
+                    }
+                    let mut offset = 0;
+                    let mut static_inits = Vec::new();
+                    for (i, init) in initializers.iter().enumerate() {
+                        let field = &struct_def.fields[i];
+                        if field.offset != offset {
+                            static_inits.push(ZeroInit(field.offset - offset));
+                        }
+                        let inner_inits = self.check_static_initializer(init, &field.ty)?;
+                        static_inits.extend(inner_inits);
+                        offset = field.offset + field.ty.al_size(&self.type_table);
+                    }
+                    if struct_def.size != offset {
+                        static_inits.push(ZeroInit(struct_def.size - offset));
                     }
                     Ok(static_inits)
                 }
@@ -356,7 +389,7 @@ impl TypeChecker {
                 ty_span,
                 "Incomplete struct type",
             )?;
-            InitialValue::Initial(Self::check_static_initializer(init, &decl.type_spec.ty())?)
+            InitialValue::Initial(self.check_static_initializer(init, &decl.type_spec.ty())?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             InitialValue::NoInitializer
         } else {
@@ -572,7 +605,8 @@ impl TypeChecker {
             size = field_offset + ty.al_size(&self.type_table);
         }
         let size = align_offset(size, alignment);
-        self.type_table.structs.insert(
+        let tag = decl.name.symbol.clone();
+        let old = self.type_table.structs.insert(
             decl.name.symbol.clone(),
             StructDef {
                 alignment,
@@ -580,7 +614,15 @@ impl TypeChecker {
                 fields,
             },
         );
-        Ok(())
+        if old.is_some() {
+            Err(CompilerError {
+                kind: ErrorKind::Type,
+                msg: format!("Structure '{tag}' was already declared"),
+                span: decl.name.span,
+            })
+        } else {
+            Ok(())
+        }
     }
 
     fn validate_type_specifier(&self, ty: &Node<TypeSpec>) -> Result<()> {
@@ -767,6 +809,7 @@ impl TypeChecker {
             Statement::Break(_) | Statement::Continue(_) | Statement::Goto(_) | Statement::Null => {
             }
         }
+
         Ok(())
     }
 
@@ -1072,14 +1115,22 @@ impl TypeChecker {
                     expr.span,
                     "Struct is not complete",
                 )?;
-                Self::error_if(!left_ty.is_scalar(), left.span, "Type is not assignable")?;
+                Self::error_if(
+                    !left_ty.is_struct() && !left_ty.is_scalar(),
+                    left.span,
+                    "Type is not assignable",
+                )?;
                 Self::error_if(
                     !Self::is_lvalue(left),
                     left.span,
                     "Expression is not assignable",
                 )?;
                 let right_ty = self.check_and_convert_expr(right)?;
-                Self::error_if(!right_ty.is_scalar(), right.span, "Invalid assign target")?;
+                Self::error_if(
+                    !right_ty.is_struct() && !right_ty.is_scalar(),
+                    right.span,
+                    "Invalid assign target",
+                )?;
 
                 match op.as_ref() {
                     AssignOp::BitAndEqual

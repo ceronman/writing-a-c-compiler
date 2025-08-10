@@ -182,14 +182,14 @@ impl Resolver {
             .structs_scopes
             .front_mut()
             .expect("Invalid scope state");
-        if scope.contains_key(tag) {
-            return Err(CompilerError {
-                kind: ErrorKind::Resolve,
-                msg: format!("Structure '{tag}' was already declared"),
-                span: decl.name.span,
-            });
-        }
-        scope.insert(tag.clone(), unique_name.clone());
+
+        let unique_name = if let Some(n) = scope.get(tag) {
+            n.clone()
+        } else {
+            scope.insert(tag.clone(), unique_name.clone());
+            unique_name
+        };
+
         decl.name.symbol = unique_name;
         for field in &mut decl.fields {
             self.resolve_type(&mut field.type_spec)?;
