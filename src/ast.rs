@@ -130,11 +130,11 @@ pub enum Expression {
     SizeOfType(Node<TypeSpec>),
     Dot {
         structure: Node<Expression>,
-        member: Node<Identifier>,
+        field: Node<Identifier>,
     },
     Arrow {
         pointer: Node<Expression>,
-        member: Node<Identifier>,
+        field: Node<Identifier>,
     },
 }
 

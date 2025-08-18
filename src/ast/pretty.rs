@@ -296,14 +296,14 @@ impl PrettyAst {
                 format!("<{node_id}> SizeOfExpr"),
                 vec![Self::from_expression(ty)],
             ),
-            Expression::Dot { structure, member } => Self::new(
+            Expression::Dot { structure, field: member } => Self::new(
                 format!("<{node_id}> Dot"),
                 vec![
                     Self::from_expression(structure),
                     Self::from_identifier(member),
                 ],
             ),
-            Expression::Arrow { pointer, member } => Self::new(
+            Expression::Arrow { pointer, field: member } => Self::new(
                 format!("<{node_id}> Arrow"),
                 vec![
                     Self::from_expression(pointer),

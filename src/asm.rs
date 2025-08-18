@@ -868,6 +868,9 @@ impl Compiler {
                         Operand::PseudoMem(dst.clone(), *offset),
                     ));
                 }
+                tacky::Instruction::CopyFromOffset { .. } => {
+                    todo!()
+                }
             }
         }
 

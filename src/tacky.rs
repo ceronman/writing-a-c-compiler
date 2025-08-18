@@ -130,6 +130,11 @@ pub enum Instruction {
         dst: Symbol,
         offset: i64,
     },
+    CopyFromOffset {
+        src: Symbol,
+        dst: Val,
+        offset: i64,
+    },
 }
 
 pub type Constant = ast::Constant;
@@ -173,6 +178,7 @@ pub enum BinaryOp {
 enum ExprResult {
     Operand(Val),
     Dereference(Val),
+    SubObject { base: Symbol, offset: i64 },
 }
 
 struct TackyGenerator {
@@ -520,6 +526,15 @@ impl TackyGenerator {
                     self.cast_if_needed(dst, expr)
                 }
             }
+            ExprResult::SubObject { base, offset } => {
+                let dst = self.make_temp(&expr_ty);
+                self.instructions.push(Instruction::CopyFromOffset {
+                    src: base,
+                    dst: dst.clone(),
+                    offset,
+                });
+                self.cast_if_needed(dst, expr)
+            }
         }
     }
 
@@ -531,7 +546,7 @@ impl TackyGenerator {
             ast::Expression::Var(name) => Val::Var(name.clone()),
             ast::Expression::Unary { op, expr } => {
                 let lvalue = self.expression(expr);
-                let val = self.get_or_load(&lvalue, expr);
+                let val = self.get_or_load(&lvalue, expr); // TODO: test if this is needed
                 let dst = self.make_temp(&expr_ty);
 
                 if let Type::Pointer(inner) = self.semantics.expr_type(expr).clone()
@@ -913,6 +928,21 @@ impl TackyGenerator {
                     dst
                 }
                 ExprResult::Dereference(ptr) => ptr,
+                ExprResult::SubObject { base, offset } => {
+                    let inner_ty = self.semantics.expr_type(inner).clone();
+                    let dst = self.make_temp(&inner_ty);
+                    self.instructions.push(Instruction::GetAddress {
+                        src: Val::Var(base),
+                        dst: dst.clone(),
+                    });
+                    self.instructions.push(Instruction::AddPtr {
+                        ptr: dst.clone(),
+                        index: Val::Constant(Constant::Long(offset)),
+                        scale: 1,
+                        dst: dst.clone(),
+                    });
+                    dst
+                }
             },
             ast::Expression::Subscript(expr1, expr2) => {
                 let ty1 = self.semantics.expr_type(expr1).clone();
@@ -954,14 +984,81 @@ impl TackyGenerator {
                 };
                 return ExprResult::Operand(Val::Constant(Constant::ULong(size as u64)));
             }
-            ast::Expression::Dot { .. } | ast::Expression::Arrow { .. } => todo!(),
+            ast::Expression::Dot { structure, field } => {
+                let struct_ty = self.semantics.expr_type(structure).clone();
+                let Type::Struct(struct_name) = struct_ty else {
+                    panic!("Expected a struct in dot expression");
+                };
+                let struct_def = self
+                    .semantics
+                    .type_table
+                    .structs
+                    .get(&struct_name)
+                    .expect("Struct without definition");
+                let field_offset = struct_def
+                    .fields
+                    .iter()
+                    .position(|f| f.name == field.symbol)
+                    .expect("Field not found in struct") as i64;
+                return match self.expression(structure) {
+                    ExprResult::Operand(Val::Var(base)) => ExprResult::SubObject {
+                        base,
+                        offset: field_offset,
+                    },
+                    ExprResult::SubObject { base, offset } => ExprResult::SubObject {
+                        base,
+                        offset: offset + field_offset,
+                    },
+                    ExprResult::Dereference(ptr) => {
+                        let struct_ty = self.semantics.expr_type(structure).clone();
+                        let dst = self.make_temp(&Type::Pointer(struct_ty.into()));
+                        self.instructions.push(Instruction::AddPtr {
+                            ptr,
+                            index: Val::Constant(Constant::Long(field_offset)),
+                            scale: 1,
+                            dst: dst.clone(),
+                        });
+                        ExprResult::Dereference(dst)
+                    }
+                    _ => panic!("Invalid dot expression"),
+                };
+            }
+            ast::Expression::Arrow { pointer, field } => {
+                let pointer_ty = self.semantics.expr_type(pointer).clone();
+                let Type::Pointer(struct_ty) = pointer_ty else {
+                    panic!("Expected a pointer to struct in dot expression");
+                };
+                let Type::Struct(struct_name) = &*struct_ty else {
+                    panic!("Expected a struct in dot expression");
+                };
+                let struct_def = self
+                    .semantics
+                    .type_table
+                    .structs
+                    .get(struct_name)
+                    .expect("Struct without definition");
+                let field_offset = struct_def
+                    .fields
+                    .iter()
+                    .position(|f| f.name == field.symbol)
+                    .expect("Field not found in struct") as i64;
+                let ptr = self.emit_expr(pointer);
+                let dst = self.make_temp(&Type::Pointer(struct_ty));
+                self.instructions.push(Instruction::AddPtr {
+                    ptr,
+                    index: Val::Constant(Constant::Long(field_offset)),
+                    scale: 1,
+                    dst: dst.clone(),
+                });
+                dst
+            }
         };
         ExprResult::Operand(result)
     }
 
-    fn get_or_load(&mut self, result: &ExprResult, expr: &ast::Node<ast::Expression>) -> Val {
+    fn get_or_load(&mut self, lvalue: &ExprResult, expr: &ast::Node<ast::Expression>) -> Val {
         let expr_ty = self.semantics.expr_type(expr).clone();
-        let val = match result {
+        let val = match lvalue {
             ExprResult::Operand(val) => val.clone(),
             ExprResult::Dereference(ptr) => {
                 let dst = self.make_temp(&expr_ty);
@@ -971,23 +1068,39 @@ impl TackyGenerator {
                 });
                 dst
             }
+            ExprResult::SubObject { base, offset } => {
+                let dst = self.make_temp(&expr_ty);
+                self.instructions.push(Instruction::CopyFromOffset {
+                    src: base.clone(),
+                    dst: dst.clone(),
+                    offset: *offset,
+                });
+                dst
+            }
         };
         self.cast_if_needed(val, expr)
     }
 
-    fn copy_or_store(&mut self, result: &ExprResult, src: Val) {
-        match result {
+    fn copy_or_store(&mut self, lvalue: &ExprResult, rvalue: Val) {
+        match lvalue {
             ExprResult::Operand(val) => {
                 self.instructions.push(Instruction::Copy {
-                    src,
+                    src: rvalue,
                     dst: val.clone(),
                 });
             }
             ExprResult::Dereference(ptr) => {
                 self.instructions.push(Instruction::Store {
-                    src,
+                    src: rvalue,
                     ptr: ptr.clone(),
                 });
+            }
+            ExprResult::SubObject { base, offset } => {
+                self.instructions.push(Instruction::CopyToOffset {
+                    src: rvalue,
+                    dst: base.clone(),
+                    offset: *offset,
+                })
             }
         }
     }

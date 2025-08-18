@@ -1369,11 +1369,17 @@ impl TypeChecker {
                 )?;
                 Type::ULong
             }
-            Expression::Dot { structure, member } => {
+            Expression::Dot {
+                structure,
+                field: member,
+            } => {
                 let ty = self.check_and_convert_expr(structure)?;
                 self.check_struct_field(structure, &ty, member)?
             }
-            Expression::Arrow { pointer, member } => {
+            Expression::Arrow {
+                pointer,
+                field: member,
+            } => {
                 let ty = self.check_and_convert_expr(pointer)?;
                 let Type::Pointer(inner_ty) = ty else {
                     return Err(CompilerError {

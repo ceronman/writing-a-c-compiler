@@ -837,7 +837,7 @@ impl<'src> Parser<'src> {
                     expr.span + member.span,
                     Expression::Dot {
                         structure: expr,
-                        member,
+                        field: member,
                     },
                 );
                 continue;
@@ -853,7 +853,7 @@ impl<'src> Parser<'src> {
                     expr.span + member.span,
                     Expression::Arrow {
                         pointer: expr,
-                        member,
+                        field: member,
                     },
                 );
                 continue;
