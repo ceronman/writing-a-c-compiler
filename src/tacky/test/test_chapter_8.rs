@@ -266,14 +266,14 @@ fn test_valid_empty_expression() {
 fn test_valid_empty_loop_body() {
     let src = r#"
         int main(void) {
-            int i = 2147;
+            int i = 2147483642;
             do ; while ((i = i - 5) >= 256);
             return i;
         }
     "#;
     let expected = r#"
         global function main() { 
-            i.0 = 2147
+            i.0 = 2147483642
         
           start_loop_0:
         
@@ -2021,7 +2021,7 @@ fn test_valid_for_absent_condition() {
 fn test_valid_for_absent_post() {
     let src = r#"
         int main(void) {
-            int a = -2147;
+            int a = -2147483647;
             for (; a % 5 != 0;) {
                 a = a + 1;
             }
@@ -2030,7 +2030,7 @@ fn test_valid_for_absent_post() {
     "#;
     let expected = r#"
         global function main() { 
-            tmp.0 = - 2147
+            tmp.0 = - 2147483647
             a.0 = tmp.0
         
           start_loop_0:

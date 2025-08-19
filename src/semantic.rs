@@ -138,6 +138,7 @@ impl Type {
         matches!(self, Type::Array(_, _))
     }
 
+    #[deprecated(since = "0.1.0", note = "Use al_size() instead")]
     pub fn size(&self) -> usize {
         match self {
             Type::Char | Type::UChar | Type::SChar => 1,
