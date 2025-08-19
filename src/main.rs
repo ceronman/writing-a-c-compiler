@@ -10,9 +10,9 @@ mod symbol;
 mod tacky;
 mod tempfile;
 
+mod alignment;
 #[cfg(feature = "test_gen")]
 mod testgen;
-mod alignment;
 
 use crate::tempfile::TempPath;
 use std::fs;

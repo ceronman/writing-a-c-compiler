@@ -7,9 +7,15 @@ impl Type {
             Type::Int | Type::UInt => 4,
             Type::Long | Type::ULong | Type::Double | Type::Pointer(_) => 8,
             Type::Array(inner, _) => inner.alignment(type_table),
-            Type::Struct(name) => type_table.structs.get(name).expect("Unknown struct").alignment,
+            Type::Struct(name) => {
+                type_table
+                    .structs
+                    .get(name)
+                    .expect("Unknown struct")
+                    .alignment
+            }
             Type::Function(_) => panic!("Function type does not have alignment"),
-            Type::Void => panic!("Void does not have alignment")
+            Type::Void => panic!("Void does not have alignment"),
         }
     }
 
@@ -30,7 +36,6 @@ impl Type {
         }
     }
 }
-
 
 pub fn align_offset(unaligned_offset: usize, alignment: u8) -> usize {
     let alignment = alignment as usize;

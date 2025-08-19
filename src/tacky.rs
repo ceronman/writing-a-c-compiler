@@ -266,25 +266,42 @@ impl TackyGenerator {
                     }
                 }
             }
-            ast::Initializer::Compound(initializers) => {
-                let Type::Array(inner, len) = ty else {
-                    panic!("Compound initializer used with a non-array type")
-                };
-                for i in 0..*len {
-                    let size = inner.size();
-                    if let Some(initializer) = initializers.get(i) {
-                        self.emit_initializer(
-                            level + 1,
-                            offset + i * size,
-                            name,
-                            initializer,
-                            inner,
-                        )
-                    } else {
-                        self.emit_zero_initializer(offset + i * size, name, inner)
+            ast::Initializer::Compound(initializers) => match ty {
+                Type::Array(inner, len) => {
+                    for i in 0..*len {
+                        let size = inner.size();
+                        if let Some(initializer) = initializers.get(i) {
+                            self.emit_initializer(
+                                level + 1,
+                                offset + i * size,
+                                name,
+                                initializer,
+                                inner,
+                            )
+                        } else {
+                            self.emit_zero_initializer(offset + i * size, name, inner)
+                        }
                     }
                 }
-            }
+                Type::Struct(name) => {
+                    let struct_def = self.semantics.struct_def(name);
+                    let fields = struct_def.fields.clone();
+                    for (i, field) in fields.iter().enumerate() {
+                        if let Some(initializer) = initializers.get(i) {
+                            self.emit_initializer(
+                                level + 1,
+                                offset + field.offset,
+                                name,
+                                initializer,
+                                &field.ty,
+                            )
+                        } else {
+                            self.emit_zero_initializer(offset + field.offset, name, &field.ty)
+                        }
+                    }
+                }
+                _ => panic!("Compound initializer used with a non-array type"),
+            },
         }
     }
 
@@ -306,7 +323,13 @@ impl TackyGenerator {
                 }
                 return;
             }
-            Type::Struct(_) => todo!(),
+            Type::Struct(name) => {
+                let struct_def = self.semantics.struct_def(name);
+                for field in struct_def.fields.clone() {
+                    self.emit_zero_initializer(offset + field.offset, name, &field.ty)
+                }
+                return;
+            }
         };
         self.instructions.push(Instruction::CopyToOffset {
             src: Val::Constant(constant),
@@ -935,12 +958,14 @@ impl TackyGenerator {
                         src: Val::Var(base),
                         dst: dst.clone(),
                     });
-                    self.instructions.push(Instruction::AddPtr {
-                        ptr: dst.clone(),
-                        index: Val::Constant(Constant::Long(offset)),
-                        scale: 1,
-                        dst: dst.clone(),
-                    });
+                    if offset != 0 {
+                        self.instructions.push(Instruction::AddPtr {
+                            ptr: dst.clone(),
+                            index: Val::Constant(Constant::Long(offset)),
+                            scale: 1,
+                            dst: dst.clone(),
+                        });
+                    }
                     dst
                 }
             },
@@ -989,12 +1014,7 @@ impl TackyGenerator {
                 let Type::Struct(struct_name) = struct_ty else {
                     panic!("Expected a struct in dot expression");
                 };
-                let struct_def = self
-                    .semantics
-                    .type_table
-                    .structs
-                    .get(&struct_name)
-                    .expect("Struct without definition");
+                let struct_def = self.semantics.struct_def(&struct_name);
                 let field_offset = struct_def
                     .fields
                     .iter()
@@ -1011,14 +1031,18 @@ impl TackyGenerator {
                     },
                     ExprResult::Dereference(ptr) => {
                         let struct_ty = self.semantics.expr_type(structure).clone();
-                        let dst = self.make_temp(&Type::Pointer(struct_ty.into()));
-                        self.instructions.push(Instruction::AddPtr {
-                            ptr,
-                            index: Val::Constant(Constant::Long(field_offset)),
-                            scale: 1,
-                            dst: dst.clone(),
-                        });
-                        ExprResult::Dereference(dst)
+                        if field_offset != 0 {
+                            let dst = self.make_temp(&Type::Pointer(struct_ty.into()));
+                            self.instructions.push(Instruction::AddPtr {
+                                ptr,
+                                index: Val::Constant(Constant::Long(field_offset)),
+                                scale: 1,
+                                dst: dst.clone(),
+                            });
+                            ExprResult::Dereference(dst)
+                        } else {
+                            ExprResult::Dereference(ptr)
+                        }
                     }
                     _ => panic!("Invalid dot expression"),
                 };
@@ -1031,26 +1055,25 @@ impl TackyGenerator {
                 let Type::Struct(struct_name) = &*struct_ty else {
                     panic!("Expected a struct in dot expression");
                 };
-                let struct_def = self
-                    .semantics
-                    .type_table
-                    .structs
-                    .get(struct_name)
-                    .expect("Struct without definition");
+                let struct_def = self.semantics.struct_def(&struct_name);
                 let field_offset = struct_def
                     .fields
                     .iter()
                     .position(|f| f.name == field.symbol)
                     .expect("Field not found in struct") as i64;
                 let ptr = self.emit_expr(pointer);
-                let dst = self.make_temp(&Type::Pointer(struct_ty));
-                self.instructions.push(Instruction::AddPtr {
-                    ptr,
-                    index: Val::Constant(Constant::Long(field_offset)),
-                    scale: 1,
-                    dst: dst.clone(),
-                });
-                dst
+                if field_offset != 0 {
+                    let dst = self.make_temp(&Type::Pointer(struct_ty));
+                    self.instructions.push(Instruction::AddPtr {
+                        ptr,
+                        index: Val::Constant(Constant::Long(field_offset)),
+                        scale: 1,
+                        dst: dst.clone(),
+                    });
+                    dst
+                } else {
+                    ptr
+                }
             }
         };
         ExprResult::Operand(result)

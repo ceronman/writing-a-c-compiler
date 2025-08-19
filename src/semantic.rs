@@ -297,6 +297,14 @@ impl SemanticData {
             .get(&expr.id)
             .expect("Expression without type")
     }
+
+    pub fn struct_def(&self, name: &Symbol) -> &StructDef {
+        self.type_table
+            .structs
+            .get(name)
+            .expect("Struct without definition")
+    }
+
     pub fn switch_cases(&self, expr: &Node<Expression>) -> &SwitchCases {
         self.switch_cases
             .get(&expr.id)

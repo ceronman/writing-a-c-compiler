@@ -313,11 +313,13 @@ impl<'src> Lexer<'src> {
                 _ => TokenKind::Less,
             },
             '0'..='9' => self.constant(c),
-            '.' => if let Some('0'..='9') = self.peek() {
-                self.constant(c)
-            } else {
-                TokenKind::Dot
-            },
+            '.' => {
+                if let Some('0'..='9') = self.peek() {
+                    self.constant(c)
+                } else {
+                    TokenKind::Dot
+                }
+            }
             '\'' => self.char_literal(),
             '"' => self.string_literal(),
             c if c == '_' || c.is_alphabetic() => self.identifier(),
