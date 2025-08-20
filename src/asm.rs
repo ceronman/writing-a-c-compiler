@@ -43,12 +43,8 @@ impl SemanticData {
             tacky::Val::Constant(Constant::Int(_) | Constant::UInt(_)) => AsmType::Longword,
             tacky::Val::Constant(Constant::Long(_) | Constant::ULong(_)) => AsmType::Quadword,
             tacky::Val::Constant(Constant::Double(_)) => AsmType::Double,
-            tacky::Val::Var(name) => self.symbol_asm_ty(name),
+            tacky::Val::Var(name) => self.symbol_ty(name).to_asm(self),
         }
-    }
-
-    fn symbol_asm_ty(&self, symbol: &Symbol) -> AsmType {
-        self.symbol_ty(symbol).to_asm()
     }
 
     fn symbol_ty(&self, symbol: &Symbol) -> &Type {
@@ -68,7 +64,7 @@ impl SemanticData {
 }
 
 impl Type {
-    fn to_asm(&self) -> AsmType {
+    fn to_asm(&self, semantics: &SemanticData) -> AsmType {
         match self {
             Type::UChar | Type::SChar | Type::Char => AsmType::Byte,
             Type::Int | Type::UInt => AsmType::Longword,
@@ -79,7 +75,7 @@ impl Type {
             Type::Pointer(_) => AsmType::Quadword,
             Type::Array(inner, length) => {
                 let size = (inner.size() * length) as u64;
-                let inner_asm_ty = inner.to_asm();
+                let inner_asm_ty = inner.to_asm(semantics);
                 let alignment = if size < 16 {
                     match inner_asm_ty {
                         AsmType::Byte => 1,
@@ -93,7 +89,14 @@ impl Type {
                 };
                 AsmType::ByteArray { size, alignment }
             }
-            Type::Struct(_name) => todo!(),
+            Type::Struct(name) => {
+                let struct_def = semantics.struct_def(name);
+                // TODO: unify usize and u64 everywhere.
+                AsmType::ByteArray {
+                    size: struct_def.size as u64,
+                    alignment: struct_def.alignment,
+                }
+            }
         }
     }
 }
@@ -113,6 +116,12 @@ struct Compiler {
     doubles: HashMap<u64, Symbol>,
     label_counter: u64,
     semantics: SemanticData,
+}
+
+#[derive(Debug, Clone)]
+enum CopyOperand {
+    Reg(Reg),
+    Var(Symbol),
 }
 
 impl Compiler {
@@ -555,11 +564,23 @@ impl Compiler {
                     instructions.push(Instruction::JmpCC(CondCode::NE, target.clone()));
                 }
                 tacky::Instruction::Copy { src, dst } => {
-                    instructions.push(Instruction::Mov(
-                        self.semantics.val_asm_ty(src),
-                        self.generate_val(src),
-                        self.generate_val(dst),
-                    ));
+                    let src_ty = self.semantics.val_asm_ty(src);
+
+                    if let AsmType::ByteArray { size, .. } = src_ty {
+                        Self::copy_bytes(
+                            &mut instructions,
+                            CopyOperand::Var(src.as_var()),
+                            CopyOperand::Var(dst.as_var()),
+                            0,
+                            size,
+                        );
+                    } else {
+                        instructions.push(Instruction::Mov(
+                            src_ty,
+                            self.generate_val(src),
+                            self.generate_val(dst),
+                        ));
+                    }
                 }
                 tacky::Instruction::Label(l) => {
                     instructions.push(Instruction::Label(l.clone()));
@@ -810,11 +831,22 @@ impl Compiler {
                         self.generate_val(ptr),
                         Reg::Ax.into(),
                     ));
-                    instructions.push(Instruction::Mov(
-                        self.semantics.val_asm_ty(dst),
-                        Operand::Memory(Reg::Ax, 0),
-                        self.generate_val(dst),
-                    ));
+                    let dst_ty = self.semantics.val_asm_ty(dst);
+                    if let AsmType::ByteArray { size, alignment } = dst_ty {
+                        Self::copy_bytes(
+                            &mut instructions,
+                            CopyOperand::Reg(Reg::Ax),
+                            CopyOperand::Var(dst.as_var()),
+                            0,
+                            size,
+                        );
+                    } else {
+                        instructions.push(Instruction::Mov(
+                            dst_ty,
+                            Operand::Memory(Reg::Ax, 0),
+                            self.generate_val(dst),
+                        ));
+                    }
                 }
                 tacky::Instruction::Store { src, ptr } => {
                     instructions.push(Instruction::Mov(
@@ -822,11 +854,22 @@ impl Compiler {
                         self.generate_val(ptr),
                         Reg::Ax.into(),
                     ));
-                    instructions.push(Instruction::Mov(
-                        self.semantics.val_asm_ty(src),
-                        self.generate_val(src),
-                        Operand::Memory(Reg::Ax, 0),
-                    ));
+                    let src_ty = self.semantics.val_asm_ty(src);
+                    if let AsmType::ByteArray { size, .. } = src_ty {
+                        Self::copy_bytes(
+                            &mut instructions,
+                            CopyOperand::Var(src.as_var()),
+                            CopyOperand::Reg(Reg::Ax),
+                            0,
+                            size,
+                        );
+                    } else {
+                        instructions.push(Instruction::Mov(
+                            src_ty,
+                            self.generate_val(src),
+                            Operand::Memory(Reg::Ax, 0),
+                        ));
+                    }
                 }
                 tacky::Instruction::AddPtr {
                     ptr,
@@ -862,14 +905,40 @@ impl Compiler {
                     ));
                 }
                 tacky::Instruction::CopyToOffset { src, dst, offset } => {
-                    instructions.push(Instruction::Mov(
-                        self.semantics.val_asm_ty(src),
-                        self.generate_val(src),
-                        Operand::PseudoMem(dst.clone(), *offset),
-                    ));
+                    let src_ty = self.semantics.val_asm_ty(src);
+                    if let AsmType::ByteArray { size, .. } = src_ty {
+                        Self::copy_bytes(
+                            &mut instructions,
+                            CopyOperand::Var(src.as_var()),
+                            CopyOperand::Var(dst.clone()),
+                            *offset,
+                            size,
+                        );
+                    } else {
+                        instructions.push(Instruction::Mov(
+                            src_ty,
+                            self.generate_val(src),
+                            Operand::PseudoMem(dst.clone(), *offset),
+                        ));
+                    }
                 }
-                tacky::Instruction::CopyFromOffset { .. } => {
-                    todo!()
+                tacky::Instruction::CopyFromOffset { src, dst, offset } => {
+                    let dst_ty = self.semantics.val_asm_ty(dst);
+                    if let AsmType::ByteArray { size, .. } = dst_ty {
+                        Self::copy_bytes(
+                            &mut instructions,
+                            CopyOperand::Var(src.clone()),
+                            CopyOperand::Var(dst.as_var()),
+                            *offset,
+                            size,
+                        );
+                    } else {
+                        instructions.push(Instruction::Mov(
+                            dst_ty,
+                            Operand::PseudoMem(src.clone(), *offset),
+                            self.generate_val(dst),
+                        ));
+                    }
                 }
             }
         }
@@ -878,6 +947,36 @@ impl Compiler {
             name: function.name.clone(),
             global: function.global,
             instructions,
+        }
+    }
+
+    fn copy_bytes(
+        instructions: &mut Vec<Instruction>,
+        src: CopyOperand,
+        dst: CopyOperand,
+        offset: i64,
+        size: u64,
+    ) {
+        let mut part_offset = 0;
+        while part_offset < size {
+            let remaining_bytes = size - part_offset;
+            let ty = match remaining_bytes {
+                1..4 => AsmType::Byte,
+                4..8 => AsmType::Longword,
+                _ => AsmType::Quadword,
+            };
+            instructions.push(Instruction::Mov(
+                ty,
+                match src.clone() {
+                    CopyOperand::Reg(reg) => Operand::Memory(reg, offset),
+                    CopyOperand::Var(name) => Operand::PseudoMem(name, offset + part_offset as i64),
+                },
+                match dst.clone() {
+                    CopyOperand::Reg(reg) => Operand::Memory(reg, offset),
+                    CopyOperand::Var(name) => Operand::PseudoMem(name, offset + part_offset as i64),
+                },
+            ));
+            part_offset += ty.size();
         }
     }
 
@@ -893,7 +992,7 @@ impl Compiler {
                     backend_symbols.insert(
                         symbol.clone(),
                         BackendSymbolData::Obj {
-                            ty: semantic.symbol_asm_ty(symbol),
+                            ty: semantic.symbol_ty(symbol).to_asm(semantic),
                             is_static: true,
                             is_const: false,
                         },
@@ -903,7 +1002,7 @@ impl Compiler {
                     backend_symbols.insert(
                         symbol.clone(),
                         BackendSymbolData::Obj {
-                            ty: semantic.symbol_asm_ty(symbol),
+                            ty: semantic.symbol_ty(symbol).to_asm(semantic),
                             is_static: true,
                             is_const: true,
                         },
@@ -913,7 +1012,7 @@ impl Compiler {
                     backend_symbols.insert(
                         symbol.clone(),
                         BackendSymbolData::Obj {
-                            ty: semantic.symbol_asm_ty(symbol),
+                            ty: semantic.symbol_ty(symbol).to_asm(semantic),
                             is_static: false,
                             is_const: false,
                         },
@@ -927,7 +1026,7 @@ impl Compiler {
     fn generate_constant(&mut self, c: &tacky::StaticConstant) -> StaticConstant {
         StaticConstant {
             name: c.name.clone(),
-            alignment: match c.ty.to_asm() {
+            alignment: match c.ty.to_asm(&self.semantics) {
                 // TODO: extract this duplicated logic
                 AsmType::Byte => 1,
                 AsmType::Longword => 4,
@@ -939,11 +1038,13 @@ impl Compiler {
     }
 
     fn generate_static_variable(&mut self, var: &tacky::StaticVariable) -> StaticVariable {
+        let self1 = &self.semantics;
+        let symbol = &var.name;
         StaticVariable {
             name: var.name.clone(),
             global: var.global,
             init: var.init.clone(),
-            alignment: match self.semantics.symbol_asm_ty(&var.name) {
+            alignment: match self1.symbol_ty(symbol).to_asm(&self.semantics) {
                 AsmType::Byte => 1,
                 AsmType::Longword => 4,
                 AsmType::Quadword | AsmType::Double => 8,
@@ -1075,7 +1176,11 @@ impl Compiler {
                 let offset = if let Some(saved) = stack_vars.get(name).copied() {
                     saved
                 } else if is_static {
-                    *operand = Operand::Data(is_const, name.clone());
+                    *operand = Operand::Data {
+                        is_static: is_const,
+                        name: name.clone(),
+                        offset: 0,
+                    };
                     return;
                 } else {
                     match ty {
@@ -1403,7 +1508,11 @@ impl Compiler {
                 name
             }
         };
-        Operand::Data(true, name)
+        Operand::Data {
+            is_static: true,
+            name,
+            offset: 0,
+        }
     }
 
     fn make_label(&mut self, prefix: &str) -> Symbol {
@@ -1445,6 +1554,27 @@ impl tacky::BinaryOp {
             | tacky::BinaryOp::LessOrEqual
             | tacky::BinaryOp::GreaterThan
             | tacky::BinaryOp::GreaterOrEqual => unreachable!(),
+        }
+    }
+}
+
+impl AsmType {
+    fn size(&self) -> u64 {
+        match self {
+            AsmType::Byte => 1,
+            AsmType::Longword => 4,
+            AsmType::Quadword => 8,
+            AsmType::Double => 8,
+            AsmType::ByteArray { size, .. } => *size,
+        }
+    }
+}
+
+impl tacky::Val {
+    fn as_var(&self) -> Symbol {
+        match self {
+            tacky::Val::Constant(_) => panic!("Constant value can't be a variable"),
+            tacky::Val::Var(symbol) => symbol.clone(),
         }
     }
 }

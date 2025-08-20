@@ -697,7 +697,8 @@ impl TackyGenerator {
                                 dst: diff.clone(),
                             });
 
-                            let size = Val::Constant(Constant::Long(self.size_of(inner1.as_ref()) as i64));
+                            let size =
+                                Val::Constant(Constant::Long(self.size_of(inner1.as_ref()) as i64));
                             self.instructions.push(Instruction::Binary {
                                 op: BinaryOp::Divide,
                                 src1: diff,
@@ -997,7 +998,9 @@ impl TackyGenerator {
                 return ExprResult::Dereference(dst);
             }
             ast::Expression::SizeOfType(ty) => {
-                return ExprResult::Operand(Val::Constant(Constant::ULong(self.size_of(&ty.ty()) as u64)));
+                return ExprResult::Operand(Val::Constant(Constant::ULong(
+                    self.size_of(&ty.ty()) as u64
+                )));
             }
             ast::Expression::SizeOfExpr(e) => {
                 let size = if let Some(target) = self.semantics.implicit_casts.get(&e.id).cloned() {

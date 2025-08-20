@@ -554,8 +554,22 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
             write!(output, "{scale}")?;
             write!(output, ")")
         }
-        (Operand::Data(true, name), _) => write!(output, "L{name}(%rip)"),
-        (Operand::Data(_, name), _) => write!(output, "_{name}(%rip)"),
+        (
+            Operand::Data {
+                is_static: true,
+                name,
+                ..
+            },
+            _,
+        ) => write!(output, "L{name}(%rip)"),
+        (
+            Operand::Data {
+                is_static: false,
+                name,
+                ..
+            },
+            _,
+        ) => write!(output, "_{name}(%rip)"),
         (Operand::Pseudo(..) | Operand::PseudoMem(..), _) => {
             unreachable!("Pseudo-registers should not appear here")
         }

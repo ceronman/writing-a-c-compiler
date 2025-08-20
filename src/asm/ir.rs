@@ -85,7 +85,11 @@ pub enum Operand {
     Reg(Reg),
     Pseudo(Symbol),
     PseudoMem(Symbol, i64),
-    Data(bool, Symbol),
+    Data {
+        is_static: bool,
+        name: Symbol,
+        offset: i64,
+    },
     Memory(Reg, i64),
     Indexed(Reg, Reg, u8),
 }
@@ -94,7 +98,7 @@ impl Operand {
     pub(crate) fn is_mem(&self) -> bool {
         matches!(
             self,
-            Operand::Memory(..) | Operand::Data(..) | Operand::Indexed(..)
+            Operand::Memory(..) | Operand::Data { .. } | Operand::Indexed(..)
         )
     }
 }
