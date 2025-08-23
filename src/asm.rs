@@ -6,10 +6,11 @@ use crate::asm::ir::{
     StaticVariable, TopLevel, UnaryOp,
 };
 use crate::ast::Constant;
-use crate::semantic::{Attributes, SemanticData, StaticInit, Type};
+use crate::semantic::{Attributes, SemanticData, StaticInit, StructDef, Type};
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
+use crate::tacky::Val;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
 const DOUBLE_ARG_REGISTERS: [Reg; 8] = [
@@ -32,6 +33,12 @@ enum BackendSymbolData {
     Fn {
         _defined: bool,
     },
+}
+
+enum ParamClass {
+    Integer,
+    Sse,
+    Memory
 }
 
 type BackendSymbolTable = HashMap<Symbol, BackendSymbolData>;
@@ -185,7 +192,7 @@ impl Compiler {
             int_reg_args,
             double_reg_args,
             stack_args,
-        } = self.classify_parameters(&args);
+        } = self.classify_parameters(&args, false);
 
         for (reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().zip(int_reg_args) {
             instructions.push(Instruction::Mov(ty, Operand::Reg(*reg), operand));
@@ -1064,7 +1071,7 @@ impl Compiler {
             int_reg_args,
             double_reg_args,
             stack_args,
-        } = self.classify_parameters(args);
+        } = self.classify_parameters(args, false);
 
         let padding = if stack_args.len().is_multiple_of(2) {
             0
@@ -1127,10 +1134,12 @@ impl Compiler {
         }
     }
 
-    fn classify_parameters(&mut self, values: &[tacky::Val]) -> FnArgs {
+    fn classify_parameters(&mut self, values: &[tacky::Val], return_in_memory: bool) -> FnArgs {
         let mut int_reg_args = Vec::new();
         let mut double_reg_args = Vec::new();
         let mut stack_args = Vec::new();
+
+        let int_regs_available = if return_in_memory { INT_ARG_REGISTERS.len() - 1 } else { INT_ARG_REGISTERS.len() };
 
         for value in values {
             let operand = self.generate_val(value);
@@ -1142,16 +1151,94 @@ impl Compiler {
                 } else {
                     stack_args.push(operand);
                 }
-            } else if int_reg_args.len() < INT_ARG_REGISTERS.len() {
-                int_reg_args.push(operand);
+            } else if ty.is_scalar() {
+                if int_reg_args.len() < int_regs_available {
+                    int_reg_args.push(operand);
+                } else {
+                    stack_args.push(operand);
+                }
             } else {
-                stack_args.push(operand);
+                let Val::Var(value_name) = value else {
+                    panic!("Non-scalar value that is not a struct");
+                };
+                let Type::Struct(struct_ty) = self.semantics.symbol_ty(value_name) else {
+                    panic!("Non-scalar value that is not a struct");
+                };
+                let struct_def = self.semantics.struct_def(struct_ty);
+                let classes = self.classify_struct(struct_def);
+                let mut use_stack = true;
+                let struct_size = struct_def.size;
+                if !matches!(classes[0], ParamClass::Memory) {
+                    let mut tentative_ints = Vec::new();
+                    let mut tentative_doubles = Vec::new();
+                    let mut offset = 0;
+                    for class in &classes {
+                        let operand = Operand::PseudoMem(value_name.clone(), offset);
+                        if let ParamClass::Sse = class {
+                            tentative_doubles.push(TypedOperand { operand, ty: AsmType::Double });
+                        } else {
+                            let eightbyte_type = self.get_eightbyte_type(offset, struct_size);
+                            tentative_ints.push(TypedOperand { operand, ty: eightbyte_type });
+                        }
+                        offset += 8
+                    }
+                    if (tentative_doubles.len() + tentative_ints.len()) <= 8 && (tentative_ints.len() + int_reg_args.len()) <= int_regs_available {
+                        double_reg_args.extend(tentative_doubles);
+                        int_reg_args.extend(tentative_ints);
+                        use_stack = false;
+                    }
+                }
+                if use_stack {
+                    let mut offset = 0;
+                    for _class in &classes {
+                        let operand = Operand::PseudoMem(value_name.clone(), offset);
+                        let eightbyte_type = self.get_eightbyte_type(offset, struct_size);
+                        stack_args.push(TypedOperand { operand, ty: eightbyte_type });
+                        offset += 8
+                    }
+                }
             }
         }
         FnArgs {
             int_reg_args,
             double_reg_args,
             stack_args,
+        }
+    }
+
+    fn get_eightbyte_type(&self, offset: i64, struct_size: usize) -> AsmType {
+        let bytes_from_end = struct_size - offset as usize;
+        if bytes_from_end >= 8 {
+            AsmType::Quadword
+        } else if bytes_from_end == 4 {
+            AsmType::Longword
+        } else if bytes_from_end  == 1 {
+            AsmType::Byte
+        } else {
+            AsmType::ByteArray { size: bytes_from_end as u64, alignment: 0 }
+        }
+    }
+
+    fn classify_struct(&self, struct_def: &StructDef) -> Vec<ParamClass> {
+        if struct_def.size > 16 {
+            return (0..struct_def.size).step_by(8).map(|_| ParamClass::Memory).collect();
+        }
+        let scalar_types = struct_def.flatten(&self.semantics);
+        if struct_def.size > 8 {
+            if let Some(Type::Double) = scalar_types.first() &&
+                let Some(Type::Double) = scalar_types.last() {
+                vec![ParamClass::Sse, ParamClass::Sse]
+            } else if let Some(Type::Double) = scalar_types.first() {
+                vec![ParamClass::Sse, ParamClass::Integer]
+            } else if let Some(Type::Double) = scalar_types.last() {
+                vec![ParamClass::Integer, ParamClass::Sse]
+            } else {
+                vec![ParamClass::Integer, ParamClass::Integer]
+            }
+        } else if let Some(Type::Double) = scalar_types.first() {
+            vec![ParamClass::Sse]
+        } else {
+            vec![ParamClass::Integer]
         }
     }
 
@@ -1568,6 +1655,13 @@ impl AsmType {
             AsmType::ByteArray { size, .. } => *size,
         }
     }
+
+    fn is_scalar(&self) -> bool {
+        match self {
+            AsmType::Byte | AsmType::Longword | AsmType::Quadword | AsmType::Double => true,
+            AsmType::ByteArray { .. } => false,
+        }
+    }
 }
 
 impl tacky::Val {
@@ -1576,6 +1670,32 @@ impl tacky::Val {
             tacky::Val::Constant(_) => panic!("Constant value can't be a variable"),
             tacky::Val::Var(symbol) => symbol.clone(),
         }
+    }
+}
+
+impl StructDef {
+    fn flatten(&self, semantic_data: &SemanticData) -> Vec<Type> {
+        let mut types: Vec<Type> = Vec::with_capacity(self.fields.len());
+        fn flatten_inner(ty: &Type, semantic_data: &SemanticData, types: &mut Vec<Type>) {
+            match ty {
+                Type::Struct(name) => {
+                    let struct_def = semantic_data.struct_def(name);
+                    for field in &struct_def.fields {
+                        flatten_inner(&field.ty, semantic_data, types);
+                    }
+                }
+                Type::Array(inner_ty, size) => {
+                    for _ in 0..*size {
+                        flatten_inner(inner_ty, semantic_data, types)
+                    }
+                }
+                other => types.push(other.clone())
+            }
+        }
+        for field in &self.fields {
+            flatten_inner(&field.ty, semantic_data, &mut types);
+        }
+        types
     }
 }
 
