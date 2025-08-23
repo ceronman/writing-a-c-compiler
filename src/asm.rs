@@ -9,8 +9,8 @@ use crate::ast::Constant;
 use crate::semantic::{Attributes, SemanticData, StaticInit, StructDef, Type};
 use crate::symbol::Symbol;
 use crate::tacky;
-use std::collections::HashMap;
 use crate::tacky::Val;
+use std::collections::HashMap;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
 const DOUBLE_ARG_REGISTERS: [Reg; 8] = [
@@ -38,7 +38,7 @@ enum BackendSymbolData {
 enum ParamClass {
     Integer,
     Sse,
-    Memory
+    Memory,
 }
 
 type BackendSymbolTable = HashMap<Symbol, BackendSymbolData>;
@@ -1139,7 +1139,11 @@ impl Compiler {
         let mut double_reg_args = Vec::new();
         let mut stack_args = Vec::new();
 
-        let int_regs_available = if return_in_memory { INT_ARG_REGISTERS.len() - 1 } else { INT_ARG_REGISTERS.len() };
+        let int_regs_available = if return_in_memory {
+            INT_ARG_REGISTERS.len() - 1
+        } else {
+            INT_ARG_REGISTERS.len()
+        };
 
         for value in values {
             let operand = self.generate_val(value);
@@ -1175,14 +1179,22 @@ impl Compiler {
                     for class in &classes {
                         let operand = Operand::PseudoMem(value_name.clone(), offset);
                         if let ParamClass::Sse = class {
-                            tentative_doubles.push(TypedOperand { operand, ty: AsmType::Double });
+                            tentative_doubles.push(TypedOperand {
+                                operand,
+                                ty: AsmType::Double,
+                            });
                         } else {
                             let eightbyte_type = self.get_eightbyte_type(offset, struct_size);
-                            tentative_ints.push(TypedOperand { operand, ty: eightbyte_type });
+                            tentative_ints.push(TypedOperand {
+                                operand,
+                                ty: eightbyte_type,
+                            });
                         }
                         offset += 8
                     }
-                    if (tentative_doubles.len() + tentative_ints.len()) <= 8 && (tentative_ints.len() + int_reg_args.len()) <= int_regs_available {
+                    if (tentative_doubles.len() + tentative_ints.len()) <= 8
+                        && (tentative_ints.len() + int_reg_args.len()) <= int_regs_available
+                    {
                         double_reg_args.extend(tentative_doubles);
                         int_reg_args.extend(tentative_ints);
                         use_stack = false;
@@ -1193,7 +1205,10 @@ impl Compiler {
                     for _class in &classes {
                         let operand = Operand::PseudoMem(value_name.clone(), offset);
                         let eightbyte_type = self.get_eightbyte_type(offset, struct_size);
-                        stack_args.push(TypedOperand { operand, ty: eightbyte_type });
+                        stack_args.push(TypedOperand {
+                            operand,
+                            ty: eightbyte_type,
+                        });
                         offset += 8
                     }
                 }
@@ -1212,21 +1227,28 @@ impl Compiler {
             AsmType::Quadword
         } else if bytes_from_end == 4 {
             AsmType::Longword
-        } else if bytes_from_end  == 1 {
+        } else if bytes_from_end == 1 {
             AsmType::Byte
         } else {
-            AsmType::ByteArray { size: bytes_from_end as u64, alignment: 0 }
+            AsmType::ByteArray {
+                size: bytes_from_end as u64,
+                alignment: 0,
+            }
         }
     }
 
     fn classify_struct(&self, struct_def: &StructDef) -> Vec<ParamClass> {
         if struct_def.size > 16 {
-            return (0..struct_def.size).step_by(8).map(|_| ParamClass::Memory).collect();
+            return (0..struct_def.size)
+                .step_by(8)
+                .map(|_| ParamClass::Memory)
+                .collect();
         }
         let scalar_types = struct_def.flatten(&self.semantics);
         if struct_def.size > 8 {
-            if let Some(Type::Double) = scalar_types.first() &&
-                let Some(Type::Double) = scalar_types.last() {
+            if let Some(Type::Double) = scalar_types.first()
+                && let Some(Type::Double) = scalar_types.last()
+            {
                 vec![ParamClass::Sse, ParamClass::Sse]
             } else if let Some(Type::Double) = scalar_types.first() {
                 vec![ParamClass::Sse, ParamClass::Integer]
@@ -1689,7 +1711,7 @@ impl StructDef {
                         flatten_inner(inner_ty, semantic_data, types)
                     }
                 }
-                other => types.push(other.clone())
+                other => types.push(other.clone()),
             }
         }
         for field in &self.fields {
