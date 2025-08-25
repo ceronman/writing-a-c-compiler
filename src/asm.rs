@@ -9,7 +9,6 @@ use crate::ast::Constant;
 use crate::semantic::{Attributes, SemanticData, StaticInit, StructDef, Type};
 use crate::symbol::Symbol;
 use crate::tacky;
-use crate::tacky::Val;
 use std::collections::HashMap;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
@@ -24,6 +23,9 @@ const DOUBLE_ARG_REGISTERS: [Reg; 8] = [
     Reg::XMM7,
 ];
 
+const INT_RETURN_REGISTERS: [Reg; 2] = [Reg::Ax, Reg::Dx];
+const DOUBLE_RETURN_REGISTERS: [Reg; 2] = [Reg::XMM0, Reg::XMM1];
+
 enum BackendSymbolData {
     Obj {
         ty: AsmType,
@@ -31,7 +33,8 @@ enum BackendSymbolData {
         is_const: bool,
     },
     Fn {
-        _defined: bool,
+        defined: bool,
+        return_on_stack: bool
     },
 }
 
@@ -119,16 +122,16 @@ struct FnArgs {
     stack_args: Vec<TypedOperand>,
 }
 
+struct FnReturn {
+    int_values: Vec<TypedOperand>,
+    double_values: Vec<TypedOperand>,
+    in_memory: bool
+}
+
 struct Compiler {
     doubles: HashMap<u64, Symbol>,
     label_counter: u64,
     semantics: SemanticData,
-}
-
-#[derive(Debug, Clone)]
-enum CopyOperand {
-    Reg(Reg),
-    Var(Symbol),
 }
 
 impl Compiler {
@@ -148,7 +151,7 @@ impl Compiler {
             }
         }
 
-        let mut backend_symbols = Self::make_backend_symbols(&program.semantics);
+        let mut backend_symbols = self.make_backend_symbols(&program.semantics);
 
         for (key, name) in &self.doubles {
             // -0.0 is used to negate floats by using xorpd instruction.
@@ -182,52 +185,20 @@ impl Compiler {
 
     fn generate_function(&mut self, function: &tacky::Function) -> Function {
         let mut instructions = Vec::new();
-        let args: Vec<tacky::Val> = function
+        let params: Vec<tacky::Val> = function
             .params
             .iter()
             .cloned()
             .map(tacky::Val::Var)
             .collect();
-        let FnArgs {
-            int_reg_args,
-            double_reg_args,
-            stack_args,
-        } = self.classify_parameters(&args, false);
+        let return_in_memory = self.does_return_in_memory(&function.name);
 
-        for (reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().zip(int_reg_args) {
-            instructions.push(Instruction::Mov(ty, Operand::Reg(*reg), operand));
-        }
-
-        for (reg, TypedOperand { ty, operand }) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args)
-        {
-            instructions.push(Instruction::Mov(ty, Operand::Reg(*reg), operand));
-        }
-
-        let mut offset = 16;
-        for TypedOperand { ty, operand } in stack_args {
-            instructions.push(Instruction::Mov(
-                ty,
-                Operand::Memory(Reg::BP, offset),
-                operand,
-            ));
-            offset += 8;
-        }
+        self.assign_parameters(&mut instructions, params, return_in_memory);
 
         for tacky_instruction in &function.body {
             match tacky_instruction {
                 tacky::Instruction::Return(val) => {
-                    if let Some(val) = val {
-                        let reg = match self.semantics.val_asm_ty(val) {
-                            AsmType::Double => Reg::XMM0,
-                            _ => Reg::Ax,
-                        };
-                        instructions.push(Instruction::Mov(
-                            self.semantics.val_asm_ty(val),
-                            self.generate_val(val),
-                            reg.into(),
-                        ));
-                    };
-                    instructions.push(Instruction::Ret);
+                    self.generate_return(&mut instructions, val);
                 }
 
                 tacky::Instruction::Unary { op, src, dst } => {
@@ -416,15 +387,10 @@ impl Compiler {
                                 self.generate_val(src1),
                                 self.generate_val(dst),
                             ));
-                            instructions.push(Instruction::Mov(
-                                ty,
-                                self.generate_val(src2),
-                                Reg::Cx.into(),
-                            ));
                             if self.semantics.is_signed(src1) {
-                                instructions.push(Instruction::Sal(ty, self.generate_val(dst)));
+                                instructions.push(Instruction::Sal(ty, self.generate_val(src2), self.generate_val(dst)));
                             } else {
-                                instructions.push(Instruction::Shl(ty, self.generate_val(dst)));
+                                instructions.push(Instruction::Shl(ty, self.generate_val(src2), self.generate_val(dst)));
                             }
                         }
                         tacky::BinaryOp::ShiftRight => {
@@ -433,15 +399,10 @@ impl Compiler {
                                 self.generate_val(src1),
                                 self.generate_val(dst),
                             ));
-                            instructions.push(Instruction::Mov(
-                                ty,
-                                self.generate_val(src2),
-                                Reg::Cx.into(),
-                            ));
                             if self.semantics.is_signed(src1) {
-                                instructions.push(Instruction::Sar(ty, self.generate_val(dst)));
+                                instructions.push(Instruction::Sar(ty, self.generate_val(src2), self.generate_val(dst)));
                             } else {
-                                instructions.push(Instruction::Shr(ty, self.generate_val(dst)));
+                                instructions.push(Instruction::Shr(ty, self.generate_val(src2), self.generate_val(dst)));
                             }
                         }
                         tacky::BinaryOp::Equal
@@ -576,9 +537,8 @@ impl Compiler {
                     if let AsmType::ByteArray { size, .. } = src_ty {
                         Self::copy_bytes(
                             &mut instructions,
-                            CopyOperand::Var(src.as_var()),
-                            CopyOperand::Var(dst.as_var()),
-                            0,
+                            self.generate_val(src),
+                            self.generate_val(dst),
                             size,
                         );
                     } else {
@@ -797,7 +757,7 @@ impl Compiler {
                                 Operand::Imm(1),
                                 Reg::Cx.into(),
                             ));
-                            instructions.push(Instruction::Shr(AsmType::Quadword, Reg::Dx.into()));
+                            instructions.push(Instruction::Shr(AsmType::Quadword, Operand::Imm(1), Reg::Dx.into()));
                             instructions.push(Instruction::Binary(
                                 AsmType::Quadword,
                                 BinaryOp::And,
@@ -842,9 +802,8 @@ impl Compiler {
                     if let AsmType::ByteArray { size, alignment } = dst_ty {
                         Self::copy_bytes(
                             &mut instructions,
-                            CopyOperand::Reg(Reg::Ax),
-                            CopyOperand::Var(dst.as_var()),
-                            0,
+                            Reg::Ax.into(),
+                            self.generate_val(dst),
                             size,
                         );
                     } else {
@@ -865,9 +824,8 @@ impl Compiler {
                     if let AsmType::ByteArray { size, .. } = src_ty {
                         Self::copy_bytes(
                             &mut instructions,
-                            CopyOperand::Var(src.as_var()),
-                            CopyOperand::Reg(Reg::Ax),
-                            0,
+                            self.generate_val(src),
+                            Reg::Ax.into(),
                             size,
                         );
                     } else {
@@ -916,9 +874,8 @@ impl Compiler {
                     if let AsmType::ByteArray { size, .. } = src_ty {
                         Self::copy_bytes(
                             &mut instructions,
-                            CopyOperand::Var(src.as_var()),
-                            CopyOperand::Var(dst.clone()),
-                            *offset,
+                            self.generate_val(src),
+                            Operand::PseudoMem(dst.clone(), *offset),
                             size,
                         );
                     } else {
@@ -934,9 +891,8 @@ impl Compiler {
                     if let AsmType::ByteArray { size, .. } = dst_ty {
                         Self::copy_bytes(
                             &mut instructions,
-                            CopyOperand::Var(src.clone()),
-                            CopyOperand::Var(dst.as_var()),
-                            *offset,
+                            Operand::PseudoMem(src.clone(), *offset),
+                            self.generate_val(dst),
                             size,
                         );
                     } else {
@@ -957,11 +913,58 @@ impl Compiler {
         }
     }
 
+    fn does_return_in_memory(&self, function_name: &Symbol) -> bool {
+        let Type::Function(function_ty) = self.semantics.symbol_ty(&function_name) else {
+            panic!("Function does not have a function type")
+        };
+        if let Type::Struct(struct_name) = &*function_ty.ret {
+            let struct_def = self.semantics.struct_def(struct_name);
+            matches!(self.classify_struct(struct_def).first(), Some(ParamClass::Memory))
+        } else {
+            false
+        }
+    }
+
+    fn assign_parameters(&mut self, instructions: &mut Vec<Instruction>, params: Vec<tacky::Val>, return_in_memory: bool) {
+        let FnArgs {
+            int_reg_args,
+            double_reg_args,
+            stack_args,
+        } = self.classify_parameters(&params, return_in_memory);
+
+        let to_skip = if return_in_memory { 1 } else { 0 };
+        for (&reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().skip(to_skip).zip(int_reg_args) {
+            if let AsmType::ByteArray { size, .. } = ty {
+                Self::copy_bytes_from_reg(instructions, reg, operand, size as i64);
+            } else {
+                instructions.push(Instruction::Mov(ty, reg.into(), operand));
+            }
+        }
+
+        for (reg, TypedOperand { ty, operand }) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args)
+        {
+            instructions.push(Instruction::Mov(ty, Operand::Reg(*reg), operand));
+        }
+
+        let mut offset = 16;
+        for TypedOperand { ty, operand } in stack_args {
+            if let AsmType::ByteArray { size, .. } = ty {
+                Self::copy_bytes(instructions, Operand::Memory(Reg::BP, offset), operand, size);
+            }  else {
+                instructions.push(Instruction::Mov(
+                    ty,
+                    Operand::Memory(Reg::BP, offset),
+                    operand,
+                ));
+            }
+            offset += 8;
+        }
+    }
+
     fn copy_bytes(
         instructions: &mut Vec<Instruction>,
-        src: CopyOperand,
-        dst: CopyOperand,
-        offset: i64,
+        src: Operand,
+        dst: Operand,
         size: u64,
     ) {
         let mut part_offset = 0;
@@ -974,26 +977,43 @@ impl Compiler {
             };
             instructions.push(Instruction::Mov(
                 ty,
-                match src.clone() {
-                    CopyOperand::Reg(reg) => Operand::Memory(reg, offset),
-                    CopyOperand::Var(name) => Operand::PseudoMem(name, offset + part_offset as i64),
-                },
-                match dst.clone() {
-                    CopyOperand::Reg(reg) => Operand::Memory(reg, offset),
-                    CopyOperand::Var(name) => Operand::PseudoMem(name, offset + part_offset as i64),
-                },
+                src.add_offset(part_offset as i64),
+                dst.add_offset(part_offset as i64),
             ));
             part_offset += ty.size();
         }
     }
 
-    fn make_backend_symbols(semantic: &SemanticData) -> BackendSymbolTable {
+    fn copy_bytes_to_reg(instructions: &mut Vec<Instruction>, src: Operand, dst: Reg, byte_count: i64) {
+        let mut offset = byte_count - 1;
+        while offset >= 0 {
+            instructions.push(Instruction::Mov(AsmType::Byte, src.add_offset(offset), dst.into()));
+            if offset > 0 {
+                instructions.push(Instruction::Shl(AsmType::Quadword, Operand::Imm(8), dst.into()))
+            }
+            offset -= 1;
+        }
+    }
+
+    fn copy_bytes_from_reg(instructions: &mut Vec<Instruction>, src: Reg, dst: Operand, byte_count: i64) {
+        let mut offset = 0;
+        while offset < byte_count {
+            instructions.push(Instruction::Mov(AsmType::Byte, src.into(), dst.add_offset(offset)));
+            if offset < byte_count - 1 {
+                instructions.push(Instruction::Shr(AsmType::Quadword, Operand::Imm(8), src.into()))
+            }
+            offset += 1;
+        }
+    }
+
+    fn make_backend_symbols(&self, semantic: &SemanticData) -> BackendSymbolTable {
         let mut backend_symbols = HashMap::new();
         for (symbol, data) in semantic.symbols.iter() {
             match data.attrs {
                 Attributes::Function { defined, .. } => {
+                    let return_on_stack = self.does_return_in_memory(symbol);
                     backend_symbols
-                        .insert(symbol.clone(), BackendSymbolData::Fn { _defined: defined });
+                        .insert(symbol.clone(), BackendSymbolData::Fn { defined, return_on_stack });
                 }
                 Attributes::Static { .. } => {
                     backend_symbols.insert(
@@ -1067,6 +1087,22 @@ impl Compiler {
         args: &[tacky::Val],
         dst: &Option<tacky::Val>,
     ) {
+        let mut return_spec = FnReturn {
+            int_values: vec![],
+            double_values: vec![],
+            in_memory: false,
+        };
+        let mut reg_index = 0;
+
+        if let Some(dst) = dst {
+            return_spec = self.classify_return_value(dst);
+            if return_spec.in_memory {
+                let operand = self.generate_val(dst);
+                instructions.push(Instruction::Lea(operand, Reg::Di.into()));
+                reg_index = 1;
+            }
+        }
+
         let FnArgs {
             int_reg_args,
             double_reg_args,
@@ -1088,8 +1124,12 @@ impl Compiler {
         }
         let bytes_to_remove = 8 * stack_args.len() as u64 + padding;
 
-        for (reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().zip(int_reg_args) {
-            instructions.push(Instruction::Mov(ty, operand, Operand::Reg(*reg)));
+        for (&reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().skip(reg_index).zip(int_reg_args) {
+            if let AsmType::ByteArray { size, ..} = ty {
+                Self::copy_bytes_to_reg(instructions, operand, reg, size as i64);
+            } else {
+                instructions.push(Instruction::Mov(ty, operand, reg.into()));
+            }
         }
 
         for (reg, TypedOperand { ty, operand }) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args)
@@ -1098,7 +1138,11 @@ impl Compiler {
         }
 
         for TypedOperand { ty, operand } in stack_args.into_iter().rev() {
-            if matches!(operand, Operand::Imm(_) | Operand::Reg(_))
+            if let AsmType::ByteArray { size, ..} = ty {
+                instructions.push(Instruction::Binary(AsmType::Quadword, BinaryOp::Sub, Operand::Imm(8), Reg::SP.into()));
+                Self::copy_bytes(instructions, operand, Operand::Memory(Reg::SP, 0), size);
+            }
+            else if matches!(operand, Operand::Imm(_) | Operand::Reg(_))
                 || matches!(ty, AsmType::Quadword | AsmType::Double)
             {
                 instructions.push(Instruction::Push(operand))
@@ -1119,7 +1163,19 @@ impl Compiler {
             ));
         }
 
-        if let Some(dst) = dst {
+        if let Some(dst) = dst && !return_spec.in_memory {
+            for (&reg, TypedOperand { ty, operand }) in INT_RETURN_REGISTERS.iter().zip(return_spec.int_values) {
+                if let AsmType::ByteArray { size, ..} = ty {
+                    Self::copy_bytes_from_reg(instructions, reg, operand, size as i64);
+                } else {
+                    instructions.push(Instruction::Mov(ty, reg.into(), operand));
+                }
+            }
+
+            for (&reg, TypedOperand { ty, operand }) in DOUBLE_RETURN_REGISTERS.iter().zip(return_spec.double_values) {
+                instructions.push(Instruction::Mov(ty, reg.into(), operand));
+            }
+
             let return_reg = match self.semantics.val_asm_ty(dst) {
                 AsmType::Byte | AsmType::Longword | AsmType::Quadword => Reg::Ax,
                 AsmType::Double => Reg::XMM0,
@@ -1132,6 +1188,34 @@ impl Compiler {
                 self.generate_val(dst),
             ));
         }
+    }
+
+    fn generate_return(&mut self, instructions: &mut Vec<Instruction>, val: &Option<tacky::Val>) {
+        let Some(val) = val else {
+            instructions.push(Instruction::Ret);
+            return;
+        };
+
+        let return_spec = self.classify_return_value(val);
+
+        if return_spec.in_memory {
+            instructions.push(Instruction::Mov(AsmType::Quadword, Operand::Memory(Reg::BP, -8), Reg::Ax.into()));
+            Self::copy_bytes(instructions, Operand::Memory(Reg::Ax, 0), self.generate_val(val), self.semantics.val_asm_ty(val).size());
+        } else {
+            for (&reg, TypedOperand { ty, operand }) in INT_RETURN_REGISTERS.iter().zip(return_spec.int_values) {
+                if let AsmType::ByteArray { size, ..} = ty {
+                    Self::copy_bytes_to_reg(instructions, operand, reg, size as i64);
+                } else {
+                    instructions.push(Instruction::Mov(ty, operand, reg.into()));
+                }
+            }
+
+            for (&reg, TypedOperand { ty, operand }) in DOUBLE_RETURN_REGISTERS.iter().zip(return_spec.double_values) {
+                instructions.push(Instruction::Mov(ty, operand, reg.into()));
+            }
+        }
+
+        instructions.push(Instruction::Ret);
     }
 
     fn classify_parameters(&mut self, values: &[tacky::Val], return_in_memory: bool) -> FnArgs {
@@ -1162,13 +1246,7 @@ impl Compiler {
                     stack_args.push(operand);
                 }
             } else {
-                let Val::Var(value_name) = value else {
-                    panic!("Non-scalar value that is not a struct");
-                };
-                let Type::Struct(struct_ty) = self.semantics.symbol_ty(value_name) else {
-                    panic!("Non-scalar value that is not a struct");
-                };
-                let struct_def = self.semantics.struct_def(struct_ty);
+                let struct_def = value.as_struct_def(&self.semantics);
                 let classes = self.classify_struct(struct_def);
                 let mut use_stack = true;
                 let struct_size = struct_def.size;
@@ -1177,7 +1255,7 @@ impl Compiler {
                     let mut tentative_doubles = Vec::new();
                     let mut offset = 0;
                     for class in &classes {
-                        let operand = Operand::PseudoMem(value_name.clone(), offset);
+                        let operand = Operand::PseudoMem(value.as_var(), offset);
                         if let ParamClass::Sse = class {
                             tentative_doubles.push(TypedOperand {
                                 operand,
@@ -1203,7 +1281,7 @@ impl Compiler {
                 if use_stack {
                     let mut offset = 0;
                     for _class in &classes {
-                        let operand = Operand::PseudoMem(value_name.clone(), offset);
+                        let operand = Operand::PseudoMem(value.as_var(), offset);
                         let eightbyte_type = self.get_eightbyte_type(offset, struct_size);
                         stack_args.push(TypedOperand {
                             operand,
@@ -1233,6 +1311,61 @@ impl Compiler {
             AsmType::ByteArray {
                 size: bytes_from_end as u64,
                 alignment: 0,
+            }
+        }
+    }
+
+    fn classify_return_value(&mut self, return_value: &tacky::Val) -> FnReturn {
+        let ty = self.semantics.val_asm_ty(return_value);
+        if let AsmType::Double = ty {
+            let operand = self.generate_val(return_value);
+            FnReturn {
+                int_values: vec![],
+                double_values: vec![TypedOperand { operand, ty }],
+                in_memory: false,
+            }
+        } else if ty.is_scalar() {
+            let operand = self.generate_val(return_value);
+            FnReturn {
+                int_values: vec![TypedOperand { operand, ty }],
+                double_values: vec![],
+                in_memory: false,
+            }
+        } else {
+            let struct_def = return_value.as_struct_def(&self.semantics);
+            let classes = self.classify_struct(struct_def);
+            let struct_size = struct_def.size;
+            if let Some(ParamClass::Memory) = classes.first() {
+                FnReturn {
+                    int_values: vec![],
+                    double_values: vec![],
+                    in_memory: true,
+                }
+            } else {
+                let mut offset = 0;
+                let mut int_values = Vec::new();
+                let mut sse_values = Vec::new();
+                for class in &classes {
+                    let operand = Operand::PseudoMem(return_value.as_var(), offset);
+                    match class {
+                        ParamClass::Sse => {
+                            sse_values.push(TypedOperand { operand, ty: AsmType::Double });
+                        }
+                        ParamClass::Integer => {
+                            let eightbyte_type = self.get_eightbyte_type(offset, struct_size);
+                            int_values.push(TypedOperand { operand, ty: eightbyte_type });
+                        }
+                        ParamClass::Memory => {
+                            panic!("Cannot return a struct in memory");
+                        }
+                    }
+                    offset += 8
+                }
+                FnReturn {
+                    int_values,
+                    double_values: sse_values,
+                    in_memory: false,
+                }
             }
         }
     }
@@ -1322,6 +1455,10 @@ impl Compiler {
                 Instruction::Mov(_, src, dst)
                 | Instruction::Movsx(_, src, _, dst)
                 | Instruction::MovZeroExtend(_, src, _, dst)
+                | Instruction::Sal(_, src, dst)
+                | Instruction::Shl(_, src, dst)
+                | Instruction::Sar(_, src, dst)
+                | Instruction::Shr(_, src, dst)
                 | Instruction::Binary(_, _, src, dst)
                 | Instruction::Cvttsd2si(_, src, dst)
                 | Instruction::Cvtsi2sd(_, src, dst)
@@ -1334,10 +1471,6 @@ impl Compiler {
                 | Instruction::Push(src)
                 | Instruction::Idiv(_, src)
                 | Instruction::Div(_, src)
-                | Instruction::Sal(_, src)
-                | Instruction::Shl(_, src)
-                | Instruction::Sar(_, src)
-                | Instruction::Shr(_, src)
                 | Instruction::SetCC(_, src) => update_operand(src),
 
                 Instruction::Cdq(_)
@@ -1463,6 +1596,22 @@ impl Compiler {
                     } else {
                         fixed.push(Instruction::Binary(ty, op, left, right));
                     }
+                }
+                Instruction::Shl(ty, bits, dst) if bits.is_mem() => {
+                    fixed.push(Instruction::Mov(AsmType::Byte, bits.clone(), Reg::Cx.into()));
+                    fixed.push(Instruction::Shl(ty, Reg::Cx.into(), dst));
+                }
+                Instruction::Sal(ty, bits, dst) if bits.is_mem() => {
+                    fixed.push(Instruction::Mov(AsmType::Byte, bits.clone(), Reg::Cx.into()));
+                    fixed.push(Instruction::Sal(ty, Reg::Cx.into(), dst));
+                }
+                Instruction::Shr(ty, bits, dst) if bits.is_mem() => {
+                    fixed.push(Instruction::Mov(AsmType::Byte, bits.clone(), Reg::Cx.into()));
+                    fixed.push(Instruction::Shr(ty, Reg::Cx.into(), dst));
+                }
+                Instruction::Sar(ty, bits, dst) if bits.is_mem() => {
+                    fixed.push(Instruction::Mov(AsmType::Byte, bits.clone(), Reg::Cx.into()));
+                    fixed.push(Instruction::Sar(ty, Reg::Cx.into(), dst));
                 }
                 Instruction::Cmp(AsmType::Double, left, right) => {
                     let right = if let Operand::Reg(_) = right {
@@ -1693,6 +1842,16 @@ impl tacky::Val {
             tacky::Val::Var(symbol) => symbol.clone(),
         }
     }
+
+    fn as_struct_def<'a>(&self, semantics: &'a SemanticData) -> &'a StructDef {
+        let tacky::Val::Var(value_name) = self else {
+            panic!("Non-scalar value that is not a struct");
+        };
+        let Type::Struct(struct_ty) = semantics.symbol_ty(value_name) else {
+            panic!("Non-scalar value that is not a struct");
+        };
+        semantics.struct_def(struct_ty)
+    }
 }
 
 impl StructDef {
@@ -1718,6 +1877,23 @@ impl StructDef {
             flatten_inner(&field.ty, semantic_data, &mut types);
         }
         types
+    }
+}
+
+impl Operand {
+    fn is_mem(&self) -> bool {
+        matches!(
+            self,
+            Operand::Memory(..) | Operand::Data { .. } | Operand::Indexed(..)
+        )
+    }
+
+    fn add_offset(&self, bytes: i64) -> Operand {
+        match self {
+            Operand::Memory(reg, offset) => Operand::Memory(reg.clone(), *offset + bytes),
+            Operand::PseudoMem(name, offset) => Operand::PseudoMem(name.clone(), *offset + bytes),
+            _ => panic!("Can't add offset to non-memory operand"),
+        }
     }
 }
 

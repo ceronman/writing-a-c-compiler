@@ -48,10 +48,10 @@ pub enum Instruction {
     Cmp(AsmType, Operand, Operand),
     Idiv(AsmType, Operand),
     Div(AsmType, Operand),
-    Sal(AsmType, Operand),
-    Shl(AsmType, Operand),
-    Sar(AsmType, Operand),
-    Shr(AsmType, Operand),
+    Sal(AsmType, Operand, Operand), // TODO: convert these to binary operators
+    Shl(AsmType, Operand, Operand),
+    Sar(AsmType, Operand, Operand),
+    Shr(AsmType, Operand, Operand),
     Cdq(AsmType),
     Jmp(Symbol),
     JmpCC(CondCode, Symbol),
@@ -92,15 +92,6 @@ pub enum Operand {
     },
     Memory(Reg, i64),
     Indexed(Reg, Reg, u8),
-}
-
-impl Operand {
-    pub(crate) fn is_mem(&self) -> bool {
-        matches!(
-            self,
-            Operand::Memory(..) | Operand::Data { .. } | Operand::Indexed(..)
-        )
-    }
 }
 
 impl From<Reg> for Operand {

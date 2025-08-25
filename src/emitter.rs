@@ -115,7 +115,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 emit_operand(output, right, RegSize::from_ty(ty))?;
             }
 
-            Instruction::Sal(ty, dst) => {
+            Instruction::Sal(ty, bits, dst) => {
                 let op = match ty {
                     AsmType::Byte => "salb",
                     AsmType::Longword => "sall",
@@ -123,13 +123,13 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
+                emit_operand(output, bits, RegSize::from_ty(ty))?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::from_ty(ty))?;
                 writeln!(output)?;
             }
 
-            Instruction::Shl(ty, dst) => {
+            Instruction::Shl(ty, bits, dst) => {
                 let op = match ty {
                     AsmType::Byte => "shlb",
                     AsmType::Longword => "shll",
@@ -137,13 +137,13 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
+                emit_operand(output, bits, RegSize::from_ty(ty))?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::from_ty(ty))?;
                 writeln!(output)?;
             }
 
-            Instruction::Sar(ty, dst) => {
+            Instruction::Sar(ty, bits,  dst) => {
                 let op = match ty {
                     AsmType::Byte => "sarb",
                     AsmType::Longword => "sarl",
@@ -151,12 +151,12 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
+                emit_operand(output, bits, RegSize::from_ty(ty))?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::from_ty(ty))?;
             }
 
-            Instruction::Shr(ty, dst) => {
+            Instruction::Shr(ty, bits, dst) => {
                 let op = match ty {
                     AsmType::Byte => "shrb",
                     AsmType::Longword => "shrl",
@@ -164,7 +164,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, &Operand::Reg(Reg::Cx), RegSize::Byte)?;
+                emit_operand(output, bits, RegSize::from_ty(ty))?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::from_ty(ty))?;
             }
