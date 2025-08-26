@@ -7,7 +7,6 @@ set -euxo pipefail
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler \
     --verbose \
     --chapter 18 \
-    --latest-only \
     --failfast \
     --bitwise \
     --compound \

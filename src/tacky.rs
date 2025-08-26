@@ -968,8 +968,7 @@ impl TackyGenerator {
                 }
                 ExprResult::Dereference(ptr) => ptr,
                 ExprResult::SubObject { base, offset } => {
-                    let inner_ty = self.semantics.expr_type(inner).clone();
-                    let dst = self.make_temp(&inner_ty);
+                    let dst = self.make_temp(&expr_ty);
                     self.instructions.push(Instruction::GetAddress {
                         src: Val::Var(base),
                         dst: dst.clone(),

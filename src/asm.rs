@@ -920,8 +920,8 @@ impl Compiler {
         let Type::Function(function_ty) = self.semantics.symbol_ty(&function_name) else {
             panic!("Function does not have a function type")
         };
-        if let Type::Struct(struct_name) = &*function_ty.ret {
-            let struct_def = self.semantics.struct_def(struct_name);
+        if let Type::Struct(struct_name) = &*function_ty.ret
+            && let Some(struct_def) = self.semantics.type_table.structs.get(struct_name) {
             matches!(self.classify_struct(struct_def).first(), Some(ParamClass::Memory))
         } else {
             false
@@ -935,7 +935,12 @@ impl Compiler {
             stack_args,
         } = self.classify_parameters(&params, return_in_memory);
 
-        let to_skip = if return_in_memory { 1 } else { 0 };
+        let to_skip = if return_in_memory {
+            instructions.push(Instruction::Mov(AsmType::Quadword, Reg::Di.into(), Operand::Memory(Reg::BP, -8)));
+            1
+        } else {
+            0
+        };
         for (&reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().skip(to_skip).zip(int_reg_args) {
             if let AsmType::ByteArray { size, .. } = ty {
                 Self::copy_bytes_from_reg(instructions, reg, operand, size as i64);
@@ -1110,7 +1115,7 @@ impl Compiler {
             int_reg_args,
             double_reg_args,
             stack_args,
-        } = self.classify_parameters(args, false);
+        } = self.classify_parameters(args, return_spec.in_memory);
 
         let padding = if stack_args.len().is_multiple_of(2) {
             0
@@ -1178,18 +1183,6 @@ impl Compiler {
             for (&reg, TypedOperand { ty, operand }) in DOUBLE_RETURN_REGISTERS.iter().zip(return_spec.double_values) {
                 instructions.push(Instruction::Mov(ty, reg.into(), operand));
             }
-
-            let return_reg = match self.semantics.val_asm_ty(dst) {
-                AsmType::Byte | AsmType::Longword | AsmType::Quadword => Reg::Ax,
-                AsmType::Double => Reg::XMM0,
-                AsmType::ByteArray { .. } => panic!("Cannot return a byte array"),
-            };
-
-            instructions.push(Instruction::Mov(
-                self.semantics.val_asm_ty(dst),
-                return_reg.into(),
-                self.generate_val(dst),
-            ));
         }
     }
 
@@ -1203,7 +1196,7 @@ impl Compiler {
 
         if return_spec.in_memory {
             instructions.push(Instruction::Mov(AsmType::Quadword, Operand::Memory(Reg::BP, -8), Reg::Ax.into()));
-            Self::copy_bytes(instructions, Operand::Memory(Reg::Ax, 0), self.generate_val(val), self.semantics.val_asm_ty(val).size());
+            Self::copy_bytes(instructions, self.generate_val(val), Operand::Memory(Reg::Ax, 0), self.semantics.val_asm_ty(val).size());
         } else {
             for (&reg, TypedOperand { ty, operand }) in INT_RETURN_REGISTERS.iter().zip(return_spec.int_values) {
                 if let AsmType::ByteArray { size, ..} = ty {
@@ -1231,6 +1224,7 @@ impl Compiler {
         } else {
             INT_ARG_REGISTERS.len()
         };
+        let double_regs_available = DOUBLE_ARG_REGISTERS.len();
 
         for value in values {
             let operand = self.generate_val(value);
@@ -1273,7 +1267,7 @@ impl Compiler {
                         }
                         offset += 8
                     }
-                    if (tentative_doubles.len() + tentative_ints.len()) <= 8
+                    if (tentative_doubles.len() + double_reg_args.len()) <= double_regs_available
                         && (tentative_ints.len() + int_reg_args.len()) <= int_regs_available
                     {
                         double_reg_args.extend(tentative_doubles);
@@ -1441,7 +1435,7 @@ impl Compiler {
                     match ty {
                         AsmType::Byte => stack_size += 1,
                         AsmType::Longword => {
-                            stack_size = align_offset(stack_size + 4, 4);
+                            stack_size = align_offset(stack_size + 4, 8);
                         }
                         AsmType::Quadword | AsmType::Double => {
                             stack_size = align_offset(stack_size + 8, 8);
