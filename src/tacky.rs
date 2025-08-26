@@ -283,8 +283,8 @@ impl TackyGenerator {
                         }
                     }
                 }
-                Type::Struct(name) => {
-                    let struct_def = self.semantics.struct_def(name);
+                Type::Struct(struct_name) => {
+                    let struct_def = self.semantics.struct_def(struct_name);
                     let fields = struct_def.fields.clone();
                     for (i, field) in fields.iter().enumerate() {
                         if let Some(initializer) = initializers.get(i) {
@@ -551,12 +551,28 @@ impl TackyGenerator {
             }
             ExprResult::SubObject { base, offset } => {
                 let dst = self.make_temp(&expr_ty);
-                self.instructions.push(Instruction::CopyFromOffset {
-                    src: base,
-                    dst: dst.clone(),
-                    offset,
-                });
-                self.cast_if_needed(dst, expr)
+                if self.semantics.pointer_decays.contains_key(&expr.id) {
+                    self.instructions.push(Instruction::GetAddress {
+                        src: Val::Var(base),
+                        dst: dst.clone(),
+                    });
+                    if offset != 0 {
+                        self.instructions.push(Instruction::AddPtr {
+                            ptr: dst.clone(),
+                            index: Val::Constant(Constant::Long(offset)),
+                            scale: 1,
+                            dst: dst.clone(),
+                        });
+                    }
+                    dst
+                } else {
+                    self.instructions.push(Instruction::CopyFromOffset {
+                        src: base,
+                        dst: dst.clone(),
+                        offset,
+                    });
+                    self.cast_if_needed(dst, expr)
+                }
             }
         }
     }
@@ -1022,8 +1038,8 @@ impl TackyGenerator {
                 let field_offset = struct_def
                     .fields
                     .iter()
-                    .position(|f| f.name == field.symbol)
-                    .expect("Field not found in struct") as i64;
+                    .find(|f| f.name == field.symbol)
+                    .expect("Field not found in struct").offset as i64;
                 return match self.expression(structure) {
                     ExprResult::Operand(Val::Var(base)) => ExprResult::SubObject {
                         base,
@@ -1063,10 +1079,10 @@ impl TackyGenerator {
                 let field_offset = struct_def
                     .fields
                     .iter()
-                    .position(|f| f.name == field.symbol)
-                    .expect("Field not found in struct") as i64;
+                    .find(|f| f.name == field.symbol)
+                    .expect("Field not found in struct").offset as i64;
                 let ptr = self.emit_expr(pointer);
-                if field_offset != 0 {
+                return if field_offset != 0 {
                     let dst = self.make_temp(&Type::Pointer(struct_ty));
                     self.instructions.push(Instruction::AddPtr {
                         ptr,
@@ -1074,9 +1090,9 @@ impl TackyGenerator {
                         scale: 1,
                         dst: dst.clone(),
                     });
-                    dst
+                    ExprResult::Dereference(dst)
                 } else {
-                    ptr
+                    ExprResult::Dereference(ptr)
                 }
             }
         };

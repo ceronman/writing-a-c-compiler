@@ -6,7 +6,6 @@ use crate::ast::{
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
-use crate::semantic::StaticInit::ZeroInit;
 use crate::semantic::{
     Attributes, FunctionType, InitialValue, SemanticData, StaticInit, StructDef, StructField,
     SwitchCases, SymbolData, Type, TypeTable,
@@ -98,7 +97,7 @@ impl TypeChecker {
             let initial_value = if let Some(init) = &decl.init {
                 InitialValue::Initial(self.check_static_initializer(init, &decl.type_spec.ty())?)
             } else {
-                InitialValue::single(ZeroInit(decl.type_spec.ty().al_size(&self.type_table)))
+                InitialValue::single(StaticInit::ZeroInit(decl.type_spec.ty().al_size(&self.type_table)))
             };
             if let Some(data) = self.symbols.get(&name) {
                 if data.ty != decl.type_spec.ty() {
@@ -255,7 +254,7 @@ impl TypeChecker {
                     }
                     let padding = (size - initializers.len()) * inner_ty.al_size(&self.type_table);
                     if padding > 0 {
-                        static_inits.push(ZeroInit(padding));
+                        static_inits.push(StaticInit::ZeroInit(padding));
                     }
                     Ok(static_inits)
                 }
@@ -279,14 +278,14 @@ impl TypeChecker {
                     for (i, init) in initializers.iter().enumerate() {
                         let field = &struct_def.fields[i];
                         if field.offset != offset {
-                            static_inits.push(ZeroInit(field.offset - offset));
+                            static_inits.push(StaticInit::ZeroInit(field.offset - offset));
                         }
                         let inner_inits = self.check_static_initializer(init, &field.ty)?;
                         static_inits.extend(inner_inits);
                         offset = field.offset + field.ty.al_size(&self.type_table);
                     }
                     if struct_def.size != offset {
-                        static_inits.push(ZeroInit(struct_def.size - offset));
+                        static_inits.push(StaticInit::ZeroInit(struct_def.size - offset));
                     }
                     Ok(static_inits)
                 }
@@ -1500,7 +1499,8 @@ impl TypeChecker {
             &Type::Double
         } else if ty1.size() == ty2.size() {
             if ty1.is_signed() { ty2 } else { ty1 }
-        } else if ty1.size() > ty2.size() {
+        } else if ty1.size() > ty2.
+            size() {
             ty1
         } else {
             ty2

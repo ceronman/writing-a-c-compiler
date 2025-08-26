@@ -84,7 +84,7 @@ impl Type {
             Type::Function(_) => unreachable!(),
             Type::Pointer(_) => AsmType::Quadword,
             Type::Array(inner, length) => {
-                let size = (inner.size() * length) as u64;
+                let size = (inner.al_size(&semantics.type_table) * length) as u64;
                 let inner_asm_ty = inner.to_asm(semantics);
                 let alignment = if size < 16 {
                     match inner_asm_ty {
@@ -175,7 +175,7 @@ impl Compiler {
         for tl in &mut top_level {
             if let TopLevel::Function(function) = tl {
                 let stack_size =
-                    self.replace_pseudo_operands(&mut function.instructions, &backend_symbols);
+                    self.replace_pseudo_operands(function, &backend_symbols);
                 self.fixup_instructions(function, stack_size);
             }
         }
@@ -1399,10 +1399,14 @@ impl Compiler {
 
     fn replace_pseudo_operands(
         &mut self,
-        instructions: &mut Vec<Instruction>,
+        function: &mut Function,
         symbols: &BackendSymbolTable,
     ) -> u64 {
-        let mut stack_size = 0u64;
+        let mut stack_size = if self.does_return_in_memory(&function.name) {
+            8
+        } else {
+            0
+        };
         let mut stack_vars = HashMap::new();
 
         let mut update_operand = |operand: &mut Operand| {
@@ -1413,15 +1417,21 @@ impl Compiler {
                     is_const,
                 }) = symbols.get(name)
                 else {
-                    panic!("Operand without symbol data")
+                    panic!("Operand '{name}' without symbol data")
                 };
                 let offset = if let Some(saved) = stack_vars.get(name).copied() {
                     saved
                 } else if is_static {
+                    let name = name.clone();
+                    let offset = if let Operand::PseudoMem(_name, array_offset) = operand {
+                        *array_offset
+                    } else {
+                        0
+                    };
                     *operand = Operand::Data {
                         is_static: is_const,
-                        name: name.clone(),
-                        offset: 0,
+                        name,
+                        offset,
                     };
                     return;
                 } else {
@@ -1450,7 +1460,7 @@ impl Compiler {
             }
         };
 
-        for instruction in instructions {
+        for instruction in &mut function.instructions {
             match instruction {
                 Instruction::Mov(_, src, dst)
                 | Instruction::Movsx(_, src, _, dst)

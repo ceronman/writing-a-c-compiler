@@ -123,7 +123,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, bits, RegSize::from_ty(ty))?;
+                emit_operand(output, bits, RegSize::Byte)?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::from_ty(ty))?;
                 writeln!(output)?;
@@ -137,7 +137,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, bits, RegSize::from_ty(ty))?;
+                emit_operand(output, bits, RegSize::Byte)?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::from_ty(ty))?;
                 writeln!(output)?;
@@ -151,7 +151,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, bits, RegSize::from_ty(ty))?;
+                emit_operand(output, bits, RegSize::Byte)?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::from_ty(ty))?;
             }
@@ -164,7 +164,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, bits, RegSize::from_ty(ty))?;
+                emit_operand(output, bits, RegSize::Byte)?;
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::from_ty(ty))?;
             }
@@ -558,18 +558,18 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
             Operand::Data {
                 is_static: true,
                 name,
-                ..
+                offset
             },
             _,
-        ) => write!(output, "L{name}(%rip)"),
+        ) => write!(output, "L{name}+{offset}(%rip)"),
         (
             Operand::Data {
                 is_static: false,
                 name,
-                ..
+                offset
             },
             _,
-        ) => write!(output, "_{name}(%rip)"),
+        ) => write!(output, "_{name}+{offset}(%rip)"),
         (Operand::Pseudo(..) | Operand::PseudoMem(..), _) => {
             unreachable!("Pseudo-registers should not appear here")
         }
