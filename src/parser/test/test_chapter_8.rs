@@ -1578,7 +1578,7 @@ fn test_valid_empty_expression() {
 fn test_valid_empty_loop_body() {
     let src = r#"
         int main(void) {
-            int i = 2147;
+            int i = 2147483642;
             do ; while ((i = i - 5) >= 256);
             return i;
         }
@@ -1593,7 +1593,7 @@ fn test_valid_empty_loop_body() {
                     │   ├── Type
                     │   │   ╰── Int
                     │   ╰── Initializer
-                    │       ╰── <9> Constant Int [2147]
+                    │       ╰── <9> Constant Int [2147483642]
                     ├── DoWhile
                     │   ├── Body
                     │   │   ╰── Empty
@@ -3677,7 +3677,7 @@ fn test_valid_for_absent_condition() {
 fn test_valid_for_absent_post() {
     let src = r#"
         int main(void) {
-            int a = -2147;
+            int a = -2147483647;
             for (; a % 5 != 0;) {
                 a = a + 1;
             }
@@ -3695,7 +3695,7 @@ fn test_valid_for_absent_post() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <11> Unary [-]
-                    │           ╰── <10> Constant Int [2147]
+                    │           ╰── <10> Constant Int [2147483647]
                     ├── For
                     │   ├── Condition
                     │   │   ╰── <21>  [!=]

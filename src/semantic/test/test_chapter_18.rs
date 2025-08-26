@@ -170,6 +170,23 @@ fn test_invalid_types_extra_credit_other_features_bitwise_op_structure() {
 }
 
 #[test]
+fn test_invalid_types_extra_credit_other_features_compound_assign_struct_rval() {
+    assert_error(
+        r#"
+        
+        struct s { int i; };
+        int main(void) {
+            int i = 100;
+            struct s x = { 100 };
+            i += x;
+               //^ Cannot compound assign a struct type
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
 fn test_invalid_types_extra_credit_other_features_compound_assign_to_nested_struct() {
     assert_error(
         r#"

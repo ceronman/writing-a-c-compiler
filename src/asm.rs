@@ -1,6 +1,7 @@
 pub mod ir;
 pub mod pretty;
 
+use crate::alignment::align_offset;
 use crate::asm::ir::{
     AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
     StaticVariable, TopLevel, UnaryOp,
@@ -10,7 +11,6 @@ use crate::semantic::{Attributes, SemanticData, StaticInit, StructDef, Type};
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
-use crate::alignment::align_offset;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
 const DOUBLE_ARG_REGISTERS: [Reg; 8] = [
@@ -33,10 +33,7 @@ enum BackendSymbolData {
         is_static: bool,
         is_const: bool,
     },
-    Fn {
-        defined: bool,
-        return_on_stack: bool
-    },
+    Fn,
 }
 
 enum ParamClass {
@@ -101,13 +98,14 @@ impl Type {
                 AsmType::ByteArray { size, alignment }
             }
             Type::Struct(name) => {
-                let (size, alignment) =if let Some(struct_def) = semantics.type_table.structs.get(name) {
-                    // TODO: unify usize and u64 everywhere.
-                    (struct_def.size as u64, struct_def.alignment)
-                } else {
-                    // In case of incomplete structs, these are dummy values.
-                    (0, 0)
-                };
+                let (size, alignment) =
+                    if let Some(struct_def) = semantics.type_table.structs.get(name) {
+                        // TODO: unify usize and u64 everywhere.
+                        (struct_def.size as u64, struct_def.alignment)
+                    } else {
+                        // In case of incomplete structs, these are dummy values.
+                        (0, 0)
+                    };
                 AsmType::ByteArray { size, alignment }
             }
         }
@@ -128,7 +126,7 @@ struct FnArgs {
 struct FnReturn {
     int_values: Vec<TypedOperand>,
     double_values: Vec<TypedOperand>,
-    in_memory: bool
+    in_memory: bool,
 }
 
 struct Compiler {
@@ -177,8 +175,7 @@ impl Compiler {
 
         for tl in &mut top_level {
             if let TopLevel::Function(function) = tl {
-                let stack_size =
-                    self.replace_pseudo_operands(function, &backend_symbols);
+                let stack_size = self.replace_pseudo_operands(function, &backend_symbols);
                 self.fixup_instructions(function, stack_size);
             }
         }
@@ -760,7 +757,11 @@ impl Compiler {
                                 Operand::Imm(1),
                                 Reg::Cx.into(),
                             ));
-                            instructions.push(Instruction::Shr(AsmType::Quadword, Operand::Imm(1), Reg::Dx.into()));
+                            instructions.push(Instruction::Shr(
+                                AsmType::Quadword,
+                                Operand::Imm(1),
+                                Reg::Dx.into(),
+                            ));
                             instructions.push(Instruction::Binary(
                                 AsmType::Quadword,
                                 BinaryOp::And,
@@ -802,7 +803,7 @@ impl Compiler {
                         Reg::Ax.into(),
                     ));
                     let dst_ty = self.semantics.val_asm_ty(dst);
-                    if let AsmType::ByteArray { size, alignment } = dst_ty {
+                    if let AsmType::ByteArray { size, .. } = dst_ty {
                         Self::copy_bytes(
                             &mut instructions,
                             Operand::Memory(Reg::Ax, 0),
@@ -917,18 +918,27 @@ impl Compiler {
     }
 
     fn does_return_in_memory(&self, function_name: &Symbol) -> bool {
-        let Type::Function(function_ty) = self.semantics.symbol_ty(&function_name) else {
+        let Type::Function(function_ty) = self.semantics.symbol_ty(function_name) else {
             panic!("Function does not have a function type")
         };
         if let Type::Struct(struct_name) = &*function_ty.ret
-            && let Some(struct_def) = self.semantics.type_table.structs.get(struct_name) {
-            matches!(self.classify_struct(struct_def).first(), Some(ParamClass::Memory))
+            && let Some(struct_def) = self.semantics.type_table.structs.get(struct_name)
+        {
+            matches!(
+                self.classify_struct(struct_def).first(),
+                Some(ParamClass::Memory)
+            )
         } else {
             false
         }
     }
 
-    fn assign_parameters(&mut self, instructions: &mut Vec<Instruction>, params: Vec<tacky::Val>, return_in_memory: bool) {
+    fn assign_parameters(
+        &mut self,
+        instructions: &mut Vec<Instruction>,
+        params: Vec<tacky::Val>,
+        return_in_memory: bool,
+    ) {
         let FnArgs {
             int_reg_args,
             double_reg_args,
@@ -936,12 +946,18 @@ impl Compiler {
         } = self.classify_parameters(&params, return_in_memory);
 
         let to_skip = if return_in_memory {
-            instructions.push(Instruction::Mov(AsmType::Quadword, Reg::Di.into(), Operand::Memory(Reg::BP, -8)));
+            instructions.push(Instruction::Mov(
+                AsmType::Quadword,
+                Reg::Di.into(),
+                Operand::Memory(Reg::BP, -8),
+            ));
             1
         } else {
             0
         };
-        for (&reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().skip(to_skip).zip(int_reg_args) {
+        for (&reg, TypedOperand { ty, operand }) in
+            INT_ARG_REGISTERS.iter().skip(to_skip).zip(int_reg_args)
+        {
             if let AsmType::ByteArray { size, .. } = ty {
                 Self::copy_bytes_from_reg(instructions, reg, operand, size as i64);
             } else {
@@ -957,8 +973,13 @@ impl Compiler {
         let mut offset = 16;
         for TypedOperand { ty, operand } in stack_args {
             if let AsmType::ByteArray { size, .. } = ty {
-                Self::copy_bytes(instructions, Operand::Memory(Reg::BP, offset), operand, size);
-            }  else {
+                Self::copy_bytes(
+                    instructions,
+                    Operand::Memory(Reg::BP, offset),
+                    operand,
+                    size,
+                );
+            } else {
                 instructions.push(Instruction::Mov(
                     ty,
                     Operand::Memory(Reg::BP, offset),
@@ -969,12 +990,7 @@ impl Compiler {
         }
     }
 
-    fn copy_bytes(
-        instructions: &mut Vec<Instruction>,
-        src: Operand,
-        dst: Operand,
-        size: u64,
-    ) {
+    fn copy_bytes(instructions: &mut Vec<Instruction>, src: Operand, dst: Operand, size: u64) {
         let mut part_offset = 0;
         while part_offset < size {
             let remaining_bytes = size - part_offset;
@@ -992,23 +1008,49 @@ impl Compiler {
         }
     }
 
-    fn copy_bytes_to_reg(instructions: &mut Vec<Instruction>, src: Operand, dst: Reg, byte_count: i64) {
+    fn copy_bytes_to_reg(
+        instructions: &mut Vec<Instruction>,
+        src: Operand,
+        dst: Reg,
+        byte_count: i64,
+    ) {
         let mut offset = byte_count - 1;
         while offset >= 0 {
-            instructions.push(Instruction::Mov(AsmType::Byte, src.add_offset(offset), dst.into()));
+            instructions.push(Instruction::Mov(
+                AsmType::Byte,
+                src.add_offset(offset),
+                dst.into(),
+            ));
             if offset > 0 {
-                instructions.push(Instruction::Shl(AsmType::Quadword, Operand::Imm(8), dst.into()))
+                instructions.push(Instruction::Shl(
+                    AsmType::Quadword,
+                    Operand::Imm(8),
+                    dst.into(),
+                ))
             }
             offset -= 1;
         }
     }
 
-    fn copy_bytes_from_reg(instructions: &mut Vec<Instruction>, src: Reg, dst: Operand, byte_count: i64) {
+    fn copy_bytes_from_reg(
+        instructions: &mut Vec<Instruction>,
+        src: Reg,
+        dst: Operand,
+        byte_count: i64,
+    ) {
         let mut offset = 0;
         while offset < byte_count {
-            instructions.push(Instruction::Mov(AsmType::Byte, src.into(), dst.add_offset(offset)));
+            instructions.push(Instruction::Mov(
+                AsmType::Byte,
+                src.into(),
+                dst.add_offset(offset),
+            ));
             if offset < byte_count - 1 {
-                instructions.push(Instruction::Shr(AsmType::Quadword, Operand::Imm(8), src.into()))
+                instructions.push(Instruction::Shr(
+                    AsmType::Quadword,
+                    Operand::Imm(8),
+                    src.into(),
+                ))
             }
             offset += 1;
         }
@@ -1018,10 +1060,11 @@ impl Compiler {
         let mut backend_symbols = HashMap::new();
         for (symbol, data) in semantic.symbols.iter() {
             match data.attrs {
-                Attributes::Function { defined, .. } => {
-                    let return_on_stack = self.does_return_in_memory(symbol);
-                    backend_symbols
-                        .insert(symbol.clone(), BackendSymbolData::Fn { defined, return_on_stack });
+                Attributes::Function { .. } => {
+                    backend_symbols.insert(
+                        symbol.clone(),
+                        BackendSymbolData::Fn,
+                    );
                 }
                 Attributes::Static { .. } => {
                     backend_symbols.insert(
@@ -1132,8 +1175,10 @@ impl Compiler {
         }
         let bytes_to_remove = 8 * stack_args.len() as u64 + padding;
 
-        for (&reg, TypedOperand { ty, operand }) in INT_ARG_REGISTERS.iter().skip(reg_index).zip(int_reg_args) {
-            if let AsmType::ByteArray { size, ..} = ty {
+        for (&reg, TypedOperand { ty, operand }) in
+            INT_ARG_REGISTERS.iter().skip(reg_index).zip(int_reg_args)
+        {
+            if let AsmType::ByteArray { size, .. } = ty {
                 Self::copy_bytes_to_reg(instructions, operand, reg, size as i64);
             } else {
                 instructions.push(Instruction::Mov(ty, operand, reg.into()));
@@ -1146,11 +1191,15 @@ impl Compiler {
         }
 
         for TypedOperand { ty, operand } in stack_args.into_iter().rev() {
-            if let AsmType::ByteArray { size, ..} = ty {
-                instructions.push(Instruction::Binary(AsmType::Quadword, BinaryOp::Sub, Operand::Imm(8), Reg::SP.into()));
+            if let AsmType::ByteArray { size, .. } = ty {
+                instructions.push(Instruction::Binary(
+                    AsmType::Quadword,
+                    BinaryOp::Sub,
+                    Operand::Imm(8),
+                    Reg::SP.into(),
+                ));
                 Self::copy_bytes(instructions, operand, Operand::Memory(Reg::SP, 0), size);
-            }
-            else if matches!(operand, Operand::Imm(_) | Operand::Reg(_))
+            } else if matches!(operand, Operand::Imm(_) | Operand::Reg(_))
                 || matches!(ty, AsmType::Quadword | AsmType::Double)
             {
                 instructions.push(Instruction::Push(operand))
@@ -1171,16 +1220,21 @@ impl Compiler {
             ));
         }
 
-        if let Some(dst) = dst && !return_spec.in_memory {
-            for (&reg, TypedOperand { ty, operand }) in INT_RETURN_REGISTERS.iter().zip(return_spec.int_values) {
-                if let AsmType::ByteArray { size, ..} = ty {
+        if dst.is_some() && !return_spec.in_memory {
+            for (&reg, TypedOperand { ty, operand }) in
+                INT_RETURN_REGISTERS.iter().zip(return_spec.int_values)
+            {
+                if let AsmType::ByteArray { size, .. } = ty {
                     Self::copy_bytes_from_reg(instructions, reg, operand, size as i64);
                 } else {
                     instructions.push(Instruction::Mov(ty, reg.into(), operand));
                 }
             }
 
-            for (&reg, TypedOperand { ty, operand }) in DOUBLE_RETURN_REGISTERS.iter().zip(return_spec.double_values) {
+            for (&reg, TypedOperand { ty, operand }) in DOUBLE_RETURN_REGISTERS
+                .iter()
+                .zip(return_spec.double_values)
+            {
                 instructions.push(Instruction::Mov(ty, reg.into(), operand));
             }
         }
@@ -1195,18 +1249,32 @@ impl Compiler {
         let return_spec = self.classify_return_value(val);
 
         if return_spec.in_memory {
-            instructions.push(Instruction::Mov(AsmType::Quadword, Operand::Memory(Reg::BP, -8), Reg::Ax.into()));
-            Self::copy_bytes(instructions, self.generate_val(val), Operand::Memory(Reg::Ax, 0), self.semantics.val_asm_ty(val).size());
+            instructions.push(Instruction::Mov(
+                AsmType::Quadword,
+                Operand::Memory(Reg::BP, -8),
+                Reg::Ax.into(),
+            ));
+            Self::copy_bytes(
+                instructions,
+                self.generate_val(val),
+                Operand::Memory(Reg::Ax, 0),
+                self.semantics.val_asm_ty(val).size(),
+            );
         } else {
-            for (&reg, TypedOperand { ty, operand }) in INT_RETURN_REGISTERS.iter().zip(return_spec.int_values) {
-                if let AsmType::ByteArray { size, ..} = ty {
+            for (&reg, TypedOperand { ty, operand }) in
+                INT_RETURN_REGISTERS.iter().zip(return_spec.int_values)
+            {
+                if let AsmType::ByteArray { size, .. } = ty {
                     Self::copy_bytes_to_reg(instructions, operand, reg, size as i64);
                 } else {
                     instructions.push(Instruction::Mov(ty, operand, reg.into()));
                 }
             }
 
-            for (&reg, TypedOperand { ty, operand }) in DOUBLE_RETURN_REGISTERS.iter().zip(return_spec.double_values) {
+            for (&reg, TypedOperand { ty, operand }) in DOUBLE_RETURN_REGISTERS
+                .iter()
+                .zip(return_spec.double_values)
+            {
                 instructions.push(Instruction::Mov(ty, operand, reg.into()));
             }
         }
@@ -1346,11 +1414,17 @@ impl Compiler {
                     let operand = Operand::PseudoMem(return_value.as_var(), offset);
                     match class {
                         ParamClass::Sse => {
-                            sse_values.push(TypedOperand { operand, ty: AsmType::Double });
+                            sse_values.push(TypedOperand {
+                                operand,
+                                ty: AsmType::Double,
+                            });
                         }
                         ParamClass::Integer => {
                             let eightbyte_type = self.get_eightbyte_type(offset, struct_size);
-                            int_values.push(TypedOperand { operand, ty: eightbyte_type });
+                            int_values.push(TypedOperand {
+                                operand,
+                                ty: eightbyte_type,
+                            });
                         }
                         ParamClass::Memory => {
                             panic!("Cannot return a struct in memory");
@@ -1604,19 +1678,35 @@ impl Compiler {
                     }
                 }
                 Instruction::Shl(ty, bits, dst) if bits.is_mem() => {
-                    fixed.push(Instruction::Mov(AsmType::Byte, bits.clone(), Reg::Cx.into()));
+                    fixed.push(Instruction::Mov(
+                        AsmType::Byte,
+                        bits.clone(),
+                        Reg::Cx.into(),
+                    ));
                     fixed.push(Instruction::Shl(ty, Reg::Cx.into(), dst));
                 }
                 Instruction::Sal(ty, bits, dst) if bits.is_mem() => {
-                    fixed.push(Instruction::Mov(AsmType::Byte, bits.clone(), Reg::Cx.into()));
+                    fixed.push(Instruction::Mov(
+                        AsmType::Byte,
+                        bits.clone(),
+                        Reg::Cx.into(),
+                    ));
                     fixed.push(Instruction::Sal(ty, Reg::Cx.into(), dst));
                 }
                 Instruction::Shr(ty, bits, dst) if bits.is_mem() => {
-                    fixed.push(Instruction::Mov(AsmType::Byte, bits.clone(), Reg::Cx.into()));
+                    fixed.push(Instruction::Mov(
+                        AsmType::Byte,
+                        bits.clone(),
+                        Reg::Cx.into(),
+                    ));
                     fixed.push(Instruction::Shr(ty, Reg::Cx.into(), dst));
                 }
                 Instruction::Sar(ty, bits, dst) if bits.is_mem() => {
-                    fixed.push(Instruction::Mov(AsmType::Byte, bits.clone(), Reg::Cx.into()));
+                    fixed.push(Instruction::Mov(
+                        AsmType::Byte,
+                        bits.clone(),
+                        Reg::Cx.into(),
+                    ));
                     fixed.push(Instruction::Sar(ty, Reg::Cx.into(), dst));
                 }
                 Instruction::Cmp(AsmType::Double, left, right) => {
@@ -1896,7 +1986,7 @@ impl Operand {
 
     fn add_offset(&self, bytes: i64) -> Operand {
         match self {
-            Operand::Memory(reg, offset) => Operand::Memory(reg.clone(), *offset + bytes),
+            Operand::Memory(reg, offset) => Operand::Memory(*reg, *offset + bytes),
             Operand::PseudoMem(name, offset) => Operand::PseudoMem(name.clone(), *offset + bytes),
             _ => panic!("Can't add offset to non-memory operand"),
         }

@@ -1,8 +1,8 @@
 use crate::alignment::align_offset;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
-    FunctionDeclaration, Identifier, Initializer, InnerRef, Node, NodeId, Program, Statement,
-    StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration,
+    FunctionDeclaration, Identifier, Initializer, InnerRef, Node, Program, Statement, StorageClass,
+    StructDeclaration, TypeSpec, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
@@ -11,7 +11,7 @@ use crate::semantic::{
     SwitchCases, SymbolData, Type,
 };
 use std::cmp;
-use std::collections::{HashMap, VecDeque};
+use std::collections::VecDeque;
 
 impl SymbolData {
     fn local(ty: Type) -> Self {
@@ -91,7 +91,9 @@ impl TypeChecker {
             let initial_value = if let Some(init) = &decl.init {
                 InitialValue::Initial(self.check_static_initializer(init, &decl.type_spec.ty())?)
             } else {
-                InitialValue::single(StaticInit::ZeroInit(decl.type_spec.ty().al_size(&self.semantics.type_table)))
+                InitialValue::single(StaticInit::ZeroInit(
+                    decl.type_spec.ty().al_size(&self.semantics.type_table),
+                ))
             };
             if let Some(data) = self.semantics.symbols.get(&name) {
                 if data.ty != decl.type_spec.ty() {
@@ -203,7 +205,9 @@ impl TypeChecker {
                         (c, Type::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
                         (c, Type::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
                         (Constant::Double(value), Type::Int) => StaticInit::Int(*value as i32),
-                        (Constant::Double(value), Type::Char | Type::SChar) => StaticInit::Char(*value as i8),
+                        (Constant::Double(value), Type::Char | Type::SChar) => {
+                            StaticInit::Char(*value as i8)
+                        }
                         (Constant::Double(value), Type::UChar) => StaticInit::UChar(*value as u8),
                         (Constant::Double(value), Type::UInt) => StaticInit::UInt(*value as u32),
                         (Constant::Double(value), Type::Long) => StaticInit::Long(*value as i64),
@@ -246,7 +250,8 @@ impl TypeChecker {
                         let inner_inits = self.check_static_initializer(initializer, inner_ty)?;
                         static_inits.extend(inner_inits);
                     }
-                    let padding = (size - initializers.len()) * inner_ty.al_size(&self.semantics.type_table);
+                    let padding =
+                        (size - initializers.len()) * inner_ty.al_size(&self.semantics.type_table);
                     if padding > 0 {
                         static_inits.push(StaticInit::ZeroInit(padding));
                     }
@@ -316,12 +321,14 @@ impl TypeChecker {
                             span: init.span,
                         });
                     }
-                    self.semantics.expression_types.insert(expr.id, target.clone());
+                    self.semantics
+                        .expression_types
+                        .insert(expr.id, target.clone());
                     target.clone()
                 } else {
                     self.check_and_convert_expr(expr)?
                 };
-                self.convert_by_assignment(expr, &init_ty, &target)?;
+                self.convert_by_assignment(expr, &init_ty, target)?;
             }
             Initializer::Compound(initializers) => match target {
                 Type::Array(inner_ty, size) => {
@@ -556,7 +563,9 @@ impl TypeChecker {
                 );
             }
             Self::error_if(
-                function_ty.ret.is_incomplete_struct(&self.semantics.type_table),
+                function_ty
+                    .ret
+                    .is_incomplete_struct(&self.semantics.type_table),
                 decl.type_spec.ret.span,
                 "Struct type is not complete",
             )?;
@@ -711,7 +720,8 @@ impl TypeChecker {
                     default: None,
                 });
                 self.check_statement(function, body)?;
-                self.semantics.switch_cases
+                self.semantics
+                    .switch_cases
                     .insert(expr.id, self.switch_stack.pop_front().unwrap());
             }
             Statement::Case { value, body, label } => {
@@ -821,8 +831,12 @@ impl TypeChecker {
             Type::Array(inner, ..) => {
                 // Pointer decay
                 let pointer_ty = Type::Pointer(inner);
-                self.semantics.pointer_decays.insert(expr.id, pointer_ty.clone());
-                self.semantics.expression_types.insert(expr.id, pointer_ty.clone());
+                self.semantics
+                    .pointer_decays
+                    .insert(expr.id, pointer_ty.clone());
+                self.semantics
+                    .expression_types
+                    .insert(expr.id, pointer_ty.clone());
                 Ok(pointer_ty)
             }
             Type::Struct(_) if !ty.is_complete(&self.semantics.type_table) => Err(CompilerError {
@@ -1068,7 +1082,7 @@ impl TypeChecker {
                                 right.span,
                                 "Invalid operand",
                             )?;
-                            Self::common_type(&left_ty, &right_ty)
+                            self.common_type(&left_ty, &right_ty)
                         };
                         self.cast_if_needed(left, &left_ty, &common);
                         self.cast_if_needed(right, &right_ty, &common);
@@ -1088,7 +1102,7 @@ impl TypeChecker {
                         right_ty
                     }
                     _ => {
-                        let common = Self::common_type(&left_ty, &right_ty);
+                        let common = self.common_type(&left_ty, &right_ty);
                         self.cast_if_needed(left, &left_ty, &common);
                         self.cast_if_needed(right, &right_ty, &common);
                         match op.as_ref() {
@@ -1172,6 +1186,16 @@ impl TypeChecker {
                             right.span,
                             "Assign compound operator cannot be a pointer type",
                         )?;
+                        Self::error_if(
+                            right_ty.is_struct(),
+                            right.span,
+                            "Cannot compound assign a struct type",
+                        )?;
+                        Self::error_if(
+                            left_ty.is_struct(),
+                            left.span,
+                            "Cannot compound assign a struct type",
+                        )?;
                     }
                     _ => {}
                 };
@@ -1183,7 +1207,7 @@ impl TypeChecker {
                         left_ty
                     }
                     _ => {
-                        let common = Self::common_type(&left_ty, &right_ty);
+                        let common = self.common_type(&left_ty, &right_ty);
                         self.cast_if_needed(left, &left_ty, &common);
                         self.cast_if_needed(right, &right_ty, &common);
                         self.cast_if_needed(expr, &common, &left_ty);
@@ -1207,7 +1231,7 @@ impl TypeChecker {
                     let common = if then_ty.is_pointer() || else_ty.is_pointer() {
                         self.common_pointer_type(then_expr, &then_ty, else_expr, &else_ty)?
                     } else if then_ty.is_arithmetic() && else_ty.is_arithmetic() {
-                        Self::common_type(&then_ty, &else_ty)
+                        self.common_type(&then_ty, &else_ty)
                     } else if then_ty == else_ty {
                         then_ty.clone()
                     } else {
@@ -1402,15 +1426,16 @@ impl TypeChecker {
                 span: structure.span,
             });
         };
-        let struct_def = self
-            .semantics.type_table
-            .structs
-            .get(name)
-            .ok_or_else(|| CompilerError {
-                kind: ErrorKind::Type,
-                msg: "Type is not a struct".to_string(),
-                span: structure.span,
-            })?;
+        let struct_def =
+            self.semantics
+                .type_table
+                .structs
+                .get(name)
+                .ok_or_else(|| CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: "Type is not a struct".to_string(),
+                    span: structure.span,
+                })?;
         let field_name = &member.symbol;
         let field = struct_def
             .fields
@@ -1478,12 +1503,14 @@ impl TypeChecker {
         if ty == expected {
             expected.clone()
         } else {
-            self.semantics.implicit_casts.insert(expr.id, expected.clone());
+            self.semantics
+                .implicit_casts
+                .insert(expr.id, expected.clone());
             expected.clone()
         }
     }
 
-    fn common_type(ty1: &Type, ty2: &Type) -> Type {
+    fn common_type(&self, ty1: &Type, ty2: &Type) -> Type {
         // Char types are treated as ints
         let ty1 = if ty1.is_char() { &Type::Int } else { ty1 };
         let ty2 = if ty2.is_char() { &Type::Int } else { ty2 };
@@ -1492,10 +1519,11 @@ impl TypeChecker {
             ty1
         } else if ty1.is_double() || ty2.is_double() {
             &Type::Double
-        } else if ty1.size() == ty2.size() {
+        } else if ty1.al_size(&self.semantics.type_table) == ty2.al_size(&self.semantics.type_table)
+        {
             if ty1.is_signed() { ty2 } else { ty1 }
-        } else if ty1.size() > ty2.
-            size() {
+        } else if ty1.al_size(&self.semantics.type_table) > ty2.al_size(&self.semantics.type_table)
+        {
             ty1
         } else {
             ty2

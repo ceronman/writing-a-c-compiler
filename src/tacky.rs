@@ -6,7 +6,6 @@ mod test;
 use crate::ast;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData, Type};
 use crate::symbol::Symbol;
-use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct Program {
@@ -584,7 +583,7 @@ impl TackyGenerator {
             ast::Expression::Var(name) => Val::Var(name.clone()),
             ast::Expression::Unary { op, expr } => {
                 let lvalue = self.expression(expr);
-                let val = self.get_or_load(&lvalue, expr); // TODO: test if this is needed
+                let val = self.get_or_load(&lvalue, expr);
                 let dst = self.make_temp(&expr_ty);
 
                 if let Type::Pointer(inner) = self.semantics.expr_type(expr).clone()
@@ -1037,7 +1036,8 @@ impl TackyGenerator {
                     .fields
                     .iter()
                     .find(|f| f.name == field.symbol)
-                    .expect("Field not found in struct").offset as i64;
+                    .expect("Field not found in struct")
+                    .offset as i64;
                 return match self.expression(structure) {
                     ExprResult::Operand(Val::Var(base)) => ExprResult::SubObject {
                         base,
@@ -1073,12 +1073,13 @@ impl TackyGenerator {
                 let Type::Struct(struct_name) = &*struct_ty else {
                     panic!("Expected a struct in dot expression");
                 };
-                let struct_def = self.semantics.struct_def(&struct_name);
+                let struct_def = self.semantics.struct_def(struct_name);
                 let field_offset = struct_def
                     .fields
                     .iter()
                     .find(|f| f.name == field.symbol)
-                    .expect("Field not found in struct").offset as i64;
+                    .expect("Field not found in struct")
+                    .offset as i64;
                 let ptr = self.emit_expr(pointer);
                 return if field_offset != 0 {
                     let dst = self.make_temp(&Type::Pointer(struct_ty));
@@ -1091,7 +1092,7 @@ impl TackyGenerator {
                     ExprResult::Dereference(dst)
                 } else {
                     ExprResult::Dereference(ptr)
-                }
+                };
             }
         };
         ExprResult::Operand(result)

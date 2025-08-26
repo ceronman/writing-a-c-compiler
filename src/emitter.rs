@@ -143,7 +143,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 writeln!(output)?;
             }
 
-            Instruction::Sar(ty, bits,  dst) => {
+            Instruction::Sar(ty, bits, dst) => {
                 let op = match ty {
                     AsmType::Byte => "sarb",
                     AsmType::Longword => "sarl",
@@ -558,7 +558,7 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
             Operand::Data {
                 is_static: true,
                 name,
-                offset
+                offset,
             },
             _,
         ) => write!(output, "L{name}+{offset}(%rip)"),
@@ -566,7 +566,7 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
             Operand::Data {
                 is_static: false,
                 name,
-                offset
+                offset,
             },
             _,
         ) => write!(output, "_{name}+{offset}(%rip)"),

@@ -3472,15 +3472,15 @@ fn test_valid_chars_static_initializers() {
             return 0
             return 0
         }
-        static global from_double: Char = 15
+        static global from_double: Char = '\u{f}'
         static global from_long: Char = '\0'
         static global from_uint: Char = '\u{81}'
         static global from_ulong: Char = '\n'
-        static global schar_from_double: Signed Char = 0
+        static global schar_from_double: Signed Char = '\0'
         static global schar_from_long: Signed Char = '\u{3}'
         static global schar_from_uint: Signed Char = 'ú'
         static global schar_from_ulong: Signed Char = '\n'
-        static global uchar_from_double: Unsigned Char = 77
+        static global uchar_from_double: Unsigned Char = 77UC
         static global uchar_from_int: Unsigned Char = 214UC
         static global uchar_from_long: Unsigned Char = 250UC
         static global uchar_from_uint: Unsigned Char = 250UC

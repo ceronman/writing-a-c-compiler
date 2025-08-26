@@ -1,7 +1,7 @@
 use crate::ast::{Constant, Expression, FunctionTypeSpec, Node, NodeId, Program, TypeSpec};
 use crate::error::Result;
 use crate::symbol::Symbol;
-use std::collections::{BTreeMap, HashMap, VecDeque};
+use std::collections::{BTreeMap, HashMap};
 
 mod id_resolution;
 mod label_check;
@@ -131,28 +131,11 @@ impl Type {
     }
 
     pub fn is_pointer_to_incomplete(&self, type_table: &TypeTable) -> bool {
-        matches!(self, Type::Pointer(inner) if !inner.is_complete(&type_table))
+        matches!(self, Type::Pointer(inner) if !inner.is_complete(type_table))
     }
 
     pub fn is_array(&self) -> bool {
         matches!(self, Type::Array(_, _))
-    }
-
-    #[deprecated(since = "0.1.0", note = "Use al_size() instead")]
-    pub fn size(&self) -> usize {
-        match self {
-            Type::Char | Type::UChar | Type::SChar => 1,
-            Type::Int => 4,
-            Type::UInt => 4,
-            Type::Long => 8,
-            Type::ULong => 8,
-            Type::Double => 8,
-            Type::Function(_) => panic!("Size of a function type"),
-            Type::Pointer(_) => 8,
-            Type::Array(ty, size) => ty.size() * size,
-            Type::Void => 1,
-            Type::Struct(_) => todo!(),
-        }
     }
 
     pub fn is_signed(&self) -> bool {
