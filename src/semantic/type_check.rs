@@ -8,10 +8,10 @@ use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
 use crate::semantic::{
     Attributes, FunctionType, InitialValue, SemanticData, StaticInit, StructDef, StructField,
-    SwitchCases, SymbolData, Type, TypeTable,
+    SwitchCases, SymbolData, Type,
 };
 use std::cmp;
-use std::collections::{BTreeMap, HashMap, VecDeque};
+use std::collections::{HashMap, VecDeque};
 
 impl SymbolData {
     fn local(ty: Type) -> Self {
@@ -31,16 +31,10 @@ impl SymbolData {
     }
 }
 
-// TODO: fields are duplicated with semantic data
 #[derive(Default)]
 struct TypeChecker {
-    symbols: BTreeMap<String, SymbolData>,
-    expression_types: HashMap<NodeId, Type>,
-    type_table: TypeTable,
-    implicit_casts: HashMap<NodeId, Type>,
-    pointer_decays: HashMap<NodeId, Type>,
+    semantics: SemanticData,
     switch_stack: VecDeque<SwitchCases>,
-    switch_cases: HashMap<NodeId, SwitchCases>,
 }
 
 impl TypeChecker {
@@ -74,7 +68,7 @@ impl TypeChecker {
                     span: init.span,
                 });
             }
-            if let Some(data) = self.symbols.get(&name) {
+            if let Some(data) = self.semantics.symbols.get(&name) {
                 if data.ty != ty {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -83,23 +77,23 @@ impl TypeChecker {
                     });
                 }
             } else {
-                self.symbols.insert(
+                self.semantics.symbols.insert(
                     decl.name.symbol.clone(),
                     SymbolData::global(decl.type_spec.ty()),
                 );
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
             Self::error_if(
-                ty.is_incomplete_struct(&self.type_table),
+                ty.is_incomplete_struct(&self.semantics.type_table),
                 ty_span,
                 "Incomplete struct type",
             )?;
             let initial_value = if let Some(init) = &decl.init {
                 InitialValue::Initial(self.check_static_initializer(init, &decl.type_spec.ty())?)
             } else {
-                InitialValue::single(StaticInit::ZeroInit(decl.type_spec.ty().al_size(&self.type_table)))
+                InitialValue::single(StaticInit::ZeroInit(decl.type_spec.ty().al_size(&self.semantics.type_table)))
             };
-            if let Some(data) = self.symbols.get(&name) {
+            if let Some(data) = self.semantics.symbols.get(&name) {
                 if data.ty != decl.type_spec.ty() {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
@@ -109,11 +103,11 @@ impl TypeChecker {
                 }
             } else {
                 Self::error_if(
-                    ty.is_incomplete_struct(&self.type_table),
+                    ty.is_incomplete_struct(&self.semantics.type_table),
                     ty_span,
                     "Incomplete struct type",
                 )?;
-                self.symbols.insert(
+                self.semantics.symbols.insert(
                     decl.name.symbol.clone(),
                     SymbolData {
                         ty: decl.type_spec.ty(),
@@ -126,11 +120,11 @@ impl TypeChecker {
             }
         } else {
             Self::error_if(
-                ty.is_incomplete_struct(&self.type_table),
+                ty.is_incomplete_struct(&self.semantics.type_table),
                 ty_span,
                 "Incomplete struct type",
             )?;
-            self.symbols.insert(
+            self.semantics.symbols.insert(
                 decl.name.symbol.clone(),
                 SymbolData::local(decl.type_spec.ty()),
             );
@@ -142,7 +136,7 @@ impl TypeChecker {
     }
 
     fn check_static_initializer(
-        &self,
+        &mut self,
         init: &Node<Initializer>,
         target: &Type,
     ) -> Result<Vec<StaticInit>> {
@@ -180,7 +174,8 @@ impl TypeChecker {
                         }
                         Type::Pointer(inner_ty) => {
                             if let Type::Char = **inner_ty {
-                                Ok(vec![StaticInit::Pointer(s.clone())])
+                                let name = self.semantics.make_string(s);
+                                Ok(vec![StaticInit::Pointer(name)])
                             } else {
                                 Err(CompilerError {
                                         kind: ErrorKind::Type,
@@ -207,10 +202,9 @@ impl TypeChecker {
                         (c, Type::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
                         (c, Type::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
                         (c, Type::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
-                        (
-                            Constant::Double(value),
-                            Type::Int | Type::Char | Type::SChar | Type::UChar,
-                        ) => StaticInit::Int(*value as i32),
+                        (Constant::Double(value), Type::Int) => StaticInit::Int(*value as i32),
+                        (Constant::Double(value), Type::Char | Type::SChar) => StaticInit::Char(*value as i8),
+                        (Constant::Double(value), Type::UChar) => StaticInit::UChar(*value as u8),
                         (Constant::Double(value), Type::UInt) => StaticInit::UInt(*value as u32),
                         (Constant::Double(value), Type::Long) => StaticInit::Long(*value as i64),
                         (Constant::Double(value), Type::ULong) => StaticInit::ULong(*value as u64),
@@ -252,14 +246,14 @@ impl TypeChecker {
                         let inner_inits = self.check_static_initializer(initializer, inner_ty)?;
                         static_inits.extend(inner_inits);
                     }
-                    let padding = (size - initializers.len()) * inner_ty.al_size(&self.type_table);
+                    let padding = (size - initializers.len()) * inner_ty.al_size(&self.semantics.type_table);
                     if padding > 0 {
                         static_inits.push(StaticInit::ZeroInit(padding));
                     }
                     Ok(static_inits)
                 }
                 Type::Struct(tag) => {
-                    let Some(struct_def) = self.type_table.structs.get(tag) else {
+                    let Some(struct_def) = self.semantics.type_table.structs.get(tag) else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Unknown structure type to initialize".into(),
@@ -275,17 +269,18 @@ impl TypeChecker {
                     }
                     let mut offset = 0;
                     let mut static_inits = Vec::new();
-                    for (i, init) in initializers.iter().enumerate() {
-                        let field = &struct_def.fields[i];
+                    let struct_size = struct_def.size;
+                    let fields = struct_def.fields.clone();
+                    for (init, field) in initializers.iter().zip(fields) {
                         if field.offset != offset {
                             static_inits.push(StaticInit::ZeroInit(field.offset - offset));
                         }
                         let inner_inits = self.check_static_initializer(init, &field.ty)?;
                         static_inits.extend(inner_inits);
-                        offset = field.offset + field.ty.al_size(&self.type_table);
+                        offset = field.offset + field.ty.al_size(&self.semantics.type_table);
                     }
-                    if struct_def.size != offset {
-                        static_inits.push(StaticInit::ZeroInit(struct_def.size - offset));
+                    if struct_size != offset {
+                        static_inits.push(StaticInit::ZeroInit(struct_size - offset));
                     }
                     Ok(static_inits)
                 }
@@ -321,7 +316,7 @@ impl TypeChecker {
                             span: init.span,
                         });
                     }
-                    self.expression_types.insert(expr.id, target.clone());
+                    self.semantics.expression_types.insert(expr.id, target.clone());
                     target.clone()
                 } else {
                     self.check_and_convert_expr(expr)?
@@ -342,7 +337,7 @@ impl TypeChecker {
                     }
                 }
                 Type::Struct(tag) => {
-                    let Some(struct_def) = self.type_table.structs.get(tag) else {
+                    let Some(struct_def) = self.semantics.type_table.structs.get(tag) else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Unknown structure type to initialize".into(),
@@ -384,7 +379,7 @@ impl TypeChecker {
         Self::error_if(ty.is_void(), ty_span, "Illegal void variable")?;
         let mut initial_value = if let Some(init) = &decl.init {
             Self::error_if(
-                ty.is_incomplete_struct(&self.type_table),
+                ty.is_incomplete_struct(&self.semantics.type_table),
                 ty_span,
                 "Incomplete struct type",
             )?;
@@ -393,7 +388,7 @@ impl TypeChecker {
             InitialValue::NoInitializer
         } else {
             Self::error_if(
-                ty.is_incomplete_struct(&self.type_table),
+                ty.is_incomplete_struct(&self.semantics.type_table),
                 ty_span,
                 "Incomplete struct type",
             )?;
@@ -401,7 +396,7 @@ impl TypeChecker {
         };
         let mut global = !matches!(decl.storage_class.inner_ref(), Some(StorageClass::Static));
         let name = decl.name.symbol.clone();
-        if let Some(data) = self.symbols.get(&name) {
+        if let Some(data) = self.semantics.symbols.get(&name) {
             if data.ty != decl.type_spec.ty() {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
@@ -452,7 +447,7 @@ impl TypeChecker {
                 global,
             },
         };
-        self.symbols.insert(name, data);
+        self.semantics.symbols.insert(name, data);
         Ok(())
     }
 
@@ -499,7 +494,7 @@ impl TypeChecker {
 
         let mut is_global = !is_static;
 
-        if let Some(data) = self.symbols.get(&name) {
+        if let Some(data) = self.semantics.symbols.get(&name) {
             if data.ty != this_ty {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
@@ -538,7 +533,7 @@ impl TypeChecker {
                 global: is_global,
             },
         };
-        self.symbols.insert(name, data);
+        self.semantics.symbols.insert(name, data);
         if let Some(body) = &decl.body {
             if !top_level {
                 return Err(CompilerError {
@@ -551,17 +546,17 @@ impl TypeChecker {
             for (param_name, param_ty) in decl.params.iter().zip(function_ty.params.iter()) {
                 // TODO: make error exactly on the type span
                 Self::error_if(
-                    param_ty.is_incomplete_struct(&self.type_table),
+                    param_ty.is_incomplete_struct(&self.semantics.type_table),
                     param_name.span,
                     "Struct type is not complete",
                 )?;
-                self.symbols.insert(
+                self.semantics.symbols.insert(
                     param_name.symbol.clone(),
                     SymbolData::local(param_ty.clone()),
                 );
             }
             Self::error_if(
-                function_ty.ret.is_incomplete_struct(&self.type_table),
+                function_ty.ret.is_incomplete_struct(&self.semantics.type_table),
                 decl.type_spec.ret.span,
                 "Struct type is not complete",
             )?;
@@ -582,7 +577,7 @@ impl TypeChecker {
         for field_node in &decl.fields {
             self.validate_type_specifier(&field_node.type_spec)?;
             let ty = field_node.type_spec.ty();
-            let field_alignment = ty.alignment(&self.type_table);
+            let field_alignment = ty.alignment(&self.semantics.type_table);
             let field_offset = align_offset(size, field_alignment);
             let field = StructField {
                 name: field_node.name.symbol.clone(),
@@ -601,11 +596,11 @@ impl TypeChecker {
             }
             fields.push(field);
             alignment = cmp::max(alignment, field_alignment);
-            size = field_offset + ty.al_size(&self.type_table);
+            size = field_offset + ty.al_size(&self.semantics.type_table);
         }
         let size = align_offset(size, alignment);
         let tag = decl.name.symbol.clone();
-        let old = self.type_table.structs.insert(
+        let old = self.semantics.type_table.structs.insert(
             decl.name.symbol.clone(),
             StructDef {
                 alignment,
@@ -628,7 +623,7 @@ impl TypeChecker {
         match ty.as_ref() {
             TypeSpec::Array(inner, _) => {
                 Self::error_if(
-                    !inner.ty().is_complete(&self.type_table),
+                    !inner.ty().is_complete(&self.semantics.type_table),
                     ty.span,
                     "Illegal array of incomplete types",
                 )?;
@@ -716,7 +711,7 @@ impl TypeChecker {
                     default: None,
                 });
                 self.check_statement(function, body)?;
-                self.switch_cases
+                self.semantics.switch_cases
                     .insert(expr.id, self.switch_stack.pop_front().unwrap());
             }
             Statement::Case { value, body, label } => {
@@ -826,11 +821,11 @@ impl TypeChecker {
             Type::Array(inner, ..) => {
                 // Pointer decay
                 let pointer_ty = Type::Pointer(inner);
-                self.pointer_decays.insert(expr.id, pointer_ty.clone());
-                self.expression_types.insert(expr.id, pointer_ty.clone());
+                self.semantics.pointer_decays.insert(expr.id, pointer_ty.clone());
+                self.semantics.expression_types.insert(expr.id, pointer_ty.clone());
                 Ok(pointer_ty)
             }
-            Type::Struct(_) if !ty.is_complete(&self.type_table) => Err(CompilerError {
+            Type::Struct(_) if !ty.is_complete(&self.semantics.type_table) => Err(CompilerError {
                 kind: ErrorKind::Type,
                 msg: "Incomplete struct type".to_string(),
                 span: expr.span,
@@ -844,7 +839,7 @@ impl TypeChecker {
             Expression::Constant(c) => c.ty(),
             Expression::String(s) => Type::Array(Type::Char.into(), s.len() + 1),
             Expression::Var(name) => {
-                let Some(data) = self.symbols.get(name) else {
+                let Some(data) = self.semantics.symbols.get(name) else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Unknown type of expression".to_string(),
@@ -862,7 +857,7 @@ impl TypeChecker {
                 UnaryOp::Increment | UnaryOp::Decrement => {
                     let operand_ty = self.check_expression(expr)?;
                     Self::error_if(
-                        operand_ty.is_incomplete_struct(&self.type_table),
+                        operand_ty.is_incomplete_struct(&self.semantics.type_table),
                         expr.span,
                         "Struct is not complete",
                     )?;
@@ -873,7 +868,7 @@ impl TypeChecker {
                         "Expression is not assignable",
                     )?;
                     Self::error_if(
-                        operand_ty.is_pointer_to_incomplete(&self.type_table),
+                        operand_ty.is_pointer_to_incomplete(&self.semantics.type_table),
                         expr.span,
                         "Illegal operation on pointer to void type",
                     )?;
@@ -918,7 +913,7 @@ impl TypeChecker {
             Expression::Postfix { expr, .. } => {
                 let operand_ty = self.check_expression(expr)?;
                 Self::error_if(
-                    operand_ty.is_incomplete_struct(&self.type_table),
+                    operand_ty.is_incomplete_struct(&self.semantics.type_table),
                     expr.span,
                     "Struct is not complete",
                 )?;
@@ -929,7 +924,7 @@ impl TypeChecker {
                     "Expression is not assignable",
                 )?;
                 Self::error_if(
-                    operand_ty.is_pointer_to_incomplete(&self.type_table),
+                    operand_ty.is_pointer_to_incomplete(&self.semantics.type_table),
                     expr.span,
                     "Illegal operation on pointer to void type",
                 )?;
@@ -970,12 +965,12 @@ impl TypeChecker {
                     }
                     BinaryOp::Add => {
                         Self::error_if(
-                            left_ty.is_pointer_to_incomplete(&self.type_table),
+                            left_ty.is_pointer_to_incomplete(&self.semantics.type_table),
                             left.span,
                             "Cannot add pointers to incomplete types",
                         )?;
                         Self::error_if(
-                            right_ty.is_pointer_to_incomplete(&self.type_table),
+                            right_ty.is_pointer_to_incomplete(&self.semantics.type_table),
                             right.span,
                             "Cannot add pointers to incomplete types",
                         )?;
@@ -993,7 +988,7 @@ impl TypeChecker {
                     BinaryOp::Subtract => match (&left_ty, &right_ty) {
                         (Type::Pointer(left_inner), Type::Pointer(right_inner)) => {
                             Self::error_if(
-                                !left_inner.is_complete(&self.type_table),
+                                !left_inner.is_complete(&self.semantics.type_table),
                                 left.span,
                                 "Incomplete pointer type",
                             )?;
@@ -1005,7 +1000,7 @@ impl TypeChecker {
                         }
                         (Type::Pointer(left_inner), right_ty) => {
                             Self::error_if(
-                                !left_inner.is_complete(&self.type_table),
+                                !left_inner.is_complete(&self.semantics.type_table),
                                 left.span,
                                 "Incomplete pointer type",
                             )?;
@@ -1041,7 +1036,7 @@ impl TypeChecker {
                             });
                         };
                         Self::error_if(
-                            !left_inner.is_complete(&self.type_table),
+                            !left_inner.is_complete(&self.semantics.type_table),
                             right.span,
                             "Operator is invalid",
                         )?;
@@ -1110,7 +1105,7 @@ impl TypeChecker {
             Expression::Assignment { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
                 Self::error_if(
-                    left_ty.is_incomplete_struct(&self.type_table),
+                    left_ty.is_incomplete_struct(&self.semantics.type_table),
                     expr.span,
                     "Struct is not complete",
                 )?;
@@ -1168,7 +1163,7 @@ impl TypeChecker {
                             "Assign compound operation on a pointer requires integer operand",
                         )?;
                         Self::error_if(
-                            left_ty.is_pointer_to_incomplete(&self.type_table),
+                            left_ty.is_pointer_to_incomplete(&self.semantics.type_table),
                             left.span,
                             "Cannot assign to a pointer of an incomplete type",
                         )?;
@@ -1230,7 +1225,7 @@ impl TypeChecker {
 
             Expression::FunctionCall { name, args } => {
                 let symbol = name.symbol.clone();
-                let Some(data) = self.symbols.get(&symbol) else {
+                let Some(data) = self.semantics.symbols.get(&symbol) else {
                     return Err(CompilerError {
                         kind: ErrorKind::Type,
                         msg: "Unknown type of expression".to_string(),
@@ -1327,7 +1322,7 @@ impl TypeChecker {
                 match (&ty1, &ty2) {
                     (Type::Pointer(referenced), _) if ty2.is_int() => {
                         Self::error_if(
-                            !referenced.is_complete(&self.type_table),
+                            !referenced.is_complete(&self.semantics.type_table),
                             expr1.span,
                             "Cannot subscript a pointer to void type",
                         )?;
@@ -1335,7 +1330,7 @@ impl TypeChecker {
                     }
                     (_, Type::Pointer(referenced)) if ty1.is_int() => {
                         Self::error_if(
-                            !referenced.is_complete(&self.type_table),
+                            !referenced.is_complete(&self.semantics.type_table),
                             expr2.span,
                             "Cannot subscript a pointer to void type",
                         )?;
@@ -1353,7 +1348,7 @@ impl TypeChecker {
             Expression::SizeOfType(target) => {
                 self.validate_type_specifier(target)?;
                 Self::error_if(
-                    !target.ty().is_complete(&self.type_table),
+                    !target.ty().is_complete(&self.semantics.type_table),
                     target.span,
                     "Cannot get size of an incomplete type",
                 )?;
@@ -1362,7 +1357,7 @@ impl TypeChecker {
             Expression::SizeOfExpr(expr) => {
                 let ty = self.check_expression(expr)?;
                 Self::error_if(
-                    !ty.is_complete(&self.type_table),
+                    !ty.is_complete(&self.semantics.type_table),
                     expr.span,
                     "Cannot get size of an incomplete type",
                 )?;
@@ -1390,7 +1385,7 @@ impl TypeChecker {
                 self.check_struct_field(pointer, &inner_ty, member)?
             }
         };
-        self.expression_types.insert(expr.id, ty.clone());
+        self.semantics.expression_types.insert(expr.id, ty.clone());
         Ok(ty)
     }
 
@@ -1408,7 +1403,7 @@ impl TypeChecker {
             });
         };
         let struct_def = self
-            .type_table
+            .semantics.type_table
             .structs
             .get(name)
             .ok_or_else(|| CompilerError {
@@ -1483,7 +1478,7 @@ impl TypeChecker {
         if ty == expected {
             expected.clone()
         } else {
-            self.implicit_casts.insert(expr.id, expected.clone());
+            self.semantics.implicit_casts.insert(expr.id, expected.clone());
             expected.clone()
         }
     }
@@ -1539,12 +1534,5 @@ impl TypeChecker {
 pub fn check(program: &Node<Program>) -> Result<SemanticData> {
     let mut type_checker = TypeChecker::default();
     type_checker.check(program)?;
-    Ok(SemanticData {
-        symbols: type_checker.symbols,
-        expression_types: type_checker.expression_types,
-        type_table: type_checker.type_table,
-        pointer_decays: type_checker.pointer_decays,
-        implicit_casts: type_checker.implicit_casts,
-        switch_cases: type_checker.switch_cases,
-    })
+    Ok(type_checker.semantics)
 }

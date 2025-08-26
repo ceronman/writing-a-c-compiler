@@ -183,7 +183,6 @@ enum ExprResult {
 
 struct TackyGenerator {
     semantics: SemanticData,
-    strings: HashMap<Symbol, Symbol>,
     instructions: Vec<Instruction>,
     tmp_counter: u32,
     label_counter: u32,
@@ -323,8 +322,8 @@ impl TackyGenerator {
                 }
                 return;
             }
-            Type::Struct(name) => {
-                let struct_def = self.semantics.struct_def(name);
+            Type::Struct(struct_name) => {
+                let struct_def = self.semantics.struct_def(struct_name);
                 for field in struct_def.fields.clone() {
                     self.emit_zero_initializer(offset + field.offset, name, &field.ty)
                 }
@@ -1242,28 +1241,7 @@ impl TackyGenerator {
     }
 
     fn make_string_const(&mut self, s: &Symbol) -> Val {
-        let existing_constant = self.strings.get(s);
-        let name = match existing_constant {
-            Some(name) => name.clone(),
-            None => {
-                let name = format!("string.{}", self.strings.len());
-                self.strings.insert(s.clone(), name.clone());
-                self.semantics.symbols.insert(
-                    name.clone(),
-                    SymbolData {
-                        ty: Type::Array(Type::Char.into(), s.len() + 1),
-                        attrs: Attributes::Const {
-                            init: StaticInit::String {
-                                symbol: s.clone(),
-                                null_terminated: true,
-                            },
-                        },
-                    },
-                );
-                name
-            }
-        };
-        Val::Var(name)
+        Val::Var(self.semantics.make_string(s))
     }
 
     fn make_label(&mut self, prefix: &str) -> Symbol {
@@ -1277,7 +1255,6 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
     let mut top_level = Vec::new();
     let mut generator = TackyGenerator {
         semantics,
-        strings: Default::default(),
         instructions: vec![],
         tmp_counter: 0,
         label_counter: 0,

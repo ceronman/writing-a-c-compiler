@@ -10,6 +10,7 @@ use crate::semantic::{Attributes, SemanticData, StaticInit, StructDef, Type};
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
+use crate::alignment::align_offset;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
 const DOUBLE_ARG_REGISTERS: [Reg; 8] = [
@@ -100,12 +101,14 @@ impl Type {
                 AsmType::ByteArray { size, alignment }
             }
             Type::Struct(name) => {
-                let struct_def = semantics.struct_def(name);
-                // TODO: unify usize and u64 everywhere.
-                AsmType::ByteArray {
-                    size: struct_def.size as u64,
-                    alignment: struct_def.alignment,
-                }
+                let (size, alignment) =if let Some(struct_def) = semantics.type_table.structs.get(name) {
+                    // TODO: unify usize and u64 everywhere.
+                    (struct_def.size as u64, struct_def.alignment)
+                } else {
+                    // In case of incomplete structs, these are dummy values.
+                    (0, 0)
+                };
+                AsmType::ByteArray { size, alignment }
             }
         }
     }
@@ -802,7 +805,7 @@ impl Compiler {
                     if let AsmType::ByteArray { size, alignment } = dst_ty {
                         Self::copy_bytes(
                             &mut instructions,
-                            Reg::Ax.into(),
+                            Operand::Memory(Reg::Ax, 0),
                             self.generate_val(dst),
                             size,
                         );
@@ -825,7 +828,7 @@ impl Compiler {
                         Self::copy_bytes(
                             &mut instructions,
                             self.generate_val(src),
-                            Reg::Ax.into(),
+                            Operand::Memory(Reg::Ax, 0),
                             size,
                         );
                     } else {
@@ -1402,7 +1405,7 @@ impl Compiler {
         function: &mut Function,
         symbols: &BackendSymbolTable,
     ) -> u64 {
-        let mut stack_size = if self.does_return_in_memory(&function.name) {
+        let mut stack_size: usize = if self.does_return_in_memory(&function.name) {
             8
         } else {
             0
@@ -1438,14 +1441,13 @@ impl Compiler {
                     match ty {
                         AsmType::Byte => stack_size += 1,
                         AsmType::Longword => {
-                            stack_size += 4 + stack_size % 8;
+                            stack_size = align_offset(stack_size + 4, 4);
                         }
                         AsmType::Quadword | AsmType::Double => {
-                            stack_size += 8 + stack_size % 8;
+                            stack_size = align_offset(stack_size + 8, 8);
                         }
                         AsmType::ByteArray { size, alignment } => {
-                            let unaligned = stack_size + size;
-                            stack_size = ((unaligned - 1) | ((alignment as u64) - 1)) + 1;
+                            stack_size = align_offset(stack_size + size as usize, alignment);
                         }
                     }
                     stack_vars.insert(name.clone(), stack_size);
@@ -1492,7 +1494,7 @@ impl Compiler {
             }
         }
 
-        stack_size
+        stack_size as u64
     }
 
     fn fixup_instructions(&mut self, function: &mut Function, stack_size: u64) {

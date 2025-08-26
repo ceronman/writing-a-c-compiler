@@ -1,7 +1,7 @@
 use crate::ast::{Constant, Expression, FunctionTypeSpec, Node, NodeId, Program, TypeSpec};
 use crate::error::Result;
 use crate::symbol::Symbol;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, VecDeque};
 
 mod id_resolution;
 mod label_check;
@@ -223,9 +223,10 @@ pub struct TypeTable {
     pub structs: HashMap<Symbol, StructDef>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct SemanticData {
     pub symbols: BTreeMap<Symbol, SymbolData>,
+    pub strings: HashMap<Symbol, Symbol>,
     pub expression_types: HashMap<NodeId, Type>,
     pub type_table: TypeTable,
     pub implicit_casts: HashMap<NodeId, Type>,
@@ -310,6 +311,30 @@ impl SemanticData {
         self.switch_cases
             .get(&expr.id)
             .expect("Switch without cases")
+    }
+
+    pub fn make_string(&mut self, s: &Symbol) -> Symbol {
+        let existing_constant = self.strings.get(s);
+        match existing_constant {
+            Some(name) => name.clone(),
+            None => {
+                let name = format!("string.{}", self.strings.len());
+                self.strings.insert(s.clone(), name.clone());
+                self.symbols.insert(
+                    name.clone(),
+                    SymbolData {
+                        ty: Type::Array(Type::Char.into(), s.len() + 1),
+                        attrs: Attributes::Const {
+                            init: StaticInit::String {
+                                symbol: s.clone(),
+                                null_terminated: true,
+                            },
+                        },
+                    },
+                );
+                name
+            }
+        }
     }
 }
 
