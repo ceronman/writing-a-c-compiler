@@ -4,7 +4,7 @@ mod test;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, Field, ForInit,
     FunctionDeclaration, FunctionTypeSpec, Identifier, Initializer, Node, PostfixOp, Program,
-    Statement, StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration,
+    Statement, StorageClass, NameAndFields, TypeSpec, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{IntKind, Lexer, Span, Token, TokenKind};
@@ -34,6 +34,7 @@ impl TokenKind {
                 | TokenKind::Signed
                 | TokenKind::Void
                 | TokenKind::Struct
+                | TokenKind::Union
         )
     }
 }
@@ -113,7 +114,9 @@ impl<'src> Parser<'src> {
 
     fn declaration(&mut self) -> Result<Node<Declaration>> {
         let begin = self.current.span;
-        let (ty, storage_class) = if self.matches(TokenKind::Struct) {
+        let (ty, storage_class) = if let TokenKind::Struct | TokenKind::Union = self.current.kind {
+            let keyword = self.current.kind;
+            self.advance(); // consume keyword
             let name = self.identifier()?;
             if let TokenKind::Semicolon | TokenKind::OpenBrace = self.current.kind {
                 let mut fields = Vec::new();
@@ -131,12 +134,21 @@ impl<'src> Parser<'src> {
                     }
                 }
                 let end = self.expect(TokenKind::Semicolon)?.span;
-                return Ok(self.node(
-                    begin + end,
-                    Declaration::Struct(StructDeclaration { name, fields }),
-                ));
+                let declaration = NameAndFields { name, fields };
+                let declaration = match keyword {
+                    TokenKind::Struct => Declaration::Struct(declaration),
+                    TokenKind::Union => Declaration::Union(declaration),
+                    _ => unreachable!(),
+                };
+                return Ok(self.node(begin + end, declaration));
             } else {
-                (self.node(begin + name.span, TypeSpec::Struct(name)), None)
+                let span = name.span;
+                let ty_spec = match keyword {
+                    TokenKind::Struct => TypeSpec::Struct(name),
+                    TokenKind::Union => TypeSpec::Union(name),
+                    _ => unreachable!(),
+                };
+                (self.node(begin + span, ty_spec), None)
             }
         } else {
             self.type_and_storage()?
@@ -410,6 +422,10 @@ impl<'src> Parser<'src> {
             [TokenKind::Struct] => {
                 let name = self.identifier()?;
                 return Ok(self.node(span, TypeSpec::Struct(name)));
+            }
+            [TokenKind::Union] => {
+                let name = self.identifier()?;
+                return Ok(self.node(span, TypeSpec::Union(name)));
             }
             [TokenKind::Double] => {
                 return Ok(self.node(span, TypeSpec::Double));

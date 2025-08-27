@@ -22,7 +22,7 @@ impl LabelChecker {
             debug_assert!(self.label_stack.is_empty());
             match decl.as_mut() {
                 Declaration::Function(d) => self.check_function_declaration(d)?,
-                Declaration::Struct(_) | Declaration::Var(_) => {}
+                _ => {}
             }
         }
 

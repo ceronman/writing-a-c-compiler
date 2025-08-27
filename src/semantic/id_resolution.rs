@@ -1,6 +1,6 @@
 use crate::ast::{
     Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier,
-    Initializer, InnerRef, Node, Program, Statement, StorageClass, StructDeclaration, TypeSpec,
+    Initializer, InnerRef, Node, Program, Statement, StorageClass, NameAndFields, TypeSpec,
     VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
@@ -30,6 +30,7 @@ impl Resolver {
                 Declaration::Var(d) => self.resolve_file_var_declaration(d)?,
                 Declaration::Function(d) => self.resolve_function_declaration(d)?,
                 Declaration::Struct(d) => self.resolve_struct_declaration(d)?,
+                Declaration::Union(d) => todo!(),
             };
         }
         self.end_scope();
@@ -51,6 +52,7 @@ impl Resolver {
             Declaration::Var(decl) => self.resolve_local_var_declaration(decl),
             Declaration::Function(decl) => self.resolve_function_declaration(decl),
             Declaration::Struct(decl) => self.resolve_struct_declaration(decl),
+            Declaration::Union(decl) => todo!(),
         }
     }
 
@@ -175,7 +177,7 @@ impl Resolver {
         Ok(())
     }
 
-    fn resolve_struct_declaration(&mut self, decl: &mut StructDeclaration) -> Result<()> {
+    fn resolve_struct_declaration(&mut self, decl: &mut NameAndFields) -> Result<()> {
         let tag = &decl.name.symbol;
         let unique_name = self.make_name(tag);
         let scope = self

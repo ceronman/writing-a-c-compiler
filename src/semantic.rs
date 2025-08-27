@@ -165,6 +165,7 @@ impl TypeSpec {
             TypeSpec::Pointer(ty) => Type::Pointer(ty.ty().into()),
             TypeSpec::Array(ty, size) => Type::Array(ty.ty().into(), *size),
             TypeSpec::Struct(tag) => Type::Struct(tag.symbol.clone()),
+            TypeSpec::Union(tag) => todo!(),
             TypeSpec::Void => Type::Void,
         }
     }

@@ -169,7 +169,8 @@ pub struct Block {
 pub enum Declaration {
     Var(VarDeclaration),
     Function(FunctionDeclaration),
-    Struct(StructDeclaration),
+    Struct(NameAndFields),
+    Union(NameAndFields),
 }
 
 #[derive(Debug)]
@@ -186,6 +187,7 @@ pub enum TypeSpec {
     Pointer(Node<TypeSpec>),
     Array(Node<TypeSpec>, usize),
     Struct(Node<Identifier>),
+    Union(Node<Identifier>),
     Void,
 }
 
@@ -213,7 +215,7 @@ pub struct FunctionDeclaration {
 }
 
 #[derive(Debug)]
-pub struct StructDeclaration {
+pub struct NameAndFields {
     pub name: Node<Identifier>,
     pub fields: Vec<Node<Field>>,
 }

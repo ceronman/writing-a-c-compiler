@@ -156,6 +156,223 @@ fn test_invalid_parse_extra_credit_labeled_struct_decl() {
 }
 
 #[test]
+fn test_invalid_parse_extra_credit_struct_union() {
+    assert_error(
+        r#"
+        
+        union struct s {
+            //^^^^^^ Expected identifier, but found 'struct'
+            int a;
+        };
+        int main(void) {
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_two_union_kws() {
+    assert_error(
+        r#"
+        union u {
+            int a;
+        };
+        union union u x;
+            //^^^^^ Expected identifier, but found 'union'
+        int main(void) {
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_bad_type_spec() {
+    assert_error(
+        r#"
+        
+        union x long a;
+              //^^^^ Expected identifier, but found 'long'
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_decl_bad_type_specifier() {
+    assert_error(
+        r#"
+        union a { int a; };
+        int main(void) {
+            union a int x;
+                  //^^^ Expected identifier, but found 'int'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_decl_empty_member_list() {
+    assert_error(
+        r#"
+        union s {};
+                //^ Expected struct field but found '}}'
+        int main(void) {
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_decl_extra_semicolon() {
+    assert_error(
+        r#"
+        
+        union u {
+            int a;
+            ;
+          //^ Expected type specifier
+        };
+        int main(void) {
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_empty_initializer() {
+    assert_error(
+        r#"
+        union u { int a; };
+        int main(void) {
+            union u x = {};
+                       //^ Expected expression, but found '}'
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_member_initializer() {
+    assert_error(
+        r#"
+        union a {
+            int member = 1;
+                     //^ Expected ';', but found '='
+        };
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_member_is_function() {
+    assert_error(
+        r#"
+        union s {
+            int foo(void);
+              //^^^ Structs can't have fields
+        };
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_member_no_declarator() {
+    assert_error(
+        r#"
+        union u {
+            int;
+             //^ Expected identifier, but found ';'
+        };
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_member_no_type() {
+    assert_error(
+        r#"
+        union u {
+            a;
+          //^ Expected type specifier
+        };
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_member_storage_class() {
+    assert_error(
+        r#"
+        union y {
+            static int a;
+          //^^^^^^ Expected type specifier
+        };
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_struct_tag() {
+    assert_error(
+        r#"
+        
+        union struct {
+            //^^^^^^ Expected identifier, but found 'struct'
+            int a;
+        };
+        int main(void) {
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_two_tags() {
+    assert_error(
+        r#"
+        union x y {
+                //^ Expected ';', but found '{'
+            int a;
+        };
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_var_bad_tag() {
+    assert_error(
+        r#"
+        int main(void) {
+            union 4 foo;
+                //^ Expected identifier, but found '4'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_parse_extra_credit_union_var_tag_paren() {
+    assert_error(
+        r#"
+        struct s {
+            int y;
+        };
+        int main(void) {
+            union(s) var;
+               //^ Expected identifier, but found '('
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
 fn test_invalid_parse_misplaced_storage_class() {
     assert_error(
         r#"
@@ -515,6 +732,56 @@ fn test_invalid_struct_tags_deref_undeclared() {
 }
 
 #[test]
+fn test_invalid_struct_tags_extra_credit_sizeof_undeclared_union() {
+    let src = r#"
+        int main(void) {
+            return sizeof(union c);
+        }
+        union c {
+            int x;
+        };
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [main]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <9> SizeOfType
+            │               ╰── Union [c]
+            ╰── Union [c]
+                ╰── Field
+                    ├── Name
+                    │   ╰── x
+                    ╰── Type
+                        ╰── Int
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_struct_tags_extra_credit_var_undeclared_union_type() {
+    let src = r#"
+        int main(void) {
+            union s var;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── var
+                    │   ╰── Type
+                    │       ╰── Union [s]
+                    ╰── Return
+                        ╰── <11> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
 fn test_invalid_struct_tags_file_scope_var_type_undeclared() {
     let src = r#"
         struct s var;
@@ -754,6 +1021,606 @@ fn test_invalid_struct_tags_var_type_undeclared() {
                     │       ╰── Struct [s]
                     ╰── Return
                         ╰── <11> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_bad_union_member_access_nested_non_member() {
+    let src = r#"
+        struct s {
+            int a;
+        };
+        union u {
+            struct s nested;
+        };
+        int main(void) {
+            union u my_union = {{1}};
+            return my_union.a;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [s]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── a
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── nested
+            │       ╰── Type
+            │           ╰── Struct [s]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── my_union
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ╰── <23> Constant Int [1]
+                    ╰── Return
+                        ╰── <31> Dot
+                            ├── <29> Var [my_union]
+                            ╰── a
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_bad_union_member_access_union_bad_member() {
+    let src = r#"
+        union s {
+            int x;
+            int y;
+        };
+        union t {
+            int blah;
+            int y;
+        };
+        int main(void) {
+            union s foo = {1};
+            return foo.blah;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [s]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── x
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── y
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [t]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── blah
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── y
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── foo
+                    │   ├── Type
+                    │   │   ╰── Union [s]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <30> Constant Int [1]
+                    ╰── Return
+                        ╰── <37> Dot
+                            ├── <35> Var [foo]
+                            ╰── blah
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_bad_union_member_access_union_bad_pointer_member() {
+    let src = r#"
+        void *malloc(unsigned long size);
+        union a {
+          int x;
+          int y;
+        };
+        union b {
+          int m;
+          int n;
+        };
+        int main(void) {
+          union a *ptr = malloc(sizeof(union a));
+          ptr->m = 10;
+          return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Union [a]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── x
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── y
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [b]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── m
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── n
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Union [a]
+                    │   ╰── Initializer
+                    │       ╰── <48> FunctionCall [malloc]
+                    │           ╰── <47> SizeOfType
+                    │               ╰── Union [a]
+                    ├── <57> Assign [=]
+                    │   ├── <54> Arrow
+                    │   │   ├── <52> Var [ptr]
+                    │   │   ╰── m
+                    │   ╰── <56> Constant Int [10]
+                    ╰── Return
+                        ╰── <59> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incompatible_union_types_assign_different_union_type() {
+    let src = r#"
+        union u1 {int a;};
+        union u2 {int a;};
+        int main(void){
+            union u1 x = {10};
+            union u2 y = {11};
+            x = y;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u1]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── a
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [u2]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── a
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Union [u1]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <22> Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Union [u2]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <30> Constant Int [11]
+                    ├── <39> Assign [=]
+                    │   ├── <35> Var [x]
+                    │   ╰── <38> Var [y]
+                    ╰── Return
+                        ╰── <41> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incompatible_union_types_assign_scalar_to_union() {
+    let src = r#"
+        union u {int a; int b;};
+        int main(void) {
+            union u x = {1};
+            x = 2;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── b
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <20> Constant Int [1]
+                    ├── <28> Assign [=]
+                    │   ├── <25> Var [x]
+                    │   ╰── <27> Constant Int [2]
+                    ╰── Return
+                        ╰── <30> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incompatible_union_types_return_type_mismatch() {
+    let src = r#"
+        union u {
+            int x;
+        };
+        union u return_union(void){
+            union u {
+                int x;
+            };
+            union u result = {10};
+            return result;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── x
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [return_union]
+                ╰── Body
+                    ├── Union [u]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── x
+                    │       ╰── Type
+                    │           ╰── Int
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <23> Constant Int [10]
+                    ╰── Return
+                        ╰── <28> Var [result]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incompatible_union_types_union_branch_mismatch() {
+    let src = r#"
+        int main(void) {
+            union u1 {
+                int a;
+            };
+            union u2 {
+                int a;
+            };
+            union u1 x = {10};
+            union u2 y = {11};
+            1 ? x : y;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [u1]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ╰── Type
+                    │           ╰── Int
+                    ├── Union [u2]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ╰── Type
+                    │           ╰── Int
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Union [u1]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <22> Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Union [u2]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <30> Constant Int [11]
+                    ├── <39> Conditional [?]
+                    │   ├── <34> Constant Int [1]
+                    │   ├── Then
+                    │   │   ╰── <36> Var [x]
+                    │   ╰── Else
+                    │       ╰── <38> Var [y]
+                    ╰── Return
+                        ╰── <41> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incompatible_union_types_union_pointer_branch_mismatch() {
+    let src = r#"
+        int main(void) {
+            union u1;
+            union u2;
+            union u1 *ptr1 = 0;
+            union u2 *ptr2 = 0;
+            1 ? ptr1 : ptr2;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [u1]
+                    ├── Union [u2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr1
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Union [u1]
+                    │   ╰── Initializer
+                    │       ╰── <16> Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr2
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Union [u2]
+                    │   ╰── Initializer
+                    │       ╰── <25> Constant Int [0]
+                    ├── <33> Conditional [?]
+                    │   ├── <28> Constant Int [1]
+                    │   ├── Then
+                    │   │   ╰── <30> Var [ptr1]
+                    │   ╰── Else
+                    │       ╰── <32> Var [ptr2]
+                    ╰── Return
+                        ╰── <35> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incomplete_unions_define_incomplete_union() {
+    let src = r#"
+        union u;
+        union u my_union;
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── my_union
+                ╰── Type
+                    ╰── Union [u]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incomplete_unions_sizeof_incomplete_union_type() {
+    let src = r#"
+        int main(void) {
+            union u;
+            return sizeof(union u);
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [u]
+                    ╰── Return
+                        ╰── <11> SizeOfType
+                            ╰── Union [u]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_invalid_union_lvalues_address_of_non_lvalue_union_member() {
+    let src = r#"
+        union u {
+            int arr[3];
+            double d;
+        };
+        union u get_union(void) {
+            union u result = {{1, 2, 3}, 4.0};
+            return result;
+        }
+        int main(void) {
+            int *ptr[3] = &get_union().arr;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── Function [get_union]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Union [u]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ├── <24> Constant Int [1]
+            │       │           │   ├── <26> Constant Int [2]
+            │       │           │   ╰── <28> Constant Int [3]
+            │       │           ╰── <31> Constant Double [+4e0]
+            │       ╰── Return
+            │           ╰── <36> Var [result]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Array
+                    │   │       ├── 3
+                    │   │       ╰── Pointer
+                    │   │           ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── <57> AddressOf
+                    │           ╰── <56> Dot
+                    │               ├── <54> FunctionCall [get_union]
+                    │               ╰── arr
+                    ╰── Return
+                        ╰── <60> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_invalid_union_lvalues_assign_non_lvalue_union_member() {
+    let src = r#"
+        
+        union inner {
+            int y;
+            long z;
+        };
+        union u {
+            int x;
+            union inner i;
+        };
+        union u return_union(void){
+            union u result = {1};
+            return result;
+        }
+        int main(void) {
+            return_union().i.y = 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [inner]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── y
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── z
+            │       ╰── Type
+            │           ╰── Long
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── x
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Union [inner]
+            ├── Function [return_union]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Union [u]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <32> Constant Int [1]
+            │       ╰── Return
+            │           ╰── <37> Var [result]
+            ╰── Function [main]
+                ╰── Body
+                    ├── <54> Assign [=]
+                    │   ├── <51> Dot
+                    │   │   ├── <49> Dot
+                    │   │   │   ├── <47> FunctionCall [return_union]
+                    │   │   │   ╰── i
+                    │   │   ╰── y
+                    │   ╰── <53> Constant Int [1]
+                    ╰── Return
+                        ╰── <56> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -1208,6 +2075,1462 @@ fn test_invalid_types_extra_credit_other_features_switch_on_struct() {
                             ╰── Default
                                 ╰── Return
                                     ╰── <26> Constant Int [1]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_scalar_required_cast_between_unions() {
+    let src = r#"
+        union u1 {
+            int a;
+        };
+        int main(void){
+            union u1 var = {10};
+            (union u1) var;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u1]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── a
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── var
+                    │   ├── Type
+                    │   │   ╰── Union [u1]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <16> Constant Int [10]
+                    ├── <25> Cast
+                    │   ├── Target
+                    │   │   ╰── Union [u1]
+                    │   ╰── Expression
+                    │       ╰── <24> Var [var]
+                    ╰── Return
+                        ╰── <27> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_scalar_required_cast_union_to_int() {
+    let src = r#"
+        
+        union u {
+            int i;
+        };
+        int main(void) {
+            union u x = {10};
+            return (int)x;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <16> Constant Int [10]
+                    ╰── Return
+                        ╰── <24> Cast
+                            ├── Target
+                            │   ╰── Int
+                            ╰── Expression
+                                ╰── <23> Var [x]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_scalar_required_compare_unions() {
+    let src = r#"
+        union u { long l; };
+        int main(void){
+            union u x = {1};
+            x == x;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Long
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <16> Constant Int [1]
+                    ├── <25>  [==]
+                    │   ├── <21> Var [x]
+                    │   ╰── <24> Var [x]
+                    ╰── Return
+                        ╰── <27> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_scalar_required_switch_on_union() {
+    let src = r#"
+        
+        union s {
+            int i;
+        };
+        int main(void) {
+            union s x = {1};
+            switch (x) {
+                case 1:
+                    return 0;
+                default:
+                    return 1;
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [s]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Union [s]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <16> Constant Int [1]
+                    ╰── Switch
+                        ├── Expression
+                        │   ╰── <21> Var [x]
+                        ╰── Block
+                            ├── Case [1]
+                            │   ╰── Return
+                            │       ╰── <23> Constant Int [0]
+                            ╰── Default
+                                ╰── Return
+                                    ╰── <26> Constant Int [1]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_scalar_required_union_as_controlling_expression() {
+    let src = r#"
+        union u {int x;};
+        int main(void) {
+            union u my_union = {10};
+            if (my_union) {
+                return 1;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── x
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── my_union
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <16> Constant Int [10]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <21> Var [my_union]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <22> Constant Int [1]
+                    ╰── Return
+                        ╰── <27> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_initializer_too_long() {
+    let src = r#"
+        union u {
+            int a;
+            long b;
+        };
+        int main(void){
+            union u x = {1, 2};
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── b
+            │       ╰── Type
+            │           ╰── Long
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── <20> Constant Int [1]
+                    │           ╰── <22> Constant Int [2]
+                    ╰── Return
+                        ╰── <26> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_nested_init_wrong_type() {
+    let src = r#"
+        union u {
+            double d;
+            int i;
+            char c;
+        };
+        struct s {
+            int *ptr;
+            union u arr[3];
+        };
+        int main(void) {
+            int x;
+            struct s my_struct = {&x, {{1.0}, {2.0}, {&x}}};
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Struct [s]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Union [u]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ╰── Type
+                    │       ╰── Int
+                    ╰── VarDeclaration
+                        ├── Name
+                        │   ╰── my_struct
+                        ├── Type
+                        │   ╰── Struct [s]
+                        ╰── Initializer
+                            ╰── Compound
+                                ├── <46> AddressOf
+                                │   ╰── <45> Var [x]
+                                ╰── Compound
+                                    ├── Compound
+                                    │   ╰── <48> Constant Double [+1e0]
+                                    ├── Compound
+                                    │   ╰── <51> Constant Double [+2e0]
+                                    ╰── Compound
+                                        ╰── <56> AddressOf
+                                            ╰── <55> Var [x]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_nested_union_init_too_long() {
+    let src = r#"
+        int main(void) {
+            union u {
+                double d; int x;
+            };
+            union u array_of_unions[3] = {
+                {1.0, 2.0, 3.0}
+            };
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [u]
+                    │   ├── Field
+                    │   │   ├── Name
+                    │   │   │   ╰── d
+                    │   │   ╰── Type
+                    │   │       ╰── Double
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── x
+                    │       ╰── Type
+                    │           ╰── Int
+                    ╰── VarDeclaration
+                        ├── Name
+                        │   ╰── array_of_unions
+                        ├── Type
+                        │   ╰── Array
+                        │       ├── 3
+                        │       ╰── Union [u]
+                        ╰── Initializer
+                            ╰── Compound
+                                ╰── Compound
+                                    ├── <23> Constant Double [+1e0]
+                                    ├── <25> Constant Double [+2e0]
+                                    ╰── <27> Constant Double [+3e0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_scalar_union_initializer() {
+    let src = r#"
+        
+        union u {int a;};
+        int main(void){
+            union u my_union = 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── a
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── my_union
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── <16> Constant Int [1]
+                    ╰── Return
+                        ╰── <19> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_aggregate_init_wrong_type() {
+    let src = r#"
+        struct one_elem {
+            long l;
+        };
+        struct three_elems {
+            int one;
+            int two;
+            int three;
+        };
+        union one_or_three_elems {
+            struct one_elem a;
+            struct three_elems b;
+        };
+        int main(void) {
+            static union one_or_three_elems my_union = {{1, 2, 3}};
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [one_elem]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Long
+            ├── Struct [three_elems]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── one
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── two
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── three
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [one_or_three_elems]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Struct [one_elem]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── b
+            │       ╰── Type
+            │           ╰── Struct [three_elems]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── my_union
+                    │   ├── Type
+                    │   │   ╰── Union [one_or_three_elems]
+                    │   ├── Initializer
+                    │   │   ╰── Compound
+                    │   │       ╰── Compound
+                    │   │           ├── <43> Constant Int [1]
+                    │   │           ├── <45> Constant Int [2]
+                    │   │           ╰── <47> Constant Int [3]
+                    │   ╰── Static
+                    ╰── Return
+                        ╰── <52> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_nested_init_not_const() {
+    let src = r#"
+        union u {
+            long l;
+        };
+        struct has_union {
+            int a;
+            union u b;
+            char c;
+        };
+        long some_var = 10l;
+        struct has_union some_struct = {1,
+                                        {some_var},
+                                        'a'};
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Long
+            ├── Struct [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── b
+            │   │   ╰── Type
+            │   │       ╰── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── some_var
+            │   ├── Type
+            │   │   ╰── Long
+            │   ╰── Initializer
+            │       ╰── <25> Constant Long [10]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── some_struct
+                ├── Type
+                │   ╰── Struct [has_union]
+                ╰── Initializer
+                    ╰── Compound
+                        ├── <32> Constant Int [1]
+                        ├── Compound
+                        │   ╰── <35> Var [some_var]
+                        ╰── <38> Constant Int [97]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_nested_init_too_long() {
+    let src = r#"
+        
+        union u {
+            int a;
+            long b;
+        };
+        struct s {
+            int tag;
+            union u contents;
+        };
+        struct s my_struct = {
+            10,
+            {1, 2}
+        };
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── b
+            │       ╰── Type
+            │           ╰── Long
+            ├── Struct [s]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── tag
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── contents
+            │       ╰── Type
+            │           ╰── Union [u]
+            ╰── VarDeclaration
+                ├── Name
+                │   ╰── my_struct
+                ├── Type
+                │   ╰── Struct [s]
+                ╰── Initializer
+                    ╰── Compound
+                        ├── <26> Constant Int [10]
+                        ╰── Compound
+                            ├── <28> Constant Int [1]
+                            ╰── <30> Constant Int [2]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_scalar_union_initializer() {
+    let src = r#"
+        
+        union u {int a;};
+        int main(void){
+            static union u my_union = 1;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── a
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── my_union
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ├── Initializer
+                    │   │   ╰── <17> Constant Int [1]
+                    │   ╰── Static
+                    ╰── Return
+                        ╰── <20> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_too_long() {
+    let src = r#"
+        union u {
+            int a;
+            long b;
+        };
+        union u x = {1, 2};
+        int main(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── b
+            │       ╰── Type
+            │           ╰── Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── x
+            │   ├── Type
+            │   │   ╰── Union [u]
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── <15> Constant Int [1]
+            │           ╰── <17> Constant Int [2]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── <26> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_union_init_not_constant() {
+    let src = r#"
+        union u {int a; int b;};
+        int main(void){
+            int i = 10;
+            static union u my_union = {i};
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── b
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── i
+                    │   ├── Type
+                    │   │   ╰── Int
+                    │   ╰── Initializer
+                    │       ╰── <19> Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── my_union
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ├── Initializer
+                    │   │   ╰── Compound
+                    │   │       ╰── <28> Var [i]
+                    │   ╰── Static
+                    ╰── Return
+                        ╰── <32> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_union_init_wrong_type() {
+    let src = r#"
+        union u {
+            signed char *ptr;
+            double d;
+        };
+        int main(void) {
+            static union u my_union = {"A char array"};
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Signed Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ╰── VarDeclaration
+                        ├── Name
+                        │   ╰── my_union
+                        ├── Type
+                        │   ╰── Union [u]
+                        ├── Initializer
+                        │   ╰── Compound
+                        │       ╰── <23> "A char array"
+                        ╰── Static
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_union_init_wrong_type() {
+    let src = r#"
+        union u {
+            long *ptr;
+            double d;
+        };
+        int main(void) {
+            union u my_union = {1.0};
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ╰── VarDeclaration
+                        ├── Name
+                        │   ╰── my_union
+                        ├── Type
+                        │   ╰── Union [u]
+                        ╰── Initializer
+                            ╰── Compound
+                                ╰── <22> Constant Double [+1e0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_conflicting_tag_decl_and_use() {
+    let src = r#"
+        struct x { int a; };
+        int main(void) {
+            union x foo;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [x]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── a
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── foo
+                    │   ╰── Type
+                    │       ╰── Union [x]
+                    ╰── Return
+                        ╰── <17> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_conflicting_tag_decl_and_use_self_reference(
+) {
+    let src = r#"
+        int main(void) {
+            struct s;
+            {
+                union s* ptr;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Struct [s]
+                    ├── Block
+                    │   ╰── VarDeclaration
+                    │       ├── Name
+                    │       │   ╰── ptr
+                    │       ╰── Type
+                    │           ╰── Pointer
+                    │               ╰── Union [s]
+                    ╰── Return
+                        ╰── <17> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_conflicting_tag_declarations() {
+    let src = r#"
+        
+        struct x;
+        union x;
+        int main(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [x]
+            ├── Union [x]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── <10> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_struct_shadowed_by_union() {
+    let src = r#"
+        int main(void) {
+            struct tag {int a;};
+            {
+                union tag {long l;};
+                struct tag *x;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Struct [tag]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ╰── Type
+                    │           ╰── Int
+                    ├── Block
+                    │   ├── Union [tag]
+                    │   │   ╰── Field
+                    │   │       ├── Name
+                    │   │       │   ╰── l
+                    │   │       ╰── Type
+                    │   │           ╰── Long
+                    │   ╰── VarDeclaration
+                    │       ├── Name
+                    │       │   ╰── x
+                    │       ╰── Type
+                    │           ╰── Pointer
+                    │               ╰── Struct [tag]
+                    ╰── Return
+                        ╰── <27> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_tag_decl_conflicts_with_def() {
+    let src = r#"
+        int main(void) {
+            struct s;
+            union s {
+                int a;
+            };
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Struct [s]
+                    ├── Union [s]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ╰── Type
+                    │           ╰── Int
+                    ╰── Return
+                        ╰── <14> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_tag_def_conflicts_with_decl() {
+    let src = r#"
+        int main(void) {
+            union s {
+                int a;
+            };
+            struct s;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [s]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ╰── Type
+                    │           ╰── Int
+                    ├── Struct [s]
+                    ╰── Return
+                        ╰── <14> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_union_shadowed_by_incomplete_struct() {
+    let src = r#"
+        int main(void) {
+            union tag {int a;};
+            {
+                struct tag;
+                union tag *x;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [tag]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ╰── Type
+                    │           ╰── Int
+                    ├── Block
+                    │   ├── Struct [tag]
+                    │   ╰── VarDeclaration
+                    │       ├── Name
+                    │       │   ╰── x
+                    │       ╰── Type
+                    │           ╰── Pointer
+                    │               ╰── Union [tag]
+                    ╰── Return
+                        ╰── <23> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_address_of_wrong_union_type() {
+    let src = r#"
+        union u {
+            int i;
+            char c;
+        };
+        int main(void) {
+            union u foo = {0};
+            union u {
+                int i;
+                char c;
+            };
+            union u *ptr = &foo;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── foo
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <20> Constant Int [0]
+                    ├── Union [u]
+                    │   ├── Field
+                    │   │   ├── Name
+                    │   │   │   ╰── i
+                    │   │   ╰── Type
+                    │   │       ╰── Int
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── c
+                    │       ╰── Type
+                    │           ╰── Char
+                    ╰── VarDeclaration
+                        ├── Name
+                        │   ╰── ptr
+                        ├── Type
+                        │   ╰── Pointer
+                        │       ╰── Union [u]
+                        ╰── Initializer
+                            ╰── <42> AddressOf
+                                ╰── <41> Var [foo]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_compare_struct_and_union_ptrs() {
+    let src = r#"
+        int main(void) {
+            struct tag;
+            struct tag *struct_ptr = 0;
+            {
+                union tag;
+                union tag *union_ptr = 0;
+                return (struct_ptr == union_ptr);
+            }
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Struct [tag]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── struct_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Struct [tag]
+                    │   ╰── Initializer
+                    │       ╰── <14> Constant Int [0]
+                    ╰── Block
+                        ├── Union [tag]
+                        ├── VarDeclaration
+                        │   ├── Name
+                        │   │   ╰── union_ptr
+                        │   ├── Type
+                        │   │   ╰── Pointer
+                        │   │       ╰── Union [tag]
+                        │   ╰── Initializer
+                        │       ╰── <25> Constant Int [0]
+                        ╰── Return
+                            ╰── <34>  [==]
+                                ├── <29> Var [struct_ptr]
+                                ╰── <32> Var [union_ptr]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_conflicting_param_union_types() {
+    let src = r#"
+        struct s;
+        int foo(struct s x);
+        int main(void) {
+            union s;
+            int foo(union s x);
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [s]
+            ├── Function [foo]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── x
+            │           ╰── Type
+            │               ╰── Struct [s]
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [s]
+                    ├── Function [foo]
+                    │   ╰── Parameters
+                    │       ╰── Param
+                    │           ├── Name
+                    │           │   ╰── x
+                    │           ╰── Type
+                    │               ╰── Union [s]
+                    ╰── Return
+                        ╰── <30> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_distinct_union_types() {
+    let src = r#"
+        int foo(void) {
+            union s {
+                int a;
+                long b;
+            };
+            union s result = {1};
+            return result.a;
+        }
+        int main(void) {
+            union s;
+            union s blah = {foo()};
+            return blah.a;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [foo]
+            │   ╰── Body
+            │       ├── Union [s]
+            │       │   ├── Field
+            │       │   │   ├── Name
+            │       │   │   │   ╰── a
+            │       │   │   ╰── Type
+            │       │   │       ╰── Int
+            │       │   ╰── Field
+            │       │       ├── Name
+            │       │       │   ╰── b
+            │       │       ╰── Type
+            │       │           ╰── Long
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Union [s]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <20> Constant Int [1]
+            │       ╰── Return
+            │           ╰── <27> Dot
+            │               ├── <25> Var [result]
+            │               ╰── a
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [s]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── blah
+                    │   ├── Type
+                    │   │   ╰── Union [s]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <43> FunctionCall [foo]
+                    ╰── Return
+                        ╰── <50> Dot
+                            ├── <48> Var [blah]
+                            ╰── a
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_union_type_shadows_struct() {
+    let src = r#"
+        struct u {
+            int a;
+        };
+        int main(void) {
+            union u;
+            union u my_union;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── a
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [u]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── my_union
+                    │   ╰── Type
+                    │       ╰── Union [u]
+                    ╰── Return
+                        ╰── <19> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_union_wrong_member() {
+    let src = r#"
+        union u {
+            int a;
+        };
+        int main(void) {
+            union u foo = {1};
+            union u {
+                int b;
+            };
+            return foo.b;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── a
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── foo
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <16> Constant Int [1]
+                    ├── Union [u]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── b
+                    │       ╰── Type
+                    │           ╰── Int
+                    ╰── Return
+                        ╰── <29> Dot
+                            ├── <27> Var [foo]
+                            ╰── b
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_type_declarations_array_of_incomplete_union_type() {
+    let src = r#"
+        union u;
+        int main(void) {
+            union u(*arr)[3];
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── arr
+                    │   ╰── Type
+                    │       ╰── Pointer
+                    │           ╰── Array
+                    │               ├── 3
+                    │               ╰── Union [u]
+                    ╰── Return
+                        ╰── <19> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_type_declarations_duplicate_union_def() {
+    let src = r#"
+        int main(void) {
+            union u {int a;};
+            union u {int a;};
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [u]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ╰── Type
+                    │           ╰── Int
+                    ├── Union [u]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ╰── Type
+                    │           ╰── Int
+                    ╰── Return
+                        ╰── <18> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_type_declarations_incomplete_union_member() {
+    let src = r#"
+        
+        struct s;
+        union u {
+            struct s bad_struct;
+        };
+        int main(void){
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [s]
+            ├── Union [u]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── bad_struct
+            │       ╰── Type
+            │           ╰── Struct [s]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── <15> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_type_declarations_member_name_conflicts() {
+    let src = r#"
+        
+        union u {
+            int a;
+            int a;
+        };
+        int main(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── a
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── <16> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_type_declarations_union_self_reference() {
+    let src = r#"
+        union u {
+            int i;
+            union u self;
+        };
+        int main(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── self
+            │       ╰── Type
+            │           ╰── Union [u]
+            ╰── Function [main]
+                ╰── Body
+                    ╰── Return
+                        ╰── <17> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }
@@ -4687,6 +7010,15044 @@ fn test_invalid_types_tag_resolution_shadowed_tag_branch_mismatch() {
 }
 
 #[test]
+fn test_valid_extra_credit_libraries_classify_unions() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        int test_one_double(union one_double u) {
+            return (u.d1 == -2.345e6 && u.d2 == -2.345e6);
+        }
+        int test_has_union_with_double(struct has_union_with_double s) {
+            return (s.member.d1 == 9887.54321e44 && s.member.d2 == 9887.54321e44);
+        }
+        int test_has_struct_with_double(union has_struct_with_double u) {
+            return (u.s.member.d1 == 9887.54321e44
+                && u.arr[0] == 9887.54321e44 && u.s.member.d2 == 9887.54321e44);
+        }
+        int test_one_int(union one_int u) {
+            return (u.d == -80. && u.c == 0);
+        }
+        int test_one_int_nested(union one_int_nested u) {
+            return u.oi.d == 44e55 && u.oi.c == 109 && u.od.d1 == 44e55
+                && u.od.d2 == 44e55;
+        }
+        int test_char_int_mixed(union char_int_mixed u) {
+            return (strcmp(u.arr, "WXYZ") == 0 && u.ui == 1515804759);
+        }
+        int test_has_union(struct has_union s) {
+            return (s.i == 4294954951u && s.u.c == -60);
+        }
+        int test_has_struct_with_ints(union has_struct_with_ints u) {
+            return (u.s.i == 4294954951u && u.s.u.c == -60);
+        }
+        int test_two_doubles(union two_doubles u) {
+            return (u.arr[0] == 10.0 && u.arr[1] == 11.0 && u.single == 10.0);
+        }
+        int test_has_xmm_union(union has_xmm_union u) {
+            return u.u.d1 == 10.0 && u.u.d2 == 10.0 && u.u2.single == 10.0
+                && u.u2.arr[0] == 10.0 && u.u2.arr[1] == 11.0;
+        }
+        int test_dbl_struct(struct dbl_struct s) {
+            return s.member1.d1 == -2.345e6 && s.member1.d2 == -2.345e6
+                && s.member2 == 123.45;
+        }
+        int test_has_dbl_struct(union has_dbl_struct u) {
+            return u.member1.member1.d1 == -2.345e6 && u.member1.member1.d2 == -2.345e6
+                && u.member1.member2 == 123.45;
+        }
+        int test_char_arr(union char_arr u) {
+            return (strcmp(u.arr, "Chars!") == 0 && u.i == 1918986307);
+        }
+        int test_two_arrs(union two_arrs u) {
+            return (u.dbl_arr[0] == 13e4 && u.dbl_arr[1] == 14.5
+                && u.long_arr[0] == 4683669945186254848 && u.long_arr[1] == 4624352392379367424);
+        }
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u) {
+            return (u.arr[0] == 100 && u.arr[1] == 200 && u.arr[2] == 300
+                && u.member1.member1.d1 == 4.24399158242461027606e-312);
+        }
+        int test_two_structs(union two_structs u) {
+            return (u.member1.c == 'x' && u.member1.d == 55.5e5 && u.member2.i == 0);
+        }
+        int test_has_nine_byte_struct(union has_nine_byte_struct u) {
+            if (u.l != -71777214294589696l || u.c != 0) {
+                return 0;
+            }
+            if (u.s.i != -16711936) {
+                return 0;
+            }
+            for (int i = 0; i < 5; i = i + 1) {
+                int expected = i % 2 ? -1 : 0;
+                if (u.s.arr[i] != expected) {
+                    return 0;
+                }
+            }
+            return 1;
+        }
+        int test_has_uneven_union(struct has_uneven_union s) {
+            return s.i == -2147483647 && strcmp(s.u.arr, "!@#$") == 0 && s.u.uc == 33;
+        }
+        int test_has_other_unions(union has_other_unions u) {
+            if (u.n.l != -71777214294589696l) {
+                return 0;
+            }
+            for (int i = 0; i < 5; i = i + 1) {
+                int expected = i % 2 ? -1 : 0;
+                if (u.n.s.arr[i] != expected) {
+                    return 0;
+                }
+            }
+            return 1;
+        }
+        int test_union_array(union union_array u) {
+            return (u.u_arr->d == -20. && u.u_arr[1].d == -30.);
+        }
+        int test_uneven_union_array(union uneven_union_array u) {
+            return (strcmp(u.u_arr[0].arr, "QWER") == 0 && strcmp(u.u_arr[1].arr, "TYUI") == 0);
+        }
+        int test_has_small_struct_array(union has_small_struct_array u) {
+            return strcmp(u.arr[0].arr, "AS") == 0 && u.arr[0].sc == 10
+                && strcmp(u.arr[1].arr, "DF") == 0 && u.arr[1].sc == 11
+                && strcmp(u.arr[2].arr, "GH") == 0 && u.arr[2].sc == 12;
+        }
+        int test_gp_and_xmm(union gp_and_xmm u) {
+            return u.d_arr[0] == 11. && u.d_arr[1] == 12.;
+        }
+        int test_scalar_and_struct(union scalar_and_struct u) {
+            return u.cfe.c == -5 && u.cfe.d == -88.8;
+        }
+        int test_has_two_unions(struct has_two_unions s) {
+            if (strcmp(s.member1.arr, "WXYZ")) {
+                return 0;
+            }
+            if (s.member2.d1 != -2.345e6) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u) {
+            return (u.d.arr[0] == -22. && u.d.arr[1] == -32.);
+        }
+        int test_xmm_and_gp(union xmm_and_gp u) {
+            return (u.ise.d == -8. && u.ise.i == -8);
+        }
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u) {
+            return (u.member1.ise.d == -8. && u.member1.ise.i == -8);
+        }
+        int test_lotsa_doubles(union lotsa_doubles u) {
+            return u.arr[0] == 99. && u.arr[1] == 98. && u.arr[2] == 97;
+        }
+        int test_lotsa_chars(union lotsa_chars u) {
+            return !strcmp(u.more_chars, "asflakjsdflkjs");
+        }
+        int test_contains_large_struct(union contains_large_struct u) {
+            return u.l.i == 100 && u.l.d == 100. && !strcmp(u.l.arr, "A struct!");
+        }
+        int test_contains_union_array(union contains_union_array u) {
+            union gp_and_xmm a = u.arr[0];
+            union gp_and_xmm b = u.arr[1];
+            if (a.d_arr[0] != 11. || a.d_arr[1] != 12.) {
+                return 0;
+            }
+            if (b.d_arr[1] != -1 || b.c != 0) {
+                return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Function [exit]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── status
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Union [one_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d1
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [has_struct_with_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 1
+            │               ╰── Double
+            ├── Union [one_int]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [one_int_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── oi
+            │   │   ╰── Type
+            │   │       ╰── Union [one_int]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── od
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [char_int_mixed]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 7
+            │   │           ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── union_ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ui
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Union [char_int_short]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Struct [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [char_int_short]
+            ├── Union [has_struct_with_ints]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ul
+            │       ╰── Type
+            │           ╰── Unsigned Long
+            ├── Union [two_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── single
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_xmm_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u2
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Struct [dbl_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_dbl_struct]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Union [char_arr]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 11
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_arrs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── dbl_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── long_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Long
+            ├── Union [two_eightbyte_has_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Struct [char_first_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [int_second_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_structs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Struct [char_first_eightbyte]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Struct [nine_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Union [has_nine_byte_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Struct [nine_bytes]
+            ├── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 5
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── uc
+            │       ╰── Type
+            │           ╰── Unsigned Char
+            ├── Struct [has_uneven_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [uneven]
+            ├── Union [has_other_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Union [two_doubles]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── n
+            │       ╰── Type
+            │           ╰── Union [has_nine_byte_struct]
+            ├── Union [union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [one_int]
+            ├── Union [uneven_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [uneven]
+            ├── Struct [small]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── sc
+            │       ╰── Type
+            │           ╰── Signed Char
+            ├── Union [has_small_struct_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Struct [small]
+            ├── Union [gp_and_xmm]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [scalar_and_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── cfe
+            │       ╰── Type
+            │           ╰── Struct [char_first_eightbyte]
+            ├── Struct [has_two_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [small_struct_arr_and_dbl]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Struct [small]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ise
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Union [xmm_and_gp_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [lotsa_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [lotsa_chars]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── more_chars
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 18
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── fewer_chars
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Struct [large]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 10
+            │               ╰── Char
+            ├── Union [contains_large_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ul
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Struct [large]
+            ├── Union [contains_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_one_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_double]
+            ├── Function [test_has_union_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union_with_double]
+            ├── Function [test_has_struct_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_double]
+            ├── Function [test_one_int]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [test_one_int_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [test_char_int_mixed]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_int_mixed]
+            ├── Function [test_has_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [test_has_struct_with_ints]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_ints]
+            ├── Function [test_two_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [test_has_xmm_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_xmm_union]
+            ├── Function [test_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [dbl_struct]
+            ├── Function [test_has_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_dbl_struct]
+            ├── Function [test_char_arr]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [test_two_arrs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_arrs]
+            ├── Function [test_two_eightbyte_has_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_eightbyte_has_struct]
+            ├── Function [test_two_structs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_structs]
+            ├── Function [test_has_nine_byte_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_nine_byte_struct]
+            ├── Function [test_has_uneven_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_uneven_union]
+            ├── Function [test_has_other_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_other_unions]
+            ├── Function [test_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [union_array]
+            ├── Function [test_uneven_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [uneven_union_array]
+            ├── Function [test_has_small_struct_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_small_struct_array]
+            ├── Function [test_gp_and_xmm]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_scalar_and_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [scalar_and_struct]
+            ├── Function [test_has_two_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_two_unions]
+            ├── Function [test_small_struct_arr_and_dbl]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [small_struct_arr_and_dbl]
+            ├── Function [test_xmm_and_gp]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp]
+            ├── Function [test_xmm_and_gp_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp_nested]
+            ├── Function [test_lotsa_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_doubles]
+            ├── Function [test_lotsa_chars]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_chars]
+            ├── Function [test_contains_large_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_large_struct]
+            ├── Function [test_contains_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_union_array]
+            ├── Function [pass_unions_and_structs]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── i5
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [pass_gp_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [pass_xmm_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm_copy
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_borderline_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_gp
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [pass_borderline_xmm_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d5
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_mixed_reg_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── mixed_regs
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [pass_uneven_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── uneven
+            │           ╰── Type
+            │               ╰── Union [uneven]
+            ├── Function [pass_in_mem_first]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mem
+            │       │   ╰── Type
+            │       │       ╰── Union [lotsa_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [char_arr]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp_struct
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [return_one_double]
+            ├── Function [return_one_int_nested]
+            ├── Function [return_has_dbl_struct]
+            ├── Function [return_two_arrs]
+            ├── Function [return_scalar_and_struct]
+            ├── Function [return_xmm_and_gp]
+            ├── Function [return_contains_union_array]
+            ├── Function [pass_params_and_return_in_mem]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── int_and_dbl
+            │       │   ╰── Type
+            │       │       ╰── Union [scalar_and_struct]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_arrs
+            │       │   ╰── Type
+            │       │       ╰── Union [two_arrs]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── big_union
+            │       │   ╰── Type
+            │       │       ╰── Union [contains_union_array]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── oin
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [return_struct_with_union]
+            ├── Function [test_one_double]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [one_double]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1215>  [&&]
+            │               ├── <1203>  [==]
+            │               │   ├── <1198> Dot
+            │               │   │   ├── <1196> Var [u]
+            │               │   │   ╰── d1
+            │               │   ╰── <1202> Unary [-]
+            │               │       ╰── <1201> Constant Double [+2.345e6]
+            │               ╰── <1213>  [==]
+            │                   ├── <1208> Dot
+            │                   │   ├── <1206> Var [u]
+            │                   │   ╰── d2
+            │                   ╰── <1212> Unary [-]
+            │                       ╰── <1211> Constant Double [+2.345e6]
+            ├── Function [test_has_union_with_double]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── s
+            │   │       ╰── Type
+            │   │           ╰── Struct [has_union_with_double]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1248>  [&&]
+            │               ├── <1236>  [==]
+            │               │   ├── <1233> Dot
+            │               │   │   ├── <1231> Dot
+            │               │   │   │   ├── <1229> Var [s]
+            │               │   │   │   ╰── member
+            │               │   │   ╰── d1
+            │               │   ╰── <1235> Constant Double [+9.88754321e47]
+            │               ╰── <1246>  [==]
+            │                   ├── <1243> Dot
+            │                   │   ├── <1241> Dot
+            │                   │   │   ├── <1239> Var [s]
+            │                   │   │   ╰── member
+            │                   │   ╰── d2
+            │                   ╰── <1245> Constant Double [+9.88754321e47]
+            ├── Function [test_has_struct_with_double]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [has_struct_with_double]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1296>  [&&]
+            │               ├── <1282>  [&&]
+            │               │   ├── <1271>  [==]
+            │               │   │   ├── <1268> Dot
+            │               │   │   │   ├── <1266> Dot
+            │               │   │   │   │   ├── <1264> Dot
+            │               │   │   │   │   │   ├── <1262> Var [u]
+            │               │   │   │   │   │   ╰── s
+            │               │   │   │   │   ╰── member
+            │               │   │   │   ╰── d1
+            │               │   │   ╰── <1270> Constant Double [+9.88754321e47]
+            │               │   ╰── <1281>  [==]
+            │               │       ├── <1278> Subscript
+            │               │       │   ├── <1276> Dot
+            │               │       │   │   ├── <1274> Var [u]
+            │               │       │   │   ╰── arr
+            │               │       │   ╰── <1277> Constant Int [0]
+            │               │       ╰── <1280> Constant Double [+9.88754321e47]
+            │               ╰── <1294>  [==]
+            │                   ├── <1291> Dot
+            │                   │   ├── <1289> Dot
+            │                   │   │   ├── <1287> Dot
+            │                   │   │   │   ├── <1285> Var [u]
+            │                   │   │   │   ╰── s
+            │                   │   │   ╰── member
+            │                   │   ╰── d2
+            │                   ╰── <1293> Constant Double [+9.88754321e47]
+            ├── Function [test_one_int]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [one_int]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1327>  [&&]
+            │               ├── <1317>  [==]
+            │               │   ├── <1312> Dot
+            │               │   │   ├── <1310> Var [u]
+            │               │   │   ╰── d
+            │               │   ╰── <1316> Unary [-]
+            │               │       ╰── <1315> Constant Double [+8e1]
+            │               ╰── <1325>  [==]
+            │                   ├── <1322> Dot
+            │                   │   ├── <1320> Var [u]
+            │                   │   ╰── c
+            │                   ╰── <1324> Constant Int [0]
+            ├── Function [test_one_int_nested]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [one_int_nested]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1381>  [&&]
+            │               ├── <1370>  [&&]
+            │               │   ├── <1359>  [&&]
+            │               │   │   ├── <1348>  [==]
+            │               │   │   │   ├── <1345> Dot
+            │               │   │   │   │   ├── <1343> Dot
+            │               │   │   │   │   │   ├── <1341> Var [u]
+            │               │   │   │   │   │   ╰── oi
+            │               │   │   │   │   ╰── d
+            │               │   │   │   ╰── <1347> Constant Double [+4.4e56]
+            │               │   │   ╰── <1358>  [==]
+            │               │   │       ├── <1355> Dot
+            │               │   │       │   ├── <1353> Dot
+            │               │   │       │   │   ├── <1351> Var [u]
+            │               │   │       │   │   ╰── oi
+            │               │   │       │   ╰── c
+            │               │   │       ╰── <1357> Constant Int [109]
+            │               │   ╰── <1369>  [==]
+            │               │       ├── <1366> Dot
+            │               │       │   ├── <1364> Dot
+            │               │       │   │   ├── <1362> Var [u]
+            │               │       │   │   ╰── od
+            │               │       │   ╰── d1
+            │               │       ╰── <1368> Constant Double [+4.4e56]
+            │               ╰── <1380>  [==]
+            │                   ├── <1377> Dot
+            │                   │   ├── <1375> Dot
+            │                   │   │   ├── <1373> Var [u]
+            │                   │   │   ╰── od
+            │                   │   ╰── d2
+            │                   ╰── <1379> Constant Double [+4.4e56]
+            ├── Function [test_char_int_mixed]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [char_int_mixed]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1413>  [&&]
+            │               ├── <1403>  [==]
+            │               │   ├── <1400> FunctionCall [strcmp]
+            │               │   │   ├── <1398> Dot
+            │               │   │   │   ├── <1396> Var [u]
+            │               │   │   │   ╰── arr
+            │               │   │   ╰── <1399> "WXYZ"
+            │               │   ╰── <1402> Constant Int [0]
+            │               ╰── <1411>  [==]
+            │                   ├── <1408> Dot
+            │                   │   ├── <1406> Var [u]
+            │                   │   ╰── ui
+            │                   ╰── <1410> Constant Int [1515804759]
+            ├── Function [test_has_union]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── s
+            │   │       ╰── Type
+            │   │           ╰── Struct [has_union]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1446>  [&&]
+            │               ├── <1432>  [==]
+            │               │   ├── <1429> Dot
+            │               │   │   ├── <1427> Var [s]
+            │               │   │   ╰── i
+            │               │   ╰── <1431> Constant UInt [4294954951]
+            │               ╰── <1444>  [==]
+            │                   ├── <1439> Dot
+            │                   │   ├── <1437> Dot
+            │                   │   │   ├── <1435> Var [s]
+            │                   │   │   ╰── u
+            │                   │   ╰── c
+            │                   ╰── <1443> Unary [-]
+            │                       ╰── <1442> Constant Int [60]
+            ├── Function [test_has_struct_with_ints]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [has_struct_with_ints]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1483>  [&&]
+            │               ├── <1467>  [==]
+            │               │   ├── <1464> Dot
+            │               │   │   ├── <1462> Dot
+            │               │   │   │   ├── <1460> Var [u]
+            │               │   │   │   ╰── s
+            │               │   │   ╰── i
+            │               │   ╰── <1466> Constant UInt [4294954951]
+            │               ╰── <1481>  [==]
+            │                   ├── <1476> Dot
+            │                   │   ├── <1474> Dot
+            │                   │   │   ├── <1472> Dot
+            │                   │   │   │   ├── <1470> Var [u]
+            │                   │   │   │   ╰── s
+            │                   │   │   ╰── u
+            │                   │   ╰── c
+            │                   ╰── <1480> Unary [-]
+            │                       ╰── <1479> Constant Int [60]
+            ├── Function [test_two_doubles]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [two_doubles]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1525>  [&&]
+            │               ├── <1515>  [&&]
+            │               │   ├── <1504>  [==]
+            │               │   │   ├── <1501> Subscript
+            │               │   │   │   ├── <1499> Dot
+            │               │   │   │   │   ├── <1497> Var [u]
+            │               │   │   │   │   ╰── arr
+            │               │   │   │   ╰── <1500> Constant Int [0]
+            │               │   │   ╰── <1503> Constant Double [+1e1]
+            │               │   ╰── <1514>  [==]
+            │               │       ├── <1511> Subscript
+            │               │       │   ├── <1509> Dot
+            │               │       │   │   ├── <1507> Var [u]
+            │               │       │   │   ╰── arr
+            │               │       │   ╰── <1510> Constant Int [1]
+            │               │       ╰── <1513> Constant Double [+1.1e1]
+            │               ╰── <1523>  [==]
+            │                   ├── <1520> Dot
+            │                   │   ├── <1518> Var [u]
+            │                   │   ╰── single
+            │                   ╰── <1522> Constant Double [+1e1]
+            ├── Function [test_has_xmm_union]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [has_xmm_union]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1594>  [&&]
+            │               ├── <1581>  [&&]
+            │               │   ├── <1568>  [&&]
+            │               │   │   ├── <1557>  [&&]
+            │               │   │   │   ├── <1546>  [==]
+            │               │   │   │   │   ├── <1543> Dot
+            │               │   │   │   │   │   ├── <1541> Dot
+            │               │   │   │   │   │   │   ├── <1539> Var [u]
+            │               │   │   │   │   │   │   ╰── u
+            │               │   │   │   │   │   ╰── d1
+            │               │   │   │   │   ╰── <1545> Constant Double [+1e1]
+            │               │   │   │   ╰── <1556>  [==]
+            │               │   │   │       ├── <1553> Dot
+            │               │   │   │       │   ├── <1551> Dot
+            │               │   │   │       │   │   ├── <1549> Var [u]
+            │               │   │   │       │   │   ╰── u
+            │               │   │   │       │   ╰── d2
+            │               │   │   │       ╰── <1555> Constant Double [+1e1]
+            │               │   │   ╰── <1567>  [==]
+            │               │   │       ├── <1564> Dot
+            │               │   │       │   ├── <1562> Dot
+            │               │   │       │   │   ├── <1560> Var [u]
+            │               │   │       │   │   ╰── u2
+            │               │   │       │   ╰── single
+            │               │   │       ╰── <1566> Constant Double [+1e1]
+            │               │   ╰── <1580>  [==]
+            │               │       ├── <1577> Subscript
+            │               │       │   ├── <1575> Dot
+            │               │       │   │   ├── <1573> Dot
+            │               │       │   │   │   ├── <1571> Var [u]
+            │               │       │   │   │   ╰── u2
+            │               │       │   │   ╰── arr
+            │               │       │   ╰── <1576> Constant Int [0]
+            │               │       ╰── <1579> Constant Double [+1e1]
+            │               ╰── <1593>  [==]
+            │                   ├── <1590> Subscript
+            │                   │   ├── <1588> Dot
+            │                   │   │   ├── <1586> Dot
+            │                   │   │   │   ├── <1584> Var [u]
+            │                   │   │   │   ╰── u2
+            │                   │   │   ╰── arr
+            │                   │   ╰── <1589> Constant Int [1]
+            │                   ╰── <1592> Constant Double [+1.1e1]
+            ├── Function [test_dbl_struct]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── s
+            │   │       ╰── Type
+            │   │           ╰── Struct [dbl_struct]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1639>  [&&]
+            │               ├── <1630>  [&&]
+            │               │   ├── <1617>  [==]
+            │               │   │   ├── <1612> Dot
+            │               │   │   │   ├── <1610> Dot
+            │               │   │   │   │   ├── <1608> Var [s]
+            │               │   │   │   │   ╰── member1
+            │               │   │   │   ╰── d1
+            │               │   │   ╰── <1616> Unary [-]
+            │               │   │       ╰── <1615> Constant Double [+2.345e6]
+            │               │   ╰── <1629>  [==]
+            │               │       ├── <1624> Dot
+            │               │       │   ├── <1622> Dot
+            │               │       │   │   ├── <1620> Var [s]
+            │               │       │   │   ╰── member1
+            │               │       │   ╰── d2
+            │               │       ╰── <1628> Unary [-]
+            │               │           ╰── <1627> Constant Double [+2.345e6]
+            │               ╰── <1638>  [==]
+            │                   ├── <1635> Dot
+            │                   │   ├── <1633> Var [s]
+            │                   │   ╰── member2
+            │                   ╰── <1637> Constant Double [+1.2345e2]
+            ├── Function [test_has_dbl_struct]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [has_dbl_struct]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1690>  [&&]
+            │               ├── <1679>  [&&]
+            │               │   ├── <1664>  [==]
+            │               │   │   ├── <1659> Dot
+            │               │   │   │   ├── <1657> Dot
+            │               │   │   │   │   ├── <1655> Dot
+            │               │   │   │   │   │   ├── <1653> Var [u]
+            │               │   │   │   │   │   ╰── member1
+            │               │   │   │   │   ╰── member1
+            │               │   │   │   ╰── d1
+            │               │   │   ╰── <1663> Unary [-]
+            │               │   │       ╰── <1662> Constant Double [+2.345e6]
+            │               │   ╰── <1678>  [==]
+            │               │       ├── <1673> Dot
+            │               │       │   ├── <1671> Dot
+            │               │       │   │   ├── <1669> Dot
+            │               │       │   │   │   ├── <1667> Var [u]
+            │               │       │   │   │   ╰── member1
+            │               │       │   │   ╰── member1
+            │               │       │   ╰── d2
+            │               │       ╰── <1677> Unary [-]
+            │               │           ╰── <1676> Constant Double [+2.345e6]
+            │               ╰── <1689>  [==]
+            │                   ├── <1686> Dot
+            │                   │   ├── <1684> Dot
+            │                   │   │   ├── <1682> Var [u]
+            │                   │   │   ╰── member1
+            │                   │   ╰── member2
+            │                   ╰── <1688> Constant Double [+1.2345e2]
+            ├── Function [test_char_arr]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [char_arr]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1722>  [&&]
+            │               ├── <1712>  [==]
+            │               │   ├── <1709> FunctionCall [strcmp]
+            │               │   │   ├── <1707> Dot
+            │               │   │   │   ├── <1705> Var [u]
+            │               │   │   │   ╰── arr
+            │               │   │   ╰── <1708> "Chars!"
+            │               │   ╰── <1711> Constant Int [0]
+            │               ╰── <1720>  [==]
+            │                   ├── <1717> Dot
+            │                   │   ├── <1715> Var [u]
+            │                   │   ╰── i
+            │                   ╰── <1719> Constant Int [1918986307]
+            ├── Function [test_two_arrs]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [two_arrs]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1777>  [&&]
+            │               ├── <1765>  [&&]
+            │               │   ├── <1754>  [&&]
+            │               │   │   ├── <1743>  [==]
+            │               │   │   │   ├── <1740> Subscript
+            │               │   │   │   │   ├── <1738> Dot
+            │               │   │   │   │   │   ├── <1736> Var [u]
+            │               │   │   │   │   │   ╰── dbl_arr
+            │               │   │   │   │   ╰── <1739> Constant Int [0]
+            │               │   │   │   ╰── <1742> Constant Double [+1.3e5]
+            │               │   │   ╰── <1753>  [==]
+            │               │   │       ├── <1750> Subscript
+            │               │   │       │   ├── <1748> Dot
+            │               │   │       │   │   ├── <1746> Var [u]
+            │               │   │       │   │   ╰── dbl_arr
+            │               │   │       │   ╰── <1749> Constant Int [1]
+            │               │   │       ╰── <1752> Constant Double [+1.45e1]
+            │               │   ╰── <1764>  [==]
+            │               │       ├── <1761> Subscript
+            │               │       │   ├── <1759> Dot
+            │               │       │   │   ├── <1757> Var [u]
+            │               │       │   │   ╰── long_arr
+            │               │       │   ╰── <1760> Constant Int [0]
+            │               │       ╰── <1763> Constant Long [4683669945186254848]
+            │               ╰── <1775>  [==]
+            │                   ├── <1772> Subscript
+            │                   │   ├── <1770> Dot
+            │                   │   │   ├── <1768> Var [u]
+            │                   │   │   ╰── long_arr
+            │                   │   ╰── <1771> Constant Int [1]
+            │                   ╰── <1774> Constant Long [4624352392379367424]
+            ├── Function [test_two_eightbyte_has_struct]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [two_eightbyte_has_struct]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1834>  [&&]
+            │               ├── <1820>  [&&]
+            │               │   ├── <1809>  [&&]
+            │               │   │   ├── <1798>  [==]
+            │               │   │   │   ├── <1795> Subscript
+            │               │   │   │   │   ├── <1793> Dot
+            │               │   │   │   │   │   ├── <1791> Var [u]
+            │               │   │   │   │   │   ╰── arr
+            │               │   │   │   │   ╰── <1794> Constant Int [0]
+            │               │   │   │   ╰── <1797> Constant Int [100]
+            │               │   │   ╰── <1808>  [==]
+            │               │   │       ├── <1805> Subscript
+            │               │   │       │   ├── <1803> Dot
+            │               │   │       │   │   ├── <1801> Var [u]
+            │               │   │       │   │   ╰── arr
+            │               │   │       │   ╰── <1804> Constant Int [1]
+            │               │   │       ╰── <1807> Constant Int [200]
+            │               │   ╰── <1819>  [==]
+            │               │       ├── <1816> Subscript
+            │               │       │   ├── <1814> Dot
+            │               │       │   │   ├── <1812> Var [u]
+            │               │       │   │   ╰── arr
+            │               │       │   ╰── <1815> Constant Int [2]
+            │               │       ╰── <1818> Constant Int [300]
+            │               ╰── <1832>  [==]
+            │                   ├── <1829> Dot
+            │                   │   ├── <1827> Dot
+            │                   │   │   ├── <1825> Dot
+            │                   │   │   │   ├── <1823> Var [u]
+            │                   │   │   │   ╰── member1
+            │                   │   │   ╰── member1
+            │                   │   ╰── d1
+            │                   ╰── <1831> Constant Double [+4.243991582425e-312]
+            ├── Function [test_two_structs]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [two_structs]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <1878>  [&&]
+            │               ├── <1866>  [&&]
+            │               │   ├── <1855>  [==]
+            │               │   │   ├── <1852> Dot
+            │               │   │   │   ├── <1850> Dot
+            │               │   │   │   │   ├── <1848> Var [u]
+            │               │   │   │   │   ╰── member1
+            │               │   │   │   ╰── c
+            │               │   │   ╰── <1854> Constant Int [120]
+            │               │   ╰── <1865>  [==]
+            │               │       ├── <1862> Dot
+            │               │       │   ├── <1860> Dot
+            │               │       │   │   ├── <1858> Var [u]
+            │               │       │   │   ╰── member1
+            │               │       │   ╰── d
+            │               │       ╰── <1864> Constant Double [+5.55e6]
+            │               ╰── <1876>  [==]
+            │                   ├── <1873> Dot
+            │                   │   ├── <1871> Dot
+            │                   │   │   ├── <1869> Var [u]
+            │                   │   │   ╰── member2
+            │                   │   ╰── i
+            │                   ╰── <1875> Constant Int [0]
+            ├── Function [test_has_nine_byte_struct]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [has_nine_byte_struct]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1908>  [||]
+            │       │   │       ├── <1899>  [!=]
+            │       │   │       │   ├── <1894> Dot
+            │       │   │       │   │   ├── <1892> Var [u]
+            │       │   │       │   │   ╰── l
+            │       │   │       │   ╰── <1898> Unary [-]
+            │       │   │       │       ╰── <1897> Constant Long [71777214294589696]
+            │       │   │       ╰── <1907>  [!=]
+            │       │   │           ├── <1904> Dot
+            │       │   │           │   ├── <1902> Var [u]
+            │       │   │           │   ╰── c
+            │       │   │           ╰── <1906> Constant Int [0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1909> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1924>  [!=]
+            │       │   │       ├── <1919> Dot
+            │       │   │       │   ├── <1917> Dot
+            │       │   │       │   │   ├── <1915> Var [u]
+            │       │   │       │   │   ╰── s
+            │       │   │       │   ╰── i
+            │       │   │       ╰── <1923> Unary [-]
+            │       │   │           ╰── <1922> Constant Int [16711936]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1925> Constant Int [0]
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── <1933> Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── <1941>  [<]
+            │       │   │       ├── <1938> Var [i]
+            │       │   │       ╰── <1940> Constant Int [5]
+            │       │   ├── Condition
+            │       │   │   ╰── <1950> Assign [=]
+            │       │   │       ├── <1943> Var [i]
+            │       │   │       ╰── <1949>  [+]
+            │       │   │           ├── <1946> Var [i]
+            │       │   │           ╰── <1948> Constant Int [1]
+            │       │   ╰── Block
+            │       │       ├── VarDeclaration
+            │       │       │   ├── Name
+            │       │       │   │   ╰── expected
+            │       │       │   ├── Type
+            │       │       │   │   ╰── Int
+            │       │       │   ╰── Initializer
+            │       │       │       ╰── <1963> Conditional [?]
+            │       │       │           ├── <1958>  [%]
+            │       │       │           │   ├── <1955> Var [i]
+            │       │       │           │   ╰── <1957> Constant Int [2]
+            │       │       │           ├── Then
+            │       │       │           │   ╰── <1961> Unary [-]
+            │       │       │           │       ╰── <1960> Constant Int [1]
+            │       │       │           ╰── Else
+            │       │       │               ╰── <1962> Constant Int [0]
+            │       │       ╰── If
+            │       │           ├── Condition
+            │       │           │   ╰── <1978>  [!=]
+            │       │           │       ├── <1974> Subscript
+            │       │           │       │   ├── <1971> Dot
+            │       │           │       │   │   ├── <1969> Dot
+            │       │           │       │   │   │   ├── <1967> Var [u]
+            │       │           │       │   │   │   ╰── s
+            │       │           │       │   │   ╰── arr
+            │       │           │       │   ╰── <1973> Var [i]
+            │       │           │       ╰── <1977> Var [expected]
+            │       │           ╰── Then
+            │       │               ╰── Block
+            │       │                   ╰── Return
+            │       │                       ╰── <1979> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <1987> Constant Int [1]
+            ├── Function [test_has_uneven_union]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── s
+            │   │       ╰── Type
+            │   │           ╰── Struct [has_uneven_union]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2033>  [&&]
+            │               ├── <2022>  [&&]
+            │               │   ├── <2008>  [==]
+            │               │   │   ├── <2003> Dot
+            │               │   │   │   ├── <2001> Var [s]
+            │               │   │   │   ╰── i
+            │               │   │   ╰── <2007> Unary [-]
+            │               │   │       ╰── <2006> Constant Int [2147483647]
+            │               │   ╰── <2021>  [==]
+            │               │       ├── <2018> FunctionCall [strcmp]
+            │               │       │   ├── <2016> Dot
+            │               │       │   │   ├── <2014> Dot
+            │               │       │   │   │   ├── <2012> Var [s]
+            │               │       │   │   │   ╰── u
+            │               │       │   │   ╰── arr
+            │               │       │   ╰── <2017> "!@#$"
+            │               │       ╰── <2020> Constant Int [0]
+            │               ╰── <2032>  [==]
+            │                   ├── <2029> Dot
+            │                   │   ├── <2027> Dot
+            │                   │   │   ├── <2025> Var [s]
+            │                   │   │   ╰── u
+            │                   │   ╰── uc
+            │                   ╰── <2031> Constant Int [33]
+            ├── Function [test_has_other_unions]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [has_other_unions]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <2056>  [!=]
+            │       │   │       ├── <2051> Dot
+            │       │   │       │   ├── <2049> Dot
+            │       │   │       │   │   ├── <2047> Var [u]
+            │       │   │       │   │   ╰── n
+            │       │   │       │   ╰── l
+            │       │   │       ╰── <2055> Unary [-]
+            │       │   │           ╰── <2054> Constant Long [71777214294589696]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <2057> Constant Int [0]
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── <2065> Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── <2073>  [<]
+            │       │   │       ├── <2070> Var [i]
+            │       │   │       ╰── <2072> Constant Int [5]
+            │       │   ├── Condition
+            │       │   │   ╰── <2082> Assign [=]
+            │       │   │       ├── <2075> Var [i]
+            │       │   │       ╰── <2081>  [+]
+            │       │   │           ├── <2078> Var [i]
+            │       │   │           ╰── <2080> Constant Int [1]
+            │       │   ╰── Block
+            │       │       ├── VarDeclaration
+            │       │       │   ├── Name
+            │       │       │   │   ╰── expected
+            │       │       │   ├── Type
+            │       │       │   │   ╰── Int
+            │       │       │   ╰── Initializer
+            │       │       │       ╰── <2095> Conditional [?]
+            │       │       │           ├── <2090>  [%]
+            │       │       │           │   ├── <2087> Var [i]
+            │       │       │           │   ╰── <2089> Constant Int [2]
+            │       │       │           ├── Then
+            │       │       │           │   ╰── <2093> Unary [-]
+            │       │       │           │       ╰── <2092> Constant Int [1]
+            │       │       │           ╰── Else
+            │       │       │               ╰── <2094> Constant Int [0]
+            │       │       ╰── If
+            │       │           ├── Condition
+            │       │           │   ╰── <2112>  [!=]
+            │       │           │       ├── <2108> Subscript
+            │       │           │       │   ├── <2105> Dot
+            │       │           │       │   │   ├── <2103> Dot
+            │       │           │       │   │   │   ├── <2101> Dot
+            │       │           │       │   │   │   │   ├── <2099> Var [u]
+            │       │           │       │   │   │   │   ╰── n
+            │       │           │       │   │   │   ╰── s
+            │       │           │       │   │   ╰── arr
+            │       │           │       │   ╰── <2107> Var [i]
+            │       │           │       ╰── <2111> Var [expected]
+            │       │           ╰── Then
+            │       │               ╰── Block
+            │       │                   ╰── Return
+            │       │                       ╰── <2113> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <2121> Constant Int [1]
+            ├── Function [test_union_array]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [union_array]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2160>  [&&]
+            │               ├── <2144>  [==]
+            │               │   ├── <2139> Arrow
+            │               │   │   ├── <2137> Dot
+            │               │   │   │   ├── <2135> Var [u]
+            │               │   │   │   ╰── u_arr
+            │               │   │   ╰── d
+            │               │   ╰── <2143> Unary [-]
+            │               │       ╰── <2142> Constant Double [+2e1]
+            │               ╰── <2158>  [==]
+            │                   ├── <2153> Dot
+            │                   │   ├── <2151> Subscript
+            │                   │   │   ├── <2149> Dot
+            │                   │   │   │   ├── <2147> Var [u]
+            │                   │   │   │   ╰── u_arr
+            │                   │   │   ╰── <2150> Constant Int [1]
+            │                   │   ╰── d
+            │                   ╰── <2157> Unary [-]
+            │                       ╰── <2156> Constant Double [+3e1]
+            ├── Function [test_uneven_union_array]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [uneven_union_array]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2203>  [&&]
+            │               ├── <2186>  [==]
+            │               │   ├── <2183> FunctionCall [strcmp]
+            │               │   │   ├── <2181> Dot
+            │               │   │   │   ├── <2179> Subscript
+            │               │   │   │   │   ├── <2177> Dot
+            │               │   │   │   │   │   ├── <2175> Var [u]
+            │               │   │   │   │   │   ╰── u_arr
+            │               │   │   │   │   ╰── <2178> Constant Int [0]
+            │               │   │   │   ╰── arr
+            │               │   │   ╰── <2182> "QWER"
+            │               │   ╰── <2185> Constant Int [0]
+            │               ╰── <2201>  [==]
+            │                   ├── <2198> FunctionCall [strcmp]
+            │                   │   ├── <2196> Dot
+            │                   │   │   ├── <2194> Subscript
+            │                   │   │   │   ├── <2192> Dot
+            │                   │   │   │   │   ├── <2190> Var [u]
+            │                   │   │   │   │   ╰── u_arr
+            │                   │   │   │   ╰── <2193> Constant Int [1]
+            │                   │   │   ╰── arr
+            │                   │   ╰── <2197> "TYUI"
+            │                   ╰── <2200> Constant Int [0]
+            ├── Function [test_has_small_struct_array]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [has_small_struct_array]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2300>  [&&]
+            │               ├── <2287>  [&&]
+            │               │   ├── <2271>  [&&]
+            │               │   │   ├── <2258>  [&&]
+            │               │   │   │   ├── <2242>  [&&]
+            │               │   │   │   │   ├── <2229>  [==]
+            │               │   │   │   │   │   ├── <2226> FunctionCall [strcmp]
+            │               │   │   │   │   │   │   ├── <2224> Dot
+            │               │   │   │   │   │   │   │   ├── <2222> Subscript
+            │               │   │   │   │   │   │   │   │   ├── <2220> Dot
+            │               │   │   │   │   │   │   │   │   │   ├── <2218> Var [u]
+            │               │   │   │   │   │   │   │   │   │   ╰── arr
+            │               │   │   │   │   │   │   │   │   ╰── <2221> Constant Int [0]
+            │               │   │   │   │   │   │   │   ╰── arr
+            │               │   │   │   │   │   │   ╰── <2225> "AS"
+            │               │   │   │   │   │   ╰── <2228> Constant Int [0]
+            │               │   │   │   │   ╰── <2241>  [==]
+            │               │   │   │   │       ├── <2238> Dot
+            │               │   │   │   │       │   ├── <2236> Subscript
+            │               │   │   │   │       │   │   ├── <2234> Dot
+            │               │   │   │   │       │   │   │   ├── <2232> Var [u]
+            │               │   │   │   │       │   │   │   ╰── arr
+            │               │   │   │   │       │   │   ╰── <2235> Constant Int [0]
+            │               │   │   │   │       │   ╰── sc
+            │               │   │   │   │       ╰── <2240> Constant Int [10]
+            │               │   │   │   ╰── <2257>  [==]
+            │               │   │   │       ├── <2254> FunctionCall [strcmp]
+            │               │   │   │       │   ├── <2252> Dot
+            │               │   │   │       │   │   ├── <2250> Subscript
+            │               │   │   │       │   │   │   ├── <2248> Dot
+            │               │   │   │       │   │   │   │   ├── <2246> Var [u]
+            │               │   │   │       │   │   │   │   ╰── arr
+            │               │   │   │       │   │   │   ╰── <2249> Constant Int [1]
+            │               │   │   │       │   │   ╰── arr
+            │               │   │   │       │   ╰── <2253> "DF"
+            │               │   │   │       ╰── <2256> Constant Int [0]
+            │               │   │   ╰── <2270>  [==]
+            │               │   │       ├── <2267> Dot
+            │               │   │       │   ├── <2265> Subscript
+            │               │   │       │   │   ├── <2263> Dot
+            │               │   │       │   │   │   ├── <2261> Var [u]
+            │               │   │       │   │   │   ╰── arr
+            │               │   │       │   │   ╰── <2264> Constant Int [1]
+            │               │   │       │   ╰── sc
+            │               │   │       ╰── <2269> Constant Int [11]
+            │               │   ╰── <2286>  [==]
+            │               │       ├── <2283> FunctionCall [strcmp]
+            │               │       │   ├── <2281> Dot
+            │               │       │   │   ├── <2279> Subscript
+            │               │       │   │   │   ├── <2277> Dot
+            │               │       │   │   │   │   ├── <2275> Var [u]
+            │               │       │   │   │   │   ╰── arr
+            │               │       │   │   │   ╰── <2278> Constant Int [2]
+            │               │       │   │   ╰── arr
+            │               │       │   ╰── <2282> "GH"
+            │               │       ╰── <2285> Constant Int [0]
+            │               ╰── <2299>  [==]
+            │                   ├── <2296> Dot
+            │                   │   ├── <2294> Subscript
+            │                   │   │   ├── <2292> Dot
+            │                   │   │   │   ├── <2290> Var [u]
+            │                   │   │   │   ╰── arr
+            │                   │   │   ╰── <2293> Constant Int [2]
+            │                   │   ╰── sc
+            │                   ╰── <2298> Constant Int [12]
+            ├── Function [test_gp_and_xmm]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [gp_and_xmm]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2332>  [&&]
+            │               ├── <2321>  [==]
+            │               │   ├── <2318> Subscript
+            │               │   │   ├── <2316> Dot
+            │               │   │   │   ├── <2314> Var [u]
+            │               │   │   │   ╰── d_arr
+            │               │   │   ╰── <2317> Constant Int [0]
+            │               │   ╰── <2320> Constant Double [+1.1e1]
+            │               ╰── <2331>  [==]
+            │                   ├── <2328> Subscript
+            │                   │   ├── <2326> Dot
+            │                   │   │   ├── <2324> Var [u]
+            │                   │   │   ╰── d_arr
+            │                   │   ╰── <2327> Constant Int [1]
+            │                   ╰── <2330> Constant Double [+1.2e1]
+            ├── Function [test_scalar_and_struct]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [scalar_and_struct]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2368>  [&&]
+            │               ├── <2355>  [==]
+            │               │   ├── <2350> Dot
+            │               │   │   ├── <2348> Dot
+            │               │   │   │   ├── <2346> Var [u]
+            │               │   │   │   ╰── cfe
+            │               │   │   ╰── c
+            │               │   ╰── <2354> Unary [-]
+            │               │       ╰── <2353> Constant Int [5]
+            │               ╰── <2367>  [==]
+            │                   ├── <2362> Dot
+            │                   │   ├── <2360> Dot
+            │                   │   │   ├── <2358> Var [u]
+            │                   │   │   ╰── cfe
+            │                   │   ╰── d
+            │                   ╰── <2366> Unary [-]
+            │                       ╰── <2365> Constant Double [+8.88e1]
+            ├── Function [test_has_two_unions]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── s
+            │   │       ╰── Type
+            │   │           ╰── Struct [has_two_unions]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <2389> FunctionCall [strcmp]
+            │       │   │       ├── <2387> Dot
+            │       │   │       │   ├── <2385> Dot
+            │       │   │       │   │   ├── <2383> Var [s]
+            │       │   │       │   │   ╰── member1
+            │       │   │       │   ╰── arr
+            │       │   │       ╰── <2388> "WXYZ"
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <2390> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <2405>  [!=]
+            │       │   │       ├── <2400> Dot
+            │       │   │       │   ├── <2398> Dot
+            │       │   │       │   │   ├── <2396> Var [s]
+            │       │   │       │   │   ╰── member2
+            │       │   │       │   ╰── d1
+            │       │   │       ╰── <2404> Unary [-]
+            │       │   │           ╰── <2403> Constant Double [+2.345e6]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <2406> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <2411> Constant Int [1]
+            ├── Function [test_small_struct_arr_and_dbl]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [small_struct_arr_and_dbl]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2452>  [&&]
+            │               ├── <2436>  [==]
+            │               │   ├── <2431> Subscript
+            │               │   │   ├── <2429> Dot
+            │               │   │   │   ├── <2427> Dot
+            │               │   │   │   │   ├── <2425> Var [u]
+            │               │   │   │   │   ╰── d
+            │               │   │   │   ╰── arr
+            │               │   │   ╰── <2430> Constant Int [0]
+            │               │   ╰── <2435> Unary [-]
+            │               │       ╰── <2434> Constant Double [+2.2e1]
+            │               ╰── <2450>  [==]
+            │                   ├── <2445> Subscript
+            │                   │   ├── <2443> Dot
+            │                   │   │   ├── <2441> Dot
+            │                   │   │   │   ├── <2439> Var [u]
+            │                   │   │   │   ╰── d
+            │                   │   │   ╰── arr
+            │                   │   ╰── <2444> Constant Int [1]
+            │                   ╰── <2449> Unary [-]
+            │                       ╰── <2448> Constant Double [+3.2e1]
+            ├── Function [test_xmm_and_gp]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [xmm_and_gp]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2489>  [&&]
+            │               ├── <2475>  [==]
+            │               │   ├── <2470> Dot
+            │               │   │   ├── <2468> Dot
+            │               │   │   │   ├── <2466> Var [u]
+            │               │   │   │   ╰── ise
+            │               │   │   ╰── d
+            │               │   ╰── <2474> Unary [-]
+            │               │       ╰── <2473> Constant Double [+8e0]
+            │               ╰── <2487>  [==]
+            │                   ├── <2482> Dot
+            │                   │   ├── <2480> Dot
+            │                   │   │   ├── <2478> Var [u]
+            │                   │   │   ╰── ise
+            │                   │   ╰── i
+            │                   ╰── <2486> Unary [-]
+            │                       ╰── <2485> Constant Int [8]
+            ├── Function [test_xmm_and_gp_nested]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [xmm_and_gp_nested]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2530>  [&&]
+            │               ├── <2514>  [==]
+            │               │   ├── <2509> Dot
+            │               │   │   ├── <2507> Dot
+            │               │   │   │   ├── <2505> Dot
+            │               │   │   │   │   ├── <2503> Var [u]
+            │               │   │   │   │   ╰── member1
+            │               │   │   │   ╰── ise
+            │               │   │   ╰── d
+            │               │   ╰── <2513> Unary [-]
+            │               │       ╰── <2512> Constant Double [+8e0]
+            │               ╰── <2528>  [==]
+            │                   ├── <2523> Dot
+            │                   │   ├── <2521> Dot
+            │                   │   │   ├── <2519> Dot
+            │                   │   │   │   ├── <2517> Var [u]
+            │                   │   │   │   ╰── member1
+            │                   │   │   ╰── ise
+            │                   │   ╰── i
+            │                   ╰── <2527> Unary [-]
+            │                       ╰── <2526> Constant Int [8]
+            ├── Function [test_lotsa_doubles]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [lotsa_doubles]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2573>  [&&]
+            │               ├── <2562>  [&&]
+            │               │   ├── <2551>  [==]
+            │               │   │   ├── <2548> Subscript
+            │               │   │   │   ├── <2546> Dot
+            │               │   │   │   │   ├── <2544> Var [u]
+            │               │   │   │   │   ╰── arr
+            │               │   │   │   ╰── <2547> Constant Int [0]
+            │               │   │   ╰── <2550> Constant Double [+9.9e1]
+            │               │   ╰── <2561>  [==]
+            │               │       ├── <2558> Subscript
+            │               │       │   ├── <2556> Dot
+            │               │       │   │   ├── <2554> Var [u]
+            │               │       │   │   ╰── arr
+            │               │       │   ╰── <2557> Constant Int [1]
+            │               │       ╰── <2560> Constant Double [+9.8e1]
+            │               ╰── <2572>  [==]
+            │                   ├── <2569> Subscript
+            │                   │   ├── <2567> Dot
+            │                   │   │   ├── <2565> Var [u]
+            │                   │   │   ╰── arr
+            │                   │   ╰── <2568> Constant Int [2]
+            │                   ╰── <2571> Constant Int [97]
+            ├── Function [test_lotsa_chars]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [lotsa_chars]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2594> Unary [!]
+            │               ╰── <2593> FunctionCall [strcmp]
+            │                   ├── <2591> Dot
+            │                   │   ├── <2589> Var [u]
+            │                   │   ╰── more_chars
+            │                   ╰── <2592> "asflakjsdflkjs"
+            ├── Function [test_contains_large_struct]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── u
+            │   │       ╰── Type
+            │   │           ╰── Union [contains_large_struct]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <2639>  [&&]
+            │               ├── <2626>  [&&]
+            │               │   ├── <2615>  [==]
+            │               │   │   ├── <2612> Dot
+            │               │   │   │   ├── <2610> Dot
+            │               │   │   │   │   ├── <2608> Var [u]
+            │               │   │   │   │   ╰── l
+            │               │   │   │   ╰── i
+            │               │   │   ╰── <2614> Constant Int [100]
+            │               │   ╰── <2625>  [==]
+            │               │       ├── <2622> Dot
+            │               │       │   ├── <2620> Dot
+            │               │       │   │   ├── <2618> Var [u]
+            │               │       │   │   ╰── l
+            │               │       │   ╰── d
+            │               │       ╰── <2624> Constant Double [+1e2]
+            │               ╰── <2638> Unary [!]
+            │                   ╰── <2637> FunctionCall [strcmp]
+            │                       ├── <2635> Dot
+            │                       │   ├── <2633> Dot
+            │                       │   │   ├── <2631> Var [u]
+            │                       │   │   ╰── l
+            │                       │   ╰── arr
+            │                       ╰── <2636> "A struct!"
+            ╰── Function [test_contains_union_array]
+                ├── Parameters
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── u
+                │       ╰── Type
+                │           ╰── Union [contains_union_array]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── a
+                    │   ├── Type
+                    │   │   ╰── Union [gp_and_xmm]
+                    │   ╰── Initializer
+                    │       ╰── <2661> Subscript
+                    │           ├── <2659> Dot
+                    │           │   ├── <2657> Var [u]
+                    │           │   ╰── arr
+                    │           ╰── <2660> Constant Int [0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── b
+                    │   ├── Type
+                    │   │   ╰── Union [gp_and_xmm]
+                    │   ╰── Initializer
+                    │       ╰── <2673> Subscript
+                    │           ├── <2671> Dot
+                    │           │   ├── <2669> Var [u]
+                    │           │   ╰── arr
+                    │           ╰── <2672> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <2695>  [||]
+                    │   │       ├── <2684>  [!=]
+                    │   │       │   ├── <2681> Subscript
+                    │   │       │   │   ├── <2679> Dot
+                    │   │       │   │   │   ├── <2677> Var [a]
+                    │   │       │   │   │   ╰── d_arr
+                    │   │       │   │   ╰── <2680> Constant Int [0]
+                    │   │       │   ╰── <2683> Constant Double [+1.1e1]
+                    │   │       ╰── <2694>  [!=]
+                    │   │           ├── <2691> Subscript
+                    │   │           │   ├── <2689> Dot
+                    │   │           │   │   ├── <2687> Var [a]
+                    │   │           │   │   ╰── d_arr
+                    │   │           │   ╰── <2690> Constant Int [1]
+                    │   │           ╰── <2693> Constant Double [+1.2e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <2696> Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <2720>  [||]
+                    │   │       ├── <2711>  [!=]
+                    │   │       │   ├── <2706> Subscript
+                    │   │       │   │   ├── <2704> Dot
+                    │   │       │   │   │   ├── <2702> Var [b]
+                    │   │       │   │   │   ╰── d_arr
+                    │   │       │   │   ╰── <2705> Constant Int [1]
+                    │   │       │   ╰── <2710> Unary [-]
+                    │   │       │       ╰── <2709> Constant Int [1]
+                    │   │       ╰── <2719>  [!=]
+                    │   │           ├── <2716> Dot
+                    │   │           │   ├── <2714> Var [b]
+                    │   │           │   ╰── c
+                    │   │           ╰── <2718> Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <2721> Constant Int [0]
+                    ╰── Return
+                        ╰── <2726> Constant Int [1]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_classify_unions_client() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        int main(void) {
+            union one_double od = { -2.345e6 };
+            if (!test_one_double(od)) {
+                return 1;
+            }
+            struct has_union_with_double huwd = { {9887.54321e44} };
+            if (!test_has_union_with_double(huwd)) {
+                return 2;
+            }
+            union has_struct_with_double hswd = { huwd };
+            if (!test_has_struct_with_double(hswd)) {
+                return 3;
+            }
+            union one_int oi = { -80. };
+            if (!test_one_int(oi)) {
+                return 4;
+            }
+            union one_int_nested oin = { {44e55} };
+            if (!test_one_int_nested(oin)) {
+                return 5;
+            }
+            union char_int_mixed cim = { "WXYZ" };
+            if (!test_char_int_mixed(cim)) {
+                return 6;
+            }
+            struct has_union hu = { 4294954951u, {-60} };
+            if (!test_has_union(hu)) {
+                return 7;
+            }
+            union has_struct_with_ints hswi;
+            hswi.s = hu;
+            if (!test_has_struct_with_ints(hswi)) {
+                return 8;
+            }
+            union two_doubles td = { {10.0, 11.0} };
+            if (!test_two_doubles(td)) {
+                return 9;
+            }
+            union has_xmm_union hxu;
+            hxu.u2 = td;
+            if (!test_has_xmm_union(hxu)) {
+                return 10;
+            }
+            struct dbl_struct ds = { od, 123.45 };
+            if (!test_dbl_struct(ds)) {
+                return 11;
+            }
+            union has_dbl_struct hds = { ds };
+            if (!test_has_dbl_struct(hds)) {
+                return 12;
+            }
+            union char_arr ca = { "Chars!" };
+            if (!test_char_arr(ca)) {
+                return 13;
+            }
+            union two_arrs two_arr_var = { {13e4, 14.5} };
+            if (!test_two_arrs(two_arr_var)) {
+                return 14;
+            }
+            union two_eightbyte_has_struct tehs = { {100, 200, 300} };
+            if (!test_two_eightbyte_has_struct(tehs)) {
+                return 15;
+            }
+            union two_structs ts = { {'x', 55.5e5} };
+            if (!test_two_structs(ts)) {
+                return 16;
+            }
+            union has_nine_byte_struct hnbs;
+            hnbs.s.i = -16711936;
+            for (int i = 0; i < 5; i = i + 1) {
+                char byte = i % 2 ? -1 : 0;
+                hnbs.s.arr[i] = byte;
+            }
+            hnbs.s.arr[4] = 0;
+            if (!test_has_nine_byte_struct(hnbs)) {
+                return 17;
+            }
+            struct has_uneven_union huu = { -2147483647, {"!@#$"} };
+            if (!test_has_uneven_union(huu)) {
+                return 18;
+            }
+            union has_other_unions hou;
+            hou.n = hnbs;
+            hou.n.s.arr[4] = 0;
+            if (!test_has_other_unions(hou)) {
+                return 19;
+            }
+            union union_array ua = { {{-20.}, {-30.}} };
+            if (!test_union_array(ua)) {
+                return 20;
+            }
+            union uneven_union_array uua = { {{"QWER"},{"TYUI"}} };
+            if (!test_uneven_union_array(uua)) {
+                return 21;
+            }
+            union has_small_struct_array hssa = { {
+                {"AS", 10}, {"DF", 11}, {"GH", 12}
+            } };
+            if (!test_has_small_struct_array(hssa)) {
+                return 22;
+            }
+            union gp_and_xmm gax = { {11., 12} };
+            if (!test_gp_and_xmm(gax)) {
+                return 23;
+            }
+            union scalar_and_struct sas;
+            sas.cfe.c = -5;
+            sas.cfe.d = -88.8;
+            if (!test_scalar_and_struct(sas)) {
+                return 24;
+            }
+            struct has_two_unions htu = {
+                cim, od
+            };
+            if (!test_has_two_unions(htu)) {
+                return 25;
+            }
+            union small_struct_arr_and_dbl ssaad;
+            ssaad.d.arr[0] = -22.;
+            ssaad.d.arr[1] = -32.;
+            if (!test_small_struct_arr_and_dbl(ssaad)) {
+                return 26;
+            }
+            union xmm_and_gp xag;
+            xag.ise.d = -8.;
+            xag.ise.i = -8;
+            if (!test_xmm_and_gp(xag)) {
+                return 27;
+            }
+            union xmm_and_gp_nested xagn = { xag };
+            if (!test_xmm_and_gp_nested(xagn)) {
+                return 28;
+            }
+            union lotsa_doubles dbls = { {99., 98., 97.} };
+            if (!test_lotsa_doubles(dbls)) {
+                return 29;
+            }
+            union lotsa_chars chars = { "asflakjsdflkjs" };
+            if (!test_lotsa_chars(chars)) {
+                return 30;
+            }
+            struct large large_struct = { 100, 100., "A struct!" };
+            union contains_large_struct cls;
+            cls.l = large_struct;
+            if (!test_contains_large_struct(cls)) {
+                return 31;
+            }
+            union gp_and_xmm gax2 = gax;
+            gax2.d_arr[0] = -2.0;
+            gax2.d_arr[1] = -1.0;
+            union contains_union_array cua = {
+                {gax, gax2}
+            };
+            if (!test_contains_union_array(cua)) {
+                return 32;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Function [exit]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── status
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Union [one_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d1
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [has_struct_with_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 1
+            │               ╰── Double
+            ├── Union [one_int]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [one_int_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── oi
+            │   │   ╰── Type
+            │   │       ╰── Union [one_int]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── od
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [char_int_mixed]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 7
+            │   │           ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── union_ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ui
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Union [char_int_short]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Struct [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [char_int_short]
+            ├── Union [has_struct_with_ints]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ul
+            │       ╰── Type
+            │           ╰── Unsigned Long
+            ├── Union [two_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── single
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_xmm_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u2
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Struct [dbl_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_dbl_struct]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Union [char_arr]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 11
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_arrs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── dbl_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── long_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Long
+            ├── Union [two_eightbyte_has_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Struct [char_first_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [int_second_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_structs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Struct [char_first_eightbyte]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Struct [nine_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Union [has_nine_byte_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Struct [nine_bytes]
+            ├── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 5
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── uc
+            │       ╰── Type
+            │           ╰── Unsigned Char
+            ├── Struct [has_uneven_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [uneven]
+            ├── Union [has_other_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Union [two_doubles]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── n
+            │       ╰── Type
+            │           ╰── Union [has_nine_byte_struct]
+            ├── Union [union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [one_int]
+            ├── Union [uneven_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [uneven]
+            ├── Struct [small]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── sc
+            │       ╰── Type
+            │           ╰── Signed Char
+            ├── Union [has_small_struct_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Struct [small]
+            ├── Union [gp_and_xmm]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [scalar_and_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── cfe
+            │       ╰── Type
+            │           ╰── Struct [char_first_eightbyte]
+            ├── Struct [has_two_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [small_struct_arr_and_dbl]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Struct [small]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ise
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Union [xmm_and_gp_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [lotsa_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [lotsa_chars]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── more_chars
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 18
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── fewer_chars
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Struct [large]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 10
+            │               ╰── Char
+            ├── Union [contains_large_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ul
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Struct [large]
+            ├── Union [contains_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_one_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_double]
+            ├── Function [test_has_union_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union_with_double]
+            ├── Function [test_has_struct_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_double]
+            ├── Function [test_one_int]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [test_one_int_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [test_char_int_mixed]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_int_mixed]
+            ├── Function [test_has_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [test_has_struct_with_ints]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_ints]
+            ├── Function [test_two_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [test_has_xmm_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_xmm_union]
+            ├── Function [test_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [dbl_struct]
+            ├── Function [test_has_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_dbl_struct]
+            ├── Function [test_char_arr]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [test_two_arrs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_arrs]
+            ├── Function [test_two_eightbyte_has_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_eightbyte_has_struct]
+            ├── Function [test_two_structs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_structs]
+            ├── Function [test_has_nine_byte_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_nine_byte_struct]
+            ├── Function [test_has_uneven_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_uneven_union]
+            ├── Function [test_has_other_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_other_unions]
+            ├── Function [test_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [union_array]
+            ├── Function [test_uneven_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [uneven_union_array]
+            ├── Function [test_has_small_struct_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_small_struct_array]
+            ├── Function [test_gp_and_xmm]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_scalar_and_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [scalar_and_struct]
+            ├── Function [test_has_two_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_two_unions]
+            ├── Function [test_small_struct_arr_and_dbl]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [small_struct_arr_and_dbl]
+            ├── Function [test_xmm_and_gp]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp]
+            ├── Function [test_xmm_and_gp_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp_nested]
+            ├── Function [test_lotsa_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_doubles]
+            ├── Function [test_lotsa_chars]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_chars]
+            ├── Function [test_contains_large_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_large_struct]
+            ├── Function [test_contains_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_union_array]
+            ├── Function [pass_unions_and_structs]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── i5
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [pass_gp_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [pass_xmm_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm_copy
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_borderline_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_gp
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [pass_borderline_xmm_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d5
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_mixed_reg_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── mixed_regs
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [pass_uneven_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── uneven
+            │           ╰── Type
+            │               ╰── Union [uneven]
+            ├── Function [pass_in_mem_first]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mem
+            │       │   ╰── Type
+            │       │       ╰── Union [lotsa_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [char_arr]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp_struct
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [return_one_double]
+            ├── Function [return_one_int_nested]
+            ├── Function [return_has_dbl_struct]
+            ├── Function [return_two_arrs]
+            ├── Function [return_scalar_and_struct]
+            ├── Function [return_xmm_and_gp]
+            ├── Function [return_contains_union_array]
+            ├── Function [pass_params_and_return_in_mem]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── int_and_dbl
+            │       │   ╰── Type
+            │       │       ╰── Union [scalar_and_struct]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_arrs
+            │       │   ╰── Type
+            │       │       ╰── Union [two_arrs]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── big_union
+            │       │   ╰── Type
+            │       │       ╰── Union [contains_union_array]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── oin
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [return_struct_with_union]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── od
+                    │   ├── Type
+                    │   │   ╰── Union [one_double]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1197> Unary [-]
+                    │               ╰── <1196> Constant Double [+2.345e6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1206> Unary [!]
+                    │   │       ╰── <1205> FunctionCall [test_one_double]
+                    │   │           ╰── <1204> Var [od]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1207> Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── huwd
+                    │   ├── Type
+                    │   │   ╰── Struct [has_union_with_double]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ╰── <1216> Constant Double [+9.88754321e47]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1226> Unary [!]
+                    │   │       ╰── <1225> FunctionCall [test_has_union_with_double]
+                    │   │           ╰── <1224> Var [huwd]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1227> Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── hswd
+                    │   ├── Type
+                    │   │   ╰── Union [has_struct_with_double]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1237> Var [huwd]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1246> Unary [!]
+                    │   │       ╰── <1245> FunctionCall [test_has_struct_with_double]
+                    │   │           ╰── <1244> Var [hswd]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1247> Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── oi
+                    │   ├── Type
+                    │   │   ╰── Union [one_int]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1258> Unary [-]
+                    │               ╰── <1257> Constant Double [+8e1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1267> Unary [!]
+                    │   │       ╰── <1266> FunctionCall [test_one_int]
+                    │   │           ╰── <1265> Var [oi]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1268> Constant Int [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── oin
+                    │   ├── Type
+                    │   │   ╰── Union [one_int_nested]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ╰── <1277> Constant Double [+4.4e56]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1287> Unary [!]
+                    │   │       ╰── <1286> FunctionCall [test_one_int_nested]
+                    │   │           ╰── <1285> Var [oin]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1288> Constant Int [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── cim
+                    │   ├── Type
+                    │   │   ╰── Union [char_int_mixed]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1297> "WXYZ"
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1306> Unary [!]
+                    │   │       ╰── <1305> FunctionCall [test_char_int_mixed]
+                    │   │           ╰── <1304> Var [cim]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1307> Constant Int [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── hu
+                    │   ├── Type
+                    │   │   ╰── Struct [has_union]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── <1316> Constant UInt [4294954951]
+                    │           ╰── Compound
+                    │               ╰── <1320> Unary [-]
+                    │                   ╰── <1319> Constant Int [60]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1330> Unary [!]
+                    │   │       ╰── <1329> FunctionCall [test_has_union]
+                    │   │           ╰── <1328> Var [hu]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1331> Constant Int [7]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── hswi
+                    │   ╰── Type
+                    │       ╰── Union [has_struct_with_ints]
+                    ├── <1348> Assign [=]
+                    │   ├── <1344> Dot
+                    │   │   ├── <1342> Var [hswi]
+                    │   │   ╰── s
+                    │   ╰── <1347> Var [hu]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1355> Unary [!]
+                    │   │       ╰── <1354> FunctionCall [test_has_struct_with_ints]
+                    │   │           ╰── <1353> Var [hswi]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1356> Constant Int [8]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── td
+                    │   ├── Type
+                    │   │   ╰── Union [two_doubles]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <1365> Constant Double [+1e1]
+                    │               ╰── <1367> Constant Double [+1.1e1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1377> Unary [!]
+                    │   │       ╰── <1376> FunctionCall [test_two_doubles]
+                    │   │           ╰── <1375> Var [td]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1378> Constant Int [9]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── hxu
+                    │   ╰── Type
+                    │       ╰── Union [has_xmm_union]
+                    ├── <1395> Assign [=]
+                    │   ├── <1391> Dot
+                    │   │   ├── <1389> Var [hxu]
+                    │   │   ╰── u2
+                    │   ╰── <1394> Var [td]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1402> Unary [!]
+                    │   │       ╰── <1401> FunctionCall [test_has_xmm_union]
+                    │   │           ╰── <1400> Var [hxu]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1403> Constant Int [10]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ds
+                    │   ├── Type
+                    │   │   ╰── Struct [dbl_struct]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── <1413> Var [od]
+                    │           ╰── <1415> Constant Double [+1.2345e2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1424> Unary [!]
+                    │   │       ╰── <1423> FunctionCall [test_dbl_struct]
+                    │   │           ╰── <1422> Var [ds]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1425> Constant Int [11]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── hds
+                    │   ├── Type
+                    │   │   ╰── Union [has_dbl_struct]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1435> Var [ds]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1444> Unary [!]
+                    │   │       ╰── <1443> FunctionCall [test_has_dbl_struct]
+                    │   │           ╰── <1442> Var [hds]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1445> Constant Int [12]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ca
+                    │   ├── Type
+                    │   │   ╰── Union [char_arr]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1454> "Chars!"
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1463> Unary [!]
+                    │   │       ╰── <1462> FunctionCall [test_char_arr]
+                    │   │           ╰── <1461> Var [ca]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1464> Constant Int [13]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── two_arr_var
+                    │   ├── Type
+                    │   │   ╰── Union [two_arrs]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <1473> Constant Double [+1.3e5]
+                    │               ╰── <1475> Constant Double [+1.45e1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1485> Unary [!]
+                    │   │       ╰── <1484> FunctionCall [test_two_arrs]
+                    │   │           ╰── <1483> Var [two_arr_var]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1486> Constant Int [14]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── tehs
+                    │   ├── Type
+                    │   │   ╰── Union [two_eightbyte_has_struct]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <1495> Constant Int [100]
+                    │               ├── <1497> Constant Int [200]
+                    │               ╰── <1499> Constant Int [300]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1509> Unary [!]
+                    │   │       ╰── <1508> FunctionCall [test_two_eightbyte_has_struct]
+                    │   │           ╰── <1507> Var [tehs]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1510> Constant Int [15]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ts
+                    │   ├── Type
+                    │   │   ╰── Union [two_structs]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <1519> Constant Int [120]
+                    │               ╰── <1521> Constant Double [+5.55e6]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1531> Unary [!]
+                    │   │       ╰── <1530> FunctionCall [test_two_structs]
+                    │   │           ╰── <1529> Var [ts]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1532> Constant Int [16]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── hnbs
+                    │   ╰── Type
+                    │       ╰── Union [has_nine_byte_struct]
+                    ├── <1552> Assign [=]
+                    │   ├── <1547> Dot
+                    │   │   ├── <1545> Dot
+                    │   │   │   ├── <1543> Var [hnbs]
+                    │   │   │   ╰── s
+                    │   │   ╰── i
+                    │   ╰── <1551> Unary [-]
+                    │       ╰── <1550> Constant Int [16711936]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── <1557> Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── <1565>  [<]
+                    │   │       ├── <1562> Var [i]
+                    │   │       ╰── <1564> Constant Int [5]
+                    │   ├── Condition
+                    │   │   ╰── <1574> Assign [=]
+                    │   │       ├── <1567> Var [i]
+                    │   │       ╰── <1573>  [+]
+                    │   │           ├── <1570> Var [i]
+                    │   │           ╰── <1572> Constant Int [1]
+                    │   ╰── Block
+                    │       ├── VarDeclaration
+                    │       │   ├── Name
+                    │       │   │   ╰── byte
+                    │       │   ├── Type
+                    │       │   │   ╰── Char
+                    │       │   ╰── Initializer
+                    │       │       ╰── <1587> Conditional [?]
+                    │       │           ├── <1582>  [%]
+                    │       │           │   ├── <1579> Var [i]
+                    │       │           │   ╰── <1581> Constant Int [2]
+                    │       │           ├── Then
+                    │       │           │   ╰── <1585> Unary [-]
+                    │       │           │       ╰── <1584> Constant Int [1]
+                    │       │           ╰── Else
+                    │       │               ╰── <1586> Constant Int [0]
+                    │       ╰── <1602> Assign [=]
+                    │           ├── <1598> Subscript
+                    │           │   ├── <1595> Dot
+                    │           │   │   ├── <1593> Dot
+                    │           │   │   │   ├── <1591> Var [hnbs]
+                    │           │   │   │   ╰── s
+                    │           │   │   ╰── arr
+                    │           │   ╰── <1597> Var [i]
+                    │           ╰── <1601> Var [byte]
+                    ├── <1617> Assign [=]
+                    │   ├── <1614> Subscript
+                    │   │   ├── <1612> Dot
+                    │   │   │   ├── <1610> Dot
+                    │   │   │   │   ├── <1608> Var [hnbs]
+                    │   │   │   │   ╰── s
+                    │   │   │   ╰── arr
+                    │   │   ╰── <1613> Constant Int [4]
+                    │   ╰── <1616> Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1624> Unary [!]
+                    │   │       ╰── <1623> FunctionCall [test_has_nine_byte_struct]
+                    │   │           ╰── <1622> Var [hnbs]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1625> Constant Int [17]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── huu
+                    │   ├── Type
+                    │   │   ╰── Struct [has_uneven_union]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── <1636> Unary [-]
+                    │           │   ╰── <1635> Constant Int [2147483647]
+                    │           ╰── Compound
+                    │               ╰── <1638> "!@#$"
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1648> Unary [!]
+                    │   │       ╰── <1647> FunctionCall [test_has_uneven_union]
+                    │   │           ╰── <1646> Var [huu]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1649> Constant Int [18]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── hou
+                    │   ╰── Type
+                    │       ╰── Union [has_other_unions]
+                    ├── <1666> Assign [=]
+                    │   ├── <1662> Dot
+                    │   │   ├── <1660> Var [hou]
+                    │   │   ╰── n
+                    │   ╰── <1665> Var [hnbs]
+                    ├── <1680> Assign [=]
+                    │   ├── <1677> Subscript
+                    │   │   ├── <1675> Dot
+                    │   │   │   ├── <1673> Dot
+                    │   │   │   │   ├── <1671> Dot
+                    │   │   │   │   │   ├── <1669> Var [hou]
+                    │   │   │   │   │   ╰── n
+                    │   │   │   │   ╰── s
+                    │   │   │   ╰── arr
+                    │   │   ╰── <1676> Constant Int [4]
+                    │   ╰── <1679> Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1687> Unary [!]
+                    │   │       ╰── <1686> FunctionCall [test_has_other_unions]
+                    │   │           ╰── <1685> Var [hou]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1688> Constant Int [19]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ua
+                    │   ├── Type
+                    │   │   ╰── Union [union_array]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── Compound
+                    │               │   ╰── <1699> Unary [-]
+                    │               │       ╰── <1698> Constant Double [+2e1]
+                    │               ╰── Compound
+                    │                   ╰── <1704> Unary [-]
+                    │                       ╰── <1703> Constant Double [+3e1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1715> Unary [!]
+                    │   │       ╰── <1714> FunctionCall [test_union_array]
+                    │   │           ╰── <1713> Var [ua]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1716> Constant Int [20]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── uua
+                    │   ├── Type
+                    │   │   ╰── Union [uneven_union_array]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── Compound
+                    │               │   ╰── <1725> "QWER"
+                    │               ╰── Compound
+                    │                   ╰── <1728> "TYUI"
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1739> Unary [!]
+                    │   │       ╰── <1738> FunctionCall [test_uneven_union_array]
+                    │   │           ╰── <1737> Var [uua]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1740> Constant Int [21]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── hssa
+                    │   ├── Type
+                    │   │   ╰── Union [has_small_struct_array]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── Compound
+                    │               │   ├── <1749> "AS"
+                    │               │   ╰── <1751> Constant Int [10]
+                    │               ├── Compound
+                    │               │   ├── <1754> "DF"
+                    │               │   ╰── <1756> Constant Int [11]
+                    │               ╰── Compound
+                    │                   ├── <1759> "GH"
+                    │                   ╰── <1761> Constant Int [12]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1772> Unary [!]
+                    │   │       ╰── <1771> FunctionCall [test_has_small_struct_array]
+                    │   │           ╰── <1770> Var [hssa]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1773> Constant Int [22]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── gax
+                    │   ├── Type
+                    │   │   ╰── Union [gp_and_xmm]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <1782> Constant Double [+1.1e1]
+                    │               ╰── <1784> Constant Int [12]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1794> Unary [!]
+                    │   │       ╰── <1793> FunctionCall [test_gp_and_xmm]
+                    │   │           ╰── <1792> Var [gax]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1795> Constant Int [23]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── sas
+                    │   ╰── Type
+                    │       ╰── Union [scalar_and_struct]
+                    ├── <1815> Assign [=]
+                    │   ├── <1810> Dot
+                    │   │   ├── <1808> Dot
+                    │   │   │   ├── <1806> Var [sas]
+                    │   │   │   ╰── cfe
+                    │   │   ╰── c
+                    │   ╰── <1814> Unary [-]
+                    │       ╰── <1813> Constant Int [5]
+                    ├── <1827> Assign [=]
+                    │   ├── <1822> Dot
+                    │   │   ├── <1820> Dot
+                    │   │   │   ├── <1818> Var [sas]
+                    │   │   │   ╰── cfe
+                    │   │   ╰── d
+                    │   ╰── <1826> Unary [-]
+                    │       ╰── <1825> Constant Double [+8.88e1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1834> Unary [!]
+                    │   │       ╰── <1833> FunctionCall [test_scalar_and_struct]
+                    │   │           ╰── <1832> Var [sas]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1835> Constant Int [24]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── htu
+                    │   ├── Type
+                    │   │   ╰── Struct [has_two_unions]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── <1845> Var [cim]
+                    │           ╰── <1848> Var [od]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1857> Unary [!]
+                    │   │       ╰── <1856> FunctionCall [test_has_two_unions]
+                    │   │           ╰── <1855> Var [htu]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1858> Constant Int [25]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ssaad
+                    │   ╰── Type
+                    │       ╰── Union [small_struct_arr_and_dbl]
+                    ├── <1880> Assign [=]
+                    │   ├── <1875> Subscript
+                    │   │   ├── <1873> Dot
+                    │   │   │   ├── <1871> Dot
+                    │   │   │   │   ├── <1869> Var [ssaad]
+                    │   │   │   │   ╰── d
+                    │   │   │   ╰── arr
+                    │   │   ╰── <1874> Constant Int [0]
+                    │   ╰── <1879> Unary [-]
+                    │       ╰── <1878> Constant Double [+2.2e1]
+                    ├── <1894> Assign [=]
+                    │   ├── <1889> Subscript
+                    │   │   ├── <1887> Dot
+                    │   │   │   ├── <1885> Dot
+                    │   │   │   │   ├── <1883> Var [ssaad]
+                    │   │   │   │   ╰── d
+                    │   │   │   ╰── arr
+                    │   │   ╰── <1888> Constant Int [1]
+                    │   ╰── <1893> Unary [-]
+                    │       ╰── <1892> Constant Double [+3.2e1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1901> Unary [!]
+                    │   │       ╰── <1900> FunctionCall [test_small_struct_arr_and_dbl]
+                    │   │           ╰── <1899> Var [ssaad]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1902> Constant Int [26]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── xag
+                    │   ╰── Type
+                    │       ╰── Union [xmm_and_gp]
+                    ├── <1922> Assign [=]
+                    │   ├── <1917> Dot
+                    │   │   ├── <1915> Dot
+                    │   │   │   ├── <1913> Var [xag]
+                    │   │   │   ╰── ise
+                    │   │   ╰── d
+                    │   ╰── <1921> Unary [-]
+                    │       ╰── <1920> Constant Double [+8e0]
+                    ├── <1934> Assign [=]
+                    │   ├── <1929> Dot
+                    │   │   ├── <1927> Dot
+                    │   │   │   ├── <1925> Var [xag]
+                    │   │   │   ╰── ise
+                    │   │   ╰── i
+                    │   ╰── <1933> Unary [-]
+                    │       ╰── <1932> Constant Int [8]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1941> Unary [!]
+                    │   │       ╰── <1940> FunctionCall [test_xmm_and_gp]
+                    │   │           ╰── <1939> Var [xag]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1942> Constant Int [27]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── xagn
+                    │   ├── Type
+                    │   │   ╰── Union [xmm_and_gp_nested]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1952> Var [xag]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1961> Unary [!]
+                    │   │       ╰── <1960> FunctionCall [test_xmm_and_gp_nested]
+                    │   │           ╰── <1959> Var [xagn]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1962> Constant Int [28]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── dbls
+                    │   ├── Type
+                    │   │   ╰── Union [lotsa_doubles]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <1971> Constant Double [+9.9e1]
+                    │               ├── <1973> Constant Double [+9.8e1]
+                    │               ╰── <1975> Constant Double [+9.7e1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1985> Unary [!]
+                    │   │       ╰── <1984> FunctionCall [test_lotsa_doubles]
+                    │   │           ╰── <1983> Var [dbls]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1986> Constant Int [29]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── chars
+                    │   ├── Type
+                    │   │   ╰── Union [lotsa_chars]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1995> "asflakjsdflkjs"
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <2004> Unary [!]
+                    │   │       ╰── <2003> FunctionCall [test_lotsa_chars]
+                    │   │           ╰── <2002> Var [chars]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <2005> Constant Int [30]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── large_struct
+                    │   ├── Type
+                    │   │   ╰── Struct [large]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── <2014> Constant Int [100]
+                    │           ├── <2016> Constant Double [+1e2]
+                    │           ╰── <2018> "A struct!"
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── cls
+                    │   ╰── Type
+                    │       ╰── Union [contains_large_struct]
+                    ├── <2034> Assign [=]
+                    │   ├── <2030> Dot
+                    │   │   ├── <2028> Var [cls]
+                    │   │   ╰── l
+                    │   ╰── <2033> Var [large_struct]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <2041> Unary [!]
+                    │   │       ╰── <2040> FunctionCall [test_contains_large_struct]
+                    │   │           ╰── <2039> Var [cls]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <2042> Constant Int [31]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── gax2
+                    │   ├── Type
+                    │   │   ╰── Union [gp_and_xmm]
+                    │   ╰── Initializer
+                    │       ╰── <2052> Var [gax]
+                    ├── <2065> Assign [=]
+                    │   ├── <2060> Subscript
+                    │   │   ├── <2058> Dot
+                    │   │   │   ├── <2056> Var [gax2]
+                    │   │   │   ╰── d_arr
+                    │   │   ╰── <2059> Constant Int [0]
+                    │   ╰── <2064> Unary [-]
+                    │       ╰── <2063> Constant Double [+2e0]
+                    ├── <2077> Assign [=]
+                    │   ├── <2072> Subscript
+                    │   │   ├── <2070> Dot
+                    │   │   │   ├── <2068> Var [gax2]
+                    │   │   │   ╰── d_arr
+                    │   │   ╰── <2071> Constant Int [1]
+                    │   ╰── <2076> Unary [-]
+                    │       ╰── <2075> Constant Double [+1e0]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── cua
+                    │   ├── Type
+                    │   │   ╰── Union [contains_union_array]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <2084> Var [gax]
+                    │               ╰── <2087> Var [gax2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <2097> Unary [!]
+                    │   │       ╰── <2096> FunctionCall [test_contains_union_array]
+                    │   │           ╰── <2095> Var [cua]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <2098> Constant Int [32]
+                    ╰── Return
+                        ╰── <2103> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_param_passing() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5) {
+            if (!(i1 == 1 && i2 == 2 && d1 == 4.0 && i3 == 100 && i4 == 120 && i5 == 130)) {
+                return 0;
+            }
+            if (!(one_gp_struct.i == (unsigned int)-24 && one_gp_struct.u.i == 123456789)) {
+                return 0;
+            }
+            if (!(two_xmm.arr[0] == -10. && two_xmm.arr[1] == -11.)) {
+                return 0;
+            }
+            if (!(one_gp.d == 13.)) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp) {
+            if (!(i1 == -1 && i2 == -2 && i3 == -3 && i4 == -4 && i5 == -5 && i6 == -6)) {
+                return 0;
+            }
+            if (!(two_xmm.arr[0] == -10. && two_xmm.arr[1] == -11.)) {
+                return 0;
+            }
+            if (!(one_gp_struct.i == (unsigned int)-24 && one_gp_struct.u.i == 123456789)) {
+                return 0;
+            }
+            if (!(one_gp.d == 13.)) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2) {
+            if (!(d1 == 1.0 && d2 == 2.0 && d3 == 3.0 && d4 == 4.0)) {
+                return 0;
+            }
+            if (!(two_xmm.arr[0] == -10. && two_xmm.arr[1] == -11.)) {
+                return 0;
+            }
+            if (!(two_xmm_copy.arr[0] == -10. && two_xmm_copy.arr[1] == -11.)) {
+                return 0;
+            }
+            if (!(two_xmm_2.arr[0] == 33e4 && two_xmm_2.arr[1] == 55e6)) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp) {
+            if (!(i1 == 1 && i2 == 2 && i3 == 3 && i4 == 4 && i5 == 5)) {
+                return 0;
+            }
+            if (strcmp(two_gp.arr, "+_)(*&^%$#") != 0) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2) {
+            if (!(d1 == 9.0 && d2 == 8.0 && d3 == 7.0 && d4 == 6.0 && d5 == 5.0)) {
+                return 0;
+            }
+            if (!(two_xmm.arr[0] == -10. && two_xmm.arr[1] == -11.)) {
+                return 0;
+            }
+            if (!(two_xmm_2.arr[0] == 66e4 && two_xmm_2.arr[1] == 110e6)) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs) {
+            if (!(d1 == 101.2 && d2 == 102.3 && d3 == 103.4 && d4 == 104.5 && i1 == 75 && i2 == 76 && i3 == 77 && i4 == 78 && i5 == 79 && i6 == 80)) {
+                return 0;
+            }
+            if (!(mixed_regs.d_arr[0] == 0 && mixed_regs.d_arr[1] == 150.5)) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven) {
+            if (!(i1 == 1100 && i2 == 2200 && i3 == 3300 && i4 == 4400 && i5 == 5500)) {
+                return 0;
+            }
+            if (!(mixed_regs.d_arr[0] == 0 && mixed_regs.d_arr[1] == 150.5)) {
+                return 0;
+            }
+            if (!(one_gp.d == 13.)) {
+                return 0;
+            }
+            if (strcmp(uneven.arr, "boop") != 0) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct) {
+            if (!(mem.arr[0] == 66. && mem.arr[1] == 77. && mem.arr[2] == 88.)) {
+                return 0;
+            }
+            if (!(mixed_regs.d_arr[0] == 0 && mixed_regs.d_arr[1] == 150.5)) {
+                return 0;
+            }
+            if (strcmp(two_gp.arr, "+_)(*&^%$#") != 0) {
+                return 0;
+            }
+            if (!(one_gp_struct.i == (unsigned int)-24 && one_gp_struct.u.i == 123456789)) {
+                return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Function [exit]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── status
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Union [one_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d1
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [has_struct_with_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 1
+            │               ╰── Double
+            ├── Union [one_int]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [one_int_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── oi
+            │   │   ╰── Type
+            │   │       ╰── Union [one_int]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── od
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [char_int_mixed]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 7
+            │   │           ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── union_ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ui
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Union [char_int_short]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Struct [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [char_int_short]
+            ├── Union [has_struct_with_ints]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ul
+            │       ╰── Type
+            │           ╰── Unsigned Long
+            ├── Union [two_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── single
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_xmm_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u2
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Struct [dbl_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_dbl_struct]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Union [char_arr]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 11
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_arrs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── dbl_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── long_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Long
+            ├── Union [two_eightbyte_has_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Struct [char_first_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [int_second_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_structs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Struct [char_first_eightbyte]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Struct [nine_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Union [has_nine_byte_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Struct [nine_bytes]
+            ├── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 5
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── uc
+            │       ╰── Type
+            │           ╰── Unsigned Char
+            ├── Struct [has_uneven_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [uneven]
+            ├── Union [has_other_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Union [two_doubles]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── n
+            │       ╰── Type
+            │           ╰── Union [has_nine_byte_struct]
+            ├── Union [union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [one_int]
+            ├── Union [uneven_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [uneven]
+            ├── Struct [small]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── sc
+            │       ╰── Type
+            │           ╰── Signed Char
+            ├── Union [has_small_struct_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Struct [small]
+            ├── Union [gp_and_xmm]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [scalar_and_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── cfe
+            │       ╰── Type
+            │           ╰── Struct [char_first_eightbyte]
+            ├── Struct [has_two_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [small_struct_arr_and_dbl]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Struct [small]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ise
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Union [xmm_and_gp_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [lotsa_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [lotsa_chars]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── more_chars
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 18
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── fewer_chars
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Struct [large]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 10
+            │               ╰── Char
+            ├── Union [contains_large_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ul
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Struct [large]
+            ├── Union [contains_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_one_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_double]
+            ├── Function [test_has_union_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union_with_double]
+            ├── Function [test_has_struct_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_double]
+            ├── Function [test_one_int]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [test_one_int_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [test_char_int_mixed]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_int_mixed]
+            ├── Function [test_has_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [test_has_struct_with_ints]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_ints]
+            ├── Function [test_two_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [test_has_xmm_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_xmm_union]
+            ├── Function [test_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [dbl_struct]
+            ├── Function [test_has_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_dbl_struct]
+            ├── Function [test_char_arr]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [test_two_arrs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_arrs]
+            ├── Function [test_two_eightbyte_has_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_eightbyte_has_struct]
+            ├── Function [test_two_structs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_structs]
+            ├── Function [test_has_nine_byte_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_nine_byte_struct]
+            ├── Function [test_has_uneven_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_uneven_union]
+            ├── Function [test_has_other_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_other_unions]
+            ├── Function [test_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [union_array]
+            ├── Function [test_uneven_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [uneven_union_array]
+            ├── Function [test_has_small_struct_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_small_struct_array]
+            ├── Function [test_gp_and_xmm]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_scalar_and_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [scalar_and_struct]
+            ├── Function [test_has_two_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_two_unions]
+            ├── Function [test_small_struct_arr_and_dbl]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [small_struct_arr_and_dbl]
+            ├── Function [test_xmm_and_gp]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp]
+            ├── Function [test_xmm_and_gp_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp_nested]
+            ├── Function [test_lotsa_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_doubles]
+            ├── Function [test_lotsa_chars]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_chars]
+            ├── Function [test_contains_large_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_large_struct]
+            ├── Function [test_contains_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_union_array]
+            ├── Function [pass_unions_and_structs]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── i5
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [pass_gp_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [pass_xmm_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm_copy
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_borderline_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_gp
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [pass_borderline_xmm_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d5
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_mixed_reg_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── mixed_regs
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [pass_uneven_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── uneven
+            │           ╰── Type
+            │               ╰── Union [uneven]
+            ├── Function [pass_in_mem_first]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mem
+            │       │   ╰── Type
+            │       │       ╰── Union [lotsa_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [char_arr]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp_struct
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [return_one_double]
+            ├── Function [return_one_int_nested]
+            ├── Function [return_has_dbl_struct]
+            ├── Function [return_two_arrs]
+            ├── Function [return_scalar_and_struct]
+            ├── Function [return_xmm_and_gp]
+            ├── Function [return_contains_union_array]
+            ├── Function [pass_params_and_return_in_mem]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── int_and_dbl
+            │       │   ╰── Type
+            │       │       ╰── Union [scalar_and_struct]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_arrs
+            │       │   ╰── Type
+            │       │       ╰── Union [two_arrs]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── big_union
+            │       │   ╰── Type
+            │       │       ╰── Union [contains_union_array]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── oin
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [return_struct_with_union]
+            ├── Function [pass_unions_and_structs]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── one_gp_struct
+            │   │   │   ╰── Type
+            │   │   │       ╰── Struct [has_union]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── two_xmm
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [two_doubles]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── one_gp
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [one_int]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── i5
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1263> Unary [!]
+            │       │   │       ╰── <1262>  [&&]
+            │       │   │           ├── <1254>  [&&]
+            │       │   │           │   ├── <1247>  [&&]
+            │       │   │           │   │   ├── <1240>  [&&]
+            │       │   │           │   │   │   ├── <1233>  [&&]
+            │       │   │           │   │   │   │   ├── <1226>  [==]
+            │       │   │           │   │   │   │   │   ├── <1223> Var [i1]
+            │       │   │           │   │   │   │   │   ╰── <1225> Constant Int [1]
+            │       │   │           │   │   │   │   ╰── <1232>  [==]
+            │       │   │           │   │   │   │       ├── <1229> Var [i2]
+            │       │   │           │   │   │   │       ╰── <1231> Constant Int [2]
+            │       │   │           │   │   │   ╰── <1239>  [==]
+            │       │   │           │   │   │       ├── <1236> Var [d1]
+            │       │   │           │   │   │       ╰── <1238> Constant Double [+4e0]
+            │       │   │           │   │   ╰── <1246>  [==]
+            │       │   │           │   │       ├── <1243> Var [i3]
+            │       │   │           │   │       ╰── <1245> Constant Int [100]
+            │       │   │           │   ╰── <1253>  [==]
+            │       │   │           │       ├── <1250> Var [i4]
+            │       │   │           │       ╰── <1252> Constant Int [120]
+            │       │   │           ╰── <1260>  [==]
+            │       │   │               ├── <1257> Var [i5]
+            │       │   │               ╰── <1259> Constant Int [130]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1264> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1294> Unary [!]
+            │       │   │       ╰── <1293>  [&&]
+            │       │   │           ├── <1281>  [==]
+            │       │   │           │   ├── <1273> Dot
+            │       │   │           │   │   ├── <1271> Var [one_gp_struct]
+            │       │   │           │   │   ╰── i
+            │       │   │           │   ╰── <1280> Cast
+            │       │   │           │       ├── Target
+            │       │   │           │       │   ╰── Unsigned Int
+            │       │   │           │       ╰── Expression
+            │       │   │           │           ╰── <1279> Unary [-]
+            │       │   │           │               ╰── <1278> Constant Int [24]
+            │       │   │           ╰── <1291>  [==]
+            │       │   │               ├── <1288> Dot
+            │       │   │               │   ├── <1286> Dot
+            │       │   │               │   │   ├── <1284> Var [one_gp_struct]
+            │       │   │               │   │   ╰── u
+            │       │   │               │   ╰── i
+            │       │   │               ╰── <1290> Constant Int [123456789]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1295> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1326> Unary [!]
+            │       │   │       ╰── <1325>  [&&]
+            │       │   │           ├── <1311>  [==]
+            │       │   │           │   ├── <1306> Subscript
+            │       │   │           │   │   ├── <1304> Dot
+            │       │   │           │   │   │   ├── <1302> Var [two_xmm]
+            │       │   │           │   │   │   ╰── arr
+            │       │   │           │   │   ╰── <1305> Constant Int [0]
+            │       │   │           │   ╰── <1310> Unary [-]
+            │       │   │           │       ╰── <1309> Constant Double [+1e1]
+            │       │   │           ╰── <1323>  [==]
+            │       │   │               ├── <1318> Subscript
+            │       │   │               │   ├── <1316> Dot
+            │       │   │               │   │   ├── <1314> Var [two_xmm]
+            │       │   │               │   │   ╰── arr
+            │       │   │               │   ╰── <1317> Constant Int [1]
+            │       │   │               ╰── <1322> Unary [-]
+            │       │   │                   ╰── <1321> Constant Double [+1.1e1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1327> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1341> Unary [!]
+            │       │   │       ╰── <1340>  [==]
+            │       │   │           ├── <1336> Dot
+            │       │   │           │   ├── <1334> Var [one_gp]
+            │       │   │           │   ╰── d
+            │       │   │           ╰── <1338> Constant Double [+1.3e1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1342> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <1347> Constant Int [1]
+            ├── Function [pass_gp_union_in_memory]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── two_xmm
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [two_doubles]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── one_gp_struct
+            │   │   │   ╰── Type
+            │   │   │       ╰── Struct [has_union]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i5
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i6
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── one_gp
+            │   │       ╰── Type
+            │   │           ╰── Union [one_int]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1440> Unary [!]
+            │       │   │       ╰── <1439>  [&&]
+            │       │   │           ├── <1429>  [&&]
+            │       │   │           │   ├── <1420>  [&&]
+            │       │   │           │   │   ├── <1411>  [&&]
+            │       │   │           │   │   │   ├── <1402>  [&&]
+            │       │   │           │   │   │   │   ├── <1393>  [==]
+            │       │   │           │   │   │   │   │   ├── <1388> Var [i1]
+            │       │   │           │   │   │   │   │   ╰── <1392> Unary [-]
+            │       │   │           │   │   │   │   │       ╰── <1391> Constant Int [1]
+            │       │   │           │   │   │   │   ╰── <1401>  [==]
+            │       │   │           │   │   │   │       ├── <1396> Var [i2]
+            │       │   │           │   │   │   │       ╰── <1400> Unary [-]
+            │       │   │           │   │   │   │           ╰── <1399> Constant Int [2]
+            │       │   │           │   │   │   ╰── <1410>  [==]
+            │       │   │           │   │   │       ├── <1405> Var [i3]
+            │       │   │           │   │   │       ╰── <1409> Unary [-]
+            │       │   │           │   │   │           ╰── <1408> Constant Int [3]
+            │       │   │           │   │   ╰── <1419>  [==]
+            │       │   │           │   │       ├── <1414> Var [i4]
+            │       │   │           │   │       ╰── <1418> Unary [-]
+            │       │   │           │   │           ╰── <1417> Constant Int [4]
+            │       │   │           │   ╰── <1428>  [==]
+            │       │   │           │       ├── <1423> Var [i5]
+            │       │   │           │       ╰── <1427> Unary [-]
+            │       │   │           │           ╰── <1426> Constant Int [5]
+            │       │   │           ╰── <1437>  [==]
+            │       │   │               ├── <1432> Var [i6]
+            │       │   │               ╰── <1436> Unary [-]
+            │       │   │                   ╰── <1435> Constant Int [6]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1441> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1472> Unary [!]
+            │       │   │       ╰── <1471>  [&&]
+            │       │   │           ├── <1457>  [==]
+            │       │   │           │   ├── <1452> Subscript
+            │       │   │           │   │   ├── <1450> Dot
+            │       │   │           │   │   │   ├── <1448> Var [two_xmm]
+            │       │   │           │   │   │   ╰── arr
+            │       │   │           │   │   ╰── <1451> Constant Int [0]
+            │       │   │           │   ╰── <1456> Unary [-]
+            │       │   │           │       ╰── <1455> Constant Double [+1e1]
+            │       │   │           ╰── <1469>  [==]
+            │       │   │               ├── <1464> Subscript
+            │       │   │               │   ├── <1462> Dot
+            │       │   │               │   │   ├── <1460> Var [two_xmm]
+            │       │   │               │   │   ╰── arr
+            │       │   │               │   ╰── <1463> Constant Int [1]
+            │       │   │               ╰── <1468> Unary [-]
+            │       │   │                   ╰── <1467> Constant Double [+1.1e1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1473> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1503> Unary [!]
+            │       │   │       ╰── <1502>  [&&]
+            │       │   │           ├── <1490>  [==]
+            │       │   │           │   ├── <1482> Dot
+            │       │   │           │   │   ├── <1480> Var [one_gp_struct]
+            │       │   │           │   │   ╰── i
+            │       │   │           │   ╰── <1489> Cast
+            │       │   │           │       ├── Target
+            │       │   │           │       │   ╰── Unsigned Int
+            │       │   │           │       ╰── Expression
+            │       │   │           │           ╰── <1488> Unary [-]
+            │       │   │           │               ╰── <1487> Constant Int [24]
+            │       │   │           ╰── <1500>  [==]
+            │       │   │               ├── <1497> Dot
+            │       │   │               │   ├── <1495> Dot
+            │       │   │               │   │   ├── <1493> Var [one_gp_struct]
+            │       │   │               │   │   ╰── u
+            │       │   │               │   ╰── i
+            │       │   │               ╰── <1499> Constant Int [123456789]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1504> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1518> Unary [!]
+            │       │   │       ╰── <1517>  [==]
+            │       │   │           ├── <1513> Dot
+            │       │   │           │   ├── <1511> Var [one_gp]
+            │       │   │           │   ╰── d
+            │       │   │           ╰── <1515> Constant Double [+1.3e1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1519> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <1524> Constant Int [1]
+            ├── Function [pass_xmm_union_in_memory]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── two_xmm
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [two_doubles]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── two_xmm_copy
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [two_doubles]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── two_xmm_2
+            │   │       ╰── Type
+            │   │           ╰── Union [two_doubles]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1585> Unary [!]
+            │       │   │       ╰── <1584>  [&&]
+            │       │   │           ├── <1576>  [&&]
+            │       │   │           │   ├── <1569>  [&&]
+            │       │   │           │   │   ├── <1562>  [==]
+            │       │   │           │   │   │   ├── <1559> Var [d1]
+            │       │   │           │   │   │   ╰── <1561> Constant Double [+1e0]
+            │       │   │           │   │   ╰── <1568>  [==]
+            │       │   │           │   │       ├── <1565> Var [d2]
+            │       │   │           │   │       ╰── <1567> Constant Double [+2e0]
+            │       │   │           │   ╰── <1575>  [==]
+            │       │   │           │       ├── <1572> Var [d3]
+            │       │   │           │       ╰── <1574> Constant Double [+3e0]
+            │       │   │           ╰── <1582>  [==]
+            │       │   │               ├── <1579> Var [d4]
+            │       │   │               ╰── <1581> Constant Double [+4e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1586> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1617> Unary [!]
+            │       │   │       ╰── <1616>  [&&]
+            │       │   │           ├── <1602>  [==]
+            │       │   │           │   ├── <1597> Subscript
+            │       │   │           │   │   ├── <1595> Dot
+            │       │   │           │   │   │   ├── <1593> Var [two_xmm]
+            │       │   │           │   │   │   ╰── arr
+            │       │   │           │   │   ╰── <1596> Constant Int [0]
+            │       │   │           │   ╰── <1601> Unary [-]
+            │       │   │           │       ╰── <1600> Constant Double [+1e1]
+            │       │   │           ╰── <1614>  [==]
+            │       │   │               ├── <1609> Subscript
+            │       │   │               │   ├── <1607> Dot
+            │       │   │               │   │   ├── <1605> Var [two_xmm]
+            │       │   │               │   │   ╰── arr
+            │       │   │               │   ╰── <1608> Constant Int [1]
+            │       │   │               ╰── <1613> Unary [-]
+            │       │   │                   ╰── <1612> Constant Double [+1.1e1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1618> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1649> Unary [!]
+            │       │   │       ╰── <1648>  [&&]
+            │       │   │           ├── <1634>  [==]
+            │       │   │           │   ├── <1629> Subscript
+            │       │   │           │   │   ├── <1627> Dot
+            │       │   │           │   │   │   ├── <1625> Var [two_xmm_copy]
+            │       │   │           │   │   │   ╰── arr
+            │       │   │           │   │   ╰── <1628> Constant Int [0]
+            │       │   │           │   ╰── <1633> Unary [-]
+            │       │   │           │       ╰── <1632> Constant Double [+1e1]
+            │       │   │           ╰── <1646>  [==]
+            │       │   │               ├── <1641> Subscript
+            │       │   │               │   ├── <1639> Dot
+            │       │   │               │   │   ├── <1637> Var [two_xmm_copy]
+            │       │   │               │   │   ╰── arr
+            │       │   │               │   ╰── <1640> Constant Int [1]
+            │       │   │               ╰── <1645> Unary [-]
+            │       │   │                   ╰── <1644> Constant Double [+1.1e1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1650> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1677> Unary [!]
+            │       │   │       ╰── <1676>  [&&]
+            │       │   │           ├── <1664>  [==]
+            │       │   │           │   ├── <1661> Subscript
+            │       │   │           │   │   ├── <1659> Dot
+            │       │   │           │   │   │   ├── <1657> Var [two_xmm_2]
+            │       │   │           │   │   │   ╰── arr
+            │       │   │           │   │   ╰── <1660> Constant Int [0]
+            │       │   │           │   ╰── <1663> Constant Double [+3.3e5]
+            │       │   │           ╰── <1674>  [==]
+            │       │   │               ├── <1671> Subscript
+            │       │   │               │   ├── <1669> Dot
+            │       │   │               │   │   ├── <1667> Var [two_xmm_2]
+            │       │   │               │   │   ╰── arr
+            │       │   │               │   ╰── <1670> Constant Int [1]
+            │       │   │               ╰── <1673> Constant Double [+5.5e7]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1678> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <1683> Constant Int [1]
+            ├── Function [pass_borderline_union]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i5
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── two_gp
+            │   │       ╰── Type
+            │   │           ╰── Union [char_arr]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1746> Unary [!]
+            │       │   │       ╰── <1745>  [&&]
+            │       │   │           ├── <1737>  [&&]
+            │       │   │           │   ├── <1730>  [&&]
+            │       │   │           │   │   ├── <1723>  [&&]
+            │       │   │           │   │   │   ├── <1716>  [==]
+            │       │   │           │   │   │   │   ├── <1713> Var [i1]
+            │       │   │           │   │   │   │   ╰── <1715> Constant Int [1]
+            │       │   │           │   │   │   ╰── <1722>  [==]
+            │       │   │           │   │   │       ├── <1719> Var [i2]
+            │       │   │           │   │   │       ╰── <1721> Constant Int [2]
+            │       │   │           │   │   ╰── <1729>  [==]
+            │       │   │           │   │       ├── <1726> Var [i3]
+            │       │   │           │   │       ╰── <1728> Constant Int [3]
+            │       │   │           │   ╰── <1736>  [==]
+            │       │   │           │       ├── <1733> Var [i4]
+            │       │   │           │       ╰── <1735> Constant Int [4]
+            │       │   │           ╰── <1743>  [==]
+            │       │   │               ├── <1740> Var [i5]
+            │       │   │               ╰── <1742> Constant Int [5]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1747> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1761>  [!=]
+            │       │   │       ├── <1758> FunctionCall [strcmp]
+            │       │   │       │   ├── <1756> Dot
+            │       │   │       │   │   ├── <1754> Var [two_gp]
+            │       │   │       │   │   ╰── arr
+            │       │   │       │   ╰── <1757> "+_)(*&^%$#"
+            │       │   │       ╰── <1760> Constant Int [0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1762> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <1767> Constant Int [1]
+            ├── Function [pass_borderline_xmm_union]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── two_xmm
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [two_doubles]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d5
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── two_xmm_2
+            │   │       ╰── Type
+            │   │           ╰── Union [two_doubles]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1834> Unary [!]
+            │       │   │       ╰── <1833>  [&&]
+            │       │   │           ├── <1825>  [&&]
+            │       │   │           │   ├── <1818>  [&&]
+            │       │   │           │   │   ├── <1811>  [&&]
+            │       │   │           │   │   │   ├── <1804>  [==]
+            │       │   │           │   │   │   │   ├── <1801> Var [d1]
+            │       │   │           │   │   │   │   ╰── <1803> Constant Double [+9e0]
+            │       │   │           │   │   │   ╰── <1810>  [==]
+            │       │   │           │   │   │       ├── <1807> Var [d2]
+            │       │   │           │   │   │       ╰── <1809> Constant Double [+8e0]
+            │       │   │           │   │   ╰── <1817>  [==]
+            │       │   │           │   │       ├── <1814> Var [d3]
+            │       │   │           │   │       ╰── <1816> Constant Double [+7e0]
+            │       │   │           │   ╰── <1824>  [==]
+            │       │   │           │       ├── <1821> Var [d4]
+            │       │   │           │       ╰── <1823> Constant Double [+6e0]
+            │       │   │           ╰── <1831>  [==]
+            │       │   │               ├── <1828> Var [d5]
+            │       │   │               ╰── <1830> Constant Double [+5e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1835> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1866> Unary [!]
+            │       │   │       ╰── <1865>  [&&]
+            │       │   │           ├── <1851>  [==]
+            │       │   │           │   ├── <1846> Subscript
+            │       │   │           │   │   ├── <1844> Dot
+            │       │   │           │   │   │   ├── <1842> Var [two_xmm]
+            │       │   │           │   │   │   ╰── arr
+            │       │   │           │   │   ╰── <1845> Constant Int [0]
+            │       │   │           │   ╰── <1850> Unary [-]
+            │       │   │           │       ╰── <1849> Constant Double [+1e1]
+            │       │   │           ╰── <1863>  [==]
+            │       │   │               ├── <1858> Subscript
+            │       │   │               │   ├── <1856> Dot
+            │       │   │               │   │   ├── <1854> Var [two_xmm]
+            │       │   │               │   │   ╰── arr
+            │       │   │               │   ╰── <1857> Constant Int [1]
+            │       │   │               ╰── <1862> Unary [-]
+            │       │   │                   ╰── <1861> Constant Double [+1.1e1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1867> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1894> Unary [!]
+            │       │   │       ╰── <1893>  [&&]
+            │       │   │           ├── <1881>  [==]
+            │       │   │           │   ├── <1878> Subscript
+            │       │   │           │   │   ├── <1876> Dot
+            │       │   │           │   │   │   ├── <1874> Var [two_xmm_2]
+            │       │   │           │   │   │   ╰── arr
+            │       │   │           │   │   ╰── <1877> Constant Int [0]
+            │       │   │           │   ╰── <1880> Constant Double [+6.6e5]
+            │       │   │           ╰── <1891>  [==]
+            │       │   │               ├── <1888> Subscript
+            │       │   │               │   ├── <1886> Dot
+            │       │   │               │   │   ├── <1884> Var [two_xmm_2]
+            │       │   │               │   │   ╰── arr
+            │       │   │               │   ╰── <1887> Constant Int [1]
+            │       │   │               ╰── <1890> Constant Double [+1.1e8]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1895> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <1900> Constant Int [1]
+            ├── Function [pass_mixed_reg_in_memory]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── d4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Double
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i5
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i6
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── mixed_regs
+            │   │       ╰── Type
+            │   │           ╰── Union [gp_and_xmm]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <2013> Unary [!]
+            │       │   │       ╰── <2012>  [&&]
+            │       │   │           ├── <2004>  [&&]
+            │       │   │           │   ├── <1997>  [&&]
+            │       │   │           │   │   ├── <1990>  [&&]
+            │       │   │           │   │   │   ├── <1983>  [&&]
+            │       │   │           │   │   │   │   ├── <1976>  [&&]
+            │       │   │           │   │   │   │   │   ├── <1969>  [&&]
+            │       │   │           │   │   │   │   │   │   ├── <1962>  [&&]
+            │       │   │           │   │   │   │   │   │   │   ├── <1955>  [&&]
+            │       │   │           │   │   │   │   │   │   │   │   ├── <1948>  [==]
+            │       │   │           │   │   │   │   │   │   │   │   │   ├── <1945> Var [d1]
+            │       │   │           │   │   │   │   │   │   │   │   │   ╰── <1947> Constant Double [+1.012e2]
+            │       │   │           │   │   │   │   │   │   │   │   ╰── <1954>  [==]
+            │       │   │           │   │   │   │   │   │   │   │       ├── <1951> Var [d2]
+            │       │   │           │   │   │   │   │   │   │   │       ╰── <1953> Constant Double [+1.023e2]
+            │       │   │           │   │   │   │   │   │   │   ╰── <1961>  [==]
+            │       │   │           │   │   │   │   │   │   │       ├── <1958> Var [d3]
+            │       │   │           │   │   │   │   │   │   │       ╰── <1960> Constant Double [+1.034e2]
+            │       │   │           │   │   │   │   │   │   ╰── <1968>  [==]
+            │       │   │           │   │   │   │   │   │       ├── <1965> Var [d4]
+            │       │   │           │   │   │   │   │   │       ╰── <1967> Constant Double [+1.045e2]
+            │       │   │           │   │   │   │   │   ╰── <1975>  [==]
+            │       │   │           │   │   │   │   │       ├── <1972> Var [i1]
+            │       │   │           │   │   │   │   │       ╰── <1974> Constant Int [75]
+            │       │   │           │   │   │   │   ╰── <1982>  [==]
+            │       │   │           │   │   │   │       ├── <1979> Var [i2]
+            │       │   │           │   │   │   │       ╰── <1981> Constant Int [76]
+            │       │   │           │   │   │   ╰── <1989>  [==]
+            │       │   │           │   │   │       ├── <1986> Var [i3]
+            │       │   │           │   │   │       ╰── <1988> Constant Int [77]
+            │       │   │           │   │   ╰── <1996>  [==]
+            │       │   │           │   │       ├── <1993> Var [i4]
+            │       │   │           │   │       ╰── <1995> Constant Int [78]
+            │       │   │           │   ╰── <2003>  [==]
+            │       │   │           │       ├── <2000> Var [i5]
+            │       │   │           │       ╰── <2002> Constant Int [79]
+            │       │   │           ╰── <2010>  [==]
+            │       │   │               ├── <2007> Var [i6]
+            │       │   │               ╰── <2009> Constant Int [80]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <2014> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <2041> Unary [!]
+            │       │   │       ╰── <2040>  [&&]
+            │       │   │           ├── <2028>  [==]
+            │       │   │           │   ├── <2025> Subscript
+            │       │   │           │   │   ├── <2023> Dot
+            │       │   │           │   │   │   ├── <2021> Var [mixed_regs]
+            │       │   │           │   │   │   ╰── d_arr
+            │       │   │           │   │   ╰── <2024> Constant Int [0]
+            │       │   │           │   ╰── <2027> Constant Int [0]
+            │       │   │           ╰── <2038>  [==]
+            │       │   │               ├── <2035> Subscript
+            │       │   │               │   ├── <2033> Dot
+            │       │   │               │   │   ├── <2031> Var [mixed_regs]
+            │       │   │               │   │   ╰── d_arr
+            │       │   │               │   ╰── <2034> Constant Int [1]
+            │       │   │               ╰── <2037> Constant Double [+1.505e2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <2042> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <2047> Constant Int [1]
+            ├── Function [pass_uneven_union_in_memory]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i3
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i4
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i5
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── mixed_regs
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [gp_and_xmm]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── one_gp
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [one_int]
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── uneven
+            │   │       ╰── Type
+            │   │           ╰── Union [uneven]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <2118> Unary [!]
+            │       │   │       ╰── <2117>  [&&]
+            │       │   │           ├── <2109>  [&&]
+            │       │   │           │   ├── <2102>  [&&]
+            │       │   │           │   │   ├── <2095>  [&&]
+            │       │   │           │   │   │   ├── <2088>  [==]
+            │       │   │           │   │   │   │   ├── <2085> Var [i1]
+            │       │   │           │   │   │   │   ╰── <2087> Constant Int [1100]
+            │       │   │           │   │   │   ╰── <2094>  [==]
+            │       │   │           │   │   │       ├── <2091> Var [i2]
+            │       │   │           │   │   │       ╰── <2093> Constant Int [2200]
+            │       │   │           │   │   ╰── <2101>  [==]
+            │       │   │           │   │       ├── <2098> Var [i3]
+            │       │   │           │   │       ╰── <2100> Constant Int [3300]
+            │       │   │           │   ╰── <2108>  [==]
+            │       │   │           │       ├── <2105> Var [i4]
+            │       │   │           │       ╰── <2107> Constant Int [4400]
+            │       │   │           ╰── <2115>  [==]
+            │       │   │               ├── <2112> Var [i5]
+            │       │   │               ╰── <2114> Constant Int [5500]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <2119> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <2146> Unary [!]
+            │       │   │       ╰── <2145>  [&&]
+            │       │   │           ├── <2133>  [==]
+            │       │   │           │   ├── <2130> Subscript
+            │       │   │           │   │   ├── <2128> Dot
+            │       │   │           │   │   │   ├── <2126> Var [mixed_regs]
+            │       │   │           │   │   │   ╰── d_arr
+            │       │   │           │   │   ╰── <2129> Constant Int [0]
+            │       │   │           │   ╰── <2132> Constant Int [0]
+            │       │   │           ╰── <2143>  [==]
+            │       │   │               ├── <2140> Subscript
+            │       │   │               │   ├── <2138> Dot
+            │       │   │               │   │   ├── <2136> Var [mixed_regs]
+            │       │   │               │   │   ╰── d_arr
+            │       │   │               │   ╰── <2139> Constant Int [1]
+            │       │   │               ╰── <2142> Constant Double [+1.505e2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <2147> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <2161> Unary [!]
+            │       │   │       ╰── <2160>  [==]
+            │       │   │           ├── <2156> Dot
+            │       │   │           │   ├── <2154> Var [one_gp]
+            │       │   │           │   ╰── d
+            │       │   │           ╰── <2158> Constant Double [+1.3e1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <2162> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <2176>  [!=]
+            │       │   │       ├── <2173> FunctionCall [strcmp]
+            │       │   │       │   ├── <2171> Dot
+            │       │   │       │   │   ├── <2169> Var [uneven]
+            │       │   │       │   │   ╰── arr
+            │       │   │       │   ╰── <2172> "boop"
+            │       │   │       ╰── <2175> Constant Int [0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <2177> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <2182> Constant Int [1]
+            ╰── Function [pass_in_mem_first]
+                ├── Parameters
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── mem
+                │   │   ╰── Type
+                │   │       ╰── Union [lotsa_doubles]
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── mixed_regs
+                │   │   ╰── Type
+                │   │       ╰── Union [gp_and_xmm]
+                │   ├── Param
+                │   │   ├── Name
+                │   │   │   ╰── two_gp
+                │   │   ╰── Type
+                │   │       ╰── Union [char_arr]
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── one_gp_struct
+                │       ╰── Type
+                │           ╰── Struct [has_union]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <2240> Unary [!]
+                    │   │       ╰── <2239>  [&&]
+                    │   │           ├── <2227>  [&&]
+                    │   │           │   ├── <2216>  [==]
+                    │   │           │   │   ├── <2213> Subscript
+                    │   │           │   │   │   ├── <2211> Dot
+                    │   │           │   │   │   │   ├── <2209> Var [mem]
+                    │   │           │   │   │   │   ╰── arr
+                    │   │           │   │   │   ╰── <2212> Constant Int [0]
+                    │   │           │   │   ╰── <2215> Constant Double [+6.6e1]
+                    │   │           │   ╰── <2226>  [==]
+                    │   │           │       ├── <2223> Subscript
+                    │   │           │       │   ├── <2221> Dot
+                    │   │           │       │   │   ├── <2219> Var [mem]
+                    │   │           │       │   │   ╰── arr
+                    │   │           │       │   ╰── <2222> Constant Int [1]
+                    │   │           │       ╰── <2225> Constant Double [+7.7e1]
+                    │   │           ╰── <2237>  [==]
+                    │   │               ├── <2234> Subscript
+                    │   │               │   ├── <2232> Dot
+                    │   │               │   │   ├── <2230> Var [mem]
+                    │   │               │   │   ╰── arr
+                    │   │               │   ╰── <2233> Constant Int [2]
+                    │   │               ╰── <2236> Constant Double [+8.8e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <2241> Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <2268> Unary [!]
+                    │   │       ╰── <2267>  [&&]
+                    │   │           ├── <2255>  [==]
+                    │   │           │   ├── <2252> Subscript
+                    │   │           │   │   ├── <2250> Dot
+                    │   │           │   │   │   ├── <2248> Var [mixed_regs]
+                    │   │           │   │   │   ╰── d_arr
+                    │   │           │   │   ╰── <2251> Constant Int [0]
+                    │   │           │   ╰── <2254> Constant Int [0]
+                    │   │           ╰── <2265>  [==]
+                    │   │               ├── <2262> Subscript
+                    │   │               │   ├── <2260> Dot
+                    │   │               │   │   ├── <2258> Var [mixed_regs]
+                    │   │               │   │   ╰── d_arr
+                    │   │               │   ╰── <2261> Constant Int [1]
+                    │   │               ╰── <2264> Constant Double [+1.505e2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <2269> Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <2283>  [!=]
+                    │   │       ├── <2280> FunctionCall [strcmp]
+                    │   │       │   ├── <2278> Dot
+                    │   │       │   │   ├── <2276> Var [two_gp]
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <2279> "+_)(*&^%$#"
+                    │   │       ╰── <2282> Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <2284> Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <2314> Unary [!]
+                    │   │       ╰── <2313>  [&&]
+                    │   │           ├── <2301>  [==]
+                    │   │           │   ├── <2293> Dot
+                    │   │           │   │   ├── <2291> Var [one_gp_struct]
+                    │   │           │   │   ╰── i
+                    │   │           │   ╰── <2300> Cast
+                    │   │           │       ├── Target
+                    │   │           │       │   ╰── Unsigned Int
+                    │   │           │       ╰── Expression
+                    │   │           │           ╰── <2299> Unary [-]
+                    │   │           │               ╰── <2298> Constant Int [24]
+                    │   │           ╰── <2311>  [==]
+                    │   │               ├── <2308> Dot
+                    │   │               │   ├── <2306> Dot
+                    │   │               │   │   ├── <2304> Var [one_gp_struct]
+                    │   │               │   │   ╰── u
+                    │   │               │   ╰── i
+                    │   │               ╰── <2310> Constant Int [123456789]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <2315> Constant Int [0]
+                    ╰── Return
+                        ╰── <2320> Constant Int [1]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_param_passing_client() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        int main(void) {
+            union two_doubles two_xmm = { {-10.0, -11.0} };
+            union one_int one_gp = { 13.0 };
+            struct has_union one_gp_struct = { -24, {0} };
+            one_gp_struct.u.i = 123456789;
+            if (!pass_unions_and_structs(1, 2, one_gp_struct, 4.0, two_xmm, one_gp, 100, 120, 130)) {
+                return 1;
+            }
+            if (!pass_gp_union_in_memory(two_xmm, one_gp_struct, -1, -2, -3, -4, -5, -6, one_gp)) {
+                return 2;
+            }
+            union two_doubles two_xmm_2 = { {33e4, 55e6 } };
+            if (!pass_xmm_union_in_memory(1.0, 2.0, two_xmm, two_xmm, 3.0, 4.0, two_xmm_2)) {
+                return 3;
+            }
+            union char_arr two_gp = { "+_)(*&^%$#" };
+            if (!pass_borderline_union(1, 2, 3, 4, 5, two_gp)) {
+                return 4;
+            }
+            two_xmm_2.arr[0] = two_xmm_2.arr[0] * 2;
+            two_xmm_2.arr[1] = two_xmm_2.arr[1] * 2;
+            if (!pass_borderline_xmm_union(two_xmm, 9.0, 8.0, 7.0, 6.0, 5.0, two_xmm_2)) {
+                return 5;
+            }
+            union gp_and_xmm mixed_regs = { {0, 150.5} };
+            if (!pass_mixed_reg_in_memory(101.2, 102.3, 103.4, 104.5, 75, 76, 77, 78, 79, 80, mixed_regs)) {
+                return 6;
+            }
+            union uneven uneven = { "boop" };
+            if (!pass_uneven_union_in_memory(1100, 2200, 3300, 4400, 5500, mixed_regs, one_gp, uneven)) {
+                return 7;
+            }
+            union lotsa_doubles mem = { {66., 77., 88.} };
+            if (!pass_in_mem_first(mem, mixed_regs, two_gp, one_gp_struct)) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Function [exit]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── status
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Union [one_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d1
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [has_struct_with_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 1
+            │               ╰── Double
+            ├── Union [one_int]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [one_int_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── oi
+            │   │   ╰── Type
+            │   │       ╰── Union [one_int]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── od
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [char_int_mixed]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 7
+            │   │           ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── union_ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ui
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Union [char_int_short]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Struct [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [char_int_short]
+            ├── Union [has_struct_with_ints]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ul
+            │       ╰── Type
+            │           ╰── Unsigned Long
+            ├── Union [two_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── single
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_xmm_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u2
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Struct [dbl_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_dbl_struct]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Union [char_arr]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 11
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_arrs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── dbl_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── long_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Long
+            ├── Union [two_eightbyte_has_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Struct [char_first_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [int_second_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_structs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Struct [char_first_eightbyte]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Struct [nine_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Union [has_nine_byte_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Struct [nine_bytes]
+            ├── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 5
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── uc
+            │       ╰── Type
+            │           ╰── Unsigned Char
+            ├── Struct [has_uneven_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [uneven]
+            ├── Union [has_other_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Union [two_doubles]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── n
+            │       ╰── Type
+            │           ╰── Union [has_nine_byte_struct]
+            ├── Union [union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [one_int]
+            ├── Union [uneven_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [uneven]
+            ├── Struct [small]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── sc
+            │       ╰── Type
+            │           ╰── Signed Char
+            ├── Union [has_small_struct_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Struct [small]
+            ├── Union [gp_and_xmm]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [scalar_and_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── cfe
+            │       ╰── Type
+            │           ╰── Struct [char_first_eightbyte]
+            ├── Struct [has_two_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [small_struct_arr_and_dbl]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Struct [small]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ise
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Union [xmm_and_gp_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [lotsa_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [lotsa_chars]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── more_chars
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 18
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── fewer_chars
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Struct [large]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 10
+            │               ╰── Char
+            ├── Union [contains_large_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ul
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Struct [large]
+            ├── Union [contains_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_one_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_double]
+            ├── Function [test_has_union_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union_with_double]
+            ├── Function [test_has_struct_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_double]
+            ├── Function [test_one_int]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [test_one_int_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [test_char_int_mixed]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_int_mixed]
+            ├── Function [test_has_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [test_has_struct_with_ints]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_ints]
+            ├── Function [test_two_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [test_has_xmm_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_xmm_union]
+            ├── Function [test_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [dbl_struct]
+            ├── Function [test_has_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_dbl_struct]
+            ├── Function [test_char_arr]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [test_two_arrs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_arrs]
+            ├── Function [test_two_eightbyte_has_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_eightbyte_has_struct]
+            ├── Function [test_two_structs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_structs]
+            ├── Function [test_has_nine_byte_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_nine_byte_struct]
+            ├── Function [test_has_uneven_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_uneven_union]
+            ├── Function [test_has_other_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_other_unions]
+            ├── Function [test_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [union_array]
+            ├── Function [test_uneven_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [uneven_union_array]
+            ├── Function [test_has_small_struct_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_small_struct_array]
+            ├── Function [test_gp_and_xmm]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_scalar_and_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [scalar_and_struct]
+            ├── Function [test_has_two_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_two_unions]
+            ├── Function [test_small_struct_arr_and_dbl]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [small_struct_arr_and_dbl]
+            ├── Function [test_xmm_and_gp]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp]
+            ├── Function [test_xmm_and_gp_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp_nested]
+            ├── Function [test_lotsa_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_doubles]
+            ├── Function [test_lotsa_chars]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_chars]
+            ├── Function [test_contains_large_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_large_struct]
+            ├── Function [test_contains_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_union_array]
+            ├── Function [pass_unions_and_structs]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── i5
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [pass_gp_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [pass_xmm_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm_copy
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_borderline_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_gp
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [pass_borderline_xmm_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d5
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_mixed_reg_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── mixed_regs
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [pass_uneven_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── uneven
+            │           ╰── Type
+            │               ╰── Union [uneven]
+            ├── Function [pass_in_mem_first]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mem
+            │       │   ╰── Type
+            │       │       ╰── Union [lotsa_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [char_arr]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp_struct
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [return_one_double]
+            ├── Function [return_one_int_nested]
+            ├── Function [return_has_dbl_struct]
+            ├── Function [return_two_arrs]
+            ├── Function [return_scalar_and_struct]
+            ├── Function [return_xmm_and_gp]
+            ├── Function [return_contains_union_array]
+            ├── Function [pass_params_and_return_in_mem]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── int_and_dbl
+            │       │   ╰── Type
+            │       │       ╰── Union [scalar_and_struct]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_arrs
+            │       │   ╰── Type
+            │       │       ╰── Union [two_arrs]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── big_union
+            │       │   ╰── Type
+            │       │       ╰── Union [contains_union_array]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── oin
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [return_struct_with_union]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── two_xmm
+                    │   ├── Type
+                    │   │   ╰── Union [two_doubles]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <1197> Unary [-]
+                    │               │   ╰── <1196> Constant Double [+1e1]
+                    │               ╰── <1201> Unary [-]
+                    │                   ╰── <1200> Constant Double [+1.1e1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── one_gp
+                    │   ├── Type
+                    │   │   ╰── Union [one_int]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1210> Constant Double [+1.3e1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── one_gp_struct
+                    │   ├── Type
+                    │   │   ╰── Struct [has_union]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── <1220> Unary [-]
+                    │           │   ╰── <1219> Constant Int [24]
+                    │           ╰── Compound
+                    │               ╰── <1222> Constant Int [0]
+                    ├── <1235> Assign [=]
+                    │   ├── <1232> Dot
+                    │   │   ├── <1230> Dot
+                    │   │   │   ├── <1228> Var [one_gp_struct]
+                    │   │   │   ╰── u
+                    │   │   ╰── i
+                    │   ╰── <1234> Constant Int [123456789]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1252> Unary [!]
+                    │   │       ╰── <1251> FunctionCall [pass_unions_and_structs]
+                    │   │           ├── <1239> Constant Int [1]
+                    │   │           ├── <1240> Constant Int [2]
+                    │   │           ├── <1242> Var [one_gp_struct]
+                    │   │           ├── <1243> Constant Double [+4e0]
+                    │   │           ├── <1245> Var [two_xmm]
+                    │   │           ├── <1247> Var [one_gp]
+                    │   │           ├── <1248> Constant Int [100]
+                    │   │           ├── <1249> Constant Int [120]
+                    │   │           ╰── <1250> Constant Int [130]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1253> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1285> Unary [!]
+                    │   │       ╰── <1284> FunctionCall [pass_gp_union_in_memory]
+                    │   │           ├── <1261> Var [two_xmm]
+                    │   │           ├── <1263> Var [one_gp_struct]
+                    │   │           ├── <1266> Unary [-]
+                    │   │           │   ╰── <1265> Constant Int [1]
+                    │   │           ├── <1269> Unary [-]
+                    │   │           │   ╰── <1268> Constant Int [2]
+                    │   │           ├── <1272> Unary [-]
+                    │   │           │   ╰── <1271> Constant Int [3]
+                    │   │           ├── <1275> Unary [-]
+                    │   │           │   ╰── <1274> Constant Int [4]
+                    │   │           ├── <1278> Unary [-]
+                    │   │           │   ╰── <1277> Constant Int [5]
+                    │   │           ├── <1281> Unary [-]
+                    │   │           │   ╰── <1280> Constant Int [6]
+                    │   │           ╰── <1283> Var [one_gp]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1286> Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── two_xmm_2
+                    │   ├── Type
+                    │   │   ╰── Union [two_doubles]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <1295> Constant Double [+3.3e5]
+                    │               ╰── <1297> Constant Double [+5.5e7]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1315> Unary [!]
+                    │   │       ╰── <1314> FunctionCall [pass_xmm_union_in_memory]
+                    │   │           ├── <1304> Constant Double [+1e0]
+                    │   │           ├── <1305> Constant Double [+2e0]
+                    │   │           ├── <1307> Var [two_xmm]
+                    │   │           ├── <1309> Var [two_xmm]
+                    │   │           ├── <1310> Constant Double [+3e0]
+                    │   │           ├── <1311> Constant Double [+4e0]
+                    │   │           ╰── <1313> Var [two_xmm_2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1316> Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── two_gp
+                    │   ├── Type
+                    │   │   ╰── Union [char_arr]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1325> "+_)(*&^%$#"
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1339> Unary [!]
+                    │   │       ╰── <1338> FunctionCall [pass_borderline_union]
+                    │   │           ├── <1331> Constant Int [1]
+                    │   │           ├── <1332> Constant Int [2]
+                    │   │           ├── <1333> Constant Int [3]
+                    │   │           ├── <1334> Constant Int [4]
+                    │   │           ├── <1335> Constant Int [5]
+                    │   │           ╰── <1337> Var [two_gp]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1340> Constant Int [4]
+                    ├── <1361> Assign [=]
+                    │   ├── <1350> Subscript
+                    │   │   ├── <1348> Dot
+                    │   │   │   ├── <1346> Var [two_xmm_2]
+                    │   │   │   ╰── arr
+                    │   │   ╰── <1349> Constant Int [0]
+                    │   ╰── <1360>  [*]
+                    │       ├── <1357> Subscript
+                    │       │   ├── <1355> Dot
+                    │       │   │   ├── <1353> Var [two_xmm_2]
+                    │       │   │   ╰── arr
+                    │       │   ╰── <1356> Constant Int [0]
+                    │       ╰── <1359> Constant Int [2]
+                    ├── <1379> Assign [=]
+                    │   ├── <1368> Subscript
+                    │   │   ├── <1366> Dot
+                    │   │   │   ├── <1364> Var [two_xmm_2]
+                    │   │   │   ╰── arr
+                    │   │   ╰── <1367> Constant Int [1]
+                    │   ╰── <1378>  [*]
+                    │       ├── <1375> Subscript
+                    │       │   ├── <1373> Dot
+                    │       │   │   ├── <1371> Var [two_xmm_2]
+                    │       │   │   ╰── arr
+                    │       │   ╰── <1374> Constant Int [1]
+                    │       ╰── <1377> Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1393> Unary [!]
+                    │   │       ╰── <1392> FunctionCall [pass_borderline_xmm_union]
+                    │   │           ├── <1384> Var [two_xmm]
+                    │   │           ├── <1385> Constant Double [+9e0]
+                    │   │           ├── <1386> Constant Double [+8e0]
+                    │   │           ├── <1387> Constant Double [+7e0]
+                    │   │           ├── <1388> Constant Double [+6e0]
+                    │   │           ├── <1389> Constant Double [+5e0]
+                    │   │           ╰── <1391> Var [two_xmm_2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1394> Constant Int [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── mixed_regs
+                    │   ├── Type
+                    │   │   ╰── Union [gp_and_xmm]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <1403> Constant Int [0]
+                    │               ╰── <1405> Constant Double [+1.505e2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1425> Unary [!]
+                    │   │       ╰── <1424> FunctionCall [pass_mixed_reg_in_memory]
+                    │   │           ├── <1412> Constant Double [+1.012e2]
+                    │   │           ├── <1413> Constant Double [+1.023e2]
+                    │   │           ├── <1414> Constant Double [+1.034e2]
+                    │   │           ├── <1415> Constant Double [+1.045e2]
+                    │   │           ├── <1416> Constant Int [75]
+                    │   │           ├── <1417> Constant Int [76]
+                    │   │           ├── <1418> Constant Int [77]
+                    │   │           ├── <1419> Constant Int [78]
+                    │   │           ├── <1420> Constant Int [79]
+                    │   │           ├── <1421> Constant Int [80]
+                    │   │           ╰── <1423> Var [mixed_regs]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1426> Constant Int [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── uneven
+                    │   ├── Type
+                    │   │   ╰── Union [uneven]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <1435> "boop"
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1453> Unary [!]
+                    │   │       ╰── <1452> FunctionCall [pass_uneven_union_in_memory]
+                    │   │           ├── <1441> Constant Int [1100]
+                    │   │           ├── <1442> Constant Int [2200]
+                    │   │           ├── <1443> Constant Int [3300]
+                    │   │           ├── <1444> Constant Int [4400]
+                    │   │           ├── <1445> Constant Int [5500]
+                    │   │           ├── <1447> Var [mixed_regs]
+                    │   │           ├── <1449> Var [one_gp]
+                    │   │           ╰── <1451> Var [uneven]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1454> Constant Int [7]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── mem
+                    │   ├── Type
+                    │   │   ╰── Union [lotsa_doubles]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <1463> Constant Double [+6.6e1]
+                    │               ├── <1465> Constant Double [+7.7e1]
+                    │               ╰── <1467> Constant Double [+8.8e1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1483> Unary [!]
+                    │   │       ╰── <1482> FunctionCall [pass_in_mem_first]
+                    │   │           ├── <1475> Var [mem]
+                    │   │           ├── <1477> Var [mixed_regs]
+                    │   │           ├── <1479> Var [two_gp]
+                    │   │           ╰── <1481> Var [one_gp_struct]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1484> Constant Int [8]
+                    ╰── Return
+                        ╰── <1489> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_static_union_inits() {
+    let src = r#"
+        
+        int strcmp(char* s1, char* s2);
+        union simple {
+            int i;
+            char c;
+            double d;
+        };
+        extern union simple s;
+        int validate_simple(void);
+        union has_union {
+            union simple u;
+            char c;
+        };
+        extern union has_union h;
+        int validate_has_union(void);
+        struct has_union_array {
+            union has_union union_array[4];
+            char c;
+            union simple s;
+        };
+        extern struct has_union_array my_struct;
+        int validate_has_union_array(void);
+        extern union has_union all_zeros;
+        int validate_uninitialized(void);
+        union with_padding {
+            char arr[13];
+            long l;
+        };
+        extern union with_padding padded_union_array[3];
+        int validate_padded_union_array(void);
+        int validate_simple(void) {
+            return (s.c == -39 && s.i == 217);
+        }
+        int validate_has_union(void) {
+            return (h.u.c == 77 && h.c == 77 && h.u.i == 77);
+        }
+        int validate_has_union_array(void) {
+            for (int i = 0; i < 3; i = i + 1) {
+                int expected = 'a' + i;
+                if (my_struct.union_array[i].u.c != expected
+                    || my_struct.union_array[i].c != expected
+                    || my_struct.union_array[i].u.i != expected) {
+                    return 0;
+                }
+            }
+            if (my_struct.union_array[3].u.d != 0.0) {
+                return 0;
+            }
+            if (my_struct.c != '#') {
+                return 0;
+            }
+            if (my_struct.s.c != '!' || my_struct.s.i != '!') {
+                return 0;
+            }
+            return 1;
+        }
+        int validate_uninitialized(void) {
+            if (all_zeros.u.d != 0.0) {
+                return 0;
+            }
+            return 1;
+        }
+        int validate_padded_union_array(void) {
+            if (strcmp(padded_union_array[0].arr, "first string") != 0) {
+                return 0;
+            }
+            if (strcmp(padded_union_array[1].arr, "string #2") != 0) {
+                return 0;
+            }
+            if (strcmp(padded_union_array[2].arr, "string #3") != 0) {
+                return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Union [simple]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── s
+            │   ├── Type
+            │   │   ╰── Union [simple]
+            │   ╰── Extern
+            ├── Function [validate_simple]
+            ├── Union [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [simple]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── h
+            │   ├── Type
+            │   │   ╰── Union [has_union]
+            │   ╰── Extern
+            ├── Function [validate_has_union]
+            ├── Struct [has_union_array]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── union_array
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 4
+            │   │           ╰── Union [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Union [simple]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── my_struct
+            │   ├── Type
+            │   │   ╰── Struct [has_union_array]
+            │   ╰── Extern
+            ├── Function [validate_has_union_array]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── all_zeros
+            │   ├── Type
+            │   │   ╰── Union [has_union]
+            │   ╰── Extern
+            ├── Function [validate_uninitialized]
+            ├── Union [with_padding]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 13
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── padded_union_array
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Union [with_padding]
+            │   ╰── Extern
+            ├── Function [validate_padded_union_array]
+            ├── Function [validate_simple]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <160>  [&&]
+            │               ├── <150>  [==]
+            │               │   ├── <145> Dot
+            │               │   │   ├── <143> Var [s]
+            │               │   │   ╰── c
+            │               │   ╰── <149> Unary [-]
+            │               │       ╰── <148> Constant Int [39]
+            │               ╰── <158>  [==]
+            │                   ├── <155> Dot
+            │                   │   ├── <153> Var [s]
+            │                   │   ╰── i
+            │                   ╰── <157> Constant Int [217]
+            ├── Function [validate_has_union]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <198>  [&&]
+            │               ├── <186>  [&&]
+            │               │   ├── <177>  [==]
+            │               │   │   ├── <174> Dot
+            │               │   │   │   ├── <172> Dot
+            │               │   │   │   │   ├── <170> Var [h]
+            │               │   │   │   │   ╰── u
+            │               │   │   │   ╰── c
+            │               │   │   ╰── <176> Constant Int [77]
+            │               │   ╰── <185>  [==]
+            │               │       ├── <182> Dot
+            │               │       │   ├── <180> Var [h]
+            │               │       │   ╰── c
+            │               │       ╰── <184> Constant Int [77]
+            │               ╰── <196>  [==]
+            │                   ├── <193> Dot
+            │                   │   ├── <191> Dot
+            │                   │   │   ├── <189> Var [h]
+            │                   │   │   ╰── u
+            │                   │   ╰── i
+            │                   ╰── <195> Constant Int [77]
+            ├── Function [validate_has_union_array]
+            │   ╰── Body
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── <210> Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── <218>  [<]
+            │       │   │       ├── <215> Var [i]
+            │       │   │       ╰── <217> Constant Int [3]
+            │       │   ├── Condition
+            │       │   │   ╰── <227> Assign [=]
+            │       │   │       ├── <220> Var [i]
+            │       │   │       ╰── <226>  [+]
+            │       │   │           ├── <223> Var [i]
+            │       │   │           ╰── <225> Constant Int [1]
+            │       │   ╰── Block
+            │       │       ├── VarDeclaration
+            │       │       │   ├── Name
+            │       │       │   │   ╰── expected
+            │       │       │   ├── Type
+            │       │       │   │   ╰── Int
+            │       │       │   ╰── Initializer
+            │       │       │       ╰── <235>  [+]
+            │       │       │           ├── <231> Constant Int [97]
+            │       │       │           ╰── <234> Var [i]
+            │       │       ╰── If
+            │       │           ├── Condition
+            │       │           │   ╰── <284>  [||]
+            │       │           │       ├── <267>  [||]
+            │       │           │       │   ├── <252>  [!=]
+            │       │           │       │   │   ├── <248> Dot
+            │       │           │       │   │   │   ├── <246> Dot
+            │       │           │       │   │   │   │   ├── <244> Subscript
+            │       │           │       │   │   │   │   │   ├── <241> Dot
+            │       │           │       │   │   │   │   │   │   ├── <239> Var [my_struct]
+            │       │           │       │   │   │   │   │   │   ╰── union_array
+            │       │           │       │   │   │   │   │   ╰── <243> Var [i]
+            │       │           │       │   │   │   │   ╰── u
+            │       │           │       │   │   │   ╰── c
+            │       │           │       │   │   ╰── <251> Var [expected]
+            │       │           │       │   ╰── <266>  [!=]
+            │       │           │       │       ├── <262> Dot
+            │       │           │       │       │   ├── <260> Subscript
+            │       │           │       │       │   │   ├── <257> Dot
+            │       │           │       │       │   │   │   ├── <255> Var [my_struct]
+            │       │           │       │       │   │   │   ╰── union_array
+            │       │           │       │       │   │   ╰── <259> Var [i]
+            │       │           │       │       │   ╰── c
+            │       │           │       │       ╰── <265> Var [expected]
+            │       │           │       ╰── <283>  [!=]
+            │       │           │           ├── <279> Dot
+            │       │           │           │   ├── <277> Dot
+            │       │           │           │   │   ├── <275> Subscript
+            │       │           │           │   │   │   ├── <272> Dot
+            │       │           │           │   │   │   │   ├── <270> Var [my_struct]
+            │       │           │           │   │   │   │   ╰── union_array
+            │       │           │           │   │   │   ╰── <274> Var [i]
+            │       │           │           │   │   ╰── u
+            │       │           │           │   ╰── i
+            │       │           │           ╰── <282> Var [expected]
+            │       │           ╰── Then
+            │       │               ╰── Block
+            │       │                   ╰── Return
+            │       │                       ╰── <285> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <305>  [!=]
+            │       │   │       ├── <302> Dot
+            │       │   │       │   ├── <300> Dot
+            │       │   │       │   │   ├── <298> Subscript
+            │       │   │       │   │   │   ├── <296> Dot
+            │       │   │       │   │   │   │   ├── <294> Var [my_struct]
+            │       │   │       │   │   │   │   ╰── union_array
+            │       │   │       │   │   │   ╰── <297> Constant Int [3]
+            │       │   │       │   │   ╰── u
+            │       │   │       │   ╰── d
+            │       │   │       ╰── <304> Constant Double [+0e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <306> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <317>  [!=]
+            │       │   │       ├── <314> Dot
+            │       │   │       │   ├── <312> Var [my_struct]
+            │       │   │       │   ╰── c
+            │       │   │       ╰── <316> Constant Int [35]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <318> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <342>  [||]
+            │       │   │       ├── <331>  [!=]
+            │       │   │       │   ├── <328> Dot
+            │       │   │       │   │   ├── <326> Dot
+            │       │   │       │   │   │   ├── <324> Var [my_struct]
+            │       │   │       │   │   │   ╰── s
+            │       │   │       │   │   ╰── c
+            │       │   │       │   ╰── <330> Constant Int [33]
+            │       │   │       ╰── <341>  [!=]
+            │       │   │           ├── <338> Dot
+            │       │   │           │   ├── <336> Dot
+            │       │   │           │   │   ├── <334> Var [my_struct]
+            │       │   │           │   │   ╰── s
+            │       │   │           │   ╰── i
+            │       │   │           ╰── <340> Constant Int [33]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <343> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <348> Constant Int [1]
+            ├── Function [validate_uninitialized]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <365>  [!=]
+            │       │   │       ├── <362> Dot
+            │       │   │       │   ├── <360> Dot
+            │       │   │       │   │   ├── <358> Var [all_zeros]
+            │       │   │       │   │   ╰── u
+            │       │   │       │   ╰── d
+            │       │   │       ╰── <364> Constant Double [+0e0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <366> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <371> Constant Int [1]
+            ╰── Function [validate_padded_union_array]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <391>  [!=]
+                    │   │       ├── <388> FunctionCall [strcmp]
+                    │   │       │   ├── <386> Dot
+                    │   │       │   │   ├── <384> Subscript
+                    │   │       │   │   │   ├── <382> Var [padded_union_array]
+                    │   │       │   │   │   ╰── <383> Constant Int [0]
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <387> "first string"
+                    │   │       ╰── <390> Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <392> Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <408>  [!=]
+                    │   │       ├── <405> FunctionCall [strcmp]
+                    │   │       │   ├── <403> Dot
+                    │   │       │   │   ├── <401> Subscript
+                    │   │       │   │   │   ├── <399> Var [padded_union_array]
+                    │   │       │   │   │   ╰── <400> Constant Int [1]
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <404> "string #2"
+                    │   │       ╰── <407> Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <409> Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <425>  [!=]
+                    │   │       ├── <422> FunctionCall [strcmp]
+                    │   │       │   ├── <420> Dot
+                    │   │       │   │   ├── <418> Subscript
+                    │   │       │   │   │   ├── <416> Var [padded_union_array]
+                    │   │       │   │   │   ╰── <417> Constant Int [2]
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <421> "string #3"
+                    │   │       ╰── <424> Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <426> Constant Int [0]
+                    ╰── Return
+                        ╰── <431> Constant Int [1]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_static_union_inits_client() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        union simple {
+            int i;
+            char c;
+            double d;
+        };
+        extern union simple s;
+        int validate_simple(void);
+        union has_union {
+            union simple u;
+            char c;
+        };
+        extern union has_union h;
+        int validate_has_union(void);
+        struct has_union_array {
+            union has_union union_array[4];
+            char c;
+            union simple s;
+        };
+        extern struct has_union_array my_struct;
+        int validate_has_union_array(void);
+        extern union has_union all_zeros;
+        int validate_uninitialized(void);
+        union with_padding {
+            char arr[13];
+            long l;
+        };
+        extern union with_padding padded_union_array[3];
+        int validate_padded_union_array(void);
+        union simple s = {217};
+        union has_union h = {{77}};
+        struct has_union_array my_struct = {
+            {{{'a'}}, {{'b'}}, {{'c'}}}, '#', {'!'}
+        };
+        union has_union all_zeros;
+        union with_padding padded_union_array[3] = {
+            {"first string"}, {"string #2"}, {
+                "string #3"
+            }
+        };
+        int main(void) {
+            if (!validate_simple()) {
+                return 1;
+            }
+            if (!validate_has_union()){
+                return 2;
+            }
+            if (!validate_has_union_array()) {
+                return 3;
+            }
+            if (!validate_uninitialized()) {
+                return 4;
+            }
+            if (!validate_padded_union_array()) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Union [simple]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── s
+            │   ├── Type
+            │   │   ╰── Union [simple]
+            │   ╰── Extern
+            ├── Function [validate_simple]
+            ├── Union [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [simple]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── h
+            │   ├── Type
+            │   │   ╰── Union [has_union]
+            │   ╰── Extern
+            ├── Function [validate_has_union]
+            ├── Struct [has_union_array]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── union_array
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 4
+            │   │           ╰── Union [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Union [simple]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── my_struct
+            │   ├── Type
+            │   │   ╰── Struct [has_union_array]
+            │   ╰── Extern
+            ├── Function [validate_has_union_array]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── all_zeros
+            │   ├── Type
+            │   │   ╰── Union [has_union]
+            │   ╰── Extern
+            ├── Function [validate_uninitialized]
+            ├── Union [with_padding]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 13
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Long
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── padded_union_array
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Union [with_padding]
+            │   ╰── Extern
+            ├── Function [validate_padded_union_array]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── s
+            │   ├── Type
+            │   │   ╰── Union [simple]
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ╰── <141> Constant Int [217]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── h
+            │   ├── Type
+            │   │   ╰── Union [has_union]
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ╰── Compound
+            │               ╰── <149> Constant Int [77]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── my_struct
+            │   ├── Type
+            │   │   ╰── Struct [has_union_array]
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Compound
+            │           │   ├── Compound
+            │           │   │   ╰── Compound
+            │           │   │       ╰── <158> Constant Int [97]
+            │           │   ├── Compound
+            │           │   │   ╰── Compound
+            │           │   │       ╰── <162> Constant Int [98]
+            │           │   ╰── Compound
+            │           │       ╰── Compound
+            │           │           ╰── <166> Constant Int [99]
+            │           ├── <171> Constant Int [35]
+            │           ╰── Compound
+            │               ╰── <173> Constant Int [33]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── all_zeros
+            │   ╰── Type
+            │       ╰── Union [has_union]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── padded_union_array
+            │   ├── Type
+            │   │   ╰── Array
+            │   │       ├── 3
+            │   │       ╰── Union [with_padding]
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── Compound
+            │           │   ╰── <190> "first string"
+            │           ├── Compound
+            │           │   ╰── <193> "string #2"
+            │           ╰── Compound
+            │               ╰── <196> "string #3"
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <209> Unary [!]
+                    │   │       ╰── <208> FunctionCall [validate_simple]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <210> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <218> Unary [!]
+                    │   │       ╰── <217> FunctionCall [validate_has_union]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <219> Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <227> Unary [!]
+                    │   │       ╰── <226> FunctionCall [validate_has_union_array]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <228> Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <236> Unary [!]
+                    │   │       ╰── <235> FunctionCall [validate_uninitialized]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <237> Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <245> Unary [!]
+                    │   │       ╰── <244> FunctionCall [validate_padded_union_array]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <246> Constant Int [5]
+                    ╰── Return
+                        ╰── <251> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_union_inits() {
+    let src = r#"
+        int strcmp(char *s1, char *s2);
+        union simple {
+            double d;
+            char c;
+            int *ptr;
+        };
+        union inner {
+            char arr[9];
+        };
+        struct my_struct {
+            long l;
+            union inner u;
+            int i;
+        };
+        union nested {
+            struct my_struct str;
+            union simple s;
+            long l;
+        };
+        int validate_simple(union simple *ptr);
+        int validate_simple_converted(union simple *ptr);
+        int validate_nested(union nested *ptr);
+        int validate_nested_partial(union nested *ptr);
+        
+        int validate_simple(union simple* ptr) {
+            return (ptr->d == 123.45);
+        }
+        int validate_simple_converted(union simple* ptr) {
+            return (ptr->d == 18446744073709549568.);
+        }
+        int validate_nested(union nested* ptr) {
+            if (ptr->str.l != 4294967395l) {
+                return 0;
+            }
+            for (int i = 0; i < 9; i = i + 1) {
+                if (ptr->str.u.arr[i] != -1 - i) {
+                    return 0;
+                }
+            }
+            return 1;
+        }
+        int validate_nested_partial(union nested* ptr) {
+            if (ptr->str.l != 9000372036854775800l) {
+                return 0;
+            }
+            if (strcmp(ptr->str.u.arr, "string")) {
+                return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Union [simple]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ptr
+            │       ╰── Type
+            │           ╰── Pointer
+            │               ╰── Int
+            ├── Union [inner]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 9
+            │               ╰── Char
+            ├── Struct [my_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [inner]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── str
+            │   │   ╰── Type
+            │   │       ╰── Struct [my_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Union [simple]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Long
+            ├── Function [validate_simple]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── ptr
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Union [simple]
+            ├── Function [validate_simple_converted]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── ptr
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Union [simple]
+            ├── Function [validate_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── ptr
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Union [nested]
+            ├── Function [validate_nested_partial]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── ptr
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Union [nested]
+            ├── Function [validate_simple]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Union [simple]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <139>  [==]
+            │               ├── <135> Arrow
+            │               │   ├── <133> Var [ptr]
+            │               │   ╰── d
+            │               ╰── <137> Constant Double [+1.2345e2]
+            ├── Function [validate_simple_converted]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Union [simple]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <161>  [==]
+            │               ├── <157> Arrow
+            │               │   ├── <155> Var [ptr]
+            │               │   ╰── d
+            │               ╰── <159> Constant Double [+1.844674407370955e19]
+            ├── Function [validate_nested]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── ptr
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Union [nested]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <184>  [!=]
+            │       │   │       ├── <181> Dot
+            │       │   │       │   ├── <179> Arrow
+            │       │   │       │   │   ├── <177> Var [ptr]
+            │       │   │       │   │   ╰── str
+            │       │   │       │   ╰── l
+            │       │   │       ╰── <183> Constant Long [4294967395]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <185> Constant Int [0]
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── <193> Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── <201>  [<]
+            │       │   │       ├── <198> Var [i]
+            │       │   │       ╰── <200> Constant Int [9]
+            │       │   ├── Condition
+            │       │   │   ╰── <210> Assign [=]
+            │       │   │       ├── <203> Var [i]
+            │       │   │       ╰── <209>  [+]
+            │       │   │           ├── <206> Var [i]
+            │       │   │           ╰── <208> Constant Int [1]
+            │       │   ╰── Block
+            │       │       ╰── If
+            │       │           ├── Condition
+            │       │           │   ╰── <230>  [!=]
+            │       │           │       ├── <221> Subscript
+            │       │           │       │   ├── <218> Dot
+            │       │           │       │   │   ├── <216> Dot
+            │       │           │       │   │   │   ├── <214> Arrow
+            │       │           │       │   │   │   │   ├── <212> Var [ptr]
+            │       │           │       │   │   │   │   ╰── str
+            │       │           │       │   │   │   ╰── u
+            │       │           │       │   │   ╰── arr
+            │       │           │       │   ╰── <220> Var [i]
+            │       │           │       ╰── <229>  [-]
+            │       │           │           ├── <225> Unary [-]
+            │       │           │           │   ╰── <224> Constant Int [1]
+            │       │           │           ╰── <228> Var [i]
+            │       │           ╰── Then
+            │       │               ╰── Block
+            │       │                   ╰── Return
+            │       │                       ╰── <231> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <239> Constant Int [1]
+            ╰── Function [validate_nested_partial]
+                ├── Parameters
+                │   ╰── Param
+                │       ├── Name
+                │       │   ╰── ptr
+                │       ╰── Type
+                │           ╰── Pointer
+                │               ╰── Union [nested]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <262>  [!=]
+                    │   │       ├── <259> Dot
+                    │   │       │   ├── <257> Arrow
+                    │   │       │   │   ├── <255> Var [ptr]
+                    │   │       │   │   ╰── str
+                    │   │       │   ╰── l
+                    │   │       ╰── <261> Constant Long [9000372036854775800]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <263> Constant Int [0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <278> FunctionCall [strcmp]
+                    │   │       ├── <276> Dot
+                    │   │       │   ├── <274> Dot
+                    │   │       │   │   ├── <272> Arrow
+                    │   │       │   │   │   ├── <270> Var [ptr]
+                    │   │       │   │   │   ╰── str
+                    │   │       │   │   ╰── u
+                    │   │       │   ╰── arr
+                    │   │       ╰── <277> "string"
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <279> Constant Int [0]
+                    ╰── Return
+                        ╰── <284> Constant Int [1]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_union_inits_client() {
+    let src = r#"
+        int strcmp(char *s1, char *s2);
+        union simple {
+            double d;
+            char c;
+            int *ptr;
+        };
+        union inner {
+            char arr[9];
+        };
+        struct my_struct {
+            long l;
+            union inner u;
+            int i;
+        };
+        union nested {
+            struct my_struct str;
+            union simple s;
+            long l;
+        };
+        int validate_simple(union simple *ptr);
+        int validate_simple_converted(union simple *ptr);
+        int validate_nested(union nested *ptr);
+        int validate_nested_partial(union nested *ptr);
+        int test_simple(void) {
+            union simple x = { 123.45 };
+            return validate_simple(&x);
+        }
+        int test_simple_converted(void) {
+            union simple x = { 18446744073709550315UL };
+            return validate_simple_converted(&x);
+        }
+        int test_nested(void) {
+            union nested x = { {4294967395l, {{-1, -2, -3, -4, -5, -6, -7, -8, -9}}} };
+            return validate_nested(&x);
+        }
+        int test_nested_partial_init(void) {
+            union nested x = { {9000372036854775800l, {"string"}} };
+            return validate_nested_partial(&x);
+        }
+        int main(void) {
+            if (!test_simple()) {
+                return 1;
+            }
+            if (!test_simple_converted()) {
+                return 2;
+            }
+            if (!test_nested()) {
+                return 3;
+            }
+            if (!test_nested_partial_init()) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Union [simple]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ptr
+            │       ╰── Type
+            │           ╰── Pointer
+            │               ╰── Int
+            ├── Union [inner]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 9
+            │               ╰── Char
+            ├── Struct [my_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [inner]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── str
+            │   │   ╰── Type
+            │   │       ╰── Struct [my_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Union [simple]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Long
+            ├── Function [validate_simple]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── ptr
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Union [simple]
+            ├── Function [validate_simple_converted]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── ptr
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Union [simple]
+            ├── Function [validate_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── ptr
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Union [nested]
+            ├── Function [validate_nested_partial]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── ptr
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Union [nested]
+            ├── Function [test_simple]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Union [simple]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <130> Constant Double [+1.2345e2]
+            │       ╰── Return
+            │           ╰── <138> FunctionCall [validate_simple]
+            │               ╰── <137> AddressOf
+            │                   ╰── <136> Var [x]
+            ├── Function [test_simple_converted]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Union [simple]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <151> Constant ULong [18446744073709550315]
+            │       ╰── Return
+            │           ╰── <159> FunctionCall [validate_simple_converted]
+            │               ╰── <158> AddressOf
+            │                   ╰── <157> Var [x]
+            ├── Function [test_nested]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Union [nested]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── Compound
+            │       │               ├── <172> Constant Long [4294967395]
+            │       │               ╰── Compound
+            │       │                   ╰── Compound
+            │       │                       ├── <176> Unary [-]
+            │       │                       │   ╰── <175> Constant Int [1]
+            │       │                       ├── <180> Unary [-]
+            │       │                       │   ╰── <179> Constant Int [2]
+            │       │                       ├── <184> Unary [-]
+            │       │                       │   ╰── <183> Constant Int [3]
+            │       │                       ├── <188> Unary [-]
+            │       │                       │   ╰── <187> Constant Int [4]
+            │       │                       ├── <192> Unary [-]
+            │       │                       │   ╰── <191> Constant Int [5]
+            │       │                       ├── <196> Unary [-]
+            │       │                       │   ╰── <195> Constant Int [6]
+            │       │                       ├── <200> Unary [-]
+            │       │                       │   ╰── <199> Constant Int [7]
+            │       │                       ├── <204> Unary [-]
+            │       │                       │   ╰── <203> Constant Int [8]
+            │       │                       ╰── <208> Unary [-]
+            │       │                           ╰── <207> Constant Int [9]
+            │       ╰── Return
+            │           ╰── <219> FunctionCall [validate_nested]
+            │               ╰── <218> AddressOf
+            │                   ╰── <217> Var [x]
+            ├── Function [test_nested_partial_init]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Union [nested]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── Compound
+            │       │               ├── <232> Constant Long [9000372036854775800]
+            │       │               ╰── Compound
+            │       │                   ╰── <234> "string"
+            │       ╰── Return
+            │           ╰── <244> FunctionCall [validate_nested_partial]
+            │               ╰── <243> AddressOf
+            │                   ╰── <242> Var [x]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <256> Unary [!]
+                    │   │       ╰── <255> FunctionCall [test_simple]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <257> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <265> Unary [!]
+                    │   │       ╰── <264> FunctionCall [test_simple_converted]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <266> Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <274> Unary [!]
+                    │   │       ╰── <273> FunctionCall [test_nested]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <275> Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <283> Unary [!]
+                    │   │       ╰── <282> FunctionCall [test_nested_partial_init]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <284> Constant Int [4]
+                    ╰── Return
+                        ╰── <289> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_union_retvals() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        union one_double return_one_double(void) {
+            union one_double result = { 245.5 };
+            return result;
+        }
+        union one_int_nested return_one_int_nested(void) {
+            union one_int_nested result = { {-9876.5} };
+            return result;
+        }
+        union has_dbl_struct return_has_dbl_struct(void) {
+            union has_dbl_struct result = {
+                {
+                    {1234.5}, 6789.
+                }
+            };
+            return result;
+        }
+        union two_arrs return_two_arrs(void) {
+            union two_arrs result;
+            result.dbl_arr[0] = 66.75;
+            result.long_arr[1] = -4294967300l;
+            return result;
+        }
+        union scalar_and_struct return_scalar_and_struct(void) {
+            union scalar_and_struct result;
+            result.cfe.c = -115;
+            result.cfe.d = 222222.25;
+            return result;
+        }
+        union xmm_and_gp return_xmm_and_gp(void) {
+            union xmm_and_gp result;
+            result.ise.d = -50000.125;
+            result.ise.i = -3000;
+            return result;
+        }
+        union contains_union_array return_contains_union_array(void) {
+            union contains_union_array result = {
+                {
+                    {{-2000e-4, -3000e-4}}, {{20000e10, 5000e11}}
+                }
+            };
+            return result;
+        }
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin) {
+            if (i1 != 1 || i2 != 25) {
+                exit(-1);
+            }
+            if (int_and_dbl.cfe.c != -115 || int_and_dbl.cfe.d != 222222.25) {
+                exit(-2);
+            }
+            if (two_arrs.dbl_arr[0] != 66.75 || two_arrs.long_arr[1] != -4294967300l) {
+                exit(-3);
+            }
+            if (!(big_union.arr[0].d_arr[0] == -2000e-4 && big_union.arr[0].d_arr[1] == -3000e-4
+                && big_union.arr[1].d_arr[0] == 20000e10 && big_union.arr[1].d_arr[1] == 5000e11)) {
+                exit(-4);
+            }
+            if (oin.oi.d != -9876.5) {
+                exit(-5);
+            }
+            union lotsa_chars result = { "ABCDEFGHIJKLMNOPQ" };
+            return result;
+        }
+        struct has_uneven_union return_struct_with_union(void) {
+            struct has_uneven_union result = {
+                -8765, {"done"}
+            };
+            return result;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Function [exit]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── status
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Union [one_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d1
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [has_struct_with_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 1
+            │               ╰── Double
+            ├── Union [one_int]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [one_int_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── oi
+            │   │   ╰── Type
+            │   │       ╰── Union [one_int]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── od
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [char_int_mixed]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 7
+            │   │           ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── union_ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ui
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Union [char_int_short]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Struct [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [char_int_short]
+            ├── Union [has_struct_with_ints]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ul
+            │       ╰── Type
+            │           ╰── Unsigned Long
+            ├── Union [two_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── single
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_xmm_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u2
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Struct [dbl_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_dbl_struct]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Union [char_arr]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 11
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_arrs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── dbl_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── long_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Long
+            ├── Union [two_eightbyte_has_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Struct [char_first_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [int_second_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_structs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Struct [char_first_eightbyte]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Struct [nine_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Union [has_nine_byte_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Struct [nine_bytes]
+            ├── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 5
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── uc
+            │       ╰── Type
+            │           ╰── Unsigned Char
+            ├── Struct [has_uneven_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [uneven]
+            ├── Union [has_other_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Union [two_doubles]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── n
+            │       ╰── Type
+            │           ╰── Union [has_nine_byte_struct]
+            ├── Union [union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [one_int]
+            ├── Union [uneven_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [uneven]
+            ├── Struct [small]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── sc
+            │       ╰── Type
+            │           ╰── Signed Char
+            ├── Union [has_small_struct_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Struct [small]
+            ├── Union [gp_and_xmm]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [scalar_and_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── cfe
+            │       ╰── Type
+            │           ╰── Struct [char_first_eightbyte]
+            ├── Struct [has_two_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [small_struct_arr_and_dbl]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Struct [small]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ise
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Union [xmm_and_gp_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [lotsa_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [lotsa_chars]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── more_chars
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 18
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── fewer_chars
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Struct [large]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 10
+            │               ╰── Char
+            ├── Union [contains_large_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ul
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Struct [large]
+            ├── Union [contains_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_one_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_double]
+            ├── Function [test_has_union_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union_with_double]
+            ├── Function [test_has_struct_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_double]
+            ├── Function [test_one_int]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [test_one_int_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [test_char_int_mixed]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_int_mixed]
+            ├── Function [test_has_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [test_has_struct_with_ints]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_ints]
+            ├── Function [test_two_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [test_has_xmm_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_xmm_union]
+            ├── Function [test_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [dbl_struct]
+            ├── Function [test_has_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_dbl_struct]
+            ├── Function [test_char_arr]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [test_two_arrs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_arrs]
+            ├── Function [test_two_eightbyte_has_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_eightbyte_has_struct]
+            ├── Function [test_two_structs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_structs]
+            ├── Function [test_has_nine_byte_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_nine_byte_struct]
+            ├── Function [test_has_uneven_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_uneven_union]
+            ├── Function [test_has_other_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_other_unions]
+            ├── Function [test_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [union_array]
+            ├── Function [test_uneven_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [uneven_union_array]
+            ├── Function [test_has_small_struct_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_small_struct_array]
+            ├── Function [test_gp_and_xmm]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_scalar_and_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [scalar_and_struct]
+            ├── Function [test_has_two_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_two_unions]
+            ├── Function [test_small_struct_arr_and_dbl]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [small_struct_arr_and_dbl]
+            ├── Function [test_xmm_and_gp]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp]
+            ├── Function [test_xmm_and_gp_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp_nested]
+            ├── Function [test_lotsa_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_doubles]
+            ├── Function [test_lotsa_chars]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_chars]
+            ├── Function [test_contains_large_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_large_struct]
+            ├── Function [test_contains_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_union_array]
+            ├── Function [pass_unions_and_structs]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── i5
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [pass_gp_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [pass_xmm_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm_copy
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_borderline_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_gp
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [pass_borderline_xmm_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d5
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_mixed_reg_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── mixed_regs
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [pass_uneven_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── uneven
+            │           ╰── Type
+            │               ╰── Union [uneven]
+            ├── Function [pass_in_mem_first]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mem
+            │       │   ╰── Type
+            │       │       ╰── Union [lotsa_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [char_arr]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp_struct
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [return_one_double]
+            ├── Function [return_one_int_nested]
+            ├── Function [return_has_dbl_struct]
+            ├── Function [return_two_arrs]
+            ├── Function [return_scalar_and_struct]
+            ├── Function [return_xmm_and_gp]
+            ├── Function [return_contains_union_array]
+            ├── Function [pass_params_and_return_in_mem]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── int_and_dbl
+            │       │   ╰── Type
+            │       │       ╰── Union [scalar_and_struct]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_arrs
+            │       │   ╰── Type
+            │       │       ╰── Union [two_arrs]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── big_union
+            │       │   ╰── Type
+            │       │       ╰── Union [contains_union_array]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── oin
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [return_struct_with_union]
+            ├── Function [return_one_double]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Union [one_double]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <1196> Constant Double [+2.455e2]
+            │       ╰── Return
+            │           ╰── <1201> Var [result]
+            ├── Function [return_one_int_nested]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Union [one_int_nested]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── Compound
+            │       │               ╰── <1217> Unary [-]
+            │       │                   ╰── <1216> Constant Double [+9.8765e3]
+            │       ╰── Return
+            │           ╰── <1223> Var [result]
+            ├── Function [return_has_dbl_struct]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Union [has_dbl_struct]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── Compound
+            │       │               ├── Compound
+            │       │               │   ╰── <1237> Constant Double [+1.2345e3]
+            │       │               ╰── <1240> Constant Double [+6.789e3]
+            │       ╰── Return
+            │           ╰── <1246> Var [result]
+            ├── Function [return_two_arrs]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ╰── Type
+            │       │       ╰── Union [two_arrs]
+            │       ├── <1269> Assign [=]
+            │       │   ├── <1266> Subscript
+            │       │   │   ├── <1264> Dot
+            │       │   │   │   ├── <1262> Var [result]
+            │       │   │   │   ╰── dbl_arr
+            │       │   │   ╰── <1265> Constant Int [0]
+            │       │   ╰── <1268> Constant Double [+6.675e1]
+            │       ├── <1281> Assign [=]
+            │       │   ├── <1276> Subscript
+            │       │   │   ├── <1274> Dot
+            │       │   │   │   ├── <1272> Var [result]
+            │       │   │   │   ╰── long_arr
+            │       │   │   ╰── <1275> Constant Int [1]
+            │       │   ╰── <1280> Unary [-]
+            │       │       ╰── <1279> Constant Long [4294967300]
+            │       ╰── Return
+            │           ╰── <1284> Var [result]
+            ├── Function [return_scalar_and_struct]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ╰── Type
+            │       │       ╰── Union [scalar_and_struct]
+            │       ├── <1309> Assign [=]
+            │       │   ├── <1304> Dot
+            │       │   │   ├── <1302> Dot
+            │       │   │   │   ├── <1300> Var [result]
+            │       │   │   │   ╰── cfe
+            │       │   │   ╰── c
+            │       │   ╰── <1308> Unary [-]
+            │       │       ╰── <1307> Constant Int [115]
+            │       ├── <1319> Assign [=]
+            │       │   ├── <1316> Dot
+            │       │   │   ├── <1314> Dot
+            │       │   │   │   ├── <1312> Var [result]
+            │       │   │   │   ╰── cfe
+            │       │   │   ╰── d
+            │       │   ╰── <1318> Constant Double [+2.2222225e5]
+            │       ╰── Return
+            │           ╰── <1322> Var [result]
+            ├── Function [return_xmm_and_gp]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ╰── Type
+            │       │       ╰── Union [xmm_and_gp]
+            │       ├── <1347> Assign [=]
+            │       │   ├── <1342> Dot
+            │       │   │   ├── <1340> Dot
+            │       │   │   │   ├── <1338> Var [result]
+            │       │   │   │   ╰── ise
+            │       │   │   ╰── d
+            │       │   ╰── <1346> Unary [-]
+            │       │       ╰── <1345> Constant Double [+5.0000125e4]
+            │       ├── <1359> Assign [=]
+            │       │   ├── <1354> Dot
+            │       │   │   ├── <1352> Dot
+            │       │   │   │   ├── <1350> Var [result]
+            │       │   │   │   ╰── ise
+            │       │   │   ╰── i
+            │       │   ╰── <1358> Unary [-]
+            │       │       ╰── <1357> Constant Int [3000]
+            │       ╰── Return
+            │           ╰── <1362> Var [result]
+            ├── Function [return_contains_union_array]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Union [contains_union_array]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── Compound
+            │       │               ├── Compound
+            │       │               │   ╰── Compound
+            │       │               │       ├── <1378> Unary [-]
+            │       │               │       │   ╰── <1377> Constant Double [+2e-1]
+            │       │               │       ╰── <1382> Unary [-]
+            │       │               │           ╰── <1381> Constant Double [+3e-1]
+            │       │               ╰── Compound
+            │       │                   ╰── Compound
+            │       │                       ├── <1386> Constant Double [+2e14]
+            │       │                       ╰── <1388> Constant Double [+5e14]
+            │       ╰── Return
+            │           ╰── <1396> Var [result]
+            ├── Function [pass_params_and_return_in_mem]
+            │   ├── Parameters
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i1
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── int_and_dbl
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [scalar_and_struct]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── two_arrs
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [two_arrs]
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── i2
+            │   │   │   ╰── Type
+            │   │   │       ╰── Int
+            │   │   ├── Param
+            │   │   │   ├── Name
+            │   │   │   │   ╰── big_union
+            │   │   │   ╰── Type
+            │   │   │       ╰── Union [contains_union_array]
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── oin
+            │   │       ╰── Type
+            │   │           ╰── Union [one_int_nested]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1439>  [||]
+            │       │   │       ├── <1432>  [!=]
+            │       │   │       │   ├── <1429> Var [i1]
+            │       │   │       │   ╰── <1431> Constant Int [1]
+            │       │   │       ╰── <1438>  [!=]
+            │       │   │           ├── <1435> Var [i2]
+            │       │   │           ╰── <1437> Constant Int [25]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── <1444> FunctionCall [exit]
+            │       │               ╰── <1443> Unary [-]
+            │       │                   ╰── <1442> Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1470>  [||]
+            │       │   │       ├── <1459>  [!=]
+            │       │   │       │   ├── <1454> Dot
+            │       │   │       │   │   ├── <1452> Dot
+            │       │   │       │   │   │   ├── <1450> Var [int_and_dbl]
+            │       │   │       │   │   │   ╰── cfe
+            │       │   │       │   │   ╰── c
+            │       │   │       │   ╰── <1458> Unary [-]
+            │       │   │       │       ╰── <1457> Constant Int [115]
+            │       │   │       ╰── <1469>  [!=]
+            │       │   │           ├── <1466> Dot
+            │       │   │           │   ├── <1464> Dot
+            │       │   │           │   │   ├── <1462> Var [int_and_dbl]
+            │       │   │           │   │   ╰── cfe
+            │       │   │           │   ╰── d
+            │       │   │           ╰── <1468> Constant Double [+2.2222225e5]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── <1475> FunctionCall [exit]
+            │       │               ╰── <1474> Unary [-]
+            │       │                   ╰── <1473> Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1501>  [||]
+            │       │   │       ├── <1488>  [!=]
+            │       │   │       │   ├── <1485> Subscript
+            │       │   │       │   │   ├── <1483> Dot
+            │       │   │       │   │   │   ├── <1481> Var [two_arrs]
+            │       │   │       │   │   │   ╰── dbl_arr
+            │       │   │       │   │   ╰── <1484> Constant Int [0]
+            │       │   │       │   ╰── <1487> Constant Double [+6.675e1]
+            │       │   │       ╰── <1500>  [!=]
+            │       │   │           ├── <1495> Subscript
+            │       │   │           │   ├── <1493> Dot
+            │       │   │           │   │   ├── <1491> Var [two_arrs]
+            │       │   │           │   │   ╰── long_arr
+            │       │   │           │   ╰── <1494> Constant Int [1]
+            │       │   │           ╰── <1499> Unary [-]
+            │       │   │               ╰── <1498> Constant Long [4294967300]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── <1506> FunctionCall [exit]
+            │       │               ╰── <1505> Unary [-]
+            │       │                   ╰── <1504> Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1575> Unary [!]
+            │       │   │       ╰── <1574>  [&&]
+            │       │   │           ├── <1558>  [&&]
+            │       │   │           │   ├── <1543>  [&&]
+            │       │   │           │   │   ├── <1526>  [==]
+            │       │   │           │   │   │   ├── <1521> Subscript
+            │       │   │           │   │   │   │   ├── <1519> Dot
+            │       │   │           │   │   │   │   │   ├── <1517> Subscript
+            │       │   │           │   │   │   │   │   │   ├── <1515> Dot
+            │       │   │           │   │   │   │   │   │   │   ├── <1513> Var [big_union]
+            │       │   │           │   │   │   │   │   │   │   ╰── arr
+            │       │   │           │   │   │   │   │   │   ╰── <1516> Constant Int [0]
+            │       │   │           │   │   │   │   │   ╰── d_arr
+            │       │   │           │   │   │   │   ╰── <1520> Constant Int [0]
+            │       │   │           │   │   │   ╰── <1525> Unary [-]
+            │       │   │           │   │   │       ╰── <1524> Constant Double [+2e-1]
+            │       │   │           │   │   ╰── <1542>  [==]
+            │       │   │           │   │       ├── <1537> Subscript
+            │       │   │           │   │       │   ├── <1535> Dot
+            │       │   │           │   │       │   │   ├── <1533> Subscript
+            │       │   │           │   │       │   │   │   ├── <1531> Dot
+            │       │   │           │   │       │   │   │   │   ├── <1529> Var [big_union]
+            │       │   │           │   │       │   │   │   │   ╰── arr
+            │       │   │           │   │       │   │   │   ╰── <1532> Constant Int [0]
+            │       │   │           │   │       │   │   ╰── d_arr
+            │       │   │           │   │       │   ╰── <1536> Constant Int [1]
+            │       │   │           │   │       ╰── <1541> Unary [-]
+            │       │   │           │   │           ╰── <1540> Constant Double [+3e-1]
+            │       │   │           │   ╰── <1557>  [==]
+            │       │   │           │       ├── <1554> Subscript
+            │       │   │           │       │   ├── <1552> Dot
+            │       │   │           │       │   │   ├── <1550> Subscript
+            │       │   │           │       │   │   │   ├── <1548> Dot
+            │       │   │           │       │   │   │   │   ├── <1546> Var [big_union]
+            │       │   │           │       │   │   │   │   ╰── arr
+            │       │   │           │       │   │   │   ╰── <1549> Constant Int [1]
+            │       │   │           │       │   │   ╰── d_arr
+            │       │   │           │       │   ╰── <1553> Constant Int [0]
+            │       │   │           │       ╰── <1556> Constant Double [+2e14]
+            │       │   │           ╰── <1572>  [==]
+            │       │   │               ├── <1569> Subscript
+            │       │   │               │   ├── <1567> Dot
+            │       │   │               │   │   ├── <1565> Subscript
+            │       │   │               │   │   │   ├── <1563> Dot
+            │       │   │               │   │   │   │   ├── <1561> Var [big_union]
+            │       │   │               │   │   │   │   ╰── arr
+            │       │   │               │   │   │   ╰── <1564> Constant Int [1]
+            │       │   │               │   │   ╰── d_arr
+            │       │   │               │   ╰── <1568> Constant Int [1]
+            │       │   │               ╰── <1571> Constant Double [+5e14]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── <1580> FunctionCall [exit]
+            │       │               ╰── <1579> Unary [-]
+            │       │                   ╰── <1578> Constant Int [4]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1595>  [!=]
+            │       │   │       ├── <1590> Dot
+            │       │   │       │   ├── <1588> Dot
+            │       │   │       │   │   ├── <1586> Var [oin]
+            │       │   │       │   │   ╰── oi
+            │       │   │       │   ╰── d
+            │       │   │       ╰── <1594> Unary [-]
+            │       │   │           ╰── <1593> Constant Double [+9.8765e3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── <1600> FunctionCall [exit]
+            │       │               ╰── <1599> Unary [-]
+            │       │                   ╰── <1598> Constant Int [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── result
+            │       │   ├── Type
+            │       │   │   ╰── Union [lotsa_chars]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <1609> "ABCDEFGHIJKLMNOPQ"
+            │       ╰── Return
+            │           ╰── <1614> Var [result]
+            ╰── Function [return_struct_with_union]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── result
+                    │   ├── Type
+                    │   │   ╰── Struct [has_uneven_union]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── <1630> Unary [-]
+                    │           │   ╰── <1629> Constant Int [8765]
+                    │           ╰── Compound
+                    │               ╰── <1632> "done"
+                    ╰── Return
+                        ╰── <1638> Var [result]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_union_retvals_client() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        int main(void) {
+            union one_double od = return_one_double();
+            if (!(od.d1 == 245.5 && od.d2 == 245.5)) {
+                return 1;
+            }
+            union one_int_nested oin = return_one_int_nested();
+            if (oin.oi.d != -9876.5) {
+                return 2;
+            }
+            union has_dbl_struct two_xmm = return_has_dbl_struct();
+            if (!(two_xmm.member1.member1.d1 == 1234.5 && two_xmm.member1.member2 == 6789.)) {
+                return 3;
+            }
+            union two_arrs two_arrs = return_two_arrs();
+            if (two_arrs.dbl_arr[0] != 66.75 || two_arrs.long_arr[1] != -4294967300l) {
+                return 4;
+            }
+            union scalar_and_struct int_and_dbl = return_scalar_and_struct();
+            if (int_and_dbl.cfe.c != -115 || int_and_dbl.cfe.d != 222222.25) {
+                return 5;
+            }
+            union xmm_and_gp dbl_and_int = return_xmm_and_gp();
+            if (dbl_and_int.d != -50000.125 || dbl_and_int.ise.d != -50000.125
+                || dbl_and_int.ise.i != -3000) {
+                return 6;
+            }
+            union contains_union_array big_union = return_contains_union_array();
+            if (!(big_union.arr[0].d_arr[0] == -2000e-4 && big_union.arr[0].d_arr[1] == -3000e-4
+                && big_union.arr[1].d_arr[0] == 20000e10 && big_union.arr[1].d_arr[1] == 5000e11)) {
+                return 7;
+            }
+            union lotsa_chars chars_union = pass_params_and_return_in_mem(1,
+                int_and_dbl, two_arrs, 25, big_union, oin);
+            if (strcmp(chars_union.more_chars, "ABCDEFGHIJKLMNOPQ") != 0) {
+                return 8;
+            }
+            struct has_uneven_union s = return_struct_with_union();
+            if (s.i != -8765 || strcmp(s.u.arr, "done") != 0) {
+                return 9;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Function [exit]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── status
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Union [one_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d1
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [has_struct_with_double]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union_with_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 1
+            │               ╰── Double
+            ├── Union [one_int]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [one_int_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── oi
+            │   │   ╰── Type
+            │   │       ╰── Union [one_int]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── od
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [char_int_mixed]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 7
+            │   │           ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── union_ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ui
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Union [char_int_short]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Struct [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [char_int_short]
+            ├── Union [has_struct_with_ints]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [has_union]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ul
+            │       ╰── Type
+            │           ╰── Unsigned Long
+            ├── Union [two_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── single
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_xmm_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u2
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Struct [dbl_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [one_double]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [has_dbl_struct]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Union [char_arr]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 11
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_arrs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── dbl_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── long_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Long
+            ├── Union [two_eightbyte_has_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member1
+            │       ╰── Type
+            │           ╰── Struct [dbl_struct]
+            ├── Struct [char_first_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [int_second_eightbyte]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [two_structs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Struct [char_first_eightbyte]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Struct [nine_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Union [has_nine_byte_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Struct [nine_bytes]
+            ├── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 5
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── uc
+            │       ╰── Type
+            │           ╰── Unsigned Char
+            ├── Struct [has_uneven_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Union [uneven]
+            ├── Union [has_other_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [uneven]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Union [two_doubles]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── n
+            │       ╰── Type
+            │           ╰── Union [has_nine_byte_struct]
+            ├── Union [union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [one_int]
+            ├── Union [uneven_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [uneven]
+            ├── Struct [small]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── sc
+            │       ╰── Type
+            │           ╰── Signed Char
+            ├── Union [has_small_struct_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Struct [small]
+            ├── Union [gp_and_xmm]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Union [scalar_and_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── cfe
+            │       ╰── Type
+            │           ╰── Struct [char_first_eightbyte]
+            ├── Struct [has_two_unions]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [char_int_mixed]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── member2
+            │       ╰── Type
+            │           ╰── Union [one_double]
+            ├── Union [small_struct_arr_and_dbl]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Struct [small]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ise
+            │       ╰── Type
+            │           ╰── Struct [int_second_eightbyte]
+            ├── Union [xmm_and_gp_nested]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── member1
+            │   │   ╰── Type
+            │   │       ╰── Union [xmm_and_gp]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Union [two_doubles]
+            ├── Union [lotsa_doubles]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [lotsa_chars]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── more_chars
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 18
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── fewer_chars
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 5
+            │               ╰── Char
+            ├── Struct [large]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 10
+            │               ╰── Char
+            ├── Union [contains_large_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ul
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Struct [large]
+            ├── Union [contains_union_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_one_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_double]
+            ├── Function [test_has_union_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union_with_double]
+            ├── Function [test_has_struct_with_double]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_double]
+            ├── Function [test_one_int]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [test_one_int_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [test_char_int_mixed]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_int_mixed]
+            ├── Function [test_has_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [test_has_struct_with_ints]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_struct_with_ints]
+            ├── Function [test_two_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [test_has_xmm_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_xmm_union]
+            ├── Function [test_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [dbl_struct]
+            ├── Function [test_has_dbl_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_dbl_struct]
+            ├── Function [test_char_arr]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [test_two_arrs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_arrs]
+            ├── Function [test_two_eightbyte_has_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_eightbyte_has_struct]
+            ├── Function [test_two_structs]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [two_structs]
+            ├── Function [test_has_nine_byte_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_nine_byte_struct]
+            ├── Function [test_has_uneven_union]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_uneven_union]
+            ├── Function [test_has_other_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_other_unions]
+            ├── Function [test_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [union_array]
+            ├── Function [test_uneven_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [uneven_union_array]
+            ├── Function [test_has_small_struct_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [has_small_struct_array]
+            ├── Function [test_gp_and_xmm]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [test_scalar_and_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [scalar_and_struct]
+            ├── Function [test_has_two_unions]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Struct [has_two_unions]
+            ├── Function [test_small_struct_arr_and_dbl]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [small_struct_arr_and_dbl]
+            ├── Function [test_xmm_and_gp]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp]
+            ├── Function [test_xmm_and_gp_nested]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [xmm_and_gp_nested]
+            ├── Function [test_lotsa_doubles]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_doubles]
+            ├── Function [test_lotsa_chars]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [lotsa_chars]
+            ├── Function [test_contains_large_struct]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_large_struct]
+            ├── Function [test_contains_union_array]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── u
+            │           ╰── Type
+            │               ╰── Union [contains_union_array]
+            ├── Function [pass_unions_and_structs]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── i5
+            │           ╰── Type
+            │               ╰── Int
+            ├── Function [pass_gp_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp_struct
+            │       │   ╰── Type
+            │       │       ╰── Struct [has_union]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp
+            │           ╰── Type
+            │               ╰── Union [one_int]
+            ├── Function [pass_xmm_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm_copy
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_borderline_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_gp
+            │           ╰── Type
+            │               ╰── Union [char_arr]
+            ├── Function [pass_borderline_xmm_union]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_xmm
+            │       │   ╰── Type
+            │       │       ╰── Union [two_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d5
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── two_xmm_2
+            │           ╰── Type
+            │               ╰── Union [two_doubles]
+            ├── Function [pass_mixed_reg_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d1
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d2
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d3
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── d4
+            │       │   ╰── Type
+            │       │       ╰── Double
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i6
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── mixed_regs
+            │           ╰── Type
+            │               ╰── Union [gp_and_xmm]
+            ├── Function [pass_uneven_union_in_memory]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i3
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i4
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i5
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── one_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [one_int]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── uneven
+            │           ╰── Type
+            │               ╰── Union [uneven]
+            ├── Function [pass_in_mem_first]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mem
+            │       │   ╰── Type
+            │       │       ╰── Union [lotsa_doubles]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── mixed_regs
+            │       │   ╰── Type
+            │       │       ╰── Union [gp_and_xmm]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_gp
+            │       │   ╰── Type
+            │       │       ╰── Union [char_arr]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── one_gp_struct
+            │           ╰── Type
+            │               ╰── Struct [has_union]
+            ├── Function [return_one_double]
+            ├── Function [return_one_int_nested]
+            ├── Function [return_has_dbl_struct]
+            ├── Function [return_two_arrs]
+            ├── Function [return_scalar_and_struct]
+            ├── Function [return_xmm_and_gp]
+            ├── Function [return_contains_union_array]
+            ├── Function [pass_params_and_return_in_mem]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i1
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── int_and_dbl
+            │       │   ╰── Type
+            │       │       ╰── Union [scalar_and_struct]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── two_arrs
+            │       │   ╰── Type
+            │       │       ╰── Union [two_arrs]
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── i2
+            │       │   ╰── Type
+            │       │       ╰── Int
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── big_union
+            │       │   ╰── Type
+            │       │       ╰── Union [contains_union_array]
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── oin
+            │           ╰── Type
+            │               ╰── Union [one_int_nested]
+            ├── Function [return_struct_with_union]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── od
+                    │   ├── Type
+                    │   │   ╰── Union [one_double]
+                    │   ╰── Initializer
+                    │       ╰── <1196> FunctionCall [return_one_double]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1217> Unary [!]
+                    │   │       ╰── <1216>  [&&]
+                    │   │           ├── <1206>  [==]
+                    │   │           │   ├── <1203> Dot
+                    │   │           │   │   ├── <1201> Var [od]
+                    │   │           │   │   ╰── d1
+                    │   │           │   ╰── <1205> Constant Double [+2.455e2]
+                    │   │           ╰── <1214>  [==]
+                    │   │               ├── <1211> Dot
+                    │   │               │   ├── <1209> Var [od]
+                    │   │               │   ╰── d2
+                    │   │               ╰── <1213> Constant Double [+2.455e2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1218> Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── oin
+                    │   ├── Type
+                    │   │   ╰── Union [one_int_nested]
+                    │   ╰── Initializer
+                    │       ╰── <1228> FunctionCall [return_one_int_nested]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1241>  [!=]
+                    │   │       ├── <1236> Dot
+                    │   │       │   ├── <1234> Dot
+                    │   │       │   │   ├── <1232> Var [oin]
+                    │   │       │   │   ╰── oi
+                    │   │       │   ╰── d
+                    │   │       ╰── <1240> Unary [-]
+                    │   │           ╰── <1239> Constant Double [+9.8765e3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1242> Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── two_xmm
+                    │   ├── Type
+                    │   │   ╰── Union [has_dbl_struct]
+                    │   ╰── Initializer
+                    │       ╰── <1252> FunctionCall [return_has_dbl_struct]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1279> Unary [!]
+                    │   │       ╰── <1278>  [&&]
+                    │   │           ├── <1266>  [==]
+                    │   │           │   ├── <1263> Dot
+                    │   │           │   │   ├── <1261> Dot
+                    │   │           │   │   │   ├── <1259> Dot
+                    │   │           │   │   │   │   ├── <1257> Var [two_xmm]
+                    │   │           │   │   │   │   ╰── member1
+                    │   │           │   │   │   ╰── member1
+                    │   │           │   │   ╰── d1
+                    │   │           │   ╰── <1265> Constant Double [+1.2345e3]
+                    │   │           ╰── <1276>  [==]
+                    │   │               ├── <1273> Dot
+                    │   │               │   ├── <1271> Dot
+                    │   │               │   │   ├── <1269> Var [two_xmm]
+                    │   │               │   │   ╰── member1
+                    │   │               │   ╰── member2
+                    │   │               ╰── <1275> Constant Double [+6.789e3]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1280> Constant Int [3]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── two_arrs
+                    │   ├── Type
+                    │   │   ╰── Union [two_arrs]
+                    │   ╰── Initializer
+                    │       ╰── <1290> FunctionCall [return_two_arrs]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1314>  [||]
+                    │   │       ├── <1301>  [!=]
+                    │   │       │   ├── <1298> Subscript
+                    │   │       │   │   ├── <1296> Dot
+                    │   │       │   │   │   ├── <1294> Var [two_arrs]
+                    │   │       │   │   │   ╰── dbl_arr
+                    │   │       │   │   ╰── <1297> Constant Int [0]
+                    │   │       │   ╰── <1300> Constant Double [+6.675e1]
+                    │   │       ╰── <1313>  [!=]
+                    │   │           ├── <1308> Subscript
+                    │   │           │   ├── <1306> Dot
+                    │   │           │   │   ├── <1304> Var [two_arrs]
+                    │   │           │   │   ╰── long_arr
+                    │   │           │   ╰── <1307> Constant Int [1]
+                    │   │           ╰── <1312> Unary [-]
+                    │   │               ╰── <1311> Constant Long [4294967300]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1315> Constant Int [4]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── int_and_dbl
+                    │   ├── Type
+                    │   │   ╰── Union [scalar_and_struct]
+                    │   ╰── Initializer
+                    │       ╰── <1325> FunctionCall [return_scalar_and_struct]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1349>  [||]
+                    │   │       ├── <1338>  [!=]
+                    │   │       │   ├── <1333> Dot
+                    │   │       │   │   ├── <1331> Dot
+                    │   │       │   │   │   ├── <1329> Var [int_and_dbl]
+                    │   │       │   │   │   ╰── cfe
+                    │   │       │   │   ╰── c
+                    │   │       │   ╰── <1337> Unary [-]
+                    │   │       │       ╰── <1336> Constant Int [115]
+                    │   │       ╰── <1348>  [!=]
+                    │   │           ├── <1345> Dot
+                    │   │           │   ├── <1343> Dot
+                    │   │           │   │   ├── <1341> Var [int_and_dbl]
+                    │   │           │   │   ╰── cfe
+                    │   │           │   ╰── d
+                    │   │           ╰── <1347> Constant Double [+2.2222225e5]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1350> Constant Int [5]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── dbl_and_int
+                    │   ├── Type
+                    │   │   ╰── Union [xmm_and_gp]
+                    │   ╰── Initializer
+                    │       ╰── <1360> FunctionCall [return_xmm_and_gp]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1397>  [||]
+                    │   │       ├── <1384>  [||]
+                    │   │       │   ├── <1371>  [!=]
+                    │   │       │   │   ├── <1366> Dot
+                    │   │       │   │   │   ├── <1364> Var [dbl_and_int]
+                    │   │       │   │   │   ╰── d
+                    │   │       │   │   ╰── <1370> Unary [-]
+                    │   │       │   │       ╰── <1369> Constant Double [+5.0000125e4]
+                    │   │       │   ╰── <1383>  [!=]
+                    │   │       │       ├── <1378> Dot
+                    │   │       │       │   ├── <1376> Dot
+                    │   │       │       │   │   ├── <1374> Var [dbl_and_int]
+                    │   │       │       │   │   ╰── ise
+                    │   │       │       │   ╰── d
+                    │   │       │       ╰── <1382> Unary [-]
+                    │   │       │           ╰── <1381> Constant Double [+5.0000125e4]
+                    │   │       ╰── <1396>  [!=]
+                    │   │           ├── <1391> Dot
+                    │   │           │   ├── <1389> Dot
+                    │   │           │   │   ├── <1387> Var [dbl_and_int]
+                    │   │           │   │   ╰── ise
+                    │   │           │   ╰── i
+                    │   │           ╰── <1395> Unary [-]
+                    │   │               ╰── <1394> Constant Int [3000]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1398> Constant Int [6]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── big_union
+                    │   ├── Type
+                    │   │   ╰── Union [contains_union_array]
+                    │   ╰── Initializer
+                    │       ╰── <1408> FunctionCall [return_contains_union_array]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1475> Unary [!]
+                    │   │       ╰── <1474>  [&&]
+                    │   │           ├── <1458>  [&&]
+                    │   │           │   ├── <1443>  [&&]
+                    │   │           │   │   ├── <1426>  [==]
+                    │   │           │   │   │   ├── <1421> Subscript
+                    │   │           │   │   │   │   ├── <1419> Dot
+                    │   │           │   │   │   │   │   ├── <1417> Subscript
+                    │   │           │   │   │   │   │   │   ├── <1415> Dot
+                    │   │           │   │   │   │   │   │   │   ├── <1413> Var [big_union]
+                    │   │           │   │   │   │   │   │   │   ╰── arr
+                    │   │           │   │   │   │   │   │   ╰── <1416> Constant Int [0]
+                    │   │           │   │   │   │   │   ╰── d_arr
+                    │   │           │   │   │   │   ╰── <1420> Constant Int [0]
+                    │   │           │   │   │   ╰── <1425> Unary [-]
+                    │   │           │   │   │       ╰── <1424> Constant Double [+2e-1]
+                    │   │           │   │   ╰── <1442>  [==]
+                    │   │           │   │       ├── <1437> Subscript
+                    │   │           │   │       │   ├── <1435> Dot
+                    │   │           │   │       │   │   ├── <1433> Subscript
+                    │   │           │   │       │   │   │   ├── <1431> Dot
+                    │   │           │   │       │   │   │   │   ├── <1429> Var [big_union]
+                    │   │           │   │       │   │   │   │   ╰── arr
+                    │   │           │   │       │   │   │   ╰── <1432> Constant Int [0]
+                    │   │           │   │       │   │   ╰── d_arr
+                    │   │           │   │       │   ╰── <1436> Constant Int [1]
+                    │   │           │   │       ╰── <1441> Unary [-]
+                    │   │           │   │           ╰── <1440> Constant Double [+3e-1]
+                    │   │           │   ╰── <1457>  [==]
+                    │   │           │       ├── <1454> Subscript
+                    │   │           │       │   ├── <1452> Dot
+                    │   │           │       │   │   ├── <1450> Subscript
+                    │   │           │       │   │   │   ├── <1448> Dot
+                    │   │           │       │   │   │   │   ├── <1446> Var [big_union]
+                    │   │           │       │   │   │   │   ╰── arr
+                    │   │           │       │   │   │   ╰── <1449> Constant Int [1]
+                    │   │           │       │   │   ╰── d_arr
+                    │   │           │       │   ╰── <1453> Constant Int [0]
+                    │   │           │       ╰── <1456> Constant Double [+2e14]
+                    │   │           ╰── <1472>  [==]
+                    │   │               ├── <1469> Subscript
+                    │   │               │   ├── <1467> Dot
+                    │   │               │   │   ├── <1465> Subscript
+                    │   │               │   │   │   ├── <1463> Dot
+                    │   │               │   │   │   │   ├── <1461> Var [big_union]
+                    │   │               │   │   │   │   ╰── arr
+                    │   │               │   │   │   ╰── <1464> Constant Int [1]
+                    │   │               │   │   ╰── d_arr
+                    │   │               │   ╰── <1468> Constant Int [1]
+                    │   │               ╰── <1471> Constant Double [+5e14]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1476> Constant Int [7]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── chars_union
+                    │   ├── Type
+                    │   │   ╰── Union [lotsa_chars]
+                    │   ╰── Initializer
+                    │       ╰── <1496> FunctionCall [pass_params_and_return_in_mem]
+                    │           ├── <1486> Constant Int [1]
+                    │           ├── <1488> Var [int_and_dbl]
+                    │           ├── <1490> Var [two_arrs]
+                    │           ├── <1491> Constant Int [25]
+                    │           ├── <1493> Var [big_union]
+                    │           ╰── <1495> Var [oin]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1508>  [!=]
+                    │   │       ├── <1505> FunctionCall [strcmp]
+                    │   │       │   ├── <1503> Dot
+                    │   │       │   │   ├── <1501> Var [chars_union]
+                    │   │       │   │   ╰── more_chars
+                    │   │       │   ╰── <1504> "ABCDEFGHIJKLMNOPQ"
+                    │   │       ╰── <1507> Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1509> Constant Int [8]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── s
+                    │   ├── Type
+                    │   │   ╰── Struct [has_uneven_union]
+                    │   ╰── Initializer
+                    │       ╰── <1519> FunctionCall [return_struct_with_union]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1544>  [||]
+                    │   │       ├── <1530>  [!=]
+                    │   │       │   ├── <1525> Dot
+                    │   │       │   │   ├── <1523> Var [s]
+                    │   │       │   │   ╰── i
+                    │   │       │   ╰── <1529> Unary [-]
+                    │   │       │       ╰── <1528> Constant Int [8765]
+                    │   │       ╰── <1543>  [!=]
+                    │   │           ├── <1540> FunctionCall [strcmp]
+                    │   │           │   ├── <1538> Dot
+                    │   │           │   │   ├── <1536> Dot
+                    │   │           │   │   │   ├── <1534> Var [s]
+                    │   │           │   │   │   ╰── u
+                    │   │           │   │   ╰── arr
+                    │   │           │   ╰── <1539> "done"
+                    │   │           ╰── <1542> Constant Int [0]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1545> Constant Int [9]
+                    ╰── Return
+                        ╰── <1550> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_member_access_nested_union_access() {
+    let src = r#"
+        void *calloc(unsigned long nmemb, unsigned long size);
+        void *malloc(unsigned long size);
+        union simple {
+            int i;
+            long l;
+            char c;
+            unsigned char uc_arr[3];
+        };
+        union has_union {
+            double d;
+            union simple u;
+            union simple *u_ptr;
+        };
+        struct simple_struct {
+            long l;
+            double d;
+            unsigned int u;
+        };
+        union has_struct {
+            long l;
+            struct simple_struct s;
+        };
+        struct struct_with_union {
+            union simple u;
+            unsigned long ul;
+        };
+        union complex_union {
+            double d_arr[2];
+            struct struct_with_union s;
+            union has_union *u_ptr;
+        };
+        
+        int test_auto_dot(void) {
+            union has_union x;
+            x.u.l = 200000u;
+            if (x.u.i != 200000) {
+                return 0;
+            }
+            union has_struct y;
+            y.s.l = -5555l;
+            y.s.d = 10.0;
+            y.s.u = 100;
+            if (y.l != -5555l) {
+                return 0;
+            }
+            union complex_union z;
+            z.s.u.i = 12345;
+            z.s.ul = 0;
+            if (z.s.u.c != 57) {
+                return 0;
+            }
+            if (z.d_arr[1]) {
+                return 0;
+            }
+            unsigned int *some_int_ptr = &y.s.u;
+            union simple *some_union_ptr = &z.s.u;
+            if (*some_int_ptr != 100 || (*some_union_ptr).i != 12345) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_static_dot(void) {
+            static union has_union x;
+            x.u.l = 200000u;
+            if (x.u.i != 200000) {
+                return 0;
+            }
+            static union has_struct y;
+            y.s.l = -5555l;
+            y.s.d = 10.0;
+            y.s.u = 100;
+            if (y.l != -5555l) {
+                return 0;
+            }
+            static union complex_union z;
+            z.s.u.i = 12345;
+            z.s.ul = 0;
+            if (z.s.u.c != 57) {
+                return 0;
+            }
+            if (z.d_arr[1]) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_auto_arrow(void) {
+            union simple inner = {100};
+            union has_union outer;
+            union has_union *outer_ptr = &outer;
+            outer_ptr->u_ptr = &inner;
+            if (outer_ptr->u_ptr->i != 100) {
+                return 0;
+            }
+            outer_ptr->u_ptr->l = -10;
+            if (outer_ptr->u_ptr->c != -10 || outer_ptr->u_ptr->i != -10 || outer_ptr->u_ptr->l != -10) {
+                return 0;
+            }
+            if (outer_ptr->u_ptr->uc_arr[0] != 246 || outer_ptr->u_ptr->uc_arr[1] != 255 || outer_ptr->u_ptr->uc_arr[2] != 255) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_static_arrow(void) {
+            static union simple inner = {100};
+            static union has_union outer;
+            static union has_union *outer_ptr;
+            outer_ptr = &outer;
+            outer_ptr->u_ptr = &inner;
+            if (outer_ptr->u_ptr->i != 100) {
+                return 0;
+            }
+            outer_ptr->u_ptr->l = -10;
+            if (outer_ptr->u_ptr->c != -10 || outer_ptr->u_ptr->i != -10 || outer_ptr->u_ptr->l != -10) {
+                return 0;
+            }
+            if (outer_ptr->u_ptr->uc_arr[0] != 246 || outer_ptr->u_ptr->uc_arr[1] != 255 || outer_ptr->u_ptr->uc_arr[2] != 255) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_array_of_unions(void) {
+            union has_union arr[3];
+            arr[0].u.l = -10000;
+            arr[1].u.i = 200;
+            arr[2].u.c = -120;
+            if (arr[0].u.l != -10000 || arr[1].u.c != -56 || arr[2].u.uc_arr[0] != 136) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_array_of_union_pointers(void) {
+            union has_union *ptr_arr[3];
+            for (int i = 0; i < 3; i = i + 1) {
+                ptr_arr[i] = calloc(1, sizeof(union has_union));
+                ptr_arr[i]->u_ptr = calloc(1, sizeof (union simple));
+                ptr_arr[i]->u_ptr->l = i;
+            }
+            if (ptr_arr[0]->u_ptr->l != 0 || ptr_arr[1]->u_ptr->l != 1 || ptr_arr[2]->u_ptr->l != 2) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_auto_dot()) {
+                return 1;
+            }
+            if (!test_static_dot()) {
+                return 2;
+            }
+            if (!test_auto_arrow()) {
+                return 3;
+            }
+            if (!test_static_arrow()) {
+                return 4;
+            }
+            if (!test_array_of_unions()) {
+                return 5;
+            }
+            if (!test_array_of_union_pointers()) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [calloc]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── nmemb
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Long
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Union [simple]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── uc_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Unsigned Char
+            ├── Union [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [simple]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_ptr
+            │       ╰── Type
+            │           ╰── Pointer
+            │               ╰── Union [simple]
+            ├── Struct [simple_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Union [has_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Struct [simple_struct]
+            ├── Struct [struct_with_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [simple]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ul
+            │       ╰── Type
+            │           ╰── Unsigned Long
+            ├── Union [complex_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [struct_with_union]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_ptr
+            │       ╰── Type
+            │           ╰── Pointer
+            │               ╰── Union [has_union]
+            ├── Function [test_auto_dot]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ╰── Type
+            │       │       ╰── Union [has_union]
+            │       ├── <140> Assign [=]
+            │       │   ├── <137> Dot
+            │       │   │   ├── <135> Dot
+            │       │   │   │   ├── <133> Var [x]
+            │       │   │   │   ╰── u
+            │       │   │   ╰── l
+            │       │   ╰── <139> Constant UInt [200000]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <150>  [!=]
+            │       │   │       ├── <147> Dot
+            │       │   │       │   ├── <145> Dot
+            │       │   │       │   │   ├── <143> Var [x]
+            │       │   │       │   │   ╰── u
+            │       │   │       │   ╰── i
+            │       │   │       ╰── <149> Constant Int [200000]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <151> Constant Int [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── y
+            │       │   ╰── Type
+            │       │       ╰── Union [has_struct]
+            │       ├── <171> Assign [=]
+            │       │   ├── <166> Dot
+            │       │   │   ├── <164> Dot
+            │       │   │   │   ├── <162> Var [y]
+            │       │   │   │   ╰── s
+            │       │   │   ╰── l
+            │       │   ╰── <170> Unary [-]
+            │       │       ╰── <169> Constant Long [5555]
+            │       ├── <181> Assign [=]
+            │       │   ├── <178> Dot
+            │       │   │   ├── <176> Dot
+            │       │   │   │   ├── <174> Var [y]
+            │       │   │   │   ╰── s
+            │       │   │   ╰── d
+            │       │   ╰── <180> Constant Double [+1e1]
+            │       ├── <191> Assign [=]
+            │       │   ├── <188> Dot
+            │       │   │   ├── <186> Dot
+            │       │   │   │   ├── <184> Var [y]
+            │       │   │   │   ╰── s
+            │       │   │   ╰── u
+            │       │   ╰── <190> Constant Int [100]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <201>  [!=]
+            │       │   │       ├── <196> Dot
+            │       │   │       │   ├── <194> Var [y]
+            │       │   │       │   ╰── l
+            │       │   │       ╰── <200> Unary [-]
+            │       │   │           ╰── <199> Constant Long [5555]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <202> Constant Int [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── z
+            │       │   ╰── Type
+            │       │       ╰── Union [complex_union]
+            │       ├── <222> Assign [=]
+            │       │   ├── <219> Dot
+            │       │   │   ├── <217> Dot
+            │       │   │   │   ├── <215> Dot
+            │       │   │   │   │   ├── <213> Var [z]
+            │       │   │   │   │   ╰── s
+            │       │   │   │   ╰── u
+            │       │   │   ╰── i
+            │       │   ╰── <221> Constant Int [12345]
+            │       ├── <232> Assign [=]
+            │       │   ├── <229> Dot
+            │       │   │   ├── <227> Dot
+            │       │   │   │   ├── <225> Var [z]
+            │       │   │   │   ╰── s
+            │       │   │   ╰── ul
+            │       │   ╰── <231> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <244>  [!=]
+            │       │   │       ├── <241> Dot
+            │       │   │       │   ├── <239> Dot
+            │       │   │       │   │   ├── <237> Dot
+            │       │   │       │   │   │   ├── <235> Var [z]
+            │       │   │       │   │   │   ╰── s
+            │       │   │       │   │   ╰── u
+            │       │   │       │   ╰── c
+            │       │   │       ╰── <243> Constant Int [57]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <245> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <255> Subscript
+            │       │   │       ├── <253> Dot
+            │       │   │       │   ├── <251> Var [z]
+            │       │   │       │   ╰── d_arr
+            │       │   │       ╰── <254> Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <256> Constant Int [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── some_int_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Unsigned Int
+            │       │   ╰── Initializer
+            │       │       ╰── <272> AddressOf
+            │       │           ╰── <271> Dot
+            │       │               ├── <269> Dot
+            │       │               │   ├── <267> Var [y]
+            │       │               │   ╰── s
+            │       │               ╰── u
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── some_union_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Union [simple]
+            │       │   ╰── Initializer
+            │       │       ╰── <287> AddressOf
+            │       │           ╰── <286> Dot
+            │       │               ├── <284> Dot
+            │       │               │   ├── <282> Var [z]
+            │       │               │   ╰── s
+            │       │               ╰── u
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <306>  [||]
+            │       │   │       ├── <295>  [!=]
+            │       │   │       │   ├── <292> Dereference
+            │       │   │       │   │   ╰── <291> Var [some_int_ptr]
+            │       │   │       │   ╰── <294> Constant Int [100]
+            │       │   │       ╰── <305>  [!=]
+            │       │   │           ├── <302> Dot
+            │       │   │           │   ├── <300> Dereference
+            │       │   │           │   │   ╰── <298> Var [some_union_ptr]
+            │       │   │           │   ╰── i
+            │       │   │           ╰── <304> Constant Int [12345]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <307> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <312> Constant Int [1]
+            ├── Function [test_static_dot]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Union [has_union]
+            │       │   ╰── Static
+            │       ├── <335> Assign [=]
+            │       │   ├── <332> Dot
+            │       │   │   ├── <330> Dot
+            │       │   │   │   ├── <328> Var [x]
+            │       │   │   │   ╰── u
+            │       │   │   ╰── l
+            │       │   ╰── <334> Constant UInt [200000]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <345>  [!=]
+            │       │   │       ├── <342> Dot
+            │       │   │       │   ├── <340> Dot
+            │       │   │       │   │   ├── <338> Var [x]
+            │       │   │       │   │   ╰── u
+            │       │   │       │   ╰── i
+            │       │   │       ╰── <344> Constant Int [200000]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <346> Constant Int [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── y
+            │       │   ├── Type
+            │       │   │   ╰── Union [has_struct]
+            │       │   ╰── Static
+            │       ├── <367> Assign [=]
+            │       │   ├── <362> Dot
+            │       │   │   ├── <360> Dot
+            │       │   │   │   ├── <358> Var [y]
+            │       │   │   │   ╰── s
+            │       │   │   ╰── l
+            │       │   ╰── <366> Unary [-]
+            │       │       ╰── <365> Constant Long [5555]
+            │       ├── <377> Assign [=]
+            │       │   ├── <374> Dot
+            │       │   │   ├── <372> Dot
+            │       │   │   │   ├── <370> Var [y]
+            │       │   │   │   ╰── s
+            │       │   │   ╰── d
+            │       │   ╰── <376> Constant Double [+1e1]
+            │       ├── <387> Assign [=]
+            │       │   ├── <384> Dot
+            │       │   │   ├── <382> Dot
+            │       │   │   │   ├── <380> Var [y]
+            │       │   │   │   ╰── s
+            │       │   │   ╰── u
+            │       │   ╰── <386> Constant Int [100]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <397>  [!=]
+            │       │   │       ├── <392> Dot
+            │       │   │       │   ├── <390> Var [y]
+            │       │   │       │   ╰── l
+            │       │   │       ╰── <396> Unary [-]
+            │       │   │           ╰── <395> Constant Long [5555]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <398> Constant Int [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── z
+            │       │   ├── Type
+            │       │   │   ╰── Union [complex_union]
+            │       │   ╰── Static
+            │       ├── <419> Assign [=]
+            │       │   ├── <416> Dot
+            │       │   │   ├── <414> Dot
+            │       │   │   │   ├── <412> Dot
+            │       │   │   │   │   ├── <410> Var [z]
+            │       │   │   │   │   ╰── s
+            │       │   │   │   ╰── u
+            │       │   │   ╰── i
+            │       │   ╰── <418> Constant Int [12345]
+            │       ├── <429> Assign [=]
+            │       │   ├── <426> Dot
+            │       │   │   ├── <424> Dot
+            │       │   │   │   ├── <422> Var [z]
+            │       │   │   │   ╰── s
+            │       │   │   ╰── ul
+            │       │   ╰── <428> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <441>  [!=]
+            │       │   │       ├── <438> Dot
+            │       │   │       │   ├── <436> Dot
+            │       │   │       │   │   ├── <434> Dot
+            │       │   │       │   │   │   ├── <432> Var [z]
+            │       │   │       │   │   │   ╰── s
+            │       │   │       │   │   ╰── u
+            │       │   │       │   ╰── c
+            │       │   │       ╰── <440> Constant Int [57]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <442> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <452> Subscript
+            │       │   │       ├── <450> Dot
+            │       │   │       │   ├── <448> Var [z]
+            │       │   │       │   ╰── d_arr
+            │       │   │       ╰── <451> Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <453> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <458> Constant Int [1]
+            ├── Function [test_auto_arrow]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── inner
+            │       │   ├── Type
+            │       │   │   ╰── Union [simple]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <471> Constant Int [100]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── outer
+            │       │   ╰── Type
+            │       │       ╰── Union [has_union]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── outer_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Union [has_union]
+            │       │   ╰── Initializer
+            │       │       ╰── <488> AddressOf
+            │       │           ╰── <487> Var [outer]
+            │       ├── <499> Assign [=]
+            │       │   ├── <494> Arrow
+            │       │   │   ├── <492> Var [outer_ptr]
+            │       │   │   ╰── u_ptr
+            │       │   ╰── <498> AddressOf
+            │       │       ╰── <497> Var [inner]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <509>  [!=]
+            │       │   │       ├── <506> Arrow
+            │       │   │       │   ├── <504> Arrow
+            │       │   │       │   │   ├── <502> Var [outer_ptr]
+            │       │   │       │   │   ╰── u_ptr
+            │       │   │       │   ╰── i
+            │       │   │       ╰── <508> Constant Int [100]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <510> Constant Int [0]
+            │       ├── <525> Assign [=]
+            │       │   ├── <520> Arrow
+            │       │   │   ├── <518> Arrow
+            │       │   │   │   ├── <516> Var [outer_ptr]
+            │       │   │   │   ╰── u_ptr
+            │       │   │   ╰── l
+            │       │   ╰── <524> Unary [-]
+            │       │       ╰── <523> Constant Int [10]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <563>  [||]
+            │       │   │       ├── <550>  [||]
+            │       │   │       │   ├── <537>  [!=]
+            │       │   │       │   │   ├── <532> Arrow
+            │       │   │       │   │   │   ├── <530> Arrow
+            │       │   │       │   │   │   │   ├── <528> Var [outer_ptr]
+            │       │   │       │   │   │   │   ╰── u_ptr
+            │       │   │       │   │   │   ╰── c
+            │       │   │       │   │   ╰── <536> Unary [-]
+            │       │   │       │   │       ╰── <535> Constant Int [10]
+            │       │   │       │   ╰── <549>  [!=]
+            │       │   │       │       ├── <544> Arrow
+            │       │   │       │       │   ├── <542> Arrow
+            │       │   │       │       │   │   ├── <540> Var [outer_ptr]
+            │       │   │       │       │   │   ╰── u_ptr
+            │       │   │       │       │   ╰── i
+            │       │   │       │       ╰── <548> Unary [-]
+            │       │   │       │           ╰── <547> Constant Int [10]
+            │       │   │       ╰── <562>  [!=]
+            │       │   │           ├── <557> Arrow
+            │       │   │           │   ├── <555> Arrow
+            │       │   │           │   │   ├── <553> Var [outer_ptr]
+            │       │   │           │   │   ╰── u_ptr
+            │       │   │           │   ╰── l
+            │       │   │           ╰── <561> Unary [-]
+            │       │   │               ╰── <560> Constant Int [10]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <564> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <605>  [||]
+            │       │   │       ├── <592>  [||]
+            │       │   │       │   ├── <579>  [!=]
+            │       │   │       │   │   ├── <576> Subscript
+            │       │   │       │   │   │   ├── <574> Arrow
+            │       │   │       │   │   │   │   ├── <572> Arrow
+            │       │   │       │   │   │   │   │   ├── <570> Var [outer_ptr]
+            │       │   │       │   │   │   │   │   ╰── u_ptr
+            │       │   │       │   │   │   │   ╰── uc_arr
+            │       │   │       │   │   │   ╰── <575> Constant Int [0]
+            │       │   │       │   │   ╰── <578> Constant Int [246]
+            │       │   │       │   ╰── <591>  [!=]
+            │       │   │       │       ├── <588> Subscript
+            │       │   │       │       │   ├── <586> Arrow
+            │       │   │       │       │   │   ├── <584> Arrow
+            │       │   │       │       │   │   │   ├── <582> Var [outer_ptr]
+            │       │   │       │       │   │   │   ╰── u_ptr
+            │       │   │       │       │   │   ╰── uc_arr
+            │       │   │       │       │   ╰── <587> Constant Int [1]
+            │       │   │       │       ╰── <590> Constant Int [255]
+            │       │   │       ╰── <604>  [!=]
+            │       │   │           ├── <601> Subscript
+            │       │   │           │   ├── <599> Arrow
+            │       │   │           │   │   ├── <597> Arrow
+            │       │   │           │   │   │   ├── <595> Var [outer_ptr]
+            │       │   │           │   │   │   ╰── u_ptr
+            │       │   │           │   │   ╰── uc_arr
+            │       │   │           │   ╰── <600> Constant Int [2]
+            │       │   │           ╰── <603> Constant Int [255]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <606> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <611> Constant Int [1]
+            ├── Function [test_static_arrow]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── inner
+            │       │   ├── Type
+            │       │   │   ╰── Union [simple]
+            │       │   ├── Initializer
+            │       │   │   ╰── Compound
+            │       │   │       ╰── <625> Constant Int [100]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── outer
+            │       │   ├── Type
+            │       │   │   ╰── Union [has_union]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── outer_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Union [has_union]
+            │       │   ╰── Static
+            │       ├── <649> Assign [=]
+            │       │   ├── <644> Var [outer_ptr]
+            │       │   ╰── <648> AddressOf
+            │       │       ╰── <647> Var [outer]
+            │       ├── <659> Assign [=]
+            │       │   ├── <654> Arrow
+            │       │   │   ├── <652> Var [outer_ptr]
+            │       │   │   ╰── u_ptr
+            │       │   ╰── <658> AddressOf
+            │       │       ╰── <657> Var [inner]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <669>  [!=]
+            │       │   │       ├── <666> Arrow
+            │       │   │       │   ├── <664> Arrow
+            │       │   │       │   │   ├── <662> Var [outer_ptr]
+            │       │   │       │   │   ╰── u_ptr
+            │       │   │       │   ╰── i
+            │       │   │       ╰── <668> Constant Int [100]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <670> Constant Int [0]
+            │       ├── <685> Assign [=]
+            │       │   ├── <680> Arrow
+            │       │   │   ├── <678> Arrow
+            │       │   │   │   ├── <676> Var [outer_ptr]
+            │       │   │   │   ╰── u_ptr
+            │       │   │   ╰── l
+            │       │   ╰── <684> Unary [-]
+            │       │       ╰── <683> Constant Int [10]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <723>  [||]
+            │       │   │       ├── <710>  [||]
+            │       │   │       │   ├── <697>  [!=]
+            │       │   │       │   │   ├── <692> Arrow
+            │       │   │       │   │   │   ├── <690> Arrow
+            │       │   │       │   │   │   │   ├── <688> Var [outer_ptr]
+            │       │   │       │   │   │   │   ╰── u_ptr
+            │       │   │       │   │   │   ╰── c
+            │       │   │       │   │   ╰── <696> Unary [-]
+            │       │   │       │   │       ╰── <695> Constant Int [10]
+            │       │   │       │   ╰── <709>  [!=]
+            │       │   │       │       ├── <704> Arrow
+            │       │   │       │       │   ├── <702> Arrow
+            │       │   │       │       │   │   ├── <700> Var [outer_ptr]
+            │       │   │       │       │   │   ╰── u_ptr
+            │       │   │       │       │   ╰── i
+            │       │   │       │       ╰── <708> Unary [-]
+            │       │   │       │           ╰── <707> Constant Int [10]
+            │       │   │       ╰── <722>  [!=]
+            │       │   │           ├── <717> Arrow
+            │       │   │           │   ├── <715> Arrow
+            │       │   │           │   │   ├── <713> Var [outer_ptr]
+            │       │   │           │   │   ╰── u_ptr
+            │       │   │           │   ╰── l
+            │       │   │           ╰── <721> Unary [-]
+            │       │   │               ╰── <720> Constant Int [10]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <724> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <765>  [||]
+            │       │   │       ├── <752>  [||]
+            │       │   │       │   ├── <739>  [!=]
+            │       │   │       │   │   ├── <736> Subscript
+            │       │   │       │   │   │   ├── <734> Arrow
+            │       │   │       │   │   │   │   ├── <732> Arrow
+            │       │   │       │   │   │   │   │   ├── <730> Var [outer_ptr]
+            │       │   │       │   │   │   │   │   ╰── u_ptr
+            │       │   │       │   │   │   │   ╰── uc_arr
+            │       │   │       │   │   │   ╰── <735> Constant Int [0]
+            │       │   │       │   │   ╰── <738> Constant Int [246]
+            │       │   │       │   ╰── <751>  [!=]
+            │       │   │       │       ├── <748> Subscript
+            │       │   │       │       │   ├── <746> Arrow
+            │       │   │       │       │   │   ├── <744> Arrow
+            │       │   │       │       │   │   │   ├── <742> Var [outer_ptr]
+            │       │   │       │       │   │   │   ╰── u_ptr
+            │       │   │       │       │   │   ╰── uc_arr
+            │       │   │       │       │   ╰── <747> Constant Int [1]
+            │       │   │       │       ╰── <750> Constant Int [255]
+            │       │   │       ╰── <764>  [!=]
+            │       │   │           ├── <761> Subscript
+            │       │   │           │   ├── <759> Arrow
+            │       │   │           │   │   ├── <757> Arrow
+            │       │   │           │   │   │   ├── <755> Var [outer_ptr]
+            │       │   │           │   │   │   ╰── u_ptr
+            │       │   │           │   │   ╰── uc_arr
+            │       │   │           │   ╰── <760> Constant Int [2]
+            │       │   │           ╰── <763> Constant Int [255]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <766> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <771> Constant Int [1]
+            ├── Function [test_array_of_unions]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── arr
+            │       │   ╰── Type
+            │       │       ╰── Array
+            │       │           ├── 3
+            │       │           ╰── Union [has_union]
+            │       ├── <800> Assign [=]
+            │       │   ├── <795> Dot
+            │       │   │   ├── <793> Dot
+            │       │   │   │   ├── <791> Subscript
+            │       │   │   │   │   ├── <789> Var [arr]
+            │       │   │   │   │   ╰── <790> Constant Int [0]
+            │       │   │   │   ╰── u
+            │       │   │   ╰── l
+            │       │   ╰── <799> Unary [-]
+            │       │       ╰── <798> Constant Int [10000]
+            │       ├── <812> Assign [=]
+            │       │   ├── <809> Dot
+            │       │   │   ├── <807> Dot
+            │       │   │   │   ├── <805> Subscript
+            │       │   │   │   │   ├── <803> Var [arr]
+            │       │   │   │   │   ╰── <804> Constant Int [1]
+            │       │   │   │   ╰── u
+            │       │   │   ╰── i
+            │       │   ╰── <811> Constant Int [200]
+            │       ├── <826> Assign [=]
+            │       │   ├── <821> Dot
+            │       │   │   ├── <819> Dot
+            │       │   │   │   ├── <817> Subscript
+            │       │   │   │   │   ├── <815> Var [arr]
+            │       │   │   │   │   ╰── <816> Constant Int [2]
+            │       │   │   │   ╰── u
+            │       │   │   ╰── c
+            │       │   ╰── <825> Unary [-]
+            │       │       ╰── <824> Constant Int [120]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <870>  [||]
+            │       │   │       ├── <855>  [||]
+            │       │   │       │   ├── <840>  [!=]
+            │       │   │       │   │   ├── <835> Dot
+            │       │   │       │   │   │   ├── <833> Dot
+            │       │   │       │   │   │   │   ├── <831> Subscript
+            │       │   │       │   │   │   │   │   ├── <829> Var [arr]
+            │       │   │       │   │   │   │   │   ╰── <830> Constant Int [0]
+            │       │   │       │   │   │   │   ╰── u
+            │       │   │       │   │   │   ╰── l
+            │       │   │       │   │   ╰── <839> Unary [-]
+            │       │   │       │   │       ╰── <838> Constant Int [10000]
+            │       │   │       │   ╰── <854>  [!=]
+            │       │   │       │       ├── <849> Dot
+            │       │   │       │       │   ├── <847> Dot
+            │       │   │       │       │   │   ├── <845> Subscript
+            │       │   │       │       │   │   │   ├── <843> Var [arr]
+            │       │   │       │       │   │   │   ╰── <844> Constant Int [1]
+            │       │   │       │       │   │   ╰── u
+            │       │   │       │       │   ╰── c
+            │       │   │       │       ╰── <853> Unary [-]
+            │       │   │       │           ╰── <852> Constant Int [56]
+            │       │   │       ╰── <869>  [!=]
+            │       │   │           ├── <866> Subscript
+            │       │   │           │   ├── <864> Dot
+            │       │   │           │   │   ├── <862> Dot
+            │       │   │           │   │   │   ├── <860> Subscript
+            │       │   │           │   │   │   │   ├── <858> Var [arr]
+            │       │   │           │   │   │   │   ╰── <859> Constant Int [2]
+            │       │   │           │   │   │   ╰── u
+            │       │   │           │   │   ╰── uc_arr
+            │       │   │           │   ╰── <865> Constant Int [0]
+            │       │   │           ╰── <868> Constant Int [136]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <871> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <876> Constant Int [1]
+            ├── Function [test_array_of_union_pointers]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr_arr
+            │       │   ╰── Type
+            │       │       ╰── Array
+            │       │           ├── 3
+            │       │           ╰── Pointer
+            │       │               ╰── Union [has_union]
+            │       ├── For
+            │       │   ├── Init
+            │       │   │   ╰── VarDeclaration
+            │       │   │       ├── Name
+            │       │   │       │   ╰── i
+            │       │   │       ├── Type
+            │       │   │       │   ╰── Int
+            │       │   │       ╰── Initializer
+            │       │   │           ╰── <898> Constant Int [0]
+            │       │   ├── Condition
+            │       │   │   ╰── <906>  [<]
+            │       │   │       ├── <903> Var [i]
+            │       │   │       ╰── <905> Constant Int [3]
+            │       │   ├── Condition
+            │       │   │   ╰── <915> Assign [=]
+            │       │   │       ├── <908> Var [i]
+            │       │   │       ╰── <914>  [+]
+            │       │   │           ├── <911> Var [i]
+            │       │   │           ╰── <913> Constant Int [1]
+            │       │   ╰── Block
+            │       │       ├── <929> Assign [=]
+            │       │       │   ├── <920> Subscript
+            │       │       │   │   ├── <917> Var [ptr_arr]
+            │       │       │   │   ╰── <919> Var [i]
+            │       │       │   ╰── <928> FunctionCall [calloc]
+            │       │       │       ├── <923> Constant Int [1]
+            │       │       │       ╰── <927> SizeOfType
+            │       │       │           ╰── Union [has_union]
+            │       │       ├── <946> Assign [=]
+            │       │       │   ├── <937> Arrow
+            │       │       │   │   ├── <935> Subscript
+            │       │       │   │   │   ├── <932> Var [ptr_arr]
+            │       │       │   │   │   ╰── <934> Var [i]
+            │       │       │   │   ╰── u_ptr
+            │       │       │   ╰── <945> FunctionCall [calloc]
+            │       │       │       ├── <940> Constant Int [1]
+            │       │       │       ╰── <944> SizeOfType
+            │       │       │           ╰── Union [simple]
+            │       │       ╰── <960> Assign [=]
+            │       │           ├── <956> Arrow
+            │       │           │   ├── <954> Arrow
+            │       │           │   │   ├── <952> Subscript
+            │       │           │   │   │   ├── <949> Var [ptr_arr]
+            │       │           │   │   │   ╰── <951> Var [i]
+            │       │           │   │   ╰── u_ptr
+            │       │           │   ╰── l
+            │       │           ╰── <959> Var [i]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <1001>  [||]
+            │       │   │       ├── <988>  [||]
+            │       │   │       │   ├── <975>  [!=]
+            │       │   │       │   │   ├── <972> Arrow
+            │       │   │       │   │   │   ├── <970> Arrow
+            │       │   │       │   │   │   │   ├── <968> Subscript
+            │       │   │       │   │   │   │   │   ├── <966> Var [ptr_arr]
+            │       │   │       │   │   │   │   │   ╰── <967> Constant Int [0]
+            │       │   │       │   │   │   │   ╰── u_ptr
+            │       │   │       │   │   │   ╰── l
+            │       │   │       │   │   ╰── <974> Constant Int [0]
+            │       │   │       │   ╰── <987>  [!=]
+            │       │   │       │       ├── <984> Arrow
+            │       │   │       │       │   ├── <982> Arrow
+            │       │   │       │       │   │   ├── <980> Subscript
+            │       │   │       │       │   │   │   ├── <978> Var [ptr_arr]
+            │       │   │       │       │   │   │   ╰── <979> Constant Int [1]
+            │       │   │       │       │   │   ╰── u_ptr
+            │       │   │       │       │   ╰── l
+            │       │   │       │       ╰── <986> Constant Int [1]
+            │       │   │       ╰── <1000>  [!=]
+            │       │   │           ├── <997> Arrow
+            │       │   │           │   ├── <995> Arrow
+            │       │   │           │   │   ├── <993> Subscript
+            │       │   │           │   │   │   ├── <991> Var [ptr_arr]
+            │       │   │           │   │   │   ╰── <992> Constant Int [2]
+            │       │   │           │   │   ╰── u_ptr
+            │       │   │           │   ╰── l
+            │       │   │           ╰── <999> Constant Int [2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <1002> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <1007> Constant Int [1]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1019> Unary [!]
+                    │   │       ╰── <1018> FunctionCall [test_auto_dot]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1020> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1028> Unary [!]
+                    │   │       ╰── <1027> FunctionCall [test_static_dot]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1029> Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1037> Unary [!]
+                    │   │       ╰── <1036> FunctionCall [test_auto_arrow]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1038> Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1046> Unary [!]
+                    │   │       ╰── <1045> FunctionCall [test_static_arrow]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1047> Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1055> Unary [!]
+                    │   │       ╰── <1054> FunctionCall [test_array_of_unions]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1056> Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <1064> Unary [!]
+                    │   │       ╰── <1063> FunctionCall [test_array_of_union_pointers]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <1065> Constant Int [6]
+                    ╰── Return
+                        ╰── <1070> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_member_access_static_union_access() {
+    let src = r#"
+        
+        union u {
+            unsigned long l;
+            double d;
+            char arr[8];
+        };
+        static union u my_union = { 18446744073709551615UL };
+        static union u* union_ptr = 0;
+        int main(void) {
+            union_ptr = &my_union;
+            if (my_union.l != 18446744073709551615UL) {
+                return 1;
+            }
+            for (int i = 0; i < 8; i = i + 1) {
+                if (my_union.arr[i] != -1) {
+                    return 2;
+                }
+            }
+            union_ptr->d = -1.0;
+            if (union_ptr->l != 13830554455654793216ul) {
+                return 3;
+            }
+            for (int i = 0; i < 6; i = i + 1) {
+                if (my_union.arr[i]) {
+                    return 4;
+                }
+            }
+            if (union_ptr->arr[6] != -16) {
+                return 5;
+            }
+            if (union_ptr->arr[7] != -65) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 8
+            │               ╰── Char
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── my_union
+            │   ├── Type
+            │   │   ╰── Union [u]
+            │   ├── Initializer
+            │   │   ╰── Compound
+            │   │       ╰── <23> Constant ULong [18446744073709551615]
+            │   ╰── Static
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── union_ptr
+            │   ├── Type
+            │   │   ╰── Pointer
+            │   │       ╰── Union [u]
+            │   ├── Initializer
+            │   │   ╰── <34> Constant Int [0]
+            │   ╰── Static
+            ╰── Function [main]
+                ╰── Body
+                    ├── <48> Assign [=]
+                    │   ├── <43> Var [union_ptr]
+                    │   ╰── <47> AddressOf
+                    │       ╰── <46> Var [my_union]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <56>  [!=]
+                    │   │       ├── <53> Dot
+                    │   │       │   ├── <51> Var [my_union]
+                    │   │       │   ╰── l
+                    │   │       ╰── <55> Constant ULong [18446744073709551615]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <57> Constant Int [1]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── <65> Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── <73>  [<]
+                    │   │       ├── <70> Var [i]
+                    │   │       ╰── <72> Constant Int [8]
+                    │   ├── Condition
+                    │   │   ╰── <82> Assign [=]
+                    │   │       ├── <75> Var [i]
+                    │   │       ╰── <81>  [+]
+                    │   │           ├── <78> Var [i]
+                    │   │           ╰── <80> Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── If
+                    │           ├── Condition
+                    │           │   ╰── <94>  [!=]
+                    │           │       ├── <89> Subscript
+                    │           │       │   ├── <86> Dot
+                    │           │       │   │   ├── <84> Var [my_union]
+                    │           │       │   │   ╰── arr
+                    │           │       │   ╰── <88> Var [i]
+                    │           │       ╰── <93> Unary [-]
+                    │           │           ╰── <92> Constant Int [1]
+                    │           ╰── Then
+                    │               ╰── Block
+                    │                   ╰── Return
+                    │                       ╰── <95> Constant Int [2]
+                    ├── <111> Assign [=]
+                    │   ├── <106> Arrow
+                    │   │   ├── <104> Var [union_ptr]
+                    │   │   ╰── d
+                    │   ╰── <110> Unary [-]
+                    │       ╰── <109> Constant Double [+1e0]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <119>  [!=]
+                    │   │       ├── <116> Arrow
+                    │   │       │   ├── <114> Var [union_ptr]
+                    │   │       │   ╰── l
+                    │   │       ╰── <118> Constant ULong [13830554455654793216]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <120> Constant Int [3]
+                    ├── For
+                    │   ├── Init
+                    │   │   ╰── VarDeclaration
+                    │   │       ├── Name
+                    │   │       │   ╰── i
+                    │   │       ├── Type
+                    │   │       │   ╰── Int
+                    │   │       ╰── Initializer
+                    │   │           ╰── <128> Constant Int [0]
+                    │   ├── Condition
+                    │   │   ╰── <136>  [<]
+                    │   │       ├── <133> Var [i]
+                    │   │       ╰── <135> Constant Int [6]
+                    │   ├── Condition
+                    │   │   ╰── <145> Assign [=]
+                    │   │       ├── <138> Var [i]
+                    │   │       ╰── <144>  [+]
+                    │   │           ├── <141> Var [i]
+                    │   │           ╰── <143> Constant Int [1]
+                    │   ╰── Block
+                    │       ╰── If
+                    │           ├── Condition
+                    │           │   ╰── <152> Subscript
+                    │           │       ├── <149> Dot
+                    │           │       │   ├── <147> Var [my_union]
+                    │           │       │   ╰── arr
+                    │           │       ╰── <151> Var [i]
+                    │           ╰── Then
+                    │               ╰── Block
+                    │                   ╰── Return
+                    │                       ╰── <153> Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <171>  [!=]
+                    │   │       ├── <166> Subscript
+                    │   │       │   ├── <164> Arrow
+                    │   │       │   │   ├── <162> Var [union_ptr]
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <165> Constant Int [6]
+                    │   │       ╰── <170> Unary [-]
+                    │   │           ╰── <169> Constant Int [16]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <172> Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <187>  [!=]
+                    │   │       ├── <182> Subscript
+                    │   │       │   ├── <180> Arrow
+                    │   │       │   │   ├── <178> Var [union_ptr]
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <181> Constant Int [7]
+                    │   │       ╰── <186> Unary [-]
+                    │   │           ╰── <185> Constant Int [65]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <188> Constant Int [6]
+                    ╰── Return
+                        ╰── <193> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_member_access_union_init_and_member_access() {
+    let src = r#"
+        union u {
+            double d;
+            long l;
+            unsigned long ul;
+            char c;
+        };
+        int main(void) {
+            union u x = {20};
+            if (x.d != 20.0) {
+                return 1;
+            }
+            union u *ptr = &x;
+            ptr->l = -1l;
+            if (ptr->l != -1l) {
+                return 2;
+            }
+            if (ptr->ul != 18446744073709551615UL) {
+                return 3;
+            }
+            if (x.c != -1) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ul
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <28> Constant Int [20]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <38>  [!=]
+                    │   │       ├── <35> Dot
+                    │   │       │   ├── <33> Var [x]
+                    │   │       │   ╰── d
+                    │   │       ╰── <37> Constant Double [+2e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <39> Constant Int [1]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── <52> AddressOf
+                    │           ╰── <51> Var [x]
+                    ├── <63> Assign [=]
+                    │   ├── <58> Arrow
+                    │   │   ├── <56> Var [ptr]
+                    │   │   ╰── l
+                    │   ╰── <62> Unary [-]
+                    │       ╰── <61> Constant Long [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <73>  [!=]
+                    │   │       ├── <68> Arrow
+                    │   │       │   ├── <66> Var [ptr]
+                    │   │       │   ╰── l
+                    │   │       ╰── <72> Unary [-]
+                    │   │           ╰── <71> Constant Long [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <74> Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <85>  [!=]
+                    │   │       ├── <82> Arrow
+                    │   │       │   ├── <80> Var [ptr]
+                    │   │       │   ╰── ul
+                    │   │       ╰── <84> Constant ULong [18446744073709551615]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <86> Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <99>  [!=]
+                    │   │       ├── <94> Dot
+                    │   │       │   ├── <92> Var [x]
+                    │   │       │   ╰── c
+                    │   │       ╰── <98> Unary [-]
+                    │   │           ╰── <97> Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <100> Constant Int [4]
+                    ╰── Return
+                        ╰── <105> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_member_access_union_temp_lifetime() {
+    let src = r#"
+        struct has_char_array {
+            char arr[8];
+        };
+        union has_array {
+            long l;
+            struct has_char_array s;
+        };
+        int get_flag(void) {
+            static int flag = 0;
+            flag = !flag;
+            return flag;
+        }
+        int main(void) {
+            union has_array union1 = {9876543210l};
+            union has_array union2 = {1234567890l};
+            if ((get_flag() ? union1 : union2).s.arr[0] != -22) {
+                return 1;
+            }
+            if ((get_flag() ? union1 : union2).s.arr[0] != -46) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [has_char_array]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 8
+            │               ╰── Char
+            ├── Union [has_array]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Struct [has_char_array]
+            ├── Function [get_flag]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── flag
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── <30> Constant Int [0]
+            │       │   ╰── Static
+            │       ├── <40> Assign [=]
+            │       │   ├── <34> Var [flag]
+            │       │   ╰── <39> Unary [!]
+            │       │       ╰── <38> Var [flag]
+            │       ╰── Return
+            │           ╰── <43> Var [flag]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── union1
+                    │   ├── Type
+                    │   │   ╰── Union [has_array]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <56> Constant Long [9876543210]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── union2
+                    │   ├── Type
+                    │   │   ╰── Union [has_array]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <64> Constant Long [1234567890]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <86>  [!=]
+                    │   │       ├── <81> Subscript
+                    │   │       │   ├── <79> Dot
+                    │   │       │   │   ├── <77> Dot
+                    │   │       │   │   │   ├── <75> Conditional [?]
+                    │   │       │   │   │   │   ├── <69> FunctionCall [get_flag]
+                    │   │       │   │   │   │   ├── Then
+                    │   │       │   │   │   │   │   ╰── <71> Var [union1]
+                    │   │       │   │   │   │   ╰── Else
+                    │   │       │   │   │   │       ╰── <73> Var [union2]
+                    │   │       │   │   │   ╰── s
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <80> Constant Int [0]
+                    │   │       ╰── <85> Unary [-]
+                    │   │           ╰── <84> Constant Int [22]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <87> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <110>  [!=]
+                    │   │       ├── <105> Subscript
+                    │   │       │   ├── <103> Dot
+                    │   │       │   │   ├── <101> Dot
+                    │   │       │   │   │   ├── <99> Conditional [?]
+                    │   │       │   │   │   │   ├── <93> FunctionCall [get_flag]
+                    │   │       │   │   │   │   ├── Then
+                    │   │       │   │   │   │   │   ╰── <95> Var [union1]
+                    │   │       │   │   │   │   ╰── Else
+                    │   │       │   │   │   │       ╰── <97> Var [union2]
+                    │   │       │   │   │   ╰── s
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <104> Constant Int [0]
+                    │   │       ╰── <109> Unary [-]
+                    │   │           ╰── <108> Constant Int [46]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <111> Constant Int [2]
+                    ╰── Return
+                        ╰── <116> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
 fn test_valid_extra_credit_other_features_bitwise_ops_struct_members() {
     let src = r#"
         struct inner {
@@ -6094,6 +23455,2919 @@ fn test_valid_extra_credit_other_features_struct_decl_in_switch_statement() {
                     │                   ╰── y
                     ╰── Return
                         ╰── <159> Var [result]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_cast_union_to_void() {
+    let src = r#"
+        union u {
+            long l;
+            double d;
+        };
+        int main(void) {
+            union u x = {1000};
+            (void) x;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <20> Constant Int [1000]
+                    ├── <28> Cast
+                    │   ├── Target
+                    │   │   ╰── Void
+                    │   ╰── Expression
+                    │       ╰── <27> Var [x]
+                    ╰── Return
+                        ╰── <30> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_decl_shadows_decl() {
+    let src = r#"
+        int main(void) {
+            struct tag;
+            struct tag *struct_ptr = 0;
+            {
+                union tag;
+                union tag *union_ptr = 0;
+                if (struct_ptr || union_ptr) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Struct [tag]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── struct_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Struct [tag]
+                    │   ╰── Initializer
+                    │       ╰── <14> Constant Int [0]
+                    ├── Block
+                    │   ├── Union [tag]
+                    │   ├── VarDeclaration
+                    │   │   ├── Name
+                    │   │   │   ╰── union_ptr
+                    │   │   ├── Type
+                    │   │   │   ╰── Pointer
+                    │   │   │       ╰── Union [tag]
+                    │   │   ╰── Initializer
+                    │   │       ╰── <25> Constant Int [0]
+                    │   ╰── If
+                    │       ├── Condition
+                    │       │   ╰── <33>  [||]
+                    │       │       ├── <29> Var [struct_ptr]
+                    │       │       ╰── <32> Var [union_ptr]
+                    │       ╰── Then
+                    │           ╰── Block
+                    │               ╰── Return
+                    │                   ╰── <34> Constant Int [1]
+                    ╰── Return
+                        ╰── <41> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_incomplete_union_types() {
+    let src = r#"
+        void *calloc(unsigned long nmemb, unsigned long size);
+        int puts(char *s);
+        union never_used;
+        union never_used incomplete_fun(union never_used x);
+        int test_block_scope_forward_decl(void) {
+            union u;
+            union u* u_ptr = 0;
+            union u {
+                long x;
+                char y;
+            };
+            union u val = { -100000000l };
+            u_ptr = &val;
+            if (u_ptr->x != -100000000l || u_ptr->y != 0) {
+                return 0;
+            }
+            return 1;
+        }
+        union opaque_union;
+        union opaque_union* use_union_pointers(union opaque_union* param) {
+            if (param == 0) {
+                puts("null pointer");
+            }
+            return 0;
+        }
+        int test_use_incomplete_union_pointers(void) {
+            union opaque_union* ptr1 = calloc(1, 4);
+            union opaque_union* ptr2 = calloc(1, 4);
+            char* ptr1_bytes = (char*)ptr1;
+            if (ptr1_bytes[0] || ptr1_bytes[1]) {
+                return 0;
+            }
+            if (ptr1 == 0 || ptr2 == 0 || ptr1 == ptr2) {
+                return 0;
+            }
+            static int flse = 0;
+            union opaque_union* ptr3 = flse ? ptr1 : ptr2;
+            if (ptr3 != ptr2) {
+                return 0;
+            }
+            if (use_union_pointers(ptr3)) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_block_scope_forward_decl()) {
+                return 1;
+            }
+            if (!test_use_incomplete_union_pointers()) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [calloc]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── nmemb
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Long
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Function [puts]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Union [never_used]
+            ├── Function [incomplete_fun]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── x
+            │           ╰── Type
+            │               ╰── Union [never_used]
+            ├── Function [test_block_scope_forward_decl]
+            │   ╰── Body
+            │       ├── Union [u]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── u_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Union [u]
+            │       │   ╰── Initializer
+            │       │       ╰── <52> Constant Int [0]
+            │       ├── Union [u]
+            │       │   ├── Field
+            │       │   │   ├── Name
+            │       │   │   │   ╰── x
+            │       │   │   ╰── Type
+            │       │   │       ╰── Long
+            │       │   ╰── Field
+            │       │       ├── Name
+            │       │       │   ╰── y
+            │       │       ╰── Type
+            │       │           ╰── Char
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── val
+            │       │   ├── Type
+            │       │   │   ╰── Union [u]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <71> Unary [-]
+            │       │               ╰── <70> Constant Long [100000000]
+            │       ├── <81> Assign [=]
+            │       │   ├── <76> Var [u_ptr]
+            │       │   ╰── <80> AddressOf
+            │       │       ╰── <79> Var [val]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <100>  [||]
+            │       │   │       ├── <91>  [!=]
+            │       │   │       │   ├── <86> Arrow
+            │       │   │       │   │   ├── <84> Var [u_ptr]
+            │       │   │       │   │   ╰── x
+            │       │   │       │   ╰── <90> Unary [-]
+            │       │   │       │       ╰── <89> Constant Long [100000000]
+            │       │   │       ╰── <99>  [!=]
+            │       │   │           ├── <96> Arrow
+            │       │   │           │   ├── <94> Var [u_ptr]
+            │       │   │           │   ╰── y
+            │       │   │           ╰── <98> Constant Int [0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <101> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <106> Constant Int [1]
+            ├── Union [opaque_union]
+            ├── Function [use_union_pointers]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── param
+            │   │       ╰── Type
+            │   │           ╰── Pointer
+            │   │               ╰── Union [opaque_union]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <130>  [==]
+            │       │   │       ├── <127> Var [param]
+            │       │   │       ╰── <129> Constant Int [0]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── <133> FunctionCall [puts]
+            │       │               ╰── <132> "null pointer"
+            │       ╰── Return
+            │           ╰── <138> Constant Int [0]
+            ├── Function [test_use_incomplete_union_pointers]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr1
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Union [opaque_union]
+            │       │   ╰── Initializer
+            │       │       ╰── <156> FunctionCall [calloc]
+            │       │           ├── <154> Constant Int [1]
+            │       │           ╰── <155> Constant Int [4]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr2
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Union [opaque_union]
+            │       │   ╰── Initializer
+            │       │       ╰── <168> FunctionCall [calloc]
+            │       │           ├── <166> Constant Int [1]
+            │       │           ╰── <167> Constant Int [4]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr1_bytes
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Char
+            │       │   ╰── Initializer
+            │       │       ╰── <181> Cast
+            │       │           ├── Target
+            │       │           │   ╰── Pointer
+            │       │           │       ╰── Char
+            │       │           ╰── Expression
+            │       │               ╰── <180> Var [ptr1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <193>  [||]
+            │       │   │       ├── <187> Subscript
+            │       │   │       │   ├── <185> Var [ptr1_bytes]
+            │       │   │       │   ╰── <186> Constant Int [0]
+            │       │   │       ╰── <192> Subscript
+            │       │   │           ├── <190> Var [ptr1_bytes]
+            │       │   │           ╰── <191> Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <194> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <218>  [||]
+            │       │   │       ├── <210>  [||]
+            │       │   │       │   ├── <203>  [==]
+            │       │   │       │   │   ├── <200> Var [ptr1]
+            │       │   │       │   │   ╰── <202> Constant Int [0]
+            │       │   │       │   ╰── <209>  [==]
+            │       │   │       │       ├── <206> Var [ptr2]
+            │       │   │       │       ╰── <208> Constant Int [0]
+            │       │   │       ╰── <217>  [==]
+            │       │   │           ├── <213> Var [ptr1]
+            │       │   │           ╰── <216> Var [ptr2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <219> Constant Int [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── flse
+            │       │   ├── Type
+            │       │   │   ╰── Int
+            │       │   ├── Initializer
+            │       │   │   ╰── <228> Constant Int [0]
+            │       │   ╰── Static
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── ptr3
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Union [opaque_union]
+            │       │   ╰── Initializer
+            │       │       ╰── <243> Conditional [?]
+            │       │           ├── <238> Var [flse]
+            │       │           ├── Then
+            │       │           │   ╰── <240> Var [ptr1]
+            │       │           ╰── Else
+            │       │               ╰── <242> Var [ptr2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <251>  [!=]
+            │       │   │       ├── <247> Var [ptr3]
+            │       │   │       ╰── <250> Var [ptr2]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <252> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <260> FunctionCall [use_union_pointers]
+            │       │   │       ╰── <259> Var [ptr3]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <261> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <266> Constant Int [1]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <278> Unary [!]
+                    │   │       ╰── <277> FunctionCall [test_block_scope_forward_decl]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <279> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <287> Unary [!]
+                    │   │       ╰── <286> FunctionCall [test_use_incomplete_union_pointers]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <288> Constant Int [2]
+                    ╰── Return
+                        ╰── <293> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_redeclare_union() {
+    let src = r#"
+        
+        int main(void) {
+            union u {
+                int a;
+            };
+            union u;
+            union u my_union = {1};
+            return my_union.a;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [u]
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── a
+                    │       ╰── Type
+                    │           ╰── Int
+                    ├── Union [u]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── my_union
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <18> Constant Int [1]
+                    ╰── Return
+                        ╰── <25> Dot
+                            ├── <23> Var [my_union]
+                            ╰── a
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_struct_shadows_union() {
+    let src = r#"
+        
+        void *malloc(unsigned long size);
+        int main(void) {
+            struct s {int a; int b;};
+            struct s my_struct = {12, 13};
+            {
+                union u;
+                union u *ptr = malloc(4);
+                union u {int i; unsigned int u;};
+                ptr->i = 10;
+                if (ptr->u != 10) {
+                    return 1;
+                }
+                if (my_struct.b != 13) {
+                    return 2;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ╰── Function [main]
+                ╰── Body
+                    ├── Struct [s]
+                    │   ├── Field
+                    │   │   ├── Name
+                    │   │   │   ╰── a
+                    │   │   ╰── Type
+                    │   │       ╰── Int
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── b
+                    │       ╰── Type
+                    │           ╰── Int
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── my_struct
+                    │   ├── Type
+                    │   │   ╰── Struct [s]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ├── <31> Constant Int [12]
+                    │           ╰── <33> Constant Int [13]
+                    ├── Block
+                    │   ├── Union [u]
+                    │   ├── VarDeclaration
+                    │   │   ├── Name
+                    │   │   │   ╰── ptr
+                    │   │   ├── Type
+                    │   │   │   ╰── Pointer
+                    │   │   │       ╰── Union [u]
+                    │   │   ╰── Initializer
+                    │   │       ╰── <47> FunctionCall [malloc]
+                    │   │           ╰── <46> Constant Int [4]
+                    │   ├── Union [u]
+                    │   │   ├── Field
+                    │   │   │   ├── Name
+                    │   │   │   │   ╰── i
+                    │   │   │   ╰── Type
+                    │   │   │       ╰── Int
+                    │   │   ╰── Field
+                    │   │       ├── Name
+                    │   │       │   ╰── u
+                    │   │       ╰── Type
+                    │   │           ╰── Unsigned Int
+                    │   ├── <66> Assign [=]
+                    │   │   ├── <63> Arrow
+                    │   │   │   ├── <61> Var [ptr]
+                    │   │   │   ╰── i
+                    │   │   ╰── <65> Constant Int [10]
+                    │   ├── If
+                    │   │   ├── Condition
+                    │   │   │   ╰── <74>  [!=]
+                    │   │   │       ├── <71> Arrow
+                    │   │   │       │   ├── <69> Var [ptr]
+                    │   │   │       │   ╰── u
+                    │   │   │       ╰── <73> Constant Int [10]
+                    │   │   ╰── Then
+                    │   │       ╰── Block
+                    │   │           ╰── Return
+                    │   │               ╰── <75> Constant Int [1]
+                    │   ╰── If
+                    │       ├── Condition
+                    │       │   ╰── <86>  [!=]
+                    │       │       ├── <83> Dot
+                    │       │       │   ├── <81> Var [my_struct]
+                    │       │       │   ╰── b
+                    │       │       ╰── <85> Constant Int [13]
+                    │       ╰── Then
+                    │           ╰── Block
+                    │               ╰── Return
+                    │                   ╰── <87> Constant Int [2]
+                    ╰── Return
+                        ╰── <94> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_union_members_same_type() {
+    let src = r#"
+        
+        union u {
+            int a;
+            int b;
+        };
+        int main(void) {
+            union u my_union = {0};
+            my_union.a = -1;
+            if (my_union.b != -1){
+                return 1;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── b
+            │       ╰── Type
+            │           ╰── Int
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── my_union
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <20> Constant Int [0]
+                    ├── <32> Assign [=]
+                    │   ├── <27> Dot
+                    │   │   ├── <25> Var [my_union]
+                    │   │   ╰── a
+                    │   ╰── <31> Unary [-]
+                    │       ╰── <30> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <42>  [!=]
+                    │   │       ├── <37> Dot
+                    │   │       │   ├── <35> Var [my_union]
+                    │   │       │   ╰── b
+                    │   │       ╰── <41> Unary [-]
+                    │   │           ╰── <40> Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <43> Constant Int [1]
+                    ╰── Return
+                        ╰── <48> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_union_namespace() {
+    let src = r#"
+        int test_shared_member_names(void) {
+            union u1 {
+                int a;
+            };
+            union u2 {
+                long l;
+                double a;
+            };
+            struct s {
+                char a[2];
+            };
+            union u1 var1 = {10};
+            union u2 var2 = {-9223372036854775807l - 1};
+            struct s var3 = {{-1, -2}};
+            if (var1.a != 10 || var2.a != -0.0 || var3.a[0] != -1) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_same_name_var_member_and_tag(void) {
+            union u {
+                int u;
+            };
+            union u u = {100};
+            if (u.u != 100) {
+                return 0;
+            }
+            return 1;
+        }
+        int f(void) {
+            return 10;
+        }
+        union f {
+            int f;
+        };
+        int test_same_name_fun_and_tag(void) {
+            union f x;
+            x.f = f();
+            if (x.f != 10) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_shared_member_names()) {
+                return 1;
+            }
+            if (!test_same_name_var_member_and_tag()) {
+                return 2;
+            }
+            if (!test_same_name_fun_and_tag()) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [test_shared_member_names]
+            │   ╰── Body
+            │       ├── Union [u1]
+            │       │   ╰── Field
+            │       │       ├── Name
+            │       │       │   ╰── a
+            │       │       ╰── Type
+            │       │           ╰── Int
+            │       ├── Union [u2]
+            │       │   ├── Field
+            │       │   │   ├── Name
+            │       │   │   │   ╰── l
+            │       │   │   ╰── Type
+            │       │   │       ╰── Long
+            │       │   ╰── Field
+            │       │       ├── Name
+            │       │       │   ╰── a
+            │       │       ╰── Type
+            │       │           ╰── Double
+            │       ├── Struct [s]
+            │       │   ╰── Field
+            │       │       ├── Name
+            │       │       │   ╰── a
+            │       │       ╰── Type
+            │       │           ╰── Array
+            │       │               ├── 2
+            │       │               ╰── Char
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── var1
+            │       │   ├── Type
+            │       │   │   ╰── Union [u1]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <35> Constant Int [10]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── var2
+            │       │   ├── Type
+            │       │   │   ╰── Union [u2]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <48>  [-]
+            │       │               ├── <45> Unary [-]
+            │       │               │   ╰── <44> Constant Long [9223372036854775807]
+            │       │               ╰── <47> Constant Int [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── var3
+            │       │   ├── Type
+            │       │   │   ╰── Struct [s]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── Compound
+            │       │               ├── <58> Unary [-]
+            │       │               │   ╰── <57> Constant Int [1]
+            │       │               ╰── <62> Unary [-]
+            │       │                   ╰── <61> Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <97>  [||]
+            │       │   │       ├── <84>  [||]
+            │       │   │       │   ├── <73>  [!=]
+            │       │   │       │   │   ├── <70> Dot
+            │       │   │       │   │   │   ├── <68> Var [var1]
+            │       │   │       │   │   │   ╰── a
+            │       │   │       │   │   ╰── <72> Constant Int [10]
+            │       │   │       │   ╰── <83>  [!=]
+            │       │   │       │       ├── <78> Dot
+            │       │   │       │       │   ├── <76> Var [var2]
+            │       │   │       │       │   ╰── a
+            │       │   │       │       ╰── <82> Unary [-]
+            │       │   │       │           ╰── <81> Constant Double [+0e0]
+            │       │   │       ╰── <96>  [!=]
+            │       │   │           ├── <91> Subscript
+            │       │   │           │   ├── <89> Dot
+            │       │   │           │   │   ├── <87> Var [var3]
+            │       │   │           │   │   ╰── a
+            │       │   │           │   ╰── <90> Constant Int [0]
+            │       │   │           ╰── <95> Unary [-]
+            │       │   │               ╰── <94> Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <98> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <103> Constant Int [1]
+            ├── Function [test_same_name_var_member_and_tag]
+            │   ╰── Body
+            │       ├── Union [u]
+            │       │   ╰── Field
+            │       │       ├── Name
+            │       │       │   ╰── u
+            │       │       ╰── Type
+            │       │           ╰── Int
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── u
+            │       │   ├── Type
+            │       │   │   ╰── Union [u]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <122> Constant Int [100]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <132>  [!=]
+            │       │   │       ├── <129> Dot
+            │       │   │       │   ├── <127> Var [u]
+            │       │   │       │   ╰── u
+            │       │   │       ╰── <131> Constant Int [100]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <133> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <138> Constant Int [1]
+            ├── Function [f]
+            │   ╰── Body
+            │       ╰── Return
+            │           ╰── <147> Constant Int [10]
+            ├── Union [f]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── f
+            │       ╰── Type
+            │           ╰── Int
+            ├── Function [test_same_name_fun_and_tag]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ╰── Type
+            │       │       ╰── Union [f]
+            │       ├── <174> Assign [=]
+            │       │   ├── <170> Dot
+            │       │   │   ├── <168> Var [x]
+            │       │   │   ╰── f
+            │       │   ╰── <173> FunctionCall [f]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <182>  [!=]
+            │       │   │       ├── <179> Dot
+            │       │   │       │   ├── <177> Var [x]
+            │       │   │       │   ╰── f
+            │       │   │       ╰── <181> Constant Int [10]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <183> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <188> Constant Int [1]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <200> Unary [!]
+                    │   │       ╰── <199> FunctionCall [test_shared_member_names]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <201> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <209> Unary [!]
+                    │   │       ╰── <208> FunctionCall [test_same_name_var_member_and_tag]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <210> Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <218> Unary [!]
+                    │   │       ╰── <217> FunctionCall [test_same_name_fun_and_tag]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <219> Constant Int [3]
+                    ╰── Return
+                        ╰── <224> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_union_self_pointer() {
+    let src = r#"
+        union self_ptr {
+            union self_ptr *ptr;
+            long l;
+        };
+        int main(void) {
+            union self_ptr u = {&u};
+            if (&u != u.ptr) {
+                return 1;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [self_ptr]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── ptr
+            │   │   ╰── Type
+            │   │       ╰── Pointer
+            │   │           ╰── Union [self_ptr]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── l
+            │       ╰── Type
+            │           ╰── Long
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── u
+                    │   ├── Type
+                    │   │   ╰── Union [self_ptr]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <25> AddressOf
+                    │               ╰── <24> Var [u]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <37>  [!=]
+                    │   │       ├── <31> AddressOf
+                    │   │       │   ╰── <30> Var [u]
+                    │   │       ╰── <36> Dot
+                    │   │           ├── <34> Var [u]
+                    │   │           ╰── ptr
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <38> Constant Int [1]
+                    ╰── Return
+                        ╰── <43> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_union_shadows_struct() {
+    let src = r#"
+        
+        struct tag {
+            int a;
+            int b;
+        };
+        struct tag global_struct = {1, 2};
+        int main(void) {
+            union tag {
+                int x;
+                long y;
+            };
+            union tag local_union = {100};
+            if (global_struct.a != 1) {
+                return 1;
+            }
+            if (local_union.x != 100) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [tag]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── b
+            │       ╰── Type
+            │           ╰── Int
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── global_struct
+            │   ├── Type
+            │   │   ╰── Struct [tag]
+            │   ╰── Initializer
+            │       ╰── Compound
+            │           ├── <15> Constant Int [1]
+            │           ╰── <17> Constant Int [2]
+            ╰── Function [main]
+                ╰── Body
+                    ├── Union [tag]
+                    │   ├── Field
+                    │   │   ├── Name
+                    │   │   │   ╰── x
+                    │   │   ╰── Type
+                    │   │       ╰── Int
+                    │   ╰── Field
+                    │       ├── Name
+                    │       │   ╰── y
+                    │       ╰── Type
+                    │           ╰── Long
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── local_union
+                    │   ├── Type
+                    │   │   ╰── Union [tag]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── <40> Constant Int [100]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <50>  [!=]
+                    │   │       ├── <47> Dot
+                    │   │       │   ├── <45> Var [global_struct]
+                    │   │       │   ╰── a
+                    │   │       ╰── <49> Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <51> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <62>  [!=]
+                    │   │       ├── <59> Dot
+                    │   │       │   ├── <57> Var [local_union]
+                    │   │       │   ╰── x
+                    │   │       ╰── <61> Constant Int [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <63> Constant Int [2]
+                    ╰── Return
+                        ╰── <68> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_size_and_offset_compare_union_pointers() {
+    let src = r#"
+        
+        struct s {
+            int i;
+        };
+        union u {
+            char arr[3];
+            double d;
+            struct s my_struct;
+        };
+        union u my_union;
+        int main(void) {
+            union u* u_ptr = &my_union;
+            if ((void*)u_ptr != (void*)&(u_ptr->arr)) {
+                return 1;
+            }
+            if (!((void*)u_ptr == (void*)&(u_ptr->d))) {
+                return 2;
+            }
+            if ((void*)&(u_ptr->my_struct) != u_ptr) {
+                return 3;
+            }
+            if (my_union.arr != (char*)&my_union.d) {
+                return 4;
+            }
+            if (!(&my_union.arr[0] >= (char *) &my_union.my_struct.i)) {
+                return 5;
+            }
+            if (! ((char *) (&u_ptr->d) <= (char *) &u_ptr->my_struct)) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [s]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── i
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 3
+            │   │           ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── my_struct
+            │       ╰── Type
+            │           ╰── Struct [s]
+            ├── VarDeclaration
+            │   ├── Name
+            │   │   ╰── my_union
+            │   ╰── Type
+            │       ╰── Union [u]
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── u_ptr
+                    │   ├── Type
+                    │   │   ╰── Pointer
+                    │   │       ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── <43> AddressOf
+                    │           ╰── <42> Var [my_union]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <63>  [!=]
+                    │   │       ├── <51> Cast
+                    │   │       │   ├── Target
+                    │   │       │   │   ╰── Pointer
+                    │   │       │   │       ╰── Void
+                    │   │       │   ╰── Expression
+                    │   │       │       ╰── <50> Var [u_ptr]
+                    │   │       ╰── <62> Cast
+                    │   │           ├── Target
+                    │   │           │   ╰── Pointer
+                    │   │           │       ╰── Void
+                    │   │           ╰── Expression
+                    │   │               ╰── <61> AddressOf
+                    │   │                   ╰── <60> Arrow
+                    │   │                       ├── <57> Var [u_ptr]
+                    │   │                       ╰── arr
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <64> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <89> Unary [!]
+                    │   │       ╰── <88>  [==]
+                    │   │           ├── <75> Cast
+                    │   │           │   ├── Target
+                    │   │           │   │   ╰── Pointer
+                    │   │           │   │       ╰── Void
+                    │   │           │   ╰── Expression
+                    │   │           │       ╰── <74> Var [u_ptr]
+                    │   │           ╰── <86> Cast
+                    │   │               ├── Target
+                    │   │               │   ╰── Pointer
+                    │   │               │       ╰── Void
+                    │   │               ╰── Expression
+                    │   │                   ╰── <85> AddressOf
+                    │   │                       ╰── <84> Arrow
+                    │   │                           ├── <81> Var [u_ptr]
+                    │   │                           ╰── d
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <90> Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <108>  [!=]
+                    │   │       ├── <104> Cast
+                    │   │       │   ├── Target
+                    │   │       │   │   ╰── Pointer
+                    │   │       │   │       ╰── Void
+                    │   │       │   ╰── Expression
+                    │   │       │       ╰── <103> AddressOf
+                    │   │       │           ╰── <102> Arrow
+                    │   │       │               ├── <99> Var [u_ptr]
+                    │   │       │               ╰── my_struct
+                    │   │       ╰── <107> Var [u_ptr]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <109> Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <128>  [!=]
+                    │   │       ├── <117> Dot
+                    │   │       │   ├── <115> Var [my_union]
+                    │   │       │   ╰── arr
+                    │   │       ╰── <127> Cast
+                    │   │           ├── Target
+                    │   │           │   ╰── Pointer
+                    │   │           │       ╰── Char
+                    │   │           ╰── Expression
+                    │   │               ╰── <126> AddressOf
+                    │   │                   ╰── <125> Dot
+                    │   │                       ├── <123> Var [my_union]
+                    │   │                       ╰── d
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <129> Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <156> Unary [!]
+                    │   │       ╰── <155>  [>=]
+                    │   │           ├── <141> AddressOf
+                    │   │           │   ╰── <140> Subscript
+                    │   │           │       ├── <138> Dot
+                    │   │           │       │   ├── <136> Var [my_union]
+                    │   │           │       │   ╰── arr
+                    │   │           │       ╰── <139> Constant Int [0]
+                    │   │           ╰── <153> Cast
+                    │   │               ├── Target
+                    │   │               │   ╰── Pointer
+                    │   │               │       ╰── Char
+                    │   │               ╰── Expression
+                    │   │                   ╰── <152> AddressOf
+                    │   │                       ╰── <151> Dot
+                    │   │                           ├── <149> Dot
+                    │   │                           │   ├── <147> Var [my_union]
+                    │   │                           │   ╰── my_struct
+                    │   │                           ╰── i
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <157> Constant Int [5]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <185> Unary [!]
+                    │   │       ╰── <184>  [<=]
+                    │   │           ├── <172> Cast
+                    │   │           │   ├── Target
+                    │   │           │   │   ╰── Pointer
+                    │   │           │   │       ╰── Char
+                    │   │           │   ╰── Expression
+                    │   │           │       ╰── <171> AddressOf
+                    │   │           │           ╰── <169> Arrow
+                    │   │           │               ├── <167> Var [u_ptr]
+                    │   │           │               ╰── d
+                    │   │           ╰── <182> Cast
+                    │   │               ├── Target
+                    │   │               │   ╰── Pointer
+                    │   │               │       ╰── Char
+                    │   │               ╰── Expression
+                    │   │                   ╰── <181> AddressOf
+                    │   │                       ╰── <180> Arrow
+                    │   │                           ├── <178> Var [u_ptr]
+                    │   │                           ╰── my_struct
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <186> Constant Int [6]
+                    ╰── Return
+                        ╰── <191> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_size_and_offset_union_sizes() {
+    let src = r#"
+        
+        struct eight_bytes {
+            int i;
+            char c;
+        };
+        struct two_bytes {
+            char arr[2];
+        };
+        struct three_bytes {
+            char arr[3];
+        };
+        struct sixteen_bytes {
+            struct eight_bytes eight;
+            struct two_bytes two;
+            struct three_bytes three;
+        };
+        struct seven_bytes {
+            struct two_bytes two;
+            struct three_bytes three;
+            struct two_bytes two2;
+        };
+        struct twentyfour_bytes {
+            struct seven_bytes seven;
+            struct sixteen_bytes sixteen;
+        };
+        struct twenty_bytes {
+            struct sixteen_bytes sixteen;
+            struct two_bytes two;
+        };
+        struct wonky {
+            char arr[19];
+        };
+        struct internal_padding {
+            char c;
+            double d;
+        };
+        struct contains_struct_array {
+            char c;
+            struct eight_bytes struct_array[3];
+        };
+        union no_padding {
+            char c;
+            unsigned char uc;
+            signed char arr[11];
+        };
+        union with_padding {
+            signed char arr[10];
+            unsigned int ui;
+        };
+        union contains_array {
+            union with_padding arr1[2];
+            union no_padding arr[3];
+        };
+        union double_and_int {
+            int i;
+            double d;
+        };
+        union contains_structs {
+            struct wonky x;
+            struct eight_bytes y;
+        };
+        int main(void) {
+            if (sizeof(union no_padding) != 11) {
+                return 1;
+            }
+            if (sizeof(union with_padding) != 12) {
+                return 2;
+            }
+            if (sizeof(union contains_array) != 36) {
+                return 3;
+            }
+            if (sizeof(union double_and_int) != 8) {
+                return 4;
+            }
+            if (sizeof(union contains_structs) != 20) {
+                return 5;
+            }
+            union no_padding x = { 1 };
+            union contains_array y = { {{{-1, 2}} }};
+            union contains_structs* get_union_ptr(void);
+            if (sizeof x != 11) {
+                return 6;
+            }
+            if (sizeof y.arr1 != 24) {
+                return 7;
+            }
+            if (sizeof * get_union_ptr() != 20) {
+                return 8;
+            }
+            return 0;
+        }
+        union contains_structs* get_union_ptr(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [eight_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Struct [two_bytes]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 2
+            │               ╰── Char
+            ├── Struct [three_bytes]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Char
+            ├── Struct [sixteen_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── eight
+            │   │   ╰── Type
+            │   │       ╰── Struct [eight_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── two
+            │   │   ╰── Type
+            │   │       ╰── Struct [two_bytes]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── three
+            │       ╰── Type
+            │           ╰── Struct [three_bytes]
+            ├── Struct [seven_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── two
+            │   │   ╰── Type
+            │   │       ╰── Struct [two_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── three
+            │   │   ╰── Type
+            │   │       ╰── Struct [three_bytes]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── two2
+            │       ╰── Type
+            │           ╰── Struct [two_bytes]
+            ├── Struct [twentyfour_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── seven
+            │   │   ╰── Type
+            │   │       ╰── Struct [seven_bytes]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── sixteen
+            │       ╰── Type
+            │           ╰── Struct [sixteen_bytes]
+            ├── Struct [twenty_bytes]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── sixteen
+            │   │   ╰── Type
+            │   │       ╰── Struct [sixteen_bytes]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── two
+            │       ╰── Type
+            │           ╰── Struct [two_bytes]
+            ├── Struct [wonky]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 19
+            │               ╰── Char
+            ├── Struct [internal_padding]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── Struct [contains_struct_array]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── struct_array
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Struct [eight_bytes]
+            ├── Union [no_padding]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── uc
+            │   │   ╰── Type
+            │   │       ╰── Unsigned Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 11
+            │               ╰── Signed Char
+            ├── Union [with_padding]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 10
+            │   │           ╰── Signed Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ui
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Union [contains_array]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr1
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Union [with_padding]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Union [no_padding]
+            ├── Union [double_and_int]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── d
+            │       ╰── Type
+            │           ╰── Double
+            ├── Union [contains_structs]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── x
+            │   │   ╰── Type
+            │   │       ╰── Struct [wonky]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── y
+            │       ╰── Type
+            │           ╰── Struct [eight_bytes]
+            ├── Function [main]
+            │   ╰── Body
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <201>  [!=]
+            │       │   │       ├── <198> SizeOfType
+            │       │   │       │   ╰── Union [no_padding]
+            │       │   │       ╰── <200> Constant Int [11]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <202> Constant Int [1]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <213>  [!=]
+            │       │   │       ├── <210> SizeOfType
+            │       │   │       │   ╰── Union [with_padding]
+            │       │   │       ╰── <212> Constant Int [12]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <214> Constant Int [2]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <225>  [!=]
+            │       │   │       ├── <222> SizeOfType
+            │       │   │       │   ╰── Union [contains_array]
+            │       │   │       ╰── <224> Constant Int [36]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <226> Constant Int [3]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <237>  [!=]
+            │       │   │       ├── <234> SizeOfType
+            │       │   │       │   ╰── Union [double_and_int]
+            │       │   │       ╰── <236> Constant Int [8]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <238> Constant Int [4]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <249>  [!=]
+            │       │   │       ├── <246> SizeOfType
+            │       │   │       │   ╰── Union [contains_structs]
+            │       │   │       ╰── <248> Constant Int [20]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <250> Constant Int [5]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Union [no_padding]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <259> Constant Int [1]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── y
+            │       │   ├── Type
+            │       │   │   ╰── Union [contains_array]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── Compound
+            │       │               ╰── Compound
+            │       │                   ╰── Compound
+            │       │                       ├── <269> Unary [-]
+            │       │                       │   ╰── <268> Constant Int [1]
+            │       │                       ╰── <271> Constant Int [2]
+            │       ├── Function [get_union_ptr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <292>  [!=]
+            │       │   │       ├── <289> SizeOfExpr
+            │       │   │       │   ╰── <288> Var [x]
+            │       │   │       ╰── <291> Constant Int [11]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <293> Constant Int [6]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <305>  [!=]
+            │       │   │       ├── <302> SizeOfExpr
+            │       │   │       │   ╰── <301> Dot
+            │       │   │       │       ├── <299> Var [y]
+            │       │   │       │       ╰── arr1
+            │       │   │       ╰── <304> Constant Int [24]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <306> Constant Int [7]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <317>  [!=]
+            │       │   │       ├── <314> SizeOfExpr
+            │       │   │       │   ╰── <313> Dereference
+            │       │   │       │       ╰── <312> FunctionCall [get_union_ptr]
+            │       │   │       ╰── <316> Constant Int [20]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <318> Constant Int [8]
+            │       ╰── Return
+            │           ╰── <323> Constant Int [0]
+            ╰── Function [get_union_ptr]
+                ╰── Body
+                    ╰── Return
+                        ╰── <335> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_union_copy_assign_to_union() {
+    let src = r#"
+        
+        struct s {
+            int a;
+            int b;
+        };
+        union u {
+            struct s str;
+            long l;
+            double arr[3];
+        };
+        int main(void) {
+            union u x = { {1, 2} };
+            union u y = { {0, 0} };
+            y = x;
+            if (y.str.a != 1) {
+                return 1;
+            }
+            if (y.str.b != 2) {
+                return 2;
+            }
+            x.arr[0] = -20.;
+            x.arr[1] = -30.;
+            x.arr[2] = -40.;
+            y = x;
+            if (y.arr[0] != -20.) {
+                return 3;
+            }
+            if (y.arr[1] != -30.) {
+                return 4;
+            }
+            if (y.arr[2] != -40.) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Struct [s]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── a
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── b
+            │       ╰── Type
+            │           ╰── Int
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── str
+            │   │   ╰── Type
+            │   │       ╰── Struct [s]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Double
+            ╰── Function [main]
+                ╰── Body
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── x
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <38> Constant Int [1]
+                    │               ╰── <40> Constant Int [2]
+                    ├── VarDeclaration
+                    │   ├── Name
+                    │   │   ╰── y
+                    │   ├── Type
+                    │   │   ╰── Union [u]
+                    │   ╰── Initializer
+                    │       ╰── Compound
+                    │           ╰── Compound
+                    │               ├── <49> Constant Int [0]
+                    │               ╰── <51> Constant Int [0]
+                    ├── <61> Assign [=]
+                    │   ├── <57> Var [y]
+                    │   ╰── <60> Var [x]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <71>  [!=]
+                    │   │       ├── <68> Dot
+                    │   │       │   ├── <66> Dot
+                    │   │       │   │   ├── <64> Var [y]
+                    │   │       │   │   ╰── str
+                    │   │       │   ╰── a
+                    │   │       ╰── <70> Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <72> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <85>  [!=]
+                    │   │       ├── <82> Dot
+                    │   │       │   ├── <80> Dot
+                    │   │       │   │   ├── <78> Var [y]
+                    │   │       │   │   ╰── str
+                    │   │       │   ╰── b
+                    │   │       ╰── <84> Constant Int [2]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <86> Constant Int [2]
+                    ├── <101> Assign [=]
+                    │   ├── <96> Subscript
+                    │   │   ├── <94> Dot
+                    │   │   │   ├── <92> Var [x]
+                    │   │   │   ╰── arr
+                    │   │   ╰── <95> Constant Int [0]
+                    │   ╰── <100> Unary [-]
+                    │       ╰── <99> Constant Double [+2e1]
+                    ├── <113> Assign [=]
+                    │   ├── <108> Subscript
+                    │   │   ├── <106> Dot
+                    │   │   │   ├── <104> Var [x]
+                    │   │   │   ╰── arr
+                    │   │   ╰── <107> Constant Int [1]
+                    │   ╰── <112> Unary [-]
+                    │       ╰── <111> Constant Double [+3e1]
+                    ├── <125> Assign [=]
+                    │   ├── <120> Subscript
+                    │   │   ├── <118> Dot
+                    │   │   │   ├── <116> Var [x]
+                    │   │   │   ╰── arr
+                    │   │   ╰── <119> Constant Int [2]
+                    │   ╰── <124> Unary [-]
+                    │       ╰── <123> Constant Double [+4e1]
+                    ├── <132> Assign [=]
+                    │   ├── <128> Var [y]
+                    │   ╰── <131> Var [x]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <144>  [!=]
+                    │   │       ├── <139> Subscript
+                    │   │       │   ├── <137> Dot
+                    │   │       │   │   ├── <135> Var [y]
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <138> Constant Int [0]
+                    │   │       ╰── <143> Unary [-]
+                    │   │           ╰── <142> Constant Double [+2e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <145> Constant Int [3]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <160>  [!=]
+                    │   │       ├── <155> Subscript
+                    │   │       │   ├── <153> Dot
+                    │   │       │   │   ├── <151> Var [y]
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <154> Constant Int [1]
+                    │   │       ╰── <159> Unary [-]
+                    │   │           ╰── <158> Constant Double [+3e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <161> Constant Int [4]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <176>  [!=]
+                    │   │       ├── <171> Subscript
+                    │   │       │   ├── <169> Dot
+                    │   │       │   │   ├── <167> Var [y]
+                    │   │       │   │   ╰── arr
+                    │   │       │   ╰── <170> Constant Int [2]
+                    │   │       ╰── <175> Unary [-]
+                    │   │           ╰── <174> Constant Double [+4e1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <177> Constant Int [5]
+                    ╰── Return
+                        ╰── <182> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_union_copy_copy_non_scalar_members() {
+    let src = r#"
+        void *calloc(unsigned long nmemb, unsigned long size);
+        void *malloc(unsigned long size);
+        union simple {
+            int i;
+            long l;
+            char c;
+            unsigned char uc_arr[3];
+        };
+        union has_union {
+            double d;
+            union simple u;
+            union simple *u_ptr;
+        };
+        struct simple_struct {
+            long l;
+            double d;
+            unsigned int u;
+        };
+        union has_struct {
+            long l;
+            struct simple_struct s;
+        };
+        struct struct_with_union {
+            union simple u;
+            unsigned long ul;
+        };
+        union complex_union {
+            double d_arr[2];
+            struct struct_with_union s;
+            union has_union *u_ptr;
+        };
+        
+        void* calloc(unsigned long nmemb, unsigned long size);
+        int test_dot(void) {
+            struct struct_with_union my_struct = { {0}, 100000l };
+            union simple my_simple_union;
+            my_simple_union.l = -1;
+            my_struct.u = my_simple_union;
+            static union complex_union my_union;
+            my_union.s = my_struct;
+            if (my_struct.ul != 100000l || my_struct.u.l != -1) {
+                return 0;
+            }
+            if (my_union.s.ul != 100000l) {
+                return 0;
+            }
+            my_union.s.u.i = 45;
+            my_simple_union = my_union.s.u;
+            if (my_simple_union.i != 45) {
+                return 0;
+            }
+            static struct struct_with_union another_struct;
+            another_struct = my_union.s;
+            if (another_struct.ul != 100000l || another_struct.u.i != 45) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_arrow(void) {
+            union complex_union* my_union_ptr = calloc(1, sizeof(union complex_union));
+            my_union_ptr->u_ptr = calloc(1, sizeof(union has_union));
+            my_union_ptr->u_ptr->u_ptr = calloc(1, sizeof(union simple));
+            my_union_ptr->u_ptr->u_ptr->i = 987654321;
+            union has_union another_union = *my_union_ptr->u_ptr;
+            if (another_union.u_ptr != my_union_ptr->u_ptr->u_ptr || another_union.u_ptr->c != my_union_ptr->u_ptr->u_ptr->c) {
+                return 0;
+            }
+            union simple small_union = { -9999 };
+            my_union_ptr->u_ptr->u = small_union;
+            if (my_union_ptr->u_ptr->u.i != -9999) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_dot()) {
+                return 1;
+            }
+            if (!test_arrow()) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [calloc]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── nmemb
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Long
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Union [simple]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── uc_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Unsigned Char
+            ├── Union [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [simple]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_ptr
+            │       ╰── Type
+            │           ╰── Pointer
+            │               ╰── Union [simple]
+            ├── Struct [simple_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Union [has_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Struct [simple_struct]
+            ├── Struct [struct_with_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [simple]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ul
+            │       ╰── Type
+            │           ╰── Unsigned Long
+            ├── Union [complex_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [struct_with_union]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_ptr
+            │       ╰── Type
+            │           ╰── Pointer
+            │               ╰── Union [has_union]
+            ├── Function [calloc]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── nmemb
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Long
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Function [test_dot]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── my_struct
+            │       │   ├── Type
+            │       │   │   ╰── Struct [struct_with_union]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ╰── <145> Constant Int [0]
+            │       │           ╰── <148> Constant Long [100000]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── my_simple_union
+            │       │   ╰── Type
+            │       │       ╰── Union [simple]
+            │       ├── <165> Assign [=]
+            │       │   ├── <160> Dot
+            │       │   │   ├── <158> Var [my_simple_union]
+            │       │   │   ╰── l
+            │       │   ╰── <164> Unary [-]
+            │       │       ╰── <163> Constant Int [1]
+            │       ├── <174> Assign [=]
+            │       │   ├── <170> Dot
+            │       │   │   ├── <168> Var [my_struct]
+            │       │   │   ╰── u
+            │       │   ╰── <173> Var [my_simple_union]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── my_union
+            │       │   ├── Type
+            │       │   │   ╰── Union [complex_union]
+            │       │   ╰── Static
+            │       ├── <189> Assign [=]
+            │       │   ├── <185> Dot
+            │       │   │   ├── <183> Var [my_union]
+            │       │   │   ╰── s
+            │       │   ╰── <188> Var [my_struct]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <210>  [||]
+            │       │   │       ├── <197>  [!=]
+            │       │   │       │   ├── <194> Dot
+            │       │   │       │   │   ├── <192> Var [my_struct]
+            │       │   │       │   │   ╰── ul
+            │       │   │       │   ╰── <196> Constant Long [100000]
+            │       │   │       ╰── <209>  [!=]
+            │       │   │           ├── <204> Dot
+            │       │   │           │   ├── <202> Dot
+            │       │   │           │   │   ├── <200> Var [my_struct]
+            │       │   │           │   │   ╰── u
+            │       │   │           │   ╰── l
+            │       │   │           ╰── <208> Unary [-]
+            │       │   │               ╰── <207> Constant Int [1]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <211> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <224>  [!=]
+            │       │   │       ├── <221> Dot
+            │       │   │       │   ├── <219> Dot
+            │       │   │       │   │   ├── <217> Var [my_union]
+            │       │   │       │   │   ╰── s
+            │       │   │       │   ╰── ul
+            │       │   │       ╰── <223> Constant Long [100000]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <225> Constant Int [0]
+            │       ├── <240> Assign [=]
+            │       │   ├── <237> Dot
+            │       │   │   ├── <235> Dot
+            │       │   │   │   ├── <233> Dot
+            │       │   │   │   │   ├── <231> Var [my_union]
+            │       │   │   │   │   ╰── s
+            │       │   │   │   ╰── u
+            │       │   │   ╰── i
+            │       │   ╰── <239> Constant Int [45]
+            │       ├── <251> Assign [=]
+            │       │   ├── <243> Var [my_simple_union]
+            │       │   ╰── <250> Dot
+            │       │       ├── <248> Dot
+            │       │       │   ├── <246> Var [my_union]
+            │       │       │   ╰── s
+            │       │       ╰── u
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <259>  [!=]
+            │       │   │       ├── <256> Dot
+            │       │   │       │   ├── <254> Var [my_simple_union]
+            │       │   │       │   ╰── i
+            │       │   │       ╰── <258> Constant Int [45]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <260> Constant Int [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── another_struct
+            │       │   ├── Type
+            │       │   │   ╰── Struct [struct_with_union]
+            │       │   ╰── Static
+            │       ├── <278> Assign [=]
+            │       │   ├── <272> Var [another_struct]
+            │       │   ╰── <277> Dot
+            │       │       ├── <275> Var [my_union]
+            │       │       ╰── s
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <297>  [||]
+            │       │   │       ├── <286>  [!=]
+            │       │   │       │   ├── <283> Dot
+            │       │   │       │   │   ├── <281> Var [another_struct]
+            │       │   │       │   │   ╰── ul
+            │       │   │       │   ╰── <285> Constant Long [100000]
+            │       │   │       ╰── <296>  [!=]
+            │       │   │           ├── <293> Dot
+            │       │   │           │   ├── <291> Dot
+            │       │   │           │   │   ├── <289> Var [another_struct]
+            │       │   │           │   │   ╰── u
+            │       │   │           │   ╰── i
+            │       │   │           ╰── <295> Constant Int [45]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <298> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <303> Constant Int [1]
+            ├── Function [test_arrow]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── my_union_ptr
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Union [complex_union]
+            │       │   ╰── Initializer
+            │       │       ╰── <324> FunctionCall [calloc]
+            │       │           ├── <319> Constant Int [1]
+            │       │           ╰── <323> SizeOfType
+            │       │               ╰── Union [complex_union]
+            │       ├── <339> Assign [=]
+            │       │   ├── <330> Arrow
+            │       │   │   ├── <328> Var [my_union_ptr]
+            │       │   │   ╰── u_ptr
+            │       │   ╰── <338> FunctionCall [calloc]
+            │       │       ├── <333> Constant Int [1]
+            │       │       ╰── <337> SizeOfType
+            │       │           ╰── Union [has_union]
+            │       ├── <355> Assign [=]
+            │       │   ├── <346> Arrow
+            │       │   │   ├── <344> Arrow
+            │       │   │   │   ├── <342> Var [my_union_ptr]
+            │       │   │   │   ╰── u_ptr
+            │       │   │   ╰── u_ptr
+            │       │   ╰── <354> FunctionCall [calloc]
+            │       │       ├── <349> Constant Int [1]
+            │       │       ╰── <353> SizeOfType
+            │       │           ╰── Union [simple]
+            │       ├── <367> Assign [=]
+            │       │   ├── <364> Arrow
+            │       │   │   ├── <362> Arrow
+            │       │   │   │   ├── <360> Arrow
+            │       │   │   │   │   ├── <358> Var [my_union_ptr]
+            │       │   │   │   │   ╰── u_ptr
+            │       │   │   │   ╰── u_ptr
+            │       │   │   ╰── i
+            │       │   ╰── <366> Constant Int [987654321]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── another_union
+            │       │   ├── Type
+            │       │   │   ╰── Union [has_union]
+            │       │   ╰── Initializer
+            │       │       ╰── <377> Dereference
+            │       │           ╰── <376> Arrow
+            │       │               ├── <374> Var [my_union_ptr]
+            │       │               ╰── u_ptr
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <409>  [||]
+            │       │   │       ├── <391>  [!=]
+            │       │   │       │   ├── <383> Dot
+            │       │   │       │   │   ├── <381> Var [another_union]
+            │       │   │       │   │   ╰── u_ptr
+            │       │   │       │   ╰── <390> Arrow
+            │       │   │       │       ├── <388> Arrow
+            │       │   │       │       │   ├── <386> Var [my_union_ptr]
+            │       │   │       │       │   ╰── u_ptr
+            │       │   │       │       ╰── u_ptr
+            │       │   │       ╰── <408>  [!=]
+            │       │   │           ├── <398> Arrow
+            │       │   │           │   ├── <396> Dot
+            │       │   │           │   │   ├── <394> Var [another_union]
+            │       │   │           │   │   ╰── u_ptr
+            │       │   │           │   ╰── c
+            │       │   │           ╰── <407> Arrow
+            │       │   │               ├── <405> Arrow
+            │       │   │               │   ├── <403> Arrow
+            │       │   │               │   │   ├── <401> Var [my_union_ptr]
+            │       │   │               │   │   ╰── u_ptr
+            │       │   │               │   ╰── u_ptr
+            │       │   │               ╰── c
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <410> Constant Int [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── small_union
+            │       │   ├── Type
+            │       │   │   ╰── Union [simple]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <421> Unary [-]
+            │       │               ╰── <420> Constant Int [9999]
+            │       ├── <434> Assign [=]
+            │       │   ├── <430> Arrow
+            │       │   │   ├── <428> Arrow
+            │       │   │   │   ├── <426> Var [my_union_ptr]
+            │       │   │   │   ╰── u_ptr
+            │       │   │   ╰── u
+            │       │   ╰── <433> Var [small_union]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <448>  [!=]
+            │       │   │       ├── <443> Dot
+            │       │   │       │   ├── <441> Arrow
+            │       │   │       │   │   ├── <439> Arrow
+            │       │   │       │   │   │   ├── <437> Var [my_union_ptr]
+            │       │   │       │   │   │   ╰── u_ptr
+            │       │   │       │   │   ╰── u
+            │       │   │       │   ╰── i
+            │       │   │       ╰── <447> Unary [-]
+            │       │   │           ╰── <446> Constant Int [9999]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <449> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <454> Constant Int [1]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <466> Unary [!]
+                    │   │       ╰── <465> FunctionCall [test_dot]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <467> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <475> Unary [!]
+                    │   │       ╰── <474> FunctionCall [test_arrow]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <476> Constant Int [2]
+                    ╰── Return
+                        ╰── <481> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_union_copy_copy_thru_pointer() {
+    let src = r#"
+        void *calloc(unsigned long nmemb, unsigned long size);
+        void *malloc(unsigned long size);
+        union simple {
+            int i;
+            long l;
+            char c;
+            unsigned char uc_arr[3];
+        };
+        union has_union {
+            double d;
+            union simple u;
+            union simple *u_ptr;
+        };
+        struct simple_struct {
+            long l;
+            double d;
+            unsigned int u;
+        };
+        union has_struct {
+            long l;
+            struct simple_struct s;
+        };
+        struct struct_with_union {
+            union simple u;
+            unsigned long ul;
+        };
+        union complex_union {
+            double d_arr[2];
+            struct struct_with_union s;
+            union has_union *u_ptr;
+        };
+        
+        int strcmp(char* s1, char* s2);
+        int test_copy_to_pointer(void) {
+            union simple y;
+            y.l = -20;
+            union simple* x = malloc(sizeof(union simple));
+            *x = y;
+            if (x->l != -20 || x->i != -20 || x->uc_arr[0] != 236 || x->uc_arr[1] != 255 || x->uc_arr[2] != 255) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_copy_from_pointer(void) {
+            struct simple_struct my_struct = { 8223372036854775807l, 20e3, 2147483650u };
+            static union has_struct my_union;
+            my_union.s = my_struct;
+            union has_struct* union_ptr;
+            union_ptr = &my_union;
+            union has_struct another_union = *union_ptr;
+            if (another_union.s.l != 8223372036854775807l || another_union.s.d != 20e3 || another_union.s.u != 2147483650u) {
+                return 0;
+            }
+            return 1;
+        }
+        union with_padding {
+            char arr[10];
+            unsigned int ui;
+        };
+        int test_copy_array_members(void) {
+            union with_padding union_array[3] = { {"foobar"}, {"hello"}, {"itsaunion"} };
+            union with_padding another_union = union_array[0];
+            union with_padding yet_another_union = { "blahblah" };
+            union_array[2] = yet_another_union;
+            if (strcmp(union_array[0].arr, "foobar") || strcmp(union_array[1].arr, "hello") || strcmp(union_array[2].arr, "blahblah")) {
+                return 0;
+            }
+            if (strcmp(another_union.arr, "foobar")) {
+                return 0;
+            }
+            if (strcmp(yet_another_union.arr, "blahblah")) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_copy_to_pointer()){
+                return 1;
+            }
+            if (!test_copy_from_pointer()) {
+                return 2;
+            }
+            if (!test_copy_array_members()) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Function [calloc]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── nmemb
+            │       │   ╰── Type
+            │       │       ╰── Unsigned Long
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Function [malloc]
+            │   ╰── Parameters
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── size
+            │           ╰── Type
+            │               ╰── Unsigned Long
+            ├── Union [simple]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── c
+            │   │   ╰── Type
+            │   │       ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── uc_arr
+            │       ╰── Type
+            │           ╰── Array
+            │               ├── 3
+            │               ╰── Unsigned Char
+            ├── Union [has_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [simple]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_ptr
+            │       ╰── Type
+            │           ╰── Pointer
+            │               ╰── Union [simple]
+            ├── Struct [simple_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d
+            │   │   ╰── Type
+            │   │       ╰── Double
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Union [has_struct]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── s
+            │       ╰── Type
+            │           ╰── Struct [simple_struct]
+            ├── Struct [struct_with_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── u
+            │   │   ╰── Type
+            │   │       ╰── Union [simple]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ul
+            │       ╰── Type
+            │           ╰── Unsigned Long
+            ├── Union [complex_union]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── d_arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 2
+            │   │           ╰── Double
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── s
+            │   │   ╰── Type
+            │   │       ╰── Struct [struct_with_union]
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── u_ptr
+            │       ╰── Type
+            │           ╰── Pointer
+            │               ╰── Union [has_union]
+            ├── Function [strcmp]
+            │   ╰── Parameters
+            │       ├── Param
+            │       │   ├── Name
+            │       │   │   ╰── s1
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Char
+            │       ╰── Param
+            │           ├── Name
+            │           │   ╰── s2
+            │           ╰── Type
+            │               ╰── Pointer
+            │                   ╰── Char
+            ├── Function [test_copy_to_pointer]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── y
+            │       │   ╰── Type
+            │       │       ╰── Union [simple]
+            │       ├── <156> Assign [=]
+            │       │   ├── <151> Dot
+            │       │   │   ├── <149> Var [y]
+            │       │   │   ╰── l
+            │       │   ╰── <155> Unary [-]
+            │       │       ╰── <154> Constant Int [20]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── x
+            │       │   ├── Type
+            │       │   │   ╰── Pointer
+            │       │   │       ╰── Union [simple]
+            │       │   ╰── Initializer
+            │       │       ╰── <169> FunctionCall [malloc]
+            │       │           ╰── <168> SizeOfType
+            │       │               ╰── Union [simple]
+            │       ├── <178> Assign [=]
+            │       │   ├── <174> Dereference
+            │       │   │   ╰── <173> Var [x]
+            │       │   ╰── <177> Var [y]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <232>  [||]
+            │       │   │       ├── <221>  [||]
+            │       │   │       │   ├── <210>  [||]
+            │       │   │       │   │   ├── <199>  [||]
+            │       │   │       │   │   │   ├── <188>  [!=]
+            │       │   │       │   │   │   │   ├── <183> Arrow
+            │       │   │       │   │   │   │   │   ├── <181> Var [x]
+            │       │   │       │   │   │   │   │   ╰── l
+            │       │   │       │   │   │   │   ╰── <187> Unary [-]
+            │       │   │       │   │   │   │       ╰── <186> Constant Int [20]
+            │       │   │       │   │   │   ╰── <198>  [!=]
+            │       │   │       │   │   │       ├── <193> Arrow
+            │       │   │       │   │   │       │   ├── <191> Var [x]
+            │       │   │       │   │   │       │   ╰── i
+            │       │   │       │   │   │       ╰── <197> Unary [-]
+            │       │   │       │   │   │           ╰── <196> Constant Int [20]
+            │       │   │       │   │   ╰── <209>  [!=]
+            │       │   │       │   │       ├── <206> Subscript
+            │       │   │       │   │       │   ├── <204> Arrow
+            │       │   │       │   │       │   │   ├── <202> Var [x]
+            │       │   │       │   │       │   │   ╰── uc_arr
+            │       │   │       │   │       │   ╰── <205> Constant Int [0]
+            │       │   │       │   │       ╰── <208> Constant Int [236]
+            │       │   │       │   ╰── <220>  [!=]
+            │       │   │       │       ├── <217> Subscript
+            │       │   │       │       │   ├── <215> Arrow
+            │       │   │       │       │   │   ├── <213> Var [x]
+            │       │   │       │       │   │   ╰── uc_arr
+            │       │   │       │       │   ╰── <216> Constant Int [1]
+            │       │   │       │       ╰── <219> Constant Int [255]
+            │       │   │       ╰── <231>  [!=]
+            │       │   │           ├── <228> Subscript
+            │       │   │           │   ├── <226> Arrow
+            │       │   │           │   │   ├── <224> Var [x]
+            │       │   │           │   │   ╰── uc_arr
+            │       │   │           │   ╰── <227> Constant Int [2]
+            │       │   │           ╰── <230> Constant Int [255]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <233> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <238> Constant Int [1]
+            ├── Function [test_copy_from_pointer]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── my_struct
+            │       │   ├── Type
+            │       │   │   ╰── Struct [simple_struct]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── <251> Constant Long [8223372036854775807]
+            │       │           ├── <253> Constant Double [+2e4]
+            │       │           ╰── <255> Constant UInt [2147483650]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── my_union
+            │       │   ├── Type
+            │       │   │   ╰── Union [has_struct]
+            │       │   ╰── Static
+            │       ├── <272> Assign [=]
+            │       │   ├── <268> Dot
+            │       │   │   ├── <266> Var [my_union]
+            │       │   │   ╰── s
+            │       │   ╰── <271> Var [my_struct]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── union_ptr
+            │       │   ╰── Type
+            │       │       ╰── Pointer
+            │       │           ╰── Union [has_struct]
+            │       ├── <287> Assign [=]
+            │       │   ├── <282> Var [union_ptr]
+            │       │   ╰── <286> AddressOf
+            │       │       ╰── <285> Var [my_union]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── another_union
+            │       │   ├── Type
+            │       │   │   ╰── Union [has_struct]
+            │       │   ╰── Initializer
+            │       │       ╰── <295> Dereference
+            │       │           ╰── <294> Var [union_ptr]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <328>  [||]
+            │       │   │       ├── <317>  [||]
+            │       │   │       │   ├── <306>  [!=]
+            │       │   │       │   │   ├── <303> Dot
+            │       │   │       │   │   │   ├── <301> Dot
+            │       │   │       │   │   │   │   ├── <299> Var [another_union]
+            │       │   │       │   │   │   │   ╰── s
+            │       │   │       │   │   │   ╰── l
+            │       │   │       │   │   ╰── <305> Constant Long [8223372036854775807]
+            │       │   │       │   ╰── <316>  [!=]
+            │       │   │       │       ├── <313> Dot
+            │       │   │       │       │   ├── <311> Dot
+            │       │   │       │       │   │   ├── <309> Var [another_union]
+            │       │   │       │       │   │   ╰── s
+            │       │   │       │       │   ╰── d
+            │       │   │       │       ╰── <315> Constant Double [+2e4]
+            │       │   │       ╰── <327>  [!=]
+            │       │   │           ├── <324> Dot
+            │       │   │           │   ├── <322> Dot
+            │       │   │           │   │   ├── <320> Var [another_union]
+            │       │   │           │   │   ╰── s
+            │       │   │           │   ╰── u
+            │       │   │           ╰── <326> Constant UInt [2147483650]
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <329> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <334> Constant Int [1]
+            ├── Union [with_padding]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── arr
+            │   │   ╰── Type
+            │   │       ╰── Array
+            │   │           ├── 10
+            │   │           ╰── Char
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── ui
+            │       ╰── Type
+            │           ╰── Unsigned Int
+            ├── Function [test_copy_array_members]
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── union_array
+            │       │   ├── Type
+            │       │   │   ╰── Array
+            │       │   │       ├── 3
+            │       │   │       ╰── Union [with_padding]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ├── Compound
+            │       │           │   ╰── <363> "foobar"
+            │       │           ├── Compound
+            │       │           │   ╰── <366> "hello"
+            │       │           ╰── Compound
+            │       │               ╰── <369> "itsaunion"
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── another_union
+            │       │   ├── Type
+            │       │   │   ╰── Union [with_padding]
+            │       │   ╰── Initializer
+            │       │       ╰── <381> Subscript
+            │       │           ├── <379> Var [union_array]
+            │       │           ╰── <380> Constant Int [0]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── yet_another_union
+            │       │   ├── Type
+            │       │   │   ╰── Union [with_padding]
+            │       │   ╰── Initializer
+            │       │       ╰── Compound
+            │       │           ╰── <388> "blahblah"
+            │       ├── <399> Assign [=]
+            │       │   ├── <395> Subscript
+            │       │   │   ├── <393> Var [union_array]
+            │       │   │   ╰── <394> Constant Int [2]
+            │       │   ╰── <398> Var [yet_another_union]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <431>  [||]
+            │       │   │       ├── <420>  [||]
+            │       │   │       │   ├── <409> FunctionCall [strcmp]
+            │       │   │       │   │   ├── <407> Dot
+            │       │   │       │   │   │   ├── <405> Subscript
+            │       │   │       │   │   │   │   ├── <403> Var [union_array]
+            │       │   │       │   │   │   │   ╰── <404> Constant Int [0]
+            │       │   │       │   │   │   ╰── arr
+            │       │   │       │   │   ╰── <408> "foobar"
+            │       │   │       │   ╰── <419> FunctionCall [strcmp]
+            │       │   │       │       ├── <417> Dot
+            │       │   │       │       │   ├── <415> Subscript
+            │       │   │       │       │   │   ├── <413> Var [union_array]
+            │       │   │       │       │   │   ╰── <414> Constant Int [1]
+            │       │   │       │       │   ╰── arr
+            │       │   │       │       ╰── <418> "hello"
+            │       │   │       ╰── <430> FunctionCall [strcmp]
+            │       │   │           ├── <428> Dot
+            │       │   │           │   ├── <426> Subscript
+            │       │   │           │   │   ├── <424> Var [union_array]
+            │       │   │           │   │   ╰── <425> Constant Int [2]
+            │       │   │           │   ╰── arr
+            │       │   │           ╰── <429> "blahblah"
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <432> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <443> FunctionCall [strcmp]
+            │       │   │       ├── <441> Dot
+            │       │   │       │   ├── <439> Var [another_union]
+            │       │   │       │   ╰── arr
+            │       │   │       ╰── <442> "foobar"
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <444> Constant Int [0]
+            │       ├── If
+            │       │   ├── Condition
+            │       │   │   ╰── <455> FunctionCall [strcmp]
+            │       │   │       ├── <453> Dot
+            │       │   │       │   ├── <451> Var [yet_another_union]
+            │       │   │       │   ╰── arr
+            │       │   │       ╰── <454> "blahblah"
+            │       │   ╰── Then
+            │       │       ╰── Block
+            │       │           ╰── Return
+            │       │               ╰── <456> Constant Int [0]
+            │       ╰── Return
+            │           ╰── <461> Constant Int [1]
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <473> Unary [!]
+                    │   │       ╰── <472> FunctionCall [test_copy_to_pointer]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <474> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <482> Unary [!]
+                    │   │       ╰── <481> FunctionCall [test_copy_from_pointer]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <483> Constant Int [2]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <491> Unary [!]
+                    │   │       ╰── <490> FunctionCall [test_copy_array_members]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <492> Constant Int [3]
+                    ╰── Return
+                        ╰── <497> Constant Int [0]
+    "#;
+    assert_parse(src, expected);
+}
+
+#[test]
+fn test_valid_extra_credit_union_copy_unions_in_conditionals() {
+    let src = r#"
+        union u {
+            long l;
+            int i;
+            char c;
+        };
+        int choose_union(int flag) {
+            union u one;
+            union u two;
+            one.l = -1;
+            two.i = 100;
+            return (flag ? one : two).c;
+        }
+        int main(void) {
+            if (choose_union(1) != -1) {
+                return 1;
+            }
+            if (choose_union(0) != 100) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        Program
+            ├── Union [u]
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── l
+            │   │   ╰── Type
+            │   │       ╰── Long
+            │   ├── Field
+            │   │   ├── Name
+            │   │   │   ╰── i
+            │   │   ╰── Type
+            │   │       ╰── Int
+            │   ╰── Field
+            │       ├── Name
+            │       │   ╰── c
+            │       ╰── Type
+            │           ╰── Char
+            ├── Function [choose_union]
+            │   ├── Parameters
+            │   │   ╰── Param
+            │   │       ├── Name
+            │   │       │   ╰── flag
+            │   │       ╰── Type
+            │   │           ╰── Int
+            │   ╰── Body
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── one
+            │       │   ╰── Type
+            │       │       ╰── Union [u]
+            │       ├── VarDeclaration
+            │       │   ├── Name
+            │       │   │   ╰── two
+            │       │   ╰── Type
+            │       │       ╰── Union [u]
+            │       ├── <41> Assign [=]
+            │       │   ├── <36> Dot
+            │       │   │   ├── <34> Var [one]
+            │       │   │   ╰── l
+            │       │   ╰── <40> Unary [-]
+            │       │       ╰── <39> Constant Int [1]
+            │       ├── <49> Assign [=]
+            │       │   ├── <46> Dot
+            │       │   │   ├── <44> Var [two]
+            │       │   │   ╰── i
+            │       │   ╰── <48> Constant Int [100]
+            │       ╰── Return
+            │           ╰── <60> Dot
+            │               ├── <58> Conditional [?]
+            │               │   ├── <52> Var [flag]
+            │               │   ├── Then
+            │               │   │   ╰── <54> Var [one]
+            │               │   ╰── Else
+            │               │       ╰── <56> Var [two]
+            │               ╰── c
+            ╰── Function [main]
+                ╰── Body
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <76>  [!=]
+                    │   │       ├── <71> FunctionCall [choose_union]
+                    │   │       │   ╰── <70> Constant Int [1]
+                    │   │       ╰── <75> Unary [-]
+                    │   │           ╰── <74> Constant Int [1]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <77> Constant Int [1]
+                    ├── If
+                    │   ├── Condition
+                    │   │   ╰── <87>  [!=]
+                    │   │       ├── <84> FunctionCall [choose_union]
+                    │   │       │   ╰── <83> Constant Int [0]
+                    │   │       ╰── <86> Constant Int [100]
+                    │   ╰── Then
+                    │       ╰── Block
+                    │           ╰── Return
+                    │               ╰── <88> Constant Int [2]
+                    ╰── Return
+                        ╰── <93> Constant Int [0]
     "#;
     assert_parse(src, expected);
 }

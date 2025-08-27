@@ -1,7 +1,7 @@
 use crate::ast::{
     AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, Field, ForInit,
     FunctionDeclaration, Identifier, Initializer, Node, NodeId, PostfixOp, Program, Statement,
-    StorageClass, StructDeclaration, TypeSpec, UnaryOp, VarDeclaration,
+    StorageClass, NameAndFields, TypeSpec, UnaryOp, VarDeclaration,
 };
 use std::io::Write;
 
@@ -31,11 +31,18 @@ impl PrettyAst {
             Declaration::Var(d) => Self::from_var_declaration(d),
             Declaration::Function(d) => Self::from_function_declaration(d),
             Declaration::Struct(d) => Self::from_struct_declaration(d),
+            Declaration::Union(d) => Self::from_union_declaration(d),
         }
     }
-    fn from_struct_declaration(s: &StructDeclaration) -> PrettyAst {
+    fn from_struct_declaration(s: &NameAndFields) -> PrettyAst {
         Self::new(
             format!("Struct [{}]", &s.name.symbol),
+            s.fields.iter().map(Self::from_field),
+        )
+    }
+    fn from_union_declaration(s: &NameAndFields) -> PrettyAst {
+        Self::new(
+            format!("Union [{}]", &s.name.symbol),
             s.fields.iter().map(Self::from_field),
         )
     }
@@ -366,6 +373,7 @@ impl PrettyAst {
                 vec![Self::new(format!("{size}"), vec![]), Self::from_type(t)],
             ),
             TypeSpec::Struct(name) => Self::new(format!("Struct [{}]", name.symbol), vec![]),
+            TypeSpec::Union(name) => Self::new(format!("Union [{}]", name.symbol), vec![]),
         }
     }
 

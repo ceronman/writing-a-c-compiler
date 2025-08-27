@@ -3123,8 +3123,8 @@ fn test_valid_no_structure_parameters_libraries_initializers_nested_auto_struct_
 }
 
 #[test]
-fn test_valid_no_structure_parameters_libraries_initializers_nested_auto_struct_initializers_client(
-) {
+fn test_valid_no_structure_parameters_libraries_initializers_nested_auto_struct_initializers_client()
+ {
     let src = r#"
         int strcmp(char *s1, char *s2);
         struct pair {
@@ -4176,8 +4176,8 @@ fn test_valid_no_structure_parameters_libraries_initializers_nested_static_struc
 }
 
 #[test]
-fn test_valid_no_structure_parameters_libraries_initializers_nested_static_struct_initializers_client(
-) {
+fn test_valid_no_structure_parameters_libraries_initializers_nested_static_struct_initializers_client()
+ {
     let src = r#"
         int strcmp(char *s1, char *s2);
         struct inner {

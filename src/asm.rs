@@ -1061,10 +1061,7 @@ impl Compiler {
         for (symbol, data) in semantic.symbols.iter() {
             match data.attrs {
                 Attributes::Function { .. } => {
-                    backend_symbols.insert(
-                        symbol.clone(),
-                        BackendSymbolData::Fn,
-                    );
+                    backend_symbols.insert(symbol.clone(), BackendSymbolData::Fn);
                 }
                 Attributes::Static { .. } => {
                     backend_symbols.insert(

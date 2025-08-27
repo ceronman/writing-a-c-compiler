@@ -2,7 +2,7 @@ use crate::alignment::align_offset;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
     FunctionDeclaration, Identifier, Initializer, InnerRef, Node, Program, Statement, StorageClass,
-    StructDeclaration, TypeSpec, UnaryOp, VarDeclaration,
+    NameAndFields, TypeSpec, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
@@ -44,6 +44,7 @@ impl TypeChecker {
                 Declaration::Var(v) => self.check_file_var_declaration(v)?,
                 Declaration::Function(f) => self.check_function_declaration(f, true)?,
                 Declaration::Struct(d) => self.check_struct_declaration(d)?,
+                Declaration::Union(d) => todo!(),
             }
         }
         Ok(())
@@ -574,7 +575,7 @@ impl TypeChecker {
         Ok(())
     }
 
-    fn check_struct_declaration(&mut self, decl: &StructDeclaration) -> Result<()> {
+    fn check_struct_declaration(&mut self, decl: &NameAndFields) -> Result<()> {
         // Incomplete declarations are ignored
         if decl.fields.is_empty() {
             return Ok(());
@@ -822,6 +823,7 @@ impl TypeChecker {
             Declaration::Var(d) => self.check_local_var_declaration(d),
             Declaration::Function(d) => self.check_function_declaration(d, false),
             Declaration::Struct(d) => self.check_struct_declaration(d),
+            Declaration::Union(d) => todo!(),
         }
     }
 

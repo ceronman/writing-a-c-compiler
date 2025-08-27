@@ -54,6 +54,7 @@ pub enum TokenKind {
     Extern,
     Sizeof,
     Struct,
+    Union,
 
     Plus,
     PlusPlus,
@@ -150,6 +151,7 @@ impl Display for TokenKind {
             TokenKind::Extern => "'extern'",
             TokenKind::Sizeof => "'sizeof'",
             TokenKind::Struct => "'struct'",
+            TokenKind::Union => "'union'",
             TokenKind::Plus => "'+'",
             TokenKind::PlusPlus => "'++'",
             TokenKind::PlusEqual => "'+='",
@@ -430,6 +432,7 @@ impl<'src> Lexer<'src> {
             "extern" => TokenKind::Extern,
             "sizeof" => TokenKind::Sizeof,
             "struct" => TokenKind::Struct,
+            "union" => TokenKind::Union,
             _ => TokenKind::Identifier,
         }
     }

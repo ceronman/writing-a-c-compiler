@@ -199,11 +199,11 @@ impl TackyGenerator {
         for block_item in &block.items {
             match block_item {
                 ast::BlockItem::Stmt(stmt) => self.emit_statement(stmt),
-                ast::BlockItem::Decl(decl) => match decl.as_ref() {
-                    ast::Declaration::Var(decl) => self.emit_var_declaration(decl),
-                    ast::Declaration::Function(_) => {}
-                    ast::Declaration::Struct(_) => {}
-                },
+                ast::BlockItem::Decl(decl) => {
+                    if let ast::Declaration::Var(decl) = decl.as_ref() {
+                        self.emit_var_declaration(decl)
+                    }
+                }
             }
         }
     }
