@@ -24,6 +24,7 @@ pub enum Type {
     Pointer(Box<Type>),
     Array(Box<Type>, usize),
     Struct(Symbol),
+    Union(Symbol),
     Void,
 }
 
@@ -34,14 +35,21 @@ pub struct FunctionType {
 }
 
 #[derive(Debug, Clone)]
-pub struct StructDef {
+pub struct TypeDefinition {
+    pub kind: TypeKind,
     pub alignment: u8,
     pub size: usize,
-    pub fields: Vec<StructField>,
+    pub fields: Vec<Field>,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum TypeKind {
+    Struct,
+    Union,
 }
 
 #[derive(Debug, Clone)]
-pub struct StructField {
+pub struct Field {
     pub name: Symbol,
     pub ty: Type,
     pub offset: usize,
@@ -77,12 +85,12 @@ impl Type {
         matches!(self, Type::Function(_))
     }
 
-    pub fn is_struct(&self) -> bool {
-        matches!(self, Type::Struct(_))
+    pub fn is_struct_or_union(&self) -> bool {
+        matches!(self, Type::Struct(_) | Type::Union(_))
     }
 
-    pub fn is_incomplete_struct(&self, type_table: &TypeTable) -> bool {
-        self.is_struct() && !self.is_complete(type_table)
+    pub fn is_incomplete_struct_or_union(&self, semantics: &SemanticData) -> bool {
+        self.is_struct_or_union() && !self.is_complete(semantics)
     }
 
     pub fn is_arithmetic(&self) -> bool {
@@ -114,10 +122,15 @@ impl Type {
         )
     }
 
-    pub fn is_complete(&self, type_table: &TypeTable) -> bool {
+    pub fn is_complete(&self, semantics: &SemanticData) -> bool {
         match self {
             Type::Void => false,
-            Type::Struct(name) => type_table.structs.contains_key(name),
+            Type::Struct(name) | Type::Union(name) => {
+                match semantics.type_table.type_defs.get(name) {
+                    Some(TypeEntry::Complete(_)) => true,
+                    _ => false,
+                }
+            },
             _ => true,
         }
     }
@@ -130,8 +143,8 @@ impl Type {
         matches!(self, Type::Pointer(inner) if inner.is_void())
     }
 
-    pub fn is_pointer_to_incomplete(&self, type_table: &TypeTable) -> bool {
-        matches!(self, Type::Pointer(inner) if !inner.is_complete(type_table))
+    pub fn is_pointer_to_incomplete(&self, semantics: &SemanticData) -> bool {
+        matches!(self, Type::Pointer(inner) if !inner.is_complete(semantics))
     }
 
     pub fn is_array(&self) -> bool {
@@ -142,10 +155,7 @@ impl Type {
         match self {
             Type::Int | Type::Long | Type::Char | Type::SChar => true,
             Type::UInt | Type::ULong | Type::Double | Type::Pointer(_) | Type::UChar => false,
-            Type::Function(_) => panic!("Function types don't have a sign"),
-            Type::Array(_, _) => panic!("Arrays don't have a sign"),
-            Type::Void => panic!("Void doesn't have a sign"),
-            Type::Struct(_) => panic!("Struct doesn't have a sign"),
+            _ => panic!("{self:?} does not have a sign"),
         }
     }
 }
@@ -165,7 +175,7 @@ impl TypeSpec {
             TypeSpec::Pointer(ty) => Type::Pointer(ty.ty().into()),
             TypeSpec::Array(ty, size) => Type::Array(ty.ty().into(), *size),
             TypeSpec::Struct(tag) => Type::Struct(tag.symbol.clone()),
-            TypeSpec::Union(tag) => todo!(),
+            TypeSpec::Union(tag) => Type::Union(tag.symbol.clone()),
             TypeSpec::Void => Type::Void,
         }
     }
@@ -202,9 +212,16 @@ impl Constant {
     }
 }
 
+#[derive(Debug, Clone)]
+pub enum TypeEntry {
+    Incomplete(TypeKind),
+    Complete(TypeDefinition),
+}
+
+// TODO: Move TypeTable to SemanticData
 #[derive(Debug, Clone, Default)]
 pub struct TypeTable {
-    pub structs: HashMap<Symbol, StructDef>,
+    pub type_defs: HashMap<Symbol, TypeEntry>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -284,11 +301,11 @@ impl SemanticData {
             .expect("Expression without type")
     }
 
-    pub fn struct_def(&self, name: &Symbol) -> &StructDef {
-        self.type_table
-            .structs
-            .get(name)
-            .expect("Struct without definition")
+    pub fn type_definition(&self, name: &Symbol) -> &TypeDefinition {
+        let Some(TypeEntry::Complete(type_def)) = self.type_table.type_defs.get(name) else {
+            panic!("Type {name} is unknown or incomplete",);
+        };
+        type_def
     }
 
     pub fn switch_cases(&self, expr: &Node<Expression>) -> &SwitchCases {

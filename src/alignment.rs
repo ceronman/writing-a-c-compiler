@@ -1,26 +1,21 @@
-use crate::semantic::{Type, TypeTable};
+use crate::semantic::{SemanticData, Type, TypeTable};
 
 impl Type {
-    pub fn alignment(&self, type_table: &TypeTable) -> u8 {
+    pub fn alignment(&self, semantics: &SemanticData) -> u8 {
         match self {
             Type::Char | Type::SChar | Type::UChar => 1,
             Type::Int | Type::UInt => 4,
             Type::Long | Type::ULong | Type::Double | Type::Pointer(_) => 8,
-            Type::Array(inner, _) => inner.alignment(type_table),
-            Type::Struct(name) => {
-                type_table
-                    .structs
-                    .get(name)
-                    .expect("Unknown struct")
-                    .alignment
+            Type::Array(inner, _) => inner.alignment(semantics),
+            Type::Struct(name) | Type::Union(name) => {
+                semantics.type_definition(name).alignment
             }
             Type::Function(_) => panic!("Function type does not have alignment"),
             Type::Void => panic!("Void does not have alignment"),
         }
     }
 
-    // TODO: deduplicate from size
-    pub fn al_size(&self, type_table: &TypeTable) -> usize {
+    pub fn size(&self, semantics: &SemanticData) -> usize {
         match self {
             Type::Char | Type::UChar | Type::SChar => 1,
             Type::Int => 4,
@@ -30,9 +25,9 @@ impl Type {
             Type::Double => 8,
             Type::Function(_) => panic!("Size of a function type"),
             Type::Pointer(_) => 8,
-            Type::Array(ty, size) => ty.al_size(type_table) * size,
+            Type::Array(ty, size) => ty.size(semantics) * size,
             Type::Void => 1,
-            Type::Struct(name) => type_table.structs.get(name).expect("Unknown struct").size,
+            Type::Struct(name) | Type::Union(name) => semantics.type_definition(name).size,
         }
     }
 }

@@ -7,7 +7,7 @@ use crate::asm::ir::{
     StaticVariable, TopLevel, UnaryOp,
 };
 use crate::ast::Constant;
-use crate::semantic::{Attributes, SemanticData, StaticInit, StructDef, Type};
+use crate::semantic::{Attributes, SemanticData, StaticInit, TypeDefinition, Type, TypeEntry};
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
@@ -82,7 +82,7 @@ impl Type {
             Type::Function(_) => unreachable!(),
             Type::Pointer(_) => AsmType::Quadword,
             Type::Array(inner, length) => {
-                let size = (inner.al_size(&semantics.type_table) * length) as u64;
+                let size = (inner.size(&semantics) * length) as u64;
                 let inner_asm_ty = inner.to_asm(semantics);
                 let alignment = if size < 16 {
                     match inner_asm_ty {
@@ -97,9 +97,9 @@ impl Type {
                 };
                 AsmType::ByteArray { size, alignment }
             }
-            Type::Struct(name) => {
+            Type::Struct(name) | Type::Union(name) => {
                 let (size, alignment) =
-                    if let Some(struct_def) = semantics.type_table.structs.get(name) {
+                    if let Some(TypeEntry::Complete(struct_def)) = semantics.type_table.type_defs.get(name) {
                         // TODO: unify usize and u64 everywhere.
                         (struct_def.size as u64, struct_def.alignment)
                     } else {
@@ -922,7 +922,7 @@ impl Compiler {
             panic!("Function does not have a function type")
         };
         if let Type::Struct(struct_name) = &*function_ty.ret
-            && let Some(struct_def) = self.semantics.type_table.structs.get(struct_name)
+            && let Some(TypeEntry::Complete(struct_def)) = self.semantics.type_table.type_defs.get(struct_name)
         {
             matches!(
                 self.classify_struct(struct_def).first(),
@@ -1438,7 +1438,7 @@ impl Compiler {
         }
     }
 
-    fn classify_struct(&self, struct_def: &StructDef) -> Vec<ParamClass> {
+    fn classify_struct(&self, struct_def: &TypeDefinition) -> Vec<ParamClass> {
         if struct_def.size > 16 {
             return (0..struct_def.size)
                 .step_by(8)
@@ -1936,24 +1936,24 @@ impl tacky::Val {
         }
     }
 
-    fn as_struct_def<'a>(&self, semantics: &'a SemanticData) -> &'a StructDef {
+    fn as_struct_def<'a>(&self, semantics: &'a SemanticData) -> &'a TypeDefinition {
         let tacky::Val::Var(value_name) = self else {
             panic!("Non-scalar value that is not a struct");
         };
         let Type::Struct(struct_ty) = semantics.symbol_ty(value_name) else {
             panic!("Non-scalar value that is not a struct");
         };
-        semantics.struct_def(struct_ty)
+        semantics.type_definition(struct_ty)
     }
 }
 
-impl StructDef {
+impl TypeDefinition {
     fn flatten(&self, semantic_data: &SemanticData) -> Vec<Type> {
         let mut types: Vec<Type> = Vec::with_capacity(self.fields.len());
         fn flatten_inner(ty: &Type, semantic_data: &SemanticData, types: &mut Vec<Type>) {
             match ty {
                 Type::Struct(name) => {
-                    let struct_def = semantic_data.struct_def(name);
+                    let struct_def = semantic_data.type_definition(name);
                     for field in &struct_def.fields {
                         flatten_inner(&field.ty, semantic_data, types);
                     }

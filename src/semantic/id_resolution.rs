@@ -29,8 +29,7 @@ impl Resolver {
             match decl.as_mut() {
                 Declaration::Var(d) => self.resolve_file_var_declaration(d)?,
                 Declaration::Function(d) => self.resolve_function_declaration(d)?,
-                Declaration::Struct(d) => self.resolve_struct_declaration(d)?,
-                Declaration::Union(d) => todo!(),
+                Declaration::Struct(d) | Declaration::Union(d) => self.resolve_type_declaration(d)?,
             };
         }
         self.end_scope();
@@ -51,8 +50,7 @@ impl Resolver {
         match decl {
             Declaration::Var(decl) => self.resolve_local_var_declaration(decl),
             Declaration::Function(decl) => self.resolve_function_declaration(decl),
-            Declaration::Struct(decl) => self.resolve_struct_declaration(decl),
-            Declaration::Union(decl) => todo!(),
+            Declaration::Struct(decl) | Declaration::Union(decl) => self.resolve_type_declaration(decl),
         }
     }
 
@@ -177,7 +175,7 @@ impl Resolver {
         Ok(())
     }
 
-    fn resolve_struct_declaration(&mut self, decl: &mut NameAndFields) -> Result<()> {
+    fn resolve_type_declaration(&mut self, decl: &mut NameAndFields) -> Result<()> {
         let tag = &decl.name.symbol;
         let unique_name = self.make_name(tag);
         let scope = self
@@ -201,7 +199,7 @@ impl Resolver {
 
     fn resolve_type(&mut self, ty: &mut Node<TypeSpec>) -> Result<()> {
         match ty.as_mut() {
-            TypeSpec::Struct(tag) => {
+            TypeSpec::Struct(tag) | TypeSpec::Union(tag) => {
                 for scope in &self.structs_scopes {
                     if let Some(declared) = scope.get(&tag.symbol) {
                         tag.symbol = declared.clone();

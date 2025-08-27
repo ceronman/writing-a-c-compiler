@@ -41,6 +41,34 @@ fn test_invalid_struct_tags_deref_undeclared() {
 }
 
 #[test]
+fn test_invalid_struct_tags_extra_credit_sizeof_undeclared_union() {
+    assert_error(
+        r#"
+        int main(void) {
+            return sizeof(union c);
+                        //^^^^^ Undeclared structure type 'c'
+        }
+        union c {
+            int x;
+        };
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_struct_tags_extra_credit_var_undeclared_union_type() {
+    assert_error(
+        r#"
+        int main(void) {
+            union s var;
+          //^^^^^^^ Undeclared structure type 's'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
 fn test_invalid_struct_tags_file_scope_var_type_undeclared() {
     assert_error(
         r#"
@@ -153,6 +181,229 @@ fn test_invalid_struct_tags_var_type_undeclared() {
 }
 
 #[test]
+fn test_invalid_types_extra_credit_bad_union_member_access_nested_non_member() {
+    assert_error(
+        r#"
+        struct s {
+            int a;
+        };
+        union u {
+            struct s nested;
+        };
+        int main(void) {
+            union u my_union = {{1}};
+            return my_union.a;
+                 //^^^^^^^^ Structure 'u.1' does not have field a
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_bad_union_member_access_union_bad_member() {
+    assert_error(
+        r#"
+        union s {
+            int x;
+            int y;
+        };
+        union t {
+            int blah;
+            int y;
+        };
+        int main(void) {
+            union s foo = {1};
+            return foo.blah;
+                 //^^^ Structure 's.0' does not have field blah
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_bad_union_member_access_union_bad_pointer_member() {
+    assert_error(
+        r#"
+        void *malloc(unsigned long size);
+        union a {
+          int x;
+          int y;
+        };
+        union b {
+          int m;
+          int n;
+        };
+        int main(void) {
+          union a *ptr = malloc(sizeof(union a));
+          ptr->m = 10;
+        //^^^ Structure 'a.1' does not have field m
+          return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incompatible_union_types_assign_different_union_type() {
+    assert_error(
+        r#"
+        union u1 {int a;};
+        union u2 {int a;};
+        int main(void){
+            union u1 x = {10};
+            union u2 y = {11};
+            x = y;
+              //^ Cannot convert type for assignment!
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incompatible_union_types_assign_scalar_to_union() {
+    assert_error(
+        r#"
+        union u {int a; int b;};
+        int main(void) {
+            union u x = {1};
+            x = 2;
+              //^ Cannot convert type for assignment!
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incompatible_union_types_return_type_mismatch() {
+    assert_error(
+        r#"
+        union u {
+            int x;
+        };
+        union u return_union(void){
+            union u {
+                int x;
+            };
+            union u result = {10};
+            return result;
+                 //^^^^^^ Cannot convert type for assignment!
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incompatible_union_types_union_branch_mismatch() {
+    assert_error(
+        r#"
+        int main(void) {
+            union u1 {
+                int a;
+            };
+            union u2 {
+                int a;
+            };
+            union u1 x = {10};
+            union u2 y = {11};
+            1 ? x : y;
+          //^^^^^^^^^ Invalid types of the branches
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incompatible_union_types_union_pointer_branch_mismatch() {
+    assert_error(
+        r#"
+        int main(void) {
+            union u1;
+            union u2;
+            union u1 *ptr1 = 0;
+            union u2 *ptr2 = 0;
+            1 ? ptr1 : ptr2;
+              //^^^^^^^^^^^ Expressions have incompatible types
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incomplete_unions_define_incomplete_union() {
+    assert_error(
+        r#"
+        union u;
+        union u my_union;
+      //^^^^^^^ Incomplete struct type
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_incomplete_unions_sizeof_incomplete_union_type() {
+    assert_error(
+        r#"
+        int main(void) {
+            union u;
+            return sizeof(union u);
+                        //^^^^^ Cannot get size of an incomplete type
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_invalid_union_lvalues_address_of_non_lvalue_union_member() {
+    assert_error(
+        r#"
+        union u {
+            int arr[3];
+            double d;
+        };
+        union u get_union(void) {
+            union u result = {{1, 2, 3}, 4.0};
+                           //^^^^^^^^^^^^^^^^ Too many elements in the initializer
+            return result;
+        }
+        int main(void) {
+            int *ptr[3] = &get_union().arr;
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_invalid_union_lvalues_assign_non_lvalue_union_member() {
+    assert_error(
+        r#"
+        
+        union inner {
+            int y;
+            long z;
+        };
+        union u {
+            int x;
+            union inner i;
+        };
+        union u return_union(void){
+            union u result = {1};
+            return result;
+        }
+        int main(void) {
+            return_union().i.y = 1;
+          //^^^^^^^^^^^^^^^^^^ Expression is not assignable
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
 fn test_invalid_types_extra_credit_other_features_bitwise_op_structure() {
     assert_error(
         r#"
@@ -200,6 +451,22 @@ fn test_invalid_types_extra_credit_other_features_compound_assign_to_nested_stru
             struct outer x = {{1}};
             x.s *= 10;
           //^^^ Assign compound operation cannot be used on pointer type
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_other_features_compound_assign_to_struct() {
+    assert_error(
+        r#"
+        
+        struct s { int i; };
+        int main(void) {
+            struct s x = {10};
+            x += 10;
+          //^ Cannot compound assign a struct type
             return 0;
         }
     "#,
@@ -317,6 +584,582 @@ fn test_invalid_types_extra_credit_other_features_switch_on_struct() {
                 default:
                     return 1;
             }
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_scalar_required_cast_between_unions() {
+    assert_error(
+        r#"
+        union u1 {
+            int a;
+        };
+        int main(void){
+            union u1 var = {10};
+            (union u1) var;
+           //^^^^^ Cannot cast a value to a non-scalar type
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_scalar_required_cast_union_to_int() {
+    assert_error(
+        r#"
+        
+        union u {
+            int i;
+        };
+        int main(void) {
+            union u x = {10};
+            return (int)x;
+                      //^ Cannot cast non-scalar expression
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_scalar_required_compare_unions() {
+    assert_error(
+        r#"
+        union u { long l; };
+        int main(void){
+            union u x = {1};
+            x == x;
+          //^ Invalid operator type
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_scalar_required_switch_on_union() {
+    assert_error(
+        r#"
+        
+        union s {
+            int i;
+        };
+        int main(void) {
+            union s x = {1};
+            switch (x) {
+                  //^ Switch statement requires an integer expression
+                case 1:
+                    return 0;
+                default:
+                    return 1;
+            }
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_scalar_required_union_as_controlling_expression() {
+    assert_error(
+        r#"
+        union u {int x;};
+        int main(void) {
+            union u my_union = {10};
+            if (my_union) {
+              //^^^^^^^^ Invalid condition type
+                return 1;
+            }
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_initializer_too_long() {
+    assert_error(
+        r#"
+        union u {
+            int a;
+            long b;
+        };
+        int main(void){
+            union u x = {1, 2};
+                      //^^^^^^ Too many elements in the initializer
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_nested_init_wrong_type() {
+    assert_error(
+        r#"
+        union u {
+            double d;
+            int i;
+            char c;
+        };
+        struct s {
+            int *ptr;
+            union u arr[3];
+        };
+        int main(void) {
+            int x;
+            struct s my_struct = {&x, {{1.0}, {2.0}, {&x}}};
+                                                    //^^ Cannot convert type for assignment!
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_nested_union_init_too_long() {
+    assert_error(
+        r#"
+        int main(void) {
+            union u {
+                double d; int x;
+            };
+            union u array_of_unions[3] = {
+                {1.0, 2.0, 3.0}
+              //^^^^^^^^^^^^^^^ Too many elements in the initializer
+            };
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_scalar_union_initializer() {
+    assert_error(
+        r#"
+        
+        union u {int a;};
+        int main(void){
+            union u my_union = 1;
+                             //^ Cannot convert type for assignment!
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_aggregate_init_wrong_type() {
+    assert_error(
+        r#"
+        struct one_elem {
+            long l;
+        };
+        struct three_elems {
+            int one;
+            int two;
+            int three;
+        };
+        union one_or_three_elems {
+            struct one_elem a;
+            struct three_elems b;
+        };
+        int main(void) {
+            static union one_or_three_elems my_union = {{1, 2, 3}};
+                                                      //^^^^^^^^^ Too many elements in the initializer
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_nested_init_not_const() {
+    assert_error(
+        r#"
+        union u {
+            long l;
+        };
+        struct has_union {
+            int a;
+            union u b;
+            char c;
+        };
+        long some_var = 10l;
+        struct has_union some_struct = {1,
+                                        {some_var},
+                                       //^^^^^^^^ Non-constant initializer on local static variable
+                                        'a'};
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_nested_init_too_long() {
+    assert_error(
+        r#"
+        
+        union u {
+            int a;
+            long b;
+        };
+        struct s {
+            int tag;
+            union u contents;
+        };
+        struct s my_struct = {
+            10,
+            {1, 2}
+          //^^^^^^ Too many elements in the initializer
+        };
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_scalar_union_initializer() {
+    assert_error(
+        r#"
+        
+        union u {int a;};
+        int main(void){
+            static union u my_union = 1;
+                                    //^ Invalid type of static declaration
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_too_long() {
+    assert_error(
+        r#"
+        union u {
+            int a;
+            long b;
+        };
+        union u x = {1, 2};
+                  //^^^^^^ Too many elements in the initializer
+        int main(void) {
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_union_init_not_constant() {
+    assert_error(
+        r#"
+        union u {int a; int b;};
+        int main(void){
+            int i = 10;
+            static union u my_union = {i};
+                                     //^ Non-constant initializer on local static variable
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_static_union_init_wrong_type() {
+    assert_error(
+        r#"
+        union u {
+            signed char *ptr;
+            double d;
+        };
+        int main(void) {
+            static union u my_union = {"A char array"};
+                                     //^^^^^^^^^^^^^^ Can't initialize a non-character pointer to a string literal
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_initializers_union_init_wrong_type() {
+    assert_error(
+        r#"
+        union u {
+            long *ptr;
+            double d;
+        };
+        int main(void) {
+            union u my_union = {1.0};
+                              //^^^ Cannot convert type for assignment!
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_conflicting_tag_decl_and_use() {
+    assert_error(
+        r#"
+        struct x { int a; };
+        int main(void) {
+            union x foo;
+          //^^^^^^^ Type is not a union type
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_conflicting_tag_decl_and_use_self_reference(
+) {
+    assert_error(
+        r#"
+        int main(void) {
+            struct s;
+            {
+                union s* ptr;
+              //^^^^^^^ Type is not a union type
+            }
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_conflicting_tag_declarations() {
+    assert_error(
+        r#"
+        
+        struct x;
+        union x;
+            //^ Tag does not match previous declaration
+        int main(void) {
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_struct_shadowed_by_union() {
+    assert_error(
+        r#"
+        int main(void) {
+            struct tag {int a;};
+            {
+                union tag {long l;};
+                struct tag *x;
+              //^^^^^^^^^^ Type is not a struct type
+            }
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_tag_decl_conflicts_with_def() {
+    assert_error(
+        r#"
+        int main(void) {
+            struct s;
+            union s {
+                //^ Tag does not match previous declaration
+                int a;
+            };
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_tag_def_conflicts_with_decl() {
+    assert_error(
+        r#"
+        int main(void) {
+            union s {
+                int a;
+            };
+            struct s;
+                 //^ Tag `s.0` does not match previous declaration
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_struct_conflicts_union_shadowed_by_incomplete_struct() {
+    assert_error(
+        r#"
+        int main(void) {
+            union tag {int a;};
+            {
+                struct tag;
+                union tag *x;
+              //^^^^^^^^^ Type is not a union type
+            }
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_address_of_wrong_union_type() {
+    assert_error(
+        r#"
+        union u {
+            int i;
+            char c;
+        };
+        int main(void) {
+            union u foo = {0};
+            union u {
+                int i;
+                char c;
+            };
+            union u *ptr = &foo;
+                         //^^^^ Cannot convert type for assignment!
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_compare_struct_and_union_ptrs() {
+    assert_error(
+        r#"
+        int main(void) {
+            struct tag;
+            struct tag *struct_ptr = 0;
+            {
+                union tag;
+                union tag *union_ptr = 0;
+                return (struct_ptr == union_ptr);
+                      //^^^^^^^^^^^^^^^^^^^^^^^ Expressions have incompatible types
+            }
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_conflicting_param_union_types() {
+    assert_error(
+        r#"
+        struct s;
+        int foo(struct s x);
+        int main(void) {
+            union s;
+            int foo(union s x);
+              //^^^ Conflicting declaration types for 'foo'
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_distinct_union_types() {
+    assert_error(
+        r#"
+        int foo(void) {
+            union s {
+                int a;
+                long b;
+            };
+            union s result = {1};
+            return result.a;
+        }
+        int main(void) {
+            union s;
+            union s blah = {foo()};
+          //^^^^^^^ Incomplete struct type
+            return blah.a;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_union_type_shadows_struct() {
+    assert_error(
+        r#"
+        struct u {
+            int a;
+        };
+        int main(void) {
+            union u;
+            union u my_union;
+          //^^^^^^^ Incomplete struct type
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_tag_resolution_union_wrong_member() {
+    assert_error(
+        r#"
+        union u {
+            int a;
+        };
+        int main(void) {
+            union u foo = {1};
+            union u {
+                int b;
+            };
+            return foo.b;
+                 //^^^ Structure 'u.0' does not have field b
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_type_declarations_array_of_incomplete_union_type() {
+    assert_error(
+        r#"
+        union u;
+        int main(void) {
+            union u(*arr)[3];
+          //^^^^^^^^^^^^^^^^ Illegal array of incomplete types
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_type_declarations_duplicate_union_def() {
+    assert_error(
+        r#"
+        int main(void) {
+            union u {int a;};
+            union u {int a;};
+                //^ Structure 'u.0' was already declared
+            return 0;
+        }
+    "#,
+    );
+}
+
+#[test]
+fn test_invalid_types_extra_credit_union_type_declarations_member_name_conflicts() {
+    assert_error(
+        r#"
+        
+        union u {
+            int a;
+            int a;
+              //^ Field name `a` already exists in the struct definition
+        };
+        int main(void) {
+            return 0;
         }
     "#,
     );
@@ -1071,7 +1914,7 @@ fn test_invalid_types_invalid_member_operators_arrow_pointer_to_non_struct() {
             double d = 0.0;
             double* ptr = &d;
             return ptr->l;
-                 //^^^ Type is not a struct
+                 //^^^ Type is not a struct or union
         }
     "#,
     );
@@ -1133,7 +1976,7 @@ fn test_invalid_types_invalid_member_operators_member_of_non_struct() {
         int main(void) {
           struct a *ptr = malloc(sizeof(struct a));
           ptr.x = 10;
-        //^^^ Type is not a struct
+        //^^^ Type is not a struct or union
         }
     "#,
     );
@@ -1170,7 +2013,7 @@ fn test_invalid_types_invalid_member_operators_nested_arrow_pointer_to_non_struc
             double d = 0.0;
             struct has_ptr p_struct = { &d };
             return p_struct.ptr->l;
-                 //^^^^^^^^^^^^ Type is not a struct
+                 //^^^^^^^^^^^^ Type is not a struct or union
         }
     "#,
     );
@@ -1503,7 +2346,7 @@ fn test_invalid_types_tag_resolution_incomplete_shadows_complete() {
             struct s;
             struct s *x;
             x->a = 10;
-          //^ Type is not a struct
+          //^ Type is not a struct or union
             return 0;
         }
     "#,
@@ -1523,7 +2366,7 @@ fn test_invalid_types_tag_resolution_incomplete_shadows_complete_cast() {
             void *ptr = malloc(sizeof(struct s));
             struct s;
             ((struct s *)ptr)->a = 10;
-          //^^^^^^^^^^^^^^^^^ Type is not a struct
+          //^^^^^^^^^^^^^^^^^ Type is not a struct or union
             return 0;
         }
     "#,

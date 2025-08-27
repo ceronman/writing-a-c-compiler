@@ -322,6 +322,9 @@ fn pp_type(file: &mut impl Write, ty: &Type) -> Result<()> {
         Type::Struct(name) => {
             write!(file, "Struct({name})")
         }
+        Type::Union(name) => {
+            write!(file, "Union({name})")
+        }
     }?;
     Ok(())
 }

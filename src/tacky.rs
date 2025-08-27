@@ -267,7 +267,7 @@ impl TackyGenerator {
             ast::Initializer::Compound(initializers) => match ty {
                 Type::Array(inner, len) => {
                     for i in 0..*len {
-                        let size = self.size_of(inner);
+                        let size = inner.size(&self.semantics);
                         if let Some(initializer) = initializers.get(i) {
                             self.emit_initializer(
                                 level + 1,
@@ -282,7 +282,7 @@ impl TackyGenerator {
                     }
                 }
                 Type::Struct(struct_name) => {
-                    let struct_def = self.semantics.struct_def(struct_name);
+                    let struct_def = self.semantics.type_definition(struct_name);
                     let fields = struct_def.fields.clone();
                     for (i, field) in fields.iter().enumerate() {
                         if let Some(initializer) = initializers.get(i) {
@@ -315,14 +315,14 @@ impl TackyGenerator {
             Type::Pointer(_) => Constant::ULong(0),
             Type::Void | Type::Function(_) => panic!("Zero initializer for invalid type"),
             Type::Array(inner, size) => {
-                let ty_size = self.size_of(inner);
+                let ty_size = inner.size(&self.semantics);
                 for i in 0..*size {
                     self.emit_zero_initializer(offset + i * ty_size, name, inner)
                 }
                 return;
             }
-            Type::Struct(struct_name) => {
-                let struct_def = self.semantics.struct_def(struct_name);
+            Type::Struct(struct_name) | Type::Union(struct_name) => {
+                let struct_def = self.semantics.type_definition(struct_name);
                 for field in struct_def.fields.clone() {
                     self.emit_zero_initializer(offset + field.offset, name, &field.ty)
                 }
@@ -595,7 +595,7 @@ impl TackyGenerator {
                         _ => unreachable!(),
                     };
                     let index = Val::Constant(Constant::Long(index));
-                    let scale = self.size_of(&inner);
+                    let scale = inner.size(&self.semantics);
                     self.instructions.push(Instruction::AddPtr {
                         ptr: val,
                         index,
@@ -639,7 +639,7 @@ impl TackyGenerator {
                         ast::PostfixOp::Decrement => -1,
                     };
                     let index = Val::Constant(Constant::Long(index));
-                    let scale = self.size_of(&inner);
+                    let scale = inner.size(&self.semantics);
                     self.instructions.push(Instruction::AddPtr {
                         ptr: val,
                         index,
@@ -672,7 +672,7 @@ impl TackyGenerator {
                         if let Type::Pointer(inner) = left_ty {
                             let ptr = src1;
                             let index = self.emit_expr(right);
-                            let scale = self.size_of(&inner);
+                            let scale = inner.size(&self.semantics);
                             self.instructions.push(Instruction::AddPtr {
                                 ptr,
                                 index,
@@ -683,7 +683,7 @@ impl TackyGenerator {
                         } else if let Type::Pointer(inner) = right_ty {
                             let ptr = self.emit_expr(right);
                             let index = src1;
-                            let scale = self.size_of(&inner);
+                            let scale = inner.size(&self.semantics);
                             self.instructions.push(Instruction::AddPtr {
                                 ptr,
                                 index,
@@ -711,8 +711,9 @@ impl TackyGenerator {
                                 dst: diff.clone(),
                             });
 
+                            let ty = inner1.as_ref();
                             let size =
-                                Val::Constant(Constant::Long(self.size_of(inner1.as_ref()) as i64));
+                                Val::Constant(Constant::Long(ty.size(&self.semantics) as i64));
                             self.instructions.push(Instruction::Binary {
                                 op: BinaryOp::Divide,
                                 src1: diff,
@@ -729,7 +730,7 @@ impl TackyGenerator {
                                 src: index,
                                 dst: negated.clone(),
                             });
-                            let scale = self.size_of(&inner);
+                            let scale = inner.size(&self.semantics);
                             self.instructions.push(Instruction::AddPtr {
                                 ptr,
                                 index: negated,
@@ -857,7 +858,7 @@ impl TackyGenerator {
                                 }
                                 _ => unreachable!(),
                             };
-                            let scale = self.size_of(&inner);
+                            let scale = inner.size(&self.semantics);
                             self.instructions.push(Instruction::AddPtr {
                                 ptr: src1,
                                 index,
@@ -1000,7 +1001,7 @@ impl TackyGenerator {
                 let Type::Pointer(inner) = &ptr_ty else {
                     unreachable!();
                 };
-                let scale = self.size_of(inner);
+                let scale = inner.size(&self.semantics);
                 let dst = self.make_temp(&ptr_ty);
                 self.instructions.push(Instruction::AddPtr {
                     ptr,
@@ -1011,18 +1012,19 @@ impl TackyGenerator {
                 return ExprResult::Dereference(dst);
             }
             ast::Expression::SizeOfType(ty) => {
+                let ty1 = &ty.ty();
                 return ExprResult::Operand(Val::Constant(Constant::ULong(
-                    self.size_of(&ty.ty()) as u64
+                    ty1.size(&self.semantics) as u64
                 )));
             }
             ast::Expression::SizeOfExpr(e) => {
                 let size = if let Some(target) = self.semantics.implicit_casts.get(&e.id).cloned() {
-                    self.size_of(&target)
+                    target.size(&self.semantics)
                 } else if let Some(target) = self.semantics.pointer_decays.get(&e.id).cloned() {
-                    self.size_of(&target)
+                    target.size(&self.semantics)
                 } else {
                     let ty = self.semantics.expr_type(e).clone();
-                    self.size_of(&ty)
+                    ty.size(&self.semantics)
                 };
                 return ExprResult::Operand(Val::Constant(Constant::ULong(size as u64)));
             }
@@ -1031,7 +1033,7 @@ impl TackyGenerator {
                 let Type::Struct(struct_name) = struct_ty else {
                     panic!("Expected a struct in dot expression");
                 };
-                let struct_def = self.semantics.struct_def(&struct_name);
+                let struct_def = self.semantics.type_definition(&struct_name);
                 let field_offset = struct_def
                     .fields
                     .iter()
@@ -1073,7 +1075,7 @@ impl TackyGenerator {
                 let Type::Struct(struct_name) = &*struct_ty else {
                     panic!("Expected a struct in dot expression");
                 };
-                let struct_def = self.semantics.struct_def(struct_name);
+                let struct_def = self.semantics.type_definition(struct_name);
                 let field_offset = struct_def
                     .fields
                     .iter()
@@ -1147,10 +1149,6 @@ impl TackyGenerator {
         }
     }
 
-    fn size_of(&mut self, ty: &Type) -> usize {
-        ty.al_size(&self.semantics.type_table)
-    }
-
     fn cast_if_needed(&mut self, val: Val, expr: &ast::Node<ast::Expression>) -> Val {
         let expr_ty = self.semantics.expr_type(expr).clone();
         let val = if let Some(target) = self.semantics.pointer_decays.get(&expr.id).cloned() {
@@ -1200,12 +1198,12 @@ impl TackyGenerator {
                         dst: dst.clone(),
                     });
                 }
-            } else if self.size_of(target) == self.size_of(src_ty) {
+            } else if target.size(&self.semantics) == src_ty.size(&self.semantics) {
                 self.instructions.push(Instruction::Copy {
                     src,
                     dst: dst.clone(),
                 });
-            } else if self.size_of(target) < self.size_of(src_ty) {
+            } else if target.size(&self.semantics) < src_ty.size(&self.semantics) {
                 self.instructions.push(Instruction::Truncate {
                     src,
                     dst: dst.clone(),
@@ -1298,7 +1296,7 @@ pub fn emit(program: &ast::Program, semantics: SemanticData) -> Program {
                         }))
                     }
                     InitialValue::Tentative => {
-                        let init = StaticInit::ZeroInit(generator.size_of(&ty));
+                        let init = StaticInit::ZeroInit(ty.size(&generator.semantics));
                         top_level.push(TopLevel::Variable(StaticVariable {
                             name: name.clone(),
                             ty,
