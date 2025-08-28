@@ -8,7 +8,7 @@ impl Type {
             Type::Long | Type::ULong | Type::Double | Type::Pointer(_) => 8,
             Type::Array(inner, _) => inner.alignment(semantics),
             Type::Struct(name) | Type::Union(name) => {
-                semantics.type_definition(name).alignment
+                semantics.get_aggregate(name).alignment
             }
             Type::Function(_) => panic!("Function type does not have alignment"),
             Type::Void => panic!("Void does not have alignment"),
@@ -27,7 +27,7 @@ impl Type {
             Type::Pointer(_) => 8,
             Type::Array(ty, size) => ty.size(semantics) * size,
             Type::Void => 1,
-            Type::Struct(name) | Type::Union(name) => semantics.type_definition(name).size,
+            Type::Struct(name) | Type::Union(name) => semantics.get_aggregate(name).size,
         }
     }
 }

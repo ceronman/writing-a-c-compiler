@@ -1,6 +1,6382 @@
 use crate::pretty::{dedent, dump_tacky};
 
 #[test]
+fn test_valid_extra_credit_libraries_classify_unions() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        int test_one_double(union one_double u) {
+            return (u.d1 == -2.345e6 && u.d2 == -2.345e6);
+        }
+        int test_has_union_with_double(struct has_union_with_double s) {
+            return (s.member.d1 == 9887.54321e44 && s.member.d2 == 9887.54321e44);
+        }
+        int test_has_struct_with_double(union has_struct_with_double u) {
+            return (u.s.member.d1 == 9887.54321e44
+                && u.arr[0] == 9887.54321e44 && u.s.member.d2 == 9887.54321e44);
+        }
+        int test_one_int(union one_int u) {
+            return (u.d == -80. && u.c == 0);
+        }
+        int test_one_int_nested(union one_int_nested u) {
+            return u.oi.d == 44e55 && u.oi.c == 109 && u.od.d1 == 44e55
+                && u.od.d2 == 44e55;
+        }
+        int test_char_int_mixed(union char_int_mixed u) {
+            return (strcmp(u.arr, "WXYZ") == 0 && u.ui == 1515804759);
+        }
+        int test_has_union(struct has_union s) {
+            return (s.i == 4294954951u && s.u.c == -60);
+        }
+        int test_has_struct_with_ints(union has_struct_with_ints u) {
+            return (u.s.i == 4294954951u && u.s.u.c == -60);
+        }
+        int test_two_doubles(union two_doubles u) {
+            return (u.arr[0] == 10.0 && u.arr[1] == 11.0 && u.single == 10.0);
+        }
+        int test_has_xmm_union(union has_xmm_union u) {
+            return u.u.d1 == 10.0 && u.u.d2 == 10.0 && u.u2.single == 10.0
+                && u.u2.arr[0] == 10.0 && u.u2.arr[1] == 11.0;
+        }
+        int test_dbl_struct(struct dbl_struct s) {
+            return s.member1.d1 == -2.345e6 && s.member1.d2 == -2.345e6
+                && s.member2 == 123.45;
+        }
+        int test_has_dbl_struct(union has_dbl_struct u) {
+            return u.member1.member1.d1 == -2.345e6 && u.member1.member1.d2 == -2.345e6
+                && u.member1.member2 == 123.45;
+        }
+        int test_char_arr(union char_arr u) {
+            return (strcmp(u.arr, "Chars!") == 0 && u.i == 1918986307);
+        }
+        int test_two_arrs(union two_arrs u) {
+            return (u.dbl_arr[0] == 13e4 && u.dbl_arr[1] == 14.5
+                && u.long_arr[0] == 4683669945186254848 && u.long_arr[1] == 4624352392379367424);
+        }
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u) {
+            return (u.arr[0] == 100 && u.arr[1] == 200 && u.arr[2] == 300
+                && u.member1.member1.d1 == 4.24399158242461027606e-312);
+        }
+        int test_two_structs(union two_structs u) {
+            return (u.member1.c == 'x' && u.member1.d == 55.5e5 && u.member2.i == 0);
+        }
+        int test_has_nine_byte_struct(union has_nine_byte_struct u) {
+            if (u.l != -71777214294589696l || u.c != 0) {
+                return 0;
+            }
+            if (u.s.i != -16711936) {
+                return 0;
+            }
+            for (int i = 0; i < 5; i = i + 1) {
+                int expected = i % 2 ? -1 : 0;
+                if (u.s.arr[i] != expected) {
+                    return 0;
+                }
+            }
+            return 1;
+        }
+        int test_has_uneven_union(struct has_uneven_union s) {
+            return s.i == -2147483647 && strcmp(s.u.arr, "!@#$") == 0 && s.u.uc == 33;
+        }
+        int test_has_other_unions(union has_other_unions u) {
+            if (u.n.l != -71777214294589696l) {
+                return 0;
+            }
+            for (int i = 0; i < 5; i = i + 1) {
+                int expected = i % 2 ? -1 : 0;
+                if (u.n.s.arr[i] != expected) {
+                    return 0;
+                }
+            }
+            return 1;
+        }
+        int test_union_array(union union_array u) {
+            return (u.u_arr->d == -20. && u.u_arr[1].d == -30.);
+        }
+        int test_uneven_union_array(union uneven_union_array u) {
+            return (strcmp(u.u_arr[0].arr, "QWER") == 0 && strcmp(u.u_arr[1].arr, "TYUI") == 0);
+        }
+        int test_has_small_struct_array(union has_small_struct_array u) {
+            return strcmp(u.arr[0].arr, "AS") == 0 && u.arr[0].sc == 10
+                && strcmp(u.arr[1].arr, "DF") == 0 && u.arr[1].sc == 11
+                && strcmp(u.arr[2].arr, "GH") == 0 && u.arr[2].sc == 12;
+        }
+        int test_gp_and_xmm(union gp_and_xmm u) {
+            return u.d_arr[0] == 11. && u.d_arr[1] == 12.;
+        }
+        int test_scalar_and_struct(union scalar_and_struct u) {
+            return u.cfe.c == -5 && u.cfe.d == -88.8;
+        }
+        int test_has_two_unions(struct has_two_unions s) {
+            if (strcmp(s.member1.arr, "WXYZ")) {
+                return 0;
+            }
+            if (s.member2.d1 != -2.345e6) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u) {
+            return (u.d.arr[0] == -22. && u.d.arr[1] == -32.);
+        }
+        int test_xmm_and_gp(union xmm_and_gp u) {
+            return (u.ise.d == -8. && u.ise.i == -8);
+        }
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u) {
+            return (u.member1.ise.d == -8. && u.member1.ise.i == -8);
+        }
+        int test_lotsa_doubles(union lotsa_doubles u) {
+            return u.arr[0] == 99. && u.arr[1] == 98. && u.arr[2] == 97;
+        }
+        int test_lotsa_chars(union lotsa_chars u) {
+            return !strcmp(u.more_chars, "asflakjsdflkjs");
+        }
+        int test_contains_large_struct(union contains_large_struct u) {
+            return u.l.i == 100 && u.l.d == 100. && !strcmp(u.l.arr, "A struct!");
+        }
+        int test_contains_union_array(union contains_union_array u) {
+            union gp_and_xmm a = u.arr[0];
+            union gp_and_xmm b = u.arr[1];
+            if (a.d_arr[0] != 11. || a.d_arr[1] != 12.) {
+                return 0;
+            }
+            if (b.d_arr[1] != -1 || b.c != 0) {
+                return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        global function test_one_double(u.142) { 
+            tmp.0 = u.142[0]
+            tmp.2 = - 2345000D
+            tmp.1 = tmp.0 == tmp.2
+            if !tmp.1 jump and_false_0
+            tmp.5 = u.142[0]
+            tmp.7 = - 2345000D
+            tmp.6 = tmp.5 == tmp.7
+            if !tmp.6 jump and_false_0
+            tmp.4 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.4 = 0
+        
+          and_end_1:
+            return tmp.4
+            return 0
+        }
+        global function test_has_union_with_double(s.143) { 
+            tmp.8 = s.143[0]
+            tmp.9 = tmp.8 == 988754321000000000000000000000000000000000000000D
+            if !tmp.9 jump and_false_2
+            tmp.12 = s.143[0]
+            tmp.13 = tmp.12 == 988754321000000000000000000000000000000000000000D
+            if !tmp.13 jump and_false_2
+            tmp.11 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.11 = 0
+        
+          and_end_3:
+            return tmp.11
+            return 0
+        }
+        global function test_has_struct_with_double(u.144) { 
+            tmp.14 = u.144[0]
+            tmp.15 = tmp.14 == 988754321000000000000000000000000000000000000000D
+            if !tmp.15 jump and_false_4
+            tmp.18 = &u.144
+            tmp.19 = sign_extend 0
+            tmp.20 = add_ptr(tmp.18, index=tmp.19, scale=8)
+            tmp.21 = *tmp.20
+            tmp.22 = tmp.21 == 988754321000000000000000000000000000000000000000D
+            if !tmp.22 jump and_false_4
+            tmp.17 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.17 = 0
+        
+          and_end_5:
+            if !tmp.17 jump and_false_6
+            tmp.25 = u.144[0]
+            tmp.26 = tmp.25 == 988754321000000000000000000000000000000000000000D
+            if !tmp.26 jump and_false_6
+            tmp.24 = 1
+            jump and_end_7
+        
+          and_false_6:
+            tmp.24 = 0
+        
+          and_end_7:
+            return tmp.24
+            return 0
+        }
+        global function test_one_int(u.145) { 
+            tmp.27 = u.145[0]
+            tmp.29 = - 80D
+            tmp.28 = tmp.27 == tmp.29
+            if !tmp.28 jump and_false_8
+            tmp.32 = u.145[0]
+            tmp.33 = sign_extend tmp.32
+            tmp.34 = tmp.33 == 0
+            if !tmp.34 jump and_false_8
+            tmp.31 = 1
+            jump and_end_9
+        
+          and_false_8:
+            tmp.31 = 0
+        
+          and_end_9:
+            return tmp.31
+            return 0
+        }
+        global function test_one_int_nested(u.146) { 
+            tmp.35 = u.146[0]
+            tmp.36 = tmp.35 == 440000000000000000000000000000000000000000000000000000000D
+            if !tmp.36 jump and_false_10
+            tmp.39 = u.146[0]
+            tmp.40 = sign_extend tmp.39
+            tmp.41 = tmp.40 == 109
+            if !tmp.41 jump and_false_10
+            tmp.38 = 1
+            jump and_end_11
+        
+          and_false_10:
+            tmp.38 = 0
+        
+          and_end_11:
+            if !tmp.38 jump and_false_12
+            tmp.44 = u.146[0]
+            tmp.45 = tmp.44 == 440000000000000000000000000000000000000000000000000000000D
+            if !tmp.45 jump and_false_12
+            tmp.43 = 1
+            jump and_end_13
+        
+          and_false_12:
+            tmp.43 = 0
+        
+          and_end_13:
+            if !tmp.43 jump and_false_14
+            tmp.48 = u.146[0]
+            tmp.49 = tmp.48 == 440000000000000000000000000000000000000000000000000000000D
+            if !tmp.49 jump and_false_14
+            tmp.47 = 1
+            jump and_end_15
+        
+          and_false_14:
+            tmp.47 = 0
+        
+          and_end_15:
+            return tmp.47
+            return 0
+        }
+        global function test_char_int_mixed(u.147) { 
+            tmp.50 = &u.147
+            tmp.51 = &string.0
+            tmp.52 = strcmp(tmp.50, tmp.51)
+            tmp.53 = tmp.52 == 0
+            if !tmp.53 jump and_false_16
+            tmp.56 = u.147[0]
+            tmp.58 = 1515804759
+            tmp.57 = tmp.56 == tmp.58
+            if !tmp.57 jump and_false_16
+            tmp.55 = 1
+            jump and_end_17
+        
+          and_false_16:
+            tmp.55 = 0
+        
+          and_end_17:
+            return tmp.55
+            return 0
+        }
+        global function test_has_union(s.148) { 
+            tmp.59 = s.148[0]
+            tmp.60 = tmp.59 == 4294954951U
+            if !tmp.60 jump and_false_18
+            tmp.63 = s.148[4]
+            tmp.64 = sign_extend tmp.63
+            tmp.66 = - 60
+            tmp.65 = tmp.64 == tmp.66
+            if !tmp.65 jump and_false_18
+            tmp.62 = 1
+            jump and_end_19
+        
+          and_false_18:
+            tmp.62 = 0
+        
+          and_end_19:
+            return tmp.62
+            return 0
+        }
+        global function test_has_struct_with_ints(u.149) { 
+            tmp.67 = u.149[0]
+            tmp.68 = tmp.67 == 4294954951U
+            if !tmp.68 jump and_false_20
+            tmp.71 = u.149[4]
+            tmp.72 = sign_extend tmp.71
+            tmp.74 = - 60
+            tmp.73 = tmp.72 == tmp.74
+            if !tmp.73 jump and_false_20
+            tmp.70 = 1
+            jump and_end_21
+        
+          and_false_20:
+            tmp.70 = 0
+        
+          and_end_21:
+            return tmp.70
+            return 0
+        }
+        global function test_two_doubles(u.150) { 
+            tmp.75 = &u.150
+            tmp.76 = sign_extend 0
+            tmp.77 = add_ptr(tmp.75, index=tmp.76, scale=8)
+            tmp.78 = *tmp.77
+            tmp.79 = tmp.78 == 10D
+            if !tmp.79 jump and_false_22
+            tmp.82 = &u.150
+            tmp.83 = sign_extend 1
+            tmp.84 = add_ptr(tmp.82, index=tmp.83, scale=8)
+            tmp.85 = *tmp.84
+            tmp.86 = tmp.85 == 11D
+            if !tmp.86 jump and_false_22
+            tmp.81 = 1
+            jump and_end_23
+        
+          and_false_22:
+            tmp.81 = 0
+        
+          and_end_23:
+            if !tmp.81 jump and_false_24
+            tmp.89 = u.150[0]
+            tmp.90 = tmp.89 == 10D
+            if !tmp.90 jump and_false_24
+            tmp.88 = 1
+            jump and_end_25
+        
+          and_false_24:
+            tmp.88 = 0
+        
+          and_end_25:
+            return tmp.88
+            return 0
+        }
+        global function test_has_xmm_union(u.151) { 
+            tmp.91 = u.151[0]
+            tmp.92 = tmp.91 == 10D
+            if !tmp.92 jump and_false_26
+            tmp.95 = u.151[0]
+            tmp.96 = tmp.95 == 10D
+            if !tmp.96 jump and_false_26
+            tmp.94 = 1
+            jump and_end_27
+        
+          and_false_26:
+            tmp.94 = 0
+        
+          and_end_27:
+            if !tmp.94 jump and_false_28
+            tmp.99 = u.151[0]
+            tmp.100 = tmp.99 == 10D
+            if !tmp.100 jump and_false_28
+            tmp.98 = 1
+            jump and_end_29
+        
+          and_false_28:
+            tmp.98 = 0
+        
+          and_end_29:
+            if !tmp.98 jump and_false_30
+            tmp.103 = &u.151
+            tmp.104 = sign_extend 0
+            tmp.105 = add_ptr(tmp.103, index=tmp.104, scale=8)
+            tmp.106 = *tmp.105
+            tmp.107 = tmp.106 == 10D
+            if !tmp.107 jump and_false_30
+            tmp.102 = 1
+            jump and_end_31
+        
+          and_false_30:
+            tmp.102 = 0
+        
+          and_end_31:
+            if !tmp.102 jump and_false_32
+            tmp.110 = &u.151
+            tmp.111 = sign_extend 1
+            tmp.112 = add_ptr(tmp.110, index=tmp.111, scale=8)
+            tmp.113 = *tmp.112
+            tmp.114 = tmp.113 == 11D
+            if !tmp.114 jump and_false_32
+            tmp.109 = 1
+            jump and_end_33
+        
+          and_false_32:
+            tmp.109 = 0
+        
+          and_end_33:
+            return tmp.109
+            return 0
+        }
+        global function test_dbl_struct(s.152) { 
+            tmp.115 = s.152[0]
+            tmp.117 = - 2345000D
+            tmp.116 = tmp.115 == tmp.117
+            if !tmp.116 jump and_false_34
+            tmp.120 = s.152[0]
+            tmp.122 = - 2345000D
+            tmp.121 = tmp.120 == tmp.122
+            if !tmp.121 jump and_false_34
+            tmp.119 = 1
+            jump and_end_35
+        
+          and_false_34:
+            tmp.119 = 0
+        
+          and_end_35:
+            if !tmp.119 jump and_false_36
+            tmp.125 = s.152[8]
+            tmp.126 = tmp.125 == 123.45D
+            if !tmp.126 jump and_false_36
+            tmp.124 = 1
+            jump and_end_37
+        
+          and_false_36:
+            tmp.124 = 0
+        
+          and_end_37:
+            return tmp.124
+            return 0
+        }
+        global function test_has_dbl_struct(u.153) { 
+            tmp.127 = u.153[0]
+            tmp.129 = - 2345000D
+            tmp.128 = tmp.127 == tmp.129
+            if !tmp.128 jump and_false_38
+            tmp.132 = u.153[0]
+            tmp.134 = - 2345000D
+            tmp.133 = tmp.132 == tmp.134
+            if !tmp.133 jump and_false_38
+            tmp.131 = 1
+            jump and_end_39
+        
+          and_false_38:
+            tmp.131 = 0
+        
+          and_end_39:
+            if !tmp.131 jump and_false_40
+            tmp.137 = u.153[8]
+            tmp.138 = tmp.137 == 123.45D
+            if !tmp.138 jump and_false_40
+            tmp.136 = 1
+            jump and_end_41
+        
+          and_false_40:
+            tmp.136 = 0
+        
+          and_end_41:
+            return tmp.136
+            return 0
+        }
+        global function test_char_arr(u.154) { 
+            tmp.139 = &u.154
+            tmp.140 = &string.1
+            tmp.141 = strcmp(tmp.139, tmp.140)
+            tmp.142 = tmp.141 == 0
+            if !tmp.142 jump and_false_42
+            tmp.145 = u.154[0]
+            tmp.146 = tmp.145 == 1918986307
+            if !tmp.146 jump and_false_42
+            tmp.144 = 1
+            jump and_end_43
+        
+          and_false_42:
+            tmp.144 = 0
+        
+          and_end_43:
+            return tmp.144
+            return 0
+        }
+        global function test_two_arrs(u.155) { 
+            tmp.147 = &u.155
+            tmp.148 = sign_extend 0
+            tmp.149 = add_ptr(tmp.147, index=tmp.148, scale=8)
+            tmp.150 = *tmp.149
+            tmp.151 = tmp.150 == 130000D
+            if !tmp.151 jump and_false_44
+            tmp.154 = &u.155
+            tmp.155 = sign_extend 1
+            tmp.156 = add_ptr(tmp.154, index=tmp.155, scale=8)
+            tmp.157 = *tmp.156
+            tmp.158 = tmp.157 == 14.5D
+            if !tmp.158 jump and_false_44
+            tmp.153 = 1
+            jump and_end_45
+        
+          and_false_44:
+            tmp.153 = 0
+        
+          and_end_45:
+            if !tmp.153 jump and_false_46
+            tmp.161 = &u.155
+            tmp.162 = sign_extend 0
+            tmp.163 = add_ptr(tmp.161, index=tmp.162, scale=8)
+            tmp.164 = *tmp.163
+            tmp.165 = tmp.164 == 4683669945186254848L
+            if !tmp.165 jump and_false_46
+            tmp.160 = 1
+            jump and_end_47
+        
+          and_false_46:
+            tmp.160 = 0
+        
+          and_end_47:
+            if !tmp.160 jump and_false_48
+            tmp.168 = &u.155
+            tmp.169 = sign_extend 1
+            tmp.170 = add_ptr(tmp.168, index=tmp.169, scale=8)
+            tmp.171 = *tmp.170
+            tmp.172 = tmp.171 == 4624352392379367424L
+            if !tmp.172 jump and_false_48
+            tmp.167 = 1
+            jump and_end_49
+        
+          and_false_48:
+            tmp.167 = 0
+        
+          and_end_49:
+            return tmp.167
+            return 0
+        }
+        global function test_two_eightbyte_has_struct(u.156) { 
+            tmp.173 = &u.156
+            tmp.174 = sign_extend 0
+            tmp.175 = add_ptr(tmp.173, index=tmp.174, scale=4)
+            tmp.176 = *tmp.175
+            tmp.177 = tmp.176 == 100
+            if !tmp.177 jump and_false_50
+            tmp.180 = &u.156
+            tmp.181 = sign_extend 1
+            tmp.182 = add_ptr(tmp.180, index=tmp.181, scale=4)
+            tmp.183 = *tmp.182
+            tmp.184 = tmp.183 == 200
+            if !tmp.184 jump and_false_50
+            tmp.179 = 1
+            jump and_end_51
+        
+          and_false_50:
+            tmp.179 = 0
+        
+          and_end_51:
+            if !tmp.179 jump and_false_52
+            tmp.187 = &u.156
+            tmp.188 = sign_extend 2
+            tmp.189 = add_ptr(tmp.187, index=tmp.188, scale=4)
+            tmp.190 = *tmp.189
+            tmp.191 = tmp.190 == 300
+            if !tmp.191 jump and_false_52
+            tmp.186 = 1
+            jump and_end_53
+        
+          and_false_52:
+            tmp.186 = 0
+        
+          and_end_53:
+            if !tmp.186 jump and_false_54
+            tmp.194 = u.156[0]
+            tmp.195 = tmp.194 == 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004243991582425D
+            if !tmp.195 jump and_false_54
+            tmp.193 = 1
+            jump and_end_55
+        
+          and_false_54:
+            tmp.193 = 0
+        
+          and_end_55:
+            return tmp.193
+            return 0
+        }
+        global function test_two_structs(u.157) { 
+            tmp.196 = u.157[0]
+            tmp.197 = sign_extend tmp.196
+            tmp.198 = tmp.197 == 120
+            if !tmp.198 jump and_false_56
+            tmp.201 = u.157[8]
+            tmp.202 = tmp.201 == 5550000D
+            if !tmp.202 jump and_false_56
+            tmp.200 = 1
+            jump and_end_57
+        
+          and_false_56:
+            tmp.200 = 0
+        
+          and_end_57:
+            if !tmp.200 jump and_false_58
+            tmp.205 = u.157[8]
+            tmp.206 = tmp.205 == 0
+            if !tmp.206 jump and_false_58
+            tmp.204 = 1
+            jump and_end_59
+        
+          and_false_58:
+            tmp.204 = 0
+        
+          and_end_59:
+            return tmp.204
+            return 0
+        }
+        global function test_has_nine_byte_struct(u.158) { 
+            tmp.207 = u.158[0]
+            tmp.209 = - 71777214294589696L
+            tmp.208 = tmp.207 != tmp.209
+            if tmp.208 jump or_true_60
+            tmp.212 = u.158[0]
+            tmp.213 = sign_extend tmp.212
+            tmp.214 = tmp.213 != 0
+            if tmp.214 jump or_true_60
+            tmp.211 = 0
+            jump or_end_61
+        
+          or_true_60:
+            tmp.211 = 1
+        
+          or_end_61:
+            if !tmp.211 jump end_if_62
+            return 0
+        
+          end_if_62:
+            tmp.215 = u.158[0]
+            tmp.217 = - 16711936
+            tmp.216 = tmp.215 != tmp.217
+            if !tmp.216 jump end_if_64
+            return 0
+        
+          end_if_64:
+            i.159 = 0
+        
+          start_loop_0:
+            tmp.218 = i.159 < 5
+            if !tmp.218 jump break_loop_0
+            tmp.219 = i.159 % 2
+            if !tmp.219 jump else_67
+            tmp.221 = - 1
+            tmp.220 = tmp.221
+            jump end_if_66
+        
+          else_67:
+            tmp.220 = 0
+        
+          end_if_66:
+            expected.160 = tmp.220
+            tmp.222 = &u.158
+            tmp.222 = add_ptr(tmp.222, index=4L, scale=1)
+            tmp.223 = sign_extend i.159
+            tmp.224 = add_ptr(tmp.222, index=tmp.223, scale=1)
+            tmp.225 = *tmp.224
+            tmp.226 = sign_extend tmp.225
+            tmp.227 = tmp.226 != expected.160
+            if !tmp.227 jump end_if_68
+            return 0
+        
+          end_if_68:
+        
+          continue_loop_0:
+            tmp.228 = i.159 + 1
+            i.159 = tmp.228
+            jump start_loop_0
+        
+          break_loop_0:
+            return 1
+            return 0
+        }
+        global function test_has_uneven_union(s.161) { 
+            tmp.229 = s.161[0]
+            tmp.231 = - 2147483647
+            tmp.230 = tmp.229 == tmp.231
+            if !tmp.230 jump and_false_70
+            tmp.234 = &s.161
+            tmp.234 = add_ptr(tmp.234, index=4L, scale=1)
+            tmp.235 = &string.2
+            tmp.236 = strcmp(tmp.234, tmp.235)
+            tmp.237 = tmp.236 == 0
+            if !tmp.237 jump and_false_70
+            tmp.233 = 1
+            jump and_end_71
+        
+          and_false_70:
+            tmp.233 = 0
+        
+          and_end_71:
+            if !tmp.233 jump and_false_72
+            tmp.240 = s.161[4]
+            tmp.241 = zero_extend tmp.240
+            tmp.242 = tmp.241 == 33
+            if !tmp.242 jump and_false_72
+            tmp.239 = 1
+            jump and_end_73
+        
+          and_false_72:
+            tmp.239 = 0
+        
+          and_end_73:
+            return tmp.239
+            return 0
+        }
+        global function test_has_other_unions(u.162) { 
+            tmp.243 = u.162[0]
+            tmp.245 = - 71777214294589696L
+            tmp.244 = tmp.243 != tmp.245
+            if !tmp.244 jump end_if_74
+            return 0
+        
+          end_if_74:
+            i.163 = 0
+        
+          start_loop_1:
+            tmp.246 = i.163 < 5
+            if !tmp.246 jump break_loop_1
+            tmp.247 = i.163 % 2
+            if !tmp.247 jump else_77
+            tmp.249 = - 1
+            tmp.248 = tmp.249
+            jump end_if_76
+        
+          else_77:
+            tmp.248 = 0
+        
+          end_if_76:
+            expected.164 = tmp.248
+            tmp.250 = &u.162
+            tmp.250 = add_ptr(tmp.250, index=4L, scale=1)
+            tmp.251 = sign_extend i.163
+            tmp.252 = add_ptr(tmp.250, index=tmp.251, scale=1)
+            tmp.253 = *tmp.252
+            tmp.254 = sign_extend tmp.253
+            tmp.255 = tmp.254 != expected.164
+            if !tmp.255 jump end_if_78
+            return 0
+        
+          end_if_78:
+        
+          continue_loop_1:
+            tmp.256 = i.163 + 1
+            i.163 = tmp.256
+            jump start_loop_1
+        
+          break_loop_1:
+            return 1
+            return 0
+        }
+        global function test_union_array(u.165) { 
+            tmp.257 = &u.165
+            tmp.258 = *tmp.257
+            tmp.260 = - 20D
+            tmp.259 = tmp.258 == tmp.260
+            if !tmp.259 jump and_false_80
+            tmp.263 = &u.165
+            tmp.264 = sign_extend 1
+            tmp.265 = add_ptr(tmp.263, index=tmp.264, scale=8)
+            tmp.266 = *tmp.265
+            tmp.268 = - 30D
+            tmp.267 = tmp.266 == tmp.268
+            if !tmp.267 jump and_false_80
+            tmp.262 = 1
+            jump and_end_81
+        
+          and_false_80:
+            tmp.262 = 0
+        
+          and_end_81:
+            return tmp.262
+            return 0
+        }
+        global function test_uneven_union_array(u.166) { 
+            tmp.269 = &u.166
+            tmp.270 = sign_extend 0
+            tmp.271 = add_ptr(tmp.269, index=tmp.270, scale=5)
+            tmp.272 = &string.3
+            tmp.273 = strcmp(tmp.271, tmp.272)
+            tmp.274 = tmp.273 == 0
+            if !tmp.274 jump and_false_82
+            tmp.277 = &u.166
+            tmp.278 = sign_extend 1
+            tmp.279 = add_ptr(tmp.277, index=tmp.278, scale=5)
+            tmp.280 = &string.4
+            tmp.281 = strcmp(tmp.279, tmp.280)
+            tmp.282 = tmp.281 == 0
+            if !tmp.282 jump and_false_82
+            tmp.276 = 1
+            jump and_end_83
+        
+          and_false_82:
+            tmp.276 = 0
+        
+          and_end_83:
+            return tmp.276
+            return 0
+        }
+        global function test_has_small_struct_array(u.167) { 
+            tmp.283 = &u.167
+            tmp.284 = sign_extend 0
+            tmp.285 = add_ptr(tmp.283, index=tmp.284, scale=4)
+            tmp.286 = &string.5
+            tmp.287 = strcmp(tmp.285, tmp.286)
+            tmp.288 = tmp.287 == 0
+            if !tmp.288 jump and_false_84
+            tmp.291 = &u.167
+            tmp.292 = sign_extend 0
+            tmp.293 = add_ptr(tmp.291, index=tmp.292, scale=4)
+            tmp.294 = add_ptr(tmp.293, index=3L, scale=1)
+            tmp.295 = *tmp.294
+            tmp.296 = sign_extend tmp.295
+            tmp.297 = tmp.296 == 10
+            if !tmp.297 jump and_false_84
+            tmp.290 = 1
+            jump and_end_85
+        
+          and_false_84:
+            tmp.290 = 0
+        
+          and_end_85:
+            if !tmp.290 jump and_false_86
+            tmp.300 = &u.167
+            tmp.301 = sign_extend 1
+            tmp.302 = add_ptr(tmp.300, index=tmp.301, scale=4)
+            tmp.303 = &string.6
+            tmp.304 = strcmp(tmp.302, tmp.303)
+            tmp.305 = tmp.304 == 0
+            if !tmp.305 jump and_false_86
+            tmp.299 = 1
+            jump and_end_87
+        
+          and_false_86:
+            tmp.299 = 0
+        
+          and_end_87:
+            if !tmp.299 jump and_false_88
+            tmp.308 = &u.167
+            tmp.309 = sign_extend 1
+            tmp.310 = add_ptr(tmp.308, index=tmp.309, scale=4)
+            tmp.311 = add_ptr(tmp.310, index=3L, scale=1)
+            tmp.312 = *tmp.311
+            tmp.313 = sign_extend tmp.312
+            tmp.314 = tmp.313 == 11
+            if !tmp.314 jump and_false_88
+            tmp.307 = 1
+            jump and_end_89
+        
+          and_false_88:
+            tmp.307 = 0
+        
+          and_end_89:
+            if !tmp.307 jump and_false_90
+            tmp.317 = &u.167
+            tmp.318 = sign_extend 2
+            tmp.319 = add_ptr(tmp.317, index=tmp.318, scale=4)
+            tmp.320 = &string.7
+            tmp.321 = strcmp(tmp.319, tmp.320)
+            tmp.322 = tmp.321 == 0
+            if !tmp.322 jump and_false_90
+            tmp.316 = 1
+            jump and_end_91
+        
+          and_false_90:
+            tmp.316 = 0
+        
+          and_end_91:
+            if !tmp.316 jump and_false_92
+            tmp.325 = &u.167
+            tmp.326 = sign_extend 2
+            tmp.327 = add_ptr(tmp.325, index=tmp.326, scale=4)
+            tmp.328 = add_ptr(tmp.327, index=3L, scale=1)
+            tmp.329 = *tmp.328
+            tmp.330 = sign_extend tmp.329
+            tmp.331 = tmp.330 == 12
+            if !tmp.331 jump and_false_92
+            tmp.324 = 1
+            jump and_end_93
+        
+          and_false_92:
+            tmp.324 = 0
+        
+          and_end_93:
+            return tmp.324
+            return 0
+        }
+        global function test_gp_and_xmm(u.168) { 
+            tmp.332 = &u.168
+            tmp.333 = sign_extend 0
+            tmp.334 = add_ptr(tmp.332, index=tmp.333, scale=8)
+            tmp.335 = *tmp.334
+            tmp.336 = tmp.335 == 11D
+            if !tmp.336 jump and_false_94
+            tmp.339 = &u.168
+            tmp.340 = sign_extend 1
+            tmp.341 = add_ptr(tmp.339, index=tmp.340, scale=8)
+            tmp.342 = *tmp.341
+            tmp.343 = tmp.342 == 12D
+            if !tmp.343 jump and_false_94
+            tmp.338 = 1
+            jump and_end_95
+        
+          and_false_94:
+            tmp.338 = 0
+        
+          and_end_95:
+            return tmp.338
+            return 0
+        }
+        global function test_scalar_and_struct(u.169) { 
+            tmp.344 = u.169[0]
+            tmp.345 = sign_extend tmp.344
+            tmp.347 = - 5
+            tmp.346 = tmp.345 == tmp.347
+            if !tmp.346 jump and_false_96
+            tmp.350 = u.169[8]
+            tmp.352 = - 88.8D
+            tmp.351 = tmp.350 == tmp.352
+            if !tmp.351 jump and_false_96
+            tmp.349 = 1
+            jump and_end_97
+        
+          and_false_96:
+            tmp.349 = 0
+        
+          and_end_97:
+            return tmp.349
+            return 0
+        }
+        global function test_has_two_unions(s.170) { 
+            tmp.353 = &s.170
+            tmp.354 = &string.0
+            tmp.355 = strcmp(tmp.353, tmp.354)
+            if !tmp.355 jump end_if_98
+            return 0
+        
+          end_if_98:
+            tmp.356 = s.170[8]
+            tmp.358 = - 2345000D
+            tmp.357 = tmp.356 != tmp.358
+            if !tmp.357 jump end_if_100
+            return 0
+        
+          end_if_100:
+            return 1
+            return 0
+        }
+        global function test_small_struct_arr_and_dbl(u.171) { 
+            tmp.359 = &u.171
+            tmp.360 = sign_extend 0
+            tmp.361 = add_ptr(tmp.359, index=tmp.360, scale=8)
+            tmp.362 = *tmp.361
+            tmp.364 = - 22D
+            tmp.363 = tmp.362 == tmp.364
+            if !tmp.363 jump and_false_102
+            tmp.367 = &u.171
+            tmp.368 = sign_extend 1
+            tmp.369 = add_ptr(tmp.367, index=tmp.368, scale=8)
+            tmp.370 = *tmp.369
+            tmp.372 = - 32D
+            tmp.371 = tmp.370 == tmp.372
+            if !tmp.371 jump and_false_102
+            tmp.366 = 1
+            jump and_end_103
+        
+          and_false_102:
+            tmp.366 = 0
+        
+          and_end_103:
+            return tmp.366
+            return 0
+        }
+        global function test_xmm_and_gp(u.172) { 
+            tmp.373 = u.172[0]
+            tmp.375 = - 8D
+            tmp.374 = tmp.373 == tmp.375
+            if !tmp.374 jump and_false_104
+            tmp.378 = u.172[8]
+            tmp.380 = - 8
+            tmp.379 = tmp.378 == tmp.380
+            if !tmp.379 jump and_false_104
+            tmp.377 = 1
+            jump and_end_105
+        
+          and_false_104:
+            tmp.377 = 0
+        
+          and_end_105:
+            return tmp.377
+            return 0
+        }
+        global function test_xmm_and_gp_nested(u.173) { 
+            tmp.381 = u.173[0]
+            tmp.383 = - 8D
+            tmp.382 = tmp.381 == tmp.383
+            if !tmp.382 jump and_false_106
+            tmp.386 = u.173[8]
+            tmp.388 = - 8
+            tmp.387 = tmp.386 == tmp.388
+            if !tmp.387 jump and_false_106
+            tmp.385 = 1
+            jump and_end_107
+        
+          and_false_106:
+            tmp.385 = 0
+        
+          and_end_107:
+            return tmp.385
+            return 0
+        }
+        global function test_lotsa_doubles(u.174) { 
+            tmp.389 = &u.174
+            tmp.390 = sign_extend 0
+            tmp.391 = add_ptr(tmp.389, index=tmp.390, scale=8)
+            tmp.392 = *tmp.391
+            tmp.393 = tmp.392 == 99D
+            if !tmp.393 jump and_false_108
+            tmp.396 = &u.174
+            tmp.397 = sign_extend 1
+            tmp.398 = add_ptr(tmp.396, index=tmp.397, scale=8)
+            tmp.399 = *tmp.398
+            tmp.400 = tmp.399 == 98D
+            if !tmp.400 jump and_false_108
+            tmp.395 = 1
+            jump and_end_109
+        
+          and_false_108:
+            tmp.395 = 0
+        
+          and_end_109:
+            if !tmp.395 jump and_false_110
+            tmp.403 = &u.174
+            tmp.404 = sign_extend 2
+            tmp.405 = add_ptr(tmp.403, index=tmp.404, scale=8)
+            tmp.406 = *tmp.405
+            tmp.408 = int_to_double 97
+            tmp.407 = tmp.406 == tmp.408
+            if !tmp.407 jump and_false_110
+            tmp.402 = 1
+            jump and_end_111
+        
+          and_false_110:
+            tmp.402 = 0
+        
+          and_end_111:
+            return tmp.402
+            return 0
+        }
+        global function test_lotsa_chars(u.175) { 
+            tmp.409 = &u.175
+            tmp.410 = &string.8
+            tmp.411 = strcmp(tmp.409, tmp.410)
+            tmp.412 = ! tmp.411
+            return tmp.412
+            return 0
+        }
+        global function test_contains_large_struct(u.176) { 
+            tmp.413 = u.176[0]
+            tmp.414 = tmp.413 == 100
+            if !tmp.414 jump and_false_112
+            tmp.417 = u.176[8]
+            tmp.418 = tmp.417 == 100D
+            if !tmp.418 jump and_false_112
+            tmp.416 = 1
+            jump and_end_113
+        
+          and_false_112:
+            tmp.416 = 0
+        
+          and_end_113:
+            if !tmp.416 jump and_false_114
+            tmp.421 = &u.176
+            tmp.421 = add_ptr(tmp.421, index=16L, scale=1)
+            tmp.422 = &string.9
+            tmp.423 = strcmp(tmp.421, tmp.422)
+            tmp.424 = ! tmp.423
+            if !tmp.424 jump and_false_114
+            tmp.420 = 1
+            jump and_end_115
+        
+          and_false_114:
+            tmp.420 = 0
+        
+          and_end_115:
+            return tmp.420
+            return 0
+        }
+        global function test_contains_union_array(u.177) { 
+            tmp.425 = &u.177
+            tmp.426 = sign_extend 0
+            tmp.427 = add_ptr(tmp.425, index=tmp.426, scale=16)
+            tmp.428 = *tmp.427
+            a.178 = tmp.428
+            tmp.429 = &u.177
+            tmp.430 = sign_extend 1
+            tmp.431 = add_ptr(tmp.429, index=tmp.430, scale=16)
+            tmp.432 = *tmp.431
+            b.179 = tmp.432
+            tmp.433 = &a.178
+            tmp.434 = sign_extend 0
+            tmp.435 = add_ptr(tmp.433, index=tmp.434, scale=8)
+            tmp.436 = *tmp.435
+            tmp.437 = tmp.436 != 11D
+            if tmp.437 jump or_true_116
+            tmp.440 = &a.178
+            tmp.441 = sign_extend 1
+            tmp.442 = add_ptr(tmp.440, index=tmp.441, scale=8)
+            tmp.443 = *tmp.442
+            tmp.444 = tmp.443 != 12D
+            if tmp.444 jump or_true_116
+            tmp.439 = 0
+            jump or_end_117
+        
+          or_true_116:
+            tmp.439 = 1
+        
+          or_end_117:
+            if !tmp.439 jump end_if_118
+            return 0
+        
+          end_if_118:
+            tmp.445 = &b.179
+            tmp.446 = sign_extend 1
+            tmp.447 = add_ptr(tmp.445, index=tmp.446, scale=8)
+            tmp.448 = *tmp.447
+            tmp.450 = - 1
+            tmp.451 = int_to_double tmp.450
+            tmp.449 = tmp.448 != tmp.451
+            if tmp.449 jump or_true_120
+            tmp.454 = b.179[0]
+            tmp.455 = sign_extend tmp.454
+            tmp.456 = tmp.455 != 0
+            if tmp.456 jump or_true_120
+            tmp.453 = 0
+            jump or_end_121
+        
+          or_true_120:
+            tmp.453 = 1
+        
+          or_end_121:
+            if !tmp.453 jump end_if_122
+            return 0
+        
+          end_if_122:
+            return 1
+            return 0
+        }
+        constant string.0: Array(5,Char) = "WXYZ\\0"
+        constant string.1: Array(7,Char) = "Chars!\\0"
+        constant string.2: Array(5,Char) = "!@#$\\0"
+        constant string.3: Array(5,Char) = "QWER\\0"
+        constant string.4: Array(5,Char) = "TYUI\\0"
+        constant string.5: Array(3,Char) = "AS\\0"
+        constant string.6: Array(3,Char) = "DF\\0"
+        constant string.7: Array(3,Char) = "GH\\0"
+        constant string.8: Array(15,Char) = "asflakjsdflkjs\\0"
+        constant string.9: Array(10,Char) = "A struct!\\0"
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_classify_unions_client() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        int main(void) {
+            union one_double od = { -2.345e6 };
+            if (!test_one_double(od)) {
+                return 1;
+            }
+            struct has_union_with_double huwd = { {9887.54321e44} };
+            if (!test_has_union_with_double(huwd)) {
+                return 2;
+            }
+            union has_struct_with_double hswd = { huwd };
+            if (!test_has_struct_with_double(hswd)) {
+                return 3;
+            }
+            union one_int oi = { -80. };
+            if (!test_one_int(oi)) {
+                return 4;
+            }
+            union one_int_nested oin = { {44e55} };
+            if (!test_one_int_nested(oin)) {
+                return 5;
+            }
+            union char_int_mixed cim = { "WXYZ" };
+            if (!test_char_int_mixed(cim)) {
+                return 6;
+            }
+            struct has_union hu = { 4294954951u, {-60} };
+            if (!test_has_union(hu)) {
+                return 7;
+            }
+            union has_struct_with_ints hswi;
+            hswi.s = hu;
+            if (!test_has_struct_with_ints(hswi)) {
+                return 8;
+            }
+            union two_doubles td = { {10.0, 11.0} };
+            if (!test_two_doubles(td)) {
+                return 9;
+            }
+            union has_xmm_union hxu;
+            hxu.u2 = td;
+            if (!test_has_xmm_union(hxu)) {
+                return 10;
+            }
+            struct dbl_struct ds = { od, 123.45 };
+            if (!test_dbl_struct(ds)) {
+                return 11;
+            }
+            union has_dbl_struct hds = { ds };
+            if (!test_has_dbl_struct(hds)) {
+                return 12;
+            }
+            union char_arr ca = { "Chars!" };
+            if (!test_char_arr(ca)) {
+                return 13;
+            }
+            union two_arrs two_arr_var = { {13e4, 14.5} };
+            if (!test_two_arrs(two_arr_var)) {
+                return 14;
+            }
+            union two_eightbyte_has_struct tehs = { {100, 200, 300} };
+            if (!test_two_eightbyte_has_struct(tehs)) {
+                return 15;
+            }
+            union two_structs ts = { {'x', 55.5e5} };
+            if (!test_two_structs(ts)) {
+                return 16;
+            }
+            union has_nine_byte_struct hnbs;
+            hnbs.s.i = -16711936;
+            for (int i = 0; i < 5; i = i + 1) {
+                char byte = i % 2 ? -1 : 0;
+                hnbs.s.arr[i] = byte;
+            }
+            hnbs.s.arr[4] = 0;
+            if (!test_has_nine_byte_struct(hnbs)) {
+                return 17;
+            }
+            struct has_uneven_union huu = { -2147483647, {"!@#$"} };
+            if (!test_has_uneven_union(huu)) {
+                return 18;
+            }
+            union has_other_unions hou;
+            hou.n = hnbs;
+            hou.n.s.arr[4] = 0;
+            if (!test_has_other_unions(hou)) {
+                return 19;
+            }
+            union union_array ua = { {{-20.}, {-30.}} };
+            if (!test_union_array(ua)) {
+                return 20;
+            }
+            union uneven_union_array uua = { {{"QWER"},{"TYUI"}} };
+            if (!test_uneven_union_array(uua)) {
+                return 21;
+            }
+            union has_small_struct_array hssa = { {
+                {"AS", 10}, {"DF", 11}, {"GH", 12}
+            } };
+            if (!test_has_small_struct_array(hssa)) {
+                return 22;
+            }
+            union gp_and_xmm gax = { {11., 12} };
+            if (!test_gp_and_xmm(gax)) {
+                return 23;
+            }
+            union scalar_and_struct sas;
+            sas.cfe.c = -5;
+            sas.cfe.d = -88.8;
+            if (!test_scalar_and_struct(sas)) {
+                return 24;
+            }
+            struct has_two_unions htu = {
+                cim, od
+            };
+            if (!test_has_two_unions(htu)) {
+                return 25;
+            }
+            union small_struct_arr_and_dbl ssaad;
+            ssaad.d.arr[0] = -22.;
+            ssaad.d.arr[1] = -32.;
+            if (!test_small_struct_arr_and_dbl(ssaad)) {
+                return 26;
+            }
+            union xmm_and_gp xag;
+            xag.ise.d = -8.;
+            xag.ise.i = -8;
+            if (!test_xmm_and_gp(xag)) {
+                return 27;
+            }
+            union xmm_and_gp_nested xagn = { xag };
+            if (!test_xmm_and_gp_nested(xagn)) {
+                return 28;
+            }
+            union lotsa_doubles dbls = { {99., 98., 97.} };
+            if (!test_lotsa_doubles(dbls)) {
+                return 29;
+            }
+            union lotsa_chars chars = { "asflakjsdflkjs" };
+            if (!test_lotsa_chars(chars)) {
+                return 30;
+            }
+            struct large large_struct = { 100, 100., "A struct!" };
+            union contains_large_struct cls;
+            cls.l = large_struct;
+            if (!test_contains_large_struct(cls)) {
+                return 31;
+            }
+            union gp_and_xmm gax2 = gax;
+            gax2.d_arr[0] = -2.0;
+            gax2.d_arr[1] = -1.0;
+            union contains_union_array cua = {
+                {gax, gax2}
+            };
+            if (!test_contains_union_array(cua)) {
+                return 32;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = - 2345000D
+            od.142[0] = tmp.0
+            tmp.1 = test_one_double(od.142)
+            tmp.2 = ! tmp.1
+            if !tmp.2 jump end_if_0
+            return 1
+        
+          end_if_0:
+            huwd.143[0] = 988754321000000000000000000000000000000000000000D
+            tmp.3 = test_has_union_with_double(huwd.143)
+            tmp.4 = ! tmp.3
+            if !tmp.4 jump end_if_2
+            return 2
+        
+          end_if_2:
+            hswd.144[0] = huwd.143
+            tmp.5 = test_has_struct_with_double(hswd.144)
+            tmp.6 = ! tmp.5
+            if !tmp.6 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.7 = - 80D
+            oi.145[0] = tmp.7
+            tmp.8 = test_one_int(oi.145)
+            tmp.9 = ! tmp.8
+            if !tmp.9 jump end_if_6
+            return 4
+        
+          end_if_6:
+            oin.146[0] = 440000000000000000000000000000000000000000000000000000000D
+            tmp.10 = test_one_int_nested(oin.146)
+            tmp.11 = ! tmp.10
+            if !tmp.11 jump end_if_8
+            return 5
+        
+          end_if_8:
+            cim.147[0] = 'W'
+            cim.147[1] = 'X'
+            cim.147[2] = 'Y'
+            cim.147[3] = 'Z'
+            cim.147[4] = '\0'
+            cim.147[5] = '\0'
+            cim.147[6] = '\0'
+            tmp.12 = test_char_int_mixed(cim.147)
+            tmp.13 = ! tmp.12
+            if !tmp.13 jump end_if_10
+            return 6
+        
+          end_if_10:
+            hu.148[0] = 4294954951U
+            tmp.14 = - 60
+            tmp.15 = truncate tmp.14
+            hu.148[4] = tmp.15
+            tmp.16 = test_has_union(hu.148)
+            tmp.17 = ! tmp.16
+            if !tmp.17 jump end_if_12
+            return 7
+        
+          end_if_12:
+            hswi.149[0] = hu.148
+            tmp.18 = test_has_struct_with_ints(hswi.149)
+            tmp.19 = ! tmp.18
+            if !tmp.19 jump end_if_14
+            return 8
+        
+          end_if_14:
+            td.150[0] = 10D
+            td.150[8] = 11D
+            tmp.20 = test_two_doubles(td.150)
+            tmp.21 = ! tmp.20
+            if !tmp.21 jump end_if_16
+            return 9
+        
+          end_if_16:
+            hxu.151[0] = td.150
+            tmp.22 = test_has_xmm_union(hxu.151)
+            tmp.23 = ! tmp.22
+            if !tmp.23 jump end_if_18
+            return 10
+        
+          end_if_18:
+            ds.152[0] = od.142
+            ds.152[8] = 123.45D
+            tmp.24 = test_dbl_struct(ds.152)
+            tmp.25 = ! tmp.24
+            if !tmp.25 jump end_if_20
+            return 11
+        
+          end_if_20:
+            hds.153[0] = ds.152
+            tmp.26 = test_has_dbl_struct(hds.153)
+            tmp.27 = ! tmp.26
+            if !tmp.27 jump end_if_22
+            return 12
+        
+          end_if_22:
+            ca.154[0] = 'C'
+            ca.154[1] = 'h'
+            ca.154[2] = 'a'
+            ca.154[3] = 'r'
+            ca.154[4] = 's'
+            ca.154[5] = '!'
+            ca.154[6] = '\0'
+            ca.154[7] = '\0'
+            ca.154[8] = '\0'
+            ca.154[9] = '\0'
+            ca.154[10] = '\0'
+            tmp.28 = test_char_arr(ca.154)
+            tmp.29 = ! tmp.28
+            if !tmp.29 jump end_if_24
+            return 13
+        
+          end_if_24:
+            two_arr_var.155[0] = 130000D
+            two_arr_var.155[8] = 14.5D
+            tmp.30 = test_two_arrs(two_arr_var.155)
+            tmp.31 = ! tmp.30
+            if !tmp.31 jump end_if_26
+            return 14
+        
+          end_if_26:
+            tehs.156[0] = 100
+            tehs.156[4] = 200
+            tehs.156[8] = 300
+            tmp.32 = test_two_eightbyte_has_struct(tehs.156)
+            tmp.33 = ! tmp.32
+            if !tmp.33 jump end_if_28
+            return 15
+        
+          end_if_28:
+            tmp.34 = truncate 120
+            ts.157[0] = tmp.34
+            ts.157[8] = 5550000D
+            tmp.35 = test_two_structs(ts.157)
+            tmp.36 = ! tmp.35
+            if !tmp.36 jump end_if_30
+            return 16
+        
+          end_if_30:
+            tmp.37 = - 16711936
+            hnbs.158[0] = tmp.37
+            i.159 = 0
+        
+          start_loop_0:
+            tmp.38 = i.159 < 5
+            if !tmp.38 jump break_loop_0
+            tmp.39 = i.159 % 2
+            if !tmp.39 jump else_33
+            tmp.41 = - 1
+            tmp.40 = tmp.41
+            jump end_if_32
+        
+          else_33:
+            tmp.40 = 0
+        
+          end_if_32:
+            tmp.42 = truncate tmp.40
+            byte.160 = tmp.42
+            tmp.43 = &hnbs.158
+            tmp.43 = add_ptr(tmp.43, index=4L, scale=1)
+            tmp.44 = sign_extend i.159
+            tmp.45 = add_ptr(tmp.43, index=tmp.44, scale=1)
+            *tmp.45 = byte.160
+        
+          continue_loop_0:
+            tmp.46 = i.159 + 1
+            i.159 = tmp.46
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.47 = &hnbs.158
+            tmp.47 = add_ptr(tmp.47, index=4L, scale=1)
+            tmp.48 = sign_extend 4
+            tmp.49 = add_ptr(tmp.47, index=tmp.48, scale=1)
+            tmp.50 = truncate 0
+            *tmp.49 = tmp.50
+            tmp.51 = test_has_nine_byte_struct(hnbs.158)
+            tmp.52 = ! tmp.51
+            if !tmp.52 jump end_if_34
+            return 17
+        
+          end_if_34:
+            tmp.53 = - 2147483647
+            huu.161[0] = tmp.53
+            huu.161[4] = '!'
+            huu.161[5] = '@'
+            huu.161[6] = '#'
+            huu.161[7] = '$'
+            huu.161[8] = '\0'
+            tmp.54 = test_has_uneven_union(huu.161)
+            tmp.55 = ! tmp.54
+            if !tmp.55 jump end_if_36
+            return 18
+        
+          end_if_36:
+            hou.162[0] = hnbs.158
+            tmp.56 = &hou.162
+            tmp.56 = add_ptr(tmp.56, index=4L, scale=1)
+            tmp.57 = sign_extend 4
+            tmp.58 = add_ptr(tmp.56, index=tmp.57, scale=1)
+            tmp.59 = truncate 0
+            *tmp.58 = tmp.59
+            tmp.60 = test_has_other_unions(hou.162)
+            tmp.61 = ! tmp.60
+            if !tmp.61 jump end_if_38
+            return 19
+        
+          end_if_38:
+            tmp.62 = - 20D
+            ua.163[0] = tmp.62
+            tmp.63 = - 30D
+            ua.163[8] = tmp.63
+            tmp.64 = test_union_array(ua.163)
+            tmp.65 = ! tmp.64
+            if !tmp.65 jump end_if_40
+            return 20
+        
+          end_if_40:
+            uua.164[0] = 'Q'
+            uua.164[1] = 'W'
+            uua.164[2] = 'E'
+            uua.164[3] = 'R'
+            uua.164[4] = '\0'
+            uua.164[5] = 'T'
+            uua.164[6] = 'Y'
+            uua.164[7] = 'U'
+            uua.164[8] = 'I'
+            uua.164[9] = '\0'
+            tmp.66 = test_uneven_union_array(uua.164)
+            tmp.67 = ! tmp.66
+            if !tmp.67 jump end_if_42
+            return 21
+        
+          end_if_42:
+            hssa.165[0] = 'A'
+            hssa.165[1] = 'S'
+            hssa.165[2] = '\0'
+            tmp.68 = truncate 10
+            hssa.165[3] = tmp.68
+            hssa.165[4] = 'D'
+            hssa.165[5] = 'F'
+            hssa.165[6] = '\0'
+            tmp.69 = truncate 11
+            hssa.165[7] = tmp.69
+            hssa.165[8] = 'G'
+            hssa.165[9] = 'H'
+            hssa.165[10] = '\0'
+            tmp.70 = truncate 12
+            hssa.165[11] = tmp.70
+            tmp.71 = test_has_small_struct_array(hssa.165)
+            tmp.72 = ! tmp.71
+            if !tmp.72 jump end_if_44
+            return 22
+        
+          end_if_44:
+            gax.166[0] = 11D
+            tmp.73 = int_to_double 12
+            gax.166[8] = tmp.73
+            tmp.74 = test_gp_and_xmm(gax.166)
+            tmp.75 = ! tmp.74
+            if !tmp.75 jump end_if_46
+            return 23
+        
+          end_if_46:
+            tmp.76 = - 5
+            tmp.77 = truncate tmp.76
+            sas.167[0] = tmp.77
+            tmp.78 = - 88.8D
+            sas.167[8] = tmp.78
+            tmp.79 = test_scalar_and_struct(sas.167)
+            tmp.80 = ! tmp.79
+            if !tmp.80 jump end_if_48
+            return 24
+        
+          end_if_48:
+            htu.168[0] = cim.147
+            htu.168[8] = od.142
+            tmp.81 = test_has_two_unions(htu.168)
+            tmp.82 = ! tmp.81
+            if !tmp.82 jump end_if_50
+            return 25
+        
+          end_if_50:
+            tmp.83 = &ssaad.169
+            tmp.84 = sign_extend 0
+            tmp.85 = add_ptr(tmp.83, index=tmp.84, scale=8)
+            tmp.86 = - 22D
+            *tmp.85 = tmp.86
+            tmp.87 = &ssaad.169
+            tmp.88 = sign_extend 1
+            tmp.89 = add_ptr(tmp.87, index=tmp.88, scale=8)
+            tmp.90 = - 32D
+            *tmp.89 = tmp.90
+            tmp.91 = test_small_struct_arr_and_dbl(ssaad.169)
+            tmp.92 = ! tmp.91
+            if !tmp.92 jump end_if_52
+            return 26
+        
+          end_if_52:
+            tmp.93 = - 8D
+            xag.170[0] = tmp.93
+            tmp.94 = - 8
+            xag.170[8] = tmp.94
+            tmp.95 = test_xmm_and_gp(xag.170)
+            tmp.96 = ! tmp.95
+            if !tmp.96 jump end_if_54
+            return 27
+        
+          end_if_54:
+            xagn.171[0] = xag.170
+            tmp.97 = test_xmm_and_gp_nested(xagn.171)
+            tmp.98 = ! tmp.97
+            if !tmp.98 jump end_if_56
+            return 28
+        
+          end_if_56:
+            dbls.172[0] = 99D
+            dbls.172[8] = 98D
+            dbls.172[16] = 97D
+            tmp.99 = test_lotsa_doubles(dbls.172)
+            tmp.100 = ! tmp.99
+            if !tmp.100 jump end_if_58
+            return 29
+        
+          end_if_58:
+            chars.173[0] = 'a'
+            chars.173[1] = 's'
+            chars.173[2] = 'f'
+            chars.173[3] = 'l'
+            chars.173[4] = 'a'
+            chars.173[5] = 'k'
+            chars.173[6] = 'j'
+            chars.173[7] = 's'
+            chars.173[8] = 'd'
+            chars.173[9] = 'f'
+            chars.173[10] = 'l'
+            chars.173[11] = 'k'
+            chars.173[12] = 'j'
+            chars.173[13] = 's'
+            chars.173[14] = '\0'
+            chars.173[15] = '\0'
+            chars.173[16] = '\0'
+            chars.173[17] = '\0'
+            tmp.101 = test_lotsa_chars(chars.173)
+            tmp.102 = ! tmp.101
+            if !tmp.102 jump end_if_60
+            return 30
+        
+          end_if_60:
+            large_struct.174[0] = 100
+            large_struct.174[8] = 100D
+            large_struct.174[16] = 'A'
+            large_struct.174[17] = ' '
+            large_struct.174[18] = 's'
+            large_struct.174[19] = 't'
+            large_struct.174[20] = 'r'
+            large_struct.174[21] = 'u'
+            large_struct.174[22] = 'c'
+            large_struct.174[23] = 't'
+            large_struct.174[24] = '!'
+            large_struct.174[25] = '\0'
+            cls.175[0] = large_struct.174
+            tmp.103 = test_contains_large_struct(cls.175)
+            tmp.104 = ! tmp.103
+            if !tmp.104 jump end_if_62
+            return 31
+        
+          end_if_62:
+            gax2.176 = gax.166
+            tmp.105 = &gax2.176
+            tmp.106 = sign_extend 0
+            tmp.107 = add_ptr(tmp.105, index=tmp.106, scale=8)
+            tmp.108 = - 2D
+            *tmp.107 = tmp.108
+            tmp.109 = &gax2.176
+            tmp.110 = sign_extend 1
+            tmp.111 = add_ptr(tmp.109, index=tmp.110, scale=8)
+            tmp.112 = - 1D
+            *tmp.111 = tmp.112
+            cua.177[0] = gax.166
+            cua.177[16] = gax2.176
+            tmp.113 = test_contains_union_array(cua.177)
+            tmp.114 = ! tmp.113
+            if !tmp.114 jump end_if_64
+            return 32
+        
+          end_if_64:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_param_passing() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5) {
+            if (!(i1 == 1 && i2 == 2 && d1 == 4.0 && i3 == 100 && i4 == 120 && i5 == 130)) {
+                return 0;
+            }
+            if (!(one_gp_struct.i == (unsigned int)-24 && one_gp_struct.u.i == 123456789)) {
+                return 0;
+            }
+            if (!(two_xmm.arr[0] == -10. && two_xmm.arr[1] == -11.)) {
+                return 0;
+            }
+            if (!(one_gp.d == 13.)) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp) {
+            if (!(i1 == -1 && i2 == -2 && i3 == -3 && i4 == -4 && i5 == -5 && i6 == -6)) {
+                return 0;
+            }
+            if (!(two_xmm.arr[0] == -10. && two_xmm.arr[1] == -11.)) {
+                return 0;
+            }
+            if (!(one_gp_struct.i == (unsigned int)-24 && one_gp_struct.u.i == 123456789)) {
+                return 0;
+            }
+            if (!(one_gp.d == 13.)) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2) {
+            if (!(d1 == 1.0 && d2 == 2.0 && d3 == 3.0 && d4 == 4.0)) {
+                return 0;
+            }
+            if (!(two_xmm.arr[0] == -10. && two_xmm.arr[1] == -11.)) {
+                return 0;
+            }
+            if (!(two_xmm_copy.arr[0] == -10. && two_xmm_copy.arr[1] == -11.)) {
+                return 0;
+            }
+            if (!(two_xmm_2.arr[0] == 33e4 && two_xmm_2.arr[1] == 55e6)) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp) {
+            if (!(i1 == 1 && i2 == 2 && i3 == 3 && i4 == 4 && i5 == 5)) {
+                return 0;
+            }
+            if (strcmp(two_gp.arr, "+_)(*&^%$#") != 0) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2) {
+            if (!(d1 == 9.0 && d2 == 8.0 && d3 == 7.0 && d4 == 6.0 && d5 == 5.0)) {
+                return 0;
+            }
+            if (!(two_xmm.arr[0] == -10. && two_xmm.arr[1] == -11.)) {
+                return 0;
+            }
+            if (!(two_xmm_2.arr[0] == 66e4 && two_xmm_2.arr[1] == 110e6)) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs) {
+            if (!(d1 == 101.2 && d2 == 102.3 && d3 == 103.4 && d4 == 104.5 && i1 == 75 && i2 == 76 && i3 == 77 && i4 == 78 && i5 == 79 && i6 == 80)) {
+                return 0;
+            }
+            if (!(mixed_regs.d_arr[0] == 0 && mixed_regs.d_arr[1] == 150.5)) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven) {
+            if (!(i1 == 1100 && i2 == 2200 && i3 == 3300 && i4 == 4400 && i5 == 5500)) {
+                return 0;
+            }
+            if (!(mixed_regs.d_arr[0] == 0 && mixed_regs.d_arr[1] == 150.5)) {
+                return 0;
+            }
+            if (!(one_gp.d == 13.)) {
+                return 0;
+            }
+            if (strcmp(uneven.arr, "boop") != 0) {
+                return 0;
+            }
+            return 1;
+        }
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct) {
+            if (!(mem.arr[0] == 66. && mem.arr[1] == 77. && mem.arr[2] == 88.)) {
+                return 0;
+            }
+            if (!(mixed_regs.d_arr[0] == 0 && mixed_regs.d_arr[1] == 150.5)) {
+                return 0;
+            }
+            if (strcmp(two_gp.arr, "+_)(*&^%$#") != 0) {
+                return 0;
+            }
+            if (!(one_gp_struct.i == (unsigned int)-24 && one_gp_struct.u.i == 123456789)) {
+                return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        global function pass_unions_and_structs(i1.142, i2.143, one_gp_struct.144, d1.145, two_xmm.146, one_gp.147, i3.148, i4.149, i5.150) { 
+            tmp.0 = i1.142 == 1
+            if !tmp.0 jump and_false_0
+            tmp.3 = i2.143 == 2
+            if !tmp.3 jump and_false_0
+            tmp.2 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.2 = 0
+        
+          and_end_1:
+            if !tmp.2 jump and_false_2
+            tmp.6 = d1.145 == 4D
+            if !tmp.6 jump and_false_2
+            tmp.5 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.5 = 0
+        
+          and_end_3:
+            if !tmp.5 jump and_false_4
+            tmp.9 = i3.148 == 100
+            if !tmp.9 jump and_false_4
+            tmp.8 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.8 = 0
+        
+          and_end_5:
+            if !tmp.8 jump and_false_6
+            tmp.12 = i4.149 == 120
+            if !tmp.12 jump and_false_6
+            tmp.11 = 1
+            jump and_end_7
+        
+          and_false_6:
+            tmp.11 = 0
+        
+          and_end_7:
+            if !tmp.11 jump and_false_8
+            tmp.15 = i5.150 == 130
+            if !tmp.15 jump and_false_8
+            tmp.14 = 1
+            jump and_end_9
+        
+          and_false_8:
+            tmp.14 = 0
+        
+          and_end_9:
+            tmp.16 = ! tmp.14
+            if !tmp.16 jump end_if_10
+            return 0
+        
+          end_if_10:
+            tmp.17 = one_gp_struct.144[0]
+            tmp.19 = - 24
+            tmp.20 = tmp.19
+            tmp.18 = tmp.17 == tmp.20
+            if !tmp.18 jump and_false_12
+            tmp.23 = one_gp_struct.144[4]
+            tmp.24 = tmp.23 == 123456789
+            if !tmp.24 jump and_false_12
+            tmp.22 = 1
+            jump and_end_13
+        
+          and_false_12:
+            tmp.22 = 0
+        
+          and_end_13:
+            tmp.25 = ! tmp.22
+            if !tmp.25 jump end_if_14
+            return 0
+        
+          end_if_14:
+            tmp.26 = &two_xmm.146
+            tmp.27 = sign_extend 0
+            tmp.28 = add_ptr(tmp.26, index=tmp.27, scale=8)
+            tmp.29 = *tmp.28
+            tmp.31 = - 10D
+            tmp.30 = tmp.29 == tmp.31
+            if !tmp.30 jump and_false_16
+            tmp.34 = &two_xmm.146
+            tmp.35 = sign_extend 1
+            tmp.36 = add_ptr(tmp.34, index=tmp.35, scale=8)
+            tmp.37 = *tmp.36
+            tmp.39 = - 11D
+            tmp.38 = tmp.37 == tmp.39
+            if !tmp.38 jump and_false_16
+            tmp.33 = 1
+            jump and_end_17
+        
+          and_false_16:
+            tmp.33 = 0
+        
+          and_end_17:
+            tmp.40 = ! tmp.33
+            if !tmp.40 jump end_if_18
+            return 0
+        
+          end_if_18:
+            tmp.41 = one_gp.147[0]
+            tmp.42 = tmp.41 == 13D
+            tmp.43 = ! tmp.42
+            if !tmp.43 jump end_if_20
+            return 0
+        
+          end_if_20:
+            return 1
+            return 0
+        }
+        global function pass_gp_union_in_memory(two_xmm.151, one_gp_struct.152, i1.153, i2.154, i3.155, i4.156, i5.157, i6.158, one_gp.159) { 
+            tmp.45 = - 1
+            tmp.44 = i1.153 == tmp.45
+            if !tmp.44 jump and_false_22
+            tmp.49 = - 2
+            tmp.48 = i2.154 == tmp.49
+            if !tmp.48 jump and_false_22
+            tmp.47 = 1
+            jump and_end_23
+        
+          and_false_22:
+            tmp.47 = 0
+        
+          and_end_23:
+            if !tmp.47 jump and_false_24
+            tmp.53 = - 3
+            tmp.52 = i3.155 == tmp.53
+            if !tmp.52 jump and_false_24
+            tmp.51 = 1
+            jump and_end_25
+        
+          and_false_24:
+            tmp.51 = 0
+        
+          and_end_25:
+            if !tmp.51 jump and_false_26
+            tmp.57 = - 4
+            tmp.56 = i4.156 == tmp.57
+            if !tmp.56 jump and_false_26
+            tmp.55 = 1
+            jump and_end_27
+        
+          and_false_26:
+            tmp.55 = 0
+        
+          and_end_27:
+            if !tmp.55 jump and_false_28
+            tmp.61 = - 5
+            tmp.60 = i5.157 == tmp.61
+            if !tmp.60 jump and_false_28
+            tmp.59 = 1
+            jump and_end_29
+        
+          and_false_28:
+            tmp.59 = 0
+        
+          and_end_29:
+            if !tmp.59 jump and_false_30
+            tmp.65 = - 6
+            tmp.64 = i6.158 == tmp.65
+            if !tmp.64 jump and_false_30
+            tmp.63 = 1
+            jump and_end_31
+        
+          and_false_30:
+            tmp.63 = 0
+        
+          and_end_31:
+            tmp.66 = ! tmp.63
+            if !tmp.66 jump end_if_32
+            return 0
+        
+          end_if_32:
+            tmp.67 = &two_xmm.151
+            tmp.68 = sign_extend 0
+            tmp.69 = add_ptr(tmp.67, index=tmp.68, scale=8)
+            tmp.70 = *tmp.69
+            tmp.72 = - 10D
+            tmp.71 = tmp.70 == tmp.72
+            if !tmp.71 jump and_false_34
+            tmp.75 = &two_xmm.151
+            tmp.76 = sign_extend 1
+            tmp.77 = add_ptr(tmp.75, index=tmp.76, scale=8)
+            tmp.78 = *tmp.77
+            tmp.80 = - 11D
+            tmp.79 = tmp.78 == tmp.80
+            if !tmp.79 jump and_false_34
+            tmp.74 = 1
+            jump and_end_35
+        
+          and_false_34:
+            tmp.74 = 0
+        
+          and_end_35:
+            tmp.81 = ! tmp.74
+            if !tmp.81 jump end_if_36
+            return 0
+        
+          end_if_36:
+            tmp.82 = one_gp_struct.152[0]
+            tmp.84 = - 24
+            tmp.85 = tmp.84
+            tmp.83 = tmp.82 == tmp.85
+            if !tmp.83 jump and_false_38
+            tmp.88 = one_gp_struct.152[4]
+            tmp.89 = tmp.88 == 123456789
+            if !tmp.89 jump and_false_38
+            tmp.87 = 1
+            jump and_end_39
+        
+          and_false_38:
+            tmp.87 = 0
+        
+          and_end_39:
+            tmp.90 = ! tmp.87
+            if !tmp.90 jump end_if_40
+            return 0
+        
+          end_if_40:
+            tmp.91 = one_gp.159[0]
+            tmp.92 = tmp.91 == 13D
+            tmp.93 = ! tmp.92
+            if !tmp.93 jump end_if_42
+            return 0
+        
+          end_if_42:
+            return 1
+            return 0
+        }
+        global function pass_xmm_union_in_memory(d1.160, d2.161, two_xmm.162, two_xmm_copy.163, d3.164, d4.165, two_xmm_2.166) { 
+            tmp.94 = d1.160 == 1D
+            if !tmp.94 jump and_false_44
+            tmp.97 = d2.161 == 2D
+            if !tmp.97 jump and_false_44
+            tmp.96 = 1
+            jump and_end_45
+        
+          and_false_44:
+            tmp.96 = 0
+        
+          and_end_45:
+            if !tmp.96 jump and_false_46
+            tmp.100 = d3.164 == 3D
+            if !tmp.100 jump and_false_46
+            tmp.99 = 1
+            jump and_end_47
+        
+          and_false_46:
+            tmp.99 = 0
+        
+          and_end_47:
+            if !tmp.99 jump and_false_48
+            tmp.103 = d4.165 == 4D
+            if !tmp.103 jump and_false_48
+            tmp.102 = 1
+            jump and_end_49
+        
+          and_false_48:
+            tmp.102 = 0
+        
+          and_end_49:
+            tmp.104 = ! tmp.102
+            if !tmp.104 jump end_if_50
+            return 0
+        
+          end_if_50:
+            tmp.105 = &two_xmm.162
+            tmp.106 = sign_extend 0
+            tmp.107 = add_ptr(tmp.105, index=tmp.106, scale=8)
+            tmp.108 = *tmp.107
+            tmp.110 = - 10D
+            tmp.109 = tmp.108 == tmp.110
+            if !tmp.109 jump and_false_52
+            tmp.113 = &two_xmm.162
+            tmp.114 = sign_extend 1
+            tmp.115 = add_ptr(tmp.113, index=tmp.114, scale=8)
+            tmp.116 = *tmp.115
+            tmp.118 = - 11D
+            tmp.117 = tmp.116 == tmp.118
+            if !tmp.117 jump and_false_52
+            tmp.112 = 1
+            jump and_end_53
+        
+          and_false_52:
+            tmp.112 = 0
+        
+          and_end_53:
+            tmp.119 = ! tmp.112
+            if !tmp.119 jump end_if_54
+            return 0
+        
+          end_if_54:
+            tmp.120 = &two_xmm_copy.163
+            tmp.121 = sign_extend 0
+            tmp.122 = add_ptr(tmp.120, index=tmp.121, scale=8)
+            tmp.123 = *tmp.122
+            tmp.125 = - 10D
+            tmp.124 = tmp.123 == tmp.125
+            if !tmp.124 jump and_false_56
+            tmp.128 = &two_xmm_copy.163
+            tmp.129 = sign_extend 1
+            tmp.130 = add_ptr(tmp.128, index=tmp.129, scale=8)
+            tmp.131 = *tmp.130
+            tmp.133 = - 11D
+            tmp.132 = tmp.131 == tmp.133
+            if !tmp.132 jump and_false_56
+            tmp.127 = 1
+            jump and_end_57
+        
+          and_false_56:
+            tmp.127 = 0
+        
+          and_end_57:
+            tmp.134 = ! tmp.127
+            if !tmp.134 jump end_if_58
+            return 0
+        
+          end_if_58:
+            tmp.135 = &two_xmm_2.166
+            tmp.136 = sign_extend 0
+            tmp.137 = add_ptr(tmp.135, index=tmp.136, scale=8)
+            tmp.138 = *tmp.137
+            tmp.139 = tmp.138 == 330000D
+            if !tmp.139 jump and_false_60
+            tmp.142 = &two_xmm_2.166
+            tmp.143 = sign_extend 1
+            tmp.144 = add_ptr(tmp.142, index=tmp.143, scale=8)
+            tmp.145 = *tmp.144
+            tmp.146 = tmp.145 == 55000000D
+            if !tmp.146 jump and_false_60
+            tmp.141 = 1
+            jump and_end_61
+        
+          and_false_60:
+            tmp.141 = 0
+        
+          and_end_61:
+            tmp.147 = ! tmp.141
+            if !tmp.147 jump end_if_62
+            return 0
+        
+          end_if_62:
+            return 1
+            return 0
+        }
+        global function pass_borderline_union(i1.167, i2.168, i3.169, i4.170, i5.171, two_gp.172) { 
+            tmp.148 = i1.167 == 1
+            if !tmp.148 jump and_false_64
+            tmp.151 = i2.168 == 2
+            if !tmp.151 jump and_false_64
+            tmp.150 = 1
+            jump and_end_65
+        
+          and_false_64:
+            tmp.150 = 0
+        
+          and_end_65:
+            if !tmp.150 jump and_false_66
+            tmp.154 = i3.169 == 3
+            if !tmp.154 jump and_false_66
+            tmp.153 = 1
+            jump and_end_67
+        
+          and_false_66:
+            tmp.153 = 0
+        
+          and_end_67:
+            if !tmp.153 jump and_false_68
+            tmp.157 = i4.170 == 4
+            if !tmp.157 jump and_false_68
+            tmp.156 = 1
+            jump and_end_69
+        
+          and_false_68:
+            tmp.156 = 0
+        
+          and_end_69:
+            if !tmp.156 jump and_false_70
+            tmp.160 = i5.171 == 5
+            if !tmp.160 jump and_false_70
+            tmp.159 = 1
+            jump and_end_71
+        
+          and_false_70:
+            tmp.159 = 0
+        
+          and_end_71:
+            tmp.161 = ! tmp.159
+            if !tmp.161 jump end_if_72
+            return 0
+        
+          end_if_72:
+            tmp.162 = &two_gp.172
+            tmp.163 = &string.0
+            tmp.164 = strcmp(tmp.162, tmp.163)
+            tmp.165 = tmp.164 != 0
+            if !tmp.165 jump end_if_74
+            return 0
+        
+          end_if_74:
+            return 1
+            return 0
+        }
+        global function pass_borderline_xmm_union(two_xmm.173, d1.174, d2.175, d3.176, d4.177, d5.178, two_xmm_2.179) { 
+            tmp.166 = d1.174 == 9D
+            if !tmp.166 jump and_false_76
+            tmp.169 = d2.175 == 8D
+            if !tmp.169 jump and_false_76
+            tmp.168 = 1
+            jump and_end_77
+        
+          and_false_76:
+            tmp.168 = 0
+        
+          and_end_77:
+            if !tmp.168 jump and_false_78
+            tmp.172 = d3.176 == 7D
+            if !tmp.172 jump and_false_78
+            tmp.171 = 1
+            jump and_end_79
+        
+          and_false_78:
+            tmp.171 = 0
+        
+          and_end_79:
+            if !tmp.171 jump and_false_80
+            tmp.175 = d4.177 == 6D
+            if !tmp.175 jump and_false_80
+            tmp.174 = 1
+            jump and_end_81
+        
+          and_false_80:
+            tmp.174 = 0
+        
+          and_end_81:
+            if !tmp.174 jump and_false_82
+            tmp.178 = d5.178 == 5D
+            if !tmp.178 jump and_false_82
+            tmp.177 = 1
+            jump and_end_83
+        
+          and_false_82:
+            tmp.177 = 0
+        
+          and_end_83:
+            tmp.179 = ! tmp.177
+            if !tmp.179 jump end_if_84
+            return 0
+        
+          end_if_84:
+            tmp.180 = &two_xmm.173
+            tmp.181 = sign_extend 0
+            tmp.182 = add_ptr(tmp.180, index=tmp.181, scale=8)
+            tmp.183 = *tmp.182
+            tmp.185 = - 10D
+            tmp.184 = tmp.183 == tmp.185
+            if !tmp.184 jump and_false_86
+            tmp.188 = &two_xmm.173
+            tmp.189 = sign_extend 1
+            tmp.190 = add_ptr(tmp.188, index=tmp.189, scale=8)
+            tmp.191 = *tmp.190
+            tmp.193 = - 11D
+            tmp.192 = tmp.191 == tmp.193
+            if !tmp.192 jump and_false_86
+            tmp.187 = 1
+            jump and_end_87
+        
+          and_false_86:
+            tmp.187 = 0
+        
+          and_end_87:
+            tmp.194 = ! tmp.187
+            if !tmp.194 jump end_if_88
+            return 0
+        
+          end_if_88:
+            tmp.195 = &two_xmm_2.179
+            tmp.196 = sign_extend 0
+            tmp.197 = add_ptr(tmp.195, index=tmp.196, scale=8)
+            tmp.198 = *tmp.197
+            tmp.199 = tmp.198 == 660000D
+            if !tmp.199 jump and_false_90
+            tmp.202 = &two_xmm_2.179
+            tmp.203 = sign_extend 1
+            tmp.204 = add_ptr(tmp.202, index=tmp.203, scale=8)
+            tmp.205 = *tmp.204
+            tmp.206 = tmp.205 == 110000000D
+            if !tmp.206 jump and_false_90
+            tmp.201 = 1
+            jump and_end_91
+        
+          and_false_90:
+            tmp.201 = 0
+        
+          and_end_91:
+            tmp.207 = ! tmp.201
+            if !tmp.207 jump end_if_92
+            return 0
+        
+          end_if_92:
+            return 1
+            return 0
+        }
+        global function pass_mixed_reg_in_memory(d1.180, d2.181, d3.182, d4.183, i1.184, i2.185, i3.186, i4.187, i5.188, i6.189, mixed_regs.190) { 
+            tmp.208 = d1.180 == 101.2D
+            if !tmp.208 jump and_false_94
+            tmp.211 = d2.181 == 102.3D
+            if !tmp.211 jump and_false_94
+            tmp.210 = 1
+            jump and_end_95
+        
+          and_false_94:
+            tmp.210 = 0
+        
+          and_end_95:
+            if !tmp.210 jump and_false_96
+            tmp.214 = d3.182 == 103.4D
+            if !tmp.214 jump and_false_96
+            tmp.213 = 1
+            jump and_end_97
+        
+          and_false_96:
+            tmp.213 = 0
+        
+          and_end_97:
+            if !tmp.213 jump and_false_98
+            tmp.217 = d4.183 == 104.5D
+            if !tmp.217 jump and_false_98
+            tmp.216 = 1
+            jump and_end_99
+        
+          and_false_98:
+            tmp.216 = 0
+        
+          and_end_99:
+            if !tmp.216 jump and_false_100
+            tmp.220 = i1.184 == 75
+            if !tmp.220 jump and_false_100
+            tmp.219 = 1
+            jump and_end_101
+        
+          and_false_100:
+            tmp.219 = 0
+        
+          and_end_101:
+            if !tmp.219 jump and_false_102
+            tmp.223 = i2.185 == 76
+            if !tmp.223 jump and_false_102
+            tmp.222 = 1
+            jump and_end_103
+        
+          and_false_102:
+            tmp.222 = 0
+        
+          and_end_103:
+            if !tmp.222 jump and_false_104
+            tmp.226 = i3.186 == 77
+            if !tmp.226 jump and_false_104
+            tmp.225 = 1
+            jump and_end_105
+        
+          and_false_104:
+            tmp.225 = 0
+        
+          and_end_105:
+            if !tmp.225 jump and_false_106
+            tmp.229 = i4.187 == 78
+            if !tmp.229 jump and_false_106
+            tmp.228 = 1
+            jump and_end_107
+        
+          and_false_106:
+            tmp.228 = 0
+        
+          and_end_107:
+            if !tmp.228 jump and_false_108
+            tmp.232 = i5.188 == 79
+            if !tmp.232 jump and_false_108
+            tmp.231 = 1
+            jump and_end_109
+        
+          and_false_108:
+            tmp.231 = 0
+        
+          and_end_109:
+            if !tmp.231 jump and_false_110
+            tmp.235 = i6.189 == 80
+            if !tmp.235 jump and_false_110
+            tmp.234 = 1
+            jump and_end_111
+        
+          and_false_110:
+            tmp.234 = 0
+        
+          and_end_111:
+            tmp.236 = ! tmp.234
+            if !tmp.236 jump end_if_112
+            return 0
+        
+          end_if_112:
+            tmp.237 = &mixed_regs.190
+            tmp.238 = sign_extend 0
+            tmp.239 = add_ptr(tmp.237, index=tmp.238, scale=8)
+            tmp.240 = *tmp.239
+            tmp.242 = int_to_double 0
+            tmp.241 = tmp.240 == tmp.242
+            if !tmp.241 jump and_false_114
+            tmp.245 = &mixed_regs.190
+            tmp.246 = sign_extend 1
+            tmp.247 = add_ptr(tmp.245, index=tmp.246, scale=8)
+            tmp.248 = *tmp.247
+            tmp.249 = tmp.248 == 150.5D
+            if !tmp.249 jump and_false_114
+            tmp.244 = 1
+            jump and_end_115
+        
+          and_false_114:
+            tmp.244 = 0
+        
+          and_end_115:
+            tmp.250 = ! tmp.244
+            if !tmp.250 jump end_if_116
+            return 0
+        
+          end_if_116:
+            return 1
+            return 0
+        }
+        global function pass_uneven_union_in_memory(i1.191, i2.192, i3.193, i4.194, i5.195, mixed_regs.196, one_gp.197, uneven.198) { 
+            tmp.251 = i1.191 == 1100
+            if !tmp.251 jump and_false_118
+            tmp.254 = i2.192 == 2200
+            if !tmp.254 jump and_false_118
+            tmp.253 = 1
+            jump and_end_119
+        
+          and_false_118:
+            tmp.253 = 0
+        
+          and_end_119:
+            if !tmp.253 jump and_false_120
+            tmp.257 = i3.193 == 3300
+            if !tmp.257 jump and_false_120
+            tmp.256 = 1
+            jump and_end_121
+        
+          and_false_120:
+            tmp.256 = 0
+        
+          and_end_121:
+            if !tmp.256 jump and_false_122
+            tmp.260 = i4.194 == 4400
+            if !tmp.260 jump and_false_122
+            tmp.259 = 1
+            jump and_end_123
+        
+          and_false_122:
+            tmp.259 = 0
+        
+          and_end_123:
+            if !tmp.259 jump and_false_124
+            tmp.263 = i5.195 == 5500
+            if !tmp.263 jump and_false_124
+            tmp.262 = 1
+            jump and_end_125
+        
+          and_false_124:
+            tmp.262 = 0
+        
+          and_end_125:
+            tmp.264 = ! tmp.262
+            if !tmp.264 jump end_if_126
+            return 0
+        
+          end_if_126:
+            tmp.265 = &mixed_regs.196
+            tmp.266 = sign_extend 0
+            tmp.267 = add_ptr(tmp.265, index=tmp.266, scale=8)
+            tmp.268 = *tmp.267
+            tmp.270 = int_to_double 0
+            tmp.269 = tmp.268 == tmp.270
+            if !tmp.269 jump and_false_128
+            tmp.273 = &mixed_regs.196
+            tmp.274 = sign_extend 1
+            tmp.275 = add_ptr(tmp.273, index=tmp.274, scale=8)
+            tmp.276 = *tmp.275
+            tmp.277 = tmp.276 == 150.5D
+            if !tmp.277 jump and_false_128
+            tmp.272 = 1
+            jump and_end_129
+        
+          and_false_128:
+            tmp.272 = 0
+        
+          and_end_129:
+            tmp.278 = ! tmp.272
+            if !tmp.278 jump end_if_130
+            return 0
+        
+          end_if_130:
+            tmp.279 = one_gp.197[0]
+            tmp.280 = tmp.279 == 13D
+            tmp.281 = ! tmp.280
+            if !tmp.281 jump end_if_132
+            return 0
+        
+          end_if_132:
+            tmp.282 = &uneven.198
+            tmp.283 = &string.1
+            tmp.284 = strcmp(tmp.282, tmp.283)
+            tmp.285 = tmp.284 != 0
+            if !tmp.285 jump end_if_134
+            return 0
+        
+          end_if_134:
+            return 1
+            return 0
+        }
+        global function pass_in_mem_first(mem.199, mixed_regs.200, two_gp.201, one_gp_struct.202) { 
+            tmp.286 = &mem.199
+            tmp.287 = sign_extend 0
+            tmp.288 = add_ptr(tmp.286, index=tmp.287, scale=8)
+            tmp.289 = *tmp.288
+            tmp.290 = tmp.289 == 66D
+            if !tmp.290 jump and_false_136
+            tmp.293 = &mem.199
+            tmp.294 = sign_extend 1
+            tmp.295 = add_ptr(tmp.293, index=tmp.294, scale=8)
+            tmp.296 = *tmp.295
+            tmp.297 = tmp.296 == 77D
+            if !tmp.297 jump and_false_136
+            tmp.292 = 1
+            jump and_end_137
+        
+          and_false_136:
+            tmp.292 = 0
+        
+          and_end_137:
+            if !tmp.292 jump and_false_138
+            tmp.300 = &mem.199
+            tmp.301 = sign_extend 2
+            tmp.302 = add_ptr(tmp.300, index=tmp.301, scale=8)
+            tmp.303 = *tmp.302
+            tmp.304 = tmp.303 == 88D
+            if !tmp.304 jump and_false_138
+            tmp.299 = 1
+            jump and_end_139
+        
+          and_false_138:
+            tmp.299 = 0
+        
+          and_end_139:
+            tmp.305 = ! tmp.299
+            if !tmp.305 jump end_if_140
+            return 0
+        
+          end_if_140:
+            tmp.306 = &mixed_regs.200
+            tmp.307 = sign_extend 0
+            tmp.308 = add_ptr(tmp.306, index=tmp.307, scale=8)
+            tmp.309 = *tmp.308
+            tmp.311 = int_to_double 0
+            tmp.310 = tmp.309 == tmp.311
+            if !tmp.310 jump and_false_142
+            tmp.314 = &mixed_regs.200
+            tmp.315 = sign_extend 1
+            tmp.316 = add_ptr(tmp.314, index=tmp.315, scale=8)
+            tmp.317 = *tmp.316
+            tmp.318 = tmp.317 == 150.5D
+            if !tmp.318 jump and_false_142
+            tmp.313 = 1
+            jump and_end_143
+        
+          and_false_142:
+            tmp.313 = 0
+        
+          and_end_143:
+            tmp.319 = ! tmp.313
+            if !tmp.319 jump end_if_144
+            return 0
+        
+          end_if_144:
+            tmp.320 = &two_gp.201
+            tmp.321 = &string.0
+            tmp.322 = strcmp(tmp.320, tmp.321)
+            tmp.323 = tmp.322 != 0
+            if !tmp.323 jump end_if_146
+            return 0
+        
+          end_if_146:
+            tmp.324 = one_gp_struct.202[0]
+            tmp.326 = - 24
+            tmp.327 = tmp.326
+            tmp.325 = tmp.324 == tmp.327
+            if !tmp.325 jump and_false_148
+            tmp.330 = one_gp_struct.202[4]
+            tmp.331 = tmp.330 == 123456789
+            if !tmp.331 jump and_false_148
+            tmp.329 = 1
+            jump and_end_149
+        
+          and_false_148:
+            tmp.329 = 0
+        
+          and_end_149:
+            tmp.332 = ! tmp.329
+            if !tmp.332 jump end_if_150
+            return 0
+        
+          end_if_150:
+            return 1
+            return 0
+        }
+        constant string.0: Array(11,Char) = "+_)(*&^%$#\\0"
+        constant string.1: Array(5,Char) = "boop\\0"
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_param_passing_client() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        int main(void) {
+            union two_doubles two_xmm = { {-10.0, -11.0} };
+            union one_int one_gp = { 13.0 };
+            struct has_union one_gp_struct = { -24, {0} };
+            one_gp_struct.u.i = 123456789;
+            if (!pass_unions_and_structs(1, 2, one_gp_struct, 4.0, two_xmm, one_gp, 100, 120, 130)) {
+                return 1;
+            }
+            if (!pass_gp_union_in_memory(two_xmm, one_gp_struct, -1, -2, -3, -4, -5, -6, one_gp)) {
+                return 2;
+            }
+            union two_doubles two_xmm_2 = { {33e4, 55e6 } };
+            if (!pass_xmm_union_in_memory(1.0, 2.0, two_xmm, two_xmm, 3.0, 4.0, two_xmm_2)) {
+                return 3;
+            }
+            union char_arr two_gp = { "+_)(*&^%$#" };
+            if (!pass_borderline_union(1, 2, 3, 4, 5, two_gp)) {
+                return 4;
+            }
+            two_xmm_2.arr[0] = two_xmm_2.arr[0] * 2;
+            two_xmm_2.arr[1] = two_xmm_2.arr[1] * 2;
+            if (!pass_borderline_xmm_union(two_xmm, 9.0, 8.0, 7.0, 6.0, 5.0, two_xmm_2)) {
+                return 5;
+            }
+            union gp_and_xmm mixed_regs = { {0, 150.5} };
+            if (!pass_mixed_reg_in_memory(101.2, 102.3, 103.4, 104.5, 75, 76, 77, 78, 79, 80, mixed_regs)) {
+                return 6;
+            }
+            union uneven uneven = { "boop" };
+            if (!pass_uneven_union_in_memory(1100, 2200, 3300, 4400, 5500, mixed_regs, one_gp, uneven)) {
+                return 7;
+            }
+            union lotsa_doubles mem = { {66., 77., 88.} };
+            if (!pass_in_mem_first(mem, mixed_regs, two_gp, one_gp_struct)) {
+                return 8;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = - 10D
+            two_xmm.142[0] = tmp.0
+            tmp.1 = - 11D
+            two_xmm.142[8] = tmp.1
+            one_gp.143[0] = 13D
+            tmp.2 = - 24
+            tmp.3 = tmp.2
+            one_gp_struct.144[0] = tmp.3
+            tmp.4 = truncate 0
+            one_gp_struct.144[4] = tmp.4
+            one_gp_struct.144[4] = 123456789
+            tmp.5 = pass_unions_and_structs(1, 2, one_gp_struct.144, 4D, two_xmm.142, one_gp.143, 100, 120, 130)
+            tmp.6 = ! tmp.5
+            if !tmp.6 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.7 = - 1
+            tmp.8 = - 2
+            tmp.9 = - 3
+            tmp.10 = - 4
+            tmp.11 = - 5
+            tmp.12 = - 6
+            tmp.13 = pass_gp_union_in_memory(two_xmm.142, one_gp_struct.144, tmp.7, tmp.8, tmp.9, tmp.10, tmp.11, tmp.12, one_gp.143)
+            tmp.14 = ! tmp.13
+            if !tmp.14 jump end_if_2
+            return 2
+        
+          end_if_2:
+            two_xmm_2.145[0] = 330000D
+            two_xmm_2.145[8] = 55000000D
+            tmp.15 = pass_xmm_union_in_memory(1D, 2D, two_xmm.142, two_xmm.142, 3D, 4D, two_xmm_2.145)
+            tmp.16 = ! tmp.15
+            if !tmp.16 jump end_if_4
+            return 3
+        
+          end_if_4:
+            two_gp.146[0] = '+'
+            two_gp.146[1] = '_'
+            two_gp.146[2] = ')'
+            two_gp.146[3] = '('
+            two_gp.146[4] = '*'
+            two_gp.146[5] = '&'
+            two_gp.146[6] = '^'
+            two_gp.146[7] = '%'
+            two_gp.146[8] = '$'
+            two_gp.146[9] = '#'
+            two_gp.146[10] = '\0'
+            tmp.17 = pass_borderline_union(1, 2, 3, 4, 5, two_gp.146)
+            tmp.18 = ! tmp.17
+            if !tmp.18 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.19 = &two_xmm_2.145
+            tmp.20 = sign_extend 0
+            tmp.21 = add_ptr(tmp.19, index=tmp.20, scale=8)
+            tmp.22 = &two_xmm_2.145
+            tmp.23 = sign_extend 0
+            tmp.24 = add_ptr(tmp.22, index=tmp.23, scale=8)
+            tmp.25 = *tmp.24
+            tmp.27 = int_to_double 2
+            tmp.26 = tmp.25 * tmp.27
+            *tmp.21 = tmp.26
+            tmp.28 = &two_xmm_2.145
+            tmp.29 = sign_extend 1
+            tmp.30 = add_ptr(tmp.28, index=tmp.29, scale=8)
+            tmp.31 = &two_xmm_2.145
+            tmp.32 = sign_extend 1
+            tmp.33 = add_ptr(tmp.31, index=tmp.32, scale=8)
+            tmp.34 = *tmp.33
+            tmp.36 = int_to_double 2
+            tmp.35 = tmp.34 * tmp.36
+            *tmp.30 = tmp.35
+            tmp.37 = pass_borderline_xmm_union(two_xmm.142, 9D, 8D, 7D, 6D, 5D, two_xmm_2.145)
+            tmp.38 = ! tmp.37
+            if !tmp.38 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.39 = int_to_double 0
+            mixed_regs.147[0] = tmp.39
+            mixed_regs.147[8] = 150.5D
+            tmp.40 = pass_mixed_reg_in_memory(101.2D, 102.3D, 103.4D, 104.5D, 75, 76, 77, 78, 79, 80, mixed_regs.147)
+            tmp.41 = ! tmp.40
+            if !tmp.41 jump end_if_10
+            return 6
+        
+          end_if_10:
+            uneven.148[0] = 'b'
+            uneven.148[1] = 'o'
+            uneven.148[2] = 'o'
+            uneven.148[3] = 'p'
+            uneven.148[4] = '\0'
+            tmp.42 = pass_uneven_union_in_memory(1100, 2200, 3300, 4400, 5500, mixed_regs.147, one_gp.143, uneven.148)
+            tmp.43 = ! tmp.42
+            if !tmp.43 jump end_if_12
+            return 7
+        
+          end_if_12:
+            mem.149[0] = 66D
+            mem.149[8] = 77D
+            mem.149[16] = 88D
+            tmp.44 = pass_in_mem_first(mem.149, mixed_regs.147, two_gp.146, one_gp_struct.144)
+            tmp.45 = ! tmp.44
+            if !tmp.45 jump end_if_14
+            return 8
+        
+          end_if_14:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_static_union_inits() {
+    let src = r#"
+        
+        int strcmp(char* s1, char* s2);
+        union simple {
+            int i;
+            char c;
+            double d;
+        };
+        extern union simple s;
+        int validate_simple(void);
+        union has_union {
+            union simple u;
+            char c;
+        };
+        extern union has_union h;
+        int validate_has_union(void);
+        struct has_union_array {
+            union has_union union_array[4];
+            char c;
+            union simple s;
+        };
+        extern struct has_union_array my_struct;
+        int validate_has_union_array(void);
+        extern union has_union all_zeros;
+        int validate_uninitialized(void);
+        union with_padding {
+            char arr[13];
+            long l;
+        };
+        extern union with_padding padded_union_array[3];
+        int validate_padded_union_array(void);
+        int validate_simple(void) {
+            return (s.c == -39 && s.i == 217);
+        }
+        int validate_has_union(void) {
+            return (h.u.c == 77 && h.c == 77 && h.u.i == 77);
+        }
+        int validate_has_union_array(void) {
+            for (int i = 0; i < 3; i = i + 1) {
+                int expected = 'a' + i;
+                if (my_struct.union_array[i].u.c != expected
+                    || my_struct.union_array[i].c != expected
+                    || my_struct.union_array[i].u.i != expected) {
+                    return 0;
+                }
+            }
+            if (my_struct.union_array[3].u.d != 0.0) {
+                return 0;
+            }
+            if (my_struct.c != '#') {
+                return 0;
+            }
+            if (my_struct.s.c != '!' || my_struct.s.i != '!') {
+                return 0;
+            }
+            return 1;
+        }
+        int validate_uninitialized(void) {
+            if (all_zeros.u.d != 0.0) {
+                return 0;
+            }
+            return 1;
+        }
+        int validate_padded_union_array(void) {
+            if (strcmp(padded_union_array[0].arr, "first string") != 0) {
+                return 0;
+            }
+            if (strcmp(padded_union_array[1].arr, "string #2") != 0) {
+                return 0;
+            }
+            if (strcmp(padded_union_array[2].arr, "string #3") != 0) {
+                return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        global function validate_simple() { 
+            tmp.0 = s[0]
+            tmp.1 = sign_extend tmp.0
+            tmp.3 = - 39
+            tmp.2 = tmp.1 == tmp.3
+            if !tmp.2 jump and_false_0
+            tmp.6 = s[0]
+            tmp.7 = tmp.6 == 217
+            if !tmp.7 jump and_false_0
+            tmp.5 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.5 = 0
+        
+          and_end_1:
+            return tmp.5
+            return 0
+        }
+        global function validate_has_union() { 
+            tmp.8 = h[0]
+            tmp.9 = sign_extend tmp.8
+            tmp.10 = tmp.9 == 77
+            if !tmp.10 jump and_false_2
+            tmp.13 = h[0]
+            tmp.14 = sign_extend tmp.13
+            tmp.15 = tmp.14 == 77
+            if !tmp.15 jump and_false_2
+            tmp.12 = 1
+            jump and_end_3
+        
+          and_false_2:
+            tmp.12 = 0
+        
+          and_end_3:
+            if !tmp.12 jump and_false_4
+            tmp.18 = h[0]
+            tmp.19 = tmp.18 == 77
+            if !tmp.19 jump and_false_4
+            tmp.17 = 1
+            jump and_end_5
+        
+          and_false_4:
+            tmp.17 = 0
+        
+          and_end_5:
+            return tmp.17
+            return 0
+        }
+        global function validate_has_union_array() { 
+            i.6 = 0
+        
+          start_loop_0:
+            tmp.20 = i.6 < 3
+            if !tmp.20 jump break_loop_0
+            tmp.21 = 97 + i.6
+            expected.7 = tmp.21
+            tmp.22 = &my_struct
+            tmp.23 = sign_extend i.6
+            tmp.24 = add_ptr(tmp.22, index=tmp.23, scale=8)
+            tmp.25 = *tmp.24
+            tmp.26 = sign_extend tmp.25
+            tmp.27 = tmp.26 != expected.7
+            if tmp.27 jump or_true_6
+            tmp.30 = &my_struct
+            tmp.31 = sign_extend i.6
+            tmp.32 = add_ptr(tmp.30, index=tmp.31, scale=8)
+            tmp.33 = *tmp.32
+            tmp.34 = sign_extend tmp.33
+            tmp.35 = tmp.34 != expected.7
+            if tmp.35 jump or_true_6
+            tmp.29 = 0
+            jump or_end_7
+        
+          or_true_6:
+            tmp.29 = 1
+        
+          or_end_7:
+            if tmp.29 jump or_true_8
+            tmp.38 = &my_struct
+            tmp.39 = sign_extend i.6
+            tmp.40 = add_ptr(tmp.38, index=tmp.39, scale=8)
+            tmp.41 = *tmp.40
+            tmp.42 = tmp.41 != expected.7
+            if tmp.42 jump or_true_8
+            tmp.37 = 0
+            jump or_end_9
+        
+          or_true_8:
+            tmp.37 = 1
+        
+          or_end_9:
+            if !tmp.37 jump end_if_10
+            return 0
+        
+          end_if_10:
+        
+          continue_loop_0:
+            tmp.43 = i.6 + 1
+            i.6 = tmp.43
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.44 = &my_struct
+            tmp.45 = sign_extend 3
+            tmp.46 = add_ptr(tmp.44, index=tmp.45, scale=8)
+            tmp.47 = *tmp.46
+            tmp.48 = tmp.47 != 0D
+            if !tmp.48 jump end_if_12
+            return 0
+        
+          end_if_12:
+            tmp.49 = my_struct[32]
+            tmp.50 = sign_extend tmp.49
+            tmp.51 = tmp.50 != 35
+            if !tmp.51 jump end_if_14
+            return 0
+        
+          end_if_14:
+            tmp.52 = my_struct[40]
+            tmp.53 = sign_extend tmp.52
+            tmp.54 = tmp.53 != 33
+            if tmp.54 jump or_true_16
+            tmp.57 = my_struct[40]
+            tmp.58 = tmp.57 != 33
+            if tmp.58 jump or_true_16
+            tmp.56 = 0
+            jump or_end_17
+        
+          or_true_16:
+            tmp.56 = 1
+        
+          or_end_17:
+            if !tmp.56 jump end_if_18
+            return 0
+        
+          end_if_18:
+            return 1
+            return 0
+        }
+        global function validate_uninitialized() { 
+            tmp.59 = all_zeros[0]
+            tmp.60 = tmp.59 != 0D
+            if !tmp.60 jump end_if_20
+            return 0
+        
+          end_if_20:
+            return 1
+            return 0
+        }
+        global function validate_padded_union_array() { 
+            tmp.61 = &padded_union_array
+            tmp.62 = sign_extend 0
+            tmp.63 = add_ptr(tmp.61, index=tmp.62, scale=16)
+            tmp.64 = &string.0
+            tmp.65 = strcmp(tmp.63, tmp.64)
+            tmp.66 = tmp.65 != 0
+            if !tmp.66 jump end_if_22
+            return 0
+        
+          end_if_22:
+            tmp.67 = &padded_union_array
+            tmp.68 = sign_extend 1
+            tmp.69 = add_ptr(tmp.67, index=tmp.68, scale=16)
+            tmp.70 = &string.1
+            tmp.71 = strcmp(tmp.69, tmp.70)
+            tmp.72 = tmp.71 != 0
+            if !tmp.72 jump end_if_24
+            return 0
+        
+          end_if_24:
+            tmp.73 = &padded_union_array
+            tmp.74 = sign_extend 2
+            tmp.75 = add_ptr(tmp.73, index=tmp.74, scale=16)
+            tmp.76 = &string.2
+            tmp.77 = strcmp(tmp.75, tmp.76)
+            tmp.78 = tmp.77 != 0
+            if !tmp.78 jump end_if_26
+            return 0
+        
+          end_if_26:
+            return 1
+            return 0
+        }
+        constant string.0: Array(13,Char) = "first string\\0"
+        constant string.1: Array(10,Char) = "string #2\\0"
+        constant string.2: Array(10,Char) = "string #3\\0"
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_static_union_inits_client() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        union simple {
+            int i;
+            char c;
+            double d;
+        };
+        extern union simple s;
+        int validate_simple(void);
+        union has_union {
+            union simple u;
+            char c;
+        };
+        extern union has_union h;
+        int validate_has_union(void);
+        struct has_union_array {
+            union has_union union_array[4];
+            char c;
+            union simple s;
+        };
+        extern struct has_union_array my_struct;
+        int validate_has_union_array(void);
+        extern union has_union all_zeros;
+        int validate_uninitialized(void);
+        union with_padding {
+            char arr[13];
+            long l;
+        };
+        extern union with_padding padded_union_array[3];
+        int validate_padded_union_array(void);
+        union simple s = {217};
+        union has_union h = {{77}};
+        struct has_union_array my_struct = {
+            {{{'a'}}, {{'b'}}, {{'c'}}}, '#', {'!'}
+        };
+        union has_union all_zeros;
+        union with_padding padded_union_array[3] = {
+            {"first string"}, {"string #2"}, {
+                "string #3"
+            }
+        };
+        int main(void) {
+            if (!validate_simple()) {
+                return 1;
+            }
+            if (!validate_has_union()){
+                return 2;
+            }
+            if (!validate_has_union_array()) {
+                return 3;
+            }
+            if (!validate_uninitialized()) {
+                return 4;
+            }
+            if (!validate_padded_union_array()) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = validate_simple()
+            tmp.1 = ! tmp.0
+            if !tmp.1 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.2 = validate_has_union()
+            tmp.3 = ! tmp.2
+            if !tmp.3 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.4 = validate_has_union_array()
+            tmp.5 = ! tmp.4
+            if !tmp.5 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.6 = validate_uninitialized()
+            tmp.7 = ! tmp.6
+            if !tmp.7 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.8 = validate_padded_union_array()
+            tmp.9 = ! tmp.8
+            if !tmp.9 jump end_if_8
+            return 5
+        
+          end_if_8:
+            return 0
+            return 0
+        }
+        static global all_zeros: Union(has_union.3) = zero[8]
+        static global h: Union(has_union.3) = [ 77, zero[4]]
+        static global my_struct: Struct(has_union_array.4) = [ 97, zero[4], 98, zero[4], 99, zero[4], zero[8], '#', zero[7], 33, zero[4]]
+        static global padded_union_array: Array(3,Union(with_padding.5)) = [ "first string\\0", zero[3], "string #2\\0", zero[3], zero[3], "string #3\\0", zero[3], zero[3]]
+        static global s: Union(simple.2) = [ 217, zero[4]]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_union_inits() {
+    let src = r#"
+        int strcmp(char *s1, char *s2);
+        union simple {
+            double d;
+            char c;
+            int *ptr;
+        };
+        union inner {
+            char arr[9];
+        };
+        struct my_struct {
+            long l;
+            union inner u;
+            int i;
+        };
+        union nested {
+            struct my_struct str;
+            union simple s;
+            long l;
+        };
+        int validate_simple(union simple *ptr);
+        int validate_simple_converted(union simple *ptr);
+        int validate_nested(union nested *ptr);
+        int validate_nested_partial(union nested *ptr);
+        
+        int validate_simple(union simple* ptr) {
+            return (ptr->d == 123.45);
+        }
+        int validate_simple_converted(union simple* ptr) {
+            return (ptr->d == 18446744073709549568.);
+        }
+        int validate_nested(union nested* ptr) {
+            if (ptr->str.l != 4294967395l) {
+                return 0;
+            }
+            for (int i = 0; i < 9; i = i + 1) {
+                if (ptr->str.u.arr[i] != -1 - i) {
+                    return 0;
+                }
+            }
+            return 1;
+        }
+        int validate_nested_partial(union nested* ptr) {
+            if (ptr->str.l != 9000372036854775800l) {
+                return 0;
+            }
+            if (strcmp(ptr->str.u.arr, "string")) {
+                return 0;
+            }
+            return 1;
+        }
+    "#;
+    let expected = r#"
+        global function validate_simple(ptr.10) { 
+            tmp.0 = *ptr.10
+            tmp.1 = tmp.0 == 123.45D
+            return tmp.1
+            return 0
+        }
+        global function validate_simple_converted(ptr.11) { 
+            tmp.2 = *ptr.11
+            tmp.3 = tmp.2 == 18446744073709550000D
+            return tmp.3
+            return 0
+        }
+        global function validate_nested(ptr.12) { 
+            tmp.4 = *ptr.12
+            tmp.5 = tmp.4 != 4294967395L
+            if !tmp.5 jump end_if_0
+            return 0
+        
+          end_if_0:
+            i.13 = 0
+        
+          start_loop_0:
+            tmp.6 = i.13 < 9
+            if !tmp.6 jump break_loop_0
+            tmp.7 = add_ptr(ptr.12, index=8L, scale=1)
+            tmp.8 = sign_extend i.13
+            tmp.9 = add_ptr(tmp.7, index=tmp.8, scale=1)
+            tmp.10 = *tmp.9
+            tmp.11 = sign_extend tmp.10
+            tmp.13 = - 1
+            tmp.14 = tmp.13 - i.13
+            tmp.12 = tmp.11 != tmp.14
+            if !tmp.12 jump end_if_2
+            return 0
+        
+          end_if_2:
+        
+          continue_loop_0:
+            tmp.15 = i.13 + 1
+            i.13 = tmp.15
+            jump start_loop_0
+        
+          break_loop_0:
+            return 1
+            return 0
+        }
+        global function validate_nested_partial(ptr.14) { 
+            tmp.16 = *ptr.14
+            tmp.17 = tmp.16 != 9000372036854775800L
+            if !tmp.17 jump end_if_4
+            return 0
+        
+          end_if_4:
+            tmp.18 = add_ptr(ptr.14, index=8L, scale=1)
+            tmp.19 = &string.0
+            tmp.20 = strcmp(tmp.18, tmp.19)
+            if !tmp.20 jump end_if_6
+            return 0
+        
+          end_if_6:
+            return 1
+            return 0
+        }
+        constant string.0: Array(7,Char) = "string\\0"
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_union_inits_client() {
+    let src = r#"
+        int strcmp(char *s1, char *s2);
+        union simple {
+            double d;
+            char c;
+            int *ptr;
+        };
+        union inner {
+            char arr[9];
+        };
+        struct my_struct {
+            long l;
+            union inner u;
+            int i;
+        };
+        union nested {
+            struct my_struct str;
+            union simple s;
+            long l;
+        };
+        int validate_simple(union simple *ptr);
+        int validate_simple_converted(union simple *ptr);
+        int validate_nested(union nested *ptr);
+        int validate_nested_partial(union nested *ptr);
+        int test_simple(void) {
+            union simple x = { 123.45 };
+            return validate_simple(&x);
+        }
+        int test_simple_converted(void) {
+            union simple x = { 18446744073709550315UL };
+            return validate_simple_converted(&x);
+        }
+        int test_nested(void) {
+            union nested x = { {4294967395l, {{-1, -2, -3, -4, -5, -6, -7, -8, -9}}} };
+            return validate_nested(&x);
+        }
+        int test_nested_partial_init(void) {
+            union nested x = { {9000372036854775800l, {"string"}} };
+            return validate_nested_partial(&x);
+        }
+        int main(void) {
+            if (!test_simple()) {
+                return 1;
+            }
+            if (!test_simple_converted()) {
+                return 2;
+            }
+            if (!test_nested()) {
+                return 3;
+            }
+            if (!test_nested_partial_init()) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function test_simple() { 
+            x.10[0] = 123.45D
+            tmp.0 = &x.10
+            tmp.1 = validate_simple(tmp.0)
+            return tmp.1
+            return 0
+        }
+        global function test_simple_converted() { 
+            tmp.2 = uint_to_double 18446744073709550315UL
+            x.11[0] = tmp.2
+            tmp.3 = &x.11
+            tmp.4 = validate_simple_converted(tmp.3)
+            return tmp.4
+            return 0
+        }
+        global function test_nested() { 
+            x.12[0] = 4294967395L
+            tmp.5 = - 1
+            tmp.6 = truncate tmp.5
+            x.12[8] = tmp.6
+            tmp.7 = - 2
+            tmp.8 = truncate tmp.7
+            x.12[9] = tmp.8
+            tmp.9 = - 3
+            tmp.10 = truncate tmp.9
+            x.12[10] = tmp.10
+            tmp.11 = - 4
+            tmp.12 = truncate tmp.11
+            x.12[11] = tmp.12
+            tmp.13 = - 5
+            tmp.14 = truncate tmp.13
+            x.12[12] = tmp.14
+            tmp.15 = - 6
+            tmp.16 = truncate tmp.15
+            x.12[13] = tmp.16
+            tmp.17 = - 7
+            tmp.18 = truncate tmp.17
+            x.12[14] = tmp.18
+            tmp.19 = - 8
+            tmp.20 = truncate tmp.19
+            x.12[15] = tmp.20
+            tmp.21 = - 9
+            tmp.22 = truncate tmp.21
+            x.12[16] = tmp.22
+            x.12[20] = 0
+            tmp.23 = &x.12
+            tmp.24 = validate_nested(tmp.23)
+            return tmp.24
+            return 0
+        }
+        global function test_nested_partial_init() { 
+            x.13[0] = 9000372036854775800L
+            x.13[8] = 's'
+            x.13[9] = 't'
+            x.13[10] = 'r'
+            x.13[11] = 'i'
+            x.13[12] = 'n'
+            x.13[13] = 'g'
+            x.13[14] = '\0'
+            x.13[15] = '\0'
+            x.13[16] = '\0'
+            x.13[20] = 0
+            tmp.25 = &x.13
+            tmp.26 = validate_nested_partial(tmp.25)
+            return tmp.26
+            return 0
+        }
+        global function main() { 
+            tmp.27 = test_simple()
+            tmp.28 = ! tmp.27
+            if !tmp.28 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.29 = test_simple_converted()
+            tmp.30 = ! tmp.29
+            if !tmp.30 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.31 = test_nested()
+            tmp.32 = ! tmp.31
+            if !tmp.32 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.33 = test_nested_partial_init()
+            tmp.34 = ! tmp.33
+            if !tmp.34 jump end_if_6
+            return 4
+        
+          end_if_6:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_union_retvals() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        union one_double return_one_double(void) {
+            union one_double result = { 245.5 };
+            return result;
+        }
+        union one_int_nested return_one_int_nested(void) {
+            union one_int_nested result = { {-9876.5} };
+            return result;
+        }
+        union has_dbl_struct return_has_dbl_struct(void) {
+            union has_dbl_struct result = {
+                {
+                    {1234.5}, 6789.
+                }
+            };
+            return result;
+        }
+        union two_arrs return_two_arrs(void) {
+            union two_arrs result;
+            result.dbl_arr[0] = 66.75;
+            result.long_arr[1] = -4294967300l;
+            return result;
+        }
+        union scalar_and_struct return_scalar_and_struct(void) {
+            union scalar_and_struct result;
+            result.cfe.c = -115;
+            result.cfe.d = 222222.25;
+            return result;
+        }
+        union xmm_and_gp return_xmm_and_gp(void) {
+            union xmm_and_gp result;
+            result.ise.d = -50000.125;
+            result.ise.i = -3000;
+            return result;
+        }
+        union contains_union_array return_contains_union_array(void) {
+            union contains_union_array result = {
+                {
+                    {{-2000e-4, -3000e-4}}, {{20000e10, 5000e11}}
+                }
+            };
+            return result;
+        }
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin) {
+            if (i1 != 1 || i2 != 25) {
+                exit(-1);
+            }
+            if (int_and_dbl.cfe.c != -115 || int_and_dbl.cfe.d != 222222.25) {
+                exit(-2);
+            }
+            if (two_arrs.dbl_arr[0] != 66.75 || two_arrs.long_arr[1] != -4294967300l) {
+                exit(-3);
+            }
+            if (!(big_union.arr[0].d_arr[0] == -2000e-4 && big_union.arr[0].d_arr[1] == -3000e-4
+                && big_union.arr[1].d_arr[0] == 20000e10 && big_union.arr[1].d_arr[1] == 5000e11)) {
+                exit(-4);
+            }
+            if (oin.oi.d != -9876.5) {
+                exit(-5);
+            }
+            union lotsa_chars result = { "ABCDEFGHIJKLMNOPQ" };
+            return result;
+        }
+        struct has_uneven_union return_struct_with_union(void) {
+            struct has_uneven_union result = {
+                -8765, {"done"}
+            };
+            return result;
+        }
+    "#;
+    let expected = r#"
+        global function return_one_double() { 
+            result.142[0] = 245.5D
+            return result.142
+            return 0
+        }
+        global function return_one_int_nested() { 
+            tmp.0 = - 9876.5D
+            result.143[0] = tmp.0
+            return result.143
+            return 0
+        }
+        global function return_has_dbl_struct() { 
+            result.144[0] = 1234.5D
+            result.144[8] = 6789D
+            return result.144
+            return 0
+        }
+        global function return_two_arrs() { 
+            tmp.1 = &result.145
+            tmp.2 = sign_extend 0
+            tmp.3 = add_ptr(tmp.1, index=tmp.2, scale=8)
+            *tmp.3 = 66.75D
+            tmp.4 = &result.145
+            tmp.5 = sign_extend 1
+            tmp.6 = add_ptr(tmp.4, index=tmp.5, scale=8)
+            tmp.7 = - 4294967300L
+            *tmp.6 = tmp.7
+            return result.145
+            return 0
+        }
+        global function return_scalar_and_struct() { 
+            tmp.8 = - 115
+            tmp.9 = truncate tmp.8
+            result.146[0] = tmp.9
+            result.146[8] = 222222.25D
+            return result.146
+            return 0
+        }
+        global function return_xmm_and_gp() { 
+            tmp.10 = - 50000.125D
+            result.147[0] = tmp.10
+            tmp.11 = - 3000
+            result.147[8] = tmp.11
+            return result.147
+            return 0
+        }
+        global function return_contains_union_array() { 
+            tmp.12 = - 0.2D
+            result.148[0] = tmp.12
+            tmp.13 = - 0.3D
+            result.148[8] = tmp.13
+            result.148[16] = 200000000000000D
+            result.148[24] = 500000000000000D
+            return result.148
+            return 0
+        }
+        global function pass_params_and_return_in_mem(i1.149, int_and_dbl.150, two_arrs.151, i2.152, big_union.153, oin.154) { 
+            tmp.14 = i1.149 != 1
+            if tmp.14 jump or_true_0
+            tmp.17 = i2.152 != 25
+            if tmp.17 jump or_true_0
+            tmp.16 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.16 = 1
+        
+          or_end_1:
+            if !tmp.16 jump end_if_2
+            tmp.18 = - 1
+            exit(tmp.18)
+        
+          end_if_2:
+            tmp.19 = int_and_dbl.150[0]
+            tmp.20 = sign_extend tmp.19
+            tmp.22 = - 115
+            tmp.21 = tmp.20 != tmp.22
+            if tmp.21 jump or_true_4
+            tmp.25 = int_and_dbl.150[8]
+            tmp.26 = tmp.25 != 222222.25D
+            if tmp.26 jump or_true_4
+            tmp.24 = 0
+            jump or_end_5
+        
+          or_true_4:
+            tmp.24 = 1
+        
+          or_end_5:
+            if !tmp.24 jump end_if_6
+            tmp.27 = - 2
+            exit(tmp.27)
+        
+          end_if_6:
+            tmp.28 = &two_arrs.151
+            tmp.29 = sign_extend 0
+            tmp.30 = add_ptr(tmp.28, index=tmp.29, scale=8)
+            tmp.31 = *tmp.30
+            tmp.32 = tmp.31 != 66.75D
+            if tmp.32 jump or_true_8
+            tmp.35 = &two_arrs.151
+            tmp.36 = sign_extend 1
+            tmp.37 = add_ptr(tmp.35, index=tmp.36, scale=8)
+            tmp.38 = *tmp.37
+            tmp.40 = - 4294967300L
+            tmp.39 = tmp.38 != tmp.40
+            if tmp.39 jump or_true_8
+            tmp.34 = 0
+            jump or_end_9
+        
+          or_true_8:
+            tmp.34 = 1
+        
+          or_end_9:
+            if !tmp.34 jump end_if_10
+            tmp.41 = - 3
+            exit(tmp.41)
+        
+          end_if_10:
+            tmp.42 = &big_union.153
+            tmp.43 = sign_extend 0
+            tmp.44 = add_ptr(tmp.42, index=tmp.43, scale=16)
+            tmp.45 = sign_extend 0
+            tmp.46 = add_ptr(tmp.44, index=tmp.45, scale=8)
+            tmp.47 = *tmp.46
+            tmp.49 = - 0.2D
+            tmp.48 = tmp.47 == tmp.49
+            if !tmp.48 jump and_false_12
+            tmp.52 = &big_union.153
+            tmp.53 = sign_extend 0
+            tmp.54 = add_ptr(tmp.52, index=tmp.53, scale=16)
+            tmp.55 = sign_extend 1
+            tmp.56 = add_ptr(tmp.54, index=tmp.55, scale=8)
+            tmp.57 = *tmp.56
+            tmp.59 = - 0.3D
+            tmp.58 = tmp.57 == tmp.59
+            if !tmp.58 jump and_false_12
+            tmp.51 = 1
+            jump and_end_13
+        
+          and_false_12:
+            tmp.51 = 0
+        
+          and_end_13:
+            if !tmp.51 jump and_false_14
+            tmp.62 = &big_union.153
+            tmp.63 = sign_extend 1
+            tmp.64 = add_ptr(tmp.62, index=tmp.63, scale=16)
+            tmp.65 = sign_extend 0
+            tmp.66 = add_ptr(tmp.64, index=tmp.65, scale=8)
+            tmp.67 = *tmp.66
+            tmp.68 = tmp.67 == 200000000000000D
+            if !tmp.68 jump and_false_14
+            tmp.61 = 1
+            jump and_end_15
+        
+          and_false_14:
+            tmp.61 = 0
+        
+          and_end_15:
+            if !tmp.61 jump and_false_16
+            tmp.71 = &big_union.153
+            tmp.72 = sign_extend 1
+            tmp.73 = add_ptr(tmp.71, index=tmp.72, scale=16)
+            tmp.74 = sign_extend 1
+            tmp.75 = add_ptr(tmp.73, index=tmp.74, scale=8)
+            tmp.76 = *tmp.75
+            tmp.77 = tmp.76 == 500000000000000D
+            if !tmp.77 jump and_false_16
+            tmp.70 = 1
+            jump and_end_17
+        
+          and_false_16:
+            tmp.70 = 0
+        
+          and_end_17:
+            tmp.78 = ! tmp.70
+            if !tmp.78 jump end_if_18
+            tmp.79 = - 4
+            exit(tmp.79)
+        
+          end_if_18:
+            tmp.80 = oin.154[0]
+            tmp.82 = - 9876.5D
+            tmp.81 = tmp.80 != tmp.82
+            if !tmp.81 jump end_if_20
+            tmp.83 = - 5
+            exit(tmp.83)
+        
+          end_if_20:
+            result.155[0] = 'A'
+            result.155[1] = 'B'
+            result.155[2] = 'C'
+            result.155[3] = 'D'
+            result.155[4] = 'E'
+            result.155[5] = 'F'
+            result.155[6] = 'G'
+            result.155[7] = 'H'
+            result.155[8] = 'I'
+            result.155[9] = 'J'
+            result.155[10] = 'K'
+            result.155[11] = 'L'
+            result.155[12] = 'M'
+            result.155[13] = 'N'
+            result.155[14] = 'O'
+            result.155[15] = 'P'
+            result.155[16] = 'Q'
+            result.155[17] = '\0'
+            return result.155
+            return 0
+        }
+        global function return_struct_with_union() { 
+            tmp.84 = - 8765
+            result.156[0] = tmp.84
+            result.156[4] = 'd'
+            result.156[5] = 'o'
+            result.156[6] = 'n'
+            result.156[7] = 'e'
+            result.156[8] = '\0'
+            return result.156
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_libraries_union_retvals_client() {
+    let src = r#"
+        int strcmp(char* s1, char* s2);
+        void exit(int status);
+        void *malloc(unsigned long size);
+        union one_double {
+            double d1;
+            double d2;
+        };
+        struct has_union_with_double {
+            union one_double member;
+        };
+        union has_struct_with_double {
+            struct has_union_with_double s;
+            double arr[1];
+        };
+        union one_int {
+            double d;
+            char c;
+        };
+        union one_int_nested {
+            union one_int oi;
+            union one_double od;
+        };
+        union char_int_mixed {
+            char arr[7];
+            union char_int_mixed* union_ptr;
+            unsigned int ui;
+        };
+        union char_int_short {
+            char c;
+            int i;
+        };
+        struct has_union {
+            unsigned int i;
+            union char_int_short u;
+        };
+        union has_struct_with_ints {
+            double d;
+            struct has_union s;
+            unsigned long ul;
+        };
+        union two_doubles {
+            double arr[2];
+            double single;
+        };
+        union has_xmm_union {
+            union one_double u;
+            union two_doubles u2;
+        };
+        struct dbl_struct {
+            union one_double member1;
+            double member2;
+        };
+        union has_dbl_struct {
+            struct dbl_struct member1;
+        };
+        union char_arr {
+            char arr[11];
+            int i;
+        };
+        union two_arrs {
+            double dbl_arr[2];
+            long long_arr[2];
+        };
+        union two_eightbyte_has_struct {
+            int arr[3];
+            struct dbl_struct member1;
+        };
+        struct char_first_eightbyte {
+            char c;
+            double d;
+        };
+        struct int_second_eightbyte {
+            double d;
+            int i;
+        };
+        union two_structs {
+            struct char_first_eightbyte member1;
+            struct int_second_eightbyte member2;
+        };
+        struct nine_bytes {
+            int i;
+            char arr[5];
+        };
+        union has_nine_byte_struct {
+            char c;
+            long l;
+            struct nine_bytes s;
+        };
+        union uneven {
+            char arr[5];
+            unsigned char uc;
+        };
+        struct has_uneven_union {
+            int i;
+            union uneven u;
+        };
+        union has_other_unions {
+            union uneven u;
+            union two_doubles d;
+            union has_nine_byte_struct n;
+        };
+        union union_array {
+            union one_int u_arr[2];
+        };
+        union uneven_union_array {
+            union uneven u_arr[2];
+        };
+        struct small {
+            char arr[3];
+            signed char sc;
+        };
+        union has_small_struct_array {
+            struct small arr[3];
+        };
+        union gp_and_xmm {
+            double d_arr[2];
+            char c;
+        };
+        union scalar_and_struct {
+            long* ptr;
+            struct char_first_eightbyte cfe;
+        };
+        struct has_two_unions {
+            union char_int_mixed member1;
+            union one_double member2;
+        };
+        union small_struct_arr_and_dbl {
+            struct small arr[2];
+            union two_doubles d;
+        };
+        union xmm_and_gp {
+            double d;
+            struct int_second_eightbyte ise;
+        };
+        union xmm_and_gp_nested {
+            union xmm_and_gp member1;
+            double arr[2];
+            union two_doubles d;
+        };
+        union lotsa_doubles {
+            double arr[3];
+            int i;
+        };
+        union lotsa_chars {
+            char more_chars[18];
+            char fewer_chars[5];
+        };
+        struct large {
+            int i;
+            double d;
+            char arr[10];
+        };
+        union contains_large_struct {
+            int i;
+            unsigned long ul;
+            struct large l;
+        };
+        union contains_union_array {
+            union gp_and_xmm arr[2];
+        };
+        int test_one_double(union one_double u);
+        int test_has_union_with_double(struct has_union_with_double s);
+        int test_has_struct_with_double(union has_struct_with_double u);
+        int test_one_int(union one_int u);
+        int test_one_int_nested(union one_int_nested u);
+        int test_char_int_mixed(union char_int_mixed u);
+        int test_has_union(struct has_union s);
+        int test_has_struct_with_ints(union has_struct_with_ints u);
+        int test_two_doubles(union two_doubles u);
+        int test_has_xmm_union(union has_xmm_union u);
+        int test_dbl_struct(struct dbl_struct s);
+        int test_has_dbl_struct(union has_dbl_struct u);
+        int test_char_arr(union char_arr u);
+        int test_two_arrs(union two_arrs u);
+        int test_two_eightbyte_has_struct(union two_eightbyte_has_struct u);
+        int test_two_structs(union two_structs u);
+        int test_has_nine_byte_struct(union has_nine_byte_struct u);
+        int test_has_uneven_union(struct has_uneven_union s);
+        int test_has_other_unions(union has_other_unions u);
+        int test_union_array(union union_array u);
+        int test_uneven_union_array(union uneven_union_array u);
+        int test_has_small_struct_array(union has_small_struct_array u);
+        int test_gp_and_xmm(union gp_and_xmm u);
+        int test_scalar_and_struct(union scalar_and_struct u);
+        int test_has_two_unions(struct has_two_unions s);
+        int test_small_struct_arr_and_dbl(union small_struct_arr_and_dbl u);
+        int test_xmm_and_gp(union xmm_and_gp u);
+        int test_xmm_and_gp_nested(union xmm_and_gp_nested u);
+        int test_lotsa_doubles(union lotsa_doubles u);
+        int test_lotsa_chars(union lotsa_chars u);
+        int test_contains_large_struct(union contains_large_struct u);
+        int test_contains_union_array(union contains_union_array u);
+        int pass_unions_and_structs(int i1, int i2, struct has_union one_gp_struct,
+            double d1, union two_doubles two_xmm, union one_int one_gp, int i3, int i4,
+            int i5);
+        int pass_gp_union_in_memory(union two_doubles two_xmm,
+            struct has_union one_gp_struct, int i1, int i2, int i3,
+            int i4, int i5, int i6, union one_int one_gp);
+        int pass_xmm_union_in_memory(double d1, double d2, union two_doubles two_xmm,
+            union two_doubles two_xmm_copy, double d3, double d4,
+            union two_doubles two_xmm_2);
+        int pass_borderline_union(int i1, int i2, int i3, int i4, int i5,
+            union char_arr two_gp);
+        int pass_borderline_xmm_union(union two_doubles two_xmm, double d1, double d2,
+            double d3, double d4, double d5, union two_doubles two_xmm_2);
+        int pass_mixed_reg_in_memory(double d1, double d2, double d3, double d4,
+            int i1, int i2, int i3, int i4, int i5, int i6,
+            union gp_and_xmm mixed_regs);
+        int pass_uneven_union_in_memory(int i1, int i2, int i3, int i4, int i5,
+            union gp_and_xmm mixed_regs, union one_int one_gp, union uneven uneven);
+        int pass_in_mem_first(union lotsa_doubles mem, union gp_and_xmm mixed_regs,
+            union char_arr two_gp, struct has_union one_gp_struct);
+        union one_double return_one_double(void);
+        union one_int_nested return_one_int_nested(void);
+        union has_dbl_struct return_has_dbl_struct(void);
+        union two_arrs return_two_arrs(void);
+        union scalar_and_struct return_scalar_and_struct(void);
+        union xmm_and_gp return_xmm_and_gp(void);
+        union contains_union_array return_contains_union_array(void);
+        union lotsa_chars pass_params_and_return_in_mem(int i1,
+            union scalar_and_struct int_and_dbl, union two_arrs two_arrs, int i2,
+            union contains_union_array big_union, union one_int_nested oin);
+        struct has_uneven_union return_struct_with_union(void);
+        
+        int main(void) {
+            union one_double od = return_one_double();
+            if (!(od.d1 == 245.5 && od.d2 == 245.5)) {
+                return 1;
+            }
+            union one_int_nested oin = return_one_int_nested();
+            if (oin.oi.d != -9876.5) {
+                return 2;
+            }
+            union has_dbl_struct two_xmm = return_has_dbl_struct();
+            if (!(two_xmm.member1.member1.d1 == 1234.5 && two_xmm.member1.member2 == 6789.)) {
+                return 3;
+            }
+            union two_arrs two_arrs = return_two_arrs();
+            if (two_arrs.dbl_arr[0] != 66.75 || two_arrs.long_arr[1] != -4294967300l) {
+                return 4;
+            }
+            union scalar_and_struct int_and_dbl = return_scalar_and_struct();
+            if (int_and_dbl.cfe.c != -115 || int_and_dbl.cfe.d != 222222.25) {
+                return 5;
+            }
+            union xmm_and_gp dbl_and_int = return_xmm_and_gp();
+            if (dbl_and_int.d != -50000.125 || dbl_and_int.ise.d != -50000.125
+                || dbl_and_int.ise.i != -3000) {
+                return 6;
+            }
+            union contains_union_array big_union = return_contains_union_array();
+            if (!(big_union.arr[0].d_arr[0] == -2000e-4 && big_union.arr[0].d_arr[1] == -3000e-4
+                && big_union.arr[1].d_arr[0] == 20000e10 && big_union.arr[1].d_arr[1] == 5000e11)) {
+                return 7;
+            }
+            union lotsa_chars chars_union = pass_params_and_return_in_mem(1,
+                int_and_dbl, two_arrs, 25, big_union, oin);
+            if (strcmp(chars_union.more_chars, "ABCDEFGHIJKLMNOPQ") != 0) {
+                return 8;
+            }
+            struct has_uneven_union s = return_struct_with_union();
+            if (s.i != -8765 || strcmp(s.u.arr, "done") != 0) {
+                return 9;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = return_one_double()
+            od.142 = tmp.0
+            tmp.1 = od.142[0]
+            tmp.2 = tmp.1 == 245.5D
+            if !tmp.2 jump and_false_0
+            tmp.5 = od.142[0]
+            tmp.6 = tmp.5 == 245.5D
+            if !tmp.6 jump and_false_0
+            tmp.4 = 1
+            jump and_end_1
+        
+          and_false_0:
+            tmp.4 = 0
+        
+          and_end_1:
+            tmp.7 = ! tmp.4
+            if !tmp.7 jump end_if_2
+            return 1
+        
+          end_if_2:
+            tmp.8 = return_one_int_nested()
+            oin.143 = tmp.8
+            tmp.9 = oin.143[0]
+            tmp.11 = - 9876.5D
+            tmp.10 = tmp.9 != tmp.11
+            if !tmp.10 jump end_if_4
+            return 2
+        
+          end_if_4:
+            tmp.12 = return_has_dbl_struct()
+            two_xmm.144 = tmp.12
+            tmp.13 = two_xmm.144[0]
+            tmp.14 = tmp.13 == 1234.5D
+            if !tmp.14 jump and_false_6
+            tmp.17 = two_xmm.144[8]
+            tmp.18 = tmp.17 == 6789D
+            if !tmp.18 jump and_false_6
+            tmp.16 = 1
+            jump and_end_7
+        
+          and_false_6:
+            tmp.16 = 0
+        
+          and_end_7:
+            tmp.19 = ! tmp.16
+            if !tmp.19 jump end_if_8
+            return 3
+        
+          end_if_8:
+            tmp.20 = return_two_arrs()
+            two_arrs.145 = tmp.20
+            tmp.21 = &two_arrs.145
+            tmp.22 = sign_extend 0
+            tmp.23 = add_ptr(tmp.21, index=tmp.22, scale=8)
+            tmp.24 = *tmp.23
+            tmp.25 = tmp.24 != 66.75D
+            if tmp.25 jump or_true_10
+            tmp.28 = &two_arrs.145
+            tmp.29 = sign_extend 1
+            tmp.30 = add_ptr(tmp.28, index=tmp.29, scale=8)
+            tmp.31 = *tmp.30
+            tmp.33 = - 4294967300L
+            tmp.32 = tmp.31 != tmp.33
+            if tmp.32 jump or_true_10
+            tmp.27 = 0
+            jump or_end_11
+        
+          or_true_10:
+            tmp.27 = 1
+        
+          or_end_11:
+            if !tmp.27 jump end_if_12
+            return 4
+        
+          end_if_12:
+            tmp.34 = return_scalar_and_struct()
+            int_and_dbl.146 = tmp.34
+            tmp.35 = int_and_dbl.146[0]
+            tmp.36 = sign_extend tmp.35
+            tmp.38 = - 115
+            tmp.37 = tmp.36 != tmp.38
+            if tmp.37 jump or_true_14
+            tmp.41 = int_and_dbl.146[8]
+            tmp.42 = tmp.41 != 222222.25D
+            if tmp.42 jump or_true_14
+            tmp.40 = 0
+            jump or_end_15
+        
+          or_true_14:
+            tmp.40 = 1
+        
+          or_end_15:
+            if !tmp.40 jump end_if_16
+            return 5
+        
+          end_if_16:
+            tmp.43 = return_xmm_and_gp()
+            dbl_and_int.147 = tmp.43
+            tmp.44 = dbl_and_int.147[0]
+            tmp.46 = - 50000.125D
+            tmp.45 = tmp.44 != tmp.46
+            if tmp.45 jump or_true_18
+            tmp.49 = dbl_and_int.147[0]
+            tmp.51 = - 50000.125D
+            tmp.50 = tmp.49 != tmp.51
+            if tmp.50 jump or_true_18
+            tmp.48 = 0
+            jump or_end_19
+        
+          or_true_18:
+            tmp.48 = 1
+        
+          or_end_19:
+            if tmp.48 jump or_true_20
+            tmp.54 = dbl_and_int.147[8]
+            tmp.56 = - 3000
+            tmp.55 = tmp.54 != tmp.56
+            if tmp.55 jump or_true_20
+            tmp.53 = 0
+            jump or_end_21
+        
+          or_true_20:
+            tmp.53 = 1
+        
+          or_end_21:
+            if !tmp.53 jump end_if_22
+            return 6
+        
+          end_if_22:
+            tmp.57 = return_contains_union_array()
+            big_union.148 = tmp.57
+            tmp.58 = &big_union.148
+            tmp.59 = sign_extend 0
+            tmp.60 = add_ptr(tmp.58, index=tmp.59, scale=16)
+            tmp.61 = sign_extend 0
+            tmp.62 = add_ptr(tmp.60, index=tmp.61, scale=8)
+            tmp.63 = *tmp.62
+            tmp.65 = - 0.2D
+            tmp.64 = tmp.63 == tmp.65
+            if !tmp.64 jump and_false_24
+            tmp.68 = &big_union.148
+            tmp.69 = sign_extend 0
+            tmp.70 = add_ptr(tmp.68, index=tmp.69, scale=16)
+            tmp.71 = sign_extend 1
+            tmp.72 = add_ptr(tmp.70, index=tmp.71, scale=8)
+            tmp.73 = *tmp.72
+            tmp.75 = - 0.3D
+            tmp.74 = tmp.73 == tmp.75
+            if !tmp.74 jump and_false_24
+            tmp.67 = 1
+            jump and_end_25
+        
+          and_false_24:
+            tmp.67 = 0
+        
+          and_end_25:
+            if !tmp.67 jump and_false_26
+            tmp.78 = &big_union.148
+            tmp.79 = sign_extend 1
+            tmp.80 = add_ptr(tmp.78, index=tmp.79, scale=16)
+            tmp.81 = sign_extend 0
+            tmp.82 = add_ptr(tmp.80, index=tmp.81, scale=8)
+            tmp.83 = *tmp.82
+            tmp.84 = tmp.83 == 200000000000000D
+            if !tmp.84 jump and_false_26
+            tmp.77 = 1
+            jump and_end_27
+        
+          and_false_26:
+            tmp.77 = 0
+        
+          and_end_27:
+            if !tmp.77 jump and_false_28
+            tmp.87 = &big_union.148
+            tmp.88 = sign_extend 1
+            tmp.89 = add_ptr(tmp.87, index=tmp.88, scale=16)
+            tmp.90 = sign_extend 1
+            tmp.91 = add_ptr(tmp.89, index=tmp.90, scale=8)
+            tmp.92 = *tmp.91
+            tmp.93 = tmp.92 == 500000000000000D
+            if !tmp.93 jump and_false_28
+            tmp.86 = 1
+            jump and_end_29
+        
+          and_false_28:
+            tmp.86 = 0
+        
+          and_end_29:
+            tmp.94 = ! tmp.86
+            if !tmp.94 jump end_if_30
+            return 7
+        
+          end_if_30:
+            tmp.95 = pass_params_and_return_in_mem(1, int_and_dbl.146, two_arrs.145, 25, big_union.148, oin.143)
+            chars_union.149 = tmp.95
+            tmp.96 = &chars_union.149
+            tmp.97 = &string.0
+            tmp.98 = strcmp(tmp.96, tmp.97)
+            tmp.99 = tmp.98 != 0
+            if !tmp.99 jump end_if_32
+            return 8
+        
+          end_if_32:
+            tmp.100 = return_struct_with_union()
+            s.150 = tmp.100
+            tmp.101 = s.150[0]
+            tmp.103 = - 8765
+            tmp.102 = tmp.101 != tmp.103
+            if tmp.102 jump or_true_34
+            tmp.106 = &s.150
+            tmp.106 = add_ptr(tmp.106, index=4L, scale=1)
+            tmp.107 = &string.1
+            tmp.108 = strcmp(tmp.106, tmp.107)
+            tmp.109 = tmp.108 != 0
+            if tmp.109 jump or_true_34
+            tmp.105 = 0
+            jump or_end_35
+        
+          or_true_34:
+            tmp.105 = 1
+        
+          or_end_35:
+            if !tmp.105 jump end_if_36
+            return 9
+        
+          end_if_36:
+            return 0
+            return 0
+        }
+        constant string.0: Array(18,Char) = "ABCDEFGHIJKLMNOPQ\\0"
+        constant string.1: Array(5,Char) = "done\\0"
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_member_access_nested_union_access() {
+    let src = r#"
+        void *calloc(unsigned long nmemb, unsigned long size);
+        void *malloc(unsigned long size);
+        union simple {
+            int i;
+            long l;
+            char c;
+            unsigned char uc_arr[3];
+        };
+        union has_union {
+            double d;
+            union simple u;
+            union simple *u_ptr;
+        };
+        struct simple_struct {
+            long l;
+            double d;
+            unsigned int u;
+        };
+        union has_struct {
+            long l;
+            struct simple_struct s;
+        };
+        struct struct_with_union {
+            union simple u;
+            unsigned long ul;
+        };
+        union complex_union {
+            double d_arr[2];
+            struct struct_with_union s;
+            union has_union *u_ptr;
+        };
+        
+        int test_auto_dot(void) {
+            union has_union x;
+            x.u.l = 200000u;
+            if (x.u.i != 200000) {
+                return 0;
+            }
+            union has_struct y;
+            y.s.l = -5555l;
+            y.s.d = 10.0;
+            y.s.u = 100;
+            if (y.l != -5555l) {
+                return 0;
+            }
+            union complex_union z;
+            z.s.u.i = 12345;
+            z.s.ul = 0;
+            if (z.s.u.c != 57) {
+                return 0;
+            }
+            if (z.d_arr[1]) {
+                return 0;
+            }
+            unsigned int *some_int_ptr = &y.s.u;
+            union simple *some_union_ptr = &z.s.u;
+            if (*some_int_ptr != 100 || (*some_union_ptr).i != 12345) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_static_dot(void) {
+            static union has_union x;
+            x.u.l = 200000u;
+            if (x.u.i != 200000) {
+                return 0;
+            }
+            static union has_struct y;
+            y.s.l = -5555l;
+            y.s.d = 10.0;
+            y.s.u = 100;
+            if (y.l != -5555l) {
+                return 0;
+            }
+            static union complex_union z;
+            z.s.u.i = 12345;
+            z.s.ul = 0;
+            if (z.s.u.c != 57) {
+                return 0;
+            }
+            if (z.d_arr[1]) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_auto_arrow(void) {
+            union simple inner = {100};
+            union has_union outer;
+            union has_union *outer_ptr = &outer;
+            outer_ptr->u_ptr = &inner;
+            if (outer_ptr->u_ptr->i != 100) {
+                return 0;
+            }
+            outer_ptr->u_ptr->l = -10;
+            if (outer_ptr->u_ptr->c != -10 || outer_ptr->u_ptr->i != -10 || outer_ptr->u_ptr->l != -10) {
+                return 0;
+            }
+            if (outer_ptr->u_ptr->uc_arr[0] != 246 || outer_ptr->u_ptr->uc_arr[1] != 255 || outer_ptr->u_ptr->uc_arr[2] != 255) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_static_arrow(void) {
+            static union simple inner = {100};
+            static union has_union outer;
+            static union has_union *outer_ptr;
+            outer_ptr = &outer;
+            outer_ptr->u_ptr = &inner;
+            if (outer_ptr->u_ptr->i != 100) {
+                return 0;
+            }
+            outer_ptr->u_ptr->l = -10;
+            if (outer_ptr->u_ptr->c != -10 || outer_ptr->u_ptr->i != -10 || outer_ptr->u_ptr->l != -10) {
+                return 0;
+            }
+            if (outer_ptr->u_ptr->uc_arr[0] != 246 || outer_ptr->u_ptr->uc_arr[1] != 255 || outer_ptr->u_ptr->uc_arr[2] != 255) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_array_of_unions(void) {
+            union has_union arr[3];
+            arr[0].u.l = -10000;
+            arr[1].u.i = 200;
+            arr[2].u.c = -120;
+            if (arr[0].u.l != -10000 || arr[1].u.c != -56 || arr[2].u.uc_arr[0] != 136) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_array_of_union_pointers(void) {
+            union has_union *ptr_arr[3];
+            for (int i = 0; i < 3; i = i + 1) {
+                ptr_arr[i] = calloc(1, sizeof(union has_union));
+                ptr_arr[i]->u_ptr = calloc(1, sizeof (union simple));
+                ptr_arr[i]->u_ptr->l = i;
+            }
+            if (ptr_arr[0]->u_ptr->l != 0 || ptr_arr[1]->u_ptr->l != 1 || ptr_arr[2]->u_ptr->l != 2) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_auto_dot()) {
+                return 1;
+            }
+            if (!test_static_dot()) {
+                return 2;
+            }
+            if (!test_auto_arrow()) {
+                return 3;
+            }
+            if (!test_static_arrow()) {
+                return 4;
+            }
+            if (!test_array_of_unions()) {
+                return 5;
+            }
+            if (!test_array_of_union_pointers()) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function test_auto_dot() { 
+            tmp.0 = zero_extend 200000U
+            x.9[0] = tmp.0
+            tmp.1 = x.9[0]
+            tmp.2 = tmp.1 != 200000
+            if !tmp.2 jump end_if_0
+            return 0
+        
+          end_if_0:
+            tmp.3 = - 5555L
+            y.10[0] = tmp.3
+            y.10[8] = 10D
+            tmp.4 = 100
+            y.10[16] = tmp.4
+            tmp.5 = y.10[0]
+            tmp.7 = - 5555L
+            tmp.6 = tmp.5 != tmp.7
+            if !tmp.6 jump end_if_2
+            return 0
+        
+          end_if_2:
+            z.11[0] = 12345
+            tmp.8 = sign_extend 0
+            z.11[8] = tmp.8
+            tmp.9 = z.11[0]
+            tmp.10 = sign_extend tmp.9
+            tmp.11 = tmp.10 != 57
+            if !tmp.11 jump end_if_4
+            return 0
+        
+          end_if_4:
+            tmp.12 = &z.11
+            tmp.13 = sign_extend 1
+            tmp.14 = add_ptr(tmp.12, index=tmp.13, scale=8)
+            tmp.15 = *tmp.14
+            tmp.16 = tmp.15 != 0D
+            if !tmp.16 jump end_if_6
+            return 0
+        
+          end_if_6:
+            tmp.17 = &y.10
+            tmp.17 = add_ptr(tmp.17, index=16L, scale=1)
+            some_int_ptr.12 = tmp.17
+            tmp.18 = &z.11
+            some_union_ptr.13 = tmp.18
+            tmp.19 = *some_int_ptr.12
+            tmp.21 = 100
+            tmp.20 = tmp.19 != tmp.21
+            if tmp.20 jump or_true_8
+            tmp.24 = *some_union_ptr.13
+            tmp.25 = tmp.24 != 12345
+            if tmp.25 jump or_true_8
+            tmp.23 = 0
+            jump or_end_9
+        
+          or_true_8:
+            tmp.23 = 1
+        
+          or_end_9:
+            if !tmp.23 jump end_if_10
+            return 0
+        
+          end_if_10:
+            return 1
+            return 0
+        }
+        global function test_static_dot() { 
+            tmp.26 = zero_extend 200000U
+            x.14[0] = tmp.26
+            tmp.27 = x.14[0]
+            tmp.28 = tmp.27 != 200000
+            if !tmp.28 jump end_if_12
+            return 0
+        
+          end_if_12:
+            tmp.29 = - 5555L
+            y.15[0] = tmp.29
+            y.15[8] = 10D
+            tmp.30 = 100
+            y.15[16] = tmp.30
+            tmp.31 = y.15[0]
+            tmp.33 = - 5555L
+            tmp.32 = tmp.31 != tmp.33
+            if !tmp.32 jump end_if_14
+            return 0
+        
+          end_if_14:
+            z.16[0] = 12345
+            tmp.34 = sign_extend 0
+            z.16[8] = tmp.34
+            tmp.35 = z.16[0]
+            tmp.36 = sign_extend tmp.35
+            tmp.37 = tmp.36 != 57
+            if !tmp.37 jump end_if_16
+            return 0
+        
+          end_if_16:
+            tmp.38 = &z.16
+            tmp.39 = sign_extend 1
+            tmp.40 = add_ptr(tmp.38, index=tmp.39, scale=8)
+            tmp.41 = *tmp.40
+            tmp.42 = tmp.41 != 0D
+            if !tmp.42 jump end_if_18
+            return 0
+        
+          end_if_18:
+            return 1
+            return 0
+        }
+        global function test_auto_arrow() { 
+            inner.17[0] = 100
+            tmp.43 = &outer.18
+            outer_ptr.19 = tmp.43
+            tmp.44 = &inner.17
+            *outer_ptr.19 = tmp.44
+            tmp.45 = *outer_ptr.19
+            tmp.46 = *tmp.45
+            tmp.47 = tmp.46 != 100
+            if !tmp.47 jump end_if_20
+            return 0
+        
+          end_if_20:
+            tmp.48 = *outer_ptr.19
+            tmp.49 = - 10
+            tmp.50 = sign_extend tmp.49
+            *tmp.48 = tmp.50
+            tmp.51 = *outer_ptr.19
+            tmp.52 = *tmp.51
+            tmp.53 = sign_extend tmp.52
+            tmp.55 = - 10
+            tmp.54 = tmp.53 != tmp.55
+            if tmp.54 jump or_true_22
+            tmp.58 = *outer_ptr.19
+            tmp.59 = *tmp.58
+            tmp.61 = - 10
+            tmp.60 = tmp.59 != tmp.61
+            if tmp.60 jump or_true_22
+            tmp.57 = 0
+            jump or_end_23
+        
+          or_true_22:
+            tmp.57 = 1
+        
+          or_end_23:
+            if tmp.57 jump or_true_24
+            tmp.64 = *outer_ptr.19
+            tmp.65 = *tmp.64
+            tmp.67 = - 10
+            tmp.68 = sign_extend tmp.67
+            tmp.66 = tmp.65 != tmp.68
+            if tmp.66 jump or_true_24
+            tmp.63 = 0
+            jump or_end_25
+        
+          or_true_24:
+            tmp.63 = 1
+        
+          or_end_25:
+            if !tmp.63 jump end_if_26
+            return 0
+        
+          end_if_26:
+            tmp.69 = *outer_ptr.19
+            tmp.70 = sign_extend 0
+            tmp.71 = add_ptr(tmp.69, index=tmp.70, scale=1)
+            tmp.72 = *tmp.71
+            tmp.73 = zero_extend tmp.72
+            tmp.74 = tmp.73 != 246
+            if tmp.74 jump or_true_28
+            tmp.77 = *outer_ptr.19
+            tmp.78 = sign_extend 1
+            tmp.79 = add_ptr(tmp.77, index=tmp.78, scale=1)
+            tmp.80 = *tmp.79
+            tmp.81 = zero_extend tmp.80
+            tmp.82 = tmp.81 != 255
+            if tmp.82 jump or_true_28
+            tmp.76 = 0
+            jump or_end_29
+        
+          or_true_28:
+            tmp.76 = 1
+        
+          or_end_29:
+            if tmp.76 jump or_true_30
+            tmp.85 = *outer_ptr.19
+            tmp.86 = sign_extend 2
+            tmp.87 = add_ptr(tmp.85, index=tmp.86, scale=1)
+            tmp.88 = *tmp.87
+            tmp.89 = zero_extend tmp.88
+            tmp.90 = tmp.89 != 255
+            if tmp.90 jump or_true_30
+            tmp.84 = 0
+            jump or_end_31
+        
+          or_true_30:
+            tmp.84 = 1
+        
+          or_end_31:
+            if !tmp.84 jump end_if_32
+            return 0
+        
+          end_if_32:
+            return 1
+            return 0
+        }
+        global function test_static_arrow() { 
+            tmp.91 = &outer.21
+            outer_ptr.22 = tmp.91
+            tmp.92 = &inner.20
+            *outer_ptr.22 = tmp.92
+            tmp.93 = *outer_ptr.22
+            tmp.94 = *tmp.93
+            tmp.95 = tmp.94 != 100
+            if !tmp.95 jump end_if_34
+            return 0
+        
+          end_if_34:
+            tmp.96 = *outer_ptr.22
+            tmp.97 = - 10
+            tmp.98 = sign_extend tmp.97
+            *tmp.96 = tmp.98
+            tmp.99 = *outer_ptr.22
+            tmp.100 = *tmp.99
+            tmp.101 = sign_extend tmp.100
+            tmp.103 = - 10
+            tmp.102 = tmp.101 != tmp.103
+            if tmp.102 jump or_true_36
+            tmp.106 = *outer_ptr.22
+            tmp.107 = *tmp.106
+            tmp.109 = - 10
+            tmp.108 = tmp.107 != tmp.109
+            if tmp.108 jump or_true_36
+            tmp.105 = 0
+            jump or_end_37
+        
+          or_true_36:
+            tmp.105 = 1
+        
+          or_end_37:
+            if tmp.105 jump or_true_38
+            tmp.112 = *outer_ptr.22
+            tmp.113 = *tmp.112
+            tmp.115 = - 10
+            tmp.116 = sign_extend tmp.115
+            tmp.114 = tmp.113 != tmp.116
+            if tmp.114 jump or_true_38
+            tmp.111 = 0
+            jump or_end_39
+        
+          or_true_38:
+            tmp.111 = 1
+        
+          or_end_39:
+            if !tmp.111 jump end_if_40
+            return 0
+        
+          end_if_40:
+            tmp.117 = *outer_ptr.22
+            tmp.118 = sign_extend 0
+            tmp.119 = add_ptr(tmp.117, index=tmp.118, scale=1)
+            tmp.120 = *tmp.119
+            tmp.121 = zero_extend tmp.120
+            tmp.122 = tmp.121 != 246
+            if tmp.122 jump or_true_42
+            tmp.125 = *outer_ptr.22
+            tmp.126 = sign_extend 1
+            tmp.127 = add_ptr(tmp.125, index=tmp.126, scale=1)
+            tmp.128 = *tmp.127
+            tmp.129 = zero_extend tmp.128
+            tmp.130 = tmp.129 != 255
+            if tmp.130 jump or_true_42
+            tmp.124 = 0
+            jump or_end_43
+        
+          or_true_42:
+            tmp.124 = 1
+        
+          or_end_43:
+            if tmp.124 jump or_true_44
+            tmp.133 = *outer_ptr.22
+            tmp.134 = sign_extend 2
+            tmp.135 = add_ptr(tmp.133, index=tmp.134, scale=1)
+            tmp.136 = *tmp.135
+            tmp.137 = zero_extend tmp.136
+            tmp.138 = tmp.137 != 255
+            if tmp.138 jump or_true_44
+            tmp.132 = 0
+            jump or_end_45
+        
+          or_true_44:
+            tmp.132 = 1
+        
+          or_end_45:
+            if !tmp.132 jump end_if_46
+            return 0
+        
+          end_if_46:
+            return 1
+            return 0
+        }
+        global function test_array_of_unions() { 
+            tmp.139 = &arr.23
+            tmp.140 = sign_extend 0
+            tmp.141 = add_ptr(tmp.139, index=tmp.140, scale=8)
+            tmp.142 = - 10000
+            tmp.143 = sign_extend tmp.142
+            *tmp.141 = tmp.143
+            tmp.144 = &arr.23
+            tmp.145 = sign_extend 1
+            tmp.146 = add_ptr(tmp.144, index=tmp.145, scale=8)
+            *tmp.146 = 200
+            tmp.147 = &arr.23
+            tmp.148 = sign_extend 2
+            tmp.149 = add_ptr(tmp.147, index=tmp.148, scale=8)
+            tmp.150 = - 120
+            tmp.151 = truncate tmp.150
+            *tmp.149 = tmp.151
+            tmp.152 = &arr.23
+            tmp.153 = sign_extend 0
+            tmp.154 = add_ptr(tmp.152, index=tmp.153, scale=8)
+            tmp.155 = *tmp.154
+            tmp.157 = - 10000
+            tmp.158 = sign_extend tmp.157
+            tmp.156 = tmp.155 != tmp.158
+            if tmp.156 jump or_true_48
+            tmp.161 = &arr.23
+            tmp.162 = sign_extend 1
+            tmp.163 = add_ptr(tmp.161, index=tmp.162, scale=8)
+            tmp.164 = *tmp.163
+            tmp.165 = sign_extend tmp.164
+            tmp.167 = - 56
+            tmp.166 = tmp.165 != tmp.167
+            if tmp.166 jump or_true_48
+            tmp.160 = 0
+            jump or_end_49
+        
+          or_true_48:
+            tmp.160 = 1
+        
+          or_end_49:
+            if tmp.160 jump or_true_50
+            tmp.170 = &arr.23
+            tmp.171 = sign_extend 2
+            tmp.172 = add_ptr(tmp.170, index=tmp.171, scale=8)
+            tmp.173 = sign_extend 0
+            tmp.174 = add_ptr(tmp.172, index=tmp.173, scale=1)
+            tmp.175 = *tmp.174
+            tmp.176 = zero_extend tmp.175
+            tmp.177 = tmp.176 != 136
+            if tmp.177 jump or_true_50
+            tmp.169 = 0
+            jump or_end_51
+        
+          or_true_50:
+            tmp.169 = 1
+        
+          or_end_51:
+            if !tmp.169 jump end_if_52
+            return 0
+        
+          end_if_52:
+            return 1
+            return 0
+        }
+        global function test_array_of_union_pointers() { 
+            i.25 = 0
+        
+          start_loop_0:
+            tmp.178 = i.25 < 3
+            if !tmp.178 jump break_loop_0
+            tmp.179 = &ptr_arr.24
+            tmp.180 = sign_extend i.25
+            tmp.181 = add_ptr(tmp.179, index=tmp.180, scale=8)
+            tmp.182 = sign_extend 1
+            tmp.183 = calloc(tmp.182, 8UL)
+            tmp.184 = tmp.183
+            *tmp.181 = tmp.184
+            tmp.185 = &ptr_arr.24
+            tmp.186 = sign_extend i.25
+            tmp.187 = add_ptr(tmp.185, index=tmp.186, scale=8)
+            tmp.188 = *tmp.187
+            tmp.189 = sign_extend 1
+            tmp.190 = calloc(tmp.189, 8UL)
+            tmp.191 = tmp.190
+            *tmp.188 = tmp.191
+            tmp.192 = &ptr_arr.24
+            tmp.193 = sign_extend i.25
+            tmp.194 = add_ptr(tmp.192, index=tmp.193, scale=8)
+            tmp.195 = *tmp.194
+            tmp.196 = *tmp.195
+            tmp.197 = sign_extend i.25
+            *tmp.196 = tmp.197
+        
+          continue_loop_0:
+            tmp.198 = i.25 + 1
+            i.25 = tmp.198
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.199 = &ptr_arr.24
+            tmp.200 = sign_extend 0
+            tmp.201 = add_ptr(tmp.199, index=tmp.200, scale=8)
+            tmp.202 = *tmp.201
+            tmp.203 = *tmp.202
+            tmp.204 = *tmp.203
+            tmp.206 = sign_extend 0
+            tmp.205 = tmp.204 != tmp.206
+            if tmp.205 jump or_true_54
+            tmp.209 = &ptr_arr.24
+            tmp.210 = sign_extend 1
+            tmp.211 = add_ptr(tmp.209, index=tmp.210, scale=8)
+            tmp.212 = *tmp.211
+            tmp.213 = *tmp.212
+            tmp.214 = *tmp.213
+            tmp.216 = sign_extend 1
+            tmp.215 = tmp.214 != tmp.216
+            if tmp.215 jump or_true_54
+            tmp.208 = 0
+            jump or_end_55
+        
+          or_true_54:
+            tmp.208 = 1
+        
+          or_end_55:
+            if tmp.208 jump or_true_56
+            tmp.219 = &ptr_arr.24
+            tmp.220 = sign_extend 2
+            tmp.221 = add_ptr(tmp.219, index=tmp.220, scale=8)
+            tmp.222 = *tmp.221
+            tmp.223 = *tmp.222
+            tmp.224 = *tmp.223
+            tmp.226 = sign_extend 2
+            tmp.225 = tmp.224 != tmp.226
+            if tmp.225 jump or_true_56
+            tmp.218 = 0
+            jump or_end_57
+        
+          or_true_56:
+            tmp.218 = 1
+        
+          or_end_57:
+            if !tmp.218 jump end_if_58
+            return 0
+        
+          end_if_58:
+            return 1
+            return 0
+        }
+        global function main() { 
+            tmp.227 = test_auto_dot()
+            tmp.228 = ! tmp.227
+            if !tmp.228 jump end_if_60
+            return 1
+        
+          end_if_60:
+            tmp.229 = test_static_dot()
+            tmp.230 = ! tmp.229
+            if !tmp.230 jump end_if_62
+            return 2
+        
+          end_if_62:
+            tmp.231 = test_auto_arrow()
+            tmp.232 = ! tmp.231
+            if !tmp.232 jump end_if_64
+            return 3
+        
+          end_if_64:
+            tmp.233 = test_static_arrow()
+            tmp.234 = ! tmp.233
+            if !tmp.234 jump end_if_66
+            return 4
+        
+          end_if_66:
+            tmp.235 = test_array_of_unions()
+            tmp.236 = ! tmp.235
+            if !tmp.236 jump end_if_68
+            return 5
+        
+          end_if_68:
+            tmp.237 = test_array_of_union_pointers()
+            tmp.238 = ! tmp.237
+            if !tmp.238 jump end_if_70
+            return 6
+        
+          end_if_70:
+            return 0
+            return 0
+        }
+        static inner.20: Union(simple.3) = [ 100, zero[4]]
+        static outer.21: Union(has_union.4) = zero[8]
+        static outer_ptr.22: Pointer(Union(has_union.4)) = zero[8]
+        static x.14: Union(has_union.4) = zero[8]
+        static y.15: Union(has_struct.6) = zero[24]
+        static z.16: Union(complex_union.8) = zero[16]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_member_access_static_union_access() {
+    let src = r#"
+        
+        union u {
+            unsigned long l;
+            double d;
+            char arr[8];
+        };
+        static union u my_union = { 18446744073709551615UL };
+        static union u* union_ptr = 0;
+        int main(void) {
+            union_ptr = &my_union;
+            if (my_union.l != 18446744073709551615UL) {
+                return 1;
+            }
+            for (int i = 0; i < 8; i = i + 1) {
+                if (my_union.arr[i] != -1) {
+                    return 2;
+                }
+            }
+            union_ptr->d = -1.0;
+            if (union_ptr->l != 13830554455654793216ul) {
+                return 3;
+            }
+            for (int i = 0; i < 6; i = i + 1) {
+                if (my_union.arr[i]) {
+                    return 4;
+                }
+            }
+            if (union_ptr->arr[6] != -16) {
+                return 5;
+            }
+            if (union_ptr->arr[7] != -65) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = &my_union
+            union_ptr = tmp.0
+            tmp.1 = my_union[0]
+            tmp.2 = tmp.1 != 18446744073709551615UL
+            if !tmp.2 jump end_if_0
+            return 1
+        
+          end_if_0:
+            i.1 = 0
+        
+          start_loop_0:
+            tmp.3 = i.1 < 8
+            if !tmp.3 jump break_loop_0
+            tmp.4 = &my_union
+            tmp.5 = sign_extend i.1
+            tmp.6 = add_ptr(tmp.4, index=tmp.5, scale=1)
+            tmp.7 = *tmp.6
+            tmp.8 = sign_extend tmp.7
+            tmp.10 = - 1
+            tmp.9 = tmp.8 != tmp.10
+            if !tmp.9 jump end_if_2
+            return 2
+        
+          end_if_2:
+        
+          continue_loop_0:
+            tmp.11 = i.1 + 1
+            i.1 = tmp.11
+            jump start_loop_0
+        
+          break_loop_0:
+            tmp.12 = - 1D
+            *union_ptr = tmp.12
+            tmp.13 = *union_ptr
+            tmp.14 = tmp.13 != 13830554455654793216UL
+            if !tmp.14 jump end_if_4
+            return 3
+        
+          end_if_4:
+            i.2 = 0
+        
+          start_loop_1:
+            tmp.15 = i.2 < 6
+            if !tmp.15 jump break_loop_1
+            tmp.16 = &my_union
+            tmp.17 = sign_extend i.2
+            tmp.18 = add_ptr(tmp.16, index=tmp.17, scale=1)
+            tmp.19 = *tmp.18
+            if !tmp.19 jump end_if_6
+            return 4
+        
+          end_if_6:
+        
+          continue_loop_1:
+            tmp.20 = i.2 + 1
+            i.2 = tmp.20
+            jump start_loop_1
+        
+          break_loop_1:
+            tmp.21 = sign_extend 6
+            tmp.22 = add_ptr(union_ptr, index=tmp.21, scale=1)
+            tmp.23 = *tmp.22
+            tmp.24 = sign_extend tmp.23
+            tmp.26 = - 16
+            tmp.25 = tmp.24 != tmp.26
+            if !tmp.25 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.27 = sign_extend 7
+            tmp.28 = add_ptr(union_ptr, index=tmp.27, scale=1)
+            tmp.29 = *tmp.28
+            tmp.30 = sign_extend tmp.29
+            tmp.32 = - 65
+            tmp.31 = tmp.30 != tmp.32
+            if !tmp.31 jump end_if_10
+            return 6
+        
+          end_if_10:
+            return 0
+            return 0
+        }
+        static my_union: Union(u.0) = 18446744073709551615UL
+        static union_ptr: Pointer(Union(u.0)) = 0UL
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_member_access_union_init_and_member_access() {
+    let src = r#"
+        union u {
+            double d;
+            long l;
+            unsigned long ul;
+            char c;
+        };
+        int main(void) {
+            union u x = {20};
+            if (x.d != 20.0) {
+                return 1;
+            }
+            union u *ptr = &x;
+            ptr->l = -1l;
+            if (ptr->l != -1l) {
+                return 2;
+            }
+            if (ptr->ul != 18446744073709551615UL) {
+                return 3;
+            }
+            if (x.c != -1) {
+                return 4;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = int_to_double 20
+            x.1[0] = tmp.0
+            tmp.1 = x.1[0]
+            tmp.2 = tmp.1 != 20D
+            if !tmp.2 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.3 = &x.1
+            ptr.2 = tmp.3
+            tmp.4 = - 1L
+            *ptr.2 = tmp.4
+            tmp.5 = *ptr.2
+            tmp.7 = - 1L
+            tmp.6 = tmp.5 != tmp.7
+            if !tmp.6 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.8 = *ptr.2
+            tmp.9 = tmp.8 != 18446744073709551615UL
+            if !tmp.9 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.10 = x.1[0]
+            tmp.11 = sign_extend tmp.10
+            tmp.13 = - 1
+            tmp.12 = tmp.11 != tmp.13
+            if !tmp.12 jump end_if_6
+            return 4
+        
+          end_if_6:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_member_access_union_temp_lifetime() {
+    let src = r#"
+        struct has_char_array {
+            char arr[8];
+        };
+        union has_array {
+            long l;
+            struct has_char_array s;
+        };
+        int get_flag(void) {
+            static int flag = 0;
+            flag = !flag;
+            return flag;
+        }
+        int main(void) {
+            union has_array union1 = {9876543210l};
+            union has_array union2 = {1234567890l};
+            if ((get_flag() ? union1 : union2).s.arr[0] != -22) {
+                return 1;
+            }
+            if ((get_flag() ? union1 : union2).s.arr[0] != -46) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function get_flag() { 
+            tmp.0 = ! flag.2
+            flag.2 = tmp.0
+            return flag.2
+            return 0
+        }
+        global function main() { 
+            union1.3[0] = 9876543210L
+            union2.4[0] = 1234567890L
+            tmp.1 = get_flag()
+            if !tmp.1 jump else_1
+            tmp.2 = union1.3
+            jump end_if_0
+        
+          else_1:
+            tmp.2 = union2.4
+        
+          end_if_0:
+            tmp.3 = &tmp.2
+            tmp.4 = sign_extend 0
+            tmp.5 = add_ptr(tmp.3, index=tmp.4, scale=1)
+            tmp.6 = *tmp.5
+            tmp.7 = sign_extend tmp.6
+            tmp.9 = - 22
+            tmp.8 = tmp.7 != tmp.9
+            if !tmp.8 jump end_if_2
+            return 1
+        
+          end_if_2:
+            tmp.10 = get_flag()
+            if !tmp.10 jump else_5
+            tmp.11 = union1.3
+            jump end_if_4
+        
+          else_5:
+            tmp.11 = union2.4
+        
+          end_if_4:
+            tmp.12 = &tmp.11
+            tmp.13 = sign_extend 0
+            tmp.14 = add_ptr(tmp.12, index=tmp.13, scale=1)
+            tmp.15 = *tmp.14
+            tmp.16 = sign_extend tmp.15
+            tmp.18 = - 46
+            tmp.17 = tmp.16 != tmp.18
+            if !tmp.17 jump end_if_6
+            return 2
+        
+          end_if_6:
+            return 0
+            return 0
+        }
+        static flag.2: Int = 0
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
 fn test_valid_extra_credit_other_features_bitwise_ops_struct_members() {
     let src = r#"
         struct inner {
@@ -1051,6 +7427,1665 @@ fn test_valid_extra_credit_other_features_struct_decl_in_switch_statement() {
         
           break_switch_0:
             return result.2
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_cast_union_to_void() {
+    let src = r#"
+        union u {
+            long l;
+            double d;
+        };
+        int main(void) {
+            union u x = {1000};
+            (void) x;
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = sign_extend 1000
+            x.1[0] = tmp.0
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_decl_shadows_decl() {
+    let src = r#"
+        int main(void) {
+            struct tag;
+            struct tag *struct_ptr = 0;
+            {
+                union tag;
+                union tag *union_ptr = 0;
+                if (struct_ptr || union_ptr) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = sign_extend 0
+            struct_ptr.1 = tmp.0
+            tmp.1 = sign_extend 0
+            union_ptr.3 = tmp.1
+            if struct_ptr.1 jump or_true_0
+            if union_ptr.3 jump or_true_0
+            tmp.3 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.3 = 1
+        
+          or_end_1:
+            if !tmp.3 jump end_if_2
+            return 1
+        
+          end_if_2:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_incomplete_union_types() {
+    let src = r#"
+        void *calloc(unsigned long nmemb, unsigned long size);
+        int puts(char *s);
+        union never_used;
+        union never_used incomplete_fun(union never_used x);
+        int test_block_scope_forward_decl(void) {
+            union u;
+            union u* u_ptr = 0;
+            union u {
+                long x;
+                char y;
+            };
+            union u val = { -100000000l };
+            u_ptr = &val;
+            if (u_ptr->x != -100000000l || u_ptr->y != 0) {
+                return 0;
+            }
+            return 1;
+        }
+        union opaque_union;
+        union opaque_union* use_union_pointers(union opaque_union* param) {
+            if (param == 0) {
+                puts("null pointer");
+            }
+            return 0;
+        }
+        int test_use_incomplete_union_pointers(void) {
+            union opaque_union* ptr1 = calloc(1, 4);
+            union opaque_union* ptr2 = calloc(1, 4);
+            char* ptr1_bytes = (char*)ptr1;
+            if (ptr1_bytes[0] || ptr1_bytes[1]) {
+                return 0;
+            }
+            if (ptr1 == 0 || ptr2 == 0 || ptr1 == ptr2) {
+                return 0;
+            }
+            static int flse = 0;
+            union opaque_union* ptr3 = flse ? ptr1 : ptr2;
+            if (ptr3 != ptr2) {
+                return 0;
+            }
+            if (use_union_pointers(ptr3)) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_block_scope_forward_decl()) {
+                return 1;
+            }
+            if (!test_use_incomplete_union_pointers()) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function test_block_scope_forward_decl() { 
+            tmp.0 = sign_extend 0
+            u_ptr.6 = tmp.0
+            tmp.1 = - 100000000L
+            val.8[0] = tmp.1
+            tmp.2 = &val.8
+            u_ptr.6 = tmp.2
+            tmp.3 = *u_ptr.6
+            tmp.5 = - 100000000L
+            tmp.4 = tmp.3 != tmp.5
+            if tmp.4 jump or_true_0
+            tmp.8 = *u_ptr.6
+            tmp.9 = sign_extend tmp.8
+            tmp.10 = tmp.9 != 0
+            if tmp.10 jump or_true_0
+            tmp.7 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.7 = 1
+        
+          or_end_1:
+            if !tmp.7 jump end_if_2
+            return 0
+        
+          end_if_2:
+            return 1
+            return 0
+        }
+        global function use_union_pointers(param.10) { 
+            tmp.12 = sign_extend 0
+            tmp.11 = param.10 == tmp.12
+            if !tmp.11 jump end_if_4
+            tmp.13 = &string.0
+            tmp.14 = puts(tmp.13)
+        
+          end_if_4:
+            tmp.15 = sign_extend 0
+            return tmp.15
+            return 0
+        }
+        global function test_use_incomplete_union_pointers() { 
+            tmp.16 = sign_extend 1
+            tmp.17 = sign_extend 4
+            tmp.18 = calloc(tmp.16, tmp.17)
+            tmp.19 = tmp.18
+            ptr1.11 = tmp.19
+            tmp.20 = sign_extend 1
+            tmp.21 = sign_extend 4
+            tmp.22 = calloc(tmp.20, tmp.21)
+            tmp.23 = tmp.22
+            ptr2.12 = tmp.23
+            tmp.24 = ptr1.11
+            ptr1_bytes.13 = tmp.24
+            tmp.25 = sign_extend 0
+            tmp.26 = add_ptr(ptr1_bytes.13, index=tmp.25, scale=1)
+            tmp.27 = *tmp.26
+            if tmp.27 jump or_true_6
+            tmp.30 = sign_extend 1
+            tmp.31 = add_ptr(ptr1_bytes.13, index=tmp.30, scale=1)
+            tmp.32 = *tmp.31
+            if tmp.32 jump or_true_6
+            tmp.29 = 0
+            jump or_end_7
+        
+          or_true_6:
+            tmp.29 = 1
+        
+          or_end_7:
+            if !tmp.29 jump end_if_8
+            return 0
+        
+          end_if_8:
+            tmp.34 = sign_extend 0
+            tmp.33 = ptr1.11 == tmp.34
+            if tmp.33 jump or_true_10
+            tmp.38 = sign_extend 0
+            tmp.37 = ptr2.12 == tmp.38
+            if tmp.37 jump or_true_10
+            tmp.36 = 0
+            jump or_end_11
+        
+          or_true_10:
+            tmp.36 = 1
+        
+          or_end_11:
+            if tmp.36 jump or_true_12
+            tmp.41 = ptr1.11 == ptr2.12
+            if tmp.41 jump or_true_12
+            tmp.40 = 0
+            jump or_end_13
+        
+          or_true_12:
+            tmp.40 = 1
+        
+          or_end_13:
+            if !tmp.40 jump end_if_14
+            return 0
+        
+          end_if_14:
+            if !flse.14 jump else_17
+            tmp.42 = ptr1.11
+            jump end_if_16
+        
+          else_17:
+            tmp.42 = ptr2.12
+        
+          end_if_16:
+            ptr3.15 = tmp.42
+            tmp.43 = ptr3.15 != ptr2.12
+            if !tmp.43 jump end_if_18
+            return 0
+        
+          end_if_18:
+            tmp.44 = use_union_pointers(ptr3.15)
+            if !tmp.44 jump end_if_20
+            return 0
+        
+          end_if_20:
+            return 1
+            return 0
+        }
+        global function main() { 
+            tmp.45 = test_block_scope_forward_decl()
+            tmp.46 = ! tmp.45
+            if !tmp.46 jump end_if_22
+            return 1
+        
+          end_if_22:
+            tmp.47 = test_use_incomplete_union_pointers()
+            tmp.48 = ! tmp.47
+            if !tmp.48 jump end_if_24
+            return 2
+        
+          end_if_24:
+            return 0
+            return 0
+        }
+        static flse.14: Int = 0
+        constant string.0: Array(13,Char) = "null pointer\\0"
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_redeclare_union() {
+    let src = r#"
+        
+        int main(void) {
+            union u {
+                int a;
+            };
+            union u;
+            union u my_union = {1};
+            return my_union.a;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            my_union.2[0] = 1
+            tmp.0 = my_union.2[0]
+            return tmp.0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_struct_shadows_union() {
+    let src = r#"
+        
+        void *malloc(unsigned long size);
+        int main(void) {
+            struct s {int a; int b;};
+            struct s my_struct = {12, 13};
+            {
+                union u;
+                union u *ptr = malloc(4);
+                union u {int i; unsigned int u;};
+                ptr->i = 10;
+                if (ptr->u != 10) {
+                    return 1;
+                }
+                if (my_struct.b != 13) {
+                    return 2;
+                }
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            my_struct.2[0] = 12
+            my_struct.2[4] = 13
+            tmp.0 = sign_extend 4
+            tmp.1 = malloc(tmp.0)
+            tmp.2 = tmp.1
+            ptr.4 = tmp.2
+            *ptr.4 = 10
+            tmp.3 = *ptr.4
+            tmp.5 = 10
+            tmp.4 = tmp.3 != tmp.5
+            if !tmp.4 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.6 = my_struct.2[4]
+            tmp.7 = tmp.6 != 13
+            if !tmp.7 jump end_if_2
+            return 2
+        
+          end_if_2:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_union_members_same_type() {
+    let src = r#"
+        
+        union u {
+            int a;
+            int b;
+        };
+        int main(void) {
+            union u my_union = {0};
+            my_union.a = -1;
+            if (my_union.b != -1){
+                return 1;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            my_union.1[0] = 0
+            tmp.0 = - 1
+            my_union.1[0] = tmp.0
+            tmp.1 = my_union.1[0]
+            tmp.3 = - 1
+            tmp.2 = tmp.1 != tmp.3
+            if !tmp.2 jump end_if_0
+            return 1
+        
+          end_if_0:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_union_namespace() {
+    let src = r#"
+        int test_shared_member_names(void) {
+            union u1 {
+                int a;
+            };
+            union u2 {
+                long l;
+                double a;
+            };
+            struct s {
+                char a[2];
+            };
+            union u1 var1 = {10};
+            union u2 var2 = {-9223372036854775807l - 1};
+            struct s var3 = {{-1, -2}};
+            if (var1.a != 10 || var2.a != -0.0 || var3.a[0] != -1) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_same_name_var_member_and_tag(void) {
+            union u {
+                int u;
+            };
+            union u u = {100};
+            if (u.u != 100) {
+                return 0;
+            }
+            return 1;
+        }
+        int f(void) {
+            return 10;
+        }
+        union f {
+            int f;
+        };
+        int test_same_name_fun_and_tag(void) {
+            union f x;
+            x.f = f();
+            if (x.f != 10) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_shared_member_names()) {
+                return 1;
+            }
+            if (!test_same_name_var_member_and_tag()) {
+                return 2;
+            }
+            if (!test_same_name_fun_and_tag()) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function test_shared_member_names() { 
+            var1.3[0] = 10
+            tmp.0 = - 9223372036854775807L
+            tmp.2 = sign_extend 1
+            tmp.1 = tmp.0 - tmp.2
+            var2.4[0] = tmp.1
+            tmp.3 = - 1
+            tmp.4 = truncate tmp.3
+            var3.5[0] = tmp.4
+            tmp.5 = - 2
+            tmp.6 = truncate tmp.5
+            var3.5[1] = tmp.6
+            tmp.7 = var1.3[0]
+            tmp.8 = tmp.7 != 10
+            if tmp.8 jump or_true_0
+            tmp.11 = var2.4[0]
+            tmp.13 = - 0D
+            tmp.12 = tmp.11 != tmp.13
+            if tmp.12 jump or_true_0
+            tmp.10 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.10 = 1
+        
+          or_end_1:
+            if tmp.10 jump or_true_2
+            tmp.16 = &var3.5
+            tmp.17 = sign_extend 0
+            tmp.18 = add_ptr(tmp.16, index=tmp.17, scale=1)
+            tmp.19 = *tmp.18
+            tmp.20 = sign_extend tmp.19
+            tmp.22 = - 1
+            tmp.21 = tmp.20 != tmp.22
+            if tmp.21 jump or_true_2
+            tmp.15 = 0
+            jump or_end_3
+        
+          or_true_2:
+            tmp.15 = 1
+        
+          or_end_3:
+            if !tmp.15 jump end_if_4
+            return 0
+        
+          end_if_4:
+            return 1
+            return 0
+        }
+        global function test_same_name_var_member_and_tag() { 
+            u.7[0] = 100
+            tmp.23 = u.7[0]
+            tmp.24 = tmp.23 != 100
+            if !tmp.24 jump end_if_6
+            return 0
+        
+          end_if_6:
+            return 1
+            return 0
+        }
+        global function f() { 
+            return 10
+            return 0
+        }
+        global function test_same_name_fun_and_tag() { 
+            tmp.25 = f()
+            x.9[0] = tmp.25
+            tmp.26 = x.9[0]
+            tmp.27 = tmp.26 != 10
+            if !tmp.27 jump end_if_8
+            return 0
+        
+          end_if_8:
+            return 1
+            return 0
+        }
+        global function main() { 
+            tmp.28 = test_shared_member_names()
+            tmp.29 = ! tmp.28
+            if !tmp.29 jump end_if_10
+            return 1
+        
+          end_if_10:
+            tmp.30 = test_same_name_var_member_and_tag()
+            tmp.31 = ! tmp.30
+            if !tmp.31 jump end_if_12
+            return 2
+        
+          end_if_12:
+            tmp.32 = test_same_name_fun_and_tag()
+            tmp.33 = ! tmp.32
+            if !tmp.33 jump end_if_14
+            return 3
+        
+          end_if_14:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_union_self_pointer() {
+    let src = r#"
+        union self_ptr {
+            union self_ptr *ptr;
+            long l;
+        };
+        int main(void) {
+            union self_ptr u = {&u};
+            if (&u != u.ptr) {
+                return 1;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = &u.1
+            u.1[0] = tmp.0
+            tmp.1 = &u.1
+            tmp.3 = u.1[0]
+            tmp.2 = tmp.1 != tmp.3
+            if !tmp.2 jump end_if_0
+            return 1
+        
+          end_if_0:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_semantic_analysis_union_shadows_struct() {
+    let src = r#"
+        
+        struct tag {
+            int a;
+            int b;
+        };
+        struct tag global_struct = {1, 2};
+        int main(void) {
+            union tag {
+                int x;
+                long y;
+            };
+            union tag local_union = {100};
+            if (global_struct.a != 1) {
+                return 1;
+            }
+            if (local_union.x != 100) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            local_union.2[0] = 100
+            tmp.0 = global_struct[0]
+            tmp.1 = tmp.0 != 1
+            if !tmp.1 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.2 = local_union.2[0]
+            tmp.3 = tmp.2 != 100
+            if !tmp.3 jump end_if_2
+            return 2
+        
+          end_if_2:
+            return 0
+            return 0
+        }
+        static global global_struct: Struct(tag.0) = [ 1, 2]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_size_and_offset_compare_union_pointers() {
+    let src = r#"
+        
+        struct s {
+            int i;
+        };
+        union u {
+            char arr[3];
+            double d;
+            struct s my_struct;
+        };
+        union u my_union;
+        int main(void) {
+            union u* u_ptr = &my_union;
+            if ((void*)u_ptr != (void*)&(u_ptr->arr)) {
+                return 1;
+            }
+            if (!((void*)u_ptr == (void*)&(u_ptr->d))) {
+                return 2;
+            }
+            if ((void*)&(u_ptr->my_struct) != u_ptr) {
+                return 3;
+            }
+            if (my_union.arr != (char*)&my_union.d) {
+                return 4;
+            }
+            if (!(&my_union.arr[0] >= (char *) &my_union.my_struct.i)) {
+                return 5;
+            }
+            if (! ((char *) (&u_ptr->d) <= (char *) &u_ptr->my_struct)) {
+                return 6;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.0 = &my_union
+            u_ptr.2 = tmp.0
+            tmp.1 = u_ptr.2
+            tmp.3 = u_ptr.2
+            tmp.2 = tmp.1 != tmp.3
+            if !tmp.2 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.4 = u_ptr.2
+            tmp.6 = u_ptr.2
+            tmp.5 = tmp.4 == tmp.6
+            tmp.7 = ! tmp.5
+            if !tmp.7 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.8 = u_ptr.2
+            tmp.10 = u_ptr.2
+            tmp.9 = tmp.8 != tmp.10
+            if !tmp.9 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.11 = &my_union
+            tmp.13 = &my_union
+            tmp.14 = tmp.13
+            tmp.12 = tmp.11 != tmp.14
+            if !tmp.12 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.15 = &my_union
+            tmp.16 = sign_extend 0
+            tmp.17 = add_ptr(tmp.15, index=tmp.16, scale=1)
+            tmp.19 = &my_union
+            tmp.20 = tmp.19
+            tmp.18 = tmp.17 >= tmp.20
+            tmp.21 = ! tmp.18
+            if !tmp.21 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.22 = u_ptr.2
+            tmp.24 = u_ptr.2
+            tmp.23 = tmp.22 <= tmp.24
+            tmp.25 = ! tmp.23
+            if !tmp.25 jump end_if_10
+            return 6
+        
+          end_if_10:
+            return 0
+            return 0
+        }
+        static global my_union: Union(u.1) = zero[8]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_size_and_offset_union_sizes() {
+    let src = r#"
+        
+        struct eight_bytes {
+            int i;
+            char c;
+        };
+        struct two_bytes {
+            char arr[2];
+        };
+        struct three_bytes {
+            char arr[3];
+        };
+        struct sixteen_bytes {
+            struct eight_bytes eight;
+            struct two_bytes two;
+            struct three_bytes three;
+        };
+        struct seven_bytes {
+            struct two_bytes two;
+            struct three_bytes three;
+            struct two_bytes two2;
+        };
+        struct twentyfour_bytes {
+            struct seven_bytes seven;
+            struct sixteen_bytes sixteen;
+        };
+        struct twenty_bytes {
+            struct sixteen_bytes sixteen;
+            struct two_bytes two;
+        };
+        struct wonky {
+            char arr[19];
+        };
+        struct internal_padding {
+            char c;
+            double d;
+        };
+        struct contains_struct_array {
+            char c;
+            struct eight_bytes struct_array[3];
+        };
+        union no_padding {
+            char c;
+            unsigned char uc;
+            signed char arr[11];
+        };
+        union with_padding {
+            signed char arr[10];
+            unsigned int ui;
+        };
+        union contains_array {
+            union with_padding arr1[2];
+            union no_padding arr[3];
+        };
+        union double_and_int {
+            int i;
+            double d;
+        };
+        union contains_structs {
+            struct wonky x;
+            struct eight_bytes y;
+        };
+        int main(void) {
+            if (sizeof(union no_padding) != 11) {
+                return 1;
+            }
+            if (sizeof(union with_padding) != 12) {
+                return 2;
+            }
+            if (sizeof(union contains_array) != 36) {
+                return 3;
+            }
+            if (sizeof(union double_and_int) != 8) {
+                return 4;
+            }
+            if (sizeof(union contains_structs) != 20) {
+                return 5;
+            }
+            union no_padding x = { 1 };
+            union contains_array y = { {{{-1, 2}} }};
+            union contains_structs* get_union_ptr(void);
+            if (sizeof x != 11) {
+                return 6;
+            }
+            if (sizeof y.arr1 != 24) {
+                return 7;
+            }
+            if (sizeof * get_union_ptr() != 20) {
+                return 8;
+            }
+            return 0;
+        }
+        union contains_structs* get_union_ptr(void) {
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            tmp.1 = sign_extend 11
+            tmp.0 = 11UL != tmp.1
+            if !tmp.0 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.3 = sign_extend 12
+            tmp.2 = 12UL != tmp.3
+            if !tmp.2 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.5 = sign_extend 36
+            tmp.4 = 36UL != tmp.5
+            if !tmp.4 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.7 = sign_extend 8
+            tmp.6 = 8UL != tmp.7
+            if !tmp.6 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.9 = sign_extend 20
+            tmp.8 = 20UL != tmp.9
+            if !tmp.8 jump end_if_8
+            return 5
+        
+          end_if_8:
+            tmp.10 = truncate 1
+            x.15[0] = tmp.10
+            tmp.11 = - 1
+            tmp.12 = truncate tmp.11
+            y.16[0] = tmp.12
+            tmp.13 = truncate 2
+            y.16[1] = tmp.13
+            y.16[2] = '\0'
+            y.16[3] = '\0'
+            y.16[4] = '\0'
+            y.16[5] = '\0'
+            y.16[6] = '\0'
+            y.16[7] = '\0'
+            y.16[8] = '\0'
+            y.16[9] = '\0'
+            y.16[12] = '\0'
+            y.16[13] = '\0'
+            y.16[14] = '\0'
+            y.16[15] = '\0'
+            y.16[16] = '\0'
+            y.16[17] = '\0'
+            y.16[18] = '\0'
+            y.16[19] = '\0'
+            y.16[20] = '\0'
+            y.16[21] = '\0'
+            y.16[12] = 0U
+            tmp.15 = sign_extend 11
+            tmp.14 = 11UL != tmp.15
+            if !tmp.14 jump end_if_10
+            return 6
+        
+          end_if_10:
+            tmp.17 = sign_extend 24
+            tmp.16 = 24UL != tmp.17
+            if !tmp.16 jump end_if_12
+            return 7
+        
+          end_if_12:
+            tmp.19 = sign_extend 20
+            tmp.18 = 20UL != tmp.19
+            if !tmp.18 jump end_if_14
+            return 8
+        
+          end_if_14:
+            return 0
+            return 0
+        }
+        global function get_union_ptr() { 
+            tmp.20 = sign_extend 0
+            return tmp.20
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_union_copy_assign_to_union() {
+    let src = r#"
+        
+        struct s {
+            int a;
+            int b;
+        };
+        union u {
+            struct s str;
+            long l;
+            double arr[3];
+        };
+        int main(void) {
+            union u x = { {1, 2} };
+            union u y = { {0, 0} };
+            y = x;
+            if (y.str.a != 1) {
+                return 1;
+            }
+            if (y.str.b != 2) {
+                return 2;
+            }
+            x.arr[0] = -20.;
+            x.arr[1] = -30.;
+            x.arr[2] = -40.;
+            y = x;
+            if (y.arr[0] != -20.) {
+                return 3;
+            }
+            if (y.arr[1] != -30.) {
+                return 4;
+            }
+            if (y.arr[2] != -40.) {
+                return 5;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function main() { 
+            x.2[0] = 1
+            x.2[4] = 2
+            y.3[0] = 0
+            y.3[4] = 0
+            y.3 = x.2
+            tmp.0 = y.3[0]
+            tmp.1 = tmp.0 != 1
+            if !tmp.1 jump end_if_0
+            return 1
+        
+          end_if_0:
+            tmp.2 = y.3[4]
+            tmp.3 = tmp.2 != 2
+            if !tmp.3 jump end_if_2
+            return 2
+        
+          end_if_2:
+            tmp.4 = &x.2
+            tmp.5 = sign_extend 0
+            tmp.6 = add_ptr(tmp.4, index=tmp.5, scale=8)
+            tmp.7 = - 20D
+            *tmp.6 = tmp.7
+            tmp.8 = &x.2
+            tmp.9 = sign_extend 1
+            tmp.10 = add_ptr(tmp.8, index=tmp.9, scale=8)
+            tmp.11 = - 30D
+            *tmp.10 = tmp.11
+            tmp.12 = &x.2
+            tmp.13 = sign_extend 2
+            tmp.14 = add_ptr(tmp.12, index=tmp.13, scale=8)
+            tmp.15 = - 40D
+            *tmp.14 = tmp.15
+            y.3 = x.2
+            tmp.16 = &y.3
+            tmp.17 = sign_extend 0
+            tmp.18 = add_ptr(tmp.16, index=tmp.17, scale=8)
+            tmp.19 = *tmp.18
+            tmp.21 = - 20D
+            tmp.20 = tmp.19 != tmp.21
+            if !tmp.20 jump end_if_4
+            return 3
+        
+          end_if_4:
+            tmp.22 = &y.3
+            tmp.23 = sign_extend 1
+            tmp.24 = add_ptr(tmp.22, index=tmp.23, scale=8)
+            tmp.25 = *tmp.24
+            tmp.27 = - 30D
+            tmp.26 = tmp.25 != tmp.27
+            if !tmp.26 jump end_if_6
+            return 4
+        
+          end_if_6:
+            tmp.28 = &y.3
+            tmp.29 = sign_extend 2
+            tmp.30 = add_ptr(tmp.28, index=tmp.29, scale=8)
+            tmp.31 = *tmp.30
+            tmp.33 = - 40D
+            tmp.32 = tmp.31 != tmp.33
+            if !tmp.32 jump end_if_8
+            return 5
+        
+          end_if_8:
+            return 0
+            return 0
+        }
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_union_copy_copy_non_scalar_members() {
+    let src = r#"
+        void *calloc(unsigned long nmemb, unsigned long size);
+        void *malloc(unsigned long size);
+        union simple {
+            int i;
+            long l;
+            char c;
+            unsigned char uc_arr[3];
+        };
+        union has_union {
+            double d;
+            union simple u;
+            union simple *u_ptr;
+        };
+        struct simple_struct {
+            long l;
+            double d;
+            unsigned int u;
+        };
+        union has_struct {
+            long l;
+            struct simple_struct s;
+        };
+        struct struct_with_union {
+            union simple u;
+            unsigned long ul;
+        };
+        union complex_union {
+            double d_arr[2];
+            struct struct_with_union s;
+            union has_union *u_ptr;
+        };
+        
+        void* calloc(unsigned long nmemb, unsigned long size);
+        int test_dot(void) {
+            struct struct_with_union my_struct = { {0}, 100000l };
+            union simple my_simple_union;
+            my_simple_union.l = -1;
+            my_struct.u = my_simple_union;
+            static union complex_union my_union;
+            my_union.s = my_struct;
+            if (my_struct.ul != 100000l || my_struct.u.l != -1) {
+                return 0;
+            }
+            if (my_union.s.ul != 100000l) {
+                return 0;
+            }
+            my_union.s.u.i = 45;
+            my_simple_union = my_union.s.u;
+            if (my_simple_union.i != 45) {
+                return 0;
+            }
+            static struct struct_with_union another_struct;
+            another_struct = my_union.s;
+            if (another_struct.ul != 100000l || another_struct.u.i != 45) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_arrow(void) {
+            union complex_union* my_union_ptr = calloc(1, sizeof(union complex_union));
+            my_union_ptr->u_ptr = calloc(1, sizeof(union has_union));
+            my_union_ptr->u_ptr->u_ptr = calloc(1, sizeof(union simple));
+            my_union_ptr->u_ptr->u_ptr->i = 987654321;
+            union has_union another_union = *my_union_ptr->u_ptr;
+            if (another_union.u_ptr != my_union_ptr->u_ptr->u_ptr || another_union.u_ptr->c != my_union_ptr->u_ptr->u_ptr->c) {
+                return 0;
+            }
+            union simple small_union = { -9999 };
+            my_union_ptr->u_ptr->u = small_union;
+            if (my_union_ptr->u_ptr->u.i != -9999) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_dot()) {
+                return 1;
+            }
+            if (!test_arrow()) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function test_dot() { 
+            my_struct.11[0] = 0
+            tmp.0 = 100000L
+            my_struct.11[8] = tmp.0
+            tmp.1 = - 1
+            tmp.2 = sign_extend tmp.1
+            my_simple_union.12[0] = tmp.2
+            my_struct.11[0] = my_simple_union.12
+            my_union.13[0] = my_struct.11
+            tmp.3 = my_struct.11[8]
+            tmp.5 = 100000L
+            tmp.4 = tmp.3 != tmp.5
+            if tmp.4 jump or_true_0
+            tmp.8 = my_struct.11[0]
+            tmp.10 = - 1
+            tmp.11 = sign_extend tmp.10
+            tmp.9 = tmp.8 != tmp.11
+            if tmp.9 jump or_true_0
+            tmp.7 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.7 = 1
+        
+          or_end_1:
+            if !tmp.7 jump end_if_2
+            return 0
+        
+          end_if_2:
+            tmp.12 = my_union.13[8]
+            tmp.14 = 100000L
+            tmp.13 = tmp.12 != tmp.14
+            if !tmp.13 jump end_if_4
+            return 0
+        
+          end_if_4:
+            my_union.13[0] = 45
+            tmp.15 = my_union.13[0]
+            my_simple_union.12 = tmp.15
+            tmp.16 = my_simple_union.12[0]
+            tmp.17 = tmp.16 != 45
+            if !tmp.17 jump end_if_6
+            return 0
+        
+          end_if_6:
+            tmp.18 = my_union.13[0]
+            another_struct.14 = tmp.18
+            tmp.19 = another_struct.14[8]
+            tmp.21 = 100000L
+            tmp.20 = tmp.19 != tmp.21
+            if tmp.20 jump or_true_8
+            tmp.24 = another_struct.14[0]
+            tmp.25 = tmp.24 != 45
+            if tmp.25 jump or_true_8
+            tmp.23 = 0
+            jump or_end_9
+        
+          or_true_8:
+            tmp.23 = 1
+        
+          or_end_9:
+            if !tmp.23 jump end_if_10
+            return 0
+        
+          end_if_10:
+            return 1
+            return 0
+        }
+        global function test_arrow() { 
+            tmp.26 = sign_extend 1
+            tmp.27 = calloc(tmp.26, 16UL)
+            tmp.28 = tmp.27
+            my_union_ptr.15 = tmp.28
+            tmp.29 = sign_extend 1
+            tmp.30 = calloc(tmp.29, 8UL)
+            tmp.31 = tmp.30
+            *my_union_ptr.15 = tmp.31
+            tmp.32 = *my_union_ptr.15
+            tmp.33 = sign_extend 1
+            tmp.34 = calloc(tmp.33, 8UL)
+            tmp.35 = tmp.34
+            *tmp.32 = tmp.35
+            tmp.36 = *my_union_ptr.15
+            tmp.37 = *tmp.36
+            *tmp.37 = 987654321
+            tmp.38 = *my_union_ptr.15
+            tmp.39 = *tmp.38
+            another_union.16 = tmp.39
+            tmp.40 = another_union.16[0]
+            tmp.42 = *my_union_ptr.15
+            tmp.43 = *tmp.42
+            tmp.41 = tmp.40 != tmp.43
+            if tmp.41 jump or_true_12
+            tmp.46 = another_union.16[0]
+            tmp.47 = *tmp.46
+            tmp.48 = sign_extend tmp.47
+            tmp.50 = *my_union_ptr.15
+            tmp.51 = *tmp.50
+            tmp.52 = *tmp.51
+            tmp.53 = sign_extend tmp.52
+            tmp.49 = tmp.48 != tmp.53
+            if tmp.49 jump or_true_12
+            tmp.45 = 0
+            jump or_end_13
+        
+          or_true_12:
+            tmp.45 = 1
+        
+          or_end_13:
+            if !tmp.45 jump end_if_14
+            return 0
+        
+          end_if_14:
+            tmp.54 = - 9999
+            small_union.17[0] = tmp.54
+            tmp.55 = *my_union_ptr.15
+            *tmp.55 = small_union.17
+            tmp.56 = *my_union_ptr.15
+            tmp.57 = *tmp.56
+            tmp.59 = - 9999
+            tmp.58 = tmp.57 != tmp.59
+            if !tmp.58 jump end_if_16
+            return 0
+        
+          end_if_16:
+            return 1
+            return 0
+        }
+        global function main() { 
+            tmp.60 = test_dot()
+            tmp.61 = ! tmp.60
+            if !tmp.61 jump end_if_18
+            return 1
+        
+          end_if_18:
+            tmp.62 = test_arrow()
+            tmp.63 = ! tmp.62
+            if !tmp.63 jump end_if_20
+            return 2
+        
+          end_if_20:
+            return 0
+            return 0
+        }
+        static another_struct.14: Struct(struct_with_union.7) = zero[16]
+        static my_union.13: Union(complex_union.8) = zero[16]
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_union_copy_copy_thru_pointer() {
+    let src = r#"
+        void *calloc(unsigned long nmemb, unsigned long size);
+        void *malloc(unsigned long size);
+        union simple {
+            int i;
+            long l;
+            char c;
+            unsigned char uc_arr[3];
+        };
+        union has_union {
+            double d;
+            union simple u;
+            union simple *u_ptr;
+        };
+        struct simple_struct {
+            long l;
+            double d;
+            unsigned int u;
+        };
+        union has_struct {
+            long l;
+            struct simple_struct s;
+        };
+        struct struct_with_union {
+            union simple u;
+            unsigned long ul;
+        };
+        union complex_union {
+            double d_arr[2];
+            struct struct_with_union s;
+            union has_union *u_ptr;
+        };
+        
+        int strcmp(char* s1, char* s2);
+        int test_copy_to_pointer(void) {
+            union simple y;
+            y.l = -20;
+            union simple* x = malloc(sizeof(union simple));
+            *x = y;
+            if (x->l != -20 || x->i != -20 || x->uc_arr[0] != 236 || x->uc_arr[1] != 255 || x->uc_arr[2] != 255) {
+                return 0;
+            }
+            return 1;
+        }
+        int test_copy_from_pointer(void) {
+            struct simple_struct my_struct = { 8223372036854775807l, 20e3, 2147483650u };
+            static union has_struct my_union;
+            my_union.s = my_struct;
+            union has_struct* union_ptr;
+            union_ptr = &my_union;
+            union has_struct another_union = *union_ptr;
+            if (another_union.s.l != 8223372036854775807l || another_union.s.d != 20e3 || another_union.s.u != 2147483650u) {
+                return 0;
+            }
+            return 1;
+        }
+        union with_padding {
+            char arr[10];
+            unsigned int ui;
+        };
+        int test_copy_array_members(void) {
+            union with_padding union_array[3] = { {"foobar"}, {"hello"}, {"itsaunion"} };
+            union with_padding another_union = union_array[0];
+            union with_padding yet_another_union = { "blahblah" };
+            union_array[2] = yet_another_union;
+            if (strcmp(union_array[0].arr, "foobar") || strcmp(union_array[1].arr, "hello") || strcmp(union_array[2].arr, "blahblah")) {
+                return 0;
+            }
+            if (strcmp(another_union.arr, "foobar")) {
+                return 0;
+            }
+            if (strcmp(yet_another_union.arr, "blahblah")) {
+                return 0;
+            }
+            return 1;
+        }
+        int main(void) {
+            if (!test_copy_to_pointer()){
+                return 1;
+            }
+            if (!test_copy_from_pointer()) {
+                return 2;
+            }
+            if (!test_copy_array_members()) {
+                return 3;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function test_copy_to_pointer() { 
+            tmp.0 = - 20
+            tmp.1 = sign_extend tmp.0
+            y.11[0] = tmp.1
+            tmp.2 = malloc(8UL)
+            tmp.3 = tmp.2
+            x.12 = tmp.3
+            *x.12 = y.11
+            tmp.4 = *x.12
+            tmp.6 = - 20
+            tmp.7 = sign_extend tmp.6
+            tmp.5 = tmp.4 != tmp.7
+            if tmp.5 jump or_true_0
+            tmp.10 = *x.12
+            tmp.12 = - 20
+            tmp.11 = tmp.10 != tmp.12
+            if tmp.11 jump or_true_0
+            tmp.9 = 0
+            jump or_end_1
+        
+          or_true_0:
+            tmp.9 = 1
+        
+          or_end_1:
+            if tmp.9 jump or_true_2
+            tmp.15 = sign_extend 0
+            tmp.16 = add_ptr(x.12, index=tmp.15, scale=1)
+            tmp.17 = *tmp.16
+            tmp.18 = zero_extend tmp.17
+            tmp.19 = tmp.18 != 236
+            if tmp.19 jump or_true_2
+            tmp.14 = 0
+            jump or_end_3
+        
+          or_true_2:
+            tmp.14 = 1
+        
+          or_end_3:
+            if tmp.14 jump or_true_4
+            tmp.22 = sign_extend 1
+            tmp.23 = add_ptr(x.12, index=tmp.22, scale=1)
+            tmp.24 = *tmp.23
+            tmp.25 = zero_extend tmp.24
+            tmp.26 = tmp.25 != 255
+            if tmp.26 jump or_true_4
+            tmp.21 = 0
+            jump or_end_5
+        
+          or_true_4:
+            tmp.21 = 1
+        
+          or_end_5:
+            if tmp.21 jump or_true_6
+            tmp.29 = sign_extend 2
+            tmp.30 = add_ptr(x.12, index=tmp.29, scale=1)
+            tmp.31 = *tmp.30
+            tmp.32 = zero_extend tmp.31
+            tmp.33 = tmp.32 != 255
+            if tmp.33 jump or_true_6
+            tmp.28 = 0
+            jump or_end_7
+        
+          or_true_6:
+            tmp.28 = 1
+        
+          or_end_7:
+            if !tmp.28 jump end_if_8
+            return 0
+        
+          end_if_8:
+            return 1
+            return 0
+        }
+        global function test_copy_from_pointer() { 
+            my_struct.13[0] = 8223372036854775807L
+            my_struct.13[8] = 20000D
+            my_struct.13[16] = 2147483650U
+            my_union.14[0] = my_struct.13
+            tmp.34 = &my_union.14
+            union_ptr.15 = tmp.34
+            tmp.35 = *union_ptr.15
+            another_union.16 = tmp.35
+            tmp.36 = another_union.16[0]
+            tmp.37 = tmp.36 != 8223372036854775807L
+            if tmp.37 jump or_true_10
+            tmp.40 = another_union.16[8]
+            tmp.41 = tmp.40 != 20000D
+            if tmp.41 jump or_true_10
+            tmp.39 = 0
+            jump or_end_11
+        
+          or_true_10:
+            tmp.39 = 1
+        
+          or_end_11:
+            if tmp.39 jump or_true_12
+            tmp.44 = another_union.16[16]
+            tmp.45 = tmp.44 != 2147483650U
+            if tmp.45 jump or_true_12
+            tmp.43 = 0
+            jump or_end_13
+        
+          or_true_12:
+            tmp.43 = 1
+        
+          or_end_13:
+            if !tmp.43 jump end_if_14
+            return 0
+        
+          end_if_14:
+            return 1
+            return 0
+        }
+        global function test_copy_array_members() { 
+            union_array.18[0] = 'f'
+            union_array.18[1] = 'o'
+            union_array.18[2] = 'o'
+            union_array.18[3] = 'b'
+            union_array.18[4] = 'a'
+            union_array.18[5] = 'r'
+            union_array.18[6] = '\0'
+            union_array.18[7] = '\0'
+            union_array.18[8] = '\0'
+            union_array.18[9] = '\0'
+            union_array.18[12] = 'h'
+            union_array.18[13] = 'e'
+            union_array.18[14] = 'l'
+            union_array.18[15] = 'l'
+            union_array.18[16] = 'o'
+            union_array.18[17] = '\0'
+            union_array.18[18] = '\0'
+            union_array.18[19] = '\0'
+            union_array.18[20] = '\0'
+            union_array.18[21] = '\0'
+            union_array.18[24] = 'i'
+            union_array.18[25] = 't'
+            union_array.18[26] = 's'
+            union_array.18[27] = 'a'
+            union_array.18[28] = 'u'
+            union_array.18[29] = 'n'
+            union_array.18[30] = 'i'
+            union_array.18[31] = 'o'
+            union_array.18[32] = 'n'
+            union_array.18[33] = '\0'
+            tmp.46 = &union_array.18
+            tmp.47 = sign_extend 0
+            tmp.48 = add_ptr(tmp.46, index=tmp.47, scale=12)
+            tmp.49 = *tmp.48
+            another_union.19 = tmp.49
+            yet_another_union.20[0] = 'b'
+            yet_another_union.20[1] = 'l'
+            yet_another_union.20[2] = 'a'
+            yet_another_union.20[3] = 'h'
+            yet_another_union.20[4] = 'b'
+            yet_another_union.20[5] = 'l'
+            yet_another_union.20[6] = 'a'
+            yet_another_union.20[7] = 'h'
+            yet_another_union.20[8] = '\0'
+            yet_another_union.20[9] = '\0'
+            tmp.50 = &union_array.18
+            tmp.51 = sign_extend 2
+            tmp.52 = add_ptr(tmp.50, index=tmp.51, scale=12)
+            *tmp.52 = yet_another_union.20
+            tmp.53 = &union_array.18
+            tmp.54 = sign_extend 0
+            tmp.55 = add_ptr(tmp.53, index=tmp.54, scale=12)
+            tmp.56 = &string.0
+            tmp.57 = strcmp(tmp.55, tmp.56)
+            if tmp.57 jump or_true_16
+            tmp.60 = &union_array.18
+            tmp.61 = sign_extend 1
+            tmp.62 = add_ptr(tmp.60, index=tmp.61, scale=12)
+            tmp.63 = &string.1
+            tmp.64 = strcmp(tmp.62, tmp.63)
+            if tmp.64 jump or_true_16
+            tmp.59 = 0
+            jump or_end_17
+        
+          or_true_16:
+            tmp.59 = 1
+        
+          or_end_17:
+            if tmp.59 jump or_true_18
+            tmp.67 = &union_array.18
+            tmp.68 = sign_extend 2
+            tmp.69 = add_ptr(tmp.67, index=tmp.68, scale=12)
+            tmp.70 = &string.2
+            tmp.71 = strcmp(tmp.69, tmp.70)
+            if tmp.71 jump or_true_18
+            tmp.66 = 0
+            jump or_end_19
+        
+          or_true_18:
+            tmp.66 = 1
+        
+          or_end_19:
+            if !tmp.66 jump end_if_20
+            return 0
+        
+          end_if_20:
+            tmp.72 = &another_union.19
+            tmp.73 = &string.0
+            tmp.74 = strcmp(tmp.72, tmp.73)
+            if !tmp.74 jump end_if_22
+            return 0
+        
+          end_if_22:
+            tmp.75 = &yet_another_union.20
+            tmp.76 = &string.2
+            tmp.77 = strcmp(tmp.75, tmp.76)
+            if !tmp.77 jump end_if_24
+            return 0
+        
+          end_if_24:
+            return 1
+            return 0
+        }
+        global function main() { 
+            tmp.78 = test_copy_to_pointer()
+            tmp.79 = ! tmp.78
+            if !tmp.79 jump end_if_26
+            return 1
+        
+          end_if_26:
+            tmp.80 = test_copy_from_pointer()
+            tmp.81 = ! tmp.80
+            if !tmp.81 jump end_if_28
+            return 2
+        
+          end_if_28:
+            tmp.82 = test_copy_array_members()
+            tmp.83 = ! tmp.82
+            if !tmp.83 jump end_if_30
+            return 3
+        
+          end_if_30:
+            return 0
+            return 0
+        }
+        static my_union.14: Union(has_struct.6) = zero[24]
+        constant string.0: Array(7,Char) = "foobar\\0"
+        constant string.1: Array(6,Char) = "hello\\0"
+        constant string.2: Array(9,Char) = "blahblah\\0"
+    "#;
+    assert_eq!(dump_tacky(src), dedent(expected));
+}
+
+#[test]
+fn test_valid_extra_credit_union_copy_unions_in_conditionals() {
+    let src = r#"
+        union u {
+            long l;
+            int i;
+            char c;
+        };
+        int choose_union(int flag) {
+            union u one;
+            union u two;
+            one.l = -1;
+            two.i = 100;
+            return (flag ? one : two).c;
+        }
+        int main(void) {
+            if (choose_union(1) != -1) {
+                return 1;
+            }
+            if (choose_union(0) != 100) {
+                return 2;
+            }
+            return 0;
+        }
+    "#;
+    let expected = r#"
+        global function choose_union(flag.1) { 
+            tmp.0 = - 1
+            tmp.1 = sign_extend tmp.0
+            one.2[0] = tmp.1
+            two.3[0] = 100
+            if !flag.1 jump else_1
+            tmp.2 = one.2
+            jump end_if_0
+        
+          else_1:
+            tmp.2 = two.3
+        
+          end_if_0:
+            tmp.3 = tmp.2[0]
+            tmp.4 = sign_extend tmp.3
+            return tmp.4
+            return 0
+        }
+        global function main() { 
+            tmp.5 = choose_union(1)
+            tmp.7 = - 1
+            tmp.6 = tmp.5 != tmp.7
+            if !tmp.6 jump end_if_2
+            return 1
+        
+          end_if_2:
+            tmp.8 = choose_union(0)
+            tmp.9 = tmp.8 != 100
+            if !tmp.9 jump end_if_4
+            return 2
+        
+          end_if_4:
+            return 0
             return 0
         }
     "#;
@@ -3123,8 +11158,8 @@ fn test_valid_no_structure_parameters_libraries_initializers_nested_auto_struct_
 }
 
 #[test]
-fn test_valid_no_structure_parameters_libraries_initializers_nested_auto_struct_initializers_client()
- {
+fn test_valid_no_structure_parameters_libraries_initializers_nested_auto_struct_initializers_client(
+) {
     let src = r#"
         int strcmp(char *s1, char *s2);
         struct pair {
@@ -4176,8 +12211,8 @@ fn test_valid_no_structure_parameters_libraries_initializers_nested_static_struc
 }
 
 #[test]
-fn test_valid_no_structure_parameters_libraries_initializers_nested_static_struct_initializers_client()
- {
+fn test_valid_no_structure_parameters_libraries_initializers_nested_static_struct_initializers_client(
+) {
     let src = r#"
         int strcmp(char *s1, char *s2);
         struct inner {

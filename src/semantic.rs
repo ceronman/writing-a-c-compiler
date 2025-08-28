@@ -298,7 +298,7 @@ impl SemanticData {
             .expect("Expression without type")
     }
 
-    pub fn type_definition(&self, name: &Symbol) -> &AggregateType {
+    pub fn get_aggregate(&self, name: &Symbol) -> &AggregateType {
         let Some(TypeEntry::Complete(type_def)) = self.type_table.type_defs.get(name) else {
             panic!("Type {name} is unknown or incomplete",);
         };

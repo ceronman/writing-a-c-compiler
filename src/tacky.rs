@@ -282,8 +282,8 @@ impl TackyGenerator {
                     }
                 }
                 Type::Struct(struct_name) => {
-                    let struct_def = self.semantics.type_definition(struct_name);
-                    let fields = struct_def.fields.clone();
+                    let aggregate = self.semantics.get_aggregate(struct_name);
+                    let fields = aggregate.fields.clone();
                     for (i, field) in fields.iter().enumerate() {
                         if let Some(initializer) = initializers.get(i) {
                             self.emit_initializer(
@@ -297,6 +297,14 @@ impl TackyGenerator {
                             self.emit_zero_initializer(offset + field.offset, name, &field.ty)
                         }
                     }
+                }
+                Type::Union(union_name) => {
+                    let struct_def = self.semantics.get_aggregate(union_name);
+                    let first_field_ty = struct_def.fields.first().expect("Union without fields").ty.clone();
+                    let [initializer] = initializers.as_slice() else {
+                        panic!("Union initializer with multiple initializers");
+                    };
+                    self.emit_initializer(level + 1, offset, name, initializer, &first_field_ty);
                 }
                 _ => panic!("Compound initializer used with a non-array type"),
             },
@@ -322,7 +330,7 @@ impl TackyGenerator {
                 return;
             }
             Type::Struct(struct_name) | Type::Union(struct_name) => {
-                let struct_def = self.semantics.type_definition(struct_name);
+                let struct_def = self.semantics.get_aggregate(struct_name);
                 for field in struct_def.fields.clone() {
                     self.emit_zero_initializer(offset + field.offset, name, &field.ty)
                 }
@@ -1028,19 +1036,19 @@ impl TackyGenerator {
                 };
                 return ExprResult::Operand(Val::Constant(Constant::ULong(size as u64)));
             }
-            ast::Expression::Dot { aggregate: structure, field } => {
-                let struct_ty = self.semantics.expr_type(structure).clone();
-                let Type::Struct(struct_name) = struct_ty else {
-                    panic!("Expected a struct in dot expression");
+            ast::Expression::Dot { aggregate, field } => {
+                let aggregate_ty = self.semantics.expr_type(aggregate).clone();
+                let (Type::Struct(aggregate_name) | Type::Union(aggregate_name)) = aggregate_ty else {
+                    panic!("Expected an aggregate type in dot expression");
                 };
-                let struct_def = self.semantics.type_definition(&struct_name);
-                let field_offset = struct_def
+                let aggregate_def = self.semantics.get_aggregate(&aggregate_name);
+                let field_offset = aggregate_def
                     .fields
                     .iter()
                     .find(|f| f.name == field.symbol)
                     .expect("Field not found in struct")
                     .offset as i64;
-                return match self.expression(structure) {
+                return match self.expression(aggregate) {
                     ExprResult::Operand(Val::Var(base)) => ExprResult::SubObject {
                         base,
                         offset: field_offset,
@@ -1050,7 +1058,7 @@ impl TackyGenerator {
                         offset: offset + field_offset,
                     },
                     ExprResult::Dereference(ptr) => {
-                        let struct_ty = self.semantics.expr_type(structure).clone();
+                        let struct_ty = self.semantics.expr_type(aggregate).clone();
                         if field_offset != 0 {
                             let dst = self.make_temp(&Type::Pointer(struct_ty.into()));
                             self.instructions.push(Instruction::AddPtr {
@@ -1069,14 +1077,14 @@ impl TackyGenerator {
             }
             ast::Expression::Arrow { pointer, field } => {
                 let pointer_ty = self.semantics.expr_type(pointer).clone();
-                let Type::Pointer(struct_ty) = pointer_ty else {
-                    panic!("Expected a pointer to struct in dot expression");
+                let Type::Pointer(aggregate_ty) = pointer_ty else {
+                    panic!("Expected a pointer to agregate type in dot expression");
                 };
-                let Type::Struct(struct_name) = &*struct_ty else {
+                let (Type::Struct(aggregate_name) | Type::Union(aggregate_name)) = &*aggregate_ty else {
                     panic!("Expected a struct in dot expression");
                 };
-                let struct_def = self.semantics.type_definition(struct_name);
-                let field_offset = struct_def
+                let aggregate = self.semantics.get_aggregate(aggregate_name);
+                let field_offset = aggregate
                     .fields
                     .iter()
                     .find(|f| f.name == field.symbol)
@@ -1084,7 +1092,7 @@ impl TackyGenerator {
                     .offset as i64;
                 let ptr = self.emit_expr(pointer);
                 return if field_offset != 0 {
-                    let dst = self.make_temp(&Type::Pointer(struct_ty));
+                    let dst = self.make_temp(&Type::Pointer(aggregate_ty));
                     self.instructions.push(Instruction::AddPtr {
                         ptr,
                         index: Val::Constant(Constant::Long(field_offset)),

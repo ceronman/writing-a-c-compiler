@@ -1943,7 +1943,7 @@ impl tacky::Val {
         let Type::Struct(struct_ty) = semantics.symbol_ty(value_name) else {
             panic!("Non-scalar value that is not a struct");
         };
-        semantics.type_definition(struct_ty)
+        semantics.get_aggregate(struct_ty)
     }
 }
 
@@ -1953,7 +1953,7 @@ impl AggregateType {
         fn flatten_inner(ty: &Type, semantic_data: &SemanticData, types: &mut Vec<Type>) {
             match ty {
                 Type::Struct(name) => {
-                    let struct_def = semantic_data.type_definition(name);
+                    let struct_def = semantic_data.get_aggregate(name);
                     for field in &struct_def.fields {
                         flatten_inner(&field.ty, semantic_data, types);
                     }
