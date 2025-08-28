@@ -852,7 +852,7 @@ impl<'src> Parser<'src> {
                 expr = self.node(
                     expr.span + member.span,
                     Expression::Dot {
-                        structure: expr,
+                        aggregate: expr,
                         field: member,
                     },
                 );

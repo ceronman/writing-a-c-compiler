@@ -304,7 +304,7 @@ impl PrettyAst {
                 vec![Self::from_expression(ty)],
             ),
             Expression::Dot {
-                structure,
+                aggregate: structure,
                 field: member,
             } => Self::new(
                 format!("<{node_id}> Dot"),

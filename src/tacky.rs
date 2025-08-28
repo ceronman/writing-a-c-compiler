@@ -1028,7 +1028,7 @@ impl TackyGenerator {
                 };
                 return ExprResult::Operand(Val::Constant(Constant::ULong(size as u64)));
             }
-            ast::Expression::Dot { structure, field } => {
+            ast::Expression::Dot { aggregate: structure, field } => {
                 let struct_ty = self.semantics.expr_type(structure).clone();
                 let Type::Struct(struct_name) = struct_ty else {
                     panic!("Expected a struct in dot expression");

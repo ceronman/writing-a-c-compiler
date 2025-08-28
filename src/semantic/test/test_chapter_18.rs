@@ -193,7 +193,7 @@ fn test_invalid_types_extra_credit_bad_union_member_access_nested_non_member() {
         int main(void) {
             union u my_union = {{1}};
             return my_union.a;
-                 //^^^^^^^^ Structure 'u.1' does not have field a
+                 //^^^^^^^^ Aggregate type 'u.1' does not have field 'a'
         }
     "#,
     );
@@ -214,7 +214,7 @@ fn test_invalid_types_extra_credit_bad_union_member_access_union_bad_member() {
         int main(void) {
             union s foo = {1};
             return foo.blah;
-                 //^^^ Structure 's.0' does not have field blah
+                 //^^^ Aggregate type 's.0' does not have field 'blah'
         }
     "#,
     );
@@ -236,7 +236,7 @@ fn test_invalid_types_extra_credit_bad_union_member_access_union_bad_pointer_mem
         int main(void) {
           union a *ptr = malloc(sizeof(union a));
           ptr->m = 10;
-        //^^^ Structure 'a.1' does not have field m
+        //^^^ Aggregate type 'a.1' does not have field 'm'
           return 0;
         }
     "#,
@@ -338,7 +338,7 @@ fn test_invalid_types_extra_credit_incomplete_unions_define_incomplete_union() {
         r#"
         union u;
         union u my_union;
-      //^^^^^^^ Incomplete struct type
+      //^^^^^^^ Incomplete aggregate type
     "#,
     );
 }
@@ -430,7 +430,7 @@ fn test_invalid_types_extra_credit_other_features_compound_assign_struct_rval() 
             int i = 100;
             struct s x = { 100 };
             i += x;
-               //^ Cannot compound assign a struct type
+               //^ Cannot compound assign an aggregate type
             return 0;
         }
     "#,
@@ -466,7 +466,7 @@ fn test_invalid_types_extra_credit_other_features_compound_assign_to_struct() {
         int main(void) {
             struct s x = {10};
             x += 10;
-          //^ Cannot compound assign a struct type
+          //^ Cannot compound assign an aggregate type
             return 0;
         }
     "#,
@@ -483,7 +483,7 @@ fn test_invalid_types_extra_credit_other_features_duplicate_struct_types_after_l
             };
         foo:;
             struct s {
-                 //^ Structure 's.0' was already declared
+                 //^ Aggregate type 's.0' was already declared
                 int b;
             };
             return 0;
@@ -1077,7 +1077,7 @@ fn test_invalid_types_extra_credit_union_tag_resolution_distinct_union_types() {
         int main(void) {
             union s;
             union s blah = {foo()};
-          //^^^^^^^ Incomplete struct type
+          //^^^^^^^ Incomplete type
             return blah.a;
         }
     "#,
@@ -1094,7 +1094,7 @@ fn test_invalid_types_extra_credit_union_tag_resolution_union_type_shadows_struc
         int main(void) {
             union u;
             union u my_union;
-          //^^^^^^^ Incomplete struct type
+          //^^^^^^^ Incomplete type
             return 0;
         }
     "#,
@@ -1114,7 +1114,7 @@ fn test_invalid_types_extra_credit_union_tag_resolution_union_wrong_member() {
                 int b;
             };
             return foo.b;
-                 //^^^ Structure 'u.0' does not have field b
+                 //^^^ Aggregate type 'u.0' does not have field 'b'
         }
     "#,
     );
@@ -1141,7 +1141,7 @@ fn test_invalid_types_extra_credit_union_type_declarations_duplicate_union_def()
         int main(void) {
             union u {int a;};
             union u {int a;};
-                //^ Structure 'u.0' was already declared
+                //^ Aggregate type 'u.0' was already declared
             return 0;
         }
     "#,
@@ -1156,7 +1156,7 @@ fn test_invalid_types_extra_credit_union_type_declarations_member_name_conflicts
         union u {
             int a;
             int a;
-              //^ Field name `a` already exists in the struct definition
+              //^ Field name `a` already exists in the type definition
         };
         int main(void) {
             return 0;
@@ -1557,7 +1557,7 @@ fn test_invalid_types_invalid_incomplete_structs_assign_to_incomplete_var() {
         extern struct s y;
         int main(void) {
           x = y;
-        //^^^^^ Struct is not complete
+        //^^^^^ Type is not complete
           return 0;
         }
     "#,
@@ -1572,7 +1572,7 @@ fn test_invalid_types_invalid_incomplete_structs_cast_incomplete_struct() {
         extern struct s v;
         int main(void) {
           (void)v;
-              //^ Incomplete struct type
+              //^ Incomplete aggregate type
           return 0;
         }
     "#,
@@ -1587,7 +1587,7 @@ fn test_invalid_types_invalid_incomplete_structs_deref_incomplete_struct_pointer
         struct s *ptr = 0;
         int main(void) {
           *ptr;
-        //^^^^ Incomplete struct type
+        //^^^^ Incomplete aggregate type
           return 0;
         }
     "#,
@@ -1603,7 +1603,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_arg_funcall() {
         extern struct s extern_var;
         int main(void) {
           f(extern_var);
-          //^^^^^^^^^^ Incomplete struct type
+          //^^^^^^^^^^ Incomplete aggregate type
         }
     "#,
     );
@@ -1634,7 +1634,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_local_var() {
         struct s;
         int main(void) {
           struct s v;
-        //^^^^^^^^ Incomplete struct type
+        //^^^^^^^^ Incomplete type
           return 0;
         }
     "#,
@@ -1647,7 +1647,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_param() {
         r#"
         struct s;
         int foo(struct s x) { return 0; }
-                       //^ Struct type is not complete
+                       //^ Aggregate type is not complete
     "#,
     );
 }
@@ -1687,7 +1687,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_return_type_fun_def(
         void exit(int status);
         struct s;
         struct s return_struct_def(void) {
-      //^^^^^^^^ Struct type is not complete
+      //^^^^^^^^ Aggregate type is not complete
           exit(0);
         }
         int main(void) { return 0; }
@@ -1703,7 +1703,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_return_type_funcall(
         struct s f(void);
         int main(void) {
           f();
-        //^ Incomplete struct type
+        //^ Incomplete aggregate type
           return 0;
         }
     "#,
@@ -1719,7 +1719,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_struct_conditional()
         extern struct s v2;
         int main(void) {
           1 ? v1 : v2;
-            //^^ Incomplete struct type
+            //^^ Incomplete aggregate type
         }
     "#,
     );
@@ -1733,7 +1733,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_struct_full_expr() {
         extern struct s x;
         int main(void) {
           for (x;;)
-             //^ Incomplete struct type
+             //^ Incomplete aggregate type
             ;
           return 0;
         }
@@ -1749,7 +1749,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_struct_member() {
         extern struct s foo;
         int main(void) {
           return foo.a;
-               //^^^ Incomplete struct type
+               //^^^ Incomplete aggregate type
         }
     "#,
     );
@@ -1773,7 +1773,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_tentative_def() {
         r#"
         struct s;
         static struct s x;
-      //^^^^^^^^^^^^^ Incomplete struct type
+      //^^^^^^^^^^^^^ Incomplete aggregate type
         int main(void) { return 0; }
     "#,
     );
@@ -1785,7 +1785,7 @@ fn test_invalid_types_invalid_incomplete_structs_initialize_incomplete() {
         r#"
         struct s;
         extern struct s x = {1};
-      //^^^^^^^^^^^^^ Incomplete struct type
+      //^^^^^^^^^^^^^ Incomplete aggregate type
         int main(void) { return 0; }
         struct s {
           int a;
@@ -1935,7 +1935,7 @@ fn test_invalid_types_invalid_member_operators_bad_member() {
         int main(void) {
             struct s foo = {1, 2};
             return foo.blah;
-                 //^^^ Structure 's.0' does not have field blah
+                 //^^^ Aggregate type 's.0' does not have field 'blah'
         }
     "#,
     );
@@ -1957,7 +1957,7 @@ fn test_invalid_types_invalid_member_operators_bad_pointer_member() {
         int main(void) {
           struct a *ptr = malloc(sizeof(struct a));
           ptr->m = 10;
-        //^^^ Structure 'a.1' does not have field m
+        //^^^ Aggregate type 'a.1' does not have field 'm'
           return 0;
         }
     "#,
@@ -2042,7 +2042,7 @@ fn test_invalid_types_invalid_struct_declaration_duplicate_member_name() {
         struct s {
           int x;
           double x;
-               //^ Field name `x` already exists in the struct definition
+               //^ Field name `x` already exists in the type definition
         };
     "#,
     );
@@ -2057,7 +2057,7 @@ fn test_invalid_types_invalid_struct_declaration_duplicate_struct_declaration() 
                 int x;
             };
             struct x {
-                 //^ Structure 'x.0' was already declared
+                 //^ Aggregate type 'x.0' was already declared
                 int y;
             };
             return 0;
@@ -2328,7 +2328,7 @@ fn test_invalid_types_tag_resolution_distinct_struct_types() {
         int main(void) {
             struct s;
             struct s blah = {foo(), foo()};
-          //^^^^^^^^ Incomplete struct type
+          //^^^^^^^^ Incomplete type
             return blah.a;
         }
     "#,
@@ -2386,7 +2386,7 @@ fn test_invalid_types_tag_resolution_member_name_wrong_scope() {
                 int b;
             };
             return foo.b;
-                 //^^^ Structure 's.0' does not have field b
+                 //^^^ Aggregate type 's.0' does not have field 'b'
         }
     "#,
     );
@@ -2409,7 +2409,7 @@ fn test_invalid_types_tag_resolution_member_name_wrong_scope_nested() {
             };
             struct outer *ptr = &foo;
             return ptr->inner.b;
-                 //^^^^^^^^^^ Structure 's.0' does not have field b
+                 //^^^^^^^^^^ Aggregate type 's.0' does not have field 'b'
         }
     "#,
     );

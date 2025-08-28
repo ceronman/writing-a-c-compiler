@@ -369,7 +369,7 @@ impl Resolver {
             | Expression::SizeOfExpr(expr)
             | Expression::Arrow { pointer: expr, .. }
             | Expression::Dot {
-                structure: expr, ..
+                aggregate: expr, ..
             } => {
                 self.resolve_expression(expr)?;
             }

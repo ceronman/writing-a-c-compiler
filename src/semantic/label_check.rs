@@ -20,9 +20,8 @@ impl LabelChecker {
         for decl in &mut program.declarations {
             self.labels.clear();
             debug_assert!(self.label_stack.is_empty());
-            match decl.as_mut() {
-                Declaration::Function(d) => self.check_function_declaration(d)?,
-                _ => {}
+            if let Declaration::Function(d) = decl.as_mut() {
+                self.check_function_declaration(d)?
             }
         }
 

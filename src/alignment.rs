@@ -1,4 +1,4 @@
-use crate::semantic::{SemanticData, Type, TypeTable};
+use crate::semantic::{SemanticData, Type};
 
 impl Type {
     pub fn alignment(&self, semantics: &SemanticData) -> u8 {

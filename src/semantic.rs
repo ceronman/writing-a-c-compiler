@@ -35,15 +35,15 @@ pub struct FunctionType {
 }
 
 #[derive(Debug, Clone)]
-pub struct TypeDefinition {
-    pub kind: TypeKind,
+pub struct AggregateType {
+    pub kind: AggregateKind,
     pub alignment: u8,
     pub size: usize,
     pub fields: Vec<Field>,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub enum TypeKind {
+pub enum AggregateKind {
     Struct,
     Union,
 }
@@ -85,12 +85,12 @@ impl Type {
         matches!(self, Type::Function(_))
     }
 
-    pub fn is_struct_or_union(&self) -> bool {
+    pub fn is_aggregate(&self) -> bool {
         matches!(self, Type::Struct(_) | Type::Union(_))
     }
 
-    pub fn is_incomplete_struct_or_union(&self, semantics: &SemanticData) -> bool {
-        self.is_struct_or_union() && !self.is_complete(semantics)
+    pub fn is_incomplete_aggregate(&self, semantics: &SemanticData) -> bool {
+        self.is_aggregate() && !self.is_complete(semantics)
     }
 
     pub fn is_arithmetic(&self) -> bool {
@@ -126,10 +126,7 @@ impl Type {
         match self {
             Type::Void => false,
             Type::Struct(name) | Type::Union(name) => {
-                match semantics.type_table.type_defs.get(name) {
-                    Some(TypeEntry::Complete(_)) => true,
-                    _ => false,
-                }
+                matches!(semantics.type_table.type_defs.get(name), Some(TypeEntry::Complete(_)))
             },
             _ => true,
         }
@@ -214,8 +211,8 @@ impl Constant {
 
 #[derive(Debug, Clone)]
 pub enum TypeEntry {
-    Incomplete(TypeKind),
-    Complete(TypeDefinition),
+    Incomplete(AggregateKind),
+    Complete(AggregateType),
 }
 
 // TODO: Move TypeTable to SemanticData
@@ -301,7 +298,7 @@ impl SemanticData {
             .expect("Expression without type")
     }
 
-    pub fn type_definition(&self, name: &Symbol) -> &TypeDefinition {
+    pub fn type_definition(&self, name: &Symbol) -> &AggregateType {
         let Some(TypeEntry::Complete(type_def)) = self.type_table.type_defs.get(name) else {
             panic!("Type {name} is unknown or incomplete",);
         };

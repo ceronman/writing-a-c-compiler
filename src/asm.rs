@@ -7,7 +7,7 @@ use crate::asm::ir::{
     StaticVariable, TopLevel, UnaryOp,
 };
 use crate::ast::Constant;
-use crate::semantic::{Attributes, SemanticData, StaticInit, TypeDefinition, Type, TypeEntry};
+use crate::semantic::{Attributes, SemanticData, StaticInit, AggregateType, Type, TypeEntry};
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
@@ -82,7 +82,7 @@ impl Type {
             Type::Function(_) => unreachable!(),
             Type::Pointer(_) => AsmType::Quadword,
             Type::Array(inner, length) => {
-                let size = (inner.size(&semantics) * length) as u64;
+                let size = (inner.size(semantics) * length) as u64;
                 let inner_asm_ty = inner.to_asm(semantics);
                 let alignment = if size < 16 {
                     match inner_asm_ty {
@@ -1438,7 +1438,7 @@ impl Compiler {
         }
     }
 
-    fn classify_struct(&self, struct_def: &TypeDefinition) -> Vec<ParamClass> {
+    fn classify_struct(&self, struct_def: &AggregateType) -> Vec<ParamClass> {
         if struct_def.size > 16 {
             return (0..struct_def.size)
                 .step_by(8)
@@ -1936,7 +1936,7 @@ impl tacky::Val {
         }
     }
 
-    fn as_struct_def<'a>(&self, semantics: &'a SemanticData) -> &'a TypeDefinition {
+    fn as_struct_def<'a>(&self, semantics: &'a SemanticData) -> &'a AggregateType {
         let tacky::Val::Var(value_name) = self else {
             panic!("Non-scalar value that is not a struct");
         };
@@ -1947,7 +1947,7 @@ impl tacky::Val {
     }
 }
 
-impl TypeDefinition {
+impl AggregateType {
     fn flatten(&self, semantic_data: &SemanticData) -> Vec<Type> {
         let mut types: Vec<Type> = Vec::with_capacity(self.fields.len());
         fn flatten_inner(ty: &Type, semantic_data: &SemanticData, types: &mut Vec<Type>) {

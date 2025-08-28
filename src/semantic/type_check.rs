@@ -6,7 +6,7 @@ use crate::ast::{
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
-use crate::semantic::{Attributes, FunctionType, InitialValue, SemanticData, StaticInit, TypeDefinition, Field, SwitchCases, SymbolData, Type, TypeKind, TypeEntry};
+use crate::semantic::{Attributes, FunctionType, InitialValue, SemanticData, StaticInit, AggregateType, Field, SwitchCases, SymbolData, Type, AggregateKind, TypeEntry};
 use std::cmp;
 use std::collections::VecDeque;
 
@@ -82,9 +82,9 @@ impl TypeChecker {
             }
         } else if let Some(StorageClass::Static) = decl.storage_class.inner_ref() {
             Self::error_if(
-                ty.is_incomplete_struct_or_union(&self.semantics),
+                ty.is_incomplete_aggregate(&self.semantics),
                 ty_span,
-                "Incomplete struct type",
+                "Incomplete aggregate type",
             )?;
             let initial_value = if let Some(init) = &decl.init {
                 InitialValue::Initial(self.check_static_initializer(init, &decl.type_spec.ty())?)
@@ -103,9 +103,9 @@ impl TypeChecker {
                 }
             } else {
                 Self::error_if(
-                    ty.is_incomplete_struct_or_union(&self.semantics),
+                    ty.is_incomplete_aggregate(&self.semantics),
                     ty_span,
-                    "Incomplete struct type",
+                    "Incomplete type",
                 )?;
                 self.semantics.symbols.insert(
                     decl.name.symbol.clone(),
@@ -120,9 +120,9 @@ impl TypeChecker {
             }
         } else {
             Self::error_if(
-                ty.is_incomplete_struct_or_union(&self.semantics),
+                ty.is_incomplete_aggregate(&self.semantics),
                 ty_span,
-                "Incomplete struct type",
+                "Incomplete type",
             )?;
             self.semantics.symbols.insert(
                 decl.name.symbol.clone(),
@@ -256,14 +256,14 @@ impl TypeChecker {
                     Ok(static_inits)
                 }
                 Type::Struct(tag) => {
-                    let Some(TypeEntry::Complete(struct_def)) = self.semantics.type_table.type_defs.get(tag) else {
+                    let Some(TypeEntry::Complete(aggregate)) = self.semantics.type_table.type_defs.get(tag) else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Unknown structure type to initialize".into(),
                             span: init.span,
                         });
                     };
-                    if initializers.len() > struct_def.fields.len() {
+                    if initializers.len() > aggregate.fields.len() {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Too many elements in the initializer".into(),
@@ -272,8 +272,8 @@ impl TypeChecker {
                     }
                     let mut offset = 0;
                     let mut static_inits = Vec::new();
-                    let struct_size = struct_def.size;
-                    let fields = struct_def.fields.clone();
+                    let struct_size = aggregate.size;
+                    let fields = aggregate.fields.clone();
                     for (init, field) in initializers.iter().zip(fields) {
                         if field.offset != offset {
                             static_inits.push(StaticInit::ZeroInit(field.offset - offset));
@@ -368,21 +368,21 @@ impl TypeChecker {
                     }
                 }
                 Type::Struct(tag) => {
-                    let Some(TypeEntry::Complete(struct_def)) = self.semantics.type_table.type_defs.get(tag) else {
+                    let Some(TypeEntry::Complete(aggregate)) = self.semantics.type_table.type_defs.get(tag) else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Unknown structure type to initialize".into(),
                             span: init.span,
                         });
                     };
-                    if initializers.len() > struct_def.fields.len() {
+                    if initializers.len() > aggregate.fields.len() {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Too many elements in the initializer".into(),
                             span: init.span,
                         });
                     }
-                    let field_tys = struct_def
+                    let field_tys = aggregate
                         .fields
                         .iter()
                         .map(|f| f.ty.clone())
@@ -429,18 +429,18 @@ impl TypeChecker {
         Self::error_if(ty.is_void(), ty_span, "Illegal void variable")?;
         let mut initial_value = if let Some(init) = &decl.init {
             Self::error_if(
-                ty.is_incomplete_struct_or_union(&self.semantics),
+                ty.is_incomplete_aggregate(&self.semantics),
                 ty_span,
-                "Incomplete struct type",
+                "Incomplete aggregate type",
             )?;
             InitialValue::Initial(self.check_static_initializer(init, &decl.type_spec.ty())?)
         } else if let Some(StorageClass::Extern) = decl.storage_class.inner_ref() {
             InitialValue::NoInitializer
         } else {
             Self::error_if(
-                ty.is_incomplete_struct_or_union(&self.semantics),
+                ty.is_incomplete_aggregate(&self.semantics),
                 ty_span,
-                "Incomplete struct type",
+                "Incomplete aggregate type",
             )?;
             InitialValue::Tentative
         };
@@ -596,9 +596,9 @@ impl TypeChecker {
             for (param_name, param_ty) in decl.params.iter().zip(function_ty.params.iter()) {
                 // TODO: make error exactly on the type span
                 Self::error_if(
-                    param_ty.is_incomplete_struct_or_union(&self.semantics),
+                    param_ty.is_incomplete_aggregate(&self.semantics),
                     param_name.span,
-                    "Struct type is not complete",
+                    "Aggregate type is not complete",
                 )?;
                 self.semantics.symbols.insert(
                     param_name.symbol.clone(),
@@ -608,9 +608,9 @@ impl TypeChecker {
             Self::error_if(
                 function_ty
                     .ret
-                    .is_incomplete_struct_or_union(&self.semantics),
+                    .is_incomplete_aggregate(&self.semantics),
                 decl.type_spec.ret.span,
-                "Struct type is not complete",
+                "Aggregate type is not complete",
             )?;
             self.check_block(&decl.type_spec.ty(), body)?;
         }
@@ -618,7 +618,7 @@ impl TypeChecker {
     }
 
     fn check_type_declaration(&mut self, decl: &NameAndFields, is_union: bool) -> Result<()> {
-        let kind = if is_union { TypeKind::Union } else { TypeKind::Struct };
+        let kind = if is_union { AggregateKind::Union } else { AggregateKind::Struct };
 
         if !self.semantics.type_table.type_defs.contains_key(&decl.name.symbol) {
             self.semantics.type_table.type_defs.insert(decl.name.symbol.clone(), TypeEntry::Incomplete(kind));
@@ -662,7 +662,7 @@ impl TypeChecker {
                 return Err(CompilerError {
                     kind: ErrorKind::Type,
                     msg: format!(
-                        "Field name `{}` already exists in the struct definition",
+                        "Field name `{}` already exists in the type definition",
                         field.name
                     ),
                     span: field_node.name.span,
@@ -680,12 +680,12 @@ impl TypeChecker {
         let tag = decl.name.symbol.clone();
         let old = self.semantics.type_table.type_defs.insert(
             decl.name.symbol.clone(),
-            TypeEntry::Complete(TypeDefinition { kind, alignment, size, fields }),
+            TypeEntry::Complete(AggregateType { kind, alignment, size, fields }),
         );
-        if let Some(TypeEntry::Complete(t)) = old {
+        if let Some(TypeEntry::Complete(_)) = old {
             Err(CompilerError {
                 kind: ErrorKind::Type,
-                msg: format!("Structure '{tag}' was already declared"),
+                msg: format!("Aggregate type '{tag}' was already declared"),
                 span: decl.name.span,
             })
         } else {
@@ -716,7 +716,7 @@ impl TypeChecker {
                 let name = &name.symbol;
                 match self.semantics.type_table.type_defs.get(name) {
                     Some(TypeEntry::Complete(type_def)) => {
-                        if let TypeKind::Union = type_def.kind  {
+                        if let AggregateKind::Union = type_def.kind  {
                             return Err(CompilerError {
                                 kind: ErrorKind::Type,
                                 msg: "Type is not a struct type".to_string(),
@@ -724,7 +724,7 @@ impl TypeChecker {
                             });
                         }
                     }
-                    Some(TypeEntry::Incomplete(TypeKind::Union)) | None => {
+                    Some(TypeEntry::Incomplete(AggregateKind::Union)) | None => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Type is not a struct type".to_string(),
@@ -738,7 +738,7 @@ impl TypeChecker {
                 let name = &name.symbol;
                 match self.semantics.type_table.type_defs.get(name) {
                     Some(TypeEntry::Complete(type_def)) => {
-                        if let TypeKind::Struct = type_def.kind  {
+                        if let AggregateKind::Struct = type_def.kind  {
                             return Err(CompilerError {
                                 kind: ErrorKind::Type,
                                 msg: "Type is not a union type".to_string(),
@@ -746,7 +746,7 @@ impl TypeChecker {
                             });
                         }
                     }
-                    Some(TypeEntry::Incomplete(TypeKind::Struct)) | None => {
+                    Some(TypeEntry::Incomplete(AggregateKind::Struct)) | None => {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Type is not a union type".to_string(),
@@ -949,9 +949,9 @@ impl TypeChecker {
                     .insert(expr.id, pointer_ty.clone());
                 Ok(pointer_ty)
             }
-            Type::Struct(_) if !ty.is_complete(&self.semantics) => Err(CompilerError {
+            Type::Struct(_) | Type::Union(_) if !ty.is_complete(&self.semantics) => Err(CompilerError {
                 kind: ErrorKind::Type,
-                msg: "Incomplete struct type".to_string(),
+                msg: "Incomplete aggregate type".to_string(),
                 span: expr.span,
             }),
             _ => Ok(ty),
@@ -981,9 +981,9 @@ impl TypeChecker {
                 UnaryOp::Increment | UnaryOp::Decrement => {
                     let operand_ty = self.check_expression(expr)?;
                     Self::error_if(
-                        operand_ty.is_incomplete_struct_or_union(&self.semantics),
+                        operand_ty.is_incomplete_aggregate(&self.semantics),
                         expr.span,
-                        "Struct is not complete",
+                        "Type is not complete",
                     )?;
                     Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
                     Self::error_if(
@@ -1037,9 +1037,9 @@ impl TypeChecker {
             Expression::Postfix { expr, .. } => {
                 let operand_ty = self.check_expression(expr)?;
                 Self::error_if(
-                    operand_ty.is_incomplete_struct_or_union(&self.semantics),
+                    operand_ty.is_incomplete_aggregate(&self.semantics),
                     expr.span,
-                    "Struct is not complete",
+                    "Type is not complete",
                 )?;
                 Self::error_if(!operand_ty.is_scalar(), expr.span, "Type is not assignable")?;
                 Self::error_if(
@@ -1229,12 +1229,12 @@ impl TypeChecker {
             Expression::Assignment { left, right, op } => {
                 let left_ty = self.check_expression(left)?;
                 Self::error_if(
-                    left_ty.is_incomplete_struct_or_union(&self.semantics),
+                    left_ty.is_incomplete_aggregate(&self.semantics),
                     expr.span,
-                    "Struct is not complete",
+                    "Type is not complete",
                 )?;
                 Self::error_if(
-                    !left_ty.is_struct_or_union() && !left_ty.is_scalar(),
+                    !left_ty.is_aggregate() && !left_ty.is_scalar(),
                     left.span,
                     "Type is not assignable",
                 )?;
@@ -1245,7 +1245,7 @@ impl TypeChecker {
                 )?;
                 let right_ty = self.check_and_convert_expr(right)?;
                 Self::error_if(
-                    !right_ty.is_struct_or_union() && !right_ty.is_scalar(),
+                    !right_ty.is_aggregate() && !right_ty.is_scalar(),
                     right.span,
                     "Invalid assign target",
                 )?;
@@ -1297,14 +1297,14 @@ impl TypeChecker {
                             "Assign compound operator cannot be a pointer type",
                         )?;
                         Self::error_if(
-                            right_ty.is_struct_or_union(),
+                            right_ty.is_aggregate(),
                             right.span,
-                            "Cannot compound assign a struct type",
+                            "Cannot compound assign an aggregate type",
                         )?;
                         Self::error_if(
-                            left_ty.is_struct_or_union(),
+                            left_ty.is_aggregate(),
                             left.span,
-                            "Cannot compound assign a struct type",
+                            "Cannot compound assign an aggregate type",
                         )?;
                     }
                     _ => {}
@@ -1498,11 +1498,11 @@ impl TypeChecker {
                 Type::ULong
             }
             Expression::Dot {
-                structure,
+                aggregate,
                 field: member,
             } => {
-                let ty = self.check_and_convert_expr(structure)?;
-                self.check_field(structure, &ty, member)?
+                let ty = self.check_and_convert_expr(aggregate)?;
+                self.check_field(aggregate, &ty, member)?
             }
             Expression::Arrow {
                 pointer,
@@ -1525,7 +1525,7 @@ impl TypeChecker {
 
     fn check_field(
         &self,
-        structure: &Node<Expression>,
+        aggregate: &Node<Expression>,
         ty: &Type,
         member: &Node<Identifier>,
     ) -> Result<Type> {
@@ -1533,14 +1533,14 @@ impl TypeChecker {
             return Err(CompilerError {
                 kind: ErrorKind::Type,
                 msg: "Type is not a struct or union".to_string(),
-                span: structure.span,
+                span: aggregate.span,
             });
         };
         let Some(TypeEntry::Complete(type_def)) = self.semantics.type_table.type_defs.get(name) else {
             return Err(CompilerError {
                 kind: ErrorKind::Type,
                 msg: "Type is not a struct or union".to_string(),
-                span: structure.span,
+                span: aggregate.span,
             })
         };
         let field_name = &member.symbol;
@@ -1550,8 +1550,8 @@ impl TypeChecker {
             .find(|&f| &f.name == field_name)
             .ok_or_else(|| CompilerError {
                 kind: ErrorKind::Type,
-                msg: format!("Structure '{name}' does not have field {field_name}"),
-                span: structure.span,
+                msg: format!("Aggregate type '{name}' does not have field '{field_name}'"),
+                span: aggregate.span,
             })?;
         Ok(field.ty.clone())
     }
@@ -1564,7 +1564,7 @@ impl TypeChecker {
             | Expression::String(_)
             | Expression::Arrow { .. } => true,
 
-            Expression::Dot { structure, .. } => Self::is_lvalue(structure),
+            Expression::Dot { aggregate, .. } => Self::is_lvalue(aggregate),
             _ => false,
         }
     }

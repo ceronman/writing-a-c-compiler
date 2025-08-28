@@ -129,7 +129,7 @@ pub enum Expression {
     SizeOfExpr(Node<Expression>),
     SizeOfType(Node<TypeSpec>),
     Dot {
-        structure: Node<Expression>,
+        aggregate: Node<Expression>,
         field: Node<Identifier>,
     },
     Arrow {
