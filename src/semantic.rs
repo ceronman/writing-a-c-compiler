@@ -126,8 +126,11 @@ impl Type {
         match self {
             Type::Void => false,
             Type::Struct(name) | Type::Union(name) => {
-                matches!(semantics.type_table.type_defs.get(name), Some(TypeEntry::Complete(_)))
-            },
+                matches!(
+                    semantics.type_table.type_defs.get(name),
+                    Some(TypeEntry::Complete(_))
+                )
+            }
             _ => true,
         }
     }

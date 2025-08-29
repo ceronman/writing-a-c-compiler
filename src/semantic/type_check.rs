@@ -1,12 +1,15 @@
 use crate::alignment::align_offset;
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, ForInit,
-    FunctionDeclaration, Identifier, Initializer, InnerRef, Node, Program, Statement, StorageClass,
-    NameAndFields, TypeSpec, UnaryOp, VarDeclaration,
+    FunctionDeclaration, Identifier, Initializer, InnerRef, NameAndFields, Node, Program,
+    Statement, StorageClass, TypeSpec, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::Span;
-use crate::semantic::{Attributes, FunctionType, InitialValue, SemanticData, StaticInit, AggregateType, Field, SwitchCases, SymbolData, Type, AggregateKind, TypeEntry};
+use crate::semantic::{
+    AggregateKind, AggregateType, Attributes, Field, FunctionType, InitialValue, SemanticData,
+    StaticInit, SwitchCases, SymbolData, Type, TypeEntry,
+};
 use std::cmp;
 use std::collections::VecDeque;
 
@@ -248,15 +251,16 @@ impl TypeChecker {
                         let inner_inits = self.check_static_initializer(initializer, inner_ty)?;
                         static_inits.extend(inner_inits);
                     }
-                    let padding =
-                        (size - initializers.len()) * inner_ty.size(&self.semantics);
+                    let padding = (size - initializers.len()) * inner_ty.size(&self.semantics);
                     if padding > 0 {
                         static_inits.push(StaticInit::ZeroInit(padding));
                     }
                     Ok(static_inits)
                 }
                 Type::Struct(tag) => {
-                    let Some(TypeEntry::Complete(aggregate)) = self.semantics.type_table.type_defs.get(tag) else {
+                    let Some(TypeEntry::Complete(aggregate)) =
+                        self.semantics.type_table.type_defs.get(tag)
+                    else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Unknown structure type to initialize".into(),
@@ -286,9 +290,11 @@ impl TypeChecker {
                         static_inits.push(StaticInit::ZeroInit(struct_size - offset));
                     }
                     Ok(static_inits)
-                },
+                }
                 Type::Union(tag) => {
-                    let Some(TypeEntry::Complete(union_def)) = self.semantics.type_table.type_defs.get(tag) else {
+                    let Some(TypeEntry::Complete(union_def)) =
+                        self.semantics.type_table.type_defs.get(tag)
+                    else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Unknown union type to initialize".into(),
@@ -304,8 +310,13 @@ impl TypeChecker {
                     };
                     let union_size = union_def.size;
 
-                    let first_field = union_def.fields.first().expect("Complete unions should always have fields").clone();
-                    let mut static_inits = self.check_static_initializer(single_init, &first_field.ty)?;
+                    let first_field = union_def
+                        .fields
+                        .first()
+                        .expect("Complete unions should always have fields")
+                        .clone();
+                    let mut static_inits =
+                        self.check_static_initializer(single_init, &first_field.ty)?;
                     let field_size = first_field.ty.size(&self.semantics);
                     if union_size != field_size {
                         static_inits.push(StaticInit::ZeroInit(union_size - field_size));
@@ -368,7 +379,9 @@ impl TypeChecker {
                     }
                 }
                 Type::Struct(tag) => {
-                    let Some(TypeEntry::Complete(aggregate)) = self.semantics.type_table.type_defs.get(tag) else {
+                    let Some(TypeEntry::Complete(aggregate)) =
+                        self.semantics.type_table.type_defs.get(tag)
+                    else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Unknown structure type to initialize".into(),
@@ -392,7 +405,9 @@ impl TypeChecker {
                     }
                 }
                 Type::Union(tag) => {
-                    let Some(TypeEntry::Complete(union_def)) = self.semantics.type_table.type_defs.get(tag) else {
+                    let Some(TypeEntry::Complete(union_def)) =
+                        self.semantics.type_table.type_defs.get(tag)
+                    else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
                             msg: "Unknown union type to initialize".into(),
@@ -407,7 +422,12 @@ impl TypeChecker {
                         });
                     };
 
-                    let first_ty = union_def.fields.first().expect("Complete unions should always have fields").ty.clone();
+                    let first_ty = union_def
+                        .fields
+                        .first()
+                        .expect("Complete unions should always have fields")
+                        .ty
+                        .clone();
                     self.check_initializer(single_init, &first_ty)?;
                 }
                 _ => {
@@ -606,9 +626,7 @@ impl TypeChecker {
                 );
             }
             Self::error_if(
-                function_ty
-                    .ret
-                    .is_incomplete_aggregate(&self.semantics),
+                function_ty.ret.is_incomplete_aggregate(&self.semantics),
                 decl.type_spec.ret.span,
                 "Aggregate type is not complete",
             )?;
@@ -618,24 +636,43 @@ impl TypeChecker {
     }
 
     fn check_type_declaration(&mut self, decl: &NameAndFields, is_union: bool) -> Result<()> {
-        let kind = if is_union { AggregateKind::Union } else { AggregateKind::Struct };
+        let kind = if is_union {
+            AggregateKind::Union
+        } else {
+            AggregateKind::Struct
+        };
 
-        if !self.semantics.type_table.type_defs.contains_key(&decl.name.symbol) {
-            self.semantics.type_table.type_defs.insert(decl.name.symbol.clone(), TypeEntry::Incomplete(kind));
+        if !self
+            .semantics
+            .type_table
+            .type_defs
+            .contains_key(&decl.name.symbol)
+        {
+            self.semantics
+                .type_table
+                .type_defs
+                .insert(decl.name.symbol.clone(), TypeEntry::Incomplete(kind));
         }
 
         let old = self.semantics.type_table.type_defs.get(&decl.name.symbol);
-        if let Some(TypeEntry::Incomplete(k)) = old && *k != kind {
+        if let Some(TypeEntry::Incomplete(k)) = old
+            && *k != kind
+        {
             return Err(CompilerError {
                 kind: ErrorKind::Type,
                 msg: "Tag does not match previous declaration".to_string(),
                 span: decl.name.span,
             });
         }
-        if let Some(TypeEntry::Complete(t)) = old && t.kind != kind {
+        if let Some(TypeEntry::Complete(t)) = old
+            && t.kind != kind
+        {
             return Err(CompilerError {
                 kind: ErrorKind::Type,
-                msg: format!("Tag `{}` does not match previous declaration", decl.name.symbol),
+                msg: format!(
+                    "Tag `{}` does not match previous declaration",
+                    decl.name.symbol
+                ),
                 span: decl.name.span,
             });
         }
@@ -652,7 +689,11 @@ impl TypeChecker {
             self.validate_type_specifier(&field_node.type_spec)?;
             let ty = field_node.type_spec.ty();
             let field_alignment = ty.alignment(&self.semantics);
-            let field_offset = if is_union { 0 } else { align_offset(size, field_alignment) };
+            let field_offset = if is_union {
+                0
+            } else {
+                align_offset(size, field_alignment)
+            };
             let field = Field {
                 name: field_node.name.symbol.clone(),
                 ty: ty.clone(),
@@ -680,7 +721,12 @@ impl TypeChecker {
         let tag = decl.name.symbol.clone();
         let old = self.semantics.type_table.type_defs.insert(
             decl.name.symbol.clone(),
-            TypeEntry::Complete(AggregateType { kind, alignment, size, fields }),
+            TypeEntry::Complete(AggregateType {
+                kind,
+                alignment,
+                size,
+                fields,
+            }),
         );
         if let Some(TypeEntry::Complete(_)) = old {
             Err(CompilerError {
@@ -716,7 +762,7 @@ impl TypeChecker {
                 let name = &name.symbol;
                 match self.semantics.type_table.type_defs.get(name) {
                     Some(TypeEntry::Complete(type_def)) => {
-                        if let AggregateKind::Union = type_def.kind  {
+                        if let AggregateKind::Union = type_def.kind {
                             return Err(CompilerError {
                                 kind: ErrorKind::Type,
                                 msg: "Type is not a struct type".to_string(),
@@ -738,7 +784,7 @@ impl TypeChecker {
                 let name = &name.symbol;
                 match self.semantics.type_table.type_defs.get(name) {
                     Some(TypeEntry::Complete(type_def)) => {
-                        if let AggregateKind::Struct = type_def.kind  {
+                        if let AggregateKind::Struct = type_def.kind {
                             return Err(CompilerError {
                                 kind: ErrorKind::Type,
                                 msg: "Type is not a union type".to_string(),
@@ -949,11 +995,13 @@ impl TypeChecker {
                     .insert(expr.id, pointer_ty.clone());
                 Ok(pointer_ty)
             }
-            Type::Struct(_) | Type::Union(_) if !ty.is_complete(&self.semantics) => Err(CompilerError {
-                kind: ErrorKind::Type,
-                msg: "Incomplete aggregate type".to_string(),
-                span: expr.span,
-            }),
+            Type::Struct(_) | Type::Union(_) if !ty.is_complete(&self.semantics) => {
+                Err(CompilerError {
+                    kind: ErrorKind::Type,
+                    msg: "Incomplete aggregate type".to_string(),
+                    span: expr.span,
+                })
+            }
             _ => Ok(ty),
         }
     }
@@ -1536,12 +1584,13 @@ impl TypeChecker {
                 span: aggregate.span,
             });
         };
-        let Some(TypeEntry::Complete(type_def)) = self.semantics.type_table.type_defs.get(name) else {
+        let Some(TypeEntry::Complete(type_def)) = self.semantics.type_table.type_defs.get(name)
+        else {
             return Err(CompilerError {
                 kind: ErrorKind::Type,
                 msg: "Type is not a struct or union".to_string(),
                 span: aggregate.span,
-            })
+            });
         };
         let field_name = &member.symbol;
         let field = type_def
@@ -1626,11 +1675,9 @@ impl TypeChecker {
             ty1
         } else if ty1.is_double() || ty2.is_double() {
             &Type::Double
-        } else if ty1.size(&self.semantics) == ty2.size(&self.semantics)
-        {
+        } else if ty1.size(&self.semantics) == ty2.size(&self.semantics) {
             if ty1.is_signed() { ty2 } else { ty1 }
-        } else if ty1.size(&self.semantics) > ty2.size(&self.semantics)
-        {
+        } else if ty1.size(&self.semantics) > ty2.size(&self.semantics) {
             ty1
         } else {
             ty2

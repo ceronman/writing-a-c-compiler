@@ -1,7 +1,7 @@
 use crate::ast::{
     AssignOp, BinaryOp, BlockItem, Constant, Declaration, Expression, Field, ForInit,
-    FunctionDeclaration, Identifier, Initializer, Node, NodeId, PostfixOp, Program, Statement,
-    StorageClass, NameAndFields, TypeSpec, UnaryOp, VarDeclaration,
+    FunctionDeclaration, Identifier, Initializer, NameAndFields, Node, NodeId, PostfixOp, Program,
+    Statement, StorageClass, TypeSpec, UnaryOp, VarDeclaration,
 };
 use std::io::Write;
 

@@ -8,8 +8,6 @@ set -euxo pipefail
     --verbose \
     --chapter 18 \
     --failfast \
-    --stage tacky \
-    --latest-only \
     --bitwise \
     --compound \
     --increment \

@@ -1,6 +1,6 @@
 use crate::ast::{
     Block, BlockItem, Declaration, Expression, ForInit, FunctionDeclaration, Identifier,
-    Initializer, InnerRef, Node, Program, Statement, StorageClass, NameAndFields, TypeSpec,
+    Initializer, InnerRef, NameAndFields, Node, Program, Statement, StorageClass, TypeSpec,
     VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
@@ -29,7 +29,9 @@ impl Resolver {
             match decl.as_mut() {
                 Declaration::Var(d) => self.resolve_file_var_declaration(d)?,
                 Declaration::Function(d) => self.resolve_function_declaration(d)?,
-                Declaration::Struct(d) | Declaration::Union(d) => self.resolve_type_declaration(d)?,
+                Declaration::Struct(d) | Declaration::Union(d) => {
+                    self.resolve_type_declaration(d)?
+                }
             };
         }
         self.end_scope();
@@ -50,7 +52,9 @@ impl Resolver {
         match decl {
             Declaration::Var(decl) => self.resolve_local_var_declaration(decl),
             Declaration::Function(decl) => self.resolve_function_declaration(decl),
-            Declaration::Struct(decl) | Declaration::Union(decl) => self.resolve_type_declaration(decl),
+            Declaration::Struct(decl) | Declaration::Union(decl) => {
+                self.resolve_type_declaration(decl)
+            }
         }
     }
 

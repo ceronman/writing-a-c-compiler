@@ -300,7 +300,12 @@ impl TackyGenerator {
                 }
                 Type::Union(union_name) => {
                     let struct_def = self.semantics.get_aggregate(union_name);
-                    let first_field_ty = struct_def.fields.first().expect("Union without fields").ty.clone();
+                    let first_field_ty = struct_def
+                        .fields
+                        .first()
+                        .expect("Union without fields")
+                        .ty
+                        .clone();
                     let [initializer] = initializers.as_slice() else {
                         panic!("Union initializer with multiple initializers");
                     };
@@ -1022,7 +1027,7 @@ impl TackyGenerator {
             ast::Expression::SizeOfType(ty) => {
                 let ty1 = &ty.ty();
                 return ExprResult::Operand(Val::Constant(Constant::ULong(
-                    ty1.size(&self.semantics) as u64
+                    ty1.size(&self.semantics) as u64,
                 )));
             }
             ast::Expression::SizeOfExpr(e) => {
@@ -1038,7 +1043,8 @@ impl TackyGenerator {
             }
             ast::Expression::Dot { aggregate, field } => {
                 let aggregate_ty = self.semantics.expr_type(aggregate).clone();
-                let (Type::Struct(aggregate_name) | Type::Union(aggregate_name)) = aggregate_ty else {
+                let (Type::Struct(aggregate_name) | Type::Union(aggregate_name)) = aggregate_ty
+                else {
                     panic!("Expected an aggregate type in dot expression");
                 };
                 let aggregate_def = self.semantics.get_aggregate(&aggregate_name);
@@ -1080,7 +1086,8 @@ impl TackyGenerator {
                 let Type::Pointer(aggregate_ty) = pointer_ty else {
                     panic!("Expected a pointer to agregate type in dot expression");
                 };
-                let (Type::Struct(aggregate_name) | Type::Union(aggregate_name)) = &*aggregate_ty else {
+                let (Type::Struct(aggregate_name) | Type::Union(aggregate_name)) = &*aggregate_ty
+                else {
                     panic!("Expected a struct in dot expression");
                 };
                 let aggregate = self.semantics.get_aggregate(aggregate_name);

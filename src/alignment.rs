@@ -7,9 +7,7 @@ impl Type {
             Type::Int | Type::UInt => 4,
             Type::Long | Type::ULong | Type::Double | Type::Pointer(_) => 8,
             Type::Array(inner, _) => inner.alignment(semantics),
-            Type::Struct(name) | Type::Union(name) => {
-                semantics.get_aggregate(name).alignment
-            }
+            Type::Struct(name) | Type::Union(name) => semantics.get_aggregate(name).alignment,
             Type::Function(_) => panic!("Function type does not have alignment"),
             Type::Void => panic!("Void does not have alignment"),
         }

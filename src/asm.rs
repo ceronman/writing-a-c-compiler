@@ -7,7 +7,7 @@ use crate::asm::ir::{
     StaticVariable, TopLevel, UnaryOp,
 };
 use crate::ast::Constant;
-use crate::semantic::{Attributes, SemanticData, StaticInit, AggregateType, Type, TypeEntry};
+use crate::semantic::{AggregateType, Attributes, SemanticData, StaticInit, Type, TypeEntry};
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
@@ -59,6 +59,13 @@ impl SemanticData {
         &self.symbols.get(symbol).expect("Symbol without type").ty
     }
 
+    fn val_ty(&self, val: &tacky::Val) -> Type {
+        match val {
+            tacky::Val::Constant(c) => c.ty().clone(),
+            tacky::Val::Var(name) => self.symbol_ty(name).clone(),
+        }
+    }
+
     fn is_signed(&self, val: &tacky::Val) -> bool {
         match val {
             tacky::Val::Constant(Constant::Int(_) | Constant::Long(_) | Constant::Char(_)) => true,
@@ -98,14 +105,15 @@ impl Type {
                 AsmType::ByteArray { size, alignment }
             }
             Type::Struct(name) | Type::Union(name) => {
-                let (size, alignment) =
-                    if let Some(TypeEntry::Complete(struct_def)) = semantics.type_table.type_defs.get(name) {
-                        // TODO: unify usize and u64 everywhere.
-                        (struct_def.size as u64, struct_def.alignment)
-                    } else {
-                        // In case of incomplete structs, these are dummy values.
-                        (0, 0)
-                    };
+                let (size, alignment) = if let Some(TypeEntry::Complete(aggregate)) =
+                    semantics.type_table.type_defs.get(name)
+                {
+                    // TODO: unify usize and u64 everywhere.
+                    (aggregate.size as u64, aggregate.alignment)
+                } else {
+                    // In case of incomplete types, these are dummy values.
+                    (0, 0)
+                };
                 AsmType::ByteArray { size, alignment }
             }
         }
@@ -921,16 +929,10 @@ impl Compiler {
         let Type::Function(function_ty) = self.semantics.symbol_ty(function_name) else {
             panic!("Function does not have a function type")
         };
-        if let Type::Struct(struct_name) = &*function_ty.ret
-            && let Some(TypeEntry::Complete(struct_def)) = self.semantics.type_table.type_defs.get(struct_name)
-        {
-            matches!(
-                self.classify_struct(struct_def).first(),
-                Some(ParamClass::Memory)
-            )
-        } else {
-            false
-        }
+        matches!(
+            self.classify_type(&function_ty.ret).first(),
+            Some(ParamClass::Memory)
+        )
     }
 
     fn assign_parameters(
@@ -1293,25 +1295,29 @@ impl Compiler {
 
         for value in values {
             let operand = self.generate_val(value);
-            let ty = self.semantics.val_asm_ty(value);
-            let operand = TypedOperand { operand, ty };
-            if let AsmType::Double = ty {
+            let asm_ty = self.semantics.val_asm_ty(value);
+            let param_ty = self.semantics.val_ty(value);
+            let operand = TypedOperand {
+                operand,
+                ty: asm_ty,
+            };
+            if let AsmType::Double = asm_ty {
                 if double_reg_args.len() < DOUBLE_ARG_REGISTERS.len() {
                     double_reg_args.push(operand);
                 } else {
                     stack_args.push(operand);
                 }
-            } else if ty.is_scalar() {
+            } else if asm_ty.is_scalar() {
                 if int_reg_args.len() < int_regs_available {
                     int_reg_args.push(operand);
                 } else {
                     stack_args.push(operand);
                 }
             } else {
-                let struct_def = value.as_struct_def(&self.semantics);
-                let classes = self.classify_struct(struct_def);
+                let classes = self.classify_type(&param_ty);
+                let aggregate = value.as_aggregate(&self.semantics);
                 let mut use_stack = true;
-                let struct_size = struct_def.size;
+                let type_size = aggregate.size;
                 if !matches!(classes[0], ParamClass::Memory) {
                     let mut tentative_ints = Vec::new();
                     let mut tentative_doubles = Vec::new();
@@ -1324,7 +1330,7 @@ impl Compiler {
                                 ty: AsmType::Double,
                             });
                         } else {
-                            let eightbyte_type = self.get_eightbyte_type(offset, struct_size);
+                            let eightbyte_type = self.get_eightbyte_type(offset, type_size);
                             tentative_ints.push(TypedOperand {
                                 operand,
                                 ty: eightbyte_type,
@@ -1344,7 +1350,7 @@ impl Compiler {
                     let mut offset = 0;
                     for _class in &classes {
                         let operand = Operand::PseudoMem(value.as_var(), offset);
-                        let eightbyte_type = self.get_eightbyte_type(offset, struct_size);
+                        let eightbyte_type = self.get_eightbyte_type(offset, type_size);
                         stack_args.push(TypedOperand {
                             operand,
                             ty: eightbyte_type,
@@ -1378,25 +1384,32 @@ impl Compiler {
     }
 
     fn classify_return_value(&mut self, return_value: &tacky::Val) -> FnReturn {
-        let ty = self.semantics.val_asm_ty(return_value);
-        if let AsmType::Double = ty {
+        let return_ty = self.semantics.val_ty(return_value);
+        let asm_ty = self.semantics.val_asm_ty(return_value);
+        if let AsmType::Double = asm_ty {
             let operand = self.generate_val(return_value);
             FnReturn {
                 int_values: vec![],
-                double_values: vec![TypedOperand { operand, ty }],
+                double_values: vec![TypedOperand {
+                    operand,
+                    ty: asm_ty,
+                }],
                 in_memory: false,
             }
-        } else if ty.is_scalar() {
+        } else if asm_ty.is_scalar() {
             let operand = self.generate_val(return_value);
             FnReturn {
-                int_values: vec![TypedOperand { operand, ty }],
+                int_values: vec![TypedOperand {
+                    operand,
+                    ty: asm_ty,
+                }],
                 double_values: vec![],
                 in_memory: false,
             }
         } else {
-            let struct_def = return_value.as_struct_def(&self.semantics);
-            let classes = self.classify_struct(struct_def);
-            let struct_size = struct_def.size;
+            let classes = self.classify_type(&return_ty);
+            let aggregate = return_value.as_aggregate(&self.semantics);
+            let type_size = aggregate.size;
             if let Some(ParamClass::Memory) = classes.first() {
                 FnReturn {
                     int_values: vec![],
@@ -1417,7 +1430,7 @@ impl Compiler {
                             });
                         }
                         ParamClass::Integer => {
-                            let eightbyte_type = self.get_eightbyte_type(offset, struct_size);
+                            let eightbyte_type = self.get_eightbyte_type(offset, type_size);
                             int_values.push(TypedOperand {
                                 operand,
                                 ty: eightbyte_type,
@@ -1438,31 +1451,96 @@ impl Compiler {
         }
     }
 
-    fn classify_struct(&self, struct_def: &AggregateType) -> Vec<ParamClass> {
-        if struct_def.size > 16 {
-            return (0..struct_def.size)
-                .step_by(8)
-                .map(|_| ParamClass::Memory)
-                .collect();
+    fn classify_type(&self, ty: &Type) -> Vec<ParamClass> {
+        let size = ty.size(&self.semantics);
+        if size > 16 {
+            return (0..size).step_by(8).map(|_| ParamClass::Memory).collect();
         }
-        let scalar_types = struct_def.flatten(&self.semantics);
-        if struct_def.size > 8 {
-            if let Some(Type::Double) = scalar_types.first()
-                && let Some(Type::Double) = scalar_types.last()
-            {
-                vec![ParamClass::Sse, ParamClass::Sse]
-            } else if let Some(Type::Double) = scalar_types.first() {
-                vec![ParamClass::Sse, ParamClass::Integer]
-            } else if let Some(Type::Double) = scalar_types.last() {
-                vec![ParamClass::Integer, ParamClass::Sse]
-            } else {
-                vec![ParamClass::Integer, ParamClass::Integer]
+
+        let mut classes: Vec<ParamClass> = Vec::new();
+
+        fn classify_inner(classes: &mut Vec<ParamClass>, ty: &Type, semantics: &SemanticData) {
+            match ty {
+                Type::Double => classes.push(ParamClass::Sse),
+
+                Type::Char
+                | Type::SChar
+                | Type::UChar
+                | Type::Int
+                | Type::UInt
+                | Type::Long
+                | Type::ULong
+                | Type::Pointer(_) => classes.push(ParamClass::Integer),
+
+                Type::Struct(name) => {
+                    let struct_def = semantics.get_aggregate(name);
+                    let mut field_classes: Vec<ParamClass> = Vec::new();
+                    for field in &struct_def.fields {
+                        classify_inner(&mut field_classes, &field.ty, semantics);
+                    }
+
+                    if let Some(ParamClass::Sse) = field_classes.first() {
+                        classes.push(ParamClass::Sse);
+                    } else {
+                        classes.push(ParamClass::Integer);
+                    }
+
+                    if struct_def.size > 8 {
+                        if let Some(ParamClass::Sse) = field_classes.last() {
+                            classes.push(ParamClass::Sse);
+                        } else {
+                            classes.push(ParamClass::Integer);
+                        }
+                    }
+                }
+                Type::Array(inner_ty, ..) => {
+                    let size = ty.size(semantics);
+                    if let Type::Double = &**inner_ty {
+                        classes.push(ParamClass::Sse);
+                        if size > 8 {
+                            classes.push(ParamClass::Sse);
+                        }
+                    } else {
+                        classes.push(ParamClass::Integer);
+                        if size > 8 {
+                            classes.push(ParamClass::Integer);
+                        }
+                    }
+                }
+                Type::Union(name) => {
+                    let union_def = semantics.get_aggregate(name);
+                    let mut field_classes = Vec::with_capacity(2);
+                    let mut first_class: Option<ParamClass> = None;
+                    let mut second_class: Option<ParamClass> = None;
+                    for field in &union_def.fields {
+                        classify_inner(&mut field_classes, &field.ty, semantics);
+                        use ParamClass::*;
+                        first_class = match (first_class, field_classes.first()) {
+                            (None | Some(Sse), Some(Sse)) => Some(Sse),
+                            (_, Some(Integer)) => Some(Integer),
+                            (Some(Integer), _) => Some(Integer),
+                            _ => unreachable!("Invalid class"),
+                        };
+                        second_class = match (second_class, field_classes.get(1)) {
+                            (old, None) => old,
+                            (None | Some(Sse), Some(Sse)) => Some(Sse),
+                            (_, Some(Integer)) => Some(Integer),
+                            (Some(Integer), _) => Some(Integer),
+                            _ => unreachable!("Invalid class"),
+                        };
+                        field_classes.clear();
+                    }
+                    classes.push(first_class.unwrap());
+                    if let Some(second_class) = second_class {
+                        classes.push(second_class);
+                    }
+                }
+
+                Type::Function(_) | Type::Void => {}
             }
-        } else if let Some(Type::Double) = scalar_types.first() {
-            vec![ParamClass::Sse]
-        } else {
-            vec![ParamClass::Integer]
         }
+        classify_inner(&mut classes, ty, &self.semantics);
+        classes
     }
 
     fn replace_pseudo_operands(
@@ -1936,40 +2014,15 @@ impl tacky::Val {
         }
     }
 
-    fn as_struct_def<'a>(&self, semantics: &'a SemanticData) -> &'a AggregateType {
+    fn as_aggregate<'a>(&self, semantics: &'a SemanticData) -> &'a AggregateType {
         let tacky::Val::Var(value_name) = self else {
             panic!("Non-scalar value that is not a struct");
         };
-        let Type::Struct(struct_ty) = semantics.symbol_ty(value_name) else {
+        let (Type::Struct(type_name) | Type::Union(type_name)) = semantics.symbol_ty(value_name)
+        else {
             panic!("Non-scalar value that is not a struct");
         };
-        semantics.get_aggregate(struct_ty)
-    }
-}
-
-impl AggregateType {
-    fn flatten(&self, semantic_data: &SemanticData) -> Vec<Type> {
-        let mut types: Vec<Type> = Vec::with_capacity(self.fields.len());
-        fn flatten_inner(ty: &Type, semantic_data: &SemanticData, types: &mut Vec<Type>) {
-            match ty {
-                Type::Struct(name) => {
-                    let struct_def = semantic_data.get_aggregate(name);
-                    for field in &struct_def.fields {
-                        flatten_inner(&field.ty, semantic_data, types);
-                    }
-                }
-                Type::Array(inner_ty, size) => {
-                    for _ in 0..*size {
-                        flatten_inner(inner_ty, semantic_data, types)
-                    }
-                }
-                other => types.push(other.clone()),
-            }
-        }
-        for field in &self.fields {
-            flatten_inner(&field.ty, semantic_data, &mut types);
-        }
-        types
+        semantics.get_aggregate(type_name)
     }
 }
 

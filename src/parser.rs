@@ -3,8 +3,8 @@ mod test;
 
 use crate::ast::{
     AssignOp, BinaryOp, Block, BlockItem, Constant, Declaration, Expression, Field, ForInit,
-    FunctionDeclaration, FunctionTypeSpec, Identifier, Initializer, Node, PostfixOp, Program,
-    Statement, StorageClass, NameAndFields, TypeSpec, UnaryOp, VarDeclaration,
+    FunctionDeclaration, FunctionTypeSpec, Identifier, Initializer, NameAndFields, Node, PostfixOp,
+    Program, Statement, StorageClass, TypeSpec, UnaryOp, VarDeclaration,
 };
 use crate::error::{CompilerError, ErrorKind, Result};
 use crate::lexer::{IntKind, Lexer, Span, Token, TokenKind};
