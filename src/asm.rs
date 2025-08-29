@@ -13,7 +13,7 @@ use crate::tacky;
 use std::collections::HashMap;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
-const DOUBLE_ARG_REGISTERS: [Reg; 8] = [
+const SSE_ARG_REGISTERS: [Reg; 8] = [
     Reg::XMM0,
     Reg::XMM1,
     Reg::XMM2,
@@ -25,7 +25,7 @@ const DOUBLE_ARG_REGISTERS: [Reg; 8] = [
 ];
 
 const INT_RETURN_REGISTERS: [Reg; 2] = [Reg::Ax, Reg::Dx];
-const DOUBLE_RETURN_REGISTERS: [Reg; 2] = [Reg::XMM0, Reg::XMM1];
+const SSE_RETURN_REGISTERS: [Reg; 2] = [Reg::XMM0, Reg::XMM1];
 
 enum BackendSymbolData {
     Obj {
@@ -127,13 +127,13 @@ struct TypedOperand {
 
 struct FnArgs {
     int_reg_args: Vec<TypedOperand>,
-    double_reg_args: Vec<TypedOperand>,
+    sse_reg_args: Vec<TypedOperand>,
     stack_args: Vec<TypedOperand>,
 }
 
 struct FnReturn {
     int_values: Vec<TypedOperand>,
-    double_values: Vec<TypedOperand>,
+    sse_values: Vec<TypedOperand>,
     in_memory: bool,
 }
 
@@ -943,7 +943,7 @@ impl Compiler {
     ) {
         let FnArgs {
             int_reg_args,
-            double_reg_args,
+            sse_reg_args,
             stack_args,
         } = self.classify_parameters(&params, return_in_memory);
 
@@ -967,8 +967,7 @@ impl Compiler {
             }
         }
 
-        for (reg, TypedOperand { ty, operand }) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args)
-        {
+        for (reg, TypedOperand { ty, operand }) in SSE_ARG_REGISTERS.iter().zip(sse_reg_args) {
             instructions.push(Instruction::Mov(ty, Operand::Reg(*reg), operand));
         }
 
@@ -1139,7 +1138,7 @@ impl Compiler {
     ) {
         let mut return_spec = FnReturn {
             int_values: vec![],
-            double_values: vec![],
+            sse_values: vec![],
             in_memory: false,
         };
         let mut reg_index = 0;
@@ -1155,7 +1154,7 @@ impl Compiler {
 
         let FnArgs {
             int_reg_args,
-            double_reg_args,
+            sse_reg_args,
             stack_args,
         } = self.classify_parameters(args, return_spec.in_memory);
 
@@ -1184,8 +1183,7 @@ impl Compiler {
             }
         }
 
-        for (reg, TypedOperand { ty, operand }) in DOUBLE_ARG_REGISTERS.iter().zip(double_reg_args)
-        {
+        for (reg, TypedOperand { ty, operand }) in SSE_ARG_REGISTERS.iter().zip(sse_reg_args) {
             instructions.push(Instruction::Mov(ty, operand, Operand::Reg(*reg)));
         }
 
@@ -1230,9 +1228,8 @@ impl Compiler {
                 }
             }
 
-            for (&reg, TypedOperand { ty, operand }) in DOUBLE_RETURN_REGISTERS
-                .iter()
-                .zip(return_spec.double_values)
+            for (&reg, TypedOperand { ty, operand }) in
+                SSE_RETURN_REGISTERS.iter().zip(return_spec.sse_values)
             {
                 instructions.push(Instruction::Mov(ty, reg.into(), operand));
             }
@@ -1270,9 +1267,8 @@ impl Compiler {
                 }
             }
 
-            for (&reg, TypedOperand { ty, operand }) in DOUBLE_RETURN_REGISTERS
-                .iter()
-                .zip(return_spec.double_values)
+            for (&reg, TypedOperand { ty, operand }) in
+                SSE_RETURN_REGISTERS.iter().zip(return_spec.sse_values)
             {
                 instructions.push(Instruction::Mov(ty, operand, reg.into()));
             }
@@ -1283,7 +1279,7 @@ impl Compiler {
 
     fn classify_parameters(&mut self, values: &[tacky::Val], return_in_memory: bool) -> FnArgs {
         let mut int_reg_args = Vec::new();
-        let mut double_reg_args = Vec::new();
+        let mut sse_reg_args = Vec::new();
         let mut stack_args = Vec::new();
 
         let int_regs_available = if return_in_memory {
@@ -1291,7 +1287,7 @@ impl Compiler {
         } else {
             INT_ARG_REGISTERS.len()
         };
-        let double_regs_available = DOUBLE_ARG_REGISTERS.len();
+        let sse_regs_available = SSE_ARG_REGISTERS.len();
 
         for value in values {
             let operand = self.generate_val(value);
@@ -1302,8 +1298,8 @@ impl Compiler {
                 ty: asm_ty,
             };
             if let AsmType::Double = asm_ty {
-                if double_reg_args.len() < DOUBLE_ARG_REGISTERS.len() {
-                    double_reg_args.push(operand);
+                if sse_reg_args.len() < SSE_ARG_REGISTERS.len() {
+                    sse_reg_args.push(operand);
                 } else {
                     stack_args.push(operand);
                 }
@@ -1338,10 +1334,10 @@ impl Compiler {
                         }
                         offset += 8
                     }
-                    if (tentative_doubles.len() + double_reg_args.len()) <= double_regs_available
+                    if (tentative_doubles.len() + sse_reg_args.len()) <= sse_regs_available
                         && (tentative_ints.len() + int_reg_args.len()) <= int_regs_available
                     {
-                        double_reg_args.extend(tentative_doubles);
+                        sse_reg_args.extend(tentative_doubles);
                         int_reg_args.extend(tentative_ints);
                         use_stack = false;
                     }
@@ -1362,7 +1358,7 @@ impl Compiler {
         }
         FnArgs {
             int_reg_args,
-            double_reg_args,
+            sse_reg_args,
             stack_args,
         }
     }
@@ -1390,7 +1386,7 @@ impl Compiler {
             let operand = self.generate_val(return_value);
             FnReturn {
                 int_values: vec![],
-                double_values: vec![TypedOperand {
+                sse_values: vec![TypedOperand {
                     operand,
                     ty: asm_ty,
                 }],
@@ -1403,7 +1399,7 @@ impl Compiler {
                     operand,
                     ty: asm_ty,
                 }],
-                double_values: vec![],
+                sse_values: vec![],
                 in_memory: false,
             }
         } else {
@@ -1413,7 +1409,7 @@ impl Compiler {
             if let Some(ParamClass::Memory) = classes.first() {
                 FnReturn {
                     int_values: vec![],
-                    double_values: vec![],
+                    sse_values: vec![],
                     in_memory: true,
                 }
             } else {
@@ -1444,7 +1440,7 @@ impl Compiler {
                 }
                 FnReturn {
                     int_values,
-                    double_values: sse_values,
+                    sse_values: sse_values,
                     in_memory: false,
                 }
             }
