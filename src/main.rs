@@ -11,11 +11,16 @@ mod tacky;
 mod tempfile;
 
 mod alignment;
+mod optimization;
 #[cfg(feature = "test_gen")]
 mod testgen;
 
+use crate::asm::ir::Program;
+use crate::optimization::OptimizationFlags;
 use crate::tempfile::TempPath;
 use std::fs;
+use std::fs::OpenOptions;
+use std::io::BufWriter;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -23,7 +28,6 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 fn main() -> Result<()> {
     let options = parse_args();
-
     let preprocessed = run_preprocessor(&options.filename)?;
     let source = fs::read_to_string(preprocessed.as_path())?;
 
@@ -91,21 +95,24 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
+    let tacky = optimization::optimize(tacky, &options.optimization);
+    if let Flag::OptimizedTacky = options.flag {
+        println!("{}", tacky::pretty::pp(&tacky)?);
+        println!("{:#?}", tacky.semantics);
+        return Ok(());
+    }
+
     let asm = asm::generate(&tacky);
     if let Flag::Codegen = options.flag {
         println!("{}", asm::pretty::pp(&asm)?);
         return Ok(());
     }
 
-    let asm_path = emitter::emit_code(&options.filename, &asm)?;
-    if let Flag::Emit = options.flag {
-        println!("{}", fs::read_to_string(asm_path.as_path())?);
-        return Ok(());
-    }
-
     match options.flag {
-        Flag::Assemble => assemble(asm_path.as_path()),
-        Flag::AssembleAndLink => assemble_and_link(asm_path.as_path()),
+        Flag::Emit => write_assembly_to_stdout(&asm),
+        Flag::GenerateAssemblyOnly => write_assembly_only(&options.filename, &asm),
+        Flag::Assemble => assemble(&options.filename, &asm),
+        Flag::AssembleAndLink => assemble_and_link(&options.filename, &asm),
         _ => unreachable!(),
     }
 }
@@ -113,36 +120,70 @@ fn main() -> Result<()> {
 struct Options {
     filename: PathBuf,
     flag: Flag,
+    optimization: OptimizationFlags,
 }
 
 enum Flag {
+    GenerateAssemblyOnly,
     Assemble,
     AssembleAndLink,
     Lex,
     Parse,
     Validate,
     Tacky,
+    OptimizedTacky,
     Codegen,
     Emit,
 }
 
 fn parse_args() -> Options {
-    let args: Vec<_> = std::env::args().skip(1).collect();
+    let mut args: Vec<_> = std::env::args().skip(1).collect();
+    let mut optimization = OptimizationFlags::default();
+    if let Some(i) = args.iter().position(|arg| arg == "--fold-constants") {
+        optimization.fold_constants = true;
+        args.remove(i);
+    }
+    if let Some(i) = args.iter().position(|arg| arg == "--propagate-copies") {
+        optimization.propagate_copies = true;
+        args.remove(i);
+    }
+
+    if let Some(i) = args
+        .iter()
+        .position(|arg| arg == "--eliminate-unreachable-code")
+    {
+        optimization.eliminate_unreachable_code = true;
+        args.remove(i);
+    }
+
+    if let Some(i) = args.iter().position(|arg| arg == "--eliminate-dead-stores") {
+        optimization.eliminate_dead_stores = true;
+        args.remove(i);
+    }
+
+    if let Some(i) = args.iter().position(|arg| arg == "--optimize") {
+        optimization.optimize = true;
+        args.remove(i);
+    }
+
     let args: Vec<_> = args.iter().map(|s| s.as_str()).collect();
+
     let (path, flag) = match args[..] {
         ["--lex", path] => (path, Flag::Lex),
         ["--parse", path] => (path, Flag::Parse),
         ["--validate", path] => (path, Flag::Validate),
         ["--tacky", path] => (path, Flag::Tacky),
+        ["--optimized-tacky", path] => (path, Flag::OptimizedTacky),
         ["--codegen", path] => (path, Flag::Codegen),
         ["--emit", path] => (path, Flag::Emit),
+        ["-s" | "-S", path] => (path, Flag::GenerateAssemblyOnly),
         ["-c", path] => (path, Flag::Assemble),
         [path] => (path, Flag::AssembleAndLink),
         _ => {
             eprintln!("Error: incorrect number of arguments");
             eprintln!("{}", args.join(" "));
             eprintln!(
-                "Usage: compiler [ --lex | --parse | --validate | --semantic | --codegen | --emmit ] <FILENAME>"
+                "Usage: compiler [ --lex | --parse | --validate | --codegen | --emit | -s | -c ] <FILENAME>"
             );
             std::process::exit(1);
         }
@@ -150,6 +191,7 @@ fn parse_args() -> Options {
     Options {
         filename: PathBuf::from(path),
         flag,
+        optimization,
     }
 }
 
@@ -170,7 +212,34 @@ fn run_preprocessor(filename: &Path) -> Result<TempPath> {
     Ok(output_path)
 }
 
-fn assemble(path: &Path) -> Result<()> {
+fn write_assembly_to_stdout(program: &Program) -> Result<()> {
+    let output = &mut std::io::stdout();
+    emitter::emit_program(output, program)?;
+    Ok(())
+}
+
+fn write_assembly_only(path: &Path, program: &Program) -> Result<()> {
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(path.with_extension("s"))?;
+    let output = &mut BufWriter::new(file);
+    emitter::emit_program(output, program)?;
+    Ok(())
+}
+
+fn assemble(path: &Path, program: &Program) -> Result<()> {
+    let output_path = TempPath::new(path.with_extension("s"));
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(output_path.as_path())?;
+    let output = &mut BufWriter::new(file);
+    emitter::emit_program(output, program)?;
     let output = Command::new("gcc")
         .arg("-c")
         .arg(path)
@@ -185,7 +254,17 @@ fn assemble(path: &Path) -> Result<()> {
     Ok(())
 }
 
-fn assemble_and_link(path: &Path) -> Result<()> {
+fn assemble_and_link(path: &Path, program: &Program) -> Result<()> {
+    let output_path = TempPath::new(path.with_extension("s"));
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(output_path.as_path())?;
+    let output = &mut BufWriter::new(file);
+    emitter::emit_program(output, program)?;
+
     let output = Command::new("gcc")
         .arg(path)
         .arg("-o")

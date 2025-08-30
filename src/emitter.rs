@@ -3,20 +3,9 @@ use crate::asm::ir::{
     StaticVariable, TopLevel, UnaryOp,
 };
 use crate::semantic::StaticInit;
-use crate::tempfile::TempPath;
-use std::fs::OpenOptions;
-use std::io::{BufWriter, Result, Write};
-use std::path::Path;
+use std::io::{Result, Write};
 
-pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
-    let output_path = TempPath::new(filename.with_extension("s"));
-    let file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .create(true)
-        .truncate(true)
-        .open(output_path.as_path())?;
-    let output = &mut BufWriter::new(file);
+pub fn emit_program(output: &mut impl Write, program: &Program) -> Result<()> {
     for (i, top_level) in program.top_level.iter().enumerate() {
         match top_level {
             TopLevel::Function(function) => emit_function(output, function)?,
@@ -27,7 +16,7 @@ pub fn emit_code(filename: &Path, program: &Program) -> Result<TempPath> {
             writeln!(output)?;
         }
     }
-    Ok(output_path)
+    Ok(())
 }
 
 fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {

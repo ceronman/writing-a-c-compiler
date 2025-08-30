@@ -1440,7 +1440,7 @@ impl Compiler {
                 }
                 FnReturn {
                     int_values,
-                    sse_values: sse_values,
+                    sse_values,
                     in_memory: false,
                 }
             }

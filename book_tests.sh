@@ -6,7 +6,10 @@ set -euxo pipefail
   cargo build
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler \
     --verbose \
-    --chapter 18 \
+    --chapter 19 \
+    --latest-only \
+    --fold-constants \
+    --int-only \
     --failfast \
     --bitwise \
     --compound \
