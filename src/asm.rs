@@ -1670,7 +1670,7 @@ impl Compiler {
             match instruction {
                 Instruction::Mov(ty, src, dst) => {
                     let src = if let Operand::Imm(v) = src {
-                        if v > i32::MAX as i64 {
+                        if i32::try_from(v).is_err() {
                             let value = match ty {
                                 AsmType::Byte | AsmType::Longword => (v as i32) as i64,
                                 AsmType::Quadword => v,
@@ -1724,7 +1724,7 @@ impl Compiler {
                     ) =>
                 {
                     let left = if let Operand::Imm(v) = left {
-                        if v > i32::MAX as i64 {
+                        if i32::try_from(v).is_err() {
                             fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
                             Reg::R10.into()
                         } else {
@@ -1792,7 +1792,7 @@ impl Compiler {
                 }
                 Instruction::Cmp(ty, left, right) => {
                     let left = if let Operand::Imm(v) = left {
-                        if v > i32::MAX as i64 {
+                        if i32::try_from(v).is_err() {
                             fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
                             Reg::R10.into()
                         } else {
@@ -1823,7 +1823,7 @@ impl Compiler {
                     fixed.push(Instruction::Div(ty, Reg::R10.into()));
                 }
                 Instruction::Push(Operand::Imm(value)) => {
-                    let value = if value > i32::MAX as i64 {
+                    let value = if i32::try_from(value).is_err() {
                         fixed.push(Instruction::Mov(
                             AsmType::Quadword,
                             Operand::Imm(value),
@@ -1841,7 +1841,7 @@ impl Compiler {
                 {
                     // TODO: generalize this pattern that is repeated all over the fixup phase.
                     let src = if let Operand::Imm(v) = src
-                        && v > i32::MAX as i64
+                        && i32::try_from(v).is_err()
                     {
                         fixed.push(Instruction::Mov(src_ty, src, Reg::R10.into()));
                         Reg::R10.into()
