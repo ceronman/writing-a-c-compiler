@@ -691,7 +691,7 @@ impl Compiler {
                             ));
                             instructions.push(Instruction::Mov(
                                 AsmType::Quadword,
-                                Operand::Imm(upper_bound_u64),
+                                Operand::Imm(upper_bound_u64 as i64),
                                 Reg::Ax.into(),
                             ));
                             instructions.push(Instruction::Binary(
@@ -870,7 +870,7 @@ impl Compiler {
                             instructions.push(Instruction::Binary(
                                 AsmType::Quadword,
                                 BinaryOp::Mul,
-                                Operand::Imm(*scale as u64),
+                                Operand::Imm(*scale as i64),
                                 Reg::Dx.into(),
                             ));
                             1
@@ -1171,7 +1171,7 @@ impl Compiler {
                 Reg::SP.into(),
             ))
         }
-        let bytes_to_remove = 8 * stack_args.len() as u64 + padding;
+        let bytes_to_remove = 8 * stack_args.len() as i64 + padding;
 
         for (&reg, TypedOperand { ty, operand }) in
             INT_ARG_REGISTERS.iter().skip(reg_index).zip(int_reg_args)
@@ -1646,7 +1646,7 @@ impl Compiler {
         fixed.push(Instruction::Binary(
             AsmType::Quadword,
             BinaryOp::Sub,
-            Operand::Imm(stack_size as u64),
+            Operand::Imm(stack_size as i64),
             Reg::SP.into(),
         ));
 
@@ -1670,9 +1670,9 @@ impl Compiler {
             match instruction {
                 Instruction::Mov(ty, src, dst) => {
                     let src = if let Operand::Imm(v) = src {
-                        if v > i32::MAX as u64 {
+                        if v > i32::MAX as i64 {
                             let value = match ty {
-                                AsmType::Byte | AsmType::Longword => (v as i32) as u64,
+                                AsmType::Byte | AsmType::Longword => (v as i32) as i64,
                                 AsmType::Quadword => v,
                                 AsmType::Double => panic!("Immediate values, can't be double"),
                                 AsmType::ByteArray { .. } => {
@@ -1724,7 +1724,7 @@ impl Compiler {
                     ) =>
                 {
                     let left = if let Operand::Imm(v) = left {
-                        if v > i32::MAX as u64 {
+                        if v > i32::MAX as i64 {
                             fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
                             Reg::R10.into()
                         } else {
@@ -1792,7 +1792,7 @@ impl Compiler {
                 }
                 Instruction::Cmp(ty, left, right) => {
                     let left = if let Operand::Imm(v) = left {
-                        if v > i32::MAX as u64 {
+                        if v > i32::MAX as i64 {
                             fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
                             Reg::R10.into()
                         } else {
@@ -1823,7 +1823,7 @@ impl Compiler {
                     fixed.push(Instruction::Div(ty, Reg::R10.into()));
                 }
                 Instruction::Push(Operand::Imm(value)) => {
-                    let value = if value > i32::MAX as u64 {
+                    let value = if value > i32::MAX as i64 {
                         fixed.push(Instruction::Mov(
                             AsmType::Quadword,
                             Operand::Imm(value),
@@ -1841,7 +1841,7 @@ impl Compiler {
                 {
                     // TODO: generalize this pattern that is repeated all over the fixup phase.
                     let src = if let Operand::Imm(v) = src
-                        && v > i32::MAX as u64
+                        && v > i32::MAX as i64
                     {
                         fixed.push(Instruction::Mov(src_ty, src, Reg::R10.into()));
                         Reg::R10.into()
@@ -1912,7 +1912,7 @@ impl Compiler {
                 if let Constant::Double(double) = value {
                     self.make_double_constant(*double)
                 } else {
-                    Operand::Imm(value.as_u64())
+                    Operand::Imm(value.as_u64() as i64)
                 }
             }
             tacky::Val::Var(name) => match self.semantics.val_asm_ty(val) {

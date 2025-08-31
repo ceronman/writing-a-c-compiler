@@ -231,18 +231,20 @@ fn write_assembly_only(path: &Path, program: &Program) -> Result<()> {
 }
 
 fn assemble(path: &Path, program: &Program) -> Result<()> {
-    let output_path = TempPath::new(path.with_extension("s"));
-    let file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .create(true)
-        .truncate(true)
-        .open(output_path.as_path())?;
-    let output = &mut BufWriter::new(file);
-    emitter::emit_program(output, program)?;
+    let assembler_code_path = TempPath::new(path.with_extension("s"));
+    {
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(assembler_code_path.as_path())?;
+        let output = &mut BufWriter::new(file);
+        emitter::emit_program(output, program)?;
+    }
     let output = Command::new("gcc")
         .arg("-c")
-        .arg(path)
+        .arg(assembler_code_path.as_path())
         .arg("-o")
         .arg(path.with_extension("o"))
         .output()?;
@@ -255,18 +257,20 @@ fn assemble(path: &Path, program: &Program) -> Result<()> {
 }
 
 fn assemble_and_link(path: &Path, program: &Program) -> Result<()> {
-    let output_path = TempPath::new(path.with_extension("s"));
-    let file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .create(true)
-        .truncate(true)
-        .open(output_path.as_path())?;
-    let output = &mut BufWriter::new(file);
-    emitter::emit_program(output, program)?;
+    let assembler_code_path = TempPath::new(path.with_extension("s"));
+    {
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(assembler_code_path.as_path())?;
+        let output = &mut BufWriter::new(file);
+        emitter::emit_program(output, program)?;
+    }
 
     let output = Command::new("gcc")
-        .arg(path)
+        .arg(assembler_code_path.as_path())
         .arg("-o")
         .arg(path.with_extension(""))
         .output()?;

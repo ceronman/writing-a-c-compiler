@@ -81,7 +81,7 @@ pub enum BinaryOp {
 
 #[derive(Debug, Clone)]
 pub enum Operand {
-    Imm(u64),
+    Imm(i64),
     Reg(Reg),
     Pseudo(Symbol),
     PseudoMem(Symbol, i64),

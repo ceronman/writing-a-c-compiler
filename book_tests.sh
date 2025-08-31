@@ -10,7 +10,6 @@ set -euxo pipefail
     --latest-only \
     --fold-constants \
     --int-only \
-    --failfast \
     --bitwise \
     --compound \
     --increment \
