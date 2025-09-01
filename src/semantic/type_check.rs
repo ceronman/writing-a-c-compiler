@@ -195,41 +195,14 @@ impl TypeChecker {
                     }
                 }
                 Expression::Constant(c) => {
-                    let static_init = match (c, target) {
-                        (c, Type::Char | Type::SChar) if c.is_int() => {
-                            StaticInit::Char(c.as_u64() as i8)
-                        }
-                        (c, Type::UChar) if c.is_int() => StaticInit::UChar(c.as_u64() as u8),
-                        (c, Type::Int) if c.is_int() => StaticInit::Int(c.as_u64() as i32),
-                        (c, Type::UInt) if c.is_int() => StaticInit::UInt(c.as_u64() as u32),
-                        (c, Type::Long) if c.is_int() => StaticInit::Long(c.as_u64() as i64),
-                        (c, Type::ULong) if c.is_int() => StaticInit::ULong(c.as_u64()),
-                        (c, Type::Double) if c.is_int() => StaticInit::Double(c.as_u64() as f64),
-                        (Constant::Double(value), Type::Int) => StaticInit::Int(*value as i32),
-                        (Constant::Double(value), Type::Char | Type::SChar) => {
-                            StaticInit::Char(*value as i8)
-                        }
-                        (Constant::Double(value), Type::UChar) => StaticInit::UChar(*value as u8),
-                        (Constant::Double(value), Type::UInt) => StaticInit::UInt(*value as u32),
-                        (Constant::Double(value), Type::Long) => StaticInit::Long(*value as i64),
-                        (Constant::Double(value), Type::ULong) => StaticInit::ULong(*value as u64),
-                        (Constant::Double(value), Type::Double) => StaticInit::Double(*value),
-                        (
-                            Constant::Int(0)
-                            | Constant::Long(0)
-                            | Constant::UInt(0)
-                            | Constant::ULong(0),
-                            Type::Pointer(_),
-                        ) => StaticInit::ULong(0),
-                        _ => {
-                            return Err(CompilerError {
-                                kind: ErrorKind::Type,
-                                msg: "Invalid type of static declaration".into(),
-                                span: init.span,
-                            });
-                        }
+                    let Some(c) = c.cast(target) else {
+                        return Err(CompilerError {
+                            kind: ErrorKind::Type,
+                            msg: "Invalid type of static declaration".into(),
+                            span: init.span,
+                        });
                     };
-                    Ok(vec![static_init])
+                    Ok(vec![c.to_static_init()])
                 }
                 _ => Err(CompilerError {
                     kind: ErrorKind::Type,

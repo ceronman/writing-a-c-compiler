@@ -1,7 +1,8 @@
-use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Neg, Not, Rem, Shl, Shr, Sub};
-use crate::tacky::{BinaryOp, Instruction, Program, TopLevel, UnaryOp, Val};
-use Instruction::*;
 use crate::ast::Constant::*;
+use crate::semantic::{SemanticData, Type};
+use crate::tacky::{BinaryOp, Instruction, Program, TopLevel, UnaryOp, Val};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Neg, Not, Rem, Shl, Shr, Sub};
+use Instruction::*;
 
 #[derive(Default)]
 pub struct OptimizationFlags {
@@ -16,14 +17,14 @@ pub fn optimize(mut program: Program, flags: &OptimizationFlags) -> Program {
     for top_level in &mut program.top_level {
         if let TopLevel::Function(f) = top_level {
             if flags.fold_constants || flags.optimize {
-                f.body = constant_fold(&f.body);
+                f.body = constant_fold(&f.body, &program.semantics);
             }
         }
     }
     program
 }
 
-fn constant_fold(old: &[Instruction]) -> Vec<Instruction> {
+fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instruction> {
     let mut new = Vec::with_capacity(old.len());
 
     for instruction in old {
@@ -108,32 +109,40 @@ fn constant_fold(old: &[Instruction]) -> Vec<Instruction> {
                 };
                 new.push(Copy { src: Val::Constant(result), dst: dst.clone()});
             }
-            Binary { op: BinaryOp::Divide, src1: Val::Constant(left), src2: Val::Constant(right), dst } if !right.is_zero() => {
-                let result = match (left, right) {
-                    (Int(left), Int(right)) => Int(left.div(*right)),
-                    (UInt(left), UInt(right)) => UInt(left.wrapping_div(*right)),
-                    (Long(left), Long(right)) => Long(left.div(*right)),
-                    (ULong(left), ULong(right)) => ULong(left.wrapping_div(*right)),
-                    (Char(left), Char(right)) => Char(left.div(*right)),
-                    (UChar(left), UChar(right)) => UChar(left.wrapping_div(*right)),
-                    (Double(left), Double(right)) => Double(left.div(*right)),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
-                };
-                new.push(Copy { src: Val::Constant(result), dst: dst.clone()});
+            Binary { op: BinaryOp::Divide, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+                if right.is_int() && right.is_zero() {
+                    new.push(instruction.clone())
+                } else {
+                    let result = match (left, right) {
+                        (Int(left), Int(right)) => Int(left.div(*right)),
+                        (UInt(left), UInt(right)) => UInt(left.wrapping_div(*right)),
+                        (Long(left), Long(right)) => Long(left.div(*right)),
+                        (ULong(left), ULong(right)) => ULong(left.wrapping_div(*right)),
+                        (Char(left), Char(right)) => Char(left.div(*right)),
+                        (UChar(left), UChar(right)) => UChar(left.wrapping_div(*right)),
+                        (Double(left), Double(right)) => Double(left.div(*right)),
+                        _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    };
+                    new.push(Copy { src: Val::Constant(result), dst: dst.clone()});
+                }
             }
 
-            Binary { op: BinaryOp::Reminder, src1: Val::Constant(left), src2: Val::Constant(right), dst } if !right.is_zero() => {
-                let result = match (left, right) {
-                    (Int(left), Int(right)) => Int(left.rem(*right)),
-                    (UInt(left), UInt(right)) => UInt(left.wrapping_rem(*right)),
-                    (Long(left), Long(right)) => Long(left.rem(*right)),
-                    (ULong(left), ULong(right)) => ULong(left.wrapping_rem(*right)),
-                    (Char(left), Char(right)) => Char(left.rem(*right)),
-                    (UChar(left), UChar(right)) => UChar(left.wrapping_rem(*right)),
-                    (Double(left), Double(right)) => Double(left.rem(*right)),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
-                };
-                new.push(Copy { src: Val::Constant(result), dst: dst.clone()});
+            Binary { op: BinaryOp::Reminder, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+                if right.is_int() && right.is_zero() {
+                    new.push(instruction.clone())
+                } else {
+                    let result = match (left, right) {
+                        (Int(left), Int(right)) => Int(left.rem(*right)),
+                        (UInt(left), UInt(right)) => UInt(left.wrapping_rem(*right)),
+                        (Long(left), Long(right)) => Long(left.rem(*right)),
+                        (ULong(left), ULong(right)) => ULong(left.wrapping_rem(*right)),
+                        (Char(left), Char(right)) => Char(left.rem(*right)),
+                        (UChar(left), UChar(right)) => UChar(left.wrapping_rem(*right)),
+                        (Double(left), Double(right)) => Double(left.rem(*right)),
+                        _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    };
+                    new.push(Copy { src: Val::Constant(result), dst: dst.clone()});
+                }
             }
 
             Binary { op: BinaryOp::BinAnd, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
@@ -180,12 +189,12 @@ fn constant_fold(old: &[Instruction]) -> Vec<Instruction> {
 
             Binary { op: BinaryOp::ShiftLeft, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
                 let result = match (left, right) {
-                    (Int(left), Int(right)) => Int(left.shl(*right)),
-                    (UInt(left), UInt(right)) => UInt(left.shl(*right)),
-                    (Long(left), Long(right)) => Long(left.shl(*right)),
-                    (ULong(left), ULong(right)) => ULong(left.shl(*right)),
-                    (Char(left), Char(right)) => Char(left.shl(*right)),
-                    (UChar(left), UChar(right)) => UChar(left.shl(*right)),
+                    (Int(left), right) if right.is_int() => Int(left.shl(right.as_u64())),
+                    (UInt(left), right) if right.is_int() => UInt(left.shl(right.as_u64())),
+                    (Long(left), right) if right.is_int() => Long(left.shl(right.as_u64())),
+                    (ULong(left), right) if right.is_int() => ULong(left.shl(right.as_u64())),
+                    (Char(left), right) if right.is_int() => Char(left.shl(right.as_u64())),
+                    (UChar(left), right) if right.is_int() => UChar(left.shl(right.as_u64())),
                     (Double(_), Double(_)) => unreachable!("Type checker should prevent binary ops with doubles"),
                     _ => unreachable!("Type checker should prevent binary ops with different types"),
                 };
@@ -194,12 +203,12 @@ fn constant_fold(old: &[Instruction]) -> Vec<Instruction> {
 
             Binary { op: BinaryOp::ShiftRight, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
                 let result = match (left, right) {
-                    (Int(left), Int(right)) => Int(left.shr(*right)),
-                    (UInt(left), UInt(right)) => UInt(left.shr(*right)),
-                    (Long(left), Long(right)) => Long(left.shr(*right)),
-                    (ULong(left), ULong(right)) => ULong(left.shr(*right)),
-                    (Char(left), Char(right)) => Char(left.shr(*right)),
-                    (UChar(left), UChar(right)) => UChar(left.shr(*right)),
+                    (Int(left), right) if right.is_int() => Int(left.shr(right.as_u64())),
+                    (UInt(left), right) if right.is_int() => UInt(left.shr(right.as_u64())),
+                    (Long(left), right) if right.is_int() => Long(left.shr(right.as_u64())),
+                    (ULong(left), right) if right.is_int() => ULong(left.shr(right.as_u64())),
+                    (Char(left), right) if right.is_int() => Char(left.shr(right.as_u64())),
+                    (UChar(left), right) if right.is_int() => UChar(left.shr(right.as_u64())),
                     (Double(_), Double(_)) => unreachable!("Type checker should prevent binary ops with doubles"),
                     _ => unreachable!("Type checker should prevent binary ops with different types"),
                 };
@@ -299,6 +308,20 @@ fn constant_fold(old: &[Instruction]) -> Vec<Instruction> {
                 if !cond.is_zero() {
                     new.push(Jump { target: target.clone() });
                 }
+            }
+            Truncate { src: Val::Constant(c), dst }
+            | SignExtend { src: Val::Constant(c), dst }
+            | ZeroExtend { src: Val::Constant(c), dst }
+            | DoubleToInt { src: Val::Constant(c), dst }
+            | DoubleToUInt { src: Val::Constant(c), dst }
+            | IntToDouble { src: Val::Constant(c), dst }
+            | UIntToDouble { src: Val::Constant(c), dst }
+            | Copy { src: Val::Constant(c), dst }
+            => {
+                let dst_ty = semantics.val_ty(dst);
+                let dst_ty = if dst_ty.is_pointer() { Type::ULong } else { dst_ty }; // Hacks for now
+                let new_constant = c.cast(&dst_ty).expect("Type checker should prevent casts with incorrect types");
+                new.push(Copy { src: Val::Constant(new_constant), dst: dst.clone()});
             }
             _ => new.push(instruction.clone()),
         }

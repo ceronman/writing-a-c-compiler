@@ -1,6 +1,7 @@
 use crate::ast::{Constant, Expression, FunctionTypeSpec, Node, NodeId, Program, TypeSpec};
 use crate::error::Result;
 use crate::symbol::Symbol;
+use crate::tacky;
 use std::collections::{BTreeMap, HashMap};
 
 mod id_resolution;
@@ -210,6 +211,52 @@ impl Constant {
             Constant::Double(_) => Type::Double,
         }
     }
+
+    pub fn cast(&self, target: &Type) -> Option<Constant> {
+        let c = match (self, target) {
+            (c, Type::Char | Type::SChar) if c.is_int() => {
+                Constant::Char(c.as_u64() as i8)
+            }
+            (c, Type::UChar) if c.is_int() => Constant::UChar(c.as_u64() as u8),
+            (c, Type::Int) if c.is_int() => Constant::Int(c.as_u64() as i32),
+            (c, Type::UInt) if c.is_int() => Constant::UInt(c.as_u64() as u32),
+            (c, Type::Long) if c.is_int() => Constant::Long(c.as_u64() as i64),
+            (c, Type::ULong) if c.is_int() => Constant::ULong(c.as_u64()),
+            (c, Type::Double) if c.is_int() => Constant::Double(c.as_u64() as f64),
+            (Constant::Double(value), Type::Int) => Constant::Int(*value as i32),
+            (Constant::Double(value), Type::Char | Type::SChar) => {
+                Constant::Char(*value as i8)
+            }
+            (Constant::Double(value), Type::UChar) => Constant::UChar(*value as u8),
+            (Constant::Double(value), Type::UInt) => Constant::UInt(*value as u32),
+            (Constant::Double(value), Type::Long) => Constant::Long(*value as i64),
+            (Constant::Double(value), Type::ULong) => Constant::ULong(*value as u64),
+            (Constant::Double(value), Type::Double) => Constant::Double(*value),
+            (
+                Constant::Int(0)
+                | Constant::Long(0)
+                | Constant::UInt(0)
+                | Constant::ULong(0),
+                Type::Pointer(_),
+            ) => Constant::ULong(0),
+            _ => {
+                return None
+            }
+        };
+        Some(c)
+    }
+
+    pub fn to_static_init(&self) -> StaticInit {
+        match self {
+            Constant::Int(v) => StaticInit::Int(*v),
+            Constant::UInt(v) => StaticInit::UInt(*v),
+            Constant::Long(v) => StaticInit::Long(*v),
+            Constant::ULong(v) => StaticInit::ULong(*v),
+            Constant::Double(v) => StaticInit::Double(*v),
+            Constant::Char(v) => StaticInit::Char(*v),
+            Constant::UChar(v) => StaticInit::UChar(*v),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -335,6 +382,28 @@ impl SemanticData {
                 );
                 name
             }
+        }
+    }
+
+    pub fn symbol_ty(&self, symbol: &Symbol) -> &Type {
+        &self.symbols.get(symbol).expect("Symbol without type").ty
+    }
+
+    pub fn val_ty(&self, val: &tacky::Val) -> Type {
+        match val {
+            tacky::Val::Constant(c) => c.ty().clone(),
+            tacky::Val::Var(name) => self.symbol_ty(name).clone(),
+        }
+    }
+
+    pub fn is_signed(&self, val: &tacky::Val) -> bool {
+        match val {
+            tacky::Val::Constant(Constant::Int(_) | Constant::Long(_) | Constant::Char(_)) => true,
+            tacky::Val::Constant(Constant::UInt(_) | Constant::ULong(_) | Constant::UChar(_)) => {
+                false
+            }
+            tacky::Val::Constant(Constant::Double(_)) => true,
+            tacky::Val::Var(name) => self.symbol_ty(name).is_signed(),
         }
     }
 }

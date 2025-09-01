@@ -54,28 +54,6 @@ impl SemanticData {
             tacky::Val::Var(name) => self.symbol_ty(name).to_asm(self),
         }
     }
-
-    fn symbol_ty(&self, symbol: &Symbol) -> &Type {
-        &self.symbols.get(symbol).expect("Symbol without type").ty
-    }
-
-    fn val_ty(&self, val: &tacky::Val) -> Type {
-        match val {
-            tacky::Val::Constant(c) => c.ty().clone(),
-            tacky::Val::Var(name) => self.symbol_ty(name).clone(),
-        }
-    }
-
-    fn is_signed(&self, val: &tacky::Val) -> bool {
-        match val {
-            tacky::Val::Constant(Constant::Int(_) | Constant::Long(_) | Constant::Char(_)) => true,
-            tacky::Val::Constant(Constant::UInt(_) | Constant::ULong(_) | Constant::UChar(_)) => {
-                false
-            }
-            tacky::Val::Constant(Constant::Double(_)) => true,
-            tacky::Val::Var(name) => self.symbol_ty(name).is_signed(),
-        }
-    }
 }
 
 impl Type {

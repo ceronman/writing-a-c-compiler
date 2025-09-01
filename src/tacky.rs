@@ -1083,6 +1083,7 @@ impl TackyGenerator {
             }
             ast::Expression::Arrow { pointer, field } => {
                 let pointer_ty = self.semantics.expr_type(pointer).clone();
+                // let pointer_ty = self.semantics.implicit_casts.get(&pointer.id).cloned().unwrap_or(pointer_ty);
                 let Type::Pointer(aggregate_ty) = pointer_ty else {
                     panic!("Expected a pointer to agregate type in dot expression");
                 };
