@@ -343,4 +343,16 @@ impl Constant {
             Constant::Double(v) => *v as u64,
         }
     }
+
+    pub fn is_zero(&self) -> bool {
+        match self {
+            Constant::Char(v) => *v == 0,
+            Constant::UChar(v) => *v == 0,
+            Constant::Int(v) => *v == 0,
+            Constant::UInt(v) => *v == 0,
+            Constant::Long(v) => *v == 0,
+            Constant::ULong(v) => *v == 0,
+            Constant::Double(v) => *v == 0.0 || *v == -0.0,
+        }
+    }
 }
