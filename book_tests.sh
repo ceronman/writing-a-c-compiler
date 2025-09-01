@@ -9,7 +9,6 @@ set -euxo pipefail
     --chapter 19 \
     --latest-only \
     --fold-constants \
-    --int-only \
     --bitwise \
     --compound \
     --increment \

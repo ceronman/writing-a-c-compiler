@@ -290,9 +290,16 @@ fn constant_fold(old: &[Instruction]) -> Vec<Instruction> {
                 new.push(Copy { src: Val::Constant(result), dst: dst.clone()});
             }
 
-            // Jump { target } => {}
-            // JumpIfZero { cond, target } => {}
-            // JumpIfNotZero { .. } => {}
+            JumpIfZero { cond: Val::Constant(cond), target } => {
+                if cond.is_zero() {
+                    new.push(Jump { target: target.clone() });
+                }
+            }
+            JumpIfNotZero { cond: Val::Constant(cond), target } => {
+                if !cond.is_zero() {
+                    new.push(Jump { target: target.clone() });
+                }
+            }
             _ => new.push(instruction.clone()),
         }
     }
