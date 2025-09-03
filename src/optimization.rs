@@ -1,4 +1,5 @@
 mod constant_folding;
+pub mod cfg;
 
 use crate::tacky::{Program, TopLevel};
 use crate::optimization::constant_folding::constant_fold;

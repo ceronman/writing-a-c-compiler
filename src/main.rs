@@ -99,6 +99,13 @@ fn main() -> Result<()> {
     if let Flag::OptimizedTacky = options.flag {
         println!("{}", tacky::pretty::pp(&tacky)?);
         println!("{:#?}", tacky.semantics);
+        for program in tacky.top_level {
+            if let tacky::TopLevel::Function(f) = program {
+                println!("CFG Function: {}", f.name);
+                let cfg = optimization::cfg::make_cfg(&f.body);
+                println!("{cfg:?}");
+            }
+        }
         return Ok(());
     }
 
