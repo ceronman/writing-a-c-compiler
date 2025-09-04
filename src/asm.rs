@@ -1624,7 +1624,7 @@ impl Compiler {
         fixed.push(Instruction::Binary(
             AsmType::Quadword,
             BinaryOp::Sub,
-            Operand::Imm(stack_size as i64),
+            Operand::Imm(stack_size),
             Reg::SP.into(),
         ));
 

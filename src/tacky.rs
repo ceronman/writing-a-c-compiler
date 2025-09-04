@@ -43,7 +43,7 @@ pub struct StaticConstant {
     pub init: StaticInit,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Instruction {
     Return(Option<Val>),
     Unary {
@@ -138,13 +138,13 @@ pub enum Instruction {
 
 pub type Constant = ast::Constant;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Val {
     Constant(Constant),
     Var(Symbol),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum UnaryOp {
     Complement,
     Negate,
@@ -153,7 +153,7 @@ pub enum UnaryOp {
     Decrement,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum BinaryOp {
     Add,
     Subtract,

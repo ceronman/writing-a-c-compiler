@@ -214,9 +214,7 @@ impl Constant {
 
     pub fn cast(&self, target: &Type) -> Option<Constant> {
         let c = match (self, target) {
-            (c, Type::Char | Type::SChar) if c.is_int() => {
-                Constant::Char(c.as_u64() as i8)
-            }
+            (c, Type::Char | Type::SChar) if c.is_int() => Constant::Char(c.as_u64() as i8),
             (c, Type::UChar) if c.is_int() => Constant::UChar(c.as_u64() as u8),
             (c, Type::Int) if c.is_int() => Constant::Int(c.as_u64() as i32),
             (c, Type::UInt) if c.is_int() => Constant::UInt(c.as_u64() as u32),
@@ -224,24 +222,17 @@ impl Constant {
             (c, Type::ULong) if c.is_int() => Constant::ULong(c.as_u64()),
             (c, Type::Double) if c.is_int() => Constant::Double(c.as_u64() as f64),
             (Constant::Double(value), Type::Int) => Constant::Int(*value as i32),
-            (Constant::Double(value), Type::Char | Type::SChar) => {
-                Constant::Char(*value as i8)
-            }
+            (Constant::Double(value), Type::Char | Type::SChar) => Constant::Char(*value as i8),
             (Constant::Double(value), Type::UChar) => Constant::UChar(*value as u8),
             (Constant::Double(value), Type::UInt) => Constant::UInt(*value as u32),
             (Constant::Double(value), Type::Long) => Constant::Long(*value as i64),
             (Constant::Double(value), Type::ULong) => Constant::ULong(*value as u64),
             (Constant::Double(value), Type::Double) => Constant::Double(*value),
             (
-                Constant::Int(0)
-                | Constant::Long(0)
-                | Constant::UInt(0)
-                | Constant::ULong(0),
+                Constant::Int(0) | Constant::Long(0) | Constant::UInt(0) | Constant::ULong(0),
                 Type::Pointer(_),
             ) => Constant::ULong(0),
-            _ => {
-                return None
-            }
+            _ => return None,
         };
         Some(c)
     }

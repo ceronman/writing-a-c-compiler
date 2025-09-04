@@ -7,7 +7,7 @@ set -euxo pipefail
   arch -x86_64 $TEST_RUNNER target/debug/writing-a-c-compiler \
     --verbose \
     --chapter 19 \
-    --fold-constants \
+    --eliminate-unreachable-code \
     --bitwise \
     --compound \
     --increment \

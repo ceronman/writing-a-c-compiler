@@ -94,7 +94,10 @@ fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> 
     Ok(())
 }
 
-pub(crate) fn pp_instruction(file: &mut impl Write, instruction: &tacky::Instruction) -> Result<()> {
+pub(crate) fn pp_instruction(
+    file: &mut impl Write,
+    instruction: &tacky::Instruction,
+) -> Result<()> {
     let indent = "    ";
     match instruction {
         tacky::Instruction::Return(val) => {

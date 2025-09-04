@@ -1,10 +1,12 @@
-mod constant_folding;
 pub mod cfg;
+mod constant_folding;
 mod unreachable_code;
 
+use crate::optimization::cfg::Cfg;
 use crate::optimization::constant_folding::constant_fold;
-use crate::optimization::unreachable_code::remove_unreachable_blocks;
-use crate::tacky::{Program, TopLevel};
+use crate::optimization::unreachable_code::{
+    remove_unreachable_blocks, remove_unreachable_code, remove_useless_jumps, remove_useless_labels,
+};
 use crate::tacky;
 
 #[derive(Default)]
@@ -16,24 +18,42 @@ pub struct OptimizationFlags {
     pub optimize: bool,
 }
 
-pub fn optimize(mut program: Program, flags: &OptimizationFlags) -> Program {
+pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky::Program {
     for top_level in &mut program.top_level {
-        if let TopLevel::Function(f) = top_level {
-            if flags.fold_constants || flags.optimize {
-                f.body = constant_fold(&f.body, &program.semantics);
+        if let tacky::TopLevel::Function(f) = top_level {
+            loop {
+                let mut optimized = f.body.clone();
+                if flags.fold_constants || flags.optimize {
+                    optimized = constant_fold(&optimized, &program.semantics);
+                }
+                if flags.eliminate_unreachable_code || flags.optimize {
+                    optimized = remove_unreachable_code(&optimized);
+                }
+
+                if optimized == f.body {
+                    break;
+                }
+                f.body = optimized;
             }
         }
     }
     program
 }
 
-pub fn debug_cfg(program: Program) {
+pub fn debug_cfg(program: tacky::Program) {
     for program in program.top_level {
         if let tacky::TopLevel::Function(f) = program {
-            let cfg = cfg::tacky_to_cfg(&f.body);
-            println!("function {} initial:\n {cfg:?}", f.name);
+            let cfg = Cfg::new(&f.body);
+            println!("[{}] initial:\n {cfg:?}", f.name);
+
             let cfg = remove_unreachable_blocks(cfg);
-            println!("function {} unreachable blocks:\n {cfg:?}", f.name);
+            println!("[{}] unreachable blocks:\n {cfg:?}", f.name);
+
+            let cfg = remove_useless_jumps(cfg);
+            println!("[{}] useless jumps:\n {cfg:?}", f.name);
+
+            let cfg = remove_useless_labels(cfg);
+            println!("[{}] useless labels:\n {cfg:?}", f.name);
         }
     }
 }

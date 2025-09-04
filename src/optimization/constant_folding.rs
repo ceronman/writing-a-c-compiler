@@ -1,15 +1,22 @@
-use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Neg, Not, Rem, Shl, Shr, Sub};
 use crate::ast::Constant::{Char, Double, Int, Long, UChar, UInt, ULong};
 use crate::semantic::{SemanticData, Type};
 use crate::tacky::{BinaryOp, Instruction, UnaryOp, Val};
-use Instruction::{Binary, DoubleToInt, DoubleToUInt, IntToDouble, Jump, JumpIfNotZero, JumpIfZero, SignExtend, Truncate, UIntToDouble, Unary, ZeroExtend};
+use Instruction::{
+    Binary, DoubleToInt, DoubleToUInt, IntToDouble, Jump, JumpIfNotZero, JumpIfZero, SignExtend,
+    Truncate, UIntToDouble, Unary, ZeroExtend,
+};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Neg, Not, Rem, Shl, Shr, Sub};
 
 pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instruction> {
     let mut new = Vec::with_capacity(old.len());
 
     for instruction in old {
         match instruction {
-            Unary { op: UnaryOp::Complement, src: Val::Constant(src), dst } => {
+            Unary {
+                op: UnaryOp::Complement,
+                src: Val::Constant(src),
+                dst,
+            } => {
                 let complement = match src {
                     Int(value) => Int(value.not()),
                     UInt(value) => UInt(value.not()),
@@ -20,9 +27,16 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
 
                     Double(_) => unreachable!("Type checker should prevent complement of doubles"),
                 };
-                new.push(Instruction::Copy { src: Val::Constant(complement), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(complement),
+                    dst: dst.clone(),
+                });
             }
-            Unary { op: UnaryOp::Negate, src: Val::Constant(src), dst } => {
+            Unary {
+                op: UnaryOp::Negate,
+                src: Val::Constant(src),
+                dst,
+            } => {
                 let negated = match src {
                     Int(value) => Int(-value),
                     UInt(value) => UInt(value.wrapping_neg()),
@@ -32,9 +46,16 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     UChar(value) => UChar(value.wrapping_neg()),
                     Double(value) => Double(value.neg()),
                 };
-                new.push(Instruction::Copy { src: Val::Constant(negated), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(negated),
+                    dst: dst.clone(),
+                });
             }
-            Unary { op: UnaryOp::Not, src: Val::Constant(src), dst } => {
+            Unary {
+                op: UnaryOp::Not,
+                src: Val::Constant(src),
+                dst,
+            } => {
                 let is_zero = match src {
                     Int(value) => *value == 0,
                     UInt(value) => *value == 0,
@@ -45,12 +66,23 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     Double(value) => *value == 0.0, // TODO: there is more to this
                 };
                 if is_zero {
-                    new.push(Instruction::Copy { src: Val::Constant(Int(1)), dst: dst.clone() });
+                    new.push(Instruction::Copy {
+                        src: Val::Constant(Int(1)),
+                        dst: dst.clone(),
+                    });
                 } else {
-                    new.push(Instruction::Copy { src: Val::Constant(Int(0)), dst: dst.clone() });
+                    new.push(Instruction::Copy {
+                        src: Val::Constant(Int(0)),
+                        dst: dst.clone(),
+                    });
                 }
             }
-            Binary { op: BinaryOp::Add, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::Add,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.wrapping_add(*right)),
                     (UInt(left), UInt(right)) => UInt(left.wrapping_add(*right)),
@@ -59,11 +91,21 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (Char(left), Char(right)) => Char(left.wrapping_add(*right)),
                     (UChar(left), UChar(right)) => UChar(left.wrapping_add(*right)),
                     (Double(left), Double(right)) => Double(left.add(*right)),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
-            Binary { op: BinaryOp::Subtract, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::Subtract,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.wrapping_sub(*right)),
                     (UInt(left), UInt(right)) => UInt(left.wrapping_sub(*right)),
@@ -72,11 +114,21 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (Char(left), Char(right)) => Char(left.wrapping_sub(*right)),
                     (UChar(left), UChar(right)) => UChar(left.wrapping_sub(*right)),
                     (Double(left), Double(right)) => Double(left.sub(*right)),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
-            Binary { op: BinaryOp::Multiply, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::Multiply,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.wrapping_mul(*right)),
                     (UInt(left), UInt(right)) => UInt(left.wrapping_mul(*right)),
@@ -85,11 +137,21 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (Char(left), Char(right)) => Char(left.wrapping_mul(*right)),
                     (UChar(left), UChar(right)) => UChar(left.wrapping_mul(*right)),
                     (Double(left), Double(right)) => Double(left.mul(*right)),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
-            Binary { op: BinaryOp::Divide, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::Divide,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 if right.is_int() && right.is_zero() {
                     new.push(instruction.clone())
                 } else {
@@ -101,13 +163,23 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                         (Char(left), Char(right)) => Char(left.div(*right)),
                         (UChar(left), UChar(right)) => UChar(left.wrapping_div(*right)),
                         (Double(left), Double(right)) => Double(left.div(*right)),
-                        _ => unreachable!("Type checker should prevent binary ops with different types"),
+                        _ => unreachable!(
+                            "Type checker should prevent binary ops with different types"
+                        ),
                     };
-                    new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                    new.push(Instruction::Copy {
+                        src: Val::Constant(result),
+                        dst: dst.clone(),
+                    });
                 }
             }
 
-            Binary { op: BinaryOp::Reminder, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::Reminder,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 if right.is_int() && right.is_zero() {
                     new.push(instruction.clone())
                 } else {
@@ -119,13 +191,23 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                         (Char(left), Char(right)) => Char(left.rem(*right)),
                         (UChar(left), UChar(right)) => UChar(left.wrapping_rem(*right)),
                         (Double(left), Double(right)) => Double(left.rem(*right)),
-                        _ => unreachable!("Type checker should prevent binary ops with different types"),
+                        _ => unreachable!(
+                            "Type checker should prevent binary ops with different types"
+                        ),
                     };
-                    new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                    new.push(Instruction::Copy {
+                        src: Val::Constant(result),
+                        dst: dst.clone(),
+                    });
                 }
             }
 
-            Binary { op: BinaryOp::BinAnd, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::BinAnd,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.bitand(*right)),
                     (UInt(left), UInt(right)) => UInt(left.bitand(*right)),
@@ -133,13 +215,25 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (ULong(left), ULong(right)) => ULong(left.bitand(*right)),
                     (Char(left), Char(right)) => Char(left.bitand(*right)),
                     (UChar(left), UChar(right)) => UChar(left.bitand(*right)),
-                    (Double(_), Double(_)) => unreachable!("Type checker should prevent binary ops with doubles"),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    (Double(_), Double(_)) => {
+                        unreachable!("Type checker should prevent binary ops with doubles")
+                    }
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            Binary { op: BinaryOp::BinOr, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::BinOr,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.bitor(*right)),
                     (UInt(left), UInt(right)) => UInt(left.bitor(*right)),
@@ -147,13 +241,25 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (ULong(left), ULong(right)) => ULong(left.bitor(*right)),
                     (Char(left), Char(right)) => Char(left.bitor(*right)),
                     (UChar(left), UChar(right)) => UChar(left.bitor(*right)),
-                    (Double(_), Double(_)) => unreachable!("Type checker should prevent binary ops with doubles"),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    (Double(_), Double(_)) => {
+                        unreachable!("Type checker should prevent binary ops with doubles")
+                    }
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            Binary { op: BinaryOp::BinXor, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::BinXor,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.bitxor(*right)),
                     (UInt(left), UInt(right)) => UInt(left.bitxor(*right)),
@@ -161,13 +267,25 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (ULong(left), ULong(right)) => ULong(left.bitxor(*right)),
                     (Char(left), Char(right)) => Char(left.bitxor(*right)),
                     (UChar(left), UChar(right)) => UChar(left.bitxor(*right)),
-                    (Double(_), Double(_)) => unreachable!("Type checker should prevent binary ops with doubles"),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    (Double(_), Double(_)) => {
+                        unreachable!("Type checker should prevent binary ops with doubles")
+                    }
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            Binary { op: BinaryOp::ShiftLeft, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::ShiftLeft,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), right) if right.is_int() => Int(left.shl(right.as_u64())),
                     (UInt(left), right) if right.is_int() => UInt(left.shl(right.as_u64())),
@@ -175,13 +293,25 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (ULong(left), right) if right.is_int() => ULong(left.shl(right.as_u64())),
                     (Char(left), right) if right.is_int() => Char(left.shl(right.as_u64())),
                     (UChar(left), right) if right.is_int() => UChar(left.shl(right.as_u64())),
-                    (Double(_), Double(_)) => unreachable!("Type checker should prevent binary ops with doubles"),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    (Double(_), Double(_)) => {
+                        unreachable!("Type checker should prevent binary ops with doubles")
+                    }
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            Binary { op: BinaryOp::ShiftRight, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::ShiftRight,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), right) if right.is_int() => Int(left.shr(right.as_u64())),
                     (UInt(left), right) if right.is_int() => UInt(left.shr(right.as_u64())),
@@ -189,13 +319,25 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (ULong(left), right) if right.is_int() => ULong(left.shr(right.as_u64())),
                     (Char(left), right) if right.is_int() => Char(left.shr(right.as_u64())),
                     (UChar(left), right) if right.is_int() => UChar(left.shr(right.as_u64())),
-                    (Double(_), Double(_)) => unreachable!("Type checker should prevent binary ops with doubles"),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    (Double(_), Double(_)) => {
+                        unreachable!("Type checker should prevent binary ops with doubles")
+                    }
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            Binary { op: BinaryOp::Equal, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::Equal,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.eq(right) as i32),
                     (UInt(left), UInt(right)) => Int(left.eq(right) as i32),
@@ -204,12 +346,22 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (Char(left), Char(right)) => Int(left.eq(right) as i32),
                     (UChar(left), UChar(right)) => Int(left.eq(right) as i32),
                     (Double(left), Double(right)) => Int(left.eq(right) as i32),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            Binary { op: BinaryOp::NotEqual, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::NotEqual,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.ne(right) as i32),
                     (UInt(left), UInt(right)) => Int(left.ne(right) as i32),
@@ -218,12 +370,22 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (Char(left), Char(right)) => Int(left.ne(right) as i32),
                     (UChar(left), UChar(right)) => Int(left.ne(right) as i32),
                     (Double(left), Double(right)) => Int(left.ne(right) as i32),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            Binary { op: BinaryOp::LessThan, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::LessThan,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.lt(right) as i32),
                     (UInt(left), UInt(right)) => Int(left.lt(right) as i32),
@@ -232,12 +394,22 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (Char(left), Char(right)) => Int(left.lt(right) as i32),
                     (UChar(left), UChar(right)) => Int(left.lt(right) as i32),
                     (Double(left), Double(right)) => Int(left.lt(right) as i32),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            Binary { op: BinaryOp::LessOrEqual, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::LessOrEqual,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.le(right) as i32),
                     (UInt(left), UInt(right)) => Int(left.le(right) as i32),
@@ -246,12 +418,22 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (Char(left), Char(right)) => Int(left.le(right) as i32),
                     (UChar(left), UChar(right)) => Int(left.le(right) as i32),
                     (Double(left), Double(right)) => Int(left.le(right) as i32),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            Binary { op: BinaryOp::GreaterThan, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::GreaterThan,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.gt(right) as i32),
                     (UInt(left), UInt(right)) => Int(left.gt(right) as i32),
@@ -260,12 +442,22 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (Char(left), Char(right)) => Int(left.gt(right) as i32),
                     (UChar(left), UChar(right)) => Int(left.gt(right) as i32),
                     (Double(left), Double(right)) => Int(left.gt(right) as i32),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            Binary { op: BinaryOp::GreaterOrEqual, src1: Val::Constant(left), src2: Val::Constant(right), dst } => {
+            Binary {
+                op: BinaryOp::GreaterOrEqual,
+                src1: Val::Constant(left),
+                src2: Val::Constant(right),
+                dst,
+            } => {
                 let result = match (left, right) {
                     (Int(left), Int(right)) => Int(left.ge(right) as i32),
                     (UInt(left), UInt(right)) => Int(left.ge(right) as i32),
@@ -274,34 +466,81 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
                     (Char(left), Char(right)) => Int(left.ge(right) as i32),
                     (UChar(left), UChar(right)) => Int(left.ge(right) as i32),
                     (Double(left), Double(right)) => Int(left.ge(right) as i32),
-                    _ => unreachable!("Type checker should prevent binary ops with different types"),
+                    _ => {
+                        unreachable!("Type checker should prevent binary ops with different types")
+                    }
                 };
-                new.push(Instruction::Copy { src: Val::Constant(result), dst: dst.clone()});
+                new.push(Instruction::Copy {
+                    src: Val::Constant(result),
+                    dst: dst.clone(),
+                });
             }
 
-            JumpIfZero { cond: Val::Constant(cond), target } => {
+            JumpIfZero {
+                cond: Val::Constant(cond),
+                target,
+            } => {
                 if cond.is_zero() {
-                    new.push(Jump { target: target.clone() });
+                    new.push(Jump {
+                        target: target.clone(),
+                    });
                 }
             }
-            JumpIfNotZero { cond: Val::Constant(cond), target } => {
+            JumpIfNotZero {
+                cond: Val::Constant(cond),
+                target,
+            } => {
                 if !cond.is_zero() {
-                    new.push(Jump { target: target.clone() });
+                    new.push(Jump {
+                        target: target.clone(),
+                    });
                 }
             }
-            Truncate { src: Val::Constant(c), dst }
-            | SignExtend { src: Val::Constant(c), dst }
-            | ZeroExtend { src: Val::Constant(c), dst }
-            | DoubleToInt { src: Val::Constant(c), dst }
-            | DoubleToUInt { src: Val::Constant(c), dst }
-            | IntToDouble { src: Val::Constant(c), dst }
-            | UIntToDouble { src: Val::Constant(c), dst }
-            | Instruction::Copy { src: Val::Constant(c), dst }
-            => {
+            Truncate {
+                src: Val::Constant(c),
+                dst,
+            }
+            | SignExtend {
+                src: Val::Constant(c),
+                dst,
+            }
+            | ZeroExtend {
+                src: Val::Constant(c),
+                dst,
+            }
+            | DoubleToInt {
+                src: Val::Constant(c),
+                dst,
+            }
+            | DoubleToUInt {
+                src: Val::Constant(c),
+                dst,
+            }
+            | IntToDouble {
+                src: Val::Constant(c),
+                dst,
+            }
+            | UIntToDouble {
+                src: Val::Constant(c),
+                dst,
+            }
+            | Instruction::Copy {
+                src: Val::Constant(c),
+                dst,
+            } => {
                 let dst_ty = semantics.val_ty(dst);
-                let dst_ty = if dst_ty.is_pointer() { Type::ULong } else { dst_ty }; // Hacks for now
-                let new_constant = c.cast(&dst_ty).expect("Type checker should prevent casts with incorrect types");
-                new.push(Instruction::Copy { src: Val::Constant(new_constant), dst: dst.clone()});
+                let dst_ty = if dst_ty.is_pointer() {
+                    Type::ULong
+                } else {
+                    dst_ty
+                }; // Hacks for now
+                let new_constant = c
+                    .cast(&dst_ty)
+                    .expect("Type checker should prevent casts with incorrect types");
+                new.push(Instruction::Copy {
+                    src: Val::Constant(new_constant),
+                    dst: dst.clone(),
+                });
             }
             _ => new.push(instruction.clone()),
         }

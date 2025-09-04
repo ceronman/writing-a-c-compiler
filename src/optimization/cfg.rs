@@ -1,9 +1,9 @@
 use crate::symbol::Symbol;
+use crate::tacky;
+use crate::tacky::pretty::pp_instruction;
 use std::cmp::PartialEq;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
-use crate::tacky;
-use crate::tacky::pretty::pp_instruction;
 
 pub trait GenericInstruction: Clone {
     fn kind(&self) -> InstructionKind;
@@ -15,7 +15,7 @@ pub enum InstructionKind {
     Jump { label: Symbol },
     ConditionalJump { label: Symbol },
     Label(Symbol),
-    Other
+    Other,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Default, Ord, PartialOrd)]
@@ -54,6 +54,18 @@ pub struct Cfg<T: GenericInstruction> {
 }
 
 impl<T: GenericInstruction> Cfg<T> {
+    pub fn new(instructions: &[T]) -> Cfg<T> {
+        let mut cfg = Cfg {
+            nodes: Vec::new(),
+            removed: vec![],
+            entry_id: NodeId(0),
+            exit_id: NodeId(0),
+            by_label: HashMap::new(),
+        };
+        cfg.build(instructions);
+        cfg
+    }
+
     fn build(&mut self, instructions: &[T]) {
         self.nodes = Vec::new();
         self.entry_id = self.add_node(vec![]);
@@ -64,10 +76,13 @@ impl<T: GenericInstruction> Cfg<T> {
                     if !current_block.is_empty() {
                         self.add_node(current_block);
                     }
-                    self.by_label.insert(label.clone(), NodeId(self.nodes.len()));
+                    self.by_label
+                        .insert(label.clone(), NodeId(self.nodes.len()));
                     current_block = vec![instruction.clone()]
                 }
-                InstructionKind::Jump { .. } | InstructionKind::ConditionalJump { .. } | InstructionKind::Return => {
+                InstructionKind::Jump { .. }
+                | InstructionKind::ConditionalJump { .. }
+                | InstructionKind::Return => {
                     current_block.push(instruction.clone());
                     self.add_node(current_block);
                     current_block = vec![];
@@ -129,7 +144,10 @@ impl<T: GenericInstruction> Cfg<T> {
     }
 
     pub fn all_ids(&self) -> impl Iterator<Item = NodeId> {
-        self.nodes.iter().map(|node| node.id).filter(|id| !self.removed.contains(id) )
+        self.nodes
+            .iter()
+            .map(|node| node.id)
+            .filter(|id| !self.removed.contains(id))
     }
 
     pub fn entry_id(&self) -> NodeId {
@@ -142,6 +160,10 @@ impl<T: GenericInstruction> Cfg<T> {
 
     pub fn get_node(&self, id: NodeId) -> &Node<T> {
         &self.nodes[id.0]
+    }
+
+    pub fn get_node_mut(&mut self, id: NodeId) -> &mut Node<T> {
+        &mut self.nodes[id.0]
     }
 
     pub fn remove_node(&mut self, id: NodeId) {
@@ -164,15 +186,29 @@ impl<T: GenericInstruction> Cfg<T> {
             pred.dedup();
         }
     }
+
+    pub fn dump(&self) -> Vec<T> {
+        let mut result = Vec::new();
+        for node_id in self.all_ids() {
+            result.extend(self.get_node(node_id).instructions.iter().cloned());
+        }
+        result
+    }
 }
 
 impl GenericInstruction for tacky::Instruction {
     fn kind(&self) -> InstructionKind {
         match self {
             tacky::Instruction::Return(_) => InstructionKind::Return,
-            tacky::Instruction::Jump { target } => InstructionKind::Jump { label: target.clone() },
+            tacky::Instruction::Jump { target } => InstructionKind::Jump {
+                label: target.clone(),
+            },
             tacky::Instruction::JumpIfZero { target, .. }
-            | tacky::Instruction::JumpIfNotZero { target, .. } => InstructionKind::ConditionalJump { label: target.clone() },
+            | tacky::Instruction::JumpIfNotZero { target, .. } => {
+                InstructionKind::ConditionalJump {
+                    label: target.clone(),
+                }
+            }
             tacky::Instruction::Label(label) => InstructionKind::Label(label.clone()),
             _ => InstructionKind::Other,
         }
@@ -180,18 +216,6 @@ impl GenericInstruction for tacky::Instruction {
 }
 
 pub type TackyCfg = Cfg<tacky::Instruction>;
-
-pub fn tacky_to_cfg(instructions: &[tacky::Instruction]) -> TackyCfg {
-    let mut cfg = Cfg {
-        nodes: Vec::new(),
-        removed: vec![],
-        entry_id: NodeId(0),
-        exit_id: NodeId(0),
-        by_label: HashMap::new(),
-    };
-    cfg.build(instructions);
-    cfg
-}
 
 impl Debug for TackyCfg {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -208,11 +232,21 @@ impl Debug for TackyCfg {
                 pp_instruction(&mut buf, ins).unwrap();
                 writeln!(f, "    {}", String::from_utf8(buf).unwrap().trim())?;
             }
-            let successors = node.successors.iter().map(|&id| id.0.to_string()).collect::<Vec<_>>().join(", ");
+            let successors = node
+                .successors
+                .iter()
+                .map(|&id| id.0.to_string())
+                .collect::<Vec<_>>()
+                .join(", ");
             if !successors.is_empty() {
                 writeln!(f, "    Successors: {successors}")?;
             }
-            let predecesors = node.predecessors.iter().map(|&id| id.0.to_string()).collect::<Vec<_>>().join(", ");
+            let predecesors = node
+                .predecessors
+                .iter()
+                .map(|&id| id.0.to_string())
+                .collect::<Vec<_>>()
+                .join(", ");
             if !predecesors.is_empty() {
                 writeln!(f, "    Predecessors: {predecesors}")?;
             }
@@ -220,4 +254,3 @@ impl Debug for TackyCfg {
         Ok(())
     }
 }
-
