@@ -3,13 +3,14 @@ use std::cmp::PartialEq;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use crate::tacky;
+use crate::tacky::pretty::pp_instruction;
 
-trait GenericInstruction: Clone + Debug {
+pub trait GenericInstruction: Clone {
     fn kind(&self) -> InstructionKind;
 }
 
 #[derive(Clone)]
-enum InstructionKind {
+pub enum InstructionKind {
     Return,
     Jump { label: Symbol },
     ConditionalJump { label: Symbol },
@@ -17,8 +18,8 @@ enum InstructionKind {
     Other
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Hash, Default)]
-struct NodeId(usize);
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Default, Ord, PartialOrd)]
+pub struct NodeId(usize);
 
 impl NodeId {
     fn next(&self) -> Self {
@@ -26,9 +27,11 @@ impl NodeId {
     }
 }
 
-struct Node<T: GenericInstruction> {
-    id: NodeId,
-    instructions: Vec<T>,
+pub struct Node<T: GenericInstruction> {
+    pub id: NodeId,
+    pub instructions: Vec<T>,
+    pub successors: Vec<NodeId>,
+    pub predecessors: Vec<NodeId>,
 }
 
 impl<T: GenericInstruction> Node<T> {
@@ -36,17 +39,18 @@ impl<T: GenericInstruction> Node<T> {
         Self {
             id,
             instructions,
+            successors: vec![],
+            predecessors: vec![],
         }
     }
 }
 
 pub struct Cfg<T: GenericInstruction> {
     nodes: Vec<Node<T>>,
+    removed: Vec<NodeId>,
     entry_id: NodeId,
     exit_id: NodeId,
     by_label: HashMap<Symbol, NodeId>,
-    successors: HashMap<NodeId, Vec<NodeId>>,
-    predecessors: HashMap<NodeId, Vec<NodeId>>,
 }
 
 impl<T: GenericInstruction> Cfg<T> {
@@ -57,10 +61,10 @@ impl<T: GenericInstruction> Cfg<T> {
         for instruction in instructions {
             match &instruction.kind() {
                 InstructionKind::Label(label) => {
-                    self.by_label.insert(label.clone(), NodeId(self.nodes.len()));
                     if !current_block.is_empty() {
                         self.add_node(current_block);
                     }
+                    self.by_label.insert(label.clone(), NodeId(self.nodes.len()));
                     current_block = vec![instruction.clone()]
                 }
                 InstructionKind::Jump { .. } | InstructionKind::ConditionalJump { .. } | InstructionKind::Return => {
@@ -112,12 +116,53 @@ impl<T: GenericInstruction> Cfg<T> {
     }
 
     fn add_edge(&mut self, from: NodeId, to: NodeId) {
-        self.successors.entry(from).or_default().push(to);
-        self.predecessors.entry(to).or_default().push(from);
+        self.nodes[from.0].successors.push(to);
+        self.nodes[to.0].predecessors.push(from);
     }
 
     fn get_by_label(&self, label: &Symbol) -> NodeId {
         *self.by_label.get(label).unwrap()
+    }
+
+    pub fn size(&self) -> usize {
+        self.nodes.len()
+    }
+
+    pub fn all_ids(&self) -> impl Iterator<Item = NodeId> {
+        self.nodes.iter().map(|node| node.id).filter(|id| !self.removed.contains(id) )
+    }
+
+    pub fn entry_id(&self) -> NodeId {
+        self.entry_id
+    }
+
+    pub fn exit_id(&self) -> NodeId {
+        self.exit_id
+    }
+
+    pub fn get_node(&self, id: NodeId) -> &Node<T> {
+        &self.nodes[id.0]
+    }
+
+    pub fn remove_node(&mut self, id: NodeId) {
+        self.removed.push(id);
+        let predecessors = self.nodes[id.0].predecessors.clone();
+        let successors = self.nodes[id.0].successors.clone();
+        for pred_id in predecessors.iter().copied() {
+            let succ = &mut self.nodes[pred_id.0].successors;
+            succ.retain(|&node_id| node_id != id);
+            succ.extend(successors.iter());
+            succ.sort();
+            succ.dedup();
+        }
+
+        for succ_id in successors.iter().copied() {
+            let pred = &mut self.nodes[succ_id.0].predecessors;
+            pred.retain(|&node_id| node_id != id);
+            pred.extend(predecessors.iter());
+            pred.sort();
+            pred.dedup();
+        }
     }
 }
 
@@ -134,31 +179,40 @@ impl GenericInstruction for tacky::Instruction {
     }
 }
 
-pub fn tacky_to_cfg(instructions: &[tacky::Instruction]) -> Cfg<tacky::Instruction> {
+pub type TackyCfg = Cfg<tacky::Instruction>;
+
+pub fn tacky_to_cfg(instructions: &[tacky::Instruction]) -> TackyCfg {
     let mut cfg = Cfg {
         nodes: Vec::new(),
+        removed: vec![],
         entry_id: NodeId(0),
         exit_id: NodeId(0),
         by_label: HashMap::new(),
-        successors: HashMap::new(),
-        predecessors: HashMap::new(),
     };
     cfg.build(instructions);
     cfg
 }
 
-impl<T: GenericInstruction> Debug for Cfg<T> {
+impl Debug for TackyCfg {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        for i in 0..self.nodes.len() {
-            writeln!(f, "  Node {}:", i)?;
-            for ins in self.nodes[i].instructions.iter() {
-                writeln!(f, "    {:?}", ins)?;
+        for node_id in self.all_ids() {
+            let node = self.get_node(node_id);
+            match node.id {
+                id if id == self.entry_id() => writeln!(f, "ENTRY: ")?,
+                id if id == self.exit_id() => writeln!(f, "EXIT: ")?,
+                _ => writeln!(f, "  Node {}:", node.id.0)?,
+            };
+
+            for ins in node.instructions.iter() {
+                let mut buf = Vec::new();
+                pp_instruction(&mut buf, ins).unwrap();
+                writeln!(f, "    {}", String::from_utf8(buf).unwrap().trim())?;
             }
-            let successors = self.successors.get(&NodeId(i)).unwrap_or(&vec![]).iter().map(|&id| id.0.to_string()).collect::<Vec<_>>().join(", ");
+            let successors = node.successors.iter().map(|&id| id.0.to_string()).collect::<Vec<_>>().join(", ");
             if !successors.is_empty() {
                 writeln!(f, "    Successors: {successors}")?;
             }
-            let predecesors = self.predecessors.get(&NodeId(i)).unwrap_or(&vec![]).iter().map(|&id| id.0.to_string()).collect::<Vec<_>>().join(", ");
+            let predecesors = node.predecessors.iter().map(|&id| id.0.to_string()).collect::<Vec<_>>().join(", ");
             if !predecesors.is_empty() {
                 writeln!(f, "    Predecessors: {predecesors}")?;
             }

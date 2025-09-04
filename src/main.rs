@@ -98,14 +98,7 @@ fn main() -> Result<()> {
     let tacky = optimization::optimize(tacky, &options.optimization);
     if let Flag::OptimizedTacky = options.flag {
         println!("{}", tacky::pretty::pp(&tacky)?);
-        println!("{:#?}", tacky.semantics);
-        for program in tacky.top_level {
-            if let tacky::TopLevel::Function(f) = program {
-                println!("CFG Function: {}", f.name);
-                let cfg = optimization::cfg::tacky_to_cfg(&f.body);
-                println!("{cfg:?}");
-            }
-        }
+        optimization::debug_cfg(tacky);
         return Ok(());
     }
 
