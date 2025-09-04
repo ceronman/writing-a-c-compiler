@@ -102,7 +102,7 @@ fn main() -> Result<()> {
         for program in tacky.top_level {
             if let tacky::TopLevel::Function(f) = program {
                 println!("CFG Function: {}", f.name);
-                let cfg = optimization::cfg::make_cfg(&f.body);
+                let cfg = optimization::cfg::tacky_to_cfg(&f.body);
                 println!("{cfg:?}");
             }
         }
