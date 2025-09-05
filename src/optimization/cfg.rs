@@ -228,9 +228,7 @@ impl Debug for TackyCfg {
             };
 
             for ins in node.instructions.iter() {
-                let mut buf = Vec::new();
-                pp_instruction(&mut buf, ins).unwrap();
-                writeln!(f, "    {}", String::from_utf8(buf).unwrap().trim())?;
+                pp_instruction(f, ins)?;
             }
             let successors = node
                 .successors

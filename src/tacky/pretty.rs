@@ -1,58 +1,58 @@
 use crate::semantic::{StaticInit, Type};
 use crate::{ast, tacky};
-use std::io::Write;
+use std::fmt::Write;
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+type Result<T> = std::result::Result<T, std::fmt::Error>;
 
 pub fn pp(program: &tacky::Program) -> Result<String> {
-    let mut buffer = Vec::new();
-    let file = &mut buffer;
+    let mut buffer = String::new();
+    let stream = &mut buffer;
     for top_level in &program.top_level {
         match top_level {
-            tacky::TopLevel::Function(f) => pp_function(file, f)?,
-            tacky::TopLevel::Variable(v) => pp_static_variable(file, v)?,
-            tacky::TopLevel::Constant(c) => pp_static_constant(file, c)?,
+            tacky::TopLevel::Function(f) => pp_function(stream, f)?,
+            tacky::TopLevel::Variable(v) => pp_static_variable(stream, v)?,
+            tacky::TopLevel::Constant(c) => pp_static_constant(stream, c)?,
         }
     }
-    Ok(String::from_utf8(buffer)?)
+    Ok(buffer)
 }
 
-fn pp_static_constant(file: &mut impl Write, constant: &tacky::StaticConstant) -> Result<()> {
-    write!(file, "constant ")?;
-    write!(file, "{}", constant.name)?;
-    write!(file, ": ")?;
-    pp_type(file, &constant.ty)?;
-    write!(file, " = ")?;
-    pp_initializer(file, &constant.init)?;
-    writeln!(file)?;
+fn pp_static_constant(stream: &mut impl Write, constant: &tacky::StaticConstant) -> Result<()> {
+    write!(stream, "constant ")?;
+    write!(stream, "{}", constant.name)?;
+    write!(stream, ": ")?;
+    pp_type(stream, &constant.ty)?;
+    write!(stream, " = ")?;
+    pp_initializer(stream, &constant.init)?;
+    writeln!(stream)?;
     Ok(())
 }
 
-fn pp_static_variable(file: &mut impl Write, variable: &tacky::StaticVariable) -> Result<()> {
-    write!(file, "static ")?;
+fn pp_static_variable(stream: &mut impl Write, variable: &tacky::StaticVariable) -> Result<()> {
+    write!(stream, "static ")?;
     if variable.global {
-        write!(file, "global ")?;
+        write!(stream, "global ")?;
     }
-    write!(file, "{}", variable.name)?;
-    write!(file, ": ")?;
-    pp_type(file, &variable.ty)?;
-    write!(file, " = ")?;
+    write!(stream, "{}", variable.name)?;
+    write!(stream, ": ")?;
+    pp_type(stream, &variable.ty)?;
+    write!(stream, " = ")?;
 
     // Shortcut for a nicer single initializer.
     if variable.init.len() == 1 {
-        pp_initializer(file, &variable.init[0])?;
-        writeln!(file)?;
+        pp_initializer(stream, &variable.init[0])?;
+        writeln!(stream)?;
         return Ok(());
     }
 
-    write!(file, "[ ")?;
+    write!(stream, "[ ")?;
     for (i, init) in variable.init.iter().enumerate() {
-        pp_initializer(file, init)?;
+        pp_initializer(stream, init)?;
         if i != variable.init.len() - 1 {
-            write!(file, ", ")?;
+            write!(stream, ", ")?;
         }
     }
-    writeln!(file, "]")?;
+    writeln!(stream, "]")?;
     Ok(())
 }
 
@@ -82,38 +82,38 @@ fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> Result<()> {
     Ok(())
 }
 
-fn pp_function(file: &mut impl Write, function: &tacky::Function) -> Result<()> {
+fn pp_function(stream: &mut impl Write, function: &tacky::Function) -> Result<()> {
     let global = if function.global { "global " } else { "" };
     let params = function.params.to_vec().join(", ");
-    writeln!(file, "{}function {}({}) {{ ", global, function.name, params)?;
+    writeln!(stream, "{}function {}({}) {{ ", global, function.name, params)?;
     for instruction in &function.body {
-        pp_instruction(file, instruction)?;
-        writeln!(file)?;
+        pp_instruction(stream, instruction)?;
+        writeln!(stream)?;
     }
-    writeln!(file, "}}")?;
+    writeln!(stream, "}}")?;
     Ok(())
 }
 
 pub(crate) fn pp_instruction(
-    file: &mut impl Write,
+    stream: &mut impl Write,
     instruction: &tacky::Instruction,
 ) -> Result<()> {
     let indent = "    ";
     match instruction {
         tacky::Instruction::Return(val) => {
-            write!(file, "{indent}return ")?;
+            write!(stream, "{indent}return ")?;
             if let Some(val) = val {
-                pp_val(file, val)?;
+                pp_val(stream, val)?;
             } else {
-                writeln!(file)?;
+                writeln!(stream)?;
             }
         }
         tacky::Instruction::Unary { op, src, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = ")?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = ")?;
             write!(
-                file,
+                stream,
                 "{} ",
                 match op {
                     tacky::UnaryOp::Complement => "~",
@@ -123,7 +123,7 @@ pub(crate) fn pp_instruction(
                     tacky::UnaryOp::Decrement => "dec",
                 }
             )?;
-            pp_val(file, src)?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::Binary {
             op,
@@ -131,12 +131,12 @@ pub(crate) fn pp_instruction(
             src2,
             dst,
         } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = ")?;
-            pp_val(file, src1)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = ")?;
+            pp_val(stream, src1)?;
             write!(
-                file,
+                stream,
                 " {} ",
                 match op {
                     tacky::BinaryOp::Add => "+",
@@ -157,107 +157,107 @@ pub(crate) fn pp_instruction(
                     tacky::BinaryOp::GreaterOrEqual => ">=",
                 }
             )?;
-            pp_val(file, src2)?;
+            pp_val(stream, src2)?;
         }
         tacky::Instruction::Copy { src, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = ")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = ")?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::Jump { target } => {
-            write!(file, "{indent}jump {target}")?;
+            write!(stream, "{indent}jump {target}")?;
         }
         tacky::Instruction::JumpIfZero { cond, target } => {
-            write!(file, "{indent}if !")?;
-            pp_val(file, cond)?;
-            write!(file, " jump {target}")?;
+            write!(stream, "{indent}if !")?;
+            pp_val(stream, cond)?;
+            write!(stream, " jump {target}")?;
         }
         tacky::Instruction::JumpIfNotZero { cond, target } => {
-            write!(file, "{indent}if ")?;
-            pp_val(file, cond)?;
-            write!(file, " jump {target}")?;
+            write!(stream, "{indent}if ")?;
+            pp_val(stream, cond)?;
+            write!(stream, " jump {target}")?;
         }
         tacky::Instruction::Label(name) => {
-            writeln!(file)?;
-            write!(file, "  {name}:")?;
+            writeln!(stream)?;
+            write!(stream, "  {name}:")?;
         }
         tacky::Instruction::FnCall { name, args, dst } => {
-            write!(file, "{indent}")?;
+            write!(stream, "{indent}")?;
             if let Some(dst) = dst {
-                pp_val(file, dst)?;
-                write!(file, " = ")?;
+                pp_val(stream, dst)?;
+                write!(stream, " = ")?;
             }
-            write!(file, "{name}(")?;
+            write!(stream, "{name}(")?;
             for (i, arg) in args.iter().enumerate() {
-                pp_val(file, arg)?;
+                pp_val(stream, arg)?;
                 if i != args.len() - 1 {
-                    write!(file, ", ")?;
+                    write!(stream, ", ")?;
                 }
             }
-            write!(file, ")")?;
+            write!(stream, ")")?;
         }
         tacky::Instruction::SignExtend { src, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = sign_extend ")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = sign_extend ")?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::Truncate { src, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = truncate ")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = truncate ")?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::ZeroExtend { src, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = zero_extend ")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = zero_extend ")?;
+            pp_val(stream, src)?;
         }
 
         tacky::Instruction::DoubleToInt { src, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = double_to_int ")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = double_to_int ")?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::DoubleToUInt { src, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = double_to_uint ")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = double_to_uint ")?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::IntToDouble { src, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = int_to_double ")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = int_to_double ")?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::UIntToDouble { src, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = uint_to_double ")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = uint_to_double ")?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::GetAddress { src, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = &")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = &")?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::Load { ptr, dst } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = *")?;
-            pp_val(file, ptr)?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = *")?;
+            pp_val(stream, ptr)?;
         }
         tacky::Instruction::Store { src, ptr } => {
-            write!(file, "{indent}")?;
-            write!(file, "*")?;
-            pp_val(file, ptr)?;
-            write!(file, " = ")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            write!(stream, "*")?;
+            pp_val(stream, ptr)?;
+            write!(stream, " = ")?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::AddPtr {
             ptr,
@@ -265,73 +265,73 @@ pub(crate) fn pp_instruction(
             scale,
             dst,
         } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = add_ptr(")?;
-            pp_val(file, ptr)?;
-            write!(file, ", index=")?;
-            pp_val(file, index)?;
-            write!(file, ", scale=")?;
-            write!(file, "{scale})")?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = add_ptr(")?;
+            pp_val(stream, ptr)?;
+            write!(stream, ", index=")?;
+            pp_val(stream, index)?;
+            write!(stream, ", scale=")?;
+            write!(stream, "{scale})")?;
         }
         tacky::Instruction::CopyToOffset { src, dst, offset } => {
-            write!(file, "{indent}")?;
-            write!(file, "{dst}[{offset}] = ")?;
-            pp_val(file, src)?;
+            write!(stream, "{indent}")?;
+            write!(stream, "{dst}[{offset}] = ")?;
+            pp_val(stream, src)?;
         }
         tacky::Instruction::CopyFromOffset { src, dst, offset } => {
-            write!(file, "{indent}")?;
-            pp_val(file, dst)?;
-            write!(file, " = {src}[{offset}]")?;
+            write!(stream, "{indent}")?;
+            pp_val(stream, dst)?;
+            write!(stream, " = {src}[{offset}]")?;
         }
     }
     Ok(())
 }
 
-fn pp_val(file: &mut impl Write, val: &tacky::Val) -> Result<()> {
+fn pp_val(stream: &mut impl Write, val: &tacky::Val) -> Result<()> {
     match val {
         tacky::Val::Constant(ast::Constant::Char(value)) => {
-            write!(file, "{:?}", (*value as u8) as char)?
+            write!(stream, "{:?}", (*value as u8) as char)?
         }
-        tacky::Val::Constant(ast::Constant::UChar(value)) => write!(file, "{value}UC")?,
-        tacky::Val::Constant(ast::Constant::Int(value)) => write!(file, "{value}")?,
-        tacky::Val::Constant(ast::Constant::Long(value)) => write!(file, "{value}L")?,
-        tacky::Val::Constant(ast::Constant::UInt(value)) => write!(file, "{value}U")?,
-        tacky::Val::Constant(ast::Constant::ULong(value)) => write!(file, "{value}UL")?,
-        tacky::Val::Constant(ast::Constant::Double(value)) => write!(file, "{value}D")?,
-        tacky::Val::Var(name) => write!(file, "{name}")?,
+        tacky::Val::Constant(ast::Constant::UChar(value)) => write!(stream, "{value}UC")?,
+        tacky::Val::Constant(ast::Constant::Int(value)) => write!(stream, "{value}")?,
+        tacky::Val::Constant(ast::Constant::Long(value)) => write!(stream, "{value}L")?,
+        tacky::Val::Constant(ast::Constant::UInt(value)) => write!(stream, "{value}U")?,
+        tacky::Val::Constant(ast::Constant::ULong(value)) => write!(stream, "{value}UL")?,
+        tacky::Val::Constant(ast::Constant::Double(value)) => write!(stream, "{value}D")?,
+        tacky::Val::Var(name) => write!(stream, "{name}")?,
     }
     Ok(())
 }
 
-fn pp_type(file: &mut impl Write, ty: &Type) -> Result<()> {
+fn pp_type(stream: &mut impl Write, ty: &Type) -> Result<()> {
     match ty {
-        Type::Char => write!(file, "Char"),
-        Type::SChar => write!(file, "Signed Char"),
-        Type::UChar => write!(file, "Unsigned Char"),
-        Type::Int => write!(file, "Int"),
-        Type::Long => write!(file, "Long"),
-        Type::UInt => write!(file, "Unsigned Int"),
-        Type::ULong => write!(file, "Unsigned Long"),
-        Type::Function(_) => write!(file, "Function(...)"),
-        Type::Double => write!(file, "Double"),
-        Type::Void => write!(file, "Void"),
+        Type::Char => write!(stream, "Char"),
+        Type::SChar => write!(stream, "Signed Char"),
+        Type::UChar => write!(stream, "Unsigned Char"),
+        Type::Int => write!(stream, "Int"),
+        Type::Long => write!(stream, "Long"),
+        Type::UInt => write!(stream, "Unsigned Int"),
+        Type::ULong => write!(stream, "Unsigned Long"),
+        Type::Function(_) => write!(stream, "Function(...)") ,
+        Type::Double => write!(stream, "Double"),
+        Type::Void => write!(stream, "Void"),
         Type::Pointer(referenced) => {
-            write!(file, "Pointer(")?;
-            pp_type(file, referenced.as_ref())?;
-            write!(file, ")")
+            write!(stream, "Pointer(")?;
+            pp_type(stream, referenced.as_ref())?;
+            write!(stream, ")")
         }
         Type::Array(inner, size) => {
-            write!(file, "Array(")?;
-            write!(file, "{size},")?;
-            pp_type(file, inner.as_ref())?;
-            write!(file, ")")
+            write!(stream, "Array(")?;
+            write!(stream, "{size},")?;
+            pp_type(stream, inner.as_ref())?;
+            write!(stream, ")")
         }
         Type::Struct(name) => {
-            write!(file, "Struct({name})")
+            write!(stream, "Struct({name})")
         }
         Type::Union(name) => {
-            write!(file, "Union({name})")
+            write!(stream, "Union({name})")
         }
     }?;
     Ok(())

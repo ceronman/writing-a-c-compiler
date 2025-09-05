@@ -3,7 +3,7 @@ use crate::ast::{
     FunctionDeclaration, Identifier, Initializer, NameAndFields, Node, NodeId, PostfixOp, Program,
     Statement, StorageClass, TypeSpec, UnaryOp, VarDeclaration,
 };
-use std::io::Write;
+use std::fmt::Write;
 
 struct PrettyAst {
     label: String,
@@ -379,18 +379,18 @@ impl PrettyAst {
 
     fn write(
         &self,
-        file: &mut impl Write,
+        stream: &mut impl Write,
         pipe: &str,
         level: usize,
         pipes: &[usize],
-    ) -> Result<(), std::io::Error> {
+    ) -> Result<(), std::fmt::Error> {
         let indent = Self::make_indent(level, pipes);
-        writeln!(file, "{indent}{pipe}{}", self.label)?;
+        writeln!(stream, "{indent}{pipe}{}", self.label)?;
         for (i, child) in self.children.iter().enumerate() {
             if i < self.children.len() - 1 {
-                child.write(file, "├── ", level + 1, &[pipes, &[level + 1]].concat())?;
+                child.write(stream, "├── ", level + 1, &[pipes, &[level + 1]].concat())?;
             } else {
-                child.write(file, "╰── ", level + 1, pipes)?;
+                child.write(stream, "╰── ", level + 1, pipes)?;
             }
         }
         Ok(())
@@ -469,8 +469,8 @@ impl PrettyAst {
     }
 }
 
-pub fn dump(program: &Program) -> Result<String, std::io::Error> {
-    let mut buffer = Vec::new();
+pub fn dump(program: &Program) -> Result<String, std::fmt::Error> {
+    let mut buffer = String::new();
     PrettyAst::from_program(program).write(&mut buffer, "", 0, &[])?;
-    Ok(String::from_utf8(buffer).unwrap().trim().into())
+    Ok(buffer.trim().to_string())
 }
