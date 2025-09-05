@@ -2,11 +2,8 @@ pub mod cfg;
 mod constant_folding;
 mod unreachable_code;
 
-use crate::optimization::cfg::Cfg;
 use crate::optimization::constant_folding::constant_fold;
-use crate::optimization::unreachable_code::{
-    remove_unreachable_blocks, remove_unreachable_code, remove_useless_jumps, remove_useless_labels,
-};
+use crate::optimization::unreachable_code::remove_unreachable_code;
 use crate::tacky;
 
 #[derive(Default)]
@@ -38,22 +35,4 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
         }
     }
     program
-}
-
-pub fn debug_cfg(program: tacky::Program) {
-    for program in program.top_level {
-        if let tacky::TopLevel::Function(f) = program {
-            let cfg = Cfg::new(&f.body);
-            println!("[{}] initial:\n {cfg:?}", f.name);
-
-            let cfg = remove_unreachable_blocks(cfg);
-            println!("[{}] unreachable blocks:\n {cfg:?}", f.name);
-
-            let cfg = remove_useless_jumps(cfg);
-            println!("[{}] useless jumps:\n {cfg:?}", f.name);
-
-            let cfg = remove_useless_labels(cfg);
-            println!("[{}] useless labels:\n {cfg:?}", f.name);
-        }
-    }
 }

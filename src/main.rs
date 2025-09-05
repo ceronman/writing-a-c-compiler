@@ -98,7 +98,6 @@ fn main() -> Result<()> {
     let tacky = optimization::optimize(tacky, &options.optimization);
     if let Flag::OptimizedTacky = options.flag {
         println!("{}", tacky::pretty::pp(&tacky)?);
-        optimization::debug_cfg(tacky);
         return Ok(());
     }
 
