@@ -6,8 +6,17 @@ use Instruction::{
     Truncate, UIntToDouble, Unary, ZeroExtend,
 };
 use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Neg, Not, Rem, Shl, Shr, Sub};
+use crate::ast::pretty::dump;
+use crate::tacky::pretty::pp_instruction;
 
-pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instruction> {
+pub fn constant_fold(old: &[Instruction], semantics: &SemanticData, trace: bool) -> Vec<Instruction> {
+    if trace {
+        println!("=======================");
+        println!("Constant Folding");
+        println!("=======================");
+        dump_instructions("INITIAL", old);
+    }
+
     let mut new = Vec::with_capacity(old.len());
 
     for instruction in old {
@@ -546,5 +555,18 @@ pub fn constant_fold(old: &[Instruction], semantics: &SemanticData) -> Vec<Instr
         }
     }
 
+    if trace {
+        dump_instructions("AFTER FOLD", old);
+    }
+
     new
+}
+
+fn dump_instructions(version: &str, instructions: &[Instruction]) {
+    println!("{version} instructions:");
+    for instruction in instructions {
+        let mut result = String::new();
+        pp_instruction(&mut result, instruction).unwrap();
+        println!(" {}", result.trim());
+    }
 }

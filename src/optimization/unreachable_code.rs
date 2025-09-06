@@ -2,12 +2,30 @@ use crate::optimization::cfg::{Cfg, GenericInstruction, InstructionKind, NodeId,
 use crate::tacky;
 use std::collections::{HashSet, VecDeque};
 
-pub fn remove_unreachable_code(instructions: &[tacky::Instruction]) -> Vec<tacky::Instruction> {
+pub fn remove_unreachable_code(instructions: &[tacky::Instruction], trace: bool) -> Vec<tacky::Instruction> {
     let mut cfg = Cfg::new(instructions);
+    if trace {
+        println!("=======================");
+        println!("Unreachable code");
+        println!("=======================");
+        println!("INITIAL\n {:#?}", cfg);
+    }
     cfg.remove_unreachable_blocks();
+    if trace {
+        println!("UNREACHABLE BLOCKS\n {:#?}", cfg);
+    }
     cfg.remove_useless_jumps();
+    if trace {
+        println!("USELESS JUMPS\n {:#?}", cfg);
+    }
     cfg.remove_useless_labels();
+    if trace {
+        println!("USELESS LABELS\n {:#?}", cfg);
+    }
     cfg.remove_empty_blocks();
+    if trace {
+        println!("EMPTY BLOCKS\n {:#?}", cfg);
+    }
     cfg.dump()
 }
 

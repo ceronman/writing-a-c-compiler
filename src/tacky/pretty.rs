@@ -82,7 +82,7 @@ fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> Result<()> {
     Ok(())
 }
 
-fn pp_function(stream: &mut impl Write, function: &tacky::Function) -> Result<()> {
+pub fn pp_function(stream: &mut impl Write, function: &tacky::Function) -> Result<()> {
     let global = if function.global { "global " } else { "" };
     let params = function.params.to_vec().join(", ");
     writeln!(stream, "{}function {}({}) {{ ", global, function.name, params)?;

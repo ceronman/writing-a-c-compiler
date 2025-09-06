@@ -165,6 +165,11 @@ fn parse_args() -> Options {
         args.remove(i);
     }
 
+    if let Some(i) = args.iter().position(|arg| arg == "--trace") {
+        optimization.trace = true;
+        args.remove(i);
+    }
+
     let args: Vec<_> = args.iter().map(|s| s.as_str()).collect();
 
     let (path, flag) = match args[..] {
