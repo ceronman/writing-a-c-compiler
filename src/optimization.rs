@@ -1,6 +1,7 @@
 pub mod cfg;
 mod constant_folding;
 mod unreachable_code;
+mod copy_propagation;
 
 use crate::optimization::constant_folding::constant_fold;
 use crate::optimization::unreachable_code::remove_unreachable_code;

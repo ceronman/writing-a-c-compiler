@@ -216,6 +216,29 @@ impl GenericInstruction for tacky::Instruction {
 }
 
 pub type TackyCfg = Cfg<tacky::Instruction>;
+pub type TackyNode = Node<tacky::Instruction>;
+
+pub struct Annotation<T> {
+    block: HashMap<NodeId, T>,
+    instructions: HashMap<(NodeId, usize), T>,
+}
+
+impl<T> Annotation<T> {
+    pub fn new() -> Self {
+        Self {
+            block: HashMap::new(),
+            instructions: HashMap::new(),
+        }
+    }
+
+    pub fn annotate_block(&mut self, node_id: NodeId, value: T ) {
+        self.block.insert(node_id, value);
+    }
+
+    pub fn annotate_instruction(&mut self, node_id: NodeId, instruction_index: usize, value: T) {
+        self.instructions.insert((node_id, instruction_index), value);
+    }
+}
 
 impl Debug for TackyCfg {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
