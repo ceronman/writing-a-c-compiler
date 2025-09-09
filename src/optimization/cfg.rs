@@ -238,6 +238,10 @@ impl<T> Annotation<T> {
     pub fn annotate_instruction(&mut self, node_id: NodeId, instruction_index: usize, value: T) {
         self.instructions.insert((node_id, instruction_index), value);
     }
+
+    pub fn get_block(&self, node_id: &NodeId) -> &T {
+        self.block.get(node_id).expect("Block not annotated")
+    }
 }
 
 impl Debug for TackyCfg {

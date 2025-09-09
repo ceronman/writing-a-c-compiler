@@ -1,5 +1,6 @@
 pub mod pretty;
 
+use std::hash::{Hash, Hasher};
 use crate::lexer::Span;
 use crate::symbol::Symbol;
 use std::ops::{Deref, DerefMut};
@@ -149,7 +150,7 @@ impl Expression {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub enum Constant {
     Int(i32),
     UInt(u32),
@@ -158,6 +159,20 @@ pub enum Constant {
     Double(f64),
     Char(i8),
     UChar(u8),
+}
+
+impl Hash for Constant {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.as_u64().hash(state);
+    }
+}
+
+impl Eq for Constant {}
+
+impl PartialEq for Constant {
+    fn eq(&self, other: &Constant) -> bool {
+        self.as_u64() == other.as_u64()
+    }
 }
 
 #[derive(Debug)]

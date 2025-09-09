@@ -1,16 +1,61 @@
-use crate::optimization::cfg::{Annotation, TackyNode};
+use std::collections::HashSet;
+use crate::optimization::cfg::{Annotation, TackyCfg, TackyNode};
 use crate::semantic::{Attributes, SemanticData};
 use crate::tacky::{Instruction, Val};
 
-// TODO: maybe use set instead?
-type ReachingCopies = Vec<Instruction>;
+#[derive(Clone)]
+struct Copies(HashSet<Instruction>);
 
-type ReachingCopiesAnnotations = Annotation<ReachingCopies>;
+impl Copies {
+    fn empty() -> Self {
+        Self(HashSet::new())
+    }
+
+    fn intersect(&mut self, other: &Self) {
+        self.0.retain(|copy| other.contains(copy));
+    }
+
+    fn remove_if(&mut self, condition: impl Fn(&Val, &Val) -> bool) {
+        self.0.retain(|copy| {
+            let Instruction::Copy { src, dst } = copy
+            else {
+                panic!("Expected copy instruction")
+            };
+            !condition(src, dst)
+        });
+    }
+
+    fn contains(&self, instruction: &Instruction) -> bool {
+        self.0.contains(instruction)
+    }
+}
+
+type ReachingCopies = Annotation<Copies>;
+
+fn meet_operator(
+    annotations: &mut ReachingCopies,
+    cfg: &TackyCfg,
+    node: &TackyNode,
+    all_copies: Copies,
+) -> Copies {
+    let mut incoming_copies = all_copies.clone();
+    for pred_id in &node.predecessors {
+        if pred_id == &cfg.entry_id() {
+            return Copies::empty()
+        }
+        if pred_id == &cfg.exit_id() {
+            panic!("Malformed cfg")
+        }
+        let pred_copies = annotations.get_block(pred_id);
+        incoming_copies.intersect(pred_copies);
+    }
+    incoming_copies
+}
 
 fn transfer_function(
-    annotations: &mut ReachingCopiesAnnotations,
+    annotations: &mut ReachingCopies,
     node: &TackyNode,
-    initial_reaching_copies: Vec<Instruction>,
+    initial_reaching_copies: Copies,
     semantics: &SemanticData,
 ) {
     let mut current_reaching_copies = initial_reaching_copies.clone();
@@ -22,12 +67,12 @@ fn transfer_function(
                     continue;
                 }
 
-                remove_if(&mut current_reaching_copies, |current_src, current_dst|{
+                current_reaching_copies.remove_if(|current_src, current_dst| {
                     current_src == dst || current_dst == dst
                 });
             }
             Instruction::FnCall { dst: Some(dst), .. } => {
-                remove_if(&mut current_reaching_copies, |current_src, current_dst|{
+                current_reaching_copies.remove_if(|current_src, current_dst| {
                     current_dst.is_static(semantics)
                         || current_src.is_static(semantics)
                         || current_src == dst
@@ -37,7 +82,7 @@ fn transfer_function(
 
             Instruction::Binary { dst, .. }
             | Instruction::Unary { dst, .. } => {
-                remove_if(&mut current_reaching_copies, |current_src, current_dst|{
+                current_reaching_copies.remove_if(|current_src, current_dst| {
                     current_src == dst || current_dst == dst
                 });
             }
@@ -45,16 +90,6 @@ fn transfer_function(
         }
     }
     annotations.annotate_block(node.id, current_reaching_copies);
-}
-
-fn remove_if(copies: &mut ReachingCopies, condition: impl Fn(&Val, &Val) -> bool) {
-    copies.retain(|copy| {
-        let Instruction::Copy { src, dst } = copy
-        else {
-            panic!("Expected copy instruction")
-        };
-        !condition(src, dst)
-    });
 }
 
 impl Val {

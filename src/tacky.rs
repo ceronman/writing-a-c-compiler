@@ -3,6 +3,7 @@ pub mod pretty;
 #[cfg(test)]
 mod test;
 
+use std::hash::{Hash, Hasher};
 use crate::ast;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData, Type};
 use crate::symbol::Symbol;
@@ -43,7 +44,7 @@ pub struct StaticConstant {
     pub init: StaticInit,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Instruction {
     Return(Option<Val>),
     Unary {
@@ -138,13 +139,13 @@ pub enum Instruction {
 
 pub type Constant = ast::Constant;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Val {
     Constant(Constant),
     Var(Symbol),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum UnaryOp {
     Complement,
     Negate,
@@ -153,7 +154,7 @@ pub enum UnaryOp {
     Decrement,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum BinaryOp {
     Add,
     Subtract,
