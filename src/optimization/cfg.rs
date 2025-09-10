@@ -150,6 +150,14 @@ impl<T: GenericInstruction> Cfg<T> {
             .filter(|id| !self.removed.contains(id))
     }
 
+    pub fn nodes_mut(&mut self) -> impl Iterator<Item=&mut Node<T>> {
+        self.nodes
+            .iter_mut()
+            .enumerate()
+            .filter(|(id, _)| !self.removed.contains(&NodeId(*id)))
+            .map(|(_, node)| node)
+    }
+
     pub fn entry_id(&self) -> NodeId {
         self.entry_id
     }
@@ -239,8 +247,14 @@ impl<T> Annotation<T> {
         self.instructions.insert((node_id, instruction_index), value);
     }
 
-    pub fn get_block(&self, node_id: &NodeId) -> &T {
+    pub fn get_block_annotation(&self, node_id: &NodeId) -> &T {
         self.block.get(node_id).expect("Block not annotated")
+    }
+
+    pub fn get_instruction_annotation(&self, node_id: NodeId, instruction_index: usize) -> &T {
+        self.instructions
+            .get(&(node_id, instruction_index))
+            .expect("Instruction not annotated")
     }
 }
 
