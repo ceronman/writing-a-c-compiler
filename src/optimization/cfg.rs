@@ -18,7 +18,7 @@ pub enum InstructionKind {
     Other,
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Hash, Default, Ord, PartialOrd)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Default, Ord, PartialOrd)]
 pub struct NodeId(usize);
 
 impl NodeId {
@@ -226,6 +226,7 @@ impl GenericInstruction for tacky::Instruction {
 pub type TackyCfg = Cfg<tacky::Instruction>;
 pub type TackyNode = Node<tacky::Instruction>;
 
+#[derive(Debug)]
 pub struct Annotation<T> {
     block: HashMap<NodeId, T>,
     instructions: HashMap<(NodeId, usize), T>,

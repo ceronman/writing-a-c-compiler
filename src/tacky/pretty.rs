@@ -88,7 +88,6 @@ pub fn pp_function(stream: &mut impl Write, function: &tacky::Function) -> Resul
     writeln!(stream, "{}function {}({}) {{ ", global, function.name, params)?;
     for instruction in &function.body {
         pp_instruction(stream, instruction)?;
-        writeln!(stream)?;
     }
     writeln!(stream, "}}")?;
     Ok(())
@@ -285,6 +284,7 @@ pub(crate) fn pp_instruction(
             write!(stream, " = {src}[{offset}]")?;
         }
     }
+    writeln!(stream)?;
     Ok(())
 }
 

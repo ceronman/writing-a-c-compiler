@@ -4,6 +4,7 @@ mod unreachable_code;
 mod copy_propagation;
 
 use crate::optimization::constant_folding::constant_fold;
+use crate::optimization::copy_propagation::copy_propagation;
 use crate::optimization::unreachable_code::remove_unreachable_code;
 use crate::tacky;
 
@@ -23,15 +24,19 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
             loop {
                 if flags.trace {
                     println!();
-                    println!("OPTIMIZATION ITERATION");
+                    println!(">>>> OPTIMIZATION ITERATION <<<<");
                     println!();
                 }
                 let mut optimized = f.body.clone();
                 if flags.fold_constants || flags.optimize {
-                    optimized = constant_fold(&optimized, &program.semantics, flags.trace);
+                    optimized = constant_fold(&optimized, &program.semantics, false);
                 }
+                // TODO: pass same cfg to all passes
                 if flags.eliminate_unreachable_code || flags.optimize {
-                    optimized = remove_unreachable_code(&optimized, flags.trace);
+                    optimized = remove_unreachable_code(&optimized, false);
+                }
+                if flags.propagate_copies || flags.optimize {
+                    optimized = copy_propagation(&optimized, &program.semantics, flags.trace);
                 }
 
                 if optimized == f.body {

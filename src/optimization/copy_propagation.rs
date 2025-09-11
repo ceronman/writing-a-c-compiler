@@ -4,7 +4,31 @@ use crate::semantic::{Attributes, SemanticData};
 use crate::tacky;
 use crate::tacky::{Instruction, Val};
 
-#[derive(Clone, PartialEq, Eq)]
+pub fn copy_propagation(instructions: &[tacky::Instruction], semantics: &SemanticData, trace: bool) -> Vec<Instruction> {
+    let mut cfg = Cfg::new(instructions);
+    if trace {
+        println!("=======================");
+        println!("Copy propagation");
+        println!("=======================");
+        println!("INITIAL\n {cfg:#?}");
+    }
+
+    let annotations= find_reaching_copies(&cfg, semantics);
+
+    if trace {
+        println!("Reaching copies:\n {annotations:?}");
+    }
+
+    rewrite_instructions(&mut cfg, &annotations);
+
+    if trace {
+        println!("Instructions Rewritten:\n {cfg:#?}");
+    }
+
+    cfg.dump()
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct Copies(HashSet<Instruction>);
 
 impl Copies {
@@ -29,6 +53,10 @@ impl Copies {
         self.0.retain(|copy| other.contains(copy));
     }
 
+    fn add(&mut self, instruction: Instruction) {
+        self.0.insert(instruction);
+    }
+
     fn remove_if(&mut self, condition: impl Fn(&Val, &Val) -> bool) {
         self.0.retain(|copy| {
             let Instruction::Copy { src, dst } = copy
@@ -46,10 +74,8 @@ impl Copies {
 
 type ReachingCopies = Annotation<Copies>;
 
-// TODO: Take Cfg instead?
-pub fn find_reaching_copies(instructions: &[tacky::Instruction], semantics: &SemanticData, trace: bool) {
-    let mut cfg = Cfg::new(instructions);
-    let all_copies = Copies::from_cfg(&cfg);
+fn find_reaching_copies(cfg: &TackyCfg, semantics: &SemanticData) -> ReachingCopies {
+    let all_copies = Copies::from_cfg(cfg);
     let mut annotations = ReachingCopies::new();
 
     let mut worklist = VecDeque::new();
@@ -77,26 +103,61 @@ pub fn find_reaching_copies(instructions: &[tacky::Instruction], semantics: &Sem
             }
         }
     }
+
+    annotations
 }
 
 fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &ReachingCopies) {
-    for node_id in cfg.all_ids() {
-        let node = cfg.get_node(node_id);
+    for node in cfg.nodes_mut() {
         let mut new_instructions = Vec::new();
         for (i, instruction) in node.instructions.iter().enumerate() {
             let reaching_copies = annotations.get_instruction_annotation(node.id, i);
             let mut new_instruction = instruction.clone();
             match &mut new_instruction {
-                Instruction::Copy { src, dst } => {
-                    if reaching_copies.contains(instruction) {
-                        continue; // Do not add instruction to new instructions
+                Instruction::Copy { src, dst} => {
+
+                    // TODO: Ugly code
+                    let mut delete = false;
+                    for copy in &reaching_copies.0 /*TODO: .0*/ {
+                        if copy == instruction {
+                            delete = true;
+                            break;
+                        }
+                        if let Instruction::Copy { src: copy_src, dst: copy_dst } = copy
+                         && copy_src == dst && copy_dst == src {
+                            delete = true;
+                            break;
+                        }
+                    }
+                    if delete {
+                        continue;
                     }
                     *src = replace_operand(src.clone(), reaching_copies);
-                    new_instructions.push(new_instruction);
                 }
-                _ => todo!()
+                Instruction::Unary { src, ..} => {
+                    *src = replace_operand(src.clone(), reaching_copies);
+                }
+                Instruction::Binary { src1, src2, ..} => {
+                    *src1 = replace_operand(src1.clone(), reaching_copies);
+                    *src2 = replace_operand(src2.clone(), reaching_copies);
+                }
+                Instruction::Return(Some(val)) => {
+                    *val = replace_operand(val.clone(), reaching_copies);
+                }
+                Instruction::FnCall { args, .. } => {
+                    for arg in args {
+                        *arg = replace_operand(arg.clone(), reaching_copies);
+                    }
+                }
+                Instruction::JumpIfZero { cond, .. }
+                | Instruction::JumpIfNotZero { cond, .. }=> {
+                    *cond = replace_operand(cond.clone(), reaching_copies);
+                }
+                _ => {}
             }
+            new_instructions.push(new_instruction);
         }
+        node.instructions = new_instructions;
     }
 }
 
@@ -151,6 +212,8 @@ fn transfer_function(
                 current_reaching_copies.remove_if(|current_src, current_dst| {
                     current_src == dst || current_dst == dst
                 });
+
+                current_reaching_copies.add(instruction.clone())
             }
             Instruction::FnCall { dst: Some(dst), .. } => {
                 current_reaching_copies.remove_if(|current_src, current_dst| {
