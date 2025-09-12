@@ -6,7 +6,10 @@ mod copy_propagation;
 use crate::optimization::constant_folding::constant_fold;
 use crate::optimization::copy_propagation::copy_propagation;
 use crate::optimization::unreachable_code::remove_unreachable_code;
+use crate::semantic::{Attributes, SemanticData};
 use crate::tacky;
+use crate::tacky::{Instruction, Val};
+use std::collections::HashSet;
 
 #[derive(Default)]
 pub struct OptimizationFlags {
@@ -28,6 +31,7 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
                     println!();
                 }
                 let mut optimized = f.body.clone();
+                let aliased_vars = address_taken_analysis(&optimized, &program.semantics);
                 if flags.fold_constants || flags.optimize {
                     optimized = constant_fold(&optimized, &program.semantics, false);
                 }
@@ -36,7 +40,7 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
                     optimized = remove_unreachable_code(&optimized, false);
                 }
                 if flags.propagate_copies || flags.optimize {
-                    optimized = copy_propagation(&optimized, &program.semantics, flags.trace);
+                    optimized = copy_propagation(&optimized, &aliased_vars, flags.trace);
                 }
 
                 if optimized == f.body {
@@ -47,4 +51,19 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
         }
     }
     program
+}
+
+fn address_taken_analysis(instructions: &[tacky::Instruction], semantics: &SemanticData) -> HashSet<Val> {
+    let mut result = HashSet::new();
+    for (name, data) in semantics.symbols.iter() {
+        if let Attributes::Static { .. } = data.attrs {
+            result.insert(Val::Var(name.clone()));
+        }
+    }
+    for instruction in instructions {
+        if let Instruction::GetAddress { src, .. } = instruction {
+            result.insert(src.clone());
+        }
+    }
+    result
 }

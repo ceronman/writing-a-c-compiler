@@ -4,7 +4,7 @@ use crate::semantic::{Attributes, SemanticData};
 use crate::tacky;
 use crate::tacky::{Instruction, Val};
 
-pub fn copy_propagation(instructions: &[tacky::Instruction], semantics: &SemanticData, trace: bool) -> Vec<Instruction> {
+pub fn copy_propagation(instructions: &[tacky::Instruction], aliased_vars: &HashSet<Val>, trace: bool) -> Vec<Instruction> {
     let mut cfg = Cfg::new(instructions);
     if trace {
         println!("=======================");
@@ -13,7 +13,7 @@ pub fn copy_propagation(instructions: &[tacky::Instruction], semantics: &Semanti
         println!("INITIAL\n {cfg:#?}");
     }
 
-    let annotations= find_reaching_copies(&cfg, semantics);
+    let annotations= find_reaching_copies(&cfg, aliased_vars);
 
     if trace {
         println!("Reaching copies:\n {annotations:?}");
@@ -74,7 +74,7 @@ impl Copies {
 
 type ReachingCopies = Annotation<Copies>;
 
-fn find_reaching_copies(cfg: &TackyCfg, semantics: &SemanticData) -> ReachingCopies {
+fn find_reaching_copies(cfg: &TackyCfg, aliased_vars: &HashSet<Val>) -> ReachingCopies {
     let all_copies = Copies::from_cfg(cfg);
     let mut annotations = ReachingCopies::new();
 
@@ -91,7 +91,7 @@ fn find_reaching_copies(cfg: &TackyCfg, semantics: &SemanticData) -> ReachingCop
         let old_copies = &annotations.get_block_annotation(&node_id).clone();
         let node = cfg.get_node(node_id);
         let incoming_copies = meet_operator(&mut annotations, &cfg, node, &all_copies);
-        transfer_function(&mut annotations, node, &incoming_copies, semantics);
+        transfer_function(&mut annotations, node, &incoming_copies, aliased_vars);
         if old_copies != annotations.get_block_annotation(&node_id) {
             for succ_id in &node.successors {
                 if succ_id == &cfg.exit_id() {
@@ -198,7 +198,7 @@ fn transfer_function(
     annotations: &mut ReachingCopies,
     node: &TackyNode,
     initial_reaching_copies: &Copies,
-    semantics: &SemanticData,
+    aliased_vars: &HashSet<Val>
 ) {
     let mut current_reaching_copies = initial_reaching_copies.clone();
     for (i, instruction) in node.instructions.iter().enumerate() {
@@ -217,8 +217,8 @@ fn transfer_function(
             }
             Instruction::FnCall { dst: Some(dst), .. } => {
                 current_reaching_copies.remove_if(|current_src, current_dst| {
-                    current_dst.is_static(semantics)
-                        || current_src.is_static(semantics)
+                    aliased_vars.contains(&current_src)
+                        || aliased_vars.contains(&current_dst)
                         || current_src == dst
                         || current_dst == dst
                 });
