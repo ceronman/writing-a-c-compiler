@@ -11,6 +11,7 @@ use crate::semantic::{AggregateType, Attributes, SemanticData, StaticInit, Type,
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
+use crate::semantic::Attributes::Const;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
 const SSE_ARG_REGISTERS: [Reg; 8] = [
@@ -837,27 +838,36 @@ impl Compiler {
                         self.generate_val(ptr),
                         Reg::Ax.into(),
                     ));
-                    instructions.push(Instruction::Mov(
-                        AsmType::Quadword,
-                        self.generate_val(index),
-                        Reg::Dx.into(),
-                    ));
-                    let indexing_scale = match *scale {
-                        1 | 2 | 4 | 8 => *scale as u8,
-                        _ => {
-                            instructions.push(Instruction::Binary(
-                                AsmType::Quadword,
-                                BinaryOp::Mul,
-                                Operand::Imm(*scale as i64),
-                                Reg::Dx.into(),
-                            ));
-                            1
-                        }
-                    };
-                    instructions.push(Instruction::Lea(
-                        Operand::Indexed(Reg::Ax, Reg::Dx, indexing_scale),
-                        self.generate_val(dst),
-                    ));
+                    if let tacky::Val::Constant(c) = index
+                        && c.is_int() {
+                        let index = c.as_u64() as i64;
+                        instructions.push(Instruction::Lea(
+                            Operand::Memory(Reg::Ax, index * (*scale as i64)),
+                            self.generate_val(dst),
+                        ));
+                    } else {
+                        instructions.push(Instruction::Mov(
+                            AsmType::Quadword,
+                            self.generate_val(index),
+                            Reg::Dx.into(),
+                        ));
+                        let indexing_scale = match *scale {
+                            1 | 2 | 4 | 8 => *scale as u8,
+                            _ => {
+                                instructions.push(Instruction::Binary(
+                                    AsmType::Quadword,
+                                    BinaryOp::Mul,
+                                    Operand::Imm(*scale as i64),
+                                    Reg::Dx.into(),
+                                ));
+                                1
+                            }
+                        };
+                        instructions.push(Instruction::Lea(
+                            Operand::Indexed(Reg::Ax, Reg::Dx, indexing_scale),
+                            self.generate_val(dst),
+                        ));
+                    }
                 }
                 tacky::Instruction::CopyToOffset { src, dst, offset } => {
                     let src_ty = self.semantics.val_asm_ty(src);

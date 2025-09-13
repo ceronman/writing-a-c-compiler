@@ -355,7 +355,7 @@ impl Constant {
             Constant::UInt(v) => *v as u64,
             Constant::Long(v) => *v as u64,
             Constant::ULong(v) => *v,
-            Constant::Double(v) => *v as u64,
+            Constant::Double(v) => (*v).to_bits(),
         }
     }
 
@@ -367,7 +367,7 @@ impl Constant {
             Constant::UInt(v) => *v == 0,
             Constant::Long(v) => *v == 0,
             Constant::ULong(v) => *v == 0,
-            Constant::Double(v) => *v == 0.0 || *v == -0.0,
+            Constant::Double(v) => *v == 0.0,
         }
     }
 }

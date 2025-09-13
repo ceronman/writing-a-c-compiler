@@ -144,7 +144,6 @@ fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &ReachingCopies) {
                 | Instruction::UIntToDouble { src, .. }
                 | Instruction::Load { ptr: src, .. }
                 | Instruction::Store { src, ..}
-                | Instruction::AddPtr { ptr: src, ..}
                 | Instruction::CopyToOffset { src, .. } => {
                     *src = replace_operand(src.clone(), reaching_copies);
                 }
@@ -163,6 +162,10 @@ fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &ReachingCopies) {
                 Instruction::JumpIfZero { cond, .. }
                 | Instruction::JumpIfNotZero { cond, .. }=> {
                     *cond = replace_operand(cond.clone(), reaching_copies);
+                }
+                Instruction::AddPtr { ptr, index, scale, dst } => {
+                    *ptr = replace_operand(ptr.clone(), reaching_copies);
+                    *index = replace_operand(index.clone(), reaching_copies);
                 }
                 Instruction::CopyFromOffset { src, dst, offset } => {
                     let replaced_src = replace_operand(Val::Var(src.clone()), reaching_copies);
@@ -234,7 +237,7 @@ fn transfer_function(
                 let src_ty = semantics.val_ty(src);
                 let dst_ty = semantics.val_ty(dst);
 
-                if src_ty == dst_ty || src_ty.is_signed() == src_ty.is_signed() {
+                if src_ty == dst_ty || src_ty.is_signed() == dst_ty.is_signed() {
                     current_reaching_copies.add(instruction.clone())
                 }
             }
@@ -278,4 +281,21 @@ fn transfer_function(
         }
     }
     annotations.annotate_block(node.id, current_reaching_copies);
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ast::Constant;
+    use super::*;
+    use crate::tacky::Instruction;
+    use crate::tacky::Val;
+
+    #[test]
+    fn test_contains() {
+        let mut copies = Copies::empty();
+        copies.add(Instruction::Copy { src: Val::Constant(Constant::Double(0.0)), dst: Val::Var("foo".to_string()) });
+        assert!(copies.contains(&Instruction::Copy { src: Val::Constant(Constant::Double(-0.0)), dst: Val::Var("foo".to_string()) }));
+        println!("{} {}", (0.0f64).to_bits(), (-0.0f64).to_bits());
+        assert_eq!(Constant::Double(0.0), Constant::Double(-0.0));
+    }
 }
