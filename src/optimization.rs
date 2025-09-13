@@ -40,7 +40,7 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
                     optimized = remove_unreachable_code(&optimized, false);
                 }
                 if flags.propagate_copies || flags.optimize {
-                    optimized = copy_propagation(&optimized, &aliased_vars, flags.trace);
+                    optimized = copy_propagation(&optimized, &aliased_vars, &program.semantics, flags.trace);
                 }
 
                 if optimized == f.body {

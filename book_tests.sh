@@ -8,8 +8,7 @@ set -euxo pipefail
     --verbose \
     --chapter 19 \
     --propagate-copies \
-    --int-only \
-    --failfast \
+    --latest-only \
     --bitwise \
     --compound \
     --increment \

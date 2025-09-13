@@ -4,7 +4,7 @@ use crate::semantic::{Attributes, SemanticData};
 use crate::tacky;
 use crate::tacky::{Instruction, Val};
 
-pub fn copy_propagation(instructions: &[tacky::Instruction], aliased_vars: &HashSet<Val>, trace: bool) -> Vec<Instruction> {
+pub fn copy_propagation(instructions: &[tacky::Instruction], aliased_vars: &HashSet<Val>, semantics: &SemanticData, trace: bool) -> Vec<Instruction> {
     let mut cfg = Cfg::new(instructions);
     if trace {
         println!("=======================");
@@ -13,7 +13,7 @@ pub fn copy_propagation(instructions: &[tacky::Instruction], aliased_vars: &Hash
         println!("INITIAL\n {cfg:#?}");
     }
 
-    let annotations= find_reaching_copies(&cfg, aliased_vars);
+    let annotations= find_reaching_copies(&cfg, aliased_vars, semantics);
 
     if trace {
         println!("Reaching copies:\n {annotations:?}");
@@ -74,7 +74,7 @@ impl Copies {
 
 type ReachingCopies = Annotation<Copies>;
 
-fn find_reaching_copies(cfg: &TackyCfg, aliased_vars: &HashSet<Val>) -> ReachingCopies {
+fn find_reaching_copies(cfg: &TackyCfg, aliased_vars: &HashSet<Val>, semantics: &SemanticData) -> ReachingCopies {
     let all_copies = Copies::from_cfg(cfg);
     let mut annotations = ReachingCopies::new();
 
@@ -91,7 +91,7 @@ fn find_reaching_copies(cfg: &TackyCfg, aliased_vars: &HashSet<Val>) -> Reaching
         let old_copies = &annotations.get_block_annotation(&node_id).clone();
         let node = cfg.get_node(node_id);
         let incoming_copies = meet_operator(&mut annotations, &cfg, node, &all_copies);
-        transfer_function(&mut annotations, node, &incoming_copies, aliased_vars);
+        transfer_function(&mut annotations, node, &incoming_copies, aliased_vars, semantics);
         if old_copies != annotations.get_block_annotation(&node_id) {
             for succ_id in &node.successors {
                 if succ_id == &cfg.exit_id() {
@@ -134,7 +134,18 @@ fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &ReachingCopies) {
                     }
                     *src = replace_operand(src.clone(), reaching_copies);
                 }
-                Instruction::Unary { src, ..} => {
+                Instruction::Unary { src, ..}
+                | Instruction::SignExtend { src, .. }
+                | Instruction::Truncate { src, .. }
+                | Instruction::ZeroExtend { src, .. }
+                | Instruction::DoubleToInt { src, .. }
+                | Instruction::DoubleToUInt { src, .. }
+                | Instruction::IntToDouble { src, .. }
+                | Instruction::UIntToDouble { src, .. }
+                | Instruction::Load { ptr: src, .. }
+                | Instruction::Store { src, ..}
+                | Instruction::AddPtr { ptr: src, ..}
+                | Instruction::CopyToOffset { src, .. } => {
                     *src = replace_operand(src.clone(), reaching_copies);
                 }
                 Instruction::Binary { src1, src2, ..} => {
@@ -152,6 +163,12 @@ fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &ReachingCopies) {
                 Instruction::JumpIfZero { cond, .. }
                 | Instruction::JumpIfNotZero { cond, .. }=> {
                     *cond = replace_operand(cond.clone(), reaching_copies);
+                }
+                Instruction::CopyFromOffset { src, dst, offset } => {
+                    let replaced_src = replace_operand(Val::Var(src.clone()), reaching_copies);
+                    if let Val::Var(symbol ) = replaced_src {
+                        *src = symbol
+                    }
                 }
                 _ => {}
             }
@@ -198,7 +215,8 @@ fn transfer_function(
     annotations: &mut ReachingCopies,
     node: &TackyNode,
     initial_reaching_copies: &Copies,
-    aliased_vars: &HashSet<Val>
+    aliased_vars: &HashSet<Val>,
+    semantics: &SemanticData
 ) {
     let mut current_reaching_copies = initial_reaching_copies.clone();
     for (i, instruction) in node.instructions.iter().enumerate() {
@@ -213,40 +231,51 @@ fn transfer_function(
                     current_src == dst || current_dst == dst
                 });
 
-                current_reaching_copies.add(instruction.clone())
+                let src_ty = semantics.val_ty(src);
+                let dst_ty = semantics.val_ty(dst);
+
+                if src_ty == dst_ty || src_ty.is_signed() == src_ty.is_signed() {
+                    current_reaching_copies.add(instruction.clone())
+                }
             }
-            Instruction::FnCall { dst: Some(dst), .. } => {
+            Instruction::FnCall { dst, .. } => {
                 current_reaching_copies.remove_if(|current_src, current_dst| {
                     aliased_vars.contains(&current_src)
                         || aliased_vars.contains(&current_dst)
-                        || current_src == dst
-                        || current_dst == dst
+                        || Some(current_src) == dst.as_ref()
+                        || Some(current_dst) == dst.as_ref()
                 });
             }
-
+            Instruction::Store { .. } => {
+                current_reaching_copies.remove_if(|current_src, current_dst| {
+                    aliased_vars.contains(current_src) || aliased_vars.contains(current_dst)
+                });
+            }
             Instruction::Binary { dst, .. }
-            | Instruction::Unary { dst, .. } => {
+            | Instruction::Unary { dst, .. }
+            | Instruction::SignExtend { dst , ..}
+            | Instruction::Truncate { dst, .. }
+            | Instruction::ZeroExtend { dst, .. }
+            | Instruction::DoubleToInt { dst, .. }
+            | Instruction::DoubleToUInt { dst, .. }
+            | Instruction::IntToDouble { dst, .. }
+            | Instruction::UIntToDouble { dst, .. }
+            | Instruction::GetAddress { dst, .. }
+            | Instruction::Load { dst, .. }
+            | Instruction::AddPtr { dst, .. }
+            | Instruction::CopyFromOffset { dst, .. } => {
                 current_reaching_copies.remove_if(|current_src, current_dst| {
                     current_src == dst || current_dst == dst
                 });
             }
-            _ => continue,
+            Instruction::CopyToOffset { dst, .. } => {
+                current_reaching_copies.remove_if(|current_src, current_dst| {
+                    let dst = &Val::Var(dst.clone());
+                    current_src == dst || current_dst == dst
+                });
+            }
+            _ => {}
         }
     }
     annotations.annotate_block(node.id, current_reaching_copies);
-}
-
-impl Val {
-    fn is_static(&self, semantics: &SemanticData) -> bool {
-        match self {
-            Val::Constant(_) => false,
-            Val::Var(name) => {
-                let symbol_data = semantics
-                    .symbols
-                    .get(name)
-                    .expect("Variable without symbol data");
-                matches!(symbol_data.attrs, Attributes::Static { .. })
-            }
-        }
-    }
 }
