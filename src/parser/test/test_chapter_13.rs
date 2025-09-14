@@ -290,7 +290,7 @@ fn test_invalid_types_extra_credit_compound_mod() {
                     │   │   ╰── Double
                     │   ╰── Initializer
                     │       ╰── <9> Constant Double [+5e0]
-                    ├── <16> Assign [&=]
+                    ├── <16> Assign [%=]
                     │   ├── <13> Var [d]
                     │   ╰── <15> Constant Int [2]
                     ╰── Return
@@ -324,7 +324,7 @@ fn test_invalid_types_extra_credit_compound_mod_2() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <9> Constant Int [5]
-                    ├── <16> Assign [&=]
+                    ├── <16> Assign [%=]
                     │   ├── <13> Var [i]
                     │   ╰── <15> Constant Double [+1e0]
                     ╰── Return

@@ -2,7 +2,10 @@ use crate::optimization::cfg::{Cfg, GenericInstruction, InstructionKind, NodeId,
 use crate::tacky;
 use std::collections::{HashSet, VecDeque};
 
-pub fn remove_unreachable_code(instructions: &[tacky::Instruction], trace: bool) -> Vec<tacky::Instruction> {
+pub fn remove_unreachable_code(
+    instructions: &[tacky::Instruction],
+    trace: bool,
+) -> Vec<tacky::Instruction> {
     let mut cfg = Cfg::new(instructions);
     if trace {
         println!("=======================");
@@ -52,7 +55,7 @@ impl TackyCfg {
 
             if let Some(last_instruction) = node.instructions.last().map(|i| i.kind())
                 && let InstructionKind::Jump { .. } | InstructionKind::ConditionalJump { .. } =
-                last_instruction
+                    last_instruction
                 && let Some(next_node_id) = ids.peek()
                 && node.successors.iter().all(|s| s == next_node_id)
             {

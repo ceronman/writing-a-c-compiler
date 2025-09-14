@@ -447,14 +447,15 @@ fn test_valid_comparisons_compare_pointers() {
           end_if_6:
             tmp.9 = *a_ptr.2
             *b_ptr.4 = tmp.9
-            tmp.10 = a_ptr.2 == b_ptr.4
-            if !tmp.10 jump end_if_8
+            tmp.10 = *b_ptr.4
+            tmp.11 = a_ptr.2 == b_ptr.4
+            if !tmp.11 jump end_if_8
             return 5
         
           end_if_8:
             b_ptr.4 = a_ptr.2
-            tmp.11 = b_ptr.4 != a_ptr.2
-            if !tmp.11 jump end_if_10
+            tmp.12 = b_ptr.4 != a_ptr.2
+            if !tmp.12 jump end_if_10
             return 6
         
           end_if_10:
@@ -609,7 +610,7 @@ fn test_valid_comparisons_pointers_as_conditions() {
             a.3 = 0
             if ptr.1 jump or_true_4
             a.3 = 10
-            if 10 jump or_true_4
+            if a.3 jump or_true_4
             tmp.6 = 0
             jump or_end_5
         
@@ -824,77 +825,78 @@ fn test_valid_declarators_declarators() {
         }
         global function two_pointers(val.0, ptr.1) { 
             *ptr.1 = val.0
-            tmp.0 = &l
-            return tmp.0
+            tmp.0 = *ptr.1
+            tmp.1 = &l
+            return tmp.1
             return 0
         }
         global function pointers_to_pointers(p.8) { 
-            tmp.1 = &u.9
-            u_ptr.10 = tmp.1
-            tmp.2 = *p.8
-            tmp.3 = *tmp.2
-            tmp.4 = tmp.3
-            u.9 = tmp.4
-            tmp.5 = &u_ptr.10
-            return tmp.5
+            tmp.2 = &u.9
+            u_ptr.10 = tmp.2
+            tmp.3 = *p.8
+            tmp.4 = *tmp.3
+            tmp.5 = tmp.4
+            u.9 = tmp.5
+            tmp.6 = &u_ptr.10
+            return tmp.6
             return 0
         }
         global function main() { 
             i.14 = 0
-            tmp.6 = &i.14
-            i_ptr.15 = tmp.6
-            tmp.7 = &i_ptr.15
-            ptr_to_iptr.16 = tmp.7
+            tmp.7 = &i.14
+            i_ptr.15 = tmp.7
+            tmp.8 = &i_ptr.15
+            ptr_to_iptr.16 = tmp.8
             d1.17 = 0D
             d2.18 = 10D
-            tmp.8 = &d1.17
-            d_ptr.19 = tmp.8
-            tmp.9 = return_3()
-            i.14 = tmp.9
-            tmp.10 = i.14 != 3
-            if !tmp.10 jump end_if_0
+            tmp.9 = &d1.17
+            d_ptr.19 = tmp.9
+            tmp.10 = return_3()
+            i.14 = tmp.10
+            tmp.11 = i.14 != 3
+            if !tmp.11 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.11 = *i_ptr.15
-            tmp.12 = tmp.11 != 3
-            if !tmp.12 jump end_if_2
+            tmp.12 = *i_ptr.15
+            tmp.13 = tmp.12 != 3
+            if !tmp.13 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.13 = two_pointers(d2.18, d_ptr.19)
-            l_ptr.20 = tmp.13
-            tmp.15 = &l
-            tmp.14 = l_ptr.20 != tmp.15
-            if !tmp.14 jump end_if_4
+            tmp.14 = two_pointers(d2.18, d_ptr.19)
+            l_ptr.20 = tmp.14
+            tmp.16 = &l
+            tmp.15 = l_ptr.20 != tmp.16
+            if !tmp.15 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.16 = *l_ptr.20
-            tmp.18 = sign_extend 100
-            tmp.17 = tmp.16 != tmp.18
-            if !tmp.17 jump end_if_6
+            tmp.17 = *l_ptr.20
+            tmp.19 = sign_extend 100
+            tmp.18 = tmp.17 != tmp.19
+            if !tmp.18 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.19 = *d_ptr.19
-            tmp.20 = tmp.19 != 10D
-            if !tmp.20 jump end_if_8
+            tmp.20 = *d_ptr.19
+            tmp.21 = tmp.20 != 10D
+            if !tmp.21 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.21 = d1.17 != 10D
-            if !tmp.21 jump end_if_10
+            tmp.22 = d1.17 != 10D
+            if !tmp.22 jump end_if_10
             return 6
         
           end_if_10:
-            tmp.22 = pointers_to_pointers(ptr_to_iptr.16)
-            ptr_to_uptr.21 = tmp.22
-            tmp.23 = *ptr_to_uptr.21
-            tmp.24 = *tmp.23
-            tmp.26 = 3
-            tmp.25 = tmp.24 != tmp.26
-            if !tmp.25 jump end_if_12
+            tmp.23 = pointers_to_pointers(ptr_to_iptr.16)
+            ptr_to_uptr.21 = tmp.23
+            tmp.24 = *ptr_to_uptr.21
+            tmp.25 = *tmp.24
+            tmp.27 = 3
+            tmp.26 = tmp.25 != tmp.27
+            if !tmp.26 jump end_if_12
             return 7
         
           end_if_12:
@@ -931,8 +933,9 @@ fn test_valid_declarators_declare_pointer_in_for_loop() {
             tmp.1 = i.1 != tmp.2
             if !tmp.1 jump break_loop_0
             *i.1 = 5
-            tmp.3 = sign_extend 0
-            i.1 = tmp.3
+            tmp.3 = *i.1
+            tmp.4 = sign_extend 0
+            i.1 = tmp.4
         
           continue_loop_0:
             jump start_loop_0
@@ -1070,7 +1073,7 @@ fn test_valid_dereference_dereference_expression_result() {
             tmp.14 = &one
             ptr_to_one.3 = tmp.14
             ptr_var.2 = ptr_to_one.3
-            tmp.15 = *ptr_to_one.3
+            tmp.15 = *ptr_var.2
             tmp.16 = tmp.15 != 1
             if !tmp.16 jump end_if_10
             return 4
@@ -1078,31 +1081,33 @@ fn test_valid_dereference_dereference_expression_result() {
           end_if_10:
             tmp.17 = return_pointer()
             *tmp.17 = 20
+            tmp.18 = *tmp.17
             if !one jump else_13
-            tmp.18 = ptr_var.2
+            tmp.19 = ptr_var.2
             jump end_if_12
         
           else_13:
-            tmp.19 = return_pointer()
-            tmp.18 = tmp.19
+            tmp.20 = return_pointer()
+            tmp.19 = tmp.20
         
           end_if_12:
-            *tmp.18 = 30
-            tmp.20 = return_pointer()
-            tmp.21 = *tmp.20
-            tmp.22 = tmp.21 != 20
-            if !tmp.22 jump end_if_14
+            *tmp.19 = 30
+            tmp.21 = *tmp.19
+            tmp.22 = return_pointer()
+            tmp.23 = *tmp.22
+            tmp.24 = tmp.23 != 20
+            if !tmp.24 jump end_if_14
             return 5
         
           end_if_14:
-            tmp.23 = *ptr_var.2
-            tmp.24 = tmp.23 != 30
-            if !tmp.24 jump end_if_16
+            tmp.25 = *ptr_var.2
+            tmp.26 = tmp.25 != 30
+            if !tmp.26 jump end_if_16
             return 6
         
           end_if_16:
-            tmp.25 = one != 30
-            if !tmp.25 jump end_if_18
+            tmp.27 = one != 30
+            if !tmp.27 jump end_if_18
             return 7
         
           end_if_18:
@@ -1244,86 +1249,88 @@ fn test_valid_dereference_multilevel_indirection() {
             tmp.20 = *d_ptr_ptr_ptr.3
             tmp.21 = *tmp.20
             *tmp.21 = 5D
-            tmp.22 = d.0 != 5D
-            if !tmp.22 jump end_if_14
+            tmp.22 = *tmp.21
+            tmp.23 = d.0 != 5D
+            if !tmp.23 jump end_if_14
             return 8
         
           end_if_14:
-            tmp.23 = *d_ptr.1
-            tmp.24 = tmp.23 != 5D
-            if !tmp.24 jump end_if_16
+            tmp.24 = *d_ptr.1
+            tmp.25 = tmp.24 != 5D
+            if !tmp.25 jump end_if_16
             return 9
         
           end_if_16:
-            tmp.25 = *d_ptr_ptr.2
-            tmp.26 = *tmp.25
-            tmp.27 = tmp.26 != 5D
-            if !tmp.27 jump end_if_18
+            tmp.26 = *d_ptr_ptr.2
+            tmp.27 = *tmp.26
+            tmp.28 = tmp.27 != 5D
+            if !tmp.28 jump end_if_18
             return 10
         
           end_if_18:
-            tmp.28 = *d_ptr_ptr_ptr.3
-            tmp.29 = *tmp.28
+            tmp.29 = *d_ptr_ptr_ptr.3
             tmp.30 = *tmp.29
-            tmp.31 = tmp.30 != 5D
-            if !tmp.31 jump end_if_20
+            tmp.31 = *tmp.30
+            tmp.32 = tmp.31 != 5D
+            if !tmp.32 jump end_if_20
             return 11
         
           end_if_20:
             d2.4 = 1D
-            tmp.32 = &d2.4
-            d2_ptr.5 = tmp.32
+            tmp.33 = &d2.4
+            d2_ptr.5 = tmp.33
             d2_ptr2.6 = d2_ptr.5
-            tmp.33 = &d2_ptr.5
-            d2_ptr_ptr.7 = tmp.33
+            tmp.34 = &d2_ptr.5
+            d2_ptr_ptr.7 = tmp.34
             *d_ptr_ptr_ptr.3 = d2_ptr_ptr.7
-            tmp.34 = *d_ptr_ptr_ptr.3
-            tmp.35 = *tmp.34
-            tmp.36 = tmp.35 != d2_ptr.5
-            if !tmp.36 jump end_if_22
+            tmp.35 = *d_ptr_ptr_ptr.3
+            tmp.36 = *d_ptr_ptr_ptr.3
+            tmp.37 = *tmp.36
+            tmp.38 = tmp.37 != d2_ptr.5
+            if !tmp.38 jump end_if_22
             return 12
         
           end_if_22:
-            tmp.37 = *d_ptr_ptr_ptr.3
-            tmp.38 = *tmp.37
-            tmp.39 = *tmp.38
-            tmp.40 = tmp.39 != 1D
-            if !tmp.40 jump end_if_24
+            tmp.39 = *d_ptr_ptr_ptr.3
+            tmp.40 = *tmp.39
+            tmp.41 = *tmp.40
+            tmp.42 = tmp.41 != 1D
+            if !tmp.42 jump end_if_24
             return 13
         
           end_if_24:
-            tmp.42 = &d2_ptr2.6
-            tmp.41 = d2_ptr_ptr.7 == tmp.42
-            if !tmp.41 jump end_if_26
+            tmp.44 = &d2_ptr2.6
+            tmp.43 = d2_ptr_ptr.7 == tmp.44
+            if !tmp.43 jump end_if_26
             return 14
         
           end_if_26:
             d2_ptr.5 = d_ptr.1
-            tmp.43 = *d_ptr_ptr_ptr.3
-            tmp.44 = *tmp.43
-            tmp.45 = tmp.44 != d_ptr.1
-            if !tmp.45 jump end_if_28
+            tmp.45 = *d_ptr_ptr_ptr.3
+            tmp.46 = *tmp.45
+            tmp.47 = tmp.46 != d_ptr.1
+            if !tmp.47 jump end_if_28
             return 15
         
           end_if_28:
-            tmp.46 = *d2_ptr_ptr.7
-            tmp.47 = tmp.46 != d_ptr.1
-            if !tmp.47 jump end_if_30
+            tmp.48 = *d2_ptr_ptr.7
+            tmp.49 = tmp.48 != d_ptr.1
+            if !tmp.49 jump end_if_30
             return 16
         
           end_if_30:
-            tmp.48 = *d_ptr_ptr_ptr.3
-            tmp.49 = *tmp.48
-            tmp.50 = tmp.49 == d2_ptr2.6
-            if !tmp.50 jump end_if_32
+            tmp.50 = *d_ptr_ptr_ptr.3
+            tmp.51 = *tmp.50
+            tmp.52 = tmp.51 == d2_ptr2.6
+            if !tmp.52 jump end_if_32
             return 17
         
           end_if_32:
-            tmp.51 = *d_ptr_ptr_ptr.3
-            tmp.52 = *tmp.51
-            tmp.53 = *tmp.52
-            tmp.54 = tmp.53 != 5D
-            if !tmp.54 jump end_if_34
+            tmp.53 = *d_ptr_ptr_ptr.3
+            tmp.54 = *tmp.53
+            tmp.55 = *tmp.54
+            tmp.56 = tmp.55 != 5D
+            if !tmp.56 jump end_if_34
             return 18
         
           end_if_34:
@@ -1568,32 +1575,34 @@ fn test_valid_dereference_static_var_indirection() {
             tmp.1 = *dbl_ptr
             tmp.2 = tmp.1 + 5D
             *dbl_ptr = tmp.2
+            tmp.3 = *dbl_ptr
             return 0
             return 0
         }
         global function main() { 
-            tmp.3 = &x
-            pointer_to_static.2 = tmp.3
+            tmp.4 = &x
+            pointer_to_static.2 = tmp.4
             x = 20
-            tmp.4 = *pointer_to_static.2
-            tmp.5 = tmp.4 != 20
-            if !tmp.5 jump end_if_2
+            tmp.5 = *pointer_to_static.2
+            tmp.6 = tmp.5 != 20
+            if !tmp.6 jump end_if_2
             return 1
         
           end_if_2:
             *pointer_to_static.2 = 100
-            tmp.6 = x != 100
-            if !tmp.6 jump end_if_4
+            tmp.7 = *pointer_to_static.2
+            tmp.8 = x != 100
+            if !tmp.8 jump end_if_4
             return 2
         
           end_if_4:
-            tmp.7 = w != 4294967295U
-            if !tmp.7 jump end_if_6
+            tmp.9 = w != 4294967295U
+            if !tmp.9 jump end_if_6
             return 3
         
           end_if_6:
-            tmp.8 = y != 4294967295U
-            if !tmp.8 jump end_if_8
+            tmp.10 = y != 4294967295U
+            if !tmp.10 jump end_if_8
             return 4
         
           end_if_8:
@@ -1602,31 +1611,31 @@ fn test_valid_dereference_static_var_indirection() {
         
           end_if_10:
             l.3 = 1000L
-            tmp.9 = &l.3
-            tmp.10 = modify_ptr(tmp.9)
-            tmp.11 = tmp.10 != 1000L
-            if !tmp.11 jump end_if_12
+            tmp.11 = &l.3
+            tmp.12 = modify_ptr(tmp.11)
+            tmp.13 = tmp.12 != 1000L
+            if !tmp.13 jump end_if_12
             return 6
         
           end_if_12:
-            tmp.12 = - 1
-            tmp.13 = sign_extend tmp.12
-            l.3 = tmp.13
-            tmp.14 = sign_extend 0
-            tmp.15 = modify_ptr(tmp.14)
-            tmp.16 = tmp.15 != l.3
-            if !tmp.16 jump end_if_14
+            tmp.14 = - 1
+            tmp.15 = sign_extend tmp.14
+            l.3 = tmp.15
+            tmp.16 = sign_extend 0
+            tmp.17 = modify_ptr(tmp.16)
+            tmp.18 = tmp.17 != l.3
+            if !tmp.18 jump end_if_14
             return 7
         
           end_if_14:
             d.4 = 10D
-            tmp.17 = &d.4
-            dbl_ptr = tmp.17
-            tmp.18 = increment_ptr()
-            tmp.19 = *dbl_ptr
-            tmp.21 = int_to_double 15
-            tmp.20 = tmp.19 != tmp.21
-            if !tmp.20 jump end_if_16
+            tmp.19 = &d.4
+            dbl_ptr = tmp.19
+            tmp.20 = increment_ptr()
+            tmp.21 = *dbl_ptr
+            tmp.23 = int_to_double 15
+            tmp.22 = tmp.21 != tmp.23
+            if !tmp.22 jump end_if_16
             return 8
         
           end_if_16:
@@ -1680,25 +1689,28 @@ fn test_valid_dereference_update_through_pointers() {
             d_ptr.5 = tmp.2
             tmp.3 = 10
             *i_ptr.3 = tmp.3
-            tmp.4 = - 20
-            tmp.5 = sign_extend tmp.4
-            *l_ptr.4 = tmp.5
+            tmp.4 = *i_ptr.3
+            tmp.5 = - 20
+            tmp.6 = sign_extend tmp.5
+            *l_ptr.4 = tmp.6
+            tmp.7 = *l_ptr.4
             *d_ptr.5 = 30.1D
-            tmp.7 = 10
-            tmp.6 = i.0 != tmp.7
-            if !tmp.6 jump end_if_0
+            tmp.8 = *d_ptr.5
+            tmp.10 = 10
+            tmp.9 = i.0 != tmp.10
+            if !tmp.9 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.9 = - 20
-            tmp.10 = sign_extend tmp.9
-            tmp.8 = l.1 != tmp.10
-            if !tmp.8 jump end_if_2
+            tmp.12 = - 20
+            tmp.13 = sign_extend tmp.12
+            tmp.11 = l.1 != tmp.13
+            if !tmp.11 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.11 = d.2 != 30.1D
-            if !tmp.11 jump end_if_4
+            tmp.14 = d.2 != 30.1D
+            if !tmp.14 jump end_if_4
             return 3
         
           end_if_4:
@@ -1912,34 +1924,34 @@ fn test_valid_extra_credit_compound_assign_conversion() {
             tmp.3 = uint_to_double 1000U
             tmp.2 = tmp.1 * tmp.3
             *d_ptr.1 = tmp.2
-            tmp.4 = d.0 != 5000D
-            if !tmp.4 jump end_if_0
+            tmp.4 = *d_ptr.1
+            tmp.5 = d.0 != 5000D
+            if !tmp.5 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.5 = - 50
-            i.2 = tmp.5
-            tmp.6 = &i.2
-            i_ptr.3 = tmp.6
-            tmp.7 = *i_ptr.3
-            tmp.8 = tmp.7
-            tmp.9 = tmp.8 % 4294967200U
-            tmp.10 = tmp.9
-            *i_ptr.3 = tmp.10
+            tmp.6 = - 50
+            i.2 = tmp.6
+            tmp.7 = &i.2
+            i_ptr.3 = tmp.7
+            tmp.8 = *i_ptr.3
+            tmp.9 = tmp.8
+            tmp.10 = tmp.9 % 4294967200U
             tmp.11 = tmp.10
+            *i_ptr.3 = tmp.11
             tmp.12 = *i_ptr.3
-            tmp.13 = tmp.12 != 46
-            if !tmp.13 jump end_if_2
+            tmp.13 = *i_ptr.3
+            tmp.14 = tmp.13 != 46
+            if !tmp.14 jump end_if_2
             return 2
         
           end_if_2:
             ui.4 = 4294967295U
-            tmp.14 = uint_to_double ui.4
-            tmp.16 = *d_ptr.1
-            tmp.15 = tmp.14 / tmp.16
-            tmp.17 = double_to_uint tmp.15
-            ui.4 = tmp.17
-            tmp.18 = double_to_uint tmp.17
+            tmp.15 = uint_to_double ui.4
+            tmp.17 = *d_ptr.1
+            tmp.16 = tmp.15 / tmp.17
+            tmp.18 = double_to_uint tmp.16
+            ui.4 = tmp.18
             tmp.19 = ui.4 != 858993U
             if !tmp.19 jump end_if_4
             return 3
@@ -1956,7 +1968,7 @@ fn test_valid_extra_credit_compound_assign_conversion() {
             tmp.24 = tmp.23 - tmp.25
             tmp.26 = truncate tmp.24
             *i_ptr.3 = tmp.26
-            tmp.27 = truncate tmp.26
+            tmp.27 = *i_ptr.3
             tmp.29 = - 9
             tmp.28 = i.2 != tmp.29
             if !tmp.28 jump end_if_6
@@ -2014,45 +2026,50 @@ fn test_valid_extra_credit_compound_assign_through_pointer() {
             tmp.1 = *ptr.1
             tmp.2 = tmp.1 + 5
             *ptr.1 = tmp.2
-            tmp.3 = x.0 != 15
-            if !tmp.3 jump end_if_0
+            tmp.3 = *ptr.1
+            tmp.4 = x.0 != 15
+            if !tmp.4 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.4 = *ptr.1
-            tmp.5 = tmp.4 - 12
-            *ptr.1 = tmp.5
-            tmp.6 = tmp.5 != 3
-            if !tmp.6 jump end_if_2
+            tmp.5 = *ptr.1
+            tmp.6 = tmp.5 - 12
+            *ptr.1 = tmp.6
+            tmp.7 = *ptr.1
+            tmp.8 = tmp.7 != 3
+            if !tmp.8 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.7 = x.0 != 3
-            if !tmp.7 jump end_if_4
+            tmp.9 = x.0 != 3
+            if !tmp.9 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.8 = *ptr.1
-            tmp.9 = tmp.8 * 6
-            *ptr.1 = tmp.9
-            tmp.10 = x.0 != 18
-            if !tmp.10 jump end_if_6
+            tmp.10 = *ptr.1
+            tmp.11 = tmp.10 * 6
+            *ptr.1 = tmp.11
+            tmp.12 = *ptr.1
+            tmp.13 = x.0 != 18
+            if !tmp.13 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.11 = *ptr.1
-            tmp.12 = tmp.11 / 9
-            *ptr.1 = tmp.12
-            tmp.13 = x.0 != 2
-            if !tmp.13 jump end_if_8
+            tmp.14 = *ptr.1
+            tmp.15 = tmp.14 / 9
+            *ptr.1 = tmp.15
+            tmp.16 = *ptr.1
+            tmp.17 = x.0 != 2
+            if !tmp.17 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.14 = *ptr.1
-            tmp.15 = tmp.14 % 3
-            *ptr.1 = tmp.15
-            tmp.16 = x.0 != 2
-            if !tmp.16 jump end_if_10
+            tmp.18 = *ptr.1
+            tmp.19 = tmp.18 % 3
+            *ptr.1 = tmp.19
+            tmp.20 = *ptr.1
+            tmp.21 = x.0 != 2
+            if !tmp.21 jump end_if_10
             return 6
         
           end_if_10:
@@ -2106,37 +2123,39 @@ fn test_valid_extra_credit_compound_bitwise_dereferenced_ptrs() {
             tmp.4 = sign_extend tmp.3
             tmp.2 = tmp.1 & tmp.4
             *ul_ptr.0 = tmp.2
-            tmp.5 = ul != 18446460386757244952UL
-            if !tmp.5 jump end_if_0
+            tmp.5 = *ul_ptr.0
+            tmp.6 = ul != 18446460386757244952UL
+            if !tmp.6 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.6 = *ul_ptr.0
-            tmp.8 = zero_extend 4294967040U
-            tmp.7 = tmp.6 | tmp.8
-            *ul_ptr.0 = tmp.7
-            tmp.9 = ul != 18446460386824683288UL
-            if !tmp.9 jump end_if_2
+            tmp.7 = *ul_ptr.0
+            tmp.9 = zero_extend 4294967040U
+            tmp.8 = tmp.7 | tmp.9
+            *ul_ptr.0 = tmp.8
+            tmp.10 = *ul_ptr.0
+            tmp.11 = ul != 18446460386824683288UL
+            if !tmp.11 jump end_if_2
             return 2
         
           end_if_2:
             i.1 = 123456
             ui.2 = 4042322160U
-            tmp.10 = - 252645136
-            tmp.11 = sign_extend tmp.10
-            l.3 = tmp.11
-            tmp.12 = &ui.2
-            ui_ptr.4 = tmp.12
-            tmp.13 = &l.3
-            l_ptr.5 = tmp.13
-            tmp.14 = *ui_ptr.4
-            tmp.15 = zero_extend tmp.14
-            tmp.17 = *l_ptr.5
-            tmp.16 = tmp.15 ^ tmp.17
-            tmp.18 = truncate tmp.16
-            *ui_ptr.4 = tmp.18
-            tmp.19 = truncate tmp.18
-            if !tmp.19 jump end_if_4
+            tmp.12 = - 252645136
+            tmp.13 = sign_extend tmp.12
+            l.3 = tmp.13
+            tmp.14 = &ui.2
+            ui_ptr.4 = tmp.14
+            tmp.15 = &l.3
+            l_ptr.5 = tmp.15
+            tmp.16 = *ui_ptr.4
+            tmp.17 = zero_extend tmp.16
+            tmp.19 = *l_ptr.5
+            tmp.18 = tmp.17 ^ tmp.19
+            tmp.20 = truncate tmp.18
+            *ui_ptr.4 = tmp.20
+            tmp.21 = *ui_ptr.4
+            if !tmp.21 jump end_if_4
             return 3
         
           end_if_4:
@@ -2144,15 +2163,15 @@ fn test_valid_extra_credit_compound_bitwise_dereferenced_ptrs() {
             return 4
         
           end_if_6:
-            tmp.20 = i.1 != 123456
-            if !tmp.20 jump end_if_8
+            tmp.22 = i.1 != 123456
+            if !tmp.22 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.22 = - 252645136
-            tmp.23 = sign_extend tmp.22
-            tmp.21 = l.3 != tmp.23
-            if !tmp.21 jump end_if_10
+            tmp.24 = - 252645136
+            tmp.25 = sign_extend tmp.24
+            tmp.23 = l.3 != tmp.25
+            if !tmp.23 jump end_if_10
             return 6
         
           end_if_10:
@@ -2207,20 +2226,21 @@ fn test_valid_extra_credit_eval_compound_lhs_once() {
             tmp.5 = *tmp.4
             tmp.6 = tmp.5 + 5
             *tmp.4 = tmp.6
-            tmp.7 = i != 5
-            if !tmp.7 jump end_if_0
+            tmp.7 = *tmp.4
+            tmp.8 = i != 5
+            if !tmp.8 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.8 = print_B()
-            tmp.9 = *tmp.8
-            tmp.10 = sign_extend tmp.9
-            tmp.11 = tmp.10 + 5L
-            tmp.12 = truncate tmp.11
-            *tmp.8 = tmp.12
+            tmp.9 = print_B()
+            tmp.10 = *tmp.9
+            tmp.11 = sign_extend tmp.10
+            tmp.12 = tmp.11 + 5L
             tmp.13 = truncate tmp.12
-            tmp.14 = i != 10
-            if !tmp.14 jump end_if_2
+            *tmp.9 = tmp.13
+            tmp.14 = *tmp.9
+            tmp.15 = i != 10
+            if !tmp.15 jump end_if_2
             return 2
         
           end_if_2:
@@ -2475,28 +2495,29 @@ fn test_valid_function_calls_address_of_argument() {
             tmp.0 = &a.0
             ptr.1 = tmp.0
             *ptr.1 = 10
+            tmp.1 = *ptr.1
             return a.0
             return 0
         }
         global function main() { 
-            tmp.1 = - 20
-            tmp.2 = addr_of_arg(tmp.1)
-            result.2 = tmp.2
-            tmp.3 = result.2 != 10
-            if !tmp.3 jump end_if_0
+            tmp.2 = - 20
+            tmp.3 = addr_of_arg(tmp.2)
+            result.2 = tmp.3
+            tmp.4 = result.2 != 10
+            if !tmp.4 jump end_if_0
             return 1
         
           end_if_0:
             var.3 = 100
-            tmp.4 = addr_of_arg(var.3)
-            result.2 = tmp.4
-            tmp.5 = result.2 != 10
-            if !tmp.5 jump end_if_2
+            tmp.5 = addr_of_arg(var.3)
+            result.2 = tmp.5
+            tmp.6 = result.2 != 10
+            if !tmp.6 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.6 = var.3 != 100
-            if !tmp.6 jump end_if_4
+            tmp.7 = var.3 != 100
+            if !tmp.7 jump end_if_4
             return 3
         
           end_if_4:
@@ -2589,21 +2610,22 @@ fn test_valid_function_calls_update_value_through_pointer_parameter() {
             tmp.0 = *ptr.0
             old_val.1 = tmp.0
             *ptr.0 = 10
+            tmp.1 = *ptr.0
             return old_val.1
             return 0
         }
         global function main() { 
             x.2 = 20
-            tmp.1 = &x.2
-            tmp.2 = update_value(tmp.1)
-            result.3 = tmp.2
-            tmp.3 = result.3 != 20
-            if !tmp.3 jump end_if_0
+            tmp.2 = &x.2
+            tmp.3 = update_value(tmp.2)
+            result.3 = tmp.3
+            tmp.4 = result.3 != 20
+            if !tmp.4 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.4 = x.2 != 10
-            if !tmp.4 jump end_if_2
+            tmp.5 = x.2 != 10
+            if !tmp.5 jump end_if_2
             return 2
         
           end_if_2:
@@ -2626,6 +2648,7 @@ fn test_valid_libraries_global_pointer() {
     let expected = r#"
         global function update_thru_ptr(new_val.0) { 
             *d_ptr = new_val.0
+            tmp.0 = *d_ptr
             return 0
             return 0
         }

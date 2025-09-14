@@ -11,7 +11,6 @@ use crate::semantic::{AggregateType, Attributes, SemanticData, StaticInit, Type,
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
-use crate::semantic::Attributes::Const;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
 const SSE_ARG_REGISTERS: [Reg; 8] = [
@@ -543,10 +542,12 @@ impl Compiler {
                     self.generate_call(&mut instructions, name, args, dst);
                 }
                 tacky::Instruction::SignExtend { src, dst } => {
+                    let asm_type1 = self.semantics.val_asm_ty(src);
+                    let asm_type2 = self.semantics.val_asm_ty(dst);
                     instructions.push(Instruction::Movsx(
-                        self.semantics.val_asm_ty(src),
+                        asm_type1,
                         self.generate_val(src),
-                        self.semantics.val_asm_ty(dst),
+                        asm_type2,
                         self.generate_val(dst),
                     ));
                 }
@@ -839,7 +840,8 @@ impl Compiler {
                         Reg::Ax.into(),
                     ));
                     if let tacky::Val::Constant(c) = index
-                        && c.is_int() {
+                        && c.is_int()
+                    {
                         let index = c.as_u64() as i64;
                         instructions.push(Instruction::Lea(
                             Operand::Memory(Reg::Ax, index * (*scale as i64)),

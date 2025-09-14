@@ -1239,7 +1239,7 @@ fn test_valid_extra_credit_compound_assignment_chained() {
                     │               ├── <60> Var [c]
                     │               ╰── <76> Assign [/=]
                     │                   ├── <63> Var [d]
-                    │                   ╰── <75> Assign [&=]
+                    │                   ╰── <75> Assign [%=]
                     │                       ├── <66> Var [e]
                     │                       ╰── <74> Assign [=]
                     │                           ├── <69> Var [f]
@@ -1895,7 +1895,7 @@ fn test_valid_extra_credit_compound_mod() {
                     │   │   ╰── Int
                     │   ╰── Initializer
                     │       ╰── <9> Constant Int [5]
-                    ├── <16> Assign [&=]
+                    ├── <16> Assign [%=]
                     │   ├── <13> Var [to_mod]
                     │   ╰── <15> Constant Int [3]
                     ╰── Return

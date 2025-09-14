@@ -837,20 +837,18 @@ fn test_valid_extra_credit_compound_assign_implicit_cast() {
             tmp.4 = tmp.3 - 15000000000000000000D
             tmp.5 = double_to_uint tmp.4
             ul.1 = tmp.5
-            tmp.6 = double_to_uint tmp.5
-            tmp.7 = ul.1 != 3446744073709551616UL
-            if !tmp.7 jump end_if_2
+            tmp.6 = ul.1 != 3446744073709551616UL
+            if !tmp.6 jump end_if_2
             return 2
         
           end_if_2:
             i.2 = 10
-            tmp.8 = int_to_double i.2
-            tmp.9 = tmp.8 + 0.99999D
-            tmp.10 = double_to_int tmp.9
-            i.2 = tmp.10
-            tmp.11 = double_to_int tmp.10
-            tmp.12 = i.2 != 10
-            if !tmp.12 jump end_if_4
+            tmp.7 = int_to_double i.2
+            tmp.8 = tmp.7 + 0.99999D
+            tmp.9 = double_to_int tmp.8
+            i.2 = tmp.9
+            tmp.10 = i.2 != 10
+            if !tmp.10 jump end_if_4
             return 3
         
           end_if_4:
@@ -1314,7 +1312,7 @@ fn test_valid_extra_credit_nan_compound_assign() {
             nan.2 = tmp.0
             tmp.1 = nan.2 + 99.2D
             nan.2 = tmp.1
-            tmp.2 = double_isnan(tmp.1)
+            tmp.2 = double_isnan(nan.2)
             tmp.3 = ! tmp.2
             if !tmp.3 jump end_if_0
             return 1
@@ -1322,7 +1320,7 @@ fn test_valid_extra_credit_nan_compound_assign() {
           end_if_0:
             tmp.4 = nan.2 - nan.2
             nan.2 = tmp.4
-            tmp.5 = double_isnan(tmp.4)
+            tmp.5 = double_isnan(nan.2)
             tmp.6 = ! tmp.5
             if !tmp.6 jump end_if_2
             return 2
@@ -1330,7 +1328,7 @@ fn test_valid_extra_credit_nan_compound_assign() {
           end_if_2:
             tmp.7 = nan.2 * 4D
             nan.2 = tmp.7
-            tmp.8 = double_isnan(tmp.7)
+            tmp.8 = double_isnan(nan.2)
             tmp.9 = ! tmp.8
             if !tmp.9 jump end_if_4
             return 3
@@ -1338,7 +1336,7 @@ fn test_valid_extra_credit_nan_compound_assign() {
           end_if_4:
             tmp.10 = nan.2 / 0D
             nan.2 = tmp.10
-            tmp.11 = double_isnan(tmp.10)
+            tmp.11 = double_isnan(nan.2)
             tmp.12 = ! tmp.11
             if !tmp.12 jump end_if_6
             return 4
@@ -3818,7 +3816,7 @@ fn test_valid_special_values_negative_zero() {
             fail.3 = 0
             if !negative_zero.2 jump and_false_6
             fail.3 = 1
-            if !1 jump and_false_6
+            if !fail.3 jump and_false_6
             tmp.12 = 1
             jump and_end_7
         

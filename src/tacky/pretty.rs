@@ -85,7 +85,11 @@ fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> Result<()> {
 pub fn pp_function(stream: &mut impl Write, function: &tacky::Function) -> Result<()> {
     let global = if function.global { "global " } else { "" };
     let params = function.params.to_vec().join(", ");
-    writeln!(stream, "{}function {}({}) {{ ", global, function.name, params)?;
+    writeln!(
+        stream,
+        "{}function {}({}) {{ ",
+        global, function.name, params
+    )?;
     for instruction in &function.body {
         pp_instruction(stream, instruction)?;
     }
@@ -313,7 +317,7 @@ fn pp_type(stream: &mut impl Write, ty: &Type) -> Result<()> {
         Type::Long => write!(stream, "Long"),
         Type::UInt => write!(stream, "Unsigned Int"),
         Type::ULong => write!(stream, "Unsigned Long"),
-        Type::Function(_) => write!(stream, "Function(...)") ,
+        Type::Function(_) => write!(stream, "Function(...)"),
         Type::Double => write!(stream, "Double"),
         Type::Void => write!(stream, "Void"),
         Type::Pointer(referenced) => {

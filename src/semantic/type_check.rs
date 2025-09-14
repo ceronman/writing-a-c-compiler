@@ -1340,15 +1340,18 @@ impl TypeChecker {
                         self.cast_if_needed(left, &left_ty, &common);
                         self.cast_if_needed(right, &right_ty, &common);
                         self.cast_if_needed(expr, &common, &left_ty);
-                        self.semantics.assignment_common_types.insert(expr.id, common);
+                        self.semantics
+                            .assignment_common_types
+                            .insert(expr.id, common);
                         left_ty
                     }
                     _ => {
                         let common = self.semantics.common_type(&left_ty, &right_ty);
                         self.cast_if_needed(left, &left_ty, &common);
                         self.cast_if_needed(right, &right_ty, &common);
-                        self.cast_if_needed(expr, &common, &left_ty);
-                        self.semantics.assignment_common_types.insert(expr.id, common);
+                        self.semantics
+                            .assignment_common_types
+                            .insert(expr.id, common);
                         left_ty
                     }
                 }

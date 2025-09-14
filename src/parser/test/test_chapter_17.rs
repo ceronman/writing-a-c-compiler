@@ -2121,7 +2121,7 @@ fn test_valid_extra_credit_sizeof_compound() {
                     │   ├── Condition
                     │   │   ╰── <88>  [!=]
                     │   │       ├── <85> SizeOfExpr
-                    │   │       │   ╰── <84> Assign [&=]
+                    │   │       │   ╰── <84> Assign [%=]
                     │   │       │       ├── <80> Var [uc]
                     │   │       │       ╰── <82> Constant Int [2]
                     │   │       ╰── <87> Constant Int [1]

@@ -48,8 +48,15 @@ fn pp_static_init(stream: &mut impl Write, init: &StaticInit) -> Result<()> {
         StaticInit::ULong(v) => writeln!(stream, "{v}UL")?,
         StaticInit::Double(v) => writeln!(stream, "{v}D")?,
         StaticInit::ZeroInit(v) => writeln!(stream, "zero[{v}]")?,
-        StaticInit::String { symbol, null_terminated } => {
-            let s = if *null_terminated { format!("{symbol}\\0") } else { symbol.clone() };
+        StaticInit::String {
+            symbol,
+            null_terminated,
+        } => {
+            let s = if *null_terminated {
+                format!("{symbol}\\0")
+            } else {
+                symbol.clone()
+            };
             writeln!(stream, "{:?}", s)?
         }
         StaticInit::Pointer(name) => writeln!(stream, "&{name}")?,

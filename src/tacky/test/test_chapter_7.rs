@@ -15,7 +15,7 @@ fn test_valid_assign_to_self() {
         global function main() { 
             a.0 = 3
             a.1 = 4
-            a.1 = 4
+            a.1 = a.1
             return a.1
             return 0
         }
@@ -38,7 +38,7 @@ fn test_valid_assign_to_self_2() {
         global function main() { 
             a.0 = 3
             a.1 = 4
-            a.1 = 4
+            a.1 = a.1
             return a.0
             return 0
         }
@@ -60,7 +60,7 @@ fn test_valid_declaration_only() {
     let expected = r#"
         global function main() { 
             a.0 = 1
-            b.1 = 1
+            b.1 = a.0
             return a.0
             return 0
         }

@@ -1,7 +1,7 @@
 pub mod cfg;
 mod constant_folding;
-mod unreachable_code;
 mod copy_propagation;
+mod unreachable_code;
 
 use crate::optimization::constant_folding::constant_fold;
 use crate::optimization::copy_propagation::copy_propagation;
@@ -40,7 +40,12 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
                     optimized = remove_unreachable_code(&optimized, false);
                 }
                 if flags.propagate_copies || flags.optimize {
-                    optimized = copy_propagation(&optimized, &aliased_vars, &program.semantics, flags.trace);
+                    optimized = copy_propagation(
+                        &optimized,
+                        &aliased_vars,
+                        &program.semantics,
+                        flags.trace,
+                    );
                 }
 
                 if optimized == f.body {
@@ -53,7 +58,10 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
     program
 }
 
-fn address_taken_analysis(instructions: &[tacky::Instruction], semantics: &SemanticData) -> HashSet<Val> {
+fn address_taken_analysis(
+    instructions: &[tacky::Instruction],
+    semantics: &SemanticData,
+) -> HashSet<Val> {
     let mut result = HashSet::new();
     for (name, data) in semantics.symbols.iter() {
         if let Attributes::Static { .. } = data.attrs {

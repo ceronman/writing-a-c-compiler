@@ -1,8 +1,8 @@
 pub mod pretty;
 
-use std::hash::{Hash, Hasher};
 use crate::lexer::Span;
 use crate::symbol::Symbol;
+use std::hash::{Hash, Hasher};
 use std::ops::{Deref, DerefMut};
 
 pub type NodeId = u32;

@@ -85,118 +85,120 @@ fn test_valid_allocation_test_alignment() {
             tmp.10 = sign_extend i.5
             tmp.11 = add_ptr(tmp.9, index=tmp.10, scale=4)
             *tmp.11 = i.5
+            tmp.12 = *tmp.11
         
           continue_loop_0:
-            tmp.12 = i.5 + 1
-            i.5 = tmp.12
+            tmp.13 = i.5 + 1
+            i.5 = tmp.13
             jump start_loop_0
         
           break_loop_0:
-            tmp.13 = &arr2.3
-            tmp.14 = check_alignment(tmp.13)
-            tmp.15 = ! tmp.14
-            if !tmp.15 jump end_if_2
+            tmp.14 = &arr2.3
+            tmp.15 = check_alignment(tmp.14)
+            tmp.16 = ! tmp.15
+            if !tmp.16 jump end_if_2
             return 2
         
           end_if_2:
             i.6 = 0
         
           start_loop_1:
-            tmp.16 = i.6 < 7
-            if !tmp.16 jump break_loop_1
-            tmp.17 = &arr2.3
-            tmp.18 = sign_extend i.6
-            tmp.19 = add_ptr(tmp.17, index=tmp.18, scale=4)
-            tmp.20 = *tmp.19
-            if !tmp.20 jump end_if_4
+            tmp.17 = i.6 < 7
+            if !tmp.17 jump break_loop_1
+            tmp.18 = &arr2.3
+            tmp.19 = sign_extend i.6
+            tmp.20 = add_ptr(tmp.18, index=tmp.19, scale=4)
+            tmp.21 = *tmp.20
+            if !tmp.21 jump end_if_4
             return 3
         
           end_if_4:
         
           continue_loop_1:
-            tmp.21 = i.6 + 1
-            i.6 = tmp.21
+            tmp.22 = i.6 + 1
+            i.6 = tmp.22
             jump start_loop_1
         
           break_loop_1:
             i.7 = 0
         
           start_loop_2:
-            tmp.22 = i.7 < 7
-            if !tmp.22 jump break_loop_2
-            tmp.23 = &arr2.3
-            tmp.24 = sign_extend i.7
-            tmp.25 = add_ptr(tmp.23, index=tmp.24, scale=4)
-            tmp.26 = - i.7
-            *tmp.25 = tmp.26
+            tmp.23 = i.7 < 7
+            if !tmp.23 jump break_loop_2
+            tmp.24 = &arr2.3
+            tmp.25 = sign_extend i.7
+            tmp.26 = add_ptr(tmp.24, index=tmp.25, scale=4)
+            tmp.27 = - i.7
+            *tmp.26 = tmp.27
+            tmp.28 = *tmp.26
         
           continue_loop_2:
-            tmp.27 = i.7 + 1
-            i.7 = tmp.27
+            tmp.29 = i.7 + 1
+            i.7 = tmp.29
             jump start_loop_2
         
           break_loop_2:
-            tmp.28 = &arr3.4
-            tmp.29 = tmp.28
-            tmp.30 = check_alignment(tmp.29)
-            tmp.31 = ! tmp.30
-            if !tmp.31 jump end_if_6
+            tmp.30 = &arr3.4
+            tmp.31 = tmp.30
+            tmp.32 = check_alignment(tmp.31)
+            tmp.33 = ! tmp.32
+            if !tmp.33 jump end_if_6
             return 4
         
           end_if_6:
             i.8 = 0
         
           start_loop_3:
-            tmp.32 = i.8 < 5
-            if !tmp.32 jump break_loop_3
-            tmp.33 = &arr.2
-            tmp.34 = sign_extend i.8
-            tmp.35 = add_ptr(tmp.33, index=tmp.34, scale=4)
-            tmp.36 = *tmp.35
-            tmp.37 = tmp.36 != i.8
-            if !tmp.37 jump end_if_8
+            tmp.34 = i.8 < 5
+            if !tmp.34 jump break_loop_3
+            tmp.35 = &arr.2
+            tmp.36 = sign_extend i.8
+            tmp.37 = add_ptr(tmp.35, index=tmp.36, scale=4)
+            tmp.38 = *tmp.37
+            tmp.39 = tmp.38 != i.8
+            if !tmp.39 jump end_if_8
             return 5
         
           end_if_8:
         
           continue_loop_3:
-            tmp.38 = i.8 + 1
-            i.8 = tmp.38
+            tmp.40 = i.8 + 1
+            i.8 = tmp.40
             jump start_loop_3
         
           break_loop_3:
             i.9 = 0
         
           start_loop_4:
-            tmp.39 = i.9 < 2
-            if !tmp.39 jump break_loop_4
+            tmp.41 = i.9 < 2
+            if !tmp.41 jump break_loop_4
             j.10 = 0
         
           start_loop_5:
-            tmp.40 = j.10 < 2
-            if !tmp.40 jump break_loop_5
-            tmp.41 = &arr3.4
-            tmp.42 = sign_extend i.9
-            tmp.43 = add_ptr(tmp.41, index=tmp.42, scale=8)
-            tmp.44 = sign_extend j.10
-            tmp.45 = add_ptr(tmp.43, index=tmp.44, scale=4)
-            tmp.46 = *tmp.45
-            tmp.47 = tmp.46 != 0
-            if !tmp.47 jump end_if_10
+            tmp.42 = j.10 < 2
+            if !tmp.42 jump break_loop_5
+            tmp.43 = &arr3.4
+            tmp.44 = sign_extend i.9
+            tmp.45 = add_ptr(tmp.43, index=tmp.44, scale=8)
+            tmp.46 = sign_extend j.10
+            tmp.47 = add_ptr(tmp.45, index=tmp.46, scale=4)
+            tmp.48 = *tmp.47
+            tmp.49 = tmp.48 != 0
+            if !tmp.49 jump end_if_10
             return 6
         
           end_if_10:
         
           continue_loop_5:
-            tmp.48 = j.10 + 1
-            j.10 = tmp.48
+            tmp.50 = j.10 + 1
+            j.10 = tmp.50
             jump start_loop_5
         
           break_loop_5:
         
           continue_loop_4:
-            tmp.49 = i.9 + 1
-            i.9 = tmp.49
+            tmp.51 = i.9 + 1
+            i.9 = tmp.51
             jump start_loop_4
         
           break_loop_4:
@@ -458,15 +460,17 @@ fn test_valid_declarators_array_as_argument() {
             tmp.0 = sign_extend 4
             tmp.1 = add_ptr(a.0, index=tmp.0, scale=4)
             *tmp.1 = 0
+            tmp.2 = *tmp.1
             return 0
             return 0
         }
         global function nested_array_param(a.1) { 
-            tmp.2 = sign_extend 1
-            tmp.3 = add_ptr(a.1, index=tmp.2, scale=12)
-            tmp.4 = sign_extend 1
-            tmp.5 = add_ptr(tmp.3, index=tmp.4, scale=4)
-            *tmp.5 = 1
+            tmp.3 = sign_extend 1
+            tmp.4 = add_ptr(a.1, index=tmp.3, scale=12)
+            tmp.5 = sign_extend 1
+            tmp.6 = add_ptr(tmp.4, index=tmp.5, scale=4)
+            *tmp.6 = 1
+            tmp.7 = *tmp.6
             return 0
             return 0
         }
@@ -479,140 +483,140 @@ fn test_valid_declarators_array_as_argument() {
             arr.6[20] = 3
             arr.6[24] = 2
             arr.6[28] = 1
-            tmp.6 = &arr.6
-            tmp.7 = array_param(tmp.6)
             tmp.8 = &arr.6
-            tmp.9 = sign_extend 4
-            tmp.10 = add_ptr(tmp.8, index=tmp.9, scale=4)
-            tmp.11 = *tmp.10
-            if !tmp.11 jump end_if_0
+            tmp.9 = array_param(tmp.8)
+            tmp.10 = &arr.6
+            tmp.11 = sign_extend 4
+            tmp.12 = add_ptr(tmp.10, index=tmp.11, scale=4)
+            tmp.13 = *tmp.12
+            if !tmp.13 jump end_if_0
             return 1
         
           end_if_0:
             i.7 = 0
         
           start_loop_0:
-            tmp.12 = i.7 < 8
-            if !tmp.12 jump break_loop_0
-            tmp.13 = i.7 != 4
-            if !tmp.13 jump and_false_2
-            tmp.16 = &arr.6
-            tmp.17 = sign_extend i.7
-            tmp.18 = add_ptr(tmp.16, index=tmp.17, scale=4)
-            tmp.19 = *tmp.18
-            tmp.21 = 8 - i.7
-            tmp.20 = tmp.19 != tmp.21
-            if !tmp.20 jump and_false_2
-            tmp.15 = 1
+            tmp.14 = i.7 < 8
+            if !tmp.14 jump break_loop_0
+            tmp.15 = i.7 != 4
+            if !tmp.15 jump and_false_2
+            tmp.18 = &arr.6
+            tmp.19 = sign_extend i.7
+            tmp.20 = add_ptr(tmp.18, index=tmp.19, scale=4)
+            tmp.21 = *tmp.20
+            tmp.23 = 8 - i.7
+            tmp.22 = tmp.21 != tmp.23
+            if !tmp.22 jump and_false_2
+            tmp.17 = 1
             jump and_end_3
         
           and_false_2:
-            tmp.15 = 0
+            tmp.17 = 0
         
           and_end_3:
-            if !tmp.15 jump end_if_4
+            if !tmp.17 jump end_if_4
             return 2
         
           end_if_4:
         
           continue_loop_0:
-            tmp.22 = i.7 + 1
-            i.7 = tmp.22
+            tmp.24 = i.7 + 1
+            i.7 = tmp.24
             jump start_loop_0
         
           break_loop_0:
-            tmp.23 = - 1
-            nested_arr.8[0] = tmp.23
-            tmp.24 = - 1
-            nested_arr.8[4] = tmp.24
             tmp.25 = - 1
-            nested_arr.8[8] = tmp.25
-            tmp.26 = - 2
-            nested_arr.8[12] = tmp.26
-            tmp.27 = - 2
-            nested_arr.8[16] = tmp.27
+            nested_arr.8[0] = tmp.25
+            tmp.26 = - 1
+            nested_arr.8[4] = tmp.26
+            tmp.27 = - 1
+            nested_arr.8[8] = tmp.27
             tmp.28 = - 2
-            nested_arr.8[20] = tmp.28
-            tmp.29 = - 3
-            nested_arr.8[24] = tmp.29
-            tmp.30 = - 3
-            nested_arr.8[28] = tmp.30
+            nested_arr.8[12] = tmp.28
+            tmp.29 = - 2
+            nested_arr.8[16] = tmp.29
+            tmp.30 = - 2
+            nested_arr.8[20] = tmp.30
             tmp.31 = - 3
-            nested_arr.8[32] = tmp.31
-            tmp.32 = - 4
-            nested_arr.8[36] = tmp.32
-            tmp.33 = - 4
-            nested_arr.8[40] = tmp.33
+            nested_arr.8[24] = tmp.31
+            tmp.32 = - 3
+            nested_arr.8[28] = tmp.32
+            tmp.33 = - 3
+            nested_arr.8[32] = tmp.33
             tmp.34 = - 4
-            nested_arr.8[44] = tmp.34
-            tmp.35 = &nested_arr.8
-            tmp.36 = nested_array_param(tmp.35)
+            nested_arr.8[36] = tmp.34
+            tmp.35 = - 4
+            nested_arr.8[40] = tmp.35
+            tmp.36 = - 4
+            nested_arr.8[44] = tmp.36
             tmp.37 = &nested_arr.8
-            tmp.38 = sign_extend 1
-            tmp.39 = add_ptr(tmp.37, index=tmp.38, scale=12)
+            tmp.38 = nested_array_param(tmp.37)
+            tmp.39 = &nested_arr.8
             tmp.40 = sign_extend 1
-            tmp.41 = add_ptr(tmp.39, index=tmp.40, scale=4)
-            tmp.42 = *tmp.41
-            tmp.43 = tmp.42 != 1
-            if !tmp.43 jump end_if_6
+            tmp.41 = add_ptr(tmp.39, index=tmp.40, scale=12)
+            tmp.42 = sign_extend 1
+            tmp.43 = add_ptr(tmp.41, index=tmp.42, scale=4)
+            tmp.44 = *tmp.43
+            tmp.45 = tmp.44 != 1
+            if !tmp.45 jump end_if_6
             return 3
         
           end_if_6:
             i.9 = 0
         
           start_loop_1:
-            tmp.44 = i.9 < 4
-            if !tmp.44 jump break_loop_1
-            tmp.45 = - 1
-            tmp.46 = tmp.45 - i.9
-            expected.10 = tmp.46
+            tmp.46 = i.9 < 4
+            if !tmp.46 jump break_loop_1
+            tmp.47 = - 1
+            tmp.48 = tmp.47 - i.9
+            expected.10 = tmp.48
             j.11 = 0
         
           start_loop_2:
-            tmp.47 = j.11 < 3
-            if !tmp.47 jump break_loop_2
-            tmp.48 = i.9 != 1
-            if tmp.48 jump or_true_8
-            tmp.51 = j.11 != 1
-            if tmp.51 jump or_true_8
-            tmp.50 = 0
+            tmp.49 = j.11 < 3
+            if !tmp.49 jump break_loop_2
+            tmp.50 = i.9 != 1
+            if tmp.50 jump or_true_8
+            tmp.53 = j.11 != 1
+            if tmp.53 jump or_true_8
+            tmp.52 = 0
             jump or_end_9
         
           or_true_8:
-            tmp.50 = 1
+            tmp.52 = 1
         
           or_end_9:
-            if !tmp.50 jump and_false_10
-            tmp.54 = &nested_arr.8
-            tmp.55 = sign_extend i.9
-            tmp.56 = add_ptr(tmp.54, index=tmp.55, scale=12)
-            tmp.57 = sign_extend j.11
-            tmp.58 = add_ptr(tmp.56, index=tmp.57, scale=4)
-            tmp.59 = *tmp.58
-            tmp.60 = tmp.59 != expected.10
-            if !tmp.60 jump and_false_10
-            tmp.53 = 1
+            if !tmp.52 jump and_false_10
+            tmp.56 = &nested_arr.8
+            tmp.57 = sign_extend i.9
+            tmp.58 = add_ptr(tmp.56, index=tmp.57, scale=12)
+            tmp.59 = sign_extend j.11
+            tmp.60 = add_ptr(tmp.58, index=tmp.59, scale=4)
+            tmp.61 = *tmp.60
+            tmp.62 = tmp.61 != expected.10
+            if !tmp.62 jump and_false_10
+            tmp.55 = 1
             jump and_end_11
         
           and_false_10:
-            tmp.53 = 0
+            tmp.55 = 0
         
           and_end_11:
-            if !tmp.53 jump end_if_12
+            if !tmp.55 jump end_if_12
             return 4
         
           end_if_12:
         
           continue_loop_2:
-            tmp.61 = j.11 + 1
-            j.11 = tmp.61
+            tmp.63 = j.11 + 1
+            j.11 = tmp.63
             jump start_loop_2
         
           break_loop_2:
         
           continue_loop_1:
-            tmp.62 = i.9 + 1
-            i.9 = tmp.62
+            tmp.64 = i.9 + 1
+            i.9 = tmp.64
             jump start_loop_1
         
           break_loop_1:
@@ -746,14 +750,15 @@ fn test_valid_declarators_equivalent_declarators() {
             tmp.14 = sign_extend 4
             tmp.15 = add_ptr(tmp.13, index=tmp.14, scale=4)
             *tmp.15 = 100
-            tmp.16 = &nested_arr.1
-            tmp.17 = sign_extend 2
-            tmp.18 = add_ptr(tmp.16, index=tmp.17, scale=24)
-            tmp.19 = sign_extend 4
-            tmp.20 = add_ptr(tmp.18, index=tmp.19, scale=4)
-            tmp.21 = *tmp.20
-            tmp.22 = tmp.21 != 100
-            if !tmp.22 jump end_if_4
+            tmp.16 = *tmp.15
+            tmp.17 = &nested_arr.1
+            tmp.18 = sign_extend 2
+            tmp.19 = add_ptr(tmp.17, index=tmp.18, scale=24)
+            tmp.20 = sign_extend 4
+            tmp.21 = add_ptr(tmp.19, index=tmp.20, scale=4)
+            tmp.22 = *tmp.21
+            tmp.23 = tmp.22 != 100
+            if !tmp.23 jump end_if_4
             return 3
         
           end_if_4:
@@ -764,61 +769,63 @@ fn test_valid_declarators_equivalent_declarators() {
             i.4 = 0
         
           start_loop_1:
-            tmp.23 = i.4 < 3
-            if !tmp.23 jump break_loop_1
-            tmp.24 = &array_of_pointers
-            tmp.25 = sign_extend i.4
-            tmp.26 = add_ptr(tmp.24, index=tmp.25, scale=8)
-            tmp.27 = *tmp.26
-            if !tmp.27 jump end_if_6
+            tmp.24 = i.4 < 3
+            if !tmp.24 jump break_loop_1
+            tmp.25 = &array_of_pointers
+            tmp.26 = sign_extend i.4
+            tmp.27 = add_ptr(tmp.25, index=tmp.26, scale=8)
+            tmp.28 = *tmp.27
+            if !tmp.28 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.28 = &array_of_pointers
-            tmp.29 = sign_extend i.4
-            tmp.30 = add_ptr(tmp.28, index=tmp.29, scale=8)
-            *tmp.30 = ptr.2
+            tmp.29 = &array_of_pointers
+            tmp.30 = sign_extend i.4
+            tmp.31 = add_ptr(tmp.29, index=tmp.30, scale=8)
+            *tmp.31 = ptr.2
+            tmp.32 = *tmp.31
         
           continue_loop_1:
-            tmp.31 = i.4 + 1
-            i.4 = tmp.31
+            tmp.33 = i.4 + 1
+            i.4 = tmp.33
             jump start_loop_1
         
           break_loop_1:
-            tmp.32 = &array_of_pointers
-            tmp.33 = sign_extend 2
-            tmp.34 = add_ptr(tmp.32, index=tmp.33, scale=8)
-            tmp.35 = *tmp.34
-            tmp.36 = sign_extend 0
-            tmp.37 = add_ptr(tmp.35, index=tmp.36, scale=4)
-            *tmp.37 = 11
-            tmp.38 = *ptr.2
-            tmp.39 = tmp.38 != 11
-            if !tmp.39 jump end_if_8
+            tmp.34 = &array_of_pointers
+            tmp.35 = sign_extend 2
+            tmp.36 = add_ptr(tmp.34, index=tmp.35, scale=8)
+            tmp.37 = *tmp.36
+            tmp.38 = sign_extend 0
+            tmp.39 = add_ptr(tmp.37, index=tmp.38, scale=4)
+            *tmp.39 = 11
+            tmp.40 = *tmp.39
+            tmp.41 = *ptr.2
+            tmp.42 = tmp.41 != 11
+            if !tmp.42 jump end_if_8
             return 5
         
           end_if_8:
             i.5 = 0
         
           start_loop_2:
-            tmp.40 = i.5 < 3
-            if !tmp.40 jump break_loop_2
-            tmp.41 = &array_of_pointers
-            tmp.42 = sign_extend i.5
-            tmp.43 = add_ptr(tmp.41, index=tmp.42, scale=8)
-            tmp.44 = *tmp.43
-            tmp.45 = sign_extend 0
-            tmp.46 = add_ptr(tmp.44, index=tmp.45, scale=4)
+            tmp.43 = i.5 < 3
+            if !tmp.43 jump break_loop_2
+            tmp.44 = &array_of_pointers
+            tmp.45 = sign_extend i.5
+            tmp.46 = add_ptr(tmp.44, index=tmp.45, scale=8)
             tmp.47 = *tmp.46
-            tmp.48 = tmp.47 != 11
-            if !tmp.48 jump end_if_10
+            tmp.48 = sign_extend 0
+            tmp.49 = add_ptr(tmp.47, index=tmp.48, scale=4)
+            tmp.50 = *tmp.49
+            tmp.51 = tmp.50 != 11
+            if !tmp.51 jump end_if_10
             return 6
         
           end_if_10:
         
           continue_loop_2:
-            tmp.49 = i.5 + 1
-            i.5 = tmp.49
+            tmp.52 = i.5 + 1
+            i.5 = tmp.52
             jump start_loop_2
         
           break_loop_2:
@@ -826,22 +833,22 @@ fn test_valid_declarators_equivalent_declarators() {
             return 0
         }
         global function main() { 
-            tmp.50 = test_arr()
-            check.6 = tmp.50
+            tmp.53 = test_arr()
+            check.6 = tmp.53
             if !check.6 jump end_if_12
             return check.6
         
           end_if_12:
-            tmp.51 = test_ptr_to_arr()
-            check.6 = tmp.51
+            tmp.54 = test_ptr_to_arr()
+            check.6 = tmp.54
             if !check.6 jump end_if_14
             return check.6
         
           end_if_14:
             x.7 = 0
-            tmp.52 = &x.7
-            tmp.53 = test_array_of_pointers(tmp.52)
-            check.6 = tmp.53
+            tmp.55 = &x.7
+            tmp.56 = test_array_of_pointers(tmp.55)
+            check.6 = tmp.56
             if !check.6 jump end_if_16
             return check.6
         
@@ -934,44 +941,46 @@ fn test_valid_declarators_return_nested_array() {
             tmp.1 = sign_extend 1
             tmp.2 = add_ptr(tmp.0, index=tmp.1, scale=4)
             *tmp.2 = x.0
-            tmp.3 = &arr
-            tmp.4 = sign_extend 2
-            tmp.5 = add_ptr(tmp.3, index=tmp.4, scale=4)
-            *tmp.5 = y.1
-            tmp.6 = &arr
-            return tmp.6
+            tmp.3 = *tmp.2
+            tmp.4 = &arr
+            tmp.5 = sign_extend 2
+            tmp.6 = add_ptr(tmp.4, index=tmp.5, scale=4)
+            *tmp.6 = y.1
+            tmp.7 = *tmp.6
+            tmp.8 = &arr
+            return tmp.8
             return 0
         }
         global function main() { 
-            tmp.7 = foo(2, 3)
-            arr.2 = tmp.7
-            tmp.8 = sign_extend 0
-            tmp.9 = add_ptr(arr.2, index=tmp.8, scale=12)
+            tmp.9 = foo(2, 3)
+            arr.2 = tmp.9
             tmp.10 = sign_extend 0
-            tmp.11 = add_ptr(tmp.9, index=tmp.10, scale=4)
-            tmp.12 = *tmp.11
-            tmp.13 = tmp.12 != 1
-            if !tmp.13 jump end_if_0
+            tmp.11 = add_ptr(arr.2, index=tmp.10, scale=12)
+            tmp.12 = sign_extend 0
+            tmp.13 = add_ptr(tmp.11, index=tmp.12, scale=4)
+            tmp.14 = *tmp.13
+            tmp.15 = tmp.14 != 1
+            if !tmp.15 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.14 = sign_extend 0
-            tmp.15 = add_ptr(arr.2, index=tmp.14, scale=12)
-            tmp.16 = sign_extend 1
-            tmp.17 = add_ptr(tmp.15, index=tmp.16, scale=4)
-            tmp.18 = *tmp.17
-            tmp.19 = tmp.18 != 2
-            if !tmp.19 jump end_if_2
+            tmp.16 = sign_extend 0
+            tmp.17 = add_ptr(arr.2, index=tmp.16, scale=12)
+            tmp.18 = sign_extend 1
+            tmp.19 = add_ptr(tmp.17, index=tmp.18, scale=4)
+            tmp.20 = *tmp.19
+            tmp.21 = tmp.20 != 2
+            if !tmp.21 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.20 = sign_extend 0
-            tmp.21 = add_ptr(arr.2, index=tmp.20, scale=12)
-            tmp.22 = sign_extend 2
-            tmp.23 = add_ptr(tmp.21, index=tmp.22, scale=4)
-            tmp.24 = *tmp.23
-            tmp.25 = tmp.24 != 3
-            if !tmp.25 jump end_if_4
+            tmp.22 = sign_extend 0
+            tmp.23 = add_ptr(arr.2, index=tmp.22, scale=12)
+            tmp.24 = sign_extend 2
+            tmp.25 = add_ptr(tmp.23, index=tmp.24, scale=4)
+            tmp.26 = *tmp.25
+            tmp.27 = tmp.26 != 3
+            if !tmp.27 jump end_if_4
             return 3
         
           end_if_4:
@@ -1067,27 +1076,28 @@ fn test_valid_extra_credit_bitwise_subscript() {
             tmp.36 = sign_extend 0
             tmp.37 = add_ptr(tmp.35, index=tmp.36, scale=4)
             *tmp.37 = 2041302511
-            tmp.38 = &arr.0
-            tmp.39 = sign_extend 0
-            tmp.40 = add_ptr(tmp.38, index=tmp.39, scale=4)
-            tmp.41 = *tmp.40
-            tmp.43 = &arr.0
-            tmp.44 = sign_extend 1
-            tmp.45 = add_ptr(tmp.43, index=tmp.44, scale=4)
-            tmp.46 = *tmp.45
-            tmp.42 = tmp.41 >> tmp.46
-            tmp.47 = tmp.42 != 1993459
-            if !tmp.47 jump end_if_6
+            tmp.38 = *tmp.37
+            tmp.39 = &arr.0
+            tmp.40 = sign_extend 0
+            tmp.41 = add_ptr(tmp.39, index=tmp.40, scale=4)
+            tmp.42 = *tmp.41
+            tmp.44 = &arr.0
+            tmp.45 = sign_extend 1
+            tmp.46 = add_ptr(tmp.44, index=tmp.45, scale=4)
+            tmp.47 = *tmp.46
+            tmp.43 = tmp.42 >> tmp.47
+            tmp.48 = tmp.43 != 1993459
+            if !tmp.48 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.48 = &arr.0
-            tmp.49 = sign_extend 5
-            tmp.50 = add_ptr(tmp.48, index=tmp.49, scale=4)
-            tmp.51 = *tmp.50
-            tmp.52 = tmp.51 << 3
-            tmp.53 = tmp.52 != 96
-            if !tmp.53 jump end_if_8
+            tmp.49 = &arr.0
+            tmp.50 = sign_extend 5
+            tmp.51 = add_ptr(tmp.49, index=tmp.50, scale=4)
+            tmp.52 = *tmp.51
+            tmp.53 = tmp.52 << 3
+            tmp.54 = tmp.53 != 96
+            if !tmp.54 jump end_if_8
             return 5
         
           end_if_8:
@@ -1149,89 +1159,91 @@ fn test_valid_extra_credit_compound_assign_and_increment() {
             tmp.11 = *tmp.10
             tmp.12 = tmp.11 * 3
             *tmp.10 = tmp.12
-            tmp.14 = - 9
-            tmp.13 = tmp.12 != tmp.14
-            if !tmp.13 jump end_if_0
+            tmp.13 = *tmp.10
+            tmp.15 = - 9
+            tmp.14 = tmp.13 != tmp.15
+            if !tmp.14 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.15 = *ptr.1
-            tmp.17 = - 2
-            tmp.16 = tmp.15 != tmp.17
-            if !tmp.16 jump end_if_2
+            tmp.16 = *ptr.1
+            tmp.18 = - 2
+            tmp.17 = tmp.16 != tmp.18
+            if !tmp.17 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.18 = idx.2 != 3
-            if !tmp.18 jump end_if_4
+            tmp.19 = idx.2 != 3
+            if !tmp.19 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.19 = idx.2
-            tmp.20 = dec idx.2
-            idx.2 = tmp.20
-            tmp.21 = add_ptr(ptr.1, index=-1L, scale=4)
-            ptr.1 = tmp.21
-            tmp.22 = sign_extend 3
-            tmp.23 = add_ptr(tmp.21, index=tmp.22, scale=4)
-            tmp.24 = *tmp.23
-            tmp.25 = tmp.24 + 4
-            *tmp.23 = tmp.25
-            if !tmp.25 jump end_if_6
+            tmp.20 = idx.2
+            tmp.21 = dec idx.2
+            idx.2 = tmp.21
+            tmp.22 = add_ptr(ptr.1, index=-1L, scale=4)
+            ptr.1 = tmp.22
+            tmp.23 = sign_extend 3
+            tmp.24 = add_ptr(tmp.22, index=tmp.23, scale=4)
+            tmp.25 = *tmp.24
+            tmp.26 = tmp.25 + 4
+            *tmp.24 = tmp.26
+            tmp.27 = *tmp.24
+            if !tmp.27 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.26 = &arr.0
-            tmp.27 = sign_extend 0
-            tmp.28 = add_ptr(tmp.26, index=tmp.27, scale=4)
-            tmp.29 = *tmp.28
-            tmp.31 = - 1
-            tmp.30 = tmp.29 != tmp.31
-            if tmp.30 jump or_true_8
-            tmp.34 = &arr.0
-            tmp.35 = sign_extend 1
-            tmp.36 = add_ptr(tmp.34, index=tmp.35, scale=4)
-            tmp.37 = *tmp.36
-            tmp.39 = - 2
-            tmp.38 = tmp.37 != tmp.39
-            if tmp.38 jump or_true_8
-            tmp.33 = 0
+            tmp.28 = &arr.0
+            tmp.29 = sign_extend 0
+            tmp.30 = add_ptr(tmp.28, index=tmp.29, scale=4)
+            tmp.31 = *tmp.30
+            tmp.33 = - 1
+            tmp.32 = tmp.31 != tmp.33
+            if tmp.32 jump or_true_8
+            tmp.36 = &arr.0
+            tmp.37 = sign_extend 1
+            tmp.38 = add_ptr(tmp.36, index=tmp.37, scale=4)
+            tmp.39 = *tmp.38
+            tmp.41 = - 2
+            tmp.40 = tmp.39 != tmp.41
+            if tmp.40 jump or_true_8
+            tmp.35 = 0
             jump or_end_9
         
           or_true_8:
-            tmp.33 = 1
+            tmp.35 = 1
         
           or_end_9:
-            if tmp.33 jump or_true_10
-            tmp.42 = &arr.0
-            tmp.43 = sign_extend 2
-            tmp.44 = add_ptr(tmp.42, index=tmp.43, scale=4)
-            tmp.45 = *tmp.44
-            tmp.47 = - 9
-            tmp.46 = tmp.45 != tmp.47
-            if tmp.46 jump or_true_10
-            tmp.41 = 0
+            if tmp.35 jump or_true_10
+            tmp.44 = &arr.0
+            tmp.45 = sign_extend 2
+            tmp.46 = add_ptr(tmp.44, index=tmp.45, scale=4)
+            tmp.47 = *tmp.46
+            tmp.49 = - 9
+            tmp.48 = tmp.47 != tmp.49
+            if tmp.48 jump or_true_10
+            tmp.43 = 0
             jump or_end_11
         
           or_true_10:
-            tmp.41 = 1
+            tmp.43 = 1
         
           or_end_11:
-            if tmp.41 jump or_true_12
-            tmp.50 = &arr.0
-            tmp.51 = sign_extend 3
-            tmp.52 = add_ptr(tmp.50, index=tmp.51, scale=4)
-            tmp.53 = *tmp.52
-            tmp.54 = tmp.53 != 0
-            if tmp.54 jump or_true_12
-            tmp.49 = 0
+            if tmp.43 jump or_true_12
+            tmp.52 = &arr.0
+            tmp.53 = sign_extend 3
+            tmp.54 = add_ptr(tmp.52, index=tmp.53, scale=4)
+            tmp.55 = *tmp.54
+            tmp.56 = tmp.55 != 0
+            if tmp.56 jump or_true_12
+            tmp.51 = 0
             jump or_end_13
         
           or_true_12:
-            tmp.49 = 1
+            tmp.51 = 1
         
           or_end_13:
-            if !tmp.49 jump end_if_14
+            if !tmp.51 jump end_if_14
             return 5
         
           end_if_14:
@@ -1290,82 +1302,88 @@ fn test_valid_extra_credit_compound_assign_array_of_pointers() {
             tmp.2 = add_ptr(tmp.0, index=tmp.1, scale=8)
             tmp.3 = &array1.1
             *tmp.2 = tmp.3
-            tmp.4 = &array_of_pointers.0
-            tmp.5 = sign_extend 1
-            tmp.6 = add_ptr(tmp.4, index=tmp.5, scale=8)
-            tmp.7 = &nested_array.2
-            tmp.8 = sign_extend 0
-            tmp.9 = add_ptr(tmp.7, index=tmp.8, scale=16)
-            *tmp.6 = tmp.9
-            tmp.10 = &array_of_pointers.0
-            tmp.11 = sign_extend 2
-            tmp.12 = add_ptr(tmp.10, index=tmp.11, scale=8)
-            tmp.13 = &nested_array.2
-            tmp.14 = sign_extend 1
-            tmp.15 = add_ptr(tmp.13, index=tmp.14, scale=16)
-            *tmp.12 = tmp.15
-            tmp.16 = &array_of_pointers.0
-            tmp.17 = sign_extend 0
-            tmp.18 = add_ptr(tmp.16, index=tmp.17, scale=8)
-            tmp.19 = *tmp.18
-            tmp.21 = sign_extend 1
-            tmp.20 = add_ptr(tmp.19, index=tmp.21, scale=16)
-            *tmp.18 = tmp.20
-            tmp.22 = &array_of_pointers.0
-            tmp.23 = sign_extend 0
-            tmp.24 = add_ptr(tmp.22, index=tmp.23, scale=8)
-            tmp.25 = *tmp.24
-            tmp.26 = - 1
-            tmp.27 = sign_extend tmp.26
-            tmp.28 = add_ptr(tmp.25, index=tmp.27, scale=16)
-            tmp.29 = sign_extend 3
-            tmp.30 = add_ptr(tmp.28, index=tmp.29, scale=4)
-            tmp.31 = *tmp.30
-            tmp.32 = tmp.31 != 103
-            if !tmp.32 jump end_if_0
+            tmp.4 = *tmp.2
+            tmp.5 = &array_of_pointers.0
+            tmp.6 = sign_extend 1
+            tmp.7 = add_ptr(tmp.5, index=tmp.6, scale=8)
+            tmp.8 = &nested_array.2
+            tmp.9 = sign_extend 0
+            tmp.10 = add_ptr(tmp.8, index=tmp.9, scale=16)
+            *tmp.7 = tmp.10
+            tmp.11 = *tmp.7
+            tmp.12 = &array_of_pointers.0
+            tmp.13 = sign_extend 2
+            tmp.14 = add_ptr(tmp.12, index=tmp.13, scale=8)
+            tmp.15 = &nested_array.2
+            tmp.16 = sign_extend 1
+            tmp.17 = add_ptr(tmp.15, index=tmp.16, scale=16)
+            *tmp.14 = tmp.17
+            tmp.18 = *tmp.14
+            tmp.19 = &array_of_pointers.0
+            tmp.20 = sign_extend 0
+            tmp.21 = add_ptr(tmp.19, index=tmp.20, scale=8)
+            tmp.22 = *tmp.21
+            tmp.24 = sign_extend 1
+            tmp.23 = add_ptr(tmp.22, index=tmp.24, scale=16)
+            *tmp.21 = tmp.23
+            tmp.25 = *tmp.21
+            tmp.26 = &array_of_pointers.0
+            tmp.27 = sign_extend 0
+            tmp.28 = add_ptr(tmp.26, index=tmp.27, scale=8)
+            tmp.29 = *tmp.28
+            tmp.30 = - 1
+            tmp.31 = sign_extend tmp.30
+            tmp.32 = add_ptr(tmp.29, index=tmp.31, scale=16)
+            tmp.33 = sign_extend 3
+            tmp.34 = add_ptr(tmp.32, index=tmp.33, scale=4)
+            tmp.35 = *tmp.34
+            tmp.36 = tmp.35 != 103
+            if !tmp.36 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.33 = &array_of_pointers.0
-            tmp.34 = sign_extend 1
-            tmp.35 = add_ptr(tmp.33, index=tmp.34, scale=8)
-            tmp.36 = *tmp.35
+            tmp.37 = &array_of_pointers.0
             tmp.38 = sign_extend 1
-            tmp.37 = add_ptr(tmp.36, index=tmp.38, scale=16)
-            *tmp.35 = tmp.37
-            tmp.39 = &array_of_pointers.0
-            tmp.40 = sign_extend 2
-            tmp.41 = add_ptr(tmp.39, index=tmp.40, scale=8)
-            tmp.42 = *tmp.41
-            tmp.44 = sign_extend 1
-            tmp.45 = - tmp.44
-            tmp.43 = add_ptr(tmp.42, index=tmp.45, scale=16)
-            *tmp.41 = tmp.43
-            tmp.46 = &array_of_pointers.0
-            tmp.47 = sign_extend 1
-            tmp.48 = add_ptr(tmp.46, index=tmp.47, scale=8)
-            tmp.49 = *tmp.48
-            tmp.50 = sign_extend 0
-            tmp.51 = add_ptr(tmp.49, index=tmp.50, scale=16)
-            tmp.52 = sign_extend 3
-            tmp.53 = add_ptr(tmp.51, index=tmp.52, scale=4)
-            tmp.54 = *tmp.53
-            tmp.55 = tmp.54 != 303
-            if !tmp.55 jump end_if_2
+            tmp.39 = add_ptr(tmp.37, index=tmp.38, scale=8)
+            tmp.40 = *tmp.39
+            tmp.42 = sign_extend 1
+            tmp.41 = add_ptr(tmp.40, index=tmp.42, scale=16)
+            *tmp.39 = tmp.41
+            tmp.43 = *tmp.39
+            tmp.44 = &array_of_pointers.0
+            tmp.45 = sign_extend 2
+            tmp.46 = add_ptr(tmp.44, index=tmp.45, scale=8)
+            tmp.47 = *tmp.46
+            tmp.49 = sign_extend 1
+            tmp.50 = - tmp.49
+            tmp.48 = add_ptr(tmp.47, index=tmp.50, scale=16)
+            *tmp.46 = tmp.48
+            tmp.51 = *tmp.46
+            tmp.52 = &array_of_pointers.0
+            tmp.53 = sign_extend 1
+            tmp.54 = add_ptr(tmp.52, index=tmp.53, scale=8)
+            tmp.55 = *tmp.54
+            tmp.56 = sign_extend 0
+            tmp.57 = add_ptr(tmp.55, index=tmp.56, scale=16)
+            tmp.58 = sign_extend 3
+            tmp.59 = add_ptr(tmp.57, index=tmp.58, scale=4)
+            tmp.60 = *tmp.59
+            tmp.61 = tmp.60 != 303
+            if !tmp.61 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.56 = &array_of_pointers.0
-            tmp.57 = sign_extend 2
-            tmp.58 = add_ptr(tmp.56, index=tmp.57, scale=8)
-            tmp.59 = *tmp.58
-            tmp.60 = sign_extend 0
-            tmp.61 = add_ptr(tmp.59, index=tmp.60, scale=16)
-            tmp.62 = sign_extend 3
-            tmp.63 = add_ptr(tmp.61, index=tmp.62, scale=4)
-            tmp.64 = *tmp.63
-            tmp.65 = tmp.64 != 203
-            if !tmp.65 jump end_if_4
+            tmp.62 = &array_of_pointers.0
+            tmp.63 = sign_extend 2
+            tmp.64 = add_ptr(tmp.62, index=tmp.63, scale=8)
+            tmp.65 = *tmp.64
+            tmp.66 = sign_extend 0
+            tmp.67 = add_ptr(tmp.65, index=tmp.66, scale=16)
+            tmp.68 = sign_extend 3
+            tmp.69 = add_ptr(tmp.67, index=tmp.68, scale=4)
+            tmp.70 = *tmp.69
+            tmp.71 = tmp.70 != 203
+            if !tmp.71 jump end_if_4
             return 3
         
           end_if_4:
@@ -1432,146 +1450,148 @@ fn test_valid_extra_credit_compound_assign_to_nested_subscript() {
             tmp.10 = sign_extend tmp.9
             tmp.8 = tmp.7 * tmp.10
             *tmp.6 = tmp.8
-            tmp.12 = - 6
-            tmp.13 = sign_extend tmp.12
-            tmp.11 = tmp.8 != tmp.13
-            if !tmp.11 jump end_if_0
+            tmp.11 = *tmp.6
+            tmp.13 = - 6
+            tmp.14 = sign_extend tmp.13
+            tmp.12 = tmp.11 != tmp.14
+            if !tmp.12 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.14 = &long_nested_arr
-            tmp.15 = sign_extend 1
-            tmp.16 = add_ptr(tmp.14, index=tmp.15, scale=24)
-            tmp.17 = sign_extend 2
-            tmp.18 = add_ptr(tmp.16, index=tmp.17, scale=8)
-            tmp.19 = *tmp.18
-            tmp.21 = - 6
-            tmp.22 = sign_extend tmp.21
-            tmp.20 = tmp.19 != tmp.22
-            if !tmp.20 jump end_if_2
+            tmp.15 = &long_nested_arr
+            tmp.16 = sign_extend 1
+            tmp.17 = add_ptr(tmp.15, index=tmp.16, scale=24)
+            tmp.18 = sign_extend 2
+            tmp.19 = add_ptr(tmp.17, index=tmp.18, scale=8)
+            tmp.20 = *tmp.19
+            tmp.22 = - 6
+            tmp.23 = sign_extend tmp.22
+            tmp.21 = tmp.20 != tmp.23
+            if !tmp.21 jump end_if_2
             return 2
         
           end_if_2:
             i.0 = 0
         
           start_loop_0:
-            tmp.23 = i.0 < 2
-            if !tmp.23 jump break_loop_0
+            tmp.24 = i.0 < 2
+            if !tmp.24 jump break_loop_0
             j.1 = 0
         
           start_loop_1:
-            tmp.24 = j.1 < 3
-            if !tmp.24 jump break_loop_1
-            tmp.25 = i.0 == 1
-            if !tmp.25 jump and_false_4
-            tmp.28 = j.1 == 2
-            if !tmp.28 jump and_false_4
-            tmp.27 = 1
+            tmp.25 = j.1 < 3
+            if !tmp.25 jump break_loop_1
+            tmp.26 = i.0 == 1
+            if !tmp.26 jump and_false_4
+            tmp.29 = j.1 == 2
+            if !tmp.29 jump and_false_4
+            tmp.28 = 1
             jump and_end_5
         
           and_false_4:
-            tmp.27 = 0
+            tmp.28 = 0
         
           and_end_5:
-            if !tmp.27 jump end_if_6
+            if !tmp.28 jump end_if_6
             jump break_loop_1
         
           end_if_6:
-            tmp.29 = i.0 * 3
-            tmp.30 = tmp.29 + j.1
-            tmp.31 = tmp.30 + 1
-            tmp.32 = sign_extend tmp.31
-            expected.2 = tmp.32
-            tmp.33 = &long_nested_arr
-            tmp.34 = sign_extend i.0
-            tmp.35 = add_ptr(tmp.33, index=tmp.34, scale=24)
-            tmp.36 = sign_extend j.1
-            tmp.37 = add_ptr(tmp.35, index=tmp.36, scale=8)
-            tmp.38 = *tmp.37
-            tmp.39 = tmp.38 != expected.2
-            if !tmp.39 jump end_if_8
+            tmp.30 = i.0 * 3
+            tmp.31 = tmp.30 + j.1
+            tmp.32 = tmp.31 + 1
+            tmp.33 = sign_extend tmp.32
+            expected.2 = tmp.33
+            tmp.34 = &long_nested_arr
+            tmp.35 = sign_extend i.0
+            tmp.36 = add_ptr(tmp.34, index=tmp.35, scale=24)
+            tmp.37 = sign_extend j.1
+            tmp.38 = add_ptr(tmp.36, index=tmp.37, scale=8)
+            tmp.39 = *tmp.38
+            tmp.40 = tmp.39 != expected.2
+            if !tmp.40 jump end_if_8
             return 3
         
           end_if_8:
         
           continue_loop_1:
-            tmp.40 = j.1 + 1
-            j.1 = tmp.40
+            tmp.41 = j.1 + 1
+            j.1 = tmp.41
             jump start_loop_1
         
           break_loop_1:
         
           continue_loop_0:
-            tmp.41 = i.0 + 1
-            i.0 = tmp.41
+            tmp.42 = i.0 + 1
+            i.0 = tmp.42
             jump start_loop_0
         
           break_loop_0:
-            tmp.42 = &dbl_nested_arr
-            tmp.43 = sign_extend 1
-            tmp.44 = add_ptr(tmp.42, index=tmp.43, scale=16)
-            tmp.45 = sign_extend 1
-            tmp.46 = add_ptr(tmp.44, index=tmp.45, scale=8)
-            tmp.47 = *tmp.46
-            tmp.48 = tmp.47 + 100D
-            *tmp.46 = tmp.48
-            tmp.49 = tmp.48 != 203D
-            if !tmp.49 jump end_if_10
+            tmp.43 = &dbl_nested_arr
+            tmp.44 = sign_extend 1
+            tmp.45 = add_ptr(tmp.43, index=tmp.44, scale=16)
+            tmp.46 = sign_extend 1
+            tmp.47 = add_ptr(tmp.45, index=tmp.46, scale=8)
+            tmp.48 = *tmp.47
+            tmp.49 = tmp.48 + 100D
+            *tmp.47 = tmp.49
+            tmp.50 = *tmp.47
+            tmp.51 = tmp.50 != 203D
+            if !tmp.51 jump end_if_10
             return 4
         
           end_if_10:
             i.3 = 0
         
           start_loop_2:
-            tmp.50 = i.3 < 3
-            if !tmp.50 jump break_loop_2
+            tmp.52 = i.3 < 3
+            if !tmp.52 jump break_loop_2
             j.4 = 0
         
           start_loop_3:
-            tmp.51 = j.4 < 2
-            if !tmp.51 jump break_loop_3
-            tmp.52 = i.3 == 1
-            if !tmp.52 jump and_false_12
-            tmp.55 = j.4 == 1
-            if !tmp.55 jump and_false_12
-            tmp.54 = 1
+            tmp.53 = j.4 < 2
+            if !tmp.53 jump break_loop_3
+            tmp.54 = i.3 == 1
+            if !tmp.54 jump and_false_12
+            tmp.57 = j.4 == 1
+            if !tmp.57 jump and_false_12
+            tmp.56 = 1
             jump and_end_13
         
           and_false_12:
-            tmp.54 = 0
+            tmp.56 = 0
         
           and_end_13:
-            if !tmp.54 jump end_if_14
+            if !tmp.56 jump end_if_14
             jump continue_loop_3
         
           end_if_14:
-            tmp.57 = i.3 * 2
-            tmp.56 = 100 + tmp.57
-            tmp.58 = tmp.56 + j.4
-            expected.5 = tmp.58
-            tmp.59 = &dbl_nested_arr
-            tmp.60 = sign_extend i.3
-            tmp.61 = add_ptr(tmp.59, index=tmp.60, scale=16)
-            tmp.62 = sign_extend j.4
-            tmp.63 = add_ptr(tmp.61, index=tmp.62, scale=8)
-            tmp.64 = *tmp.63
-            tmp.66 = int_to_double expected.5
-            tmp.65 = tmp.64 != tmp.66
-            if !tmp.65 jump end_if_16
+            tmp.59 = i.3 * 2
+            tmp.58 = 100 + tmp.59
+            tmp.60 = tmp.58 + j.4
+            expected.5 = tmp.60
+            tmp.61 = &dbl_nested_arr
+            tmp.62 = sign_extend i.3
+            tmp.63 = add_ptr(tmp.61, index=tmp.62, scale=16)
+            tmp.64 = sign_extend j.4
+            tmp.65 = add_ptr(tmp.63, index=tmp.64, scale=8)
+            tmp.66 = *tmp.65
+            tmp.68 = int_to_double expected.5
+            tmp.67 = tmp.66 != tmp.68
+            if !tmp.67 jump end_if_16
             return 5
         
           end_if_16:
         
           continue_loop_3:
-            tmp.67 = j.4 + 1
-            j.4 = tmp.67
+            tmp.69 = j.4 + 1
+            j.4 = tmp.69
             jump start_loop_3
         
           break_loop_3:
         
           continue_loop_2:
-            tmp.68 = i.3 + 1
-            i.3 = tmp.68
+            tmp.70 = i.3 + 1
+            i.3 = tmp.70
             jump start_loop_2
         
           break_loop_2:
@@ -1639,118 +1659,122 @@ fn test_valid_extra_credit_compound_assign_to_subscripted_val() {
             tmp.6 = 2
             tmp.5 = tmp.4 + tmp.6
             *tmp.3 = tmp.5
-            tmp.7 = &unsigned_arr
-            tmp.8 = sign_extend 1
-            tmp.9 = add_ptr(tmp.7, index=tmp.8, scale=4)
-            tmp.10 = *tmp.9
-            if !tmp.10 jump end_if_0
+            tmp.7 = *tmp.3
+            tmp.8 = &unsigned_arr
+            tmp.9 = sign_extend 1
+            tmp.10 = add_ptr(tmp.8, index=tmp.9, scale=4)
+            tmp.11 = *tmp.10
+            if !tmp.11 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.11 = &unsigned_arr
-            tmp.12 = sign_extend idx
-            tmp.13 = add_ptr(tmp.11, index=tmp.12, scale=4)
-            tmp.14 = *tmp.13
-            tmp.15 = uint_to_double tmp.14
-            tmp.16 = tmp.15 - 10D
-            tmp.17 = double_to_uint tmp.16
-            *tmp.13 = tmp.17
+            tmp.12 = &unsigned_arr
+            tmp.13 = sign_extend idx
+            tmp.14 = add_ptr(tmp.12, index=tmp.13, scale=4)
+            tmp.15 = *tmp.14
+            tmp.16 = uint_to_double tmp.15
+            tmp.17 = tmp.16 - 10D
             tmp.18 = double_to_uint tmp.17
-            tmp.19 = &unsigned_arr
-            tmp.20 = sign_extend idx
-            tmp.21 = add_ptr(tmp.19, index=tmp.20, scale=4)
-            tmp.22 = *tmp.21
-            tmp.23 = tmp.22 != 4294967283U
-            if !tmp.23 jump end_if_2
+            *tmp.14 = tmp.18
+            tmp.19 = *tmp.14
+            tmp.20 = &unsigned_arr
+            tmp.21 = sign_extend idx
+            tmp.22 = add_ptr(tmp.20, index=tmp.21, scale=4)
+            tmp.23 = *tmp.22
+            tmp.24 = tmp.23 != 4294967283U
+            if !tmp.24 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.24 = &unsigned_arr
-            tmp.26 = sign_extend 4
-            tmp.25 = add_ptr(tmp.24, index=tmp.26, scale=4)
-            unsigned_ptr.0 = tmp.25
-            tmp.27 = add_ptr(unsigned_ptr.0, index=long_idx, scale=4)
-            tmp.28 = *tmp.27
-            tmp.30 = 10
-            tmp.29 = tmp.28 / tmp.30
-            *tmp.27 = tmp.29
-            tmp.31 = &unsigned_arr
-            tmp.32 = sign_extend 3
-            tmp.33 = add_ptr(tmp.31, index=tmp.32, scale=4)
-            tmp.34 = *tmp.33
-            tmp.35 = tmp.34 != 429496729U
-            if !tmp.35 jump end_if_4
+            tmp.25 = &unsigned_arr
+            tmp.27 = sign_extend 4
+            tmp.26 = add_ptr(tmp.25, index=tmp.27, scale=4)
+            unsigned_ptr.0 = tmp.26
+            tmp.28 = add_ptr(unsigned_ptr.0, index=long_idx, scale=4)
+            tmp.29 = *tmp.28
+            tmp.31 = 10
+            tmp.30 = tmp.29 / tmp.31
+            *tmp.28 = tmp.30
+            tmp.32 = *tmp.28
+            tmp.33 = &unsigned_arr
+            tmp.34 = sign_extend 3
+            tmp.35 = add_ptr(tmp.33, index=tmp.34, scale=4)
+            tmp.36 = *tmp.35
+            tmp.37 = tmp.36 != 429496729U
+            if !tmp.37 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.37 = sign_extend 2
-            tmp.36 = long_idx * tmp.37
-            long_idx = tmp.36
-            tmp.38 = add_ptr(unsigned_ptr.0, index=tmp.36, scale=4)
-            tmp.39 = *tmp.38
-            tmp.41 = &unsigned_arr
-            tmp.42 = sign_extend 0
-            tmp.43 = add_ptr(tmp.41, index=tmp.42, scale=4)
-            tmp.44 = *tmp.43
-            tmp.40 = tmp.39 * tmp.44
-            *tmp.38 = tmp.40
-            tmp.45 = &unsigned_arr
-            tmp.46 = sign_extend 2
-            tmp.47 = add_ptr(tmp.45, index=tmp.46, scale=4)
-            tmp.48 = *tmp.47
-            tmp.50 = 13
-            tmp.49 = tmp.48 != tmp.50
-            if !tmp.49 jump end_if_6
+            tmp.39 = sign_extend 2
+            tmp.38 = long_idx * tmp.39
+            long_idx = tmp.38
+            tmp.40 = add_ptr(unsigned_ptr.0, index=long_idx, scale=4)
+            tmp.41 = *tmp.40
+            tmp.43 = &unsigned_arr
+            tmp.44 = sign_extend 0
+            tmp.45 = add_ptr(tmp.43, index=tmp.44, scale=4)
+            tmp.46 = *tmp.45
+            tmp.42 = tmp.41 * tmp.46
+            *tmp.40 = tmp.42
+            tmp.47 = *tmp.40
+            tmp.48 = &unsigned_arr
+            tmp.49 = sign_extend 2
+            tmp.50 = add_ptr(tmp.48, index=tmp.49, scale=4)
+            tmp.51 = *tmp.50
+            tmp.53 = 13
+            tmp.52 = tmp.51 != tmp.53
+            if !tmp.52 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.51 = &unsigned_arr
-            tmp.52 = sign_extend idx
-            tmp.53 = tmp.52 + long_idx
-            tmp.54 = add_ptr(tmp.51, index=tmp.53, scale=4)
-            tmp.55 = *tmp.54
-            tmp.57 = 10
-            tmp.56 = tmp.55 % tmp.57
-            *tmp.54 = tmp.56
-            tmp.59 = 5
-            tmp.58 = tmp.56 != tmp.59
-            if !tmp.58 jump end_if_8
+            tmp.54 = &unsigned_arr
+            tmp.55 = sign_extend idx
+            tmp.56 = tmp.55 + long_idx
+            tmp.57 = add_ptr(tmp.54, index=tmp.56, scale=4)
+            tmp.58 = *tmp.57
+            tmp.60 = 10
+            tmp.59 = tmp.58 % tmp.60
+            *tmp.57 = tmp.59
+            tmp.61 = *tmp.57
+            tmp.63 = 5
+            tmp.62 = tmp.61 != tmp.63
+            if !tmp.62 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.60 = &unsigned_arr
-            tmp.61 = sign_extend 0
-            tmp.62 = add_ptr(tmp.60, index=tmp.61, scale=4)
-            tmp.63 = *tmp.62
-            tmp.64 = tmp.63 != 5U
-            if !tmp.64 jump end_if_10
+            tmp.64 = &unsigned_arr
+            tmp.65 = sign_extend 0
+            tmp.66 = add_ptr(tmp.64, index=tmp.65, scale=4)
+            tmp.67 = *tmp.66
+            tmp.68 = tmp.67 != 5U
+            if !tmp.68 jump end_if_10
             return 6
         
           end_if_10:
-            tmp.65 = &unsigned_arr
-            tmp.66 = sign_extend 1
-            tmp.67 = add_ptr(tmp.65, index=tmp.66, scale=4)
-            tmp.68 = *tmp.67
-            if !tmp.68 jump end_if_12
+            tmp.69 = &unsigned_arr
+            tmp.70 = sign_extend 1
+            tmp.71 = add_ptr(tmp.69, index=tmp.70, scale=4)
+            tmp.72 = *tmp.71
+            if !tmp.72 jump end_if_12
             return 7
         
           end_if_12:
-            tmp.69 = &unsigned_arr
-            tmp.70 = sign_extend 2
-            tmp.71 = add_ptr(tmp.69, index=tmp.70, scale=4)
-            tmp.72 = *tmp.71
-            tmp.74 = 13
-            tmp.73 = tmp.72 != tmp.74
-            if !tmp.73 jump end_if_14
+            tmp.73 = &unsigned_arr
+            tmp.74 = sign_extend 2
+            tmp.75 = add_ptr(tmp.73, index=tmp.74, scale=4)
+            tmp.76 = *tmp.75
+            tmp.78 = 13
+            tmp.77 = tmp.76 != tmp.78
+            if !tmp.77 jump end_if_14
             return 8
         
           end_if_14:
-            tmp.75 = &unsigned_arr
-            tmp.76 = sign_extend 3
-            tmp.77 = add_ptr(tmp.75, index=tmp.76, scale=4)
-            tmp.78 = *tmp.77
-            tmp.79 = tmp.78 != 429496729U
-            if !tmp.79 jump end_if_16
+            tmp.79 = &unsigned_arr
+            tmp.80 = sign_extend 3
+            tmp.81 = add_ptr(tmp.79, index=tmp.80, scale=4)
+            tmp.82 = *tmp.81
+            tmp.83 = tmp.82 != 429496729U
+            if !tmp.83 jump end_if_16
             return 9
         
           end_if_16:
@@ -1816,84 +1840,89 @@ fn test_valid_extra_credit_compound_bitwise_subscript() {
             tmp.10 = *tmp.9
             tmp.6 = tmp.5 & tmp.10
             *tmp.4 = tmp.6
-            tmp.11 = &arr.0
-            tmp.12 = sign_extend 1
-            tmp.13 = add_ptr(tmp.11, index=tmp.12, scale=8)
-            tmp.14 = *tmp.13
-            tmp.16 = 1085102592318504960L
-            tmp.15 = tmp.14 != tmp.16
-            if !tmp.15 jump end_if_0
+            tmp.11 = *tmp.4
+            tmp.12 = &arr.0
+            tmp.13 = sign_extend 1
+            tmp.14 = add_ptr(tmp.12, index=tmp.13, scale=8)
+            tmp.15 = *tmp.14
+            tmp.17 = 1085102592318504960L
+            tmp.16 = tmp.15 != tmp.17
+            if !tmp.16 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.17 = &arr.0
-            tmp.18 = sign_extend 0
-            tmp.19 = add_ptr(tmp.17, index=tmp.18, scale=8)
-            tmp.20 = *tmp.19
-            tmp.22 = &arr.0
-            tmp.23 = sign_extend 1
-            tmp.24 = add_ptr(tmp.22, index=tmp.23, scale=8)
-            tmp.25 = *tmp.24
-            tmp.21 = tmp.20 | tmp.25
-            *tmp.19 = tmp.21
-            tmp.26 = &arr.0
-            tmp.27 = sign_extend 0
-            tmp.28 = add_ptr(tmp.26, index=tmp.27, scale=8)
-            tmp.29 = *tmp.28
-            tmp.30 = tmp.29 != 1085102594465988608UL
-            if !tmp.30 jump end_if_2
+            tmp.18 = &arr.0
+            tmp.19 = sign_extend 0
+            tmp.20 = add_ptr(tmp.18, index=tmp.19, scale=8)
+            tmp.21 = *tmp.20
+            tmp.23 = &arr.0
+            tmp.24 = sign_extend 1
+            tmp.25 = add_ptr(tmp.23, index=tmp.24, scale=8)
+            tmp.26 = *tmp.25
+            tmp.22 = tmp.21 | tmp.26
+            *tmp.20 = tmp.22
+            tmp.27 = *tmp.20
+            tmp.28 = &arr.0
+            tmp.29 = sign_extend 0
+            tmp.30 = add_ptr(tmp.28, index=tmp.29, scale=8)
+            tmp.31 = *tmp.30
+            tmp.32 = tmp.31 != 1085102594465988608UL
+            if !tmp.32 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.31 = &arr.0
-            tmp.32 = sign_extend 2
-            tmp.33 = add_ptr(tmp.31, index=tmp.32, scale=8)
-            tmp.34 = *tmp.33
-            tmp.36 = &arr.0
-            tmp.37 = sign_extend 3
-            tmp.38 = add_ptr(tmp.36, index=tmp.37, scale=8)
-            tmp.39 = *tmp.38
-            tmp.35 = tmp.34 ^ tmp.39
-            *tmp.33 = tmp.35
-            tmp.40 = &arr.0
-            tmp.41 = sign_extend 2
-            tmp.42 = add_ptr(tmp.40, index=tmp.41, scale=8)
-            tmp.43 = *tmp.42
-            tmp.44 = tmp.43 != 10308474629425925903UL
-            if !tmp.44 jump end_if_4
+            tmp.33 = &arr.0
+            tmp.34 = sign_extend 2
+            tmp.35 = add_ptr(tmp.33, index=tmp.34, scale=8)
+            tmp.36 = *tmp.35
+            tmp.38 = &arr.0
+            tmp.39 = sign_extend 3
+            tmp.40 = add_ptr(tmp.38, index=tmp.39, scale=8)
+            tmp.41 = *tmp.40
+            tmp.37 = tmp.36 ^ tmp.41
+            *tmp.35 = tmp.37
+            tmp.42 = *tmp.35
+            tmp.43 = &arr.0
+            tmp.44 = sign_extend 2
+            tmp.45 = add_ptr(tmp.43, index=tmp.44, scale=8)
+            tmp.46 = *tmp.45
+            tmp.47 = tmp.46 != 10308474629425925903UL
+            if !tmp.47 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.45 = &arr.0
-            tmp.46 = sign_extend 3
-            tmp.47 = add_ptr(tmp.45, index=tmp.46, scale=8)
-            tmp.48 = *tmp.47
-            tmp.50 = sign_extend 25
-            tmp.49 = tmp.48 >> tmp.50
-            *tmp.47 = tmp.49
-            tmp.51 = &arr.0
-            tmp.52 = sign_extend 3
-            tmp.53 = add_ptr(tmp.51, index=tmp.52, scale=8)
-            tmp.54 = *tmp.53
-            tmp.56 = 32338577287L
-            tmp.55 = tmp.54 != tmp.56
-            if !tmp.55 jump end_if_6
+            tmp.48 = &arr.0
+            tmp.49 = sign_extend 3
+            tmp.50 = add_ptr(tmp.48, index=tmp.49, scale=8)
+            tmp.51 = *tmp.50
+            tmp.53 = sign_extend 25
+            tmp.52 = tmp.51 >> tmp.53
+            *tmp.50 = tmp.52
+            tmp.54 = *tmp.50
+            tmp.55 = &arr.0
+            tmp.56 = sign_extend 3
+            tmp.57 = add_ptr(tmp.55, index=tmp.56, scale=8)
+            tmp.58 = *tmp.57
+            tmp.60 = 32338577287L
+            tmp.59 = tmp.58 != tmp.60
+            if !tmp.59 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.57 = &arr.0
-            tmp.58 = sign_extend 1
-            tmp.59 = add_ptr(tmp.57, index=tmp.58, scale=8)
-            tmp.60 = *tmp.59
-            tmp.62 = sign_extend 12
-            tmp.61 = tmp.60 << tmp.62
-            *tmp.59 = tmp.61
-            tmp.63 = &arr.0
-            tmp.64 = sign_extend 1
-            tmp.65 = add_ptr(tmp.63, index=tmp.64, scale=8)
-            tmp.66 = *tmp.65
-            tmp.67 = tmp.66 != 17361640446303928320UL
-            if !tmp.67 jump end_if_8
+            tmp.61 = &arr.0
+            tmp.62 = sign_extend 1
+            tmp.63 = add_ptr(tmp.61, index=tmp.62, scale=8)
+            tmp.64 = *tmp.63
+            tmp.66 = sign_extend 12
+            tmp.65 = tmp.64 << tmp.66
+            *tmp.63 = tmp.65
+            tmp.67 = *tmp.63
+            tmp.68 = &arr.0
+            tmp.69 = sign_extend 1
+            tmp.70 = add_ptr(tmp.68, index=tmp.69, scale=8)
+            tmp.71 = *tmp.70
+            tmp.72 = tmp.71 != 17361640446303928320UL
+            if !tmp.72 jump end_if_8
             return 5
         
           end_if_8:
@@ -2078,7 +2107,7 @@ fn test_valid_extra_credit_compound_nested_pointer_assignment() {
             tmp.47 = add_ptr(tmp.45, index=tmp.46, scale=160)
             tmp.48 = sign_extend 2
             tmp.49 = add_ptr(tmp.47, index=tmp.48, scale=40)
-            tmp.44 = tmp.42 != tmp.49
+            tmp.44 = inner_ptr.1 != tmp.49
             if !tmp.44 jump end_if_6
             return 4
         
@@ -2215,7 +2244,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             tmp.2 = sign_extend 5
             tmp.1 = add_ptr(ptr.1, index=tmp.2, scale=4)
             ptr.1 = tmp.1
-            tmp.3 = *tmp.1
+            tmp.3 = *ptr.1
             tmp.4 = tmp.3 != 6
             if !tmp.4 jump end_if_0
             return 1
@@ -2241,7 +2270,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             tmp.15 = - tmp.14
             tmp.13 = add_ptr(ptr.1, index=tmp.15, scale=4)
             ptr.1 = tmp.13
-            tmp.16 = *tmp.13
+            tmp.16 = *ptr.1
             tmp.17 = tmp.16 != 3
             if !tmp.17 jump end_if_6
             return 4
@@ -2270,7 +2299,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             tmp.30 = &arr.0
             tmp.32 = sign_extend 5
             tmp.31 = add_ptr(tmp.30, index=tmp.32, scale=4)
-            tmp.29 = tmp.26 != tmp.31
+            tmp.29 = ptr.1 != tmp.31
             if !tmp.29 jump end_if_12
             return 7
         
@@ -2290,7 +2319,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             tmp.41 = &arr.0
             tmp.43 = sign_extend 2
             tmp.42 = add_ptr(tmp.41, index=tmp.43, scale=4)
-            tmp.40 = tmp.35 != tmp.42
+            tmp.40 = ptr.1 != tmp.42
             if !tmp.40 jump end_if_16
             return 9
         
@@ -2309,7 +2338,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             tmp.50 = &arr.0
             tmp.52 = sign_extend 3
             tmp.51 = add_ptr(tmp.50, index=tmp.52, scale=4)
-            tmp.49 = tmp.46 != tmp.51
+            tmp.49 = ptr.1 != tmp.51
             if !tmp.49 jump end_if_20
             return 11
         
@@ -2329,7 +2358,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             tmp.57 = sign_extend 5
             tmp.56 = add_ptr(ptr.4, index=tmp.57, scale=8)
             ptr.4 = tmp.56
-            tmp.58 = *tmp.56
+            tmp.58 = *ptr.4
             tmp.60 = int_to_double 6
             tmp.59 = tmp.58 != tmp.60
             if !tmp.59 jump end_if_24
@@ -2357,7 +2386,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             tmp.72 = - tmp.71
             tmp.70 = add_ptr(ptr.4, index=tmp.72, scale=8)
             ptr.4 = tmp.70
-            tmp.73 = *tmp.70
+            tmp.73 = *ptr.4
             tmp.75 = int_to_double 3
             tmp.74 = tmp.73 != tmp.75
             if !tmp.74 jump end_if_30
@@ -2388,7 +2417,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             tmp.89 = &arr.3
             tmp.91 = sign_extend 5
             tmp.90 = add_ptr(tmp.89, index=tmp.91, scale=8)
-            tmp.88 = tmp.85 != tmp.90
+            tmp.88 = ptr.4 != tmp.90
             if !tmp.88 jump end_if_36
             return 7
         
@@ -2409,7 +2438,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             tmp.101 = &arr.3
             tmp.103 = sign_extend 2
             tmp.102 = add_ptr(tmp.101, index=tmp.103, scale=8)
-            tmp.100 = tmp.95 != tmp.102
+            tmp.100 = ptr.4 != tmp.102
             if !tmp.100 jump end_if_40
             return 9
         
@@ -2429,7 +2458,7 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
             tmp.111 = &arr.3
             tmp.113 = sign_extend 3
             tmp.112 = add_ptr(tmp.111, index=tmp.113, scale=8)
-            tmp.110 = tmp.107 != tmp.112
+            tmp.110 = ptr.4 != tmp.112
             if !tmp.110 jump end_if_44
             return 11
         
@@ -2447,13 +2476,13 @@ fn test_valid_extra_credit_compound_pointer_assignment() {
         global function main() { 
             tmp.117 = int_array()
             result.6 = tmp.117
-            if !tmp.117 jump end_if_48
+            if !result.6 jump end_if_48
             return result.6
         
           end_if_48:
             tmp.118 = double_array()
             result.6 = tmp.118
-            if !tmp.118 jump end_if_50
+            if !result.6 jump end_if_50
             tmp.119 = result.6 + 12
             return tmp.119
         
@@ -3272,96 +3301,97 @@ fn test_valid_initialization_automatic() {
         }
         global function test_non_constant(negative_7billion.2, ptr.3) { 
             *ptr.3 = 1
-            tmp.53 = three()
-            tmp.54 = sign_extend tmp.53
-            tmp.52 = negative_7billion.2 * tmp.54
-            var.4 = tmp.52
+            tmp.52 = *ptr.3
+            tmp.54 = three()
+            tmp.55 = sign_extend tmp.54
+            tmp.53 = negative_7billion.2 * tmp.55
+            var.4 = tmp.53
             arr.5[0] = negative_7billion.2
-            tmp.55 = three()
-            tmp.56 = sign_extend tmp.55
-            tmp.57 = tmp.56 * 7L
-            arr.5[8] = tmp.57
-            tmp.58 = *ptr.3
-            tmp.59 = sign_extend tmp.58
-            tmp.60 = - tmp.59
-            arr.5[16] = tmp.60
+            tmp.56 = three()
+            tmp.57 = sign_extend tmp.56
+            tmp.58 = tmp.57 * 7L
+            arr.5[8] = tmp.58
+            tmp.59 = *ptr.3
+            tmp.60 = sign_extend tmp.59
+            tmp.61 = - tmp.60
+            arr.5[16] = tmp.61
             if !negative_7billion.2 jump else_13
-            tmp.62 = 2
+            tmp.63 = 2
             jump end_if_12
         
           else_13:
-            tmp.62 = 3
+            tmp.63 = 3
         
           end_if_12:
-            tmp.63 = sign_extend tmp.62
-            tmp.61 = var.4 + tmp.63
-            arr.5[24] = tmp.61
+            tmp.64 = sign_extend tmp.63
+            tmp.62 = var.4 + tmp.64
+            arr.5[24] = tmp.62
             arr.5[32] = 0L
-            tmp.64 = &arr.5
-            tmp.65 = sign_extend 0
-            tmp.66 = add_ptr(tmp.64, index=tmp.65, scale=8)
-            tmp.67 = *tmp.66
-            tmp.69 = - 7000000000L
-            tmp.68 = tmp.67 == tmp.69
-            if !tmp.68 jump and_false_14
-            tmp.72 = &arr.5
-            tmp.73 = sign_extend 1
-            tmp.74 = add_ptr(tmp.72, index=tmp.73, scale=8)
-            tmp.75 = *tmp.74
-            tmp.76 = tmp.75 == 21L
-            if !tmp.76 jump and_false_14
-            tmp.71 = 1
+            tmp.65 = &arr.5
+            tmp.66 = sign_extend 0
+            tmp.67 = add_ptr(tmp.65, index=tmp.66, scale=8)
+            tmp.68 = *tmp.67
+            tmp.70 = - 7000000000L
+            tmp.69 = tmp.68 == tmp.70
+            if !tmp.69 jump and_false_14
+            tmp.73 = &arr.5
+            tmp.74 = sign_extend 1
+            tmp.75 = add_ptr(tmp.73, index=tmp.74, scale=8)
+            tmp.76 = *tmp.75
+            tmp.77 = tmp.76 == 21L
+            if !tmp.77 jump and_false_14
+            tmp.72 = 1
             jump and_end_15
         
           and_false_14:
-            tmp.71 = 0
+            tmp.72 = 0
         
           and_end_15:
-            if !tmp.71 jump and_false_16
-            tmp.79 = &arr.5
-            tmp.80 = sign_extend 2
-            tmp.81 = add_ptr(tmp.79, index=tmp.80, scale=8)
-            tmp.82 = *tmp.81
-            tmp.84 = - 1L
-            tmp.83 = tmp.82 == tmp.84
-            if !tmp.83 jump and_false_16
-            tmp.78 = 1
+            if !tmp.72 jump and_false_16
+            tmp.80 = &arr.5
+            tmp.81 = sign_extend 2
+            tmp.82 = add_ptr(tmp.80, index=tmp.81, scale=8)
+            tmp.83 = *tmp.82
+            tmp.85 = - 1L
+            tmp.84 = tmp.83 == tmp.85
+            if !tmp.84 jump and_false_16
+            tmp.79 = 1
             jump and_end_17
         
           and_false_16:
-            tmp.78 = 0
+            tmp.79 = 0
         
           and_end_17:
-            if !tmp.78 jump and_false_18
-            tmp.87 = &arr.5
-            tmp.88 = sign_extend 3
-            tmp.89 = add_ptr(tmp.87, index=tmp.88, scale=8)
-            tmp.90 = *tmp.89
-            tmp.92 = - 20999999998L
-            tmp.91 = tmp.90 == tmp.92
-            if !tmp.91 jump and_false_18
-            tmp.86 = 1
+            if !tmp.79 jump and_false_18
+            tmp.88 = &arr.5
+            tmp.89 = sign_extend 3
+            tmp.90 = add_ptr(tmp.88, index=tmp.89, scale=8)
+            tmp.91 = *tmp.90
+            tmp.93 = - 20999999998L
+            tmp.92 = tmp.91 == tmp.93
+            if !tmp.92 jump and_false_18
+            tmp.87 = 1
             jump and_end_19
         
           and_false_18:
-            tmp.86 = 0
+            tmp.87 = 0
         
           and_end_19:
-            if !tmp.86 jump and_false_20
-            tmp.95 = &arr.5
-            tmp.96 = sign_extend 4
-            tmp.97 = add_ptr(tmp.95, index=tmp.96, scale=8)
-            tmp.98 = *tmp.97
-            tmp.99 = tmp.98 == 0L
-            if !tmp.99 jump and_false_20
-            tmp.94 = 1
+            if !tmp.87 jump and_false_20
+            tmp.96 = &arr.5
+            tmp.97 = sign_extend 4
+            tmp.98 = add_ptr(tmp.96, index=tmp.97, scale=8)
+            tmp.99 = *tmp.98
+            tmp.100 = tmp.99 == 0L
+            if !tmp.100 jump and_false_20
+            tmp.95 = 1
             jump and_end_21
         
           and_false_20:
-            tmp.94 = 0
+            tmp.95 = 0
         
           and_end_21:
-            return tmp.94
+            return tmp.95
             return 0
         }
         global function three() { 
@@ -3369,165 +3399,166 @@ fn test_valid_initialization_automatic() {
             return 0
         }
         global function test_type_conversion(ptr.6) { 
-            tmp.100 = - 100
-            *ptr.6 = tmp.100
-            tmp.101 = double_to_uint 3458764513821589500D
-            arr.7[0] = tmp.101
+            tmp.101 = - 100
+            *ptr.6 = tmp.101
             tmp.102 = *ptr.6
-            tmp.103 = sign_extend tmp.102
-            arr.7[8] = tmp.103
-            tmp.104 = truncate 18446744073709551615UL
-            tmp.105 = zero_extend tmp.104
-            arr.7[16] = tmp.105
-            tmp.106 = - global_one
-            tmp.107 = tmp.106
-            arr.7[24] = tmp.107
-            tmp.108 = &arr.7
-            tmp.109 = sign_extend 0
-            tmp.110 = add_ptr(tmp.108, index=tmp.109, scale=8)
-            tmp.111 = *tmp.110
-            tmp.112 = tmp.111 == 3458764513821589504UL
-            if !tmp.112 jump and_false_22
-            tmp.115 = &arr.7
-            tmp.116 = sign_extend 1
-            tmp.117 = add_ptr(tmp.115, index=tmp.116, scale=8)
-            tmp.118 = *tmp.117
-            tmp.119 = tmp.118 == 18446744073709551516UL
-            if !tmp.119 jump and_false_22
-            tmp.114 = 1
+            tmp.103 = double_to_uint 3458764513821589500D
+            arr.7[0] = tmp.103
+            tmp.104 = *ptr.6
+            tmp.105 = sign_extend tmp.104
+            arr.7[8] = tmp.105
+            tmp.106 = truncate 18446744073709551615UL
+            tmp.107 = zero_extend tmp.106
+            arr.7[16] = tmp.107
+            tmp.108 = - global_one
+            tmp.109 = tmp.108
+            arr.7[24] = tmp.109
+            tmp.110 = &arr.7
+            tmp.111 = sign_extend 0
+            tmp.112 = add_ptr(tmp.110, index=tmp.111, scale=8)
+            tmp.113 = *tmp.112
+            tmp.114 = tmp.113 == 3458764513821589504UL
+            if !tmp.114 jump and_false_22
+            tmp.117 = &arr.7
+            tmp.118 = sign_extend 1
+            tmp.119 = add_ptr(tmp.117, index=tmp.118, scale=8)
+            tmp.120 = *tmp.119
+            tmp.121 = tmp.120 == 18446744073709551516UL
+            if !tmp.121 jump and_false_22
+            tmp.116 = 1
             jump and_end_23
         
           and_false_22:
-            tmp.114 = 0
+            tmp.116 = 0
         
           and_end_23:
-            if !tmp.114 jump and_false_24
-            tmp.122 = &arr.7
-            tmp.123 = sign_extend 2
-            tmp.124 = add_ptr(tmp.122, index=tmp.123, scale=8)
-            tmp.125 = *tmp.124
-            tmp.127 = zero_extend 4294967295U
-            tmp.126 = tmp.125 == tmp.127
-            if !tmp.126 jump and_false_24
-            tmp.121 = 1
+            if !tmp.116 jump and_false_24
+            tmp.124 = &arr.7
+            tmp.125 = sign_extend 2
+            tmp.126 = add_ptr(tmp.124, index=tmp.125, scale=8)
+            tmp.127 = *tmp.126
+            tmp.129 = zero_extend 4294967295U
+            tmp.128 = tmp.127 == tmp.129
+            if !tmp.128 jump and_false_24
+            tmp.123 = 1
             jump and_end_25
         
           and_false_24:
-            tmp.121 = 0
+            tmp.123 = 0
         
           and_end_25:
-            if !tmp.121 jump and_false_26
-            tmp.130 = &arr.7
-            tmp.131 = sign_extend 3
-            tmp.132 = add_ptr(tmp.130, index=tmp.131, scale=8)
-            tmp.133 = *tmp.132
-            tmp.134 = tmp.133 == 18446744073709551615UL
-            if !tmp.134 jump and_false_26
-            tmp.129 = 1
+            if !tmp.123 jump and_false_26
+            tmp.132 = &arr.7
+            tmp.133 = sign_extend 3
+            tmp.134 = add_ptr(tmp.132, index=tmp.133, scale=8)
+            tmp.135 = *tmp.134
+            tmp.136 = tmp.135 == 18446744073709551615UL
+            if !tmp.136 jump and_false_26
+            tmp.131 = 1
             jump and_end_27
         
           and_false_26:
-            tmp.129 = 0
+            tmp.131 = 0
         
           and_end_27:
-            return tmp.129
+            return tmp.131
             return 0
         }
         global function test_preserve_stack() { 
-            tmp.135 = - 1
-            i.8 = tmp.135
-            tmp.136 = global_one * 2L
-            tmp.137 = truncate tmp.136
-            arr.9[0] = tmp.137
-            tmp.139 = three()
-            tmp.140 = sign_extend tmp.139
-            tmp.138 = global_one + tmp.140
-            tmp.141 = truncate tmp.138
-            arr.9[4] = tmp.141
+            tmp.137 = - 1
+            i.8 = tmp.137
+            tmp.138 = global_one * 2L
+            tmp.139 = truncate tmp.138
+            arr.9[0] = tmp.139
+            tmp.141 = three()
+            tmp.142 = sign_extend tmp.141
+            tmp.140 = global_one + tmp.142
+            tmp.143 = truncate tmp.140
+            arr.9[4] = tmp.143
             arr.9[8] = 0
-            tmp.142 = truncate 2684366905L
-            u.10 = tmp.142
-            tmp.144 = - 1
-            tmp.143 = i.8 != tmp.144
-            if !tmp.143 jump end_if_28
+            tmp.144 = truncate 2684366905L
+            u.10 = tmp.144
+            tmp.146 = - 1
+            tmp.145 = i.8 != tmp.146
+            if !tmp.145 jump end_if_28
             return 0
         
           end_if_28:
-            tmp.145 = zero_extend u.10
-            tmp.146 = tmp.145 != 2684366905L
-            if !tmp.146 jump end_if_30
+            tmp.147 = zero_extend u.10
+            tmp.148 = tmp.147 != 2684366905L
+            if !tmp.148 jump end_if_30
             return 0
         
           end_if_30:
-            tmp.147 = &arr.9
-            tmp.148 = sign_extend 0
-            tmp.149 = add_ptr(tmp.147, index=tmp.148, scale=4)
-            tmp.150 = *tmp.149
-            tmp.151 = tmp.150 == 2
-            if !tmp.151 jump and_false_32
-            tmp.154 = &arr.9
-            tmp.155 = sign_extend 1
-            tmp.156 = add_ptr(tmp.154, index=tmp.155, scale=4)
-            tmp.157 = *tmp.156
-            tmp.158 = tmp.157 == 4
-            if !tmp.158 jump and_false_32
-            tmp.153 = 1
+            tmp.149 = &arr.9
+            tmp.150 = sign_extend 0
+            tmp.151 = add_ptr(tmp.149, index=tmp.150, scale=4)
+            tmp.152 = *tmp.151
+            tmp.153 = tmp.152 == 2
+            if !tmp.153 jump and_false_32
+            tmp.156 = &arr.9
+            tmp.157 = sign_extend 1
+            tmp.158 = add_ptr(tmp.156, index=tmp.157, scale=4)
+            tmp.159 = *tmp.158
+            tmp.160 = tmp.159 == 4
+            if !tmp.160 jump and_false_32
+            tmp.155 = 1
             jump and_end_33
         
           and_false_32:
-            tmp.153 = 0
+            tmp.155 = 0
         
           and_end_33:
-            if !tmp.153 jump and_false_34
-            tmp.161 = &arr.9
-            tmp.162 = sign_extend 2
-            tmp.163 = add_ptr(tmp.161, index=tmp.162, scale=4)
-            tmp.164 = *tmp.163
-            tmp.165 = ! tmp.164
-            if !tmp.165 jump and_false_34
-            tmp.160 = 1
+            if !tmp.155 jump and_false_34
+            tmp.163 = &arr.9
+            tmp.164 = sign_extend 2
+            tmp.165 = add_ptr(tmp.163, index=tmp.164, scale=4)
+            tmp.166 = *tmp.165
+            tmp.167 = ! tmp.166
+            if !tmp.167 jump and_false_34
+            tmp.162 = 1
             jump and_end_35
         
           and_false_34:
-            tmp.160 = 0
+            tmp.162 = 0
         
           and_end_35:
-            return tmp.160
+            return tmp.162
             return 0
         }
         global function main() { 
-            tmp.166 = test_simple()
-            tmp.167 = ! tmp.166
-            if !tmp.167 jump end_if_36
+            tmp.168 = test_simple()
+            tmp.169 = ! tmp.168
+            if !tmp.169 jump end_if_36
             return 1
         
           end_if_36:
-            tmp.168 = test_partial()
-            tmp.169 = ! tmp.168
-            if !tmp.169 jump end_if_38
+            tmp.170 = test_partial()
+            tmp.171 = ! tmp.170
+            if !tmp.171 jump end_if_38
             return 2
         
           end_if_38:
-            tmp.170 = - 7000000000L
-            negative_seven_billion.11 = tmp.170
+            tmp.172 = - 7000000000L
+            negative_seven_billion.11 = tmp.172
             i.12 = 0
-            tmp.171 = &i.12
-            tmp.172 = test_non_constant(negative_seven_billion.11, tmp.171)
-            tmp.173 = ! tmp.172
-            if !tmp.173 jump end_if_40
+            tmp.173 = &i.12
+            tmp.174 = test_non_constant(negative_seven_billion.11, tmp.173)
+            tmp.175 = ! tmp.174
+            if !tmp.175 jump end_if_40
             return 3
         
           end_if_40:
-            tmp.174 = &i.12
-            tmp.175 = test_type_conversion(tmp.174)
-            tmp.176 = ! tmp.175
-            if !tmp.176 jump end_if_42
+            tmp.176 = &i.12
+            tmp.177 = test_type_conversion(tmp.176)
+            tmp.178 = ! tmp.177
+            if !tmp.178 jump end_if_42
             return 4
         
           end_if_42:
-            tmp.177 = test_preserve_stack()
-            tmp.178 = ! tmp.177
-            if !tmp.178 jump end_if_44
+            tmp.179 = test_preserve_stack()
+            tmp.180 = ! tmp.179
+            if !tmp.180 jump end_if_44
             return 5
         
           end_if_44:
@@ -4868,10 +4899,11 @@ fn test_valid_libraries_global_array() {
             tmp.9 = sign_extend 2
             tmp.8 = tmp.7 * tmp.9
             *tmp.3 = tmp.8
+            tmp.10 = *tmp.3
         
           continue_loop_0:
-            tmp.10 = i.0 + 1
-            i.0 = tmp.10
+            tmp.11 = i.0 + 1
+            i.0 = tmp.11
             jump start_loop_0
         
           break_loop_0:
@@ -5095,17 +5127,18 @@ fn test_valid_libraries_return_pointer_to_array_client() {
             tmp.34 = add_ptr(tmp.32, index=tmp.33, scale=8)
             tmp.35 = sign_extend 100
             *tmp.34 = tmp.35
-            tmp.36 = &nested_array.2
-            tmp.37 = sign_extend 1
-            tmp.38 = add_ptr(tmp.36, index=tmp.37, scale=96)
-            tmp.39 = sign_extend 2
-            tmp.40 = add_ptr(tmp.38, index=tmp.39, scale=32)
-            tmp.41 = sign_extend 1
-            tmp.42 = add_ptr(tmp.40, index=tmp.41, scale=8)
-            tmp.43 = *tmp.42
-            tmp.45 = sign_extend 100
-            tmp.44 = tmp.43 != tmp.45
-            if !tmp.44 jump end_if_2
+            tmp.36 = *tmp.34
+            tmp.37 = &nested_array.2
+            tmp.38 = sign_extend 1
+            tmp.39 = add_ptr(tmp.37, index=tmp.38, scale=96)
+            tmp.40 = sign_extend 2
+            tmp.41 = add_ptr(tmp.39, index=tmp.40, scale=32)
+            tmp.42 = sign_extend 1
+            tmp.43 = add_ptr(tmp.41, index=tmp.42, scale=8)
+            tmp.44 = *tmp.43
+            tmp.46 = sign_extend 100
+            tmp.45 = tmp.44 != tmp.46
+            if !tmp.45 jump end_if_2
             return 2
         
           end_if_2:
@@ -5167,6 +5200,7 @@ fn test_valid_libraries_set_array_val() {
             tmp.7 = add_ptr(arr.0, index=tmp.6, scale=8)
             tmp.8 = int_to_double 8
             *tmp.7 = tmp.8
+            tmp.9 = *tmp.7
             return 0
             return 0
         }
@@ -5174,47 +5208,48 @@ fn test_valid_libraries_set_array_val() {
             x.6 = 0
         
           start_loop_1:
-            tmp.9 = x.6 < 3
-            if !tmp.9 jump break_loop_1
+            tmp.10 = x.6 < 3
+            if !tmp.10 jump break_loop_1
             y.7 = 0
         
           start_loop_2:
-            tmp.10 = y.7 < 2
-            if !tmp.10 jump break_loop_2
-            tmp.11 = - 10
-            tmp.13 = 2 * x.6
-            tmp.12 = tmp.11 + tmp.13
-            tmp.14 = tmp.12 + y.7
-            expected.8 = tmp.14
-            tmp.15 = sign_extend x.6
-            tmp.16 = add_ptr(arr.3, index=tmp.15, scale=8)
-            tmp.17 = sign_extend y.7
-            tmp.18 = add_ptr(tmp.16, index=tmp.17, scale=4)
-            tmp.19 = *tmp.18
-            tmp.20 = tmp.19 != expected.8
-            if !tmp.20 jump end_if_2
+            tmp.11 = y.7 < 2
+            if !tmp.11 jump break_loop_2
+            tmp.12 = - 10
+            tmp.14 = 2 * x.6
+            tmp.13 = tmp.12 + tmp.14
+            tmp.15 = tmp.13 + y.7
+            expected.8 = tmp.15
+            tmp.16 = sign_extend x.6
+            tmp.17 = add_ptr(arr.3, index=tmp.16, scale=8)
+            tmp.18 = sign_extend y.7
+            tmp.19 = add_ptr(tmp.17, index=tmp.18, scale=4)
+            tmp.20 = *tmp.19
+            tmp.21 = tmp.20 != expected.8
+            if !tmp.21 jump end_if_2
             return 4
         
           end_if_2:
         
           continue_loop_2:
-            tmp.21 = y.7 + 1
-            y.7 = tmp.21
+            tmp.22 = y.7 + 1
+            y.7 = tmp.22
             jump start_loop_2
         
           break_loop_2:
         
           continue_loop_1:
-            tmp.22 = x.6 + 1
-            x.6 = tmp.22
+            tmp.23 = x.6 + 1
+            x.6 = tmp.23
             jump start_loop_1
         
           break_loop_1:
-            tmp.23 = sign_extend i.4
-            tmp.24 = add_ptr(arr.3, index=tmp.23, scale=8)
-            tmp.25 = sign_extend j.5
-            tmp.26 = add_ptr(tmp.24, index=tmp.25, scale=4)
-            *tmp.26 = 10
+            tmp.24 = sign_extend i.4
+            tmp.25 = add_ptr(arr.3, index=tmp.24, scale=8)
+            tmp.26 = sign_extend j.5
+            tmp.27 = add_ptr(tmp.25, index=tmp.26, scale=4)
+            *tmp.27 = 10
+            tmp.28 = *tmp.27
             return 0
             return 0
         }
@@ -5424,25 +5459,27 @@ fn test_valid_pointer_arithmetic_add_dereference_and_assign() {
             arr.0[4] = 2
             tmp.0 = &arr.0
             *tmp.0 = 3
-            tmp.1 = &arr.0
-            tmp.3 = sign_extend 1
-            tmp.2 = add_ptr(tmp.1, index=tmp.3, scale=4)
-            *tmp.2 = 4
-            tmp.4 = &arr.0
-            tmp.5 = sign_extend 0
-            tmp.6 = add_ptr(tmp.4, index=tmp.5, scale=4)
-            tmp.7 = *tmp.6
-            tmp.8 = tmp.7 != 3
-            if !tmp.8 jump end_if_0
+            tmp.1 = *tmp.0
+            tmp.2 = &arr.0
+            tmp.4 = sign_extend 1
+            tmp.3 = add_ptr(tmp.2, index=tmp.4, scale=4)
+            *tmp.3 = 4
+            tmp.5 = *tmp.3
+            tmp.6 = &arr.0
+            tmp.7 = sign_extend 0
+            tmp.8 = add_ptr(tmp.6, index=tmp.7, scale=4)
+            tmp.9 = *tmp.8
+            tmp.10 = tmp.9 != 3
+            if !tmp.10 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.9 = &arr.0
-            tmp.10 = sign_extend 1
-            tmp.11 = add_ptr(tmp.9, index=tmp.10, scale=4)
-            tmp.12 = *tmp.11
-            tmp.13 = tmp.12 != 4
-            if !tmp.13 jump end_if_2
+            tmp.11 = &arr.0
+            tmp.12 = sign_extend 1
+            tmp.13 = add_ptr(tmp.11, index=tmp.12, scale=4)
+            tmp.14 = *tmp.13
+            tmp.15 = tmp.14 != 4
+            if !tmp.15 jump end_if_2
             return 2
         
           end_if_2:
@@ -6504,107 +6541,109 @@ fn test_valid_subscripting_addition_subscript_equivalence() {
             tmp.8 = tmp.7 + j.2
             tmp.9 = sign_extend tmp.8
             *tmp.6 = tmp.9
+            tmp.10 = *tmp.6
         
           continue_loop_1:
-            tmp.10 = j.2 + 1
-            j.2 = tmp.10
+            tmp.11 = j.2 + 1
+            j.2 = tmp.11
             jump start_loop_1
         
           break_loop_1:
         
           continue_loop_0:
-            tmp.11 = i.1 + 1
-            i.1 = tmp.11
+            tmp.12 = i.1 + 1
+            i.1 = tmp.12
             jump start_loop_0
         
           break_loop_0:
-            tmp.12 = &x.0
-            tmp.14 = sign_extend 20
-            tmp.13 = add_ptr(tmp.12, index=tmp.14, scale=40)
-            tmp.16 = sign_extend 3
-            tmp.15 = add_ptr(tmp.13, index=tmp.16, scale=8)
-            tmp.17 = *tmp.15
-            tmp.19 = &x.0
-            tmp.20 = sign_extend 20
-            tmp.21 = add_ptr(tmp.19, index=tmp.20, scale=40)
-            tmp.22 = sign_extend 3
-            tmp.23 = add_ptr(tmp.21, index=tmp.22, scale=8)
-            tmp.24 = *tmp.23
-            tmp.18 = tmp.17 != tmp.24
-            if !tmp.18 jump end_if_0
+            tmp.13 = &x.0
+            tmp.15 = sign_extend 20
+            tmp.14 = add_ptr(tmp.13, index=tmp.15, scale=40)
+            tmp.17 = sign_extend 3
+            tmp.16 = add_ptr(tmp.14, index=tmp.17, scale=8)
+            tmp.18 = *tmp.16
+            tmp.20 = &x.0
+            tmp.21 = sign_extend 20
+            tmp.22 = add_ptr(tmp.20, index=tmp.21, scale=40)
+            tmp.23 = sign_extend 3
+            tmp.24 = add_ptr(tmp.22, index=tmp.23, scale=8)
+            tmp.25 = *tmp.24
+            tmp.19 = tmp.18 != tmp.25
+            if !tmp.19 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.25 = &x.0
-            tmp.27 = sign_extend 290
-            tmp.26 = add_ptr(tmp.25, index=tmp.27, scale=40)
-            tmp.29 = sign_extend 3
-            tmp.28 = add_ptr(tmp.26, index=tmp.29, scale=8)
-            tmp.31 = &x.0
-            tmp.32 = sign_extend 290
-            tmp.33 = add_ptr(tmp.31, index=tmp.32, scale=40)
-            tmp.34 = sign_extend 3
-            tmp.35 = add_ptr(tmp.33, index=tmp.34, scale=8)
-            tmp.30 = tmp.28 != tmp.35
-            if !tmp.30 jump end_if_2
+            tmp.26 = &x.0
+            tmp.28 = sign_extend 290
+            tmp.27 = add_ptr(tmp.26, index=tmp.28, scale=40)
+            tmp.30 = sign_extend 3
+            tmp.29 = add_ptr(tmp.27, index=tmp.30, scale=8)
+            tmp.32 = &x.0
+            tmp.33 = sign_extend 290
+            tmp.34 = add_ptr(tmp.32, index=tmp.33, scale=40)
+            tmp.35 = sign_extend 3
+            tmp.36 = add_ptr(tmp.34, index=tmp.35, scale=8)
+            tmp.31 = tmp.29 != tmp.36
+            if !tmp.31 jump end_if_2
             return 2
         
           end_if_2:
             i.3 = 0
         
           start_loop_2:
-            tmp.36 = i.3 < 300
-            if !tmp.36 jump break_loop_2
+            tmp.37 = i.3 < 300
+            if !tmp.37 jump break_loop_2
             j.4 = 0
         
           start_loop_3:
-            tmp.37 = j.4 < 5
-            if !tmp.37 jump break_loop_3
-            tmp.38 = &x.0
-            tmp.40 = sign_extend i.3
-            tmp.39 = add_ptr(tmp.38, index=tmp.40, scale=40)
-            tmp.42 = sign_extend j.4
-            tmp.41 = add_ptr(tmp.39, index=tmp.42, scale=8)
-            tmp.43 = *tmp.41
-            tmp.45 = &x.0
-            tmp.46 = sign_extend i.3
-            tmp.47 = add_ptr(tmp.45, index=tmp.46, scale=40)
-            tmp.48 = sign_extend j.4
-            tmp.49 = add_ptr(tmp.47, index=tmp.48, scale=8)
-            tmp.50 = *tmp.49
-            tmp.44 = tmp.43 != tmp.50
-            if !tmp.44 jump end_if_4
+            tmp.38 = j.4 < 5
+            if !tmp.38 jump break_loop_3
+            tmp.39 = &x.0
+            tmp.41 = sign_extend i.3
+            tmp.40 = add_ptr(tmp.39, index=tmp.41, scale=40)
+            tmp.43 = sign_extend j.4
+            tmp.42 = add_ptr(tmp.40, index=tmp.43, scale=8)
+            tmp.44 = *tmp.42
+            tmp.46 = &x.0
+            tmp.47 = sign_extend i.3
+            tmp.48 = add_ptr(tmp.46, index=tmp.47, scale=40)
+            tmp.49 = sign_extend j.4
+            tmp.50 = add_ptr(tmp.48, index=tmp.49, scale=8)
+            tmp.51 = *tmp.50
+            tmp.45 = tmp.44 != tmp.51
+            if !tmp.45 jump end_if_4
             return 3
         
           end_if_4:
         
           continue_loop_3:
-            tmp.51 = j.4 + 1
-            j.4 = tmp.51
+            tmp.52 = j.4 + 1
+            j.4 = tmp.52
             jump start_loop_3
         
           break_loop_3:
         
           continue_loop_2:
-            tmp.52 = i.3 + 1
-            i.3 = tmp.52
+            tmp.53 = i.3 + 1
+            i.3 = tmp.53
             jump start_loop_2
         
           break_loop_2:
-            tmp.53 = &x.0
-            tmp.55 = sign_extend 275
-            tmp.54 = add_ptr(tmp.53, index=tmp.55, scale=40)
-            tmp.57 = sign_extend 4
-            tmp.56 = add_ptr(tmp.54, index=tmp.57, scale=8)
-            *tmp.56 = 22000UL
-            tmp.58 = &x.0
-            tmp.59 = sign_extend 275
-            tmp.60 = add_ptr(tmp.58, index=tmp.59, scale=40)
-            tmp.61 = sign_extend 4
-            tmp.62 = add_ptr(tmp.60, index=tmp.61, scale=8)
-            tmp.63 = *tmp.62
-            tmp.64 = tmp.63 != 22000UL
-            if !tmp.64 jump end_if_6
+            tmp.54 = &x.0
+            tmp.56 = sign_extend 275
+            tmp.55 = add_ptr(tmp.54, index=tmp.56, scale=40)
+            tmp.58 = sign_extend 4
+            tmp.57 = add_ptr(tmp.55, index=tmp.58, scale=8)
+            *tmp.57 = 22000UL
+            tmp.59 = *tmp.57
+            tmp.60 = &x.0
+            tmp.61 = sign_extend 275
+            tmp.62 = add_ptr(tmp.60, index=tmp.61, scale=40)
+            tmp.63 = sign_extend 4
+            tmp.64 = add_ptr(tmp.62, index=tmp.63, scale=8)
+            tmp.65 = *tmp.64
+            tmp.66 = tmp.65 != 22000UL
+            if !tmp.66 jump end_if_6
             return 4
         
           end_if_6:
@@ -6852,7 +6891,7 @@ fn test_valid_subscripting_complex_operands() {
             tmp.0 = &arr.1
             tmp.1 = idx.0 + 2
             idx.0 = tmp.1
-            tmp.2 = sign_extend tmp.1
+            tmp.2 = sign_extend idx.0
             tmp.3 = add_ptr(tmp.0, index=tmp.2, scale=4)
             tmp.4 = *tmp.3
             val.2 = tmp.4
@@ -6956,12 +6995,13 @@ fn test_valid_subscripting_complex_operands() {
             tmp.41 = sign_extend 2
             tmp.42 = add_ptr(tmp.40, index=tmp.41, scale=4)
             *tmp.42 = 1
-            tmp.43 = get_array()
-            tmp.44 = sign_extend 2
-            tmp.45 = add_ptr(tmp.43, index=tmp.44, scale=4)
-            tmp.46 = *tmp.45
-            tmp.47 = tmp.46 != 1
-            if !tmp.47 jump end_if_12
+            tmp.43 = *tmp.42
+            tmp.44 = get_array()
+            tmp.45 = sign_extend 2
+            tmp.46 = add_ptr(tmp.44, index=tmp.45, scale=4)
+            tmp.47 = *tmp.46
+            tmp.48 = tmp.47 != 1
+            if !tmp.48 jump end_if_12
             return 7
         
           end_if_12:
@@ -6969,12 +7009,12 @@ fn test_valid_subscripting_complex_operands() {
             return 0
         }
         global function negate_subscript(arr.14, idx.15, expected.16) { 
-            tmp.48 = - idx.15
-            tmp.49 = sign_extend tmp.48
-            tmp.50 = add_ptr(arr.14, index=tmp.49, scale=4)
-            tmp.51 = *tmp.50
-            tmp.52 = tmp.51 != expected.16
-            if !tmp.52 jump end_if_14
+            tmp.49 = - idx.15
+            tmp.50 = sign_extend tmp.49
+            tmp.51 = add_ptr(arr.14, index=tmp.50, scale=4)
+            tmp.52 = *tmp.51
+            tmp.53 = tmp.52 != expected.16
+            if !tmp.53 jump end_if_14
             return 8
         
           end_if_14:
@@ -6982,27 +7022,27 @@ fn test_valid_subscripting_complex_operands() {
             return 0
         }
         global function main() { 
-            tmp.53 = - 1
-            tmp.54 = assign_in_index(tmp.53)
-            check.17 = tmp.54
+            tmp.54 = - 1
+            tmp.55 = assign_in_index(tmp.54)
+            check.17 = tmp.55
             if !check.17 jump end_if_16
             return check.17
         
           end_if_16:
-            tmp.55 = funcall_in_index()
-            check.17 = tmp.55
+            tmp.56 = funcall_in_index()
+            check.17 = tmp.56
             if !check.17 jump end_if_18
             return check.17
         
           end_if_18:
-            tmp.56 = check_subscript_inception()
-            check.17 = tmp.56
+            tmp.57 = check_subscript_inception()
+            check.17 = tmp.57
             if !check.17 jump end_if_20
             return check.17
         
           end_if_20:
-            tmp.57 = subscript_function_result()
-            check.17 = tmp.57
+            tmp.58 = subscript_function_result()
+            check.17 = tmp.58
             if !check.17 jump end_if_22
             return check.17
         
@@ -7010,11 +7050,11 @@ fn test_valid_subscripting_complex_operands() {
             arr.18[0] = 0
             arr.18[4] = 1
             arr.18[8] = 2
-            tmp.58 = &arr.18
-            tmp.60 = sign_extend 2
-            tmp.59 = add_ptr(tmp.58, index=tmp.60, scale=4)
-            tmp.61 = negate_subscript(tmp.59, 2, 0)
-            check.17 = tmp.61
+            tmp.59 = &arr.18
+            tmp.61 = sign_extend 2
+            tmp.60 = add_ptr(tmp.59, index=tmp.61, scale=4)
+            tmp.62 = negate_subscript(tmp.60, 2, 0)
+            check.17 = tmp.62
             if !check.17 jump end_if_24
             return check.17
         
@@ -7263,11 +7303,12 @@ fn test_valid_subscripting_simple_subscripts() {
             tmp.47 = *tmp.46
             tmp.48 = tmp.47 * 2
             *tmp.44 = tmp.48
-            tmp.49 = sign_extend 10
-            tmp.50 = add_ptr(arr.8, index=tmp.49, scale=4)
-            tmp.51 = *tmp.50
-            tmp.52 = tmp.51 != expected.9
-            if !tmp.52 jump end_if_20
+            tmp.49 = *tmp.44
+            tmp.50 = sign_extend 10
+            tmp.51 = add_ptr(arr.8, index=tmp.50, scale=4)
+            tmp.52 = *tmp.51
+            tmp.53 = tmp.52 != expected.9
+            if !tmp.53 jump end_if_20
             return 11
         
           end_if_20:
@@ -7275,73 +7316,74 @@ fn test_valid_subscripting_simple_subscripts() {
             return 0
         }
         global function increment_static_element() { 
-            tmp.53 = &arr.10
-            tmp.54 = sign_extend 3
-            tmp.55 = add_ptr(tmp.53, index=tmp.54, scale=4)
-            tmp.56 = &arr.10
-            tmp.57 = sign_extend 3
-            tmp.58 = add_ptr(tmp.56, index=tmp.57, scale=4)
-            tmp.59 = *tmp.58
-            tmp.60 = tmp.59 + 1
-            *tmp.55 = tmp.60
-            tmp.61 = &arr.10
-            return tmp.61
+            tmp.54 = &arr.10
+            tmp.55 = sign_extend 3
+            tmp.56 = add_ptr(tmp.54, index=tmp.55, scale=4)
+            tmp.57 = &arr.10
+            tmp.58 = sign_extend 3
+            tmp.59 = add_ptr(tmp.57, index=tmp.58, scale=4)
+            tmp.60 = *tmp.59
+            tmp.61 = tmp.60 + 1
+            *tmp.56 = tmp.61
+            tmp.62 = *tmp.56
+            tmp.63 = &arr.10
+            return tmp.63
             return 0
         }
         global function check_increment_static_element() { 
-            tmp.62 = increment_static_element()
-            arr1.11 = tmp.62
-            tmp.63 = sign_extend 3
-            tmp.64 = add_ptr(arr1.11, index=tmp.63, scale=4)
-            tmp.65 = *tmp.64
-            tmp.66 = tmp.65 != 1
-            if !tmp.66 jump end_if_22
+            tmp.64 = increment_static_element()
+            arr1.11 = tmp.64
+            tmp.65 = sign_extend 3
+            tmp.66 = add_ptr(arr1.11, index=tmp.65, scale=4)
+            tmp.67 = *tmp.66
+            tmp.68 = tmp.67 != 1
+            if !tmp.68 jump end_if_22
             return 12
         
           end_if_22:
-            tmp.67 = sign_extend 0
-            tmp.68 = add_ptr(arr1.11, index=tmp.67, scale=4)
-            tmp.69 = *tmp.68
-            if tmp.69 jump or_true_24
-            tmp.72 = sign_extend 1
-            tmp.73 = add_ptr(arr1.11, index=tmp.72, scale=4)
-            tmp.74 = *tmp.73
-            if tmp.74 jump or_true_24
-            tmp.71 = 0
+            tmp.69 = sign_extend 0
+            tmp.70 = add_ptr(arr1.11, index=tmp.69, scale=4)
+            tmp.71 = *tmp.70
+            if tmp.71 jump or_true_24
+            tmp.74 = sign_extend 1
+            tmp.75 = add_ptr(arr1.11, index=tmp.74, scale=4)
+            tmp.76 = *tmp.75
+            if tmp.76 jump or_true_24
+            tmp.73 = 0
             jump or_end_25
         
           or_true_24:
-            tmp.71 = 1
+            tmp.73 = 1
         
           or_end_25:
-            if tmp.71 jump or_true_26
-            tmp.77 = sign_extend 2
-            tmp.78 = add_ptr(arr1.11, index=tmp.77, scale=4)
-            tmp.79 = *tmp.78
-            if tmp.79 jump or_true_26
-            tmp.76 = 0
+            if tmp.73 jump or_true_26
+            tmp.79 = sign_extend 2
+            tmp.80 = add_ptr(arr1.11, index=tmp.79, scale=4)
+            tmp.81 = *tmp.80
+            if tmp.81 jump or_true_26
+            tmp.78 = 0
             jump or_end_27
         
           or_true_26:
-            tmp.76 = 1
+            tmp.78 = 1
         
           or_end_27:
-            if !tmp.76 jump end_if_28
+            if !tmp.78 jump end_if_28
             return 13
         
           end_if_28:
-            tmp.80 = increment_static_element()
-            arr2.12 = tmp.80
-            tmp.81 = arr1.11 != arr2.12
-            if !tmp.81 jump end_if_30
+            tmp.82 = increment_static_element()
+            arr2.12 = tmp.82
+            tmp.83 = arr1.11 != arr2.12
+            if !tmp.83 jump end_if_30
             return 14
         
           end_if_30:
-            tmp.82 = sign_extend 3
-            tmp.83 = add_ptr(arr1.11, index=tmp.82, scale=4)
-            tmp.84 = *tmp.83
-            tmp.85 = tmp.84 != 2
-            if !tmp.85 jump end_if_32
+            tmp.84 = sign_extend 3
+            tmp.85 = add_ptr(arr1.11, index=tmp.84, scale=4)
+            tmp.86 = *tmp.85
+            tmp.87 = tmp.86 != 2
+            if !tmp.87 jump end_if_32
             return 15
         
           end_if_32:
@@ -7349,42 +7391,42 @@ fn test_valid_subscripting_simple_subscripts() {
             return 0
         }
         global function main() { 
-            tmp.86 = 0
-            unsigned_arr.13[0] = tmp.86
-            tmp.87 = 0
-            unsigned_arr.13[4] = tmp.87
             tmp.88 = 0
-            unsigned_arr.13[8] = tmp.88
+            unsigned_arr.13[0] = tmp.88
             tmp.89 = 0
-            unsigned_arr.13[12] = tmp.89
+            unsigned_arr.13[4] = tmp.89
             tmp.90 = 0
-            unsigned_arr.13[16] = tmp.90
+            unsigned_arr.13[8] = tmp.90
+            tmp.91 = 0
+            unsigned_arr.13[12] = tmp.91
+            tmp.92 = 0
+            unsigned_arr.13[16] = tmp.92
             unsigned_arr.13[20] = 7U
-            tmp.91 = &unsigned_arr.13
-            tmp.92 = integer_types(tmp.91, 7U)
-            check.14 = tmp.92
+            tmp.93 = &unsigned_arr.13
+            tmp.94 = integer_types(tmp.93, 7U)
+            check.14 = tmp.94
             if !check.14 jump end_if_34
             return check.14
         
           end_if_34:
-            tmp.93 = sign_extend 100
-            long_arr.15[0] = tmp.93
-            tmp.94 = sign_extend 102
-            long_arr.15[8] = tmp.94
-            tmp.95 = sign_extend 104
-            long_arr.15[16] = tmp.95
-            tmp.96 = sign_extend 106
-            long_arr.15[24] = tmp.96
-            tmp.97 = &long_arr.15
+            tmp.95 = sign_extend 100
+            long_arr.15[0] = tmp.95
+            tmp.96 = sign_extend 102
+            long_arr.15[8] = tmp.96
+            tmp.97 = sign_extend 104
+            long_arr.15[16] = tmp.97
             tmp.98 = sign_extend 106
-            tmp.99 = reverse_subscript(tmp.97, tmp.98)
-            check.14 = tmp.99
+            long_arr.15[24] = tmp.98
+            tmp.99 = &long_arr.15
+            tmp.100 = sign_extend 106
+            tmp.101 = reverse_subscript(tmp.99, tmp.100)
+            check.14 = tmp.101
             if !check.14 jump end_if_36
             return check.14
         
           end_if_36:
-            tmp.100 = subscript_static()
-            check.14 = tmp.100
+            tmp.102 = subscript_static()
+            check.14 = tmp.102
             if !check.14 jump end_if_38
             return check.14
         
@@ -7400,15 +7442,15 @@ fn test_valid_subscripting_simple_subscripts() {
             int_arr.16[32] = 0
             int_arr.16[36] = 0
             int_arr.16[40] = 15
-            tmp.101 = &int_arr.16
-            tmp.102 = update_element(tmp.101, 30)
-            check.14 = tmp.102
+            tmp.103 = &int_arr.16
+            tmp.104 = update_element(tmp.103, 30)
+            check.14 = tmp.104
             if !check.14 jump end_if_40
             return check.14
         
           end_if_40:
-            tmp.103 = check_increment_static_element()
-            check.14 = tmp.103
+            tmp.105 = check_increment_static_element()
+            check.14 = tmp.105
             if !check.14 jump end_if_42
             return check.14
         
@@ -7502,63 +7544,65 @@ fn test_valid_subscripting_subscript_nested() {
             tmp.8 = sign_extend j.6
             tmp.9 = add_ptr(tmp.7, index=tmp.8, scale=4)
             *tmp.9 = new_val.7
+            tmp.10 = *tmp.9
             return 0
             return 0
         }
         global function read_nested_negated(nested_arr.8, i.9, j.10, expected.11) { 
-            tmp.10 = - i.9
-            tmp.11 = sign_extend tmp.10
-            tmp.12 = add_ptr(nested_arr.8, index=tmp.11, scale=12)
-            tmp.13 = sign_extend j.10
-            tmp.14 = add_ptr(tmp.12, index=tmp.13, scale=4)
-            tmp.15 = *tmp.14
-            tmp.16 = tmp.15 == expected.11
-            return tmp.16
+            tmp.11 = - i.9
+            tmp.12 = sign_extend tmp.11
+            tmp.13 = add_ptr(nested_arr.8, index=tmp.12, scale=12)
+            tmp.14 = sign_extend j.10
+            tmp.15 = add_ptr(tmp.13, index=tmp.14, scale=4)
+            tmp.16 = *tmp.15
+            tmp.17 = tmp.16 == expected.11
+            return tmp.17
             return 0
         }
         global function get_nested_addr(nested_arr.12, i.13, j.14, expected.15) { 
-            tmp.17 = sign_extend i.13
-            tmp.18 = add_ptr(nested_arr.12, index=tmp.17, scale=12)
-            tmp.19 = sign_extend j.14
-            tmp.20 = add_ptr(tmp.18, index=tmp.19, scale=4)
-            tmp.21 = tmp.20 == expected.15
-            return tmp.21
+            tmp.18 = sign_extend i.13
+            tmp.19 = add_ptr(nested_arr.12, index=tmp.18, scale=12)
+            tmp.20 = sign_extend j.14
+            tmp.21 = add_ptr(tmp.19, index=tmp.20, scale=4)
+            tmp.22 = tmp.21 == expected.15
+            return tmp.22
             return 0
         }
         global function read_static_nested(i.16, j.17, k.18, expected.19) { 
-            tmp.22 = &nested_arr
-            tmp.23 = sign_extend i.16
-            tmp.24 = add_ptr(tmp.22, index=tmp.23, scale=60)
-            tmp.25 = sign_extend j.17
-            tmp.26 = add_ptr(tmp.24, index=tmp.25, scale=20)
-            tmp.27 = sign_extend k.18
-            tmp.28 = add_ptr(tmp.26, index=tmp.27, scale=4)
-            tmp.29 = *tmp.28
-            tmp.30 = tmp.29 == expected.19
-            return tmp.30
-            return 0
-        }
-        global function get_array() { 
-            tmp.31 = &nested_arr
+            tmp.23 = &nested_arr
+            tmp.24 = sign_extend i.16
+            tmp.25 = add_ptr(tmp.23, index=tmp.24, scale=60)
+            tmp.26 = sign_extend j.17
+            tmp.27 = add_ptr(tmp.25, index=tmp.26, scale=20)
+            tmp.28 = sign_extend k.18
+            tmp.29 = add_ptr(tmp.27, index=tmp.28, scale=4)
+            tmp.30 = *tmp.29
+            tmp.31 = tmp.30 == expected.19
             return tmp.31
             return 0
         }
+        global function get_array() { 
+            tmp.32 = &nested_arr
+            return tmp.32
+            return 0
+        }
         global function write_nested_complex(i.20, j.21, k.22, val.23) { 
-            tmp.32 = get_array()
-            tmp.33 = sign_extend i.20
-            tmp.34 = add_ptr(tmp.32, index=tmp.33, scale=60)
-            tmp.35 = sign_extend j.21
-            tmp.36 = add_ptr(tmp.34, index=tmp.35, scale=20)
-            tmp.37 = sign_extend k.22
-            tmp.38 = add_ptr(tmp.36, index=tmp.37, scale=4)
-            *tmp.38 = val.23
+            tmp.33 = get_array()
+            tmp.34 = sign_extend i.20
+            tmp.35 = add_ptr(tmp.33, index=tmp.34, scale=60)
+            tmp.36 = sign_extend j.21
+            tmp.37 = add_ptr(tmp.35, index=tmp.36, scale=20)
+            tmp.38 = sign_extend k.22
+            tmp.39 = add_ptr(tmp.37, index=tmp.38, scale=4)
+            *tmp.39 = val.23
+            tmp.40 = *tmp.39
             return 0
             return 0
         }
         global function get_subarray(nested.24, i.25) { 
-            tmp.39 = sign_extend i.25
-            tmp.40 = add_ptr(nested.24, index=tmp.39, scale=12)
-            return tmp.40
+            tmp.41 = sign_extend i.25
+            tmp.42 = add_ptr(nested.24, index=tmp.41, scale=12)
+            return tmp.42
             return 0
         }
         global function main() { 
@@ -7568,82 +7612,82 @@ fn test_valid_subscripting_subscript_nested() {
             nested_arr.26[12] = 4
             nested_arr.26[16] = 5
             nested_arr.26[20] = 6
-            tmp.41 = &nested_arr.26
-            tmp.42 = read_nested(tmp.41, 1, 2, 6)
-            tmp.43 = ! tmp.42
-            if !tmp.43 jump end_if_0
+            tmp.43 = &nested_arr.26
+            tmp.44 = read_nested(tmp.43, 1, 2, 6)
+            tmp.45 = ! tmp.44
+            if !tmp.45 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.44 = &nested_arr.26
-            tmp.45 = - 1
-            tmp.46 = write_nested(tmp.44, 1, 2, tmp.45)
-            tmp.47 = &nested_arr.26
-            tmp.48 = sign_extend 1
-            tmp.49 = add_ptr(tmp.47, index=tmp.48, scale=12)
-            tmp.50 = sign_extend 2
-            tmp.51 = add_ptr(tmp.49, index=tmp.50, scale=4)
-            tmp.52 = *tmp.51
-            tmp.54 = - 1
-            tmp.53 = tmp.52 != tmp.54
-            if !tmp.53 jump end_if_2
+            tmp.46 = &nested_arr.26
+            tmp.47 = - 1
+            tmp.48 = write_nested(tmp.46, 1, 2, tmp.47)
+            tmp.49 = &nested_arr.26
+            tmp.50 = sign_extend 1
+            tmp.51 = add_ptr(tmp.49, index=tmp.50, scale=12)
+            tmp.52 = sign_extend 2
+            tmp.53 = add_ptr(tmp.51, index=tmp.52, scale=4)
+            tmp.54 = *tmp.53
+            tmp.56 = - 1
+            tmp.55 = tmp.54 != tmp.56
+            if !tmp.55 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.55 = &nested_arr.26
-            tmp.57 = sign_extend 2
-            tmp.56 = add_ptr(tmp.55, index=tmp.57, scale=12)
-            tmp.58 = read_nested_negated(tmp.56, 2, 0, 1)
-            tmp.59 = ! tmp.58
-            if !tmp.59 jump end_if_4
+            tmp.57 = &nested_arr.26
+            tmp.59 = sign_extend 2
+            tmp.58 = add_ptr(tmp.57, index=tmp.59, scale=12)
+            tmp.60 = read_nested_negated(tmp.58, 2, 0, 1)
+            tmp.61 = ! tmp.60
+            if !tmp.61 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.60 = &nested_arr.26
-            tmp.61 = sign_extend 0
-            tmp.62 = add_ptr(tmp.60, index=tmp.61, scale=12)
-            tmp.64 = sign_extend 1
-            tmp.63 = add_ptr(tmp.62, index=tmp.64, scale=4)
-            ptr.27 = tmp.63
-            tmp.65 = &nested_arr.26
-            tmp.66 = get_nested_addr(tmp.65, 0, 1, ptr.27)
-            tmp.67 = ! tmp.66
-            if !tmp.67 jump end_if_6
+            tmp.62 = &nested_arr.26
+            tmp.63 = sign_extend 0
+            tmp.64 = add_ptr(tmp.62, index=tmp.63, scale=12)
+            tmp.66 = sign_extend 1
+            tmp.65 = add_ptr(tmp.64, index=tmp.66, scale=4)
+            ptr.27 = tmp.65
+            tmp.67 = &nested_arr.26
+            tmp.68 = get_nested_addr(tmp.67, 0, 1, ptr.27)
+            tmp.69 = ! tmp.68
+            if !tmp.69 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.68 = read_static_nested(1, 1, 0, 5)
-            tmp.69 = ! tmp.68
-            if !tmp.69 jump end_if_8
+            tmp.70 = read_static_nested(1, 1, 0, 5)
+            tmp.71 = ! tmp.70
+            if !tmp.71 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.70 = write_nested_complex(0, 2, 3, 111)
-            tmp.71 = get_array()
-            tmp.72 = sign_extend 0
-            tmp.73 = add_ptr(tmp.71, index=tmp.72, scale=60)
-            tmp.74 = sign_extend 2
-            tmp.75 = add_ptr(tmp.73, index=tmp.74, scale=20)
-            tmp.76 = sign_extend 3
-            tmp.77 = add_ptr(tmp.75, index=tmp.76, scale=4)
-            tmp.78 = *tmp.77
-            tmp.79 = tmp.78 != 111
-            if !tmp.79 jump end_if_10
+            tmp.72 = write_nested_complex(0, 2, 3, 111)
+            tmp.73 = get_array()
+            tmp.74 = sign_extend 0
+            tmp.75 = add_ptr(tmp.73, index=tmp.74, scale=60)
+            tmp.76 = sign_extend 2
+            tmp.77 = add_ptr(tmp.75, index=tmp.76, scale=20)
+            tmp.78 = sign_extend 3
+            tmp.79 = add_ptr(tmp.77, index=tmp.78, scale=4)
+            tmp.80 = *tmp.79
+            tmp.81 = tmp.80 != 111
+            if !tmp.81 jump end_if_10
             return 6
         
           end_if_10:
-            tmp.80 = &nested_arr.26
-            tmp.81 = get_subarray(tmp.80, 1)
-            row_1.28 = tmp.81
-            tmp.83 = sign_extend 1
-            tmp.82 = add_ptr(row_1.28, index=tmp.83, scale=4)
-            tmp.85 = &nested_arr.26
-            tmp.86 = sign_extend 1
-            tmp.87 = add_ptr(tmp.85, index=tmp.86, scale=12)
+            tmp.82 = &nested_arr.26
+            tmp.83 = get_subarray(tmp.82, 1)
+            row_1.28 = tmp.83
+            tmp.85 = sign_extend 1
+            tmp.84 = add_ptr(row_1.28, index=tmp.85, scale=4)
+            tmp.87 = &nested_arr.26
             tmp.88 = sign_extend 1
-            tmp.89 = add_ptr(tmp.87, index=tmp.88, scale=4)
-            tmp.84 = tmp.82 != tmp.89
-            if !tmp.84 jump end_if_12
+            tmp.89 = add_ptr(tmp.87, index=tmp.88, scale=12)
+            tmp.90 = sign_extend 1
+            tmp.91 = add_ptr(tmp.89, index=tmp.90, scale=4)
+            tmp.86 = tmp.84 != tmp.91
+            if !tmp.86 jump end_if_12
             return 7
         
           end_if_12:

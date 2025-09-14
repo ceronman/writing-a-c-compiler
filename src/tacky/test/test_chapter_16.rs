@@ -1447,228 +1447,233 @@ fn test_valid_chars_convert_by_assignment() {
             tmp.79 = add_ptr(tmp.77, index=tmp.78, scale=1)
             tmp.80 = truncate 128
             *tmp.79 = tmp.80
-            tmp.81 = &array.29
-            tmp.82 = sign_extend 0
-            tmp.83 = add_ptr(tmp.81, index=tmp.82, scale=1)
-            tmp.84 = *tmp.83
-            if tmp.84 jump or_true_30
-            tmp.87 = &array.29
-            tmp.88 = sign_extend 2
-            tmp.89 = add_ptr(tmp.87, index=tmp.88, scale=1)
-            tmp.90 = *tmp.89
-            if tmp.90 jump or_true_30
-            tmp.86 = 0
+            tmp.81 = *tmp.79
+            tmp.82 = &array.29
+            tmp.83 = sign_extend 0
+            tmp.84 = add_ptr(tmp.82, index=tmp.83, scale=1)
+            tmp.85 = *tmp.84
+            if tmp.85 jump or_true_30
+            tmp.88 = &array.29
+            tmp.89 = sign_extend 2
+            tmp.90 = add_ptr(tmp.88, index=tmp.89, scale=1)
+            tmp.91 = *tmp.90
+            if tmp.91 jump or_true_30
+            tmp.87 = 0
             jump or_end_31
         
           or_true_30:
-            tmp.86 = 1
+            tmp.87 = 1
         
           or_end_31:
-            if tmp.86 jump or_true_32
-            tmp.93 = &array.29
-            tmp.94 = sign_extend 1
-            tmp.95 = add_ptr(tmp.93, index=tmp.94, scale=1)
-            tmp.96 = *tmp.95
-            tmp.97 = sign_extend tmp.96
-            tmp.99 = - 128
-            tmp.98 = tmp.97 != tmp.99
-            if tmp.98 jump or_true_32
-            tmp.92 = 0
+            if tmp.87 jump or_true_32
+            tmp.94 = &array.29
+            tmp.95 = sign_extend 1
+            tmp.96 = add_ptr(tmp.94, index=tmp.95, scale=1)
+            tmp.97 = *tmp.96
+            tmp.98 = sign_extend tmp.97
+            tmp.100 = - 128
+            tmp.99 = tmp.98 != tmp.100
+            if tmp.99 jump or_true_32
+            tmp.93 = 0
             jump or_end_33
         
           or_true_32:
-            tmp.92 = 1
+            tmp.93 = 1
         
           or_end_33:
-            if !tmp.92 jump end_if_34
+            if !tmp.93 jump end_if_34
             return 16
         
           end_if_34:
-            tmp.100 = &array.29
-            tmp.101 = sign_extend 1
-            tmp.102 = add_ptr(tmp.100, index=tmp.101, scale=1)
-            tmp.103 = truncate 9224497936761618562UL
-            *tmp.102 = tmp.103
-            tmp.104 = &array.29
-            tmp.105 = sign_extend 0
-            tmp.106 = add_ptr(tmp.104, index=tmp.105, scale=1)
-            tmp.107 = *tmp.106
-            if tmp.107 jump or_true_36
-            tmp.110 = &array.29
-            tmp.111 = sign_extend 2
-            tmp.112 = add_ptr(tmp.110, index=tmp.111, scale=1)
-            tmp.113 = *tmp.112
-            if tmp.113 jump or_true_36
-            tmp.109 = 0
+            tmp.101 = &array.29
+            tmp.102 = sign_extend 1
+            tmp.103 = add_ptr(tmp.101, index=tmp.102, scale=1)
+            tmp.104 = truncate 9224497936761618562UL
+            *tmp.103 = tmp.104
+            tmp.105 = *tmp.103
+            tmp.106 = &array.29
+            tmp.107 = sign_extend 0
+            tmp.108 = add_ptr(tmp.106, index=tmp.107, scale=1)
+            tmp.109 = *tmp.108
+            if tmp.109 jump or_true_36
+            tmp.112 = &array.29
+            tmp.113 = sign_extend 2
+            tmp.114 = add_ptr(tmp.112, index=tmp.113, scale=1)
+            tmp.115 = *tmp.114
+            if tmp.115 jump or_true_36
+            tmp.111 = 0
             jump or_end_37
         
           or_true_36:
-            tmp.109 = 1
+            tmp.111 = 1
         
           or_end_37:
-            if tmp.109 jump or_true_38
-            tmp.116 = &array.29
-            tmp.117 = sign_extend 1
-            tmp.118 = add_ptr(tmp.116, index=tmp.117, scale=1)
-            tmp.119 = *tmp.118
-            tmp.120 = sign_extend tmp.119
-            tmp.122 = - 126
-            tmp.121 = tmp.120 != tmp.122
-            if tmp.121 jump or_true_38
-            tmp.115 = 0
+            if tmp.111 jump or_true_38
+            tmp.118 = &array.29
+            tmp.119 = sign_extend 1
+            tmp.120 = add_ptr(tmp.118, index=tmp.119, scale=1)
+            tmp.121 = *tmp.120
+            tmp.122 = sign_extend tmp.121
+            tmp.124 = - 126
+            tmp.123 = tmp.122 != tmp.124
+            if tmp.123 jump or_true_38
+            tmp.117 = 0
             jump or_end_39
         
           or_true_38:
-            tmp.115 = 1
+            tmp.117 = 1
         
           or_end_39:
-            if !tmp.115 jump end_if_40
+            if !tmp.117 jump end_if_40
             return 17
         
           end_if_40:
-            tmp.123 = &array.29
-            tmp.124 = sign_extend 1
-            tmp.125 = add_ptr(tmp.123, index=tmp.124, scale=1)
-            tmp.126 = - 2.6D
-            tmp.127 = double_to_int tmp.126
-            *tmp.125 = tmp.127
-            tmp.128 = &array.29
-            tmp.129 = sign_extend 0
-            tmp.130 = add_ptr(tmp.128, index=tmp.129, scale=1)
-            tmp.131 = *tmp.130
-            if tmp.131 jump or_true_42
-            tmp.134 = &array.29
-            tmp.135 = sign_extend 2
-            tmp.136 = add_ptr(tmp.134, index=tmp.135, scale=1)
-            tmp.137 = *tmp.136
-            if tmp.137 jump or_true_42
-            tmp.133 = 0
+            tmp.125 = &array.29
+            tmp.126 = sign_extend 1
+            tmp.127 = add_ptr(tmp.125, index=tmp.126, scale=1)
+            tmp.128 = - 2.6D
+            tmp.129 = double_to_int tmp.128
+            *tmp.127 = tmp.129
+            tmp.130 = *tmp.127
+            tmp.131 = &array.29
+            tmp.132 = sign_extend 0
+            tmp.133 = add_ptr(tmp.131, index=tmp.132, scale=1)
+            tmp.134 = *tmp.133
+            if tmp.134 jump or_true_42
+            tmp.137 = &array.29
+            tmp.138 = sign_extend 2
+            tmp.139 = add_ptr(tmp.137, index=tmp.138, scale=1)
+            tmp.140 = *tmp.139
+            if tmp.140 jump or_true_42
+            tmp.136 = 0
             jump or_end_43
         
           or_true_42:
-            tmp.133 = 1
+            tmp.136 = 1
         
           or_end_43:
-            if tmp.133 jump or_true_44
-            tmp.140 = &array.29
-            tmp.141 = sign_extend 1
-            tmp.142 = add_ptr(tmp.140, index=tmp.141, scale=1)
-            tmp.143 = *tmp.142
-            tmp.144 = sign_extend tmp.143
-            tmp.146 = - 2
-            tmp.145 = tmp.144 != tmp.146
-            if tmp.145 jump or_true_44
-            tmp.139 = 0
+            if tmp.136 jump or_true_44
+            tmp.143 = &array.29
+            tmp.144 = sign_extend 1
+            tmp.145 = add_ptr(tmp.143, index=tmp.144, scale=1)
+            tmp.146 = *tmp.145
+            tmp.147 = sign_extend tmp.146
+            tmp.149 = - 2
+            tmp.148 = tmp.147 != tmp.149
+            if tmp.148 jump or_true_44
+            tmp.142 = 0
             jump or_end_45
         
           or_true_44:
-            tmp.139 = 1
+            tmp.142 = 1
         
           or_end_45:
-            if !tmp.139 jump end_if_46
+            if !tmp.142 jump end_if_46
             return 18
         
           end_if_46:
-            tmp.147 = truncate 0
-            uchar_array.30[0] = tmp.147
-            tmp.148 = truncate 0
-            uchar_array.30[1] = tmp.148
-            tmp.149 = truncate 0
-            uchar_array.30[2] = tmp.149
-            tmp.150 = &uchar_array.30
-            tmp.151 = sign_extend 1
-            tmp.152 = add_ptr(tmp.150, index=tmp.151, scale=1)
-            tmp.153 = truncate 17592186044416L
-            *tmp.152 = tmp.153
-            tmp.154 = &uchar_array.30
-            tmp.155 = sign_extend 0
-            tmp.156 = add_ptr(tmp.154, index=tmp.155, scale=1)
-            tmp.157 = *tmp.156
-            if tmp.157 jump or_true_48
-            tmp.160 = &uchar_array.30
-            tmp.161 = sign_extend 2
-            tmp.162 = add_ptr(tmp.160, index=tmp.161, scale=1)
-            tmp.163 = *tmp.162
-            if tmp.163 jump or_true_48
-            tmp.159 = 0
+            tmp.150 = truncate 0
+            uchar_array.30[0] = tmp.150
+            tmp.151 = truncate 0
+            uchar_array.30[1] = tmp.151
+            tmp.152 = truncate 0
+            uchar_array.30[2] = tmp.152
+            tmp.153 = &uchar_array.30
+            tmp.154 = sign_extend 1
+            tmp.155 = add_ptr(tmp.153, index=tmp.154, scale=1)
+            tmp.156 = truncate 17592186044416L
+            *tmp.155 = tmp.156
+            tmp.157 = *tmp.155
+            tmp.158 = &uchar_array.30
+            tmp.159 = sign_extend 0
+            tmp.160 = add_ptr(tmp.158, index=tmp.159, scale=1)
+            tmp.161 = *tmp.160
+            if tmp.161 jump or_true_48
+            tmp.164 = &uchar_array.30
+            tmp.165 = sign_extend 2
+            tmp.166 = add_ptr(tmp.164, index=tmp.165, scale=1)
+            tmp.167 = *tmp.166
+            if tmp.167 jump or_true_48
+            tmp.163 = 0
             jump or_end_49
         
           or_true_48:
-            tmp.159 = 1
+            tmp.163 = 1
         
           or_end_49:
-            if tmp.159 jump or_true_50
-            tmp.166 = &uchar_array.30
-            tmp.167 = sign_extend 1
-            tmp.168 = add_ptr(tmp.166, index=tmp.167, scale=1)
-            tmp.169 = *tmp.168
-            tmp.170 = zero_extend tmp.169
-            tmp.171 = tmp.170 != 0
-            if tmp.171 jump or_true_50
-            tmp.165 = 0
+            if tmp.163 jump or_true_50
+            tmp.170 = &uchar_array.30
+            tmp.171 = sign_extend 1
+            tmp.172 = add_ptr(tmp.170, index=tmp.171, scale=1)
+            tmp.173 = *tmp.172
+            tmp.174 = zero_extend tmp.173
+            tmp.175 = tmp.174 != 0
+            if tmp.175 jump or_true_50
+            tmp.169 = 0
             jump or_end_51
         
           or_true_50:
-            tmp.165 = 1
+            tmp.169 = 1
         
           or_end_51:
-            if !tmp.165 jump end_if_52
+            if !tmp.169 jump end_if_52
             return 19
         
           end_if_52:
-            tmp.172 = &uchar_array.30
-            tmp.173 = sign_extend 1
-            tmp.174 = add_ptr(tmp.172, index=tmp.173, scale=1)
-            tmp.175 = truncate 2147483898U
-            *tmp.174 = tmp.175
             tmp.176 = &uchar_array.30
-            tmp.177 = sign_extend 0
+            tmp.177 = sign_extend 1
             tmp.178 = add_ptr(tmp.176, index=tmp.177, scale=1)
-            tmp.179 = *tmp.178
-            if tmp.179 jump or_true_54
-            tmp.182 = &uchar_array.30
-            tmp.183 = sign_extend 2
-            tmp.184 = add_ptr(tmp.182, index=tmp.183, scale=1)
-            tmp.185 = *tmp.184
-            if tmp.185 jump or_true_54
-            tmp.181 = 0
+            tmp.179 = truncate 2147483898U
+            *tmp.178 = tmp.179
+            tmp.180 = *tmp.178
+            tmp.181 = &uchar_array.30
+            tmp.182 = sign_extend 0
+            tmp.183 = add_ptr(tmp.181, index=tmp.182, scale=1)
+            tmp.184 = *tmp.183
+            if tmp.184 jump or_true_54
+            tmp.187 = &uchar_array.30
+            tmp.188 = sign_extend 2
+            tmp.189 = add_ptr(tmp.187, index=tmp.188, scale=1)
+            tmp.190 = *tmp.189
+            if tmp.190 jump or_true_54
+            tmp.186 = 0
             jump or_end_55
         
           or_true_54:
-            tmp.181 = 1
+            tmp.186 = 1
         
           or_end_55:
-            if tmp.181 jump or_true_56
-            tmp.188 = &uchar_array.30
-            tmp.189 = sign_extend 1
-            tmp.190 = add_ptr(tmp.188, index=tmp.189, scale=1)
-            tmp.191 = *tmp.190
-            tmp.192 = zero_extend tmp.191
-            tmp.193 = tmp.192 != 250
-            if tmp.193 jump or_true_56
-            tmp.187 = 0
+            if tmp.186 jump or_true_56
+            tmp.193 = &uchar_array.30
+            tmp.194 = sign_extend 1
+            tmp.195 = add_ptr(tmp.193, index=tmp.194, scale=1)
+            tmp.196 = *tmp.195
+            tmp.197 = zero_extend tmp.196
+            tmp.198 = tmp.197 != 250
+            if tmp.198 jump or_true_56
+            tmp.192 = 0
             jump or_end_57
         
           or_true_56:
-            tmp.187 = 1
+            tmp.192 = 1
         
           or_end_57:
-            if !tmp.187 jump end_if_58
+            if !tmp.192 jump end_if_58
             return 20
         
           end_if_58:
             ui.31 = 4294967295U
-            tmp.194 = zero_extend uc_static.32
-            ui.31 = tmp.194
+            tmp.199 = zero_extend uc_static.32
+            ui.31 = tmp.199
             if !ui.31 jump end_if_60
             return 21
         
           end_if_60:
-            tmp.195 = - 1
-            tmp.196 = sign_extend tmp.195
-            l.33 = tmp.196
-            tmp.197 = sign_extend s_static.34
-            l.33 = tmp.197
+            tmp.200 = - 1
+            tmp.201 = sign_extend tmp.200
+            l.33 = tmp.201
+            tmp.202 = sign_extend s_static.34
+            l.33 = tmp.202
             if !l.33 jump end_if_62
             return 22
         
@@ -3874,64 +3879,60 @@ fn test_valid_extra_credit_compound_assign_chars() {
             tmp.2 = tmp.1 + tmp.3
             tmp.4 = truncate tmp.2
             c.0 = tmp.4
-            tmp.5 = truncate tmp.4
-            tmp.6 = sign_extend c.0
-            tmp.8 = - 56
-            tmp.7 = tmp.6 != tmp.8
-            if !tmp.7 jump end_if_0
+            tmp.5 = sign_extend c.0
+            tmp.7 = - 56
+            tmp.6 = tmp.5 != tmp.7
+            if !tmp.6 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.9 = - 100
-            tmp.10 = truncate tmp.9
-            c2.1 = tmp.10
-            tmp.11 = zero_extend uc.2
-            tmp.13 = sign_extend c2.1
-            tmp.12 = tmp.11 / tmp.13
-            tmp.14 = truncate tmp.12
-            uc.2 = tmp.14
-            tmp.15 = truncate tmp.14
-            tmp.16 = zero_extend uc.2
-            tmp.17 = tmp.16 != 254
-            if !tmp.17 jump end_if_2
+            tmp.8 = - 100
+            tmp.9 = truncate tmp.8
+            c2.1 = tmp.9
+            tmp.10 = zero_extend uc.2
+            tmp.12 = sign_extend c2.1
+            tmp.11 = tmp.10 / tmp.12
+            tmp.13 = truncate tmp.11
+            uc.2 = tmp.13
+            tmp.14 = zero_extend uc.2
+            tmp.15 = tmp.14 != 254
+            if !tmp.15 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.18 = uint_to_double uc.2
-            tmp.19 = tmp.18 - 250D
-            tmp.20 = double_to_uint tmp.19
-            uc.2 = tmp.20
-            tmp.21 = double_to_uint tmp.20
-            tmp.22 = zero_extend uc.2
-            tmp.23 = tmp.22 != 4
-            if !tmp.23 jump end_if_4
+            tmp.16 = uint_to_double uc.2
+            tmp.17 = tmp.16 - 250D
+            tmp.18 = double_to_uint tmp.17
+            uc.2 = tmp.18
+            tmp.19 = zero_extend uc.2
+            tmp.20 = tmp.19 != 4
+            if !tmp.20 jump end_if_4
             return 3
         
           end_if_4:
+            tmp.21 = sign_extend sc.3
+            tmp.22 = - tmp.21
+            tmp.23 = truncate tmp.22
+            sc.3 = tmp.23
             tmp.24 = sign_extend sc.3
-            tmp.25 = - tmp.24
-            tmp.26 = truncate tmp.25
-            sc.3 = tmp.26
-            tmp.27 = sign_extend sc.3
-            tmp.29 = sign_extend c.0
-            tmp.28 = tmp.27 * tmp.29
-            tmp.30 = truncate tmp.28
-            sc.3 = tmp.30
-            tmp.31 = truncate tmp.30
-            tmp.32 = sign_extend sc.3
-            tmp.33 = tmp.32 != 80
-            if !tmp.33 jump end_if_6
+            tmp.26 = sign_extend c.0
+            tmp.25 = tmp.24 * tmp.26
+            tmp.27 = truncate tmp.25
+            sc.3 = tmp.27
+            tmp.28 = sign_extend sc.3
+            tmp.29 = tmp.28 != 80
+            if !tmp.29 jump end_if_6
             return 4
         
           end_if_6:
+            tmp.30 = sign_extend sc.3
+            tmp.32 = sign_extend c.0
+            tmp.31 = tmp.30 % tmp.32
+            tmp.33 = truncate tmp.31
+            sc.3 = tmp.33
             tmp.34 = sign_extend sc.3
-            tmp.36 = sign_extend c.0
-            tmp.35 = tmp.34 % tmp.36
-            tmp.37 = truncate tmp.35
-            sc.3 = tmp.37
-            tmp.38 = truncate tmp.37
-            tmp.39 = tmp.38 != 24
-            if !tmp.39 jump end_if_8
+            tmp.35 = tmp.34 != 24
+            if !tmp.35 jump end_if_8
             return 5
         
           end_if_8:
@@ -4023,7 +4024,7 @@ fn test_valid_extra_credit_compound_bitwise_ops_chars() {
             tmp.17 = tmp.16 ^ 12345
             tmp.18 = truncate tmp.17
             *tmp.14 = tmp.18
-            tmp.19 = truncate tmp.18
+            tmp.19 = *tmp.14
             tmp.20 = &arr.0
             tmp.21 = sign_extend 1
             tmp.22 = add_ptr(tmp.20, index=tmp.21, scale=1)
@@ -4037,7 +4038,7 @@ fn test_valid_extra_credit_compound_bitwise_ops_chars() {
             tmp.25 = tmp.24 | tmp.30
             tmp.31 = truncate tmp.25
             *tmp.22 = tmp.31
-            tmp.32 = truncate tmp.31
+            tmp.32 = *tmp.22
             tmp.33 = &arr.0
             tmp.34 = sign_extend 2
             tmp.35 = add_ptr(tmp.33, index=tmp.34, scale=1)
@@ -4054,149 +4055,159 @@ fn test_valid_extra_credit_compound_bitwise_ops_chars() {
             tmp.38 = tmp.37 & tmp.44
             tmp.47 = truncate tmp.38
             *tmp.35 = tmp.47
-            tmp.48 = truncate tmp.47
+            tmp.48 = *tmp.35
             tmp.49 = &arr.0
             tmp.50 = sign_extend 3
             tmp.51 = add_ptr(tmp.49, index=tmp.50, scale=1)
             tmp.52 = *tmp.51
-            tmp.54 = truncate 7U
-            tmp.53 = tmp.52 << tmp.54
-            *tmp.51 = tmp.53
-            tmp.55 = &arr.0
-            tmp.56 = sign_extend 4
-            tmp.57 = add_ptr(tmp.55, index=tmp.56, scale=1)
-            tmp.58 = *tmp.57
-            tmp.60 = truncate 31
-            tmp.59 = tmp.58 >> tmp.60
-            *tmp.57 = tmp.59
-            tmp.61 = &u_arr.1
-            tmp.62 = sign_extend 3
-            tmp.63 = add_ptr(tmp.61, index=tmp.62, scale=1)
-            tmp.64 = *tmp.63
-            tmp.66 = truncate 12
-            tmp.65 = tmp.64 << tmp.66
-            *tmp.63 = tmp.65
-            tmp.67 = &u_arr.1
-            tmp.68 = sign_extend 2
-            tmp.69 = add_ptr(tmp.67, index=tmp.68, scale=1)
-            tmp.70 = *tmp.69
-            tmp.73 = sign_extend 1
-            tmp.72 = x.2 - tmp.73
-            tmp.74 = truncate tmp.72
-            tmp.71 = tmp.70 >> tmp.74
-            *tmp.69 = tmp.71
-            tmp.75 = &u_arr.1
-            tmp.76 = sign_extend 1
-            tmp.77 = add_ptr(tmp.75, index=tmp.76, scale=1)
-            tmp.78 = *tmp.77
-            tmp.79 = zero_extend tmp.78
-            tmp.81 = - 399
-            tmp.80 = tmp.79 | tmp.81
+            tmp.53 = sign_extend tmp.52
+            tmp.55 = 7U
+            tmp.54 = tmp.53 << tmp.55
+            tmp.56 = truncate tmp.54
+            *tmp.51 = tmp.56
+            tmp.57 = *tmp.51
+            tmp.58 = &arr.0
+            tmp.59 = sign_extend 4
+            tmp.60 = add_ptr(tmp.58, index=tmp.59, scale=1)
+            tmp.61 = *tmp.60
+            tmp.62 = sign_extend tmp.61
+            tmp.63 = tmp.62 >> 31
+            tmp.64 = truncate tmp.63
+            *tmp.60 = tmp.64
+            tmp.65 = *tmp.60
+            tmp.66 = &u_arr.1
+            tmp.67 = sign_extend 3
+            tmp.68 = add_ptr(tmp.66, index=tmp.67, scale=1)
+            tmp.69 = *tmp.68
+            tmp.70 = zero_extend tmp.69
+            tmp.71 = tmp.70 << 12
+            tmp.72 = truncate tmp.71
+            *tmp.68 = tmp.72
+            tmp.73 = *tmp.68
+            tmp.74 = &u_arr.1
+            tmp.75 = sign_extend 2
+            tmp.76 = add_ptr(tmp.74, index=tmp.75, scale=1)
+            tmp.77 = *tmp.76
+            tmp.78 = zero_extend tmp.77
+            tmp.81 = sign_extend 1
+            tmp.80 = x.2 - tmp.81
             tmp.82 = truncate tmp.80
-            *tmp.77 = tmp.82
-            tmp.83 = truncate tmp.82
-            tmp.84 = - 4296140120L
-            x.2 = tmp.84
+            tmp.79 = tmp.78 >> tmp.82
+            tmp.83 = truncate tmp.79
+            *tmp.76 = tmp.83
+            tmp.84 = *tmp.76
             tmp.85 = &u_arr.1
-            tmp.86 = sign_extend 0
+            tmp.86 = sign_extend 1
             tmp.87 = add_ptr(tmp.85, index=tmp.86, scale=1)
             tmp.88 = *tmp.87
             tmp.89 = zero_extend tmp.88
-            tmp.90 = tmp.89 ^ x.2
-            tmp.91 = truncate tmp.90
-            *tmp.87 = tmp.91
-            tmp.92 = truncate tmp.91
-            tmp.93 = &arr.0
-            tmp.94 = sign_extend 0
-            tmp.95 = add_ptr(tmp.93, index=tmp.94, scale=1)
-            tmp.96 = *tmp.95
-            tmp.97 = sign_extend tmp.96
-            tmp.99 = - 71
-            tmp.98 = tmp.97 != tmp.99
-            if !tmp.98 jump end_if_0
+            tmp.91 = - 399
+            tmp.90 = tmp.89 | tmp.91
+            tmp.92 = truncate tmp.90
+            *tmp.87 = tmp.92
+            tmp.93 = *tmp.87
+            tmp.94 = - 4296140120L
+            x.2 = tmp.94
+            tmp.95 = &u_arr.1
+            tmp.96 = sign_extend 0
+            tmp.97 = add_ptr(tmp.95, index=tmp.96, scale=1)
+            tmp.98 = *tmp.97
+            tmp.99 = zero_extend tmp.98
+            tmp.100 = tmp.99 ^ x.2
+            tmp.101 = truncate tmp.100
+            *tmp.97 = tmp.101
+            tmp.102 = *tmp.97
+            tmp.103 = &arr.0
+            tmp.104 = sign_extend 0
+            tmp.105 = add_ptr(tmp.103, index=tmp.104, scale=1)
+            tmp.106 = *tmp.105
+            tmp.107 = sign_extend tmp.106
+            tmp.109 = - 71
+            tmp.108 = tmp.107 != tmp.109
+            if !tmp.108 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.100 = &arr.0
-            tmp.101 = sign_extend 1
-            tmp.102 = add_ptr(tmp.100, index=tmp.101, scale=1)
-            tmp.103 = *tmp.102
-            tmp.104 = sign_extend tmp.103
-            tmp.106 = - 1
-            tmp.105 = tmp.104 != tmp.106
-            if !tmp.105 jump end_if_2
+            tmp.110 = &arr.0
+            tmp.111 = sign_extend 1
+            tmp.112 = add_ptr(tmp.110, index=tmp.111, scale=1)
+            tmp.113 = *tmp.112
+            tmp.114 = sign_extend tmp.113
+            tmp.116 = - 1
+            tmp.115 = tmp.114 != tmp.116
+            if !tmp.115 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.107 = &arr.0
-            tmp.108 = sign_extend 2
-            tmp.109 = add_ptr(tmp.107, index=tmp.108, scale=1)
-            tmp.110 = *tmp.109
-            tmp.111 = sign_extend tmp.110
-            tmp.113 = - 16
-            tmp.112 = tmp.111 != tmp.113
-            if !tmp.112 jump end_if_4
+            tmp.117 = &arr.0
+            tmp.118 = sign_extend 2
+            tmp.119 = add_ptr(tmp.117, index=tmp.118, scale=1)
+            tmp.120 = *tmp.119
+            tmp.121 = sign_extend tmp.120
+            tmp.123 = - 16
+            tmp.122 = tmp.121 != tmp.123
+            if !tmp.122 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.114 = &arr.0
-            tmp.115 = sign_extend 3
-            tmp.116 = add_ptr(tmp.114, index=tmp.115, scale=1)
-            tmp.117 = *tmp.116
-            tmp.118 = sign_extend tmp.117
-            tmp.120 = - 128
-            tmp.119 = tmp.118 != tmp.120
-            if !tmp.119 jump end_if_6
+            tmp.124 = &arr.0
+            tmp.125 = sign_extend 3
+            tmp.126 = add_ptr(tmp.124, index=tmp.125, scale=1)
+            tmp.127 = *tmp.126
+            tmp.128 = sign_extend tmp.127
+            tmp.130 = - 128
+            tmp.129 = tmp.128 != tmp.130
+            if !tmp.129 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.121 = &arr.0
-            tmp.122 = sign_extend 4
-            tmp.123 = add_ptr(tmp.121, index=tmp.122, scale=1)
-            tmp.124 = *tmp.123
-            tmp.125 = sign_extend tmp.124
-            tmp.126 = tmp.125 != 0
-            if !tmp.126 jump end_if_8
+            tmp.131 = &arr.0
+            tmp.132 = sign_extend 4
+            tmp.133 = add_ptr(tmp.131, index=tmp.132, scale=1)
+            tmp.134 = *tmp.133
+            tmp.135 = sign_extend tmp.134
+            tmp.136 = tmp.135 != 0
+            if !tmp.136 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.127 = &u_arr.1
-            tmp.128 = sign_extend 0
-            tmp.129 = add_ptr(tmp.127, index=tmp.128, scale=1)
-            tmp.130 = *tmp.129
-            tmp.131 = zero_extend tmp.130
-            tmp.132 = tmp.131 != 168
-            if !tmp.132 jump end_if_10
+            tmp.137 = &u_arr.1
+            tmp.138 = sign_extend 0
+            tmp.139 = add_ptr(tmp.137, index=tmp.138, scale=1)
+            tmp.140 = *tmp.139
+            tmp.141 = zero_extend tmp.140
+            tmp.142 = tmp.141 != 168
+            if !tmp.142 jump end_if_10
             return 6
         
           end_if_10:
-            tmp.133 = &u_arr.1
-            tmp.134 = sign_extend 1
-            tmp.135 = add_ptr(tmp.133, index=tmp.134, scale=1)
-            tmp.136 = *tmp.135
-            tmp.137 = zero_extend tmp.136
-            tmp.138 = tmp.137 != 251
-            if !tmp.138 jump end_if_12
+            tmp.143 = &u_arr.1
+            tmp.144 = sign_extend 1
+            tmp.145 = add_ptr(tmp.143, index=tmp.144, scale=1)
+            tmp.146 = *tmp.145
+            tmp.147 = zero_extend tmp.146
+            tmp.148 = tmp.147 != 251
+            if !tmp.148 jump end_if_12
             return 7
         
           end_if_12:
-            tmp.139 = &u_arr.1
-            tmp.140 = sign_extend 2
-            tmp.141 = add_ptr(tmp.139, index=tmp.140, scale=1)
-            tmp.142 = *tmp.141
-            tmp.143 = zero_extend tmp.142
-            tmp.144 = tmp.143 != 0
-            if !tmp.144 jump end_if_14
+            tmp.149 = &u_arr.1
+            tmp.150 = sign_extend 2
+            tmp.151 = add_ptr(tmp.149, index=tmp.150, scale=1)
+            tmp.152 = *tmp.151
+            tmp.153 = zero_extend tmp.152
+            tmp.154 = tmp.153 != 0
+            if !tmp.154 jump end_if_14
             return 8
         
           end_if_14:
-            tmp.145 = &u_arr.1
-            tmp.146 = sign_extend 3
-            tmp.147 = add_ptr(tmp.145, index=tmp.146, scale=1)
-            tmp.148 = *tmp.147
-            tmp.149 = zero_extend tmp.148
-            tmp.150 = tmp.149 != 0
-            if !tmp.150 jump end_if_16
+            tmp.155 = &u_arr.1
+            tmp.156 = sign_extend 3
+            tmp.157 = add_ptr(tmp.155, index=tmp.156, scale=1)
+            tmp.158 = *tmp.157
+            tmp.159 = zero_extend tmp.158
+            tmp.160 = tmp.159 != 0
+            if !tmp.160 jump end_if_16
             return 9
         
           end_if_16:
@@ -6586,137 +6597,140 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             tmp.248 = &nested
             tmp.249 = sign_extend 0
             tmp.250 = add_ptr(tmp.248, index=tmp.249, scale=3)
-            word1.8 = tmp.250
-            tmp.251 = &nested
-            tmp.252 = sign_extend 1
-            tmp.253 = add_ptr(tmp.251, index=tmp.252, scale=3)
-            word2.9 = tmp.253
-            tmp.254 = &nested
-            tmp.255 = sign_extend 2
-            tmp.256 = add_ptr(tmp.254, index=tmp.255, scale=3)
-            word3.10 = tmp.256
-            tmp.257 = &string.0
-            tmp.258 = strcmp(whole_array.7, tmp.257)
-            if tmp.258 jump or_true_42
-            tmp.261 = &string.0
-            tmp.262 = strcmp(word1.8, tmp.261)
-            if tmp.262 jump or_true_42
-            tmp.260 = 0
+            tmp.251 = tmp.250
+            word1.8 = tmp.251
+            tmp.252 = &nested
+            tmp.253 = sign_extend 1
+            tmp.254 = add_ptr(tmp.252, index=tmp.253, scale=3)
+            tmp.255 = tmp.254
+            word2.9 = tmp.255
+            tmp.256 = &nested
+            tmp.257 = sign_extend 2
+            tmp.258 = add_ptr(tmp.256, index=tmp.257, scale=3)
+            tmp.259 = tmp.258
+            word3.10 = tmp.259
+            tmp.260 = &string.0
+            tmp.261 = strcmp(whole_array.7, tmp.260)
+            if tmp.261 jump or_true_42
+            tmp.264 = &string.0
+            tmp.265 = strcmp(word1.8, tmp.264)
+            if tmp.265 jump or_true_42
+            tmp.263 = 0
             jump or_end_43
         
           or_true_42:
-            tmp.260 = 1
+            tmp.263 = 1
         
           or_end_43:
-            if tmp.260 jump or_true_44
-            tmp.265 = &string.1
-            tmp.266 = strcmp(word2.9, tmp.265)
-            if tmp.266 jump or_true_44
-            tmp.264 = 0
+            if tmp.263 jump or_true_44
+            tmp.268 = &string.1
+            tmp.269 = strcmp(word2.9, tmp.268)
+            if tmp.269 jump or_true_44
+            tmp.267 = 0
             jump or_end_45
         
           or_true_44:
-            tmp.264 = 1
+            tmp.267 = 1
         
           or_end_45:
-            if tmp.264 jump or_true_46
-            tmp.269 = &string.2
-            tmp.270 = strcmp(word3.10, tmp.269)
-            if tmp.270 jump or_true_46
-            tmp.268 = 0
+            if tmp.267 jump or_true_46
+            tmp.272 = &string.2
+            tmp.273 = strcmp(word3.10, tmp.272)
+            if tmp.273 jump or_true_46
+            tmp.271 = 0
             jump or_end_47
         
           or_true_46:
-            tmp.268 = 1
+            tmp.271 = 1
         
           or_end_47:
-            tmp.271 = ! tmp.268
-            return tmp.271
+            tmp.274 = ! tmp.271
+            return tmp.274
             return 0
         }
         global function test_flat_auto_without_null_byte() { 
-            tmp.272 = - 1
-            x.11 = tmp.272
+            tmp.275 = - 1
+            x.11 = tmp.275
             letters.12[0] = 'a'
             letters.12[1] = 'b'
             letters.12[2] = 'c'
             letters.12[3] = 'd'
-            tmp.273 = - 1
-            y.13 = tmp.273
-            tmp.275 = - 1
-            tmp.274 = x.11 == tmp.275
-            if !tmp.274 jump and_false_48
-            tmp.279 = - 1
-            tmp.278 = y.13 == tmp.279
-            if !tmp.278 jump and_false_48
-            tmp.277 = 1
+            tmp.276 = - 1
+            y.13 = tmp.276
+            tmp.278 = - 1
+            tmp.277 = x.11 == tmp.278
+            if !tmp.277 jump and_false_48
+            tmp.282 = - 1
+            tmp.281 = y.13 == tmp.282
+            if !tmp.281 jump and_false_48
+            tmp.280 = 1
             jump and_end_49
         
           and_false_48:
-            tmp.277 = 0
+            tmp.280 = 0
         
           and_end_49:
-            if !tmp.277 jump and_false_50
-            tmp.282 = &letters.12
-            tmp.283 = sign_extend 0
-            tmp.284 = add_ptr(tmp.282, index=tmp.283, scale=1)
-            tmp.285 = *tmp.284
-            tmp.286 = sign_extend tmp.285
-            tmp.287 = tmp.286 == 97
-            if !tmp.287 jump and_false_50
-            tmp.281 = 1
+            if !tmp.280 jump and_false_50
+            tmp.285 = &letters.12
+            tmp.286 = sign_extend 0
+            tmp.287 = add_ptr(tmp.285, index=tmp.286, scale=1)
+            tmp.288 = *tmp.287
+            tmp.289 = sign_extend tmp.288
+            tmp.290 = tmp.289 == 97
+            if !tmp.290 jump and_false_50
+            tmp.284 = 1
             jump and_end_51
         
           and_false_50:
-            tmp.281 = 0
+            tmp.284 = 0
         
           and_end_51:
-            if !tmp.281 jump and_false_52
-            tmp.290 = &letters.12
-            tmp.291 = sign_extend 1
-            tmp.292 = add_ptr(tmp.290, index=tmp.291, scale=1)
-            tmp.293 = *tmp.292
-            tmp.294 = sign_extend tmp.293
-            tmp.295 = tmp.294 == 98
-            if !tmp.295 jump and_false_52
-            tmp.289 = 1
+            if !tmp.284 jump and_false_52
+            tmp.293 = &letters.12
+            tmp.294 = sign_extend 1
+            tmp.295 = add_ptr(tmp.293, index=tmp.294, scale=1)
+            tmp.296 = *tmp.295
+            tmp.297 = sign_extend tmp.296
+            tmp.298 = tmp.297 == 98
+            if !tmp.298 jump and_false_52
+            tmp.292 = 1
             jump and_end_53
         
           and_false_52:
-            tmp.289 = 0
+            tmp.292 = 0
         
           and_end_53:
-            if !tmp.289 jump and_false_54
-            tmp.298 = &letters.12
-            tmp.299 = sign_extend 2
-            tmp.300 = add_ptr(tmp.298, index=tmp.299, scale=1)
-            tmp.301 = *tmp.300
-            tmp.302 = sign_extend tmp.301
-            tmp.303 = tmp.302 == 99
-            if !tmp.303 jump and_false_54
-            tmp.297 = 1
+            if !tmp.292 jump and_false_54
+            tmp.301 = &letters.12
+            tmp.302 = sign_extend 2
+            tmp.303 = add_ptr(tmp.301, index=tmp.302, scale=1)
+            tmp.304 = *tmp.303
+            tmp.305 = sign_extend tmp.304
+            tmp.306 = tmp.305 == 99
+            if !tmp.306 jump and_false_54
+            tmp.300 = 1
             jump and_end_55
         
           and_false_54:
-            tmp.297 = 0
+            tmp.300 = 0
         
           and_end_55:
-            if !tmp.297 jump and_false_56
-            tmp.306 = &letters.12
-            tmp.307 = sign_extend 3
-            tmp.308 = add_ptr(tmp.306, index=tmp.307, scale=1)
-            tmp.309 = *tmp.308
-            tmp.310 = sign_extend tmp.309
-            tmp.311 = tmp.310 == 100
-            if !tmp.311 jump and_false_56
-            tmp.305 = 1
+            if !tmp.300 jump and_false_56
+            tmp.309 = &letters.12
+            tmp.310 = sign_extend 3
+            tmp.311 = add_ptr(tmp.309, index=tmp.310, scale=1)
+            tmp.312 = *tmp.311
+            tmp.313 = sign_extend tmp.312
+            tmp.314 = tmp.313 == 100
+            if !tmp.314 jump and_false_56
+            tmp.308 = 1
             jump and_end_57
         
           and_false_56:
-            tmp.305 = 0
+            tmp.308 = 0
         
           and_end_57:
-            return tmp.305
+            return tmp.308
             return 0
         }
         global function test_nested_auto_without_null_byte() { 
@@ -6729,106 +6743,109 @@ fn test_valid_strings_as_initializers_terminating_null_bytes() {
             nested.14[6] = 'o'
             nested.14[7] = 'k'
             nested.14[8] = '\0'
-            tmp.312 = &nested.14
-            tmp.313 = tmp.312
-            whole_array.15 = tmp.313
-            tmp.314 = &nested.14
-            tmp.315 = sign_extend 0
-            tmp.316 = add_ptr(tmp.314, index=tmp.315, scale=3)
-            word1.16 = tmp.316
+            tmp.315 = &nested.14
+            tmp.316 = tmp.315
+            whole_array.15 = tmp.316
             tmp.317 = &nested.14
-            tmp.318 = sign_extend 1
+            tmp.318 = sign_extend 0
             tmp.319 = add_ptr(tmp.317, index=tmp.318, scale=3)
-            word2.17 = tmp.319
-            tmp.320 = &nested.14
-            tmp.321 = sign_extend 2
-            tmp.322 = add_ptr(tmp.320, index=tmp.321, scale=3)
-            word3.18 = tmp.322
-            tmp.323 = &string.0
-            tmp.324 = strcmp(whole_array.15, tmp.323)
-            if tmp.324 jump or_true_58
-            tmp.327 = &string.0
-            tmp.328 = strcmp(word1.16, tmp.327)
-            if tmp.328 jump or_true_58
-            tmp.326 = 0
+            tmp.320 = tmp.319
+            word1.16 = tmp.320
+            tmp.321 = &nested.14
+            tmp.322 = sign_extend 1
+            tmp.323 = add_ptr(tmp.321, index=tmp.322, scale=3)
+            tmp.324 = tmp.323
+            word2.17 = tmp.324
+            tmp.325 = &nested.14
+            tmp.326 = sign_extend 2
+            tmp.327 = add_ptr(tmp.325, index=tmp.326, scale=3)
+            tmp.328 = tmp.327
+            word3.18 = tmp.328
+            tmp.329 = &string.0
+            tmp.330 = strcmp(whole_array.15, tmp.329)
+            if tmp.330 jump or_true_58
+            tmp.333 = &string.0
+            tmp.334 = strcmp(word1.16, tmp.333)
+            if tmp.334 jump or_true_58
+            tmp.332 = 0
             jump or_end_59
         
           or_true_58:
-            tmp.326 = 1
+            tmp.332 = 1
         
           or_end_59:
-            if tmp.326 jump or_true_60
-            tmp.331 = &string.1
-            tmp.332 = strcmp(word2.17, tmp.331)
             if tmp.332 jump or_true_60
-            tmp.330 = 0
+            tmp.337 = &string.1
+            tmp.338 = strcmp(word2.17, tmp.337)
+            if tmp.338 jump or_true_60
+            tmp.336 = 0
             jump or_end_61
         
           or_true_60:
-            tmp.330 = 1
+            tmp.336 = 1
         
           or_end_61:
-            if tmp.330 jump or_true_62
-            tmp.335 = &string.2
-            tmp.336 = strcmp(word3.18, tmp.335)
             if tmp.336 jump or_true_62
-            tmp.334 = 0
+            tmp.341 = &string.2
+            tmp.342 = strcmp(word3.18, tmp.341)
+            if tmp.342 jump or_true_62
+            tmp.340 = 0
             jump or_end_63
         
           or_true_62:
-            tmp.334 = 1
+            tmp.340 = 1
         
           or_end_63:
-            tmp.337 = ! tmp.334
-            return tmp.337
+            tmp.343 = ! tmp.340
+            return tmp.343
             return 0
         }
         global function main() { 
-            tmp.338 = test_flat_static_with_null_byte()
-            tmp.339 = ! tmp.338
-            if !tmp.339 jump end_if_64
+            tmp.344 = test_flat_static_with_null_byte()
+            tmp.345 = ! tmp.344
+            if !tmp.345 jump end_if_64
             return 1
         
           end_if_64:
-            tmp.340 = test_nested_static_with_null_byte()
-            tmp.341 = ! tmp.340
-            if !tmp.341 jump end_if_66
+            tmp.346 = test_nested_static_with_null_byte()
+            tmp.347 = ! tmp.346
+            if !tmp.347 jump end_if_66
             return 2
         
           end_if_66:
-            tmp.342 = test_flat_auto_with_null_byte()
-            tmp.343 = ! tmp.342
-            if !tmp.343 jump end_if_68
+            tmp.348 = test_flat_auto_with_null_byte()
+            tmp.349 = ! tmp.348
+            if !tmp.349 jump end_if_68
             return 3
         
           end_if_68:
-            tmp.344 = test_nested_auto_with_null_byte()
-            tmp.345 = ! tmp.344
-            if !tmp.345 jump end_if_70
+            tmp.350 = test_nested_auto_with_null_byte()
+            tmp.351 = ! tmp.350
+            if !tmp.351 jump end_if_70
             return 4
         
           end_if_70:
-            tmp.346 = test_flat_static_without_null_byte()
-            tmp.347 = ! tmp.346
-            if !tmp.347 jump end_if_72
+            tmp.352 = test_flat_static_without_null_byte()
+            tmp.353 = ! tmp.352
+            if !tmp.353 jump end_if_72
             return 5
         
           end_if_72:
-            tmp.348 = test_nested_static_without_null_byte()
-            tmp.349 = ! tmp.348
-            if !tmp.349 jump end_if_74
+            tmp.354 = test_nested_static_without_null_byte()
+            tmp.355 = ! tmp.354
+            if !tmp.355 jump end_if_74
             return 6
         
           end_if_74:
-            tmp.350 = test_flat_auto_without_null_byte()
-            tmp.351 = ! tmp.350
-            if !tmp.351 jump end_if_76
+            tmp.356 = test_flat_auto_without_null_byte()
+            tmp.357 = ! tmp.356
+            if !tmp.357 jump end_if_76
             return 7
         
           end_if_76:
-            tmp.352 = test_nested_auto_without_null_byte()
-            tmp.353 = ! tmp.352
-            if !tmp.353 jump end_if_78
+            tmp.358 = test_nested_auto_without_null_byte()
+            tmp.359 = ! tmp.358
+            if !tmp.359 jump end_if_78
             return 8
         
           end_if_78:
@@ -7051,8 +7068,9 @@ fn test_valid_strings_as_initializers_write_to_array() {
             tmp.4 = add_ptr(tmp.2, index=tmp.3, scale=1)
             tmp.5 = truncate 120
             *tmp.4 = tmp.5
-            tmp.6 = &flat_arr.1
-            tmp.7 = puts(tmp.6)
+            tmp.6 = *tmp.4
+            tmp.7 = &flat_arr.1
+            tmp.8 = puts(tmp.7)
             nested_array.2[0] = 'H'
             nested_array.2[1] = 'e'
             nested_array.2[2] = 'l'
@@ -7065,25 +7083,26 @@ fn test_valid_strings_as_initializers_write_to_array() {
             nested_array.2[9] = 'l'
             nested_array.2[10] = 'd'
             nested_array.2[11] = '\0'
-            tmp.8 = &nested_array.2
-            tmp.9 = sign_extend 0
-            tmp.10 = add_ptr(tmp.8, index=tmp.9, scale=6)
-            tmp.11 = puts(tmp.10)
-            tmp.12 = &nested_array.2
-            tmp.13 = sign_extend 1
-            tmp.14 = add_ptr(tmp.12, index=tmp.13, scale=6)
-            tmp.15 = puts(tmp.14)
-            tmp.16 = &nested_array.2
-            tmp.17 = sign_extend 0
-            tmp.18 = add_ptr(tmp.16, index=tmp.17, scale=6)
-            tmp.19 = sign_extend 0
-            tmp.20 = add_ptr(tmp.18, index=tmp.19, scale=1)
-            tmp.21 = truncate 74
-            *tmp.20 = tmp.21
-            tmp.22 = &nested_array.2
-            tmp.23 = sign_extend 0
-            tmp.24 = add_ptr(tmp.22, index=tmp.23, scale=6)
-            tmp.25 = puts(tmp.24)
+            tmp.9 = &nested_array.2
+            tmp.10 = sign_extend 0
+            tmp.11 = add_ptr(tmp.9, index=tmp.10, scale=6)
+            tmp.12 = puts(tmp.11)
+            tmp.13 = &nested_array.2
+            tmp.14 = sign_extend 1
+            tmp.15 = add_ptr(tmp.13, index=tmp.14, scale=6)
+            tmp.16 = puts(tmp.15)
+            tmp.17 = &nested_array.2
+            tmp.18 = sign_extend 0
+            tmp.19 = add_ptr(tmp.17, index=tmp.18, scale=6)
+            tmp.20 = sign_extend 0
+            tmp.21 = add_ptr(tmp.19, index=tmp.20, scale=1)
+            tmp.22 = truncate 74
+            *tmp.21 = tmp.22
+            tmp.23 = *tmp.21
+            tmp.24 = &nested_array.2
+            tmp.25 = sign_extend 0
+            tmp.26 = add_ptr(tmp.24, index=tmp.25, scale=6)
+            tmp.27 = puts(tmp.26)
             return 0
             return 0
         }

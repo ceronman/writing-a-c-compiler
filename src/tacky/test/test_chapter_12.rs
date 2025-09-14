@@ -791,9 +791,8 @@ fn test_valid_extra_credit_compound_assign_uint() {
             tmp.2 = tmp.1 / tmp.3
             tmp.4 = truncate tmp.2
             x.0 = tmp.4
-            tmp.5 = truncate tmp.4
-            tmp.6 = x.0 == 3865470567U
-            return tmp.6
+            tmp.5 = x.0 == 3865470567U
+            return tmp.5
             return 0
         }
     "#;
@@ -906,8 +905,7 @@ fn test_valid_extra_credit_compound_bitwise() {
             tmp.10 = tmp.9 ^ l.3
             tmp.11 = truncate tmp.10
             ui.2 = tmp.11
-            tmp.12 = truncate tmp.11
-            if !tmp.12 jump end_if_4
+            if !ui.2 jump end_if_4
             return 3
         
           end_if_4:
@@ -915,15 +913,15 @@ fn test_valid_extra_credit_compound_bitwise() {
             return 4
         
           end_if_6:
-            tmp.13 = i.1 != 123456
-            if !tmp.13 jump end_if_8
+            tmp.12 = i.1 != 123456
+            if !tmp.12 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.15 = - 252645136
-            tmp.16 = sign_extend tmp.15
-            tmp.14 = l.3 != tmp.16
-            if !tmp.14 jump end_if_10
+            tmp.14 = - 252645136
+            tmp.15 = sign_extend tmp.14
+            tmp.13 = l.3 != tmp.15
+            if !tmp.13 jump end_if_10
             return 6
         
           end_if_10:

@@ -413,45 +413,42 @@ fn test_valid_extra_credit_compound_assign_to_int() {
             tmp.3 = tmp.2 + 2147483648L
             tmp.4 = truncate tmp.3
             i.0 = tmp.4
-            tmp.5 = truncate tmp.4
-            tmp.6 = i.0 != 2147483628
-            if !tmp.6 jump end_if_0
+            tmp.5 = i.0 != 2147483628
+            if !tmp.5 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.7 = b.1 != 2147483647
-            if !tmp.7 jump end_if_2
+            tmp.6 = b.1 != 2147483647
+            if !tmp.6 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.8 = sign_extend b.1
-            tmp.10 = - 34359738367L
-            tmp.9 = tmp.8 / tmp.10
-            tmp.11 = truncate tmp.9
-            b.1 = tmp.11
-            tmp.12 = truncate tmp.11
+            tmp.7 = sign_extend b.1
+            tmp.9 = - 34359738367L
+            tmp.8 = tmp.7 / tmp.9
+            tmp.10 = truncate tmp.8
+            b.1 = tmp.10
             if !b.1 jump end_if_4
             return 3
         
           end_if_4:
-            tmp.13 = i.0 != 2147483628
-            if !tmp.13 jump end_if_6
+            tmp.11 = i.0 != 2147483628
+            if !tmp.11 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.15 = - 5000000
-            tmp.14 = c.2 != tmp.15
-            if !tmp.14 jump end_if_8
+            tmp.13 = - 5000000
+            tmp.12 = c.2 != tmp.13
+            if !tmp.12 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.16 = sign_extend c.2
-            tmp.17 = tmp.16 * 10000L
-            tmp.18 = truncate tmp.17
-            c.2 = tmp.18
-            tmp.19 = truncate tmp.18
-            tmp.20 = c.2 != 1539607552
-            if !tmp.20 jump end_if_10
+            tmp.14 = sign_extend c.2
+            tmp.15 = tmp.14 * 10000L
+            tmp.16 = truncate tmp.15
+            c.2 = tmp.16
+            tmp.17 = c.2 != 1539607552
+            if !tmp.17 jump end_if_10
             return 6
         
           end_if_10:
@@ -537,7 +534,7 @@ fn test_valid_extra_credit_compound_bitshift() {
             tmp.4 = truncate 4L
             tmp.3 = x.0 >> tmp.4
             x.0 = tmp.3
-            tmp.5 = tmp.3 != 26214400
+            tmp.5 = x.0 != 26214400
             if !tmp.5 jump end_if_2
             return 2
         
@@ -551,7 +548,7 @@ fn test_valid_extra_credit_compound_bitshift() {
             tmp.8 = sign_extend 33
             tmp.7 = l.1 << tmp.8
             l.1 = tmp.7
-            tmp.9 = tmp.7 != 106042742538240L
+            tmp.9 = l.1 != 106042742538240L
             if !tmp.9 jump end_if_6
             return 4
         
@@ -562,7 +559,7 @@ fn test_valid_extra_credit_compound_bitshift() {
             tmp.11 = l.1 >> tmp.12
             l.1 = tmp.11
             tmp.14 = - 103557365760L
-            tmp.13 = tmp.11 != tmp.14
+            tmp.13 = l.1 != tmp.14
             if !tmp.13 jump end_if_8
             return 5
         
@@ -655,17 +652,15 @@ fn test_valid_extra_credit_compound_bitwise() {
             tmp.17 = tmp.16 | 71777214294589695L
             tmp.18 = truncate tmp.17
             i.2 = tmp.18
-            tmp.19 = truncate tmp.18
-            tmp.21 = - 2130771713
-            tmp.22 = sign_extend tmp.21
-            tmp.20 = tmp.19 != tmp.22
-            if !tmp.20 jump end_if_8
+            tmp.20 = - 2130771713
+            tmp.19 = i.2 != tmp.20
+            if !tmp.19 jump end_if_8
             return 5
         
           end_if_8:
-            tmp.24 = - 2130771713
-            tmp.23 = i.2 != tmp.24
-            if !tmp.23 jump end_if_10
+            tmp.22 = - 2130771713
+            tmp.21 = i.2 != tmp.22
+            if !tmp.21 jump end_if_10
             return 6
         
           end_if_10:

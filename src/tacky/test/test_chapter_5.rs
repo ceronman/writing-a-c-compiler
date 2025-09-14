@@ -79,7 +79,7 @@ fn test_valid_assign_val_in_initializer() {
     let expected = r#"
         global function main() { 
             a.0 = 5
-            a.0 = 5
+            a.0 = a.0
             return a.0
             return 0
         }
@@ -99,7 +99,7 @@ fn test_valid_assignment_in_initializer() {
     let expected = r#"
         global function main() { 
             a.0 = 0
-            b.1 = 0
+            b.1 = a.0
             return b.1
             return 0
         }
@@ -290,17 +290,17 @@ fn test_valid_extra_credit_compound_assignment_chained() {
             x.6 = 0
             tmp.6 = - 7
             f.5 = tmp.6
-            tmp.5 = e.4 % tmp.6
+            tmp.5 = e.4 % f.5
             e.4 = tmp.5
-            tmp.4 = d.3 / tmp.5
+            tmp.4 = d.3 / e.4
             d.3 = tmp.4
-            tmp.3 = c.2 * tmp.4
+            tmp.3 = c.2 * d.3
             c.2 = tmp.3
-            tmp.2 = b.1 - tmp.3
+            tmp.2 = b.1 - c.2
             b.1 = tmp.2
-            tmp.1 = a.0 + tmp.2
+            tmp.1 = a.0 + b.1
             a.0 = tmp.1
-            x.6 = tmp.1
+            x.6 = a.0
             tmp.7 = a.0 == 2250
             if !tmp.7 jump and_false_0
             tmp.10 = b.1 == 2000
@@ -490,7 +490,7 @@ fn test_valid_extra_credit_compound_assignment_use_result() {
             x.0 = 1
             tmp.0 = x.0 + 3
             x.0 = tmp.0
-            y.1 = tmp.0
+            y.1 = x.0
             tmp.1 = x.0 == 4
             if !tmp.1 jump and_false_0
             tmp.4 = y.1 == 4
@@ -689,22 +689,22 @@ fn test_valid_extra_credit_compound_bitwise_chained() {
             j.8 = 0
             x.9 = 0
             j.8 = 1
-            tmp.6 = h.7 << 1
+            tmp.6 = h.7 << j.8
             h.7 = tmp.6
-            tmp.5 = g.6 >> tmp.6
+            tmp.5 = g.6 >> h.7
             g.6 = tmp.5
-            tmp.4 = f.5 + tmp.5
+            tmp.4 = f.5 + g.6
             f.5 = tmp.4
-            tmp.3 = e.4 ^ tmp.4
+            tmp.3 = e.4 ^ f.5
             e.4 = tmp.3
-            d.3 = tmp.3
-            tmp.2 = c.2 | tmp.3
+            d.3 = e.4
+            tmp.2 = c.2 | d.3
             c.2 = tmp.2
-            tmp.1 = b.1 * tmp.2
+            tmp.1 = b.1 * c.2
             b.1 = tmp.1
-            tmp.0 = a.0 & tmp.1
+            tmp.0 = a.0 & b.1
             a.0 = tmp.0
-            x.9 = tmp.0
+            x.9 = a.0
             tmp.7 = a.0 == 40
             if !tmp.7 jump and_false_0
             tmp.10 = b.1 == 21800
@@ -1365,7 +1365,7 @@ fn test_valid_mixed_precedence_assignment() {
             a.0 = 1
             b.1 = 0
             b.1 = a.0
-            tmp.0 = 3 * a.0
+            tmp.0 = 3 * b.1
             a.0 = tmp.0
             tmp.1 = a.0 + b.1
             return tmp.1
@@ -1389,7 +1389,7 @@ fn test_valid_non_short_circuit_or() {
             a.0 = 0
             if 0 jump or_true_0
             a.0 = 1
-            if 1 jump or_true_0
+            if a.0 jump or_true_0
             tmp.1 = 0
             jump or_end_1
         
@@ -1468,7 +1468,7 @@ fn test_valid_short_circuit_and_fail() {
             a.0 = 0
             if !0 jump and_false_0
             a.0 = 5
-            if !5 jump and_false_0
+            if !a.0 jump and_false_0
             tmp.1 = 1
             jump and_end_1
         
@@ -1497,7 +1497,7 @@ fn test_valid_short_circuit_or() {
             a.0 = 0
             if 1 jump or_true_0
             a.0 = 1
-            if 1 jump or_true_0
+            if a.0 jump or_true_0
             tmp.1 = 0
             jump or_end_1
         
@@ -1544,8 +1544,8 @@ fn test_valid_use_assignment_result() {
             a.0 = 1
             b.1 = 2
             b.1 = 4
-            a.0 = 4
-            return 4
+            a.0 = b.1
+            return a.0
             return 0
         }
     "#;

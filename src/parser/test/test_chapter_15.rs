@@ -4292,7 +4292,7 @@ fn test_valid_extra_credit_compound_assign_to_subscripted_val() {
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <157>  [!=]
-                    │   │       ├── <154> Assign [&=]
+                    │   │       ├── <154> Assign [%=]
                     │   │       │   ├── <150> Subscript
                     │   │       │   │   ├── <143> Var [unsigned_arr]
                     │   │       │   │   ╰── <149>  [+]

@@ -220,7 +220,14 @@ impl Constant {
             (c, Type::UInt) if c.is_int() => Constant::UInt(c.as_u64() as u32),
             (c, Type::Long) if c.is_int() => Constant::Long(c.as_u64() as i64),
             (c, Type::ULong) if c.is_int() => Constant::ULong(c.as_u64()),
-            (c, Type::Double) if c.is_int() => Constant::Double(c.as_u64() as f64),
+
+            (Constant::Char(value), Type::Double) => Constant::Double(*value as f64),
+            (Constant::UChar(value), Type::Double) => Constant::Double(*value as f64),
+            (Constant::Int(value), Type::Double) => Constant::Double(*value as f64),
+            (Constant::UInt(value), Type::Double) => Constant::Double(*value as f64),
+            (Constant::Long(value), Type::Double) => Constant::Double(*value as f64),
+            (Constant::ULong(value), Type::Double) => Constant::Double(*value as f64),
+
             (Constant::Double(value), Type::Int) => Constant::Int(*value as i32),
             (Constant::Double(value), Type::Char | Type::SChar) => Constant::Char(*value as i8),
             (Constant::Double(value), Type::UChar) => Constant::UChar(*value as u8),
@@ -414,9 +421,9 @@ impl SemanticData {
             ty1
         } else if ty1.is_double() || ty2.is_double() {
             &Type::Double
-        } else if ty1.size(&self) == ty2.size(&self) {
+        } else if ty1.size(self) == ty2.size(self) {
             if ty1.is_signed() { ty2 } else { ty1 }
-        } else if ty1.size(&self) > ty2.size(&self) {
+        } else if ty1.size(self) > ty2.size(self) {
             ty1
         } else {
             ty2

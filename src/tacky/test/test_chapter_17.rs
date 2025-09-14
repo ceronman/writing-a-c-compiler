@@ -1848,11 +1848,12 @@ fn test_valid_void_pointer_conversion_by_assignment() {
             tmp.13 = i.13
             tmp.14 = add_ptr(array.10, index=tmp.13, scale=8)
             *tmp.14 = d.12
+            tmp.15 = *tmp.14
         
           continue_loop_0:
-            tmp.16 = sign_extend 1
-            tmp.15 = i.13 + tmp.16
-            i.13 = tmp.15
+            tmp.17 = sign_extend 1
+            tmp.16 = i.13 + tmp.17
+            i.13 = tmp.16
             jump start_loop_0
         
           break_loop_0:
@@ -1861,218 +1862,222 @@ fn test_valid_void_pointer_conversion_by_assignment() {
             return 0
         }
         global function return_dbl_ptr_as_void_ptr(ptr.14) { 
-            tmp.17 = ptr.14
-            return tmp.17
+            tmp.18 = ptr.14
+            return tmp.18
             return 0
         }
         global function main() { 
-            tmp.18 = sign_extend 4
-            tmp.19 = malloc(tmp.18)
-            four_bytes.15 = tmp.19
-            tmp.20 = four_bytes.15
-            int_ptr.16 = tmp.20
-            tmp.21 = - 1
-            *int_ptr.16 = tmp.21
-            tmp.22 = four_bytes.15
-            tmp.23 = - 1
-            tmp.24 = truncate tmp.23
-            tmp.25 = check_char_ptr_argument(tmp.22, tmp.24)
-            tmp.26 = ! tmp.25
-            if !tmp.26 jump end_if_0
+            tmp.19 = sign_extend 4
+            tmp.20 = malloc(tmp.19)
+            four_bytes.15 = tmp.20
+            tmp.21 = four_bytes.15
+            int_ptr.16 = tmp.21
+            tmp.22 = - 1
+            *int_ptr.16 = tmp.22
+            tmp.23 = *int_ptr.16
+            tmp.24 = four_bytes.15
+            tmp.25 = - 1
+            tmp.26 = truncate tmp.25
+            tmp.27 = check_char_ptr_argument(tmp.24, tmp.26)
+            tmp.28 = ! tmp.27
+            if !tmp.28 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.27 = return_void_ptr_as_int_ptr(four_bytes.15)
-            tmp.28 = tmp.27 != int_ptr.16
-            if !tmp.28 jump end_if_2
+            tmp.29 = return_void_ptr_as_int_ptr(four_bytes.15)
+            tmp.30 = tmp.29 != int_ptr.16
+            if !tmp.30 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.29 = four_bytes.15
-            dbl_ptr.17 = tmp.29
-            tmp.30 = four_bytes.15
-            complicated_ptr.18 = tmp.30
             tmp.31 = four_bytes.15
-            long_ptr.19 = tmp.31
-            tmp.32 = dbl_ptr.17
-            tmp.33 = tmp.32 != four_bytes.15
-            if tmp.33 jump or_true_4
-            tmp.36 = complicated_ptr.18
-            tmp.37 = tmp.36 != four_bytes.15
-            if tmp.37 jump or_true_4
-            tmp.35 = 0
+            dbl_ptr.17 = tmp.31
+            tmp.32 = four_bytes.15
+            complicated_ptr.18 = tmp.32
+            tmp.33 = four_bytes.15
+            long_ptr.19 = tmp.33
+            tmp.34 = dbl_ptr.17
+            tmp.35 = tmp.34 != four_bytes.15
+            if tmp.35 jump or_true_4
+            tmp.38 = complicated_ptr.18
+            tmp.39 = tmp.38 != four_bytes.15
+            if tmp.39 jump or_true_4
+            tmp.37 = 0
             jump or_end_5
         
           or_true_4:
-            tmp.35 = 1
+            tmp.37 = 1
         
           or_end_5:
-            if tmp.35 jump or_true_6
-            tmp.40 = long_ptr.19
-            tmp.41 = tmp.40 != four_bytes.15
-            if tmp.41 jump or_true_6
-            tmp.39 = 0
+            if tmp.37 jump or_true_6
+            tmp.42 = long_ptr.19
+            tmp.43 = tmp.42 != four_bytes.15
+            if tmp.43 jump or_true_6
+            tmp.41 = 0
             jump or_end_7
         
           or_true_6:
-            tmp.39 = 1
+            tmp.41 = 1
         
           or_end_7:
-            if !tmp.39 jump end_if_8
+            if !tmp.41 jump end_if_8
             return 3
         
           end_if_8:
             free(four_bytes.15)
-            tmp.42 = sign_extend 5
-            tmp.43 = get_dbl_array(tmp.42)
-            dbl_array.20 = tmp.43
-            tmp.44 = dbl_array.20
-            void_array.21 = tmp.44
-            tmp.45 = void_array.21
-            tmp.46 = sign_extend 5
-            set_doubles(tmp.45, tmp.46, 4D)
-            tmp.47 = sign_extend 3
-            tmp.48 = add_ptr(dbl_array.20, index=tmp.47, scale=8)
-            tmp.49 = *tmp.48
-            tmp.50 = tmp.49 != 4D
-            if !tmp.50 jump end_if_10
+            tmp.44 = sign_extend 5
+            tmp.45 = get_dbl_array(tmp.44)
+            dbl_array.20 = tmp.45
+            tmp.46 = dbl_array.20
+            void_array.21 = tmp.46
+            tmp.47 = void_array.21
+            tmp.48 = sign_extend 5
+            set_doubles(tmp.47, tmp.48, 4D)
+            tmp.49 = sign_extend 3
+            tmp.50 = add_ptr(dbl_array.20, index=tmp.49, scale=8)
+            tmp.51 = *tmp.50
+            tmp.52 = tmp.51 != 4D
+            if !tmp.52 jump end_if_10
             return 4
         
           end_if_10:
-            tmp.51 = return_dbl_ptr_as_void_ptr(dbl_array.20)
-            tmp.52 = tmp.51 != void_array.21
-            if !tmp.52 jump end_if_12
+            tmp.53 = return_dbl_ptr_as_void_ptr(dbl_array.20)
+            tmp.54 = tmp.53 != void_array.21
+            if !tmp.54 jump end_if_12
             return 5
         
           end_if_12:
-            tmp.53 = sign_extend 0
-            some_other_ptr.22 = tmp.53
-            tmp.54 = dbl_array.20
-            some_other_ptr.22 = tmp.54
-            tmp.55 = some_other_ptr.22 != void_array.21
-            if !tmp.55 jump end_if_14
+            tmp.55 = sign_extend 0
+            some_other_ptr.22 = tmp.55
+            tmp.56 = dbl_array.20
+            some_other_ptr.22 = tmp.56
+            tmp.57 = some_other_ptr.22 != void_array.21
+            if !tmp.57 jump end_if_14
             return 6
         
           end_if_14:
-            tmp.56 = &some_other_ptr.22
-            tmp.57 = tmp.56
-            some_other_ptr.22 = tmp.57
-            tmp.58 = some_other_ptr.22 == void_array.21
-            if !tmp.58 jump end_if_16
+            tmp.58 = &some_other_ptr.22
+            tmp.59 = tmp.58
+            some_other_ptr.22 = tmp.59
+            tmp.60 = some_other_ptr.22 == void_array.21
+            if !tmp.60 jump end_if_16
             return 7
         
           end_if_16:
-            tmp.59 = sign_extend 0
-            complicated_ptr.18 = tmp.59
-            tmp.60 = complicated_ptr.18
-            some_other_ptr.22 = tmp.60
+            tmp.61 = sign_extend 0
+            complicated_ptr.18 = tmp.61
+            tmp.62 = complicated_ptr.18
+            some_other_ptr.22 = tmp.62
             if !some_other_ptr.22 jump end_if_18
             return 8
         
           end_if_18:
-            tmp.61 = dbl_array.20
-            free(tmp.61)
-            tmp.62 = malloc(8UL)
-            tmp.63 = tmp.62
-            long_ptr_array.23[0] = tmp.63
+            tmp.63 = dbl_array.20
+            free(tmp.63)
             tmp.64 = malloc(8UL)
             tmp.65 = tmp.64
-            long_ptr_array.23[8] = tmp.65
+            long_ptr_array.23[0] = tmp.65
             tmp.66 = malloc(8UL)
             tmp.67 = tmp.66
-            long_ptr_array.23[16] = tmp.67
-            tmp.68 = &long_ptr_array.23
-            tmp.69 = sign_extend 0
-            tmp.70 = add_ptr(tmp.68, index=tmp.69, scale=8)
-            tmp.71 = *tmp.70
-            *tmp.71 = 100L
-            tmp.72 = &long_ptr_array.23
-            tmp.73 = sign_extend 1
-            tmp.74 = add_ptr(tmp.72, index=tmp.73, scale=8)
-            tmp.75 = *tmp.74
-            *tmp.75 = 200L
-            tmp.76 = &long_ptr_array.23
-            tmp.77 = sign_extend 2
-            tmp.78 = add_ptr(tmp.76, index=tmp.77, scale=8)
+            long_ptr_array.23[8] = tmp.67
+            tmp.68 = malloc(8UL)
+            tmp.69 = tmp.68
+            long_ptr_array.23[16] = tmp.69
+            tmp.70 = &long_ptr_array.23
+            tmp.71 = sign_extend 0
+            tmp.72 = add_ptr(tmp.70, index=tmp.71, scale=8)
+            tmp.73 = *tmp.72
+            *tmp.73 = 100L
+            tmp.74 = *tmp.73
+            tmp.75 = &long_ptr_array.23
+            tmp.76 = sign_extend 1
+            tmp.77 = add_ptr(tmp.75, index=tmp.76, scale=8)
+            tmp.78 = *tmp.77
+            *tmp.78 = 200L
             tmp.79 = *tmp.78
-            *tmp.79 = 300L
             tmp.80 = &long_ptr_array.23
-            tmp.81 = sign_extend 0
+            tmp.81 = sign_extend 2
             tmp.82 = add_ptr(tmp.80, index=tmp.81, scale=8)
             tmp.83 = *tmp.82
+            *tmp.83 = 300L
             tmp.84 = *tmp.83
-            tmp.86 = &long_ptr_array.23
-            tmp.87 = sign_extend 1
-            tmp.88 = add_ptr(tmp.86, index=tmp.87, scale=8)
+            tmp.85 = &long_ptr_array.23
+            tmp.86 = sign_extend 0
+            tmp.87 = add_ptr(tmp.85, index=tmp.86, scale=8)
+            tmp.88 = *tmp.87
             tmp.89 = *tmp.88
-            tmp.90 = *tmp.89
-            tmp.85 = tmp.84 + tmp.90
-            tmp.92 = &long_ptr_array.23
-            tmp.93 = sign_extend 2
-            tmp.94 = add_ptr(tmp.92, index=tmp.93, scale=8)
+            tmp.91 = &long_ptr_array.23
+            tmp.92 = sign_extend 1
+            tmp.93 = add_ptr(tmp.91, index=tmp.92, scale=8)
+            tmp.94 = *tmp.93
             tmp.95 = *tmp.94
-            tmp.96 = *tmp.95
-            tmp.91 = tmp.85 + tmp.96
-            sum.24 = tmp.91
-            tmp.97 = sum.24 != 600L
-            if !tmp.97 jump end_if_20
+            tmp.90 = tmp.89 + tmp.95
+            tmp.97 = &long_ptr_array.23
+            tmp.98 = sign_extend 2
+            tmp.99 = add_ptr(tmp.97, index=tmp.98, scale=8)
+            tmp.100 = *tmp.99
+            tmp.101 = *tmp.100
+            tmp.96 = tmp.90 + tmp.101
+            sum.24 = tmp.96
+            tmp.102 = sum.24 != 600L
+            if !tmp.102 jump end_if_20
             return 9
         
           end_if_20:
-            tmp.98 = &long_ptr_array.23
-            tmp.99 = sign_extend 0
-            tmp.100 = add_ptr(tmp.98, index=tmp.99, scale=8)
-            tmp.101 = *tmp.100
-            tmp.102 = tmp.101
-            free(tmp.102)
             tmp.103 = &long_ptr_array.23
-            tmp.104 = sign_extend 1
+            tmp.104 = sign_extend 0
             tmp.105 = add_ptr(tmp.103, index=tmp.104, scale=8)
             tmp.106 = *tmp.105
             tmp.107 = tmp.106
             free(tmp.107)
             tmp.108 = &long_ptr_array.23
-            tmp.109 = sign_extend 2
+            tmp.109 = sign_extend 1
             tmp.110 = add_ptr(tmp.108, index=tmp.109, scale=8)
             tmp.111 = *tmp.110
             tmp.112 = tmp.111
             free(tmp.112)
-            tmp.113 = sign_extend 1
-            arr1.25[0] = tmp.113
+            tmp.113 = &long_ptr_array.23
             tmp.114 = sign_extend 2
-            arr1.25[8] = tmp.114
-            tmp.115 = sign_extend 3
-            arr1.25[16] = tmp.115
-            tmp.116 = sign_extend 1
-            arr2.26[0] = tmp.116
-            tmp.117 = sign_extend 2
-            arr2.26[8] = tmp.117
-            tmp.118 = sign_extend 3
-            arr2.26[16] = tmp.118
-            tmp.119 = sign_extend 1
-            arr3.27[0] = tmp.119
-            tmp.120 = sign_extend 2
-            arr3.27[8] = tmp.120
-            tmp.121 = sign_extend 4
-            arr3.27[16] = tmp.121
-            tmp.122 = &arr1.25
-            tmp.123 = tmp.122
-            tmp.124 = &arr2.26
-            tmp.125 = tmp.124
-            tmp.126 = memcmp(tmp.123, tmp.125, 24UL)
-            tmp.127 = tmp.126 != 0
-            if !tmp.127 jump end_if_22
+            tmp.115 = add_ptr(tmp.113, index=tmp.114, scale=8)
+            tmp.116 = *tmp.115
+            tmp.117 = tmp.116
+            free(tmp.117)
+            tmp.118 = sign_extend 1
+            arr1.25[0] = tmp.118
+            tmp.119 = sign_extend 2
+            arr1.25[8] = tmp.119
+            tmp.120 = sign_extend 3
+            arr1.25[16] = tmp.120
+            tmp.121 = sign_extend 1
+            arr2.26[0] = tmp.121
+            tmp.122 = sign_extend 2
+            arr2.26[8] = tmp.122
+            tmp.123 = sign_extend 3
+            arr2.26[16] = tmp.123
+            tmp.124 = sign_extend 1
+            arr3.27[0] = tmp.124
+            tmp.125 = sign_extend 2
+            arr3.27[8] = tmp.125
+            tmp.126 = sign_extend 4
+            arr3.27[16] = tmp.126
+            tmp.127 = &arr1.25
+            tmp.128 = tmp.127
+            tmp.129 = &arr2.26
+            tmp.130 = tmp.129
+            tmp.131 = memcmp(tmp.128, tmp.130, 24UL)
+            tmp.132 = tmp.131 != 0
+            if !tmp.132 jump end_if_22
             return 10
         
           end_if_22:
-            tmp.128 = &arr1.25
-            tmp.129 = tmp.128
-            tmp.130 = &arr3.27
-            tmp.131 = tmp.130
-            tmp.132 = memcmp(tmp.129, tmp.131, 24UL)
-            tmp.134 = - 1
-            tmp.133 = tmp.132 != tmp.134
-            if !tmp.133 jump end_if_24
+            tmp.133 = &arr1.25
+            tmp.134 = tmp.133
+            tmp.135 = &arr3.27
+            tmp.136 = tmp.135
+            tmp.137 = memcmp(tmp.134, tmp.136, 24UL)
+            tmp.139 = - 1
+            tmp.138 = tmp.137 != tmp.139
+            if !tmp.138 jump end_if_24
             return 11
         
           end_if_24:
@@ -2128,40 +2133,41 @@ fn test_valid_void_pointer_explicit_cast() {
             tmp.4 = sign_extend 2
             tmp.5 = add_ptr(double_ptr.6, index=tmp.4, scale=8)
             *tmp.5 = 10D
-            tmp.6 = double_ptr.6
-            tmp.7 = tmp.6 != ptr.5
-            if !tmp.7 jump end_if_0
+            tmp.6 = *tmp.5
+            tmp.7 = double_ptr.6
+            tmp.8 = tmp.7 != ptr.5
+            if !tmp.8 jump end_if_0
             return 1
         
           end_if_0:
-            tmp.8 = sign_extend 2
-            tmp.9 = add_ptr(double_ptr.6, index=tmp.8, scale=8)
-            tmp.10 = *tmp.9
-            result.7 = tmp.10
-            tmp.11 = result.7 != 10D
-            if !tmp.11 jump end_if_2
+            tmp.9 = sign_extend 2
+            tmp.10 = add_ptr(double_ptr.6, index=tmp.9, scale=8)
+            tmp.11 = *tmp.10
+            result.7 = tmp.11
+            tmp.12 = result.7 != 10D
+            if !tmp.12 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.12 = ptr.5
-            ul.8 = tmp.12
-            tmp.14 = sign_extend 8
-            tmp.13 = ul.8 % tmp.14
-            if !tmp.13 jump end_if_4
+            tmp.13 = ptr.5
+            ul.8 = tmp.13
+            tmp.15 = sign_extend 8
+            tmp.14 = ul.8 % tmp.15
+            if !tmp.14 jump end_if_4
             return 3
         
           end_if_4:
             free(ptr.5)
-            tmp.15 = sign_extend 0
-            zero.9 = tmp.15
-            tmp.16 = zero.9
-            ptr.5 = tmp.16
+            tmp.16 = sign_extend 0
+            zero.9 = tmp.16
+            tmp.17 = zero.9
+            ptr.5 = tmp.17
             if !ptr.5 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.17 = ptr.5
-            zero.9 = tmp.17
+            tmp.18 = ptr.5
+            zero.9 = tmp.18
             if !zero.9 jump end_if_8
             return 5
         
@@ -2227,94 +2233,96 @@ fn test_valid_void_pointer_memory_management_functions() {
             tmp.5 = add_ptr(char_buffer.8, index=tmp.4, scale=1)
             tmp.6 = truncate i.9
             *tmp.5 = tmp.6
+            tmp.7 = *tmp.5
         
           continue_loop_0:
-            tmp.7 = i.9 + 1
-            i.9 = tmp.7
+            tmp.8 = i.9 + 1
+            i.9 = tmp.8
             jump start_loop_0
         
           break_loop_0:
-            tmp.8 = char_buffer.8
-            tmp.9 = sign_extend 100
-            tmp.10 = realloc(tmp.8, tmp.9)
-            tmp.11 = tmp.10
-            char_buffer2.10 = tmp.11
-            tmp.12 = sign_extend 75
-            tmp.13 = add_ptr(char_buffer2.10, index=tmp.12, scale=1)
-            tmp.14 = truncate 11
-            *tmp.13 = tmp.14
+            tmp.9 = char_buffer.8
+            tmp.10 = sign_extend 100
+            tmp.11 = realloc(tmp.9, tmp.10)
+            tmp.12 = tmp.11
+            char_buffer2.10 = tmp.12
+            tmp.13 = sign_extend 75
+            tmp.14 = add_ptr(char_buffer2.10, index=tmp.13, scale=1)
+            tmp.15 = truncate 11
+            *tmp.14 = tmp.15
+            tmp.16 = *tmp.14
             i.11 = 0
         
           start_loop_1:
-            tmp.15 = i.11 < 50
-            if !tmp.15 jump break_loop_1
-            tmp.16 = sign_extend i.11
-            tmp.17 = add_ptr(char_buffer2.10, index=tmp.16, scale=1)
-            tmp.18 = *tmp.17
-            tmp.19 = sign_extend tmp.18
-            tmp.20 = tmp.19 != i.11
-            if !tmp.20 jump end_if_0
+            tmp.17 = i.11 < 50
+            if !tmp.17 jump break_loop_1
+            tmp.18 = sign_extend i.11
+            tmp.19 = add_ptr(char_buffer2.10, index=tmp.18, scale=1)
+            tmp.20 = *tmp.19
+            tmp.21 = sign_extend tmp.20
+            tmp.22 = tmp.21 != i.11
+            if !tmp.22 jump end_if_0
             return 1
         
           end_if_0:
         
           continue_loop_1:
-            tmp.21 = i.11 + 1
-            i.11 = tmp.21
+            tmp.23 = i.11 + 1
+            i.11 = tmp.23
             jump start_loop_1
         
           break_loop_1:
-            tmp.22 = sign_extend 75
-            tmp.23 = add_ptr(char_buffer2.10, index=tmp.22, scale=1)
-            tmp.24 = *tmp.23
-            tmp.25 = sign_extend tmp.24
-            tmp.26 = tmp.25 != 11
-            if !tmp.26 jump end_if_2
+            tmp.24 = sign_extend 75
+            tmp.25 = add_ptr(char_buffer2.10, index=tmp.24, scale=1)
+            tmp.26 = *tmp.25
+            tmp.27 = sign_extend tmp.26
+            tmp.28 = tmp.27 != 11
+            if !tmp.28 jump end_if_2
             return 2
         
           end_if_2:
-            tmp.27 = char_buffer2.10
-            free(tmp.27)
-            tmp.28 = sign_extend 10
-            tmp.29 = calloc(tmp.28, 8UL)
-            tmp.30 = tmp.29
-            double_buffer.12 = tmp.30
+            tmp.29 = char_buffer2.10
+            free(tmp.29)
+            tmp.30 = sign_extend 10
+            tmp.31 = calloc(tmp.30, 8UL)
+            tmp.32 = tmp.31
+            double_buffer.12 = tmp.32
             i.13 = 0
         
           start_loop_2:
-            tmp.31 = i.13 < 10
-            if !tmp.31 jump break_loop_2
-            tmp.32 = sign_extend i.13
-            tmp.33 = add_ptr(double_buffer.12, index=tmp.32, scale=8)
-            tmp.34 = *tmp.33
-            tmp.35 = tmp.34 != 0D
-            if !tmp.35 jump end_if_4
+            tmp.33 = i.13 < 10
+            if !tmp.33 jump break_loop_2
+            tmp.34 = sign_extend i.13
+            tmp.35 = add_ptr(double_buffer.12, index=tmp.34, scale=8)
+            tmp.36 = *tmp.35
+            tmp.37 = tmp.36 != 0D
+            if !tmp.37 jump end_if_4
             return 3
         
           end_if_4:
         
           continue_loop_2:
-            tmp.36 = i.13 + 1
-            i.13 = tmp.36
+            tmp.38 = i.13 + 1
+            i.13 = tmp.38
             jump start_loop_2
         
           break_loop_2:
-            tmp.37 = double_buffer.12
-            free(tmp.37)
-            tmp.38 = sign_extend 256
-            tmp.39 = sign_extend 256
-            tmp.40 = aligned_alloc(tmp.38, tmp.39)
-            tmp.41 = tmp.40
-            char_buffer.8 = tmp.41
-            tmp.42 = char_buffer.8
-            tmp.44 = sign_extend 256
-            tmp.43 = tmp.42 % tmp.44
-            if !tmp.43 jump end_if_6
+            tmp.39 = double_buffer.12
+            free(tmp.39)
+            tmp.40 = sign_extend 256
+            tmp.41 = sign_extend 256
+            tmp.42 = aligned_alloc(tmp.40, tmp.41)
+            tmp.43 = tmp.42
+            char_buffer.8 = tmp.43
+            tmp.44 = char_buffer.8
+            tmp.46 = sign_extend 256
+            tmp.45 = tmp.44 % tmp.46
+            if !tmp.45 jump end_if_6
             return 4
         
           end_if_6:
-            tmp.45 = char_buffer.8
-            free(tmp.45)
+            tmp.47 = char_buffer.8
+            free(tmp.47)
             return 0
             return 0
         }
@@ -2345,12 +2353,13 @@ fn test_valid_void_pointer_simple() {
             tmp.4 = sign_extend 2
             tmp.5 = add_ptr(array.2, index=tmp.4, scale=4)
             *tmp.5 = 100
-            tmp.6 = sign_extend 2
-            tmp.7 = add_ptr(array.2, index=tmp.6, scale=4)
-            tmp.8 = *tmp.7
-            result.3 = tmp.8
-            tmp.9 = array.2
-            free(tmp.9)
+            tmp.6 = *tmp.5
+            tmp.7 = sign_extend 2
+            tmp.8 = add_ptr(array.2, index=tmp.7, scale=4)
+            tmp.9 = *tmp.8
+            result.3 = tmp.9
+            tmp.10 = array.2
+            free(tmp.10)
             return result.3
             return 0
         }

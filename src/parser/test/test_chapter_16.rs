@@ -6820,7 +6820,7 @@ fn test_valid_extra_credit_compound_assign_chars() {
                     ├── If
                     │   ├── Condition
                     │   │   ╰── <128>  [!=]
-                    │   │       ├── <125> Assign [&=]
+                    │   │       ├── <125> Assign [%=]
                     │   │       │   ├── <120> Var [sc]
                     │   │       │   ╰── <123> Var [c]
                     │   │       ╰── <127> Constant Int [24]

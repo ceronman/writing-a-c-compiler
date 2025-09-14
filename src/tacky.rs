@@ -3,10 +3,10 @@ pub mod pretty;
 #[cfg(test)]
 mod test;
 
-use std::hash::{Hash, Hasher};
 use crate::ast;
 use crate::semantic::{Attributes, InitialValue, SemanticData, StaticInit, SymbolData, Type};
 use crate::symbol::Symbol;
+use std::hash::Hash;
 
 #[derive(Debug, Clone)]
 pub struct Program {
@@ -548,7 +548,7 @@ impl TackyGenerator {
     fn emit_expr(&mut self, expr: &ast::Node<ast::Expression>) -> Val {
         let expr_ty = self.semantics.expr_type(expr).clone();
         match self.expression(expr) {
-            ExprResult::Operand(val) => self.cast_if_needed(val, expr),
+            ExprResult::Operand(val) => self.check_implicit_cast(val, expr),
             ExprResult::Dereference(ptr) => {
                 if self.semantics.pointer_decays.contains_key(&expr.id) {
                     ptr
@@ -558,7 +558,7 @@ impl TackyGenerator {
                         ptr,
                         dst: dst.clone(),
                     });
-                    self.cast_if_needed(dst, expr)
+                    self.check_implicit_cast(dst, expr)
                 }
             }
             ExprResult::SubObject { base, offset } => {
@@ -583,7 +583,7 @@ impl TackyGenerator {
                         dst: dst.clone(),
                         offset,
                     });
-                    self.cast_if_needed(dst, expr)
+                    self.check_implicit_cast(dst, expr)
                 }
             }
         }
@@ -893,7 +893,9 @@ impl TackyGenerator {
                 } else {
                     self.emit_expr(right)
                 };
-                let rvalue = self.cast_if_needed(rvalue, expr);
+
+                let left_ty = self.semantics.expr_type(left).clone();
+                let rvalue = self.cast(rvalue, &left_ty);
                 self.copy_or_store(&lvalue, rvalue.clone());
                 return lvalue;
             }
@@ -963,8 +965,7 @@ impl TackyGenerator {
                 if target.ty().is_void() {
                     return ExprResult::Operand(Val::Var("DUMMY".into()));
                 } else {
-                    let inner_ty = self.semantics.expr_type(inner).clone();
-                    self.cast(result, &inner_ty, &target.ty())
+                    self.cast(result, &target.ty())
                 }
             }
 
@@ -1009,9 +1010,8 @@ impl TackyGenerator {
                     (expr2, expr1)
                 };
                 let ptr = self.emit_expr(ptr_expr);
-                let index_ty = self.semantics.expr_type(index_expr).clone();
                 let index = self.emit_expr(index_expr);
-                let index = self.cast(index, &index_ty, &Type::Long);
+                let index = self.cast(index, &Type::Long);
                 let ptr_ty = self.semantics.expr_type(ptr_expr).clone();
                 let Type::Pointer(inner) = &ptr_ty else {
                     unreachable!();
@@ -1140,7 +1140,7 @@ impl TackyGenerator {
                 dst
             }
         };
-        self.cast_if_needed(val, expr)
+        self.check_implicit_cast(val, expr)
     }
 
     fn copy_or_store(&mut self, lvalue: &ExprResult, rvalue: Val) {
@@ -1167,7 +1167,7 @@ impl TackyGenerator {
         }
     }
 
-    fn cast_if_needed(&mut self, val: Val, expr: &ast::Node<ast::Expression>) -> Val {
+    fn check_implicit_cast(&mut self, val: Val, expr: &ast::Node<ast::Expression>) -> Val {
         let val = if let Some(target) = self.semantics.pointer_decays.get(&expr.id).cloned() {
             let dst = self.make_temp(&target);
             self.instructions.push(Instruction::GetAddress {
@@ -1179,21 +1179,20 @@ impl TackyGenerator {
             val
         };
         if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
-            let expr_ty = self.semantics.val_ty(&val);
-            self.cast(val, &expr_ty, &target)
+            self.cast(val, &target)
         } else {
             val
         }
     }
 
-    // TODO: Refactor by removing src_ty and using src to get type.
-    fn cast(&mut self, src: Val, src_ty: &Type, target: &Type) -> Val {
-        if target == src_ty {
+    fn cast(&mut self, src: Val, target: &Type) -> Val {
+        let src_ty = self.semantics.val_ty(&src);
+        if target == &src_ty {
             src
         } else {
             let dst = self.make_temp(target);
 
-            if *src_ty == Type::Double {
+            if src_ty.is_double() {
                 if target.is_signed() {
                     self.instructions.push(Instruction::DoubleToInt {
                         src,
@@ -1205,7 +1204,7 @@ impl TackyGenerator {
                         dst: dst.clone(),
                     });
                 }
-            } else if *target == Type::Double {
+            } else if target.is_double() {
                 if src_ty.is_signed() {
                     self.instructions.push(Instruction::IntToDouble {
                         src,

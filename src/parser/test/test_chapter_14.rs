@@ -1140,7 +1140,7 @@ fn test_invalid_types_extra_credit_compound_mod_pointer() {
                     │   ╰── Initializer
                     │       ╰── <19> AddressOf
                     │           ╰── <18> Var [i]
-                    ├── <27> Assign [&=]
+                    ├── <27> Assign [%=]
                     │   ├── <23> Var [i]
                     │   ╰── <26> Var [ptr]
                     ╰── Return
@@ -4838,7 +4838,7 @@ fn test_valid_extra_credit_compound_assign_conversion() {
                     │   ╰── Initializer
                     │       ╰── <54> AddressOf
                     │           ╰── <53> Var [i]
-                    ├── <62> Assign [&=]
+                    ├── <62> Assign [%=]
                     │   ├── <59> Dereference
                     │   │   ╰── <58> Var [i_ptr]
                     │   ╰── <61> Constant UInt [4294967200]
@@ -5033,7 +5033,7 @@ fn test_valid_extra_credit_compound_assign_through_pointer() {
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── <93> Constant Int [5]
-                    ├── <103> Assign [&=]
+                    ├── <103> Assign [%=]
                     │   ├── <100> Dereference
                     │   │   ╰── <99> Var [ptr]
                     │   ╰── <102> Constant Int [3]

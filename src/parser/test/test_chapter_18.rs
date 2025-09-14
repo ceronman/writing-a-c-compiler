@@ -22499,7 +22499,7 @@ fn test_valid_extra_credit_other_features_compound_assign_struct_members() {
                     │       ╰── Block
                     │           ╰── Return
                     │               ╰── <217> Constant Int [5]
-                    ├── <233> Assign [&=]
+                    ├── <233> Assign [%=]
                     │   ├── <227> Arrow
                     │   │   ├── <225> AddressOf
                     │   │   │   ╰── <223> Var [o]

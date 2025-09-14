@@ -440,7 +440,7 @@ impl PrettyAst {
             SubEqual => "-=",
             MulEqual => "*=",
             DivEqual => "/=",
-            ModEqual => "&=",
+            ModEqual => "%=",
             BitAndEqual => "&=",
             BitOrEqual => "|=",
             BitXorEqual => "^=",

@@ -114,12 +114,12 @@ fn test_valid_extra_credit_bitwise_ternary() {
             tmp.0 = 1 ^ 1
             if !tmp.0 jump else_1
             result.0 = 4
-            tmp.1 = 4
+            tmp.1 = result.0
             jump end_if_0
         
           else_1:
             result.0 = 5
-            tmp.1 = 5
+            tmp.1 = result.0
         
           end_if_0:
             return result.0
@@ -173,7 +173,7 @@ fn test_valid_extra_credit_compound_if_expression() {
             a.0 = 0
             tmp.0 = a.0 + 1
             a.0 = tmp.0
-            if !tmp.0 jump end_if_0
+            if !a.0 jump end_if_0
             return a.0
         
           end_if_0:
@@ -201,7 +201,7 @@ fn test_valid_extra_credit_goto_after_declaration() {
             x.0 = 1
             jump post_declaration_0
             x.0 = 0
-            i.1 = 0
+            i.1 = x.0
         
           post_declaration_0:
             i.1 = 5
@@ -466,10 +466,10 @@ fn test_valid_extra_credit_lh_compound_assignment() {
             x.0 = 10
             tmp.0 = x.0 - 1
             x.0 = tmp.0
-            if !tmp.0 jump else_1
+            if !x.0 jump else_1
             tmp.2 = x.0 / 2
             x.0 = tmp.2
-            tmp.1 = tmp.2
+            tmp.1 = x.0
             jump end_if_0
         
           else_1:
@@ -756,7 +756,7 @@ fn test_valid_if_nested_3() {
         global function main() { 
             a.0 = 0
             a.0 = 1
-            if !1 jump end_if_0
+            if !a.0 jump end_if_0
             tmp.0 = a.0 == 1
             if !tmp.0 jump else_3
             a.0 = 3
@@ -948,7 +948,7 @@ fn test_valid_lh_assignment() {
             x.0 = 10
             y.1 = 0
             x.0 = 5
-            if !5 jump else_1
+            if !x.0 jump else_1
             tmp.0 = x.0
             jump end_if_0
         
@@ -1128,12 +1128,12 @@ fn test_valid_rh_assignment() {
             a.1 = 0
             if !flag.0 jump else_1
             a.1 = 1
-            tmp.0 = 1
+            tmp.0 = a.1
             jump end_if_0
         
           else_1:
             a.1 = 0
-            tmp.0 = 0
+            tmp.0 = a.1
         
           end_if_0:
             return a.1
@@ -1186,7 +1186,7 @@ fn test_valid_ternary_middle_assignment() {
             tmp.0 = a.0 != 2
             if !tmp.0 jump else_1
             a.0 = 2
-            tmp.1 = 2
+            tmp.1 = a.0
             jump end_if_0
         
           else_1:
@@ -1311,12 +1311,12 @@ fn test_valid_ternary_short_circuit() {
             b.1 = 0
             if !a.0 jump else_1
             b.1 = 1
-            tmp.0 = 1
+            tmp.0 = b.1
             jump end_if_0
         
           else_1:
             b.1 = 2
-            tmp.0 = 2
+            tmp.0 = b.1
         
           end_if_0:
             return b.1
@@ -1342,12 +1342,12 @@ fn test_valid_ternary_short_circuit_2() {
             b.1 = 0
             if !a.0 jump else_1
             b.1 = 1
-            tmp.0 = 1
+            tmp.0 = b.1
             jump end_if_0
         
           else_1:
             b.1 = 2
-            tmp.0 = 2
+            tmp.0 = b.1
         
           end_if_0:
             return b.1

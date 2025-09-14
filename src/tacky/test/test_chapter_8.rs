@@ -73,7 +73,7 @@ fn test_valid_break_immediate() {
         
           continue_loop_0:
             a.0 = 1
-            if !1 jump break_loop_0
+            if !a.0 jump break_loop_0
             jump break_loop_0
             jump continue_loop_0
         
@@ -236,7 +236,7 @@ fn test_valid_do_while_break_immediate() {
         
           continue_loop_0:
             a.0 = 1
-            if 1 jump start_loop_0
+            if a.0 jump start_loop_0
         
           break_loop_0:
             return a.0
@@ -280,7 +280,7 @@ fn test_valid_empty_loop_body() {
           continue_loop_0:
             tmp.0 = i.0 - 5
             i.0 = tmp.0
-            tmp.1 = tmp.0 >= 256
+            tmp.1 = i.0 >= 256
             if tmp.1 jump start_loop_0
         
           break_loop_0:
@@ -360,7 +360,7 @@ fn test_valid_extra_credit_compound_assignment_controlling_expression() {
           continue_loop_0:
             tmp.1 = i.0 - 1
             i.0 = tmp.1
-            if tmp.1 jump start_loop_0
+            if i.0 jump start_loop_0
         
           break_loop_0:
             tmp.2 = i.0 == 0
@@ -486,7 +486,7 @@ fn test_valid_extra_credit_duffs_device() {
           continue_loop_2:
             tmp.13 = iterations.1 - 1
             iterations.1 = tmp.13
-            tmp.14 = tmp.13 > 0
+            tmp.14 = iterations.1 > 0
             if tmp.14 jump start_loop_2
         
           break_loop_2:
@@ -1000,9 +1000,9 @@ fn test_valid_extra_credit_switch_assign_in_condition() {
         global function main() { 
             a.0 = 0
             a.0 = 1
-            tmp.0 = 0 == 1
+            tmp.0 = 0 == a.0
             if tmp.0 jump switch_0_case__1
-            tmp.1 = 1 == 1
+            tmp.1 = 1 == a.0
             if tmp.1 jump switch_0_case__2
             jump switch_0_default_3
             jump break_switch_0
@@ -1090,7 +1090,7 @@ fn test_valid_extra_credit_switch_decl() {
             if tmp.0 jump switch_0_case__1
             jump break_switch_0
             b.1 = 5
-            a.2 = 5
+            a.2 = b.1
         
           switch_0_case__1:
             a.2 = 4
@@ -1220,7 +1220,7 @@ fn test_valid_extra_credit_switch_default_not_last() {
     let expected = r#"
         global function main() { 
             a.0 = 7
-            b.1 = 7
+            b.1 = a.0
             tmp.0 = a.0 + b.1
             tmp.1 = 2 == tmp.0
             if tmp.1 jump switch_0_case__2
