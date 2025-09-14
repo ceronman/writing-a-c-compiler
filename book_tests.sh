@@ -9,6 +9,7 @@ set -euxo pipefail
     --chapter 19 \
     --propagate-copies \
     --bitwise \
+    --failfast \
     --compound \
     --increment \
     --goto \

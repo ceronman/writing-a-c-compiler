@@ -1213,7 +1213,7 @@ impl TypeChecker {
                                 right.span,
                                 "Invalid operand",
                             )?;
-                            self.common_type(&left_ty, &right_ty)
+                            self.semantics.common_type(&left_ty, &right_ty)
                         };
                         self.cast_if_needed(left, &left_ty, &common);
                         self.cast_if_needed(right, &right_ty, &common);
@@ -1233,7 +1233,7 @@ impl TypeChecker {
                         right_ty
                     }
                     _ => {
-                        let common = self.common_type(&left_ty, &right_ty);
+                        let common = self.semantics.common_type(&left_ty, &right_ty);
                         self.cast_if_needed(left, &left_ty, &common);
                         self.cast_if_needed(right, &right_ty, &common);
                         match op.as_ref() {
@@ -1334,15 +1334,22 @@ impl TypeChecker {
                 match op.as_ref() {
                     AssignOp::Equal => self.convert_by_assignment(right, &right_ty, &left_ty)?,
                     AssignOp::ShiftLeftEqual | AssignOp::ShiftRightEqual => {
-                        self.cast_if_needed(right, &right_ty, &left_ty);
-                        left_ty
-                    }
-                    _ => {
-                        let common = self.common_type(&left_ty, &right_ty);
+                        // This doesn't seem to make sense, but it serves to cast
+                        // possible Char | UChar to Int
+                        let common = self.semantics.common_type(&left_ty, &left_ty);
                         self.cast_if_needed(left, &left_ty, &common);
                         self.cast_if_needed(right, &right_ty, &common);
                         self.cast_if_needed(expr, &common, &left_ty);
-                        common
+                        self.semantics.assignment_common_types.insert(expr.id, common);
+                        left_ty
+                    }
+                    _ => {
+                        let common = self.semantics.common_type(&left_ty, &right_ty);
+                        self.cast_if_needed(left, &left_ty, &common);
+                        self.cast_if_needed(right, &right_ty, &common);
+                        self.cast_if_needed(expr, &common, &left_ty);
+                        self.semantics.assignment_common_types.insert(expr.id, common);
+                        left_ty
                     }
                 }
             }
@@ -1362,7 +1369,7 @@ impl TypeChecker {
                     let common = if then_ty.is_pointer() || else_ty.is_pointer() {
                         self.common_pointer_type(then_expr, &then_ty, else_expr, &else_ty)?
                     } else if then_ty.is_arithmetic() && else_ty.is_arithmetic() {
-                        self.common_type(&then_ty, &else_ty)
+                        self.semantics.common_type(&then_ty, &else_ty)
                     } else if then_ty == else_ty {
                         then_ty.clone()
                     } else {
@@ -1637,25 +1644,6 @@ impl TypeChecker {
                 .insert(expr.id, expected.clone());
             expected.clone()
         }
-    }
-
-    fn common_type(&self, ty1: &Type, ty2: &Type) -> Type {
-        // Char types are treated as ints
-        let ty1 = if ty1.is_char() { &Type::Int } else { ty1 };
-        let ty2 = if ty2.is_char() { &Type::Int } else { ty2 };
-
-        let result = if ty1 == ty2 {
-            ty1
-        } else if ty1.is_double() || ty2.is_double() {
-            &Type::Double
-        } else if ty1.size(&self.semantics) == ty2.size(&self.semantics) {
-            if ty1.is_signed() { ty2 } else { ty1 }
-        } else if ty1.size(&self.semantics) > ty2.size(&self.semantics) {
-            ty1
-        } else {
-            ty2
-        };
-        result.clone()
     }
 
     fn common_pointer_type(

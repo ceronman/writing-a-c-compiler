@@ -237,7 +237,7 @@ fn transfer_function(
                 let src_ty = semantics.val_ty(src);
                 let dst_ty = semantics.val_ty(dst);
 
-                if src_ty == dst_ty || src_ty.is_signed() == dst_ty.is_signed() {
+                if src_ty == dst_ty || (src_ty.is_signed() == dst_ty.is_signed()) {
                     current_reaching_copies.add(instruction.clone())
                 }
             }

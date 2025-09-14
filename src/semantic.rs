@@ -267,6 +267,7 @@ pub struct SemanticData {
     pub symbols: BTreeMap<Symbol, SymbolData>,
     pub strings: HashMap<Symbol, Symbol>,
     pub expression_types: HashMap<NodeId, Type>,
+    pub assignment_common_types: HashMap<NodeId, Type>,
     pub type_table: TypeTable,
     pub implicit_casts: HashMap<NodeId, Type>,
     pub pointer_decays: HashMap<NodeId, Type>,
@@ -339,6 +340,12 @@ impl SemanticData {
             .expect("Expression without type")
     }
 
+    pub fn assignment_common_type(&self, expr: &Node<Expression>) -> &Type {
+        self.assignment_common_types
+            .get(&expr.id)
+            .expect("Expression without type")
+    }
+
     pub fn get_aggregate(&self, name: &Symbol) -> &AggregateType {
         let Some(TypeEntry::Complete(type_def)) = self.type_table.type_defs.get(name) else {
             panic!("Type {name} is unknown or incomplete",);
@@ -396,6 +403,25 @@ impl SemanticData {
             tacky::Val::Constant(Constant::Double(_)) => true,
             tacky::Val::Var(name) => self.symbol_ty(name).is_signed(),
         }
+    }
+
+    pub fn common_type(&self, ty1: &Type, ty2: &Type) -> Type {
+        // Char types are treated as ints
+        let ty1 = if ty1.is_char() { &Type::Int } else { ty1 };
+        let ty2 = if ty2.is_char() { &Type::Int } else { ty2 };
+
+        let result = if ty1 == ty2 {
+            ty1
+        } else if ty1.is_double() || ty2.is_double() {
+            &Type::Double
+        } else if ty1.size(&self) == ty2.size(&self) {
+            if ty1.is_signed() { ty2 } else { ty1 }
+        } else if ty1.size(&self) > ty2.size(&self) {
+            ty1
+        } else {
+            ty2
+        };
+        result.clone()
     }
 }
 

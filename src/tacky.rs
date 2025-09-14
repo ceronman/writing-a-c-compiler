@@ -855,7 +855,8 @@ impl TackyGenerator {
 
                 let rvalue = if let Some(op) = op {
                     let src1 = self.get_or_load(&lvalue, left);
-                    let dst = self.make_temp(&expr_ty);
+                    let common_ty = self.semantics.assignment_common_type(expr).clone();
+                    let dst = self.make_temp(&common_ty);
                     let src2 = self.emit_expr(right);
                     if let Type::Pointer(inner) = self.semantics.expr_type(left).clone() {
                         if let BinaryOp::Add | BinaryOp::Subtract = op {
@@ -894,7 +895,7 @@ impl TackyGenerator {
                 };
                 let rvalue = self.cast_if_needed(rvalue, expr);
                 self.copy_or_store(&lvalue, rvalue.clone());
-                rvalue
+                return lvalue;
             }
 
             ast::Expression::Conditional {
@@ -1167,7 +1168,6 @@ impl TackyGenerator {
     }
 
     fn cast_if_needed(&mut self, val: Val, expr: &ast::Node<ast::Expression>) -> Val {
-        let expr_ty = self.semantics.expr_type(expr).clone();
         let val = if let Some(target) = self.semantics.pointer_decays.get(&expr.id).cloned() {
             let dst = self.make_temp(&target);
             self.instructions.push(Instruction::GetAddress {
@@ -1179,12 +1179,14 @@ impl TackyGenerator {
             val
         };
         if let Some(target) = self.semantics.implicit_casts.get(&expr.id).cloned() {
+            let expr_ty = self.semantics.val_ty(&val);
             self.cast(val, &expr_ty, &target)
         } else {
             val
         }
     }
 
+    // TODO: Refactor by removing src_ty and using src to get type.
     fn cast(&mut self, src: Val, src_ty: &Type, target: &Type) -> Val {
         if target == src_ty {
             src
