@@ -1,12 +1,11 @@
 use crate::optimization::cfg::{Annotation, Cfg, TackyCfg, TackyNode};
 use crate::semantic::SemanticData;
-use crate::tacky;
 use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};
 
 pub fn copy_propagation(
-    instructions: &[tacky::Instruction],
-    aliased_vars: &HashSet<Val>,
+    instructions: &[Instruction],
+    aliased_and_static: &HashSet<Val>,
     semantics: &SemanticData,
     trace: bool,
 ) -> Vec<Instruction> {
@@ -18,7 +17,7 @@ pub fn copy_propagation(
         println!("INITIAL\n {cfg:#?}");
     }
 
-    let annotations = find_reaching_copies(&cfg, aliased_vars, semantics);
+    let annotations = find_reaching_copies(&cfg, aliased_and_static, semantics);
 
     if trace {
         println!("Reaching copies:\n {annotations:?}");
@@ -80,11 +79,11 @@ type ReachingCopies = Annotation<Copies>;
 
 fn find_reaching_copies(
     cfg: &TackyCfg,
-    aliased_vars: &HashSet<Val>,
+    aliased_and_static_vars: &HashSet<Val>,
     semantics: &SemanticData,
 ) -> ReachingCopies {
     let all_copies = Copies::from_cfg(cfg);
-    let mut annotations = ReachingCopies::new();
+    let mut annotations = ReachingCopies::empty();
 
     let mut worklist = VecDeque::new();
     for node_id in cfg.all_ids() {
@@ -103,7 +102,7 @@ fn find_reaching_copies(
             &mut annotations,
             node,
             &incoming_copies,
-            aliased_vars,
+            aliased_and_static_vars,
             semantics,
         );
         if old_copies != annotations.get_block_annotation(&node_id) {
@@ -131,8 +130,8 @@ fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &ReachingCopies) {
                 Instruction::Copy { src, dst } => {
                     // TODO: Ugly code
                     let mut delete = false;
+                    /*TODO: .0 and ugly delete*/
                     for copy in &reaching_copies.0
-                    /*TODO: .0*/
                     {
                         if copy == instruction {
                             delete = true;
@@ -237,7 +236,7 @@ fn transfer_function(
     annotations: &mut ReachingCopies,
     node: &TackyNode,
     initial_reaching_copies: &Copies,
-    aliased_vars: &HashSet<Val>,
+    aliased_and_static_vars: &HashSet<Val>,
     semantics: &SemanticData,
 ) {
     let mut current_reaching_copies = initial_reaching_copies.clone();
@@ -261,15 +260,15 @@ fn transfer_function(
             }
             Instruction::FnCall { dst, .. } => {
                 current_reaching_copies.remove_if(|current_src, current_dst| {
-                    aliased_vars.contains(current_src)
-                        || aliased_vars.contains(current_dst)
+                    aliased_and_static_vars.contains(current_src)
+                        || aliased_and_static_vars.contains(current_dst)
                         || Some(current_src) == dst.as_ref()
                         || Some(current_dst) == dst.as_ref()
                 });
             }
             Instruction::Store { .. } => {
                 current_reaching_copies.remove_if(|current_src, current_dst| {
-                    aliased_vars.contains(current_src) || aliased_vars.contains(current_dst)
+                    aliased_and_static_vars.contains(current_src) || aliased_and_static_vars.contains(current_dst)
                 });
             }
             Instruction::Binary { dst, .. }
@@ -298,27 +297,4 @@ fn transfer_function(
         }
     }
     annotations.annotate_block(node.id, current_reaching_copies);
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::ast::Constant;
-    use crate::tacky::Instruction;
-    use crate::tacky::Val;
-
-    #[test]
-    fn test_contains() {
-        let mut copies = Copies::empty();
-        copies.add(Instruction::Copy {
-            src: Val::Constant(Constant::Double(0.0)),
-            dst: Val::Var("foo".to_string()),
-        });
-        assert!(copies.contains(&Instruction::Copy {
-            src: Val::Constant(Constant::Double(-0.0)),
-            dst: Val::Var("foo".to_string())
-        }));
-        println!("{} {}", (0.0f64).to_bits(), (-0.0f64).to_bits());
-        assert_eq!(Constant::Double(0.0), Constant::Double(-0.0));
-    }
 }

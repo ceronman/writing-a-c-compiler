@@ -233,7 +233,7 @@ pub struct Annotation<T> {
 }
 
 impl<T> Annotation<T> {
-    pub fn new() -> Self {
+    pub fn empty() -> Self {
         Self {
             block: HashMap::new(),
             instructions: HashMap::new(),
