@@ -9,6 +9,7 @@ set -euxo pipefail
     --chapter 19 \
     --eliminate-dead-stores \
     --latest-only \
+    --failfast \
     --bitwise \
     --compound \
     --increment \

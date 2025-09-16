@@ -1,8 +1,7 @@
-use std::collections::{HashSet, VecDeque};
 use crate::optimization::cfg::{Annotation, TackyCfg, TackyNode};
-use crate::semantic::{Attributes, SemanticData};
 use crate::symbol::Symbol;
 use crate::tacky::{Instruction, Val};
+use std::collections::{HashSet, VecDeque};
 
 pub fn dead_store_elimination(
     instructions: &[Instruction],
@@ -20,7 +19,7 @@ pub fn dead_store_elimination(
     let all_static_vars = VarSet::from_vars(static_vars);
     let annotations = find_live_vars(&cfg, &all_static_vars, aliased_vars);
     if trace {
-        println!("Reaching copies:\n {annotations:?}");
+        println!("Live variables:\n {annotations:?}");
     }
     rewrite_instructions(&mut cfg, &annotations);
     if trace {
@@ -112,6 +111,9 @@ fn transfer_function(annotations: &mut LiveVars, node: &TackyNode, all_static_va
                     current_live_vars.add(arg);
                 }
                 current_live_vars.extend(all_static_vars);
+                for var in aliased_vars.iter() {
+                    current_live_vars.add(var)
+                }
             }
 
             Instruction::Load { ptr, dst } => {
@@ -136,6 +138,7 @@ fn transfer_function(annotations: &mut LiveVars, node: &TackyNode, all_static_va
             }
             Instruction::CopyFromOffset { src, dst, ..} => {
                 current_live_vars.0.insert(src.clone());
+                current_live_vars.remove(dst);
             }
 
             Instruction::Return(val) => {
@@ -217,6 +220,12 @@ fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &LiveVars) {
                 | Instruction::CopyFromOffset { dst, .. } => {
                     let live_vars = annotations.get_instruction_annotation(node.id, i);
                     if !live_vars.contains(dst) {
+                        continue;
+                    }
+                }
+                Instruction::CopyToOffset { dst, .. } => {
+                    let live_vars = annotations.get_instruction_annotation(node.id, i);
+                    if !live_vars.0.contains(dst) {
                         continue;
                     }
                 }
