@@ -89,6 +89,44 @@ pub fn constant_fold(
                     });
                 }
             }
+            Unary {
+                op: UnaryOp::Increment,
+                src: Val::Constant(src),
+                dst,
+            } => {
+                let incremented = match src {
+                    Int(value) => Int(value.wrapping_add(1)),
+                    UInt(value) => UInt(value.wrapping_add(1)),
+                    Long(value) => Long(value.wrapping_add(1)),
+                    ULong(value) => ULong(value.wrapping_add(1)),
+                    Char(value) => Char(value.wrapping_add(1)),
+                    UChar(value) => UChar(value.wrapping_add(1)),
+                    Double(value) => Double(value.add(1.0)),
+                };
+                new.push(Instruction::Copy {
+                    src: Val::Constant(incremented),
+                    dst: dst.clone(),
+                });
+            }
+            Unary {
+                op: UnaryOp::Decrement,
+                src: Val::Constant(src),
+                dst,
+            } => {
+                let decremented = match src {
+                    Int(value) => Int(value.wrapping_sub(1)),
+                    UInt(value) => UInt(value.wrapping_sub(1)),
+                    Long(value) => Long(value.wrapping_sub(1)),
+                    ULong(value) => ULong(value.wrapping_sub(1)),
+                    Char(value) => Char(value.wrapping_sub(1)),
+                    UChar(value) => UChar(value.wrapping_sub(1)),
+                    Double(value) => Double(value.sub(1.0)),
+                };
+                new.push(Instruction::Copy {
+                    src: Val::Constant(decremented),
+                    dst: dst.clone(),
+                });
+            }
             Binary {
                 op: BinaryOp::Add,
                 src1: Val::Constant(left),

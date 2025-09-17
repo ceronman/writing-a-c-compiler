@@ -1658,9 +1658,9 @@ impl Compiler {
 
         for instruction in instructions.into_iter() {
             match instruction {
-                Instruction::Mov(ty, src, dst) => {
+                Instruction::Mov(ty, src, dst)  => {
                     let src = if let Operand::Imm(v) = src {
-                        if i32::try_from(v).is_err() {
+                        if i32::try_from(v).is_err() && !dst.is_reg() {
                             let value = match ty {
                                 AsmType::Byte | AsmType::Longword => (v as i32) as i64,
                                 AsmType::Quadword => v,
@@ -2013,6 +2013,9 @@ impl tacky::Val {
 }
 
 impl Operand {
+    fn is_reg(&self) -> bool {
+        matches!(self, Operand::Reg(_))
+    }
     fn is_mem(&self) -> bool {
         matches!(
             self,
