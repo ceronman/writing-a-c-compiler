@@ -93,7 +93,6 @@ fn transfer_function(annotations: &mut LiveVars, node: &TackyNode, all_static_va
             | Instruction::DoubleToUInt { src, dst }
             | Instruction::IntToDouble { src, dst }
             | Instruction::UIntToDouble { src, dst }
-            | Instruction::GetAddress { src, dst }
             | Instruction::Unary { src, dst, .. } => {
                 current_live_vars.remove(dst);
                 current_live_vars.add(src);
@@ -117,21 +116,26 @@ fn transfer_function(annotations: &mut LiveVars, node: &TackyNode, all_static_va
             }
 
             Instruction::Load { ptr, dst } => {
-                current_live_vars.add(ptr);
-                for var in aliased_vars.iter() {
-                    current_live_vars.add(var)
-                }
                 current_live_vars.remove(dst);
-            }
-            Instruction::AddPtr { ptr, dst, .. } => {
                 current_live_vars.add(ptr);
                 for var in aliased_vars.iter() {
                     current_live_vars.add(var)
                 }
+            }
+            Instruction::AddPtr { ptr, index, dst, .. } => {
+                current_live_vars.remove(dst);
+                current_live_vars.add(ptr);
+                current_live_vars.add(index);
+                for var in aliased_vars.iter() {
+                    current_live_vars.add(var)
+                }
+            }
+            Instruction::GetAddress { src, dst } => {
                 current_live_vars.remove(dst);
             }
             Instruction::Store { src, ptr } => {
                 current_live_vars.add(src);
+                current_live_vars.add(ptr);
             }
             Instruction::CopyToOffset { src, dst , ..} => {
                 current_live_vars.add(src);
