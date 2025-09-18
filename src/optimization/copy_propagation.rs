@@ -131,8 +131,7 @@ fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &ReachingCopies) {
                     // TODO: Ugly code
                     let mut delete = false;
                     /*TODO: .0 and ugly delete*/
-                    for copy in &reaching_copies.0
-                    {
+                    for copy in &reaching_copies.0 {
                         if copy == instruction {
                             delete = true;
                             break;
@@ -268,7 +267,8 @@ fn transfer_function(
             }
             Instruction::Store { .. } => {
                 current_reaching_copies.remove_if(|current_src, current_dst| {
-                    aliased_and_static_vars.contains(current_src) || aliased_and_static_vars.contains(current_dst)
+                    aliased_and_static_vars.contains(current_src)
+                        || aliased_and_static_vars.contains(current_dst)
                 });
             }
             Instruction::Binary { dst, .. }

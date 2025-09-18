@@ -1658,7 +1658,7 @@ impl Compiler {
 
         for instruction in instructions.into_iter() {
             match instruction {
-                Instruction::Mov(ty, src, dst)  => {
+                Instruction::Mov(ty, src, dst) => {
                     let src = if let Operand::Imm(v) = src {
                         if i32::try_from(v).is_err() && !dst.is_reg() {
                             let value = match ty {

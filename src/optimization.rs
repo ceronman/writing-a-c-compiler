@@ -1,17 +1,17 @@
 pub mod cfg;
 mod constant_folding;
 mod copy_propagation;
-mod unreachable_code;
 mod dead_store_elimination;
+mod unreachable_code;
 
 use crate::optimization::constant_folding::constant_fold;
 use crate::optimization::copy_propagation::copy_propagation;
+use crate::optimization::dead_store_elimination::dead_store_elimination;
 use crate::optimization::unreachable_code::remove_unreachable_code;
 use crate::semantic::{Attributes, SemanticData};
 use crate::tacky;
 use crate::tacky::{Instruction, Val};
 use std::collections::HashSet;
-use crate::optimization::dead_store_elimination::dead_store_elimination;
 
 #[derive(Default)]
 pub struct OptimizationFlags {
@@ -36,7 +36,8 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
 
                 let aliased_vars = address_taken_analysis(&optimized);
                 let static_vars = static_vars(&program.semantics);
-                let aliased_and_static_vars: HashSet<Val> = aliased_vars.union(&static_vars).cloned().collect();
+                let aliased_and_static_vars: HashSet<Val> =
+                    aliased_vars.union(&static_vars).cloned().collect();
                 if flags.fold_constants || flags.optimize {
                     optimized = constant_fold(&optimized, &program.semantics, false);
                 }
@@ -53,12 +54,8 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
                     );
                 }
                 if flags.eliminate_dead_stores || flags.optimize {
-                    optimized = dead_store_elimination(
-                        &optimized,
-                        &static_vars,
-                        &aliased_vars,
-                        flags.trace,
-                    )
+                    optimized =
+                        dead_store_elimination(&optimized, &static_vars, &aliased_vars, flags.trace)
                 }
 
                 if optimized == f.body {

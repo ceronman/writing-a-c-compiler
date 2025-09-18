@@ -37,15 +37,18 @@ impl VarSet {
     }
 
     fn from_vars(vars: &HashSet<Val>) -> Self {
-        let set = vars.iter().map(|v| {
-            let Val::Var(symbol) = v else {
-                panic!("Expected variable");
-            };
-            symbol.clone()
-        }).collect();
+        let set = vars
+            .iter()
+            .map(|v| {
+                let Val::Var(symbol) = v else {
+                    panic!("Expected variable");
+                };
+                symbol.clone()
+            })
+            .collect();
         Self(set)
     }
-    
+
     fn remove(&mut self, var: &Val) {
         let Val::Var(symbol) = var else {
             return;
@@ -74,13 +77,21 @@ impl VarSet {
 
 type LiveVars = Annotation<VarSet>;
 
-fn transfer_function(annotations: &mut LiveVars, node: &TackyNode, all_static_vars: &VarSet, aliased_vars: &HashSet<Val>, all_live_vars: &VarSet) {
+fn transfer_function(
+    annotations: &mut LiveVars,
+    node: &TackyNode,
+    all_static_vars: &VarSet,
+    aliased_vars: &HashSet<Val>,
+    all_live_vars: &VarSet,
+) {
     let mut current_live_vars = all_live_vars.clone();
     for (i, instruction) in node.instructions.iter().enumerate().rev() {
         annotations.annotate_instruction(node.id, i, current_live_vars.clone());
 
         match instruction {
-            Instruction::Binary { src1, src2, dst, .. } => {
+            Instruction::Binary {
+                src1, src2, dst, ..
+            } => {
                 current_live_vars.remove(dst);
                 current_live_vars.add(src1);
                 current_live_vars.add(src2);
@@ -97,12 +108,11 @@ fn transfer_function(annotations: &mut LiveVars, node: &TackyNode, all_static_va
                 current_live_vars.remove(dst);
                 current_live_vars.add(src);
             }
-            Instruction::JumpIfNotZero { cond, ..}
-            | Instruction::JumpIfZero { cond, .. } => {
+            Instruction::JumpIfNotZero { cond, .. } | Instruction::JumpIfZero { cond, .. } => {
                 current_live_vars.add(cond);
             }
 
-            Instruction::FnCall { name, args, dst } => {
+            Instruction::FnCall { args, dst, .. } => {
                 if let Some(dst) = dst {
                     current_live_vars.remove(dst);
                 }
@@ -122,7 +132,9 @@ fn transfer_function(annotations: &mut LiveVars, node: &TackyNode, all_static_va
                     current_live_vars.add(var)
                 }
             }
-            Instruction::AddPtr { ptr, index, dst, .. } => {
+            Instruction::AddPtr {
+                ptr, index, dst, ..
+            } => {
                 current_live_vars.remove(dst);
                 current_live_vars.add(ptr);
                 current_live_vars.add(index);
@@ -130,17 +142,17 @@ fn transfer_function(annotations: &mut LiveVars, node: &TackyNode, all_static_va
                     current_live_vars.add(var)
                 }
             }
-            Instruction::GetAddress { src, dst } => {
+            Instruction::GetAddress { dst, .. } => {
                 current_live_vars.remove(dst);
             }
             Instruction::Store { src, ptr } => {
                 current_live_vars.add(src);
                 current_live_vars.add(ptr);
             }
-            Instruction::CopyToOffset { src, dst , ..} => {
+            Instruction::CopyToOffset { src, .. } => {
                 current_live_vars.add(src);
             }
-            Instruction::CopyFromOffset { src, dst, ..} => {
+            Instruction::CopyFromOffset { src, dst, .. } => {
                 current_live_vars.0.insert(src.clone());
                 current_live_vars.remove(dst);
             }
@@ -157,7 +169,12 @@ fn transfer_function(annotations: &mut LiveVars, node: &TackyNode, all_static_va
     annotations.annotate_block(node.id, current_live_vars);
 }
 
-fn meet_operator(annotations: &mut LiveVars, cfg: &TackyCfg, node: &TackyNode, all_static_vars: &VarSet) -> VarSet {
+fn meet_operator(
+    annotations: &mut LiveVars,
+    cfg: &TackyCfg,
+    node: &TackyNode,
+    all_static_vars: &VarSet,
+) -> VarSet {
     let mut live_vars = VarSet::empty();
     for succ_id in &node.successors {
         if succ_id == &cfg.exit_id() {
@@ -170,7 +187,11 @@ fn meet_operator(annotations: &mut LiveVars, cfg: &TackyCfg, node: &TackyNode, a
     live_vars
 }
 
-fn find_live_vars(cfg: &TackyCfg, all_static_vars: &VarSet, aliased_vars: &HashSet<Val>) -> LiveVars {
+fn find_live_vars(
+    cfg: &TackyCfg,
+    all_static_vars: &VarSet,
+    aliased_vars: &HashSet<Val>,
+) -> LiveVars {
     let live_vars = VarSet::empty();
     let mut annotations = LiveVars::empty();
 
@@ -187,7 +208,13 @@ fn find_live_vars(cfg: &TackyCfg, all_static_vars: &VarSet, aliased_vars: &HashS
         let old_vars = &annotations.get_block_annotation(&node_id).clone();
         let node = cfg.get_node(node_id);
         let incoming_vars = meet_operator(&mut annotations, cfg, node, all_static_vars);
-        transfer_function(&mut annotations, node, all_static_vars, aliased_vars, &incoming_vars);
+        transfer_function(
+            &mut annotations,
+            node,
+            all_static_vars,
+            aliased_vars,
+            &incoming_vars,
+        );
         if old_vars != annotations.get_block_annotation(&node_id) {
             for pred_id in &node.predecessors {
                 if pred_id == &cfg.entry_id() {
