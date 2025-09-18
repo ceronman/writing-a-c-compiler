@@ -1,16 +1,17 @@
 use crate::ast::Constant::{Char, Double, Int, Long, UChar, UInt, ULong};
-use crate::semantic::{SemanticData, Type};
+use crate::optimization::VariableData;
+use crate::semantic::Type;
 use crate::tacky::pretty::pp_instruction;
 use crate::tacky::{BinaryOp, Instruction, UnaryOp, Val};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Neg, Not, Rem, Shl, Shr, Sub};
 use Instruction::{
     Binary, DoubleToInt, DoubleToUInt, IntToDouble, Jump, JumpIfNotZero, JumpIfZero, SignExtend,
     Truncate, UIntToDouble, Unary, ZeroExtend,
 };
-use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Neg, Not, Rem, Shl, Shr, Sub};
 
 pub fn constant_fold(
     old: &[Instruction],
-    semantics: &SemanticData,
+    var_data: &VariableData,
     trace: bool,
 ) -> Vec<Instruction> {
     if trace {
@@ -578,7 +579,7 @@ pub fn constant_fold(
                 src: Val::Constant(c),
                 dst,
             } => {
-                let dst_ty = semantics.val_ty(dst);
+                let dst_ty = var_data.ty(dst);
                 let dst_ty = if dst_ty.is_pointer() {
                     Type::ULong
                 } else {

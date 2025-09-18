@@ -8,7 +8,7 @@ use crate::optimization::constant_folding::constant_fold;
 use crate::optimization::copy_propagation::copy_propagation;
 use crate::optimization::dead_store_elimination::dead_store_elimination;
 use crate::optimization::unreachable_code::remove_unreachable_code;
-use crate::semantic::{Attributes, SemanticData};
+use crate::semantic::{Attributes, SemanticData, Type};
 use crate::tacky;
 use crate::tacky::{Instruction, Val};
 use std::collections::HashSet;
@@ -33,29 +33,22 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
                     println!();
                 }
                 let mut optimized = f.body.clone();
+                let var_data = VariableData::new(&optimized, &program.semantics);
 
-                let aliased_vars = address_taken_analysis(&optimized);
-                let static_vars = static_vars(&program.semantics);
-                let aliased_and_static_vars: HashSet<Val> =
-                    aliased_vars.union(&static_vars).cloned().collect();
                 if flags.fold_constants || flags.optimize {
-                    optimized = constant_fold(&optimized, &program.semantics, false);
+                    optimized = constant_fold(&optimized, &var_data, false);
                 }
+
                 // TODO: pass same cfg to all passes
                 if flags.eliminate_unreachable_code || flags.optimize {
                     optimized = remove_unreachable_code(&optimized, false);
                 }
                 if flags.propagate_copies || flags.optimize {
-                    optimized = copy_propagation(
-                        &optimized,
-                        &aliased_and_static_vars,
-                        &program.semantics,
-                        flags.trace,
-                    );
+                    optimized = copy_propagation(&optimized, &var_data, flags.trace);
                 }
                 if flags.eliminate_dead_stores || flags.optimize {
                     optimized =
-                        dead_store_elimination(&optimized, &static_vars, &aliased_vars, flags.trace)
+                        dead_store_elimination(&optimized, &var_data, flags.trace)
                 }
 
                 if optimized == f.body {
@@ -68,22 +61,54 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
     program
 }
 
-fn address_taken_analysis(instructions: &[tacky::Instruction]) -> HashSet<Val> {
-    let mut result = HashSet::new();
-    for instruction in instructions {
-        if let Instruction::GetAddress { src, .. } = instruction {
-            result.insert(src.clone());
-        }
-    }
-    result
+struct VariableData<'a> {
+    aliased_vars: HashSet<Val>,
+    static_vars: HashSet<Val>,
+    semantics: &'a SemanticData,
 }
 
-fn static_vars(semantics: &SemanticData) -> HashSet<Val> {
-    let mut result = HashSet::new();
-    for (name, data) in semantics.symbols.iter() {
-        if let Attributes::Static { .. } = data.attrs {
-            result.insert(Val::Var(name.clone()));
+impl<'a> VariableData<'a> {
+    fn new(instructions: &[Instruction], semantic_data: &'a SemanticData) -> Self {
+        VariableData {
+            aliased_vars: Self::find_aliased_vars(instructions),
+            static_vars: Self::find_static_vars(semantic_data),
+            semantics: semantic_data,
         }
     }
-    result
+
+    fn find_aliased_vars(instructions: &[Instruction]) -> HashSet<Val> {
+        let mut result = HashSet::new();
+        for instruction in instructions {
+            if let Instruction::GetAddress { src, .. } = instruction {
+                result.insert(src.clone());
+            }
+        }
+        result
+    }
+
+    fn find_static_vars(semantics: &SemanticData) -> HashSet<Val> {
+        let mut result = HashSet::new();
+        for (name, data) in semantics.symbols.iter() {
+            if let Attributes::Static { .. } = data.attrs {
+                result.insert(Val::Var(name.clone()));
+            }
+        }
+        result
+    }
+
+    pub fn is_aliased(&self, val: &Val) -> bool {
+        self.aliased_vars.contains(val)
+    }
+
+    pub fn is_static(&self, val: &Val) -> bool {
+        self.static_vars.contains(val)
+    }
+
+    pub fn is_aliased_or_static(&self, val: &Val) -> bool {
+        self.is_aliased(val) || self.is_static(val)
+    }
+
+    pub fn ty(&self, val: &Val) -> Type {
+        self.semantics.val_ty(val)
+    }
 }

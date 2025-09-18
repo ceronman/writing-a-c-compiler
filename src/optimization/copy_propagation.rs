@@ -1,12 +1,11 @@
 use crate::optimization::cfg::{Annotation, Cfg, TackyCfg, TackyNode};
-use crate::semantic::SemanticData;
+use crate::optimization::VariableData;
 use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};
 
 pub fn copy_propagation(
     instructions: &[Instruction],
-    aliased_and_static: &HashSet<Val>,
-    semantics: &SemanticData,
+    var_data: &VariableData,
     trace: bool,
 ) -> Vec<Instruction> {
     let mut cfg = Cfg::new(instructions);
@@ -17,7 +16,7 @@ pub fn copy_propagation(
         println!("INITIAL\n {cfg:#?}");
     }
 
-    let annotations = find_reaching_copies(&cfg, aliased_and_static, semantics);
+    let annotations = find_reaching_copies(&cfg, var_data);
 
     if trace {
         println!("Reaching copies:\n {annotations:?}");
@@ -77,11 +76,7 @@ impl Copies {
 
 type ReachingCopies = Annotation<Copies>;
 
-fn find_reaching_copies(
-    cfg: &TackyCfg,
-    aliased_and_static_vars: &HashSet<Val>,
-    semantics: &SemanticData,
-) -> ReachingCopies {
+fn find_reaching_copies(cfg: &TackyCfg, var_data: &VariableData) -> ReachingCopies {
     let all_copies = Copies::from_cfg(cfg);
     let mut annotations = ReachingCopies::empty();
 
@@ -98,13 +93,7 @@ fn find_reaching_copies(
         let old_copies = &annotations.get_block_annotation(&node_id).clone();
         let node = cfg.get_node(node_id);
         let incoming_copies = meet_operator(&mut annotations, cfg, node, &all_copies);
-        transfer_function(
-            &mut annotations,
-            node,
-            &incoming_copies,
-            aliased_and_static_vars,
-            semantics,
-        );
+        transfer_function(&mut annotations, node, &incoming_copies, var_data);
         if old_copies != annotations.get_block_annotation(&node_id) {
             for succ_id in &node.successors {
                 if succ_id == &cfg.exit_id() {
@@ -235,8 +224,7 @@ fn transfer_function(
     annotations: &mut ReachingCopies,
     node: &TackyNode,
     initial_reaching_copies: &Copies,
-    aliased_and_static_vars: &HashSet<Val>,
-    semantics: &SemanticData,
+    var_data: &VariableData,
 ) {
     let mut current_reaching_copies = initial_reaching_copies.clone();
     for (i, instruction) in node.instructions.iter().enumerate() {
@@ -250,8 +238,8 @@ fn transfer_function(
                 current_reaching_copies
                     .remove_if(|current_src, current_dst| current_src == dst || current_dst == dst);
 
-                let src_ty = semantics.val_ty(src);
-                let dst_ty = semantics.val_ty(dst);
+                let src_ty = var_data.ty(src);
+                let dst_ty = var_data.ty(dst);
 
                 if src_ty == dst_ty || (src_ty.is_signed() == dst_ty.is_signed()) {
                     current_reaching_copies.add(instruction.clone())
@@ -259,16 +247,16 @@ fn transfer_function(
             }
             Instruction::FnCall { dst, .. } => {
                 current_reaching_copies.remove_if(|current_src, current_dst| {
-                    aliased_and_static_vars.contains(current_src)
-                        || aliased_and_static_vars.contains(current_dst)
+                    var_data.is_aliased_or_static(current_src)
+                        || var_data.is_aliased_or_static(current_dst)
                         || Some(current_src) == dst.as_ref()
                         || Some(current_dst) == dst.as_ref()
                 });
             }
             Instruction::Store { .. } => {
                 current_reaching_copies.remove_if(|current_src, current_dst| {
-                    aliased_and_static_vars.contains(current_src)
-                        || aliased_and_static_vars.contains(current_dst)
+                    var_data.is_aliased_or_static(current_src)
+                        || var_data.is_aliased_or_static(current_dst)
                 });
             }
             Instruction::Binary { dst, .. }

@@ -2,11 +2,11 @@ use crate::optimization::cfg::{Annotation, TackyCfg, TackyNode};
 use crate::symbol::Symbol;
 use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};
+use crate::optimization::VariableData;
 
 pub fn dead_store_elimination(
     instructions: &[Instruction],
-    static_vars: &HashSet<Val>,
-    aliased_vars: &HashSet<Val>,
+    var_data: &VariableData,
     trace: bool,
 ) -> Vec<Instruction> {
     let mut cfg = TackyCfg::new(instructions);
@@ -16,8 +16,8 @@ pub fn dead_store_elimination(
         println!("=======================");
         println!("INITIAL\n {cfg:#?}");
     }
-    let all_static_vars = VarSet::from_vars(static_vars);
-    let annotations = find_live_vars(&cfg, &all_static_vars, aliased_vars);
+    let all_static_vars = VarSet::from_vars(&var_data.static_vars);
+    let annotations = find_live_vars(&cfg, &all_static_vars, var_data);
     if trace {
         println!("Live variables:\n {annotations:?}");
     }
@@ -81,7 +81,7 @@ fn transfer_function(
     annotations: &mut LiveVars,
     node: &TackyNode,
     all_static_vars: &VarSet,
-    aliased_vars: &HashSet<Val>,
+    var_data: &VariableData,
     all_live_vars: &VarSet,
 ) {
     let mut current_live_vars = all_live_vars.clone();
@@ -120,7 +120,7 @@ fn transfer_function(
                     current_live_vars.add(arg);
                 }
                 current_live_vars.extend(all_static_vars);
-                for var in aliased_vars.iter() {
+                for var in var_data.aliased_vars.iter() {
                     current_live_vars.add(var)
                 }
             }
@@ -128,7 +128,7 @@ fn transfer_function(
             Instruction::Load { ptr, dst } => {
                 current_live_vars.remove(dst);
                 current_live_vars.add(ptr);
-                for var in aliased_vars.iter() {
+                for var in var_data.aliased_vars.iter() {
                     current_live_vars.add(var)
                 }
             }
@@ -138,7 +138,7 @@ fn transfer_function(
                 current_live_vars.remove(dst);
                 current_live_vars.add(ptr);
                 current_live_vars.add(index);
-                for var in aliased_vars.iter() {
+                for var in var_data.aliased_vars.iter() {
                     current_live_vars.add(var)
                 }
             }
@@ -190,7 +190,7 @@ fn meet_operator(
 fn find_live_vars(
     cfg: &TackyCfg,
     all_static_vars: &VarSet,
-    aliased_vars: &HashSet<Val>,
+    var_data: &VariableData,
 ) -> LiveVars {
     let live_vars = VarSet::empty();
     let mut annotations = LiveVars::empty();
@@ -212,7 +212,7 @@ fn find_live_vars(
             &mut annotations,
             node,
             all_static_vars,
-            aliased_vars,
+            var_data,
             &incoming_vars,
         );
         if old_vars != annotations.get_block_annotation(&node_id) {
