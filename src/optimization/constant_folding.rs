@@ -3,11 +3,11 @@ use crate::optimization::VariableData;
 use crate::semantic::Type;
 use crate::tacky::pretty::pp_instruction;
 use crate::tacky::{BinaryOp, Instruction, UnaryOp, Val};
-use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Neg, Not, Rem, Shl, Shr, Sub};
 use Instruction::{
     Binary, DoubleToInt, DoubleToUInt, IntToDouble, Jump, JumpIfNotZero, JumpIfZero, SignExtend,
     Truncate, UIntToDouble, Unary, ZeroExtend,
 };
+use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Neg, Not, Rem, Shl, Shr, Sub};
 
 pub fn constant_fold(
     old: &[Instruction],

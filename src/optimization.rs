@@ -47,8 +47,7 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
                     optimized = copy_propagation(&optimized, &var_data, flags.trace);
                 }
                 if flags.eliminate_dead_stores || flags.optimize {
-                    optimized =
-                        dead_store_elimination(&optimized, &var_data, flags.trace)
+                    optimized = dead_store_elimination(&optimized, &var_data, flags.trace)
                 }
 
                 if optimized == f.body {

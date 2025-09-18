@@ -1,8 +1,8 @@
+use crate::optimization::VariableData;
 use crate::optimization::cfg::{Annotation, TackyCfg, TackyNode};
 use crate::symbol::Symbol;
 use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};
-use crate::optimization::VariableData;
 
 pub fn dead_store_elimination(
     instructions: &[Instruction],
@@ -187,11 +187,7 @@ fn meet_operator(
     live_vars
 }
 
-fn find_live_vars(
-    cfg: &TackyCfg,
-    all_static_vars: &VarSet,
-    var_data: &VariableData,
-) -> LiveVars {
+fn find_live_vars(cfg: &TackyCfg, all_static_vars: &VarSet, var_data: &VariableData) -> LiveVars {
     let live_vars = VarSet::empty();
     let mut annotations = LiveVars::empty();
 
