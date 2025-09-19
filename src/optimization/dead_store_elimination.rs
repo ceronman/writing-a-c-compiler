@@ -5,11 +5,10 @@ use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};
 
 pub fn dead_store_elimination(
-    instructions: &[Instruction],
+    cfg: &mut TackyCfg,
     var_data: &VariableData,
     trace: bool,
-) -> Vec<Instruction> {
-    let mut cfg = TackyCfg::new(instructions);
+) {
     if trace {
         println!("=======================");
         println!("Dead store elimination");
@@ -17,15 +16,14 @@ pub fn dead_store_elimination(
         println!("INITIAL\n {cfg:#?}");
     }
     let all_static_vars = VarSet::from_vars(&var_data.static_vars);
-    let annotations = find_live_vars(&cfg, &all_static_vars, var_data);
+    let annotations = find_live_vars(cfg, &all_static_vars, var_data);
     if trace {
         println!("Live variables:\n {annotations:?}");
     }
-    rewrite_instructions(&mut cfg, &annotations);
+    rewrite_instructions(cfg, &annotations);
     if trace {
         println!("Instructions Rewritten:\n {cfg:#?}");
     }
-    cfg.dump()
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]

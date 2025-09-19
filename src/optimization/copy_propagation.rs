@@ -4,11 +4,10 @@ use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};
 
 pub fn copy_propagation(
-    instructions: &[Instruction],
+    cfg: &mut TackyCfg,
     var_data: &VariableData,
     trace: bool,
-) -> Vec<Instruction> {
-    let mut cfg = Cfg::new(instructions);
+) {
     if trace {
         println!("=======================");
         println!("Copy propagation");
@@ -16,19 +15,17 @@ pub fn copy_propagation(
         println!("INITIAL\n {cfg:#?}");
     }
 
-    let annotations = find_reaching_copies(&cfg, var_data);
+    let annotations = find_reaching_copies(cfg, var_data);
 
     if trace {
         println!("Reaching copies:\n {annotations:?}");
     }
 
-    rewrite_instructions(&mut cfg, &annotations);
+    rewrite_instructions(cfg, &annotations);
 
     if trace {
         println!("Instructions Rewritten:\n {cfg:#?}");
     }
-
-    cfg.dump()
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

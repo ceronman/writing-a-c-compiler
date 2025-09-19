@@ -12,6 +12,7 @@ use crate::semantic::{Attributes, SemanticData, Type};
 use crate::tacky;
 use crate::tacky::{Instruction, Val};
 use std::collections::HashSet;
+use crate::optimization::cfg::Cfg;
 
 #[derive(Default)]
 pub struct OptimizationFlags {
@@ -43,12 +44,15 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
                 if flags.eliminate_unreachable_code || flags.optimize {
                     optimized = remove_unreachable_code(&optimized, false);
                 }
+                let mut cfg = Cfg::new(&optimized);
                 if flags.propagate_copies || flags.optimize {
-                    optimized = copy_propagation(&optimized, &var_data, flags.trace);
+                    copy_propagation(&mut cfg, &var_data, flags.trace);
                 }
                 if flags.eliminate_dead_stores || flags.optimize {
-                    optimized = dead_store_elimination(&optimized, &var_data, flags.trace)
+                    dead_store_elimination(&mut cfg, &var_data, flags.trace)
                 }
+
+                optimized = cfg.dump();
 
                 if optimized == f.body {
                     break;
