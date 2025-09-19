@@ -1,12 +1,7 @@
-use crate::optimization::cfg::{Cfg, GenericInstruction, InstructionKind, NodeId, TackyCfg};
-use crate::tacky;
+use crate::optimization::cfg::{GenericInstruction, InstructionKind, NodeId, TackyCfg};
 use std::collections::{HashSet, VecDeque};
 
-pub fn remove_unreachable_code(
-    instructions: &[tacky::Instruction],
-    trace: bool,
-) -> Vec<tacky::Instruction> {
-    let mut cfg = Cfg::new(instructions);
+pub fn remove_unreachable_code(cfg: &mut TackyCfg, trace: bool) {
     if trace {
         println!("=======================");
         println!("Unreachable code");
@@ -29,7 +24,6 @@ pub fn remove_unreachable_code(
     if trace {
         println!("EMPTY BLOCKS\n {:#?}", cfg);
     }
-    cfg.dump()
 }
 
 impl TackyCfg {
@@ -83,6 +77,9 @@ impl TackyCfg {
     fn remove_empty_blocks(&mut self) {
         let ids = Vec::from_iter(self.all_ids());
         for node_id in ids {
+            if node_id == self.entry_id() || node_id == self.exit_id() {
+                continue;
+            }
             let node = self.get_node(node_id);
             if node.instructions.is_empty() {
                 self.remove_node(node_id);

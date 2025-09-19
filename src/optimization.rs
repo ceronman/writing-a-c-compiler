@@ -4,6 +4,7 @@ mod copy_propagation;
 mod dead_store_elimination;
 mod unreachable_code;
 
+use crate::optimization::cfg::Cfg;
 use crate::optimization::constant_folding::constant_fold;
 use crate::optimization::copy_propagation::copy_propagation;
 use crate::optimization::dead_store_elimination::dead_store_elimination;
@@ -12,7 +13,6 @@ use crate::semantic::{Attributes, SemanticData, Type};
 use crate::tacky;
 use crate::tacky::{Instruction, Val};
 use std::collections::HashSet;
-use crate::optimization::cfg::Cfg;
 
 #[derive(Default)]
 pub struct OptimizationFlags {
@@ -37,14 +37,13 @@ pub fn optimize(mut program: tacky::Program, flags: &OptimizationFlags) -> tacky
                 let var_data = VariableData::new(&optimized, &program.semantics);
 
                 if flags.fold_constants || flags.optimize {
-                    optimized = constant_fold(&optimized, &var_data, false);
+                    optimized = constant_fold(&optimized, &var_data, flags.trace);
                 }
 
-                // TODO: pass same cfg to all passes
-                if flags.eliminate_unreachable_code || flags.optimize {
-                    optimized = remove_unreachable_code(&optimized, false);
-                }
                 let mut cfg = Cfg::new(&optimized);
+                if flags.eliminate_unreachable_code || flags.optimize {
+                    remove_unreachable_code(&mut cfg, flags.trace);
+                }
                 if flags.propagate_copies || flags.optimize {
                     copy_propagation(&mut cfg, &var_data, flags.trace);
                 }

@@ -1,13 +1,9 @@
 use crate::optimization::VariableData;
-use crate::optimization::cfg::{Annotation, Cfg, TackyCfg, TackyNode};
+use crate::optimization::cfg::{Annotation, TackyCfg, TackyNode};
 use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};
 
-pub fn copy_propagation(
-    cfg: &mut TackyCfg,
-    var_data: &VariableData,
-    trace: bool,
-) {
+pub fn copy_propagation(cfg: &mut TackyCfg, var_data: &VariableData, trace: bool) {
     if trace {
         println!("=======================");
         println!("Copy propagation");

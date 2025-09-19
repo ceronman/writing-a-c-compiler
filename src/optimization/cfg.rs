@@ -153,9 +153,7 @@ impl<T: GenericInstruction> Cfg<T> {
     pub fn nodes_mut(&mut self) -> impl Iterator<Item = &mut Node<T>> {
         self.nodes
             .iter_mut()
-            .enumerate()
-            .filter(|(id, _)| !self.removed.contains(&NodeId(*id)))
-            .map(|(_, node)| node)
+            .filter(|node| !self.removed.contains(&node.id))
     }
 
     pub fn entry_id(&self) -> NodeId {
@@ -167,10 +165,12 @@ impl<T: GenericInstruction> Cfg<T> {
     }
 
     pub fn get_node(&self, id: NodeId) -> &Node<T> {
+        assert!(!self.removed.contains(&id));
         &self.nodes[id.0]
     }
 
     pub fn get_node_mut(&mut self, id: NodeId) -> &mut Node<T> {
+        assert!(!self.removed.contains(&id));
         &mut self.nodes[id.0]
     }
 
@@ -193,6 +193,8 @@ impl<T: GenericInstruction> Cfg<T> {
             pred.sort();
             pred.dedup();
         }
+        self.nodes[id.0].predecessors.clear();
+        self.nodes[id.0].successors.clear()
     }
 
     pub fn dump(&self) -> Vec<T> {
@@ -262,12 +264,12 @@ impl<T> Annotation<T> {
 
 impl Debug for TackyCfg {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        for node_id in self.all_ids() {
-            let node = self.get_node(node_id);
+        for node in self.nodes.iter() {
             match node.id {
-                id if id == self.entry_id() => writeln!(f, "ENTRY: ")?,
-                id if id == self.exit_id() => writeln!(f, "EXIT: ")?,
-                _ => writeln!(f, "  Node {}:", node.id.0)?,
+                id if id == self.entry_id() => writeln!(f, "  ##ENTRY: ")?,
+                id if id == self.exit_id() => writeln!(f, "  ##EXIT: ")?,
+                id if self.removed.contains(&id) => writeln!(f, "  ##[REMOVED {}]", node.id.0)?,
+                _ => writeln!(f, "  ##Node {}:", node.id.0)?,
             };
 
             for ins in node.instructions.iter() {

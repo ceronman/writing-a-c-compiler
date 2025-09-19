@@ -4,11 +4,7 @@ use crate::symbol::Symbol;
 use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};
 
-pub fn dead_store_elimination(
-    cfg: &mut TackyCfg,
-    var_data: &VariableData,
-    trace: bool,
-) {
+pub fn dead_store_elimination(cfg: &mut TackyCfg, var_data: &VariableData, trace: bool) {
     if trace {
         println!("=======================");
         println!("Dead store elimination");
