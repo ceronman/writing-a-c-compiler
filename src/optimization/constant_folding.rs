@@ -69,16 +69,7 @@ pub fn constant_fold(
                 src: Val::Constant(src),
                 dst,
             } => {
-                let is_zero = match src {
-                    Int(value) => *value == 0,
-                    UInt(value) => *value == 0,
-                    Long(value) => *value == 0,
-                    ULong(value) => *value == 0,
-                    Char(value) => *value == 0,
-                    UChar(value) => *value == 0,
-                    Double(value) => *value == 0.0, // TODO: there is more to this
-                };
-                if is_zero {
+                if src.is_zero() {
                     new.push(Instruction::Copy {
                         src: Val::Constant(Int(1)),
                         dst: dst.clone(),
