@@ -83,15 +83,14 @@ impl Type {
                 AsmType::ByteArray { size, alignment }
             }
             Type::Struct(name) | Type::Union(name) => {
-                let (size, alignment) = if let Some(TypeEntry::Complete(aggregate)) =
-                    semantics.type_table.type_defs.get(name)
-                {
-                    // TODO: unify usize and u64 everywhere.
-                    (aggregate.size as u64, aggregate.alignment)
-                } else {
-                    // In case of incomplete types, these are dummy values.
-                    (0, 0)
-                };
+                let (size, alignment) =
+                    if let Some(TypeEntry::Complete(aggregate)) = semantics.type_defs.get(name) {
+                        // TODO: unify usize and u64 everywhere.
+                        (aggregate.size as u64, aggregate.alignment)
+                    } else {
+                        // In case of incomplete types, these are dummy values.
+                        (0, 0)
+                    };
                 AsmType::ByteArray { size, alignment }
             }
         }

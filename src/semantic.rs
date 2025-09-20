@@ -127,10 +127,7 @@ impl Type {
         match self {
             Type::Void => false,
             Type::Struct(name) | Type::Union(name) => {
-                matches!(
-                    semantics.type_table.type_defs.get(name),
-                    Some(TypeEntry::Complete(_))
-                )
+                matches!(semantics.type_defs.get(name), Some(TypeEntry::Complete(_)))
             }
             _ => true,
         }
@@ -263,19 +260,13 @@ pub enum TypeEntry {
     Complete(AggregateType),
 }
 
-// TODO: Move TypeTable to SemanticData
-#[derive(Debug, Clone, Default)]
-pub struct TypeTable {
-    pub type_defs: HashMap<Symbol, TypeEntry>,
-}
-
 #[derive(Debug, Clone, Default)]
 pub struct SemanticData {
     pub symbols: BTreeMap<Symbol, SymbolData>,
     pub strings: HashMap<Symbol, Symbol>,
     pub expression_types: HashMap<NodeId, Type>,
     pub assignment_common_types: HashMap<NodeId, Type>,
-    pub type_table: TypeTable,
+    pub type_defs: HashMap<Symbol, TypeEntry>,
     pub implicit_casts: HashMap<NodeId, Type>,
     pub pointer_decays: HashMap<NodeId, Type>,
     pub switch_cases: HashMap<NodeId, SwitchCases>,
@@ -354,7 +345,7 @@ impl SemanticData {
     }
 
     pub fn get_aggregate(&self, name: &Symbol) -> &AggregateType {
-        let Some(TypeEntry::Complete(type_def)) = self.type_table.type_defs.get(name) else {
+        let Some(TypeEntry::Complete(type_def)) = self.type_defs.get(name) else {
             panic!("Type {name} is unknown or incomplete",);
         };
         type_def

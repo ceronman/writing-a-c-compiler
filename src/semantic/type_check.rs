@@ -231,8 +231,7 @@ impl TypeChecker {
                     Ok(static_inits)
                 }
                 Type::Struct(tag) => {
-                    let Some(TypeEntry::Complete(aggregate)) =
-                        self.semantics.type_table.type_defs.get(tag)
+                    let Some(TypeEntry::Complete(aggregate)) = self.semantics.type_defs.get(tag)
                     else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
@@ -265,8 +264,7 @@ impl TypeChecker {
                     Ok(static_inits)
                 }
                 Type::Union(tag) => {
-                    let Some(TypeEntry::Complete(union_def)) =
-                        self.semantics.type_table.type_defs.get(tag)
+                    let Some(TypeEntry::Complete(union_def)) = self.semantics.type_defs.get(tag)
                     else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
@@ -352,8 +350,7 @@ impl TypeChecker {
                     }
                 }
                 Type::Struct(tag) => {
-                    let Some(TypeEntry::Complete(aggregate)) =
-                        self.semantics.type_table.type_defs.get(tag)
+                    let Some(TypeEntry::Complete(aggregate)) = self.semantics.type_defs.get(tag)
                     else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
@@ -378,8 +375,7 @@ impl TypeChecker {
                     }
                 }
                 Type::Union(tag) => {
-                    let Some(TypeEntry::Complete(union_def)) =
-                        self.semantics.type_table.type_defs.get(tag)
+                    let Some(TypeEntry::Complete(union_def)) = self.semantics.type_defs.get(tag)
                     else {
                         return Err(CompilerError {
                             kind: ErrorKind::Type,
@@ -615,19 +611,13 @@ impl TypeChecker {
             AggregateKind::Struct
         };
 
-        if !self
-            .semantics
-            .type_table
-            .type_defs
-            .contains_key(&decl.name.symbol)
-        {
+        if !self.semantics.type_defs.contains_key(&decl.name.symbol) {
             self.semantics
-                .type_table
                 .type_defs
                 .insert(decl.name.symbol.clone(), TypeEntry::Incomplete(kind));
         }
 
-        let old = self.semantics.type_table.type_defs.get(&decl.name.symbol);
+        let old = self.semantics.type_defs.get(&decl.name.symbol);
         if let Some(TypeEntry::Incomplete(k)) = old
             && *k != kind
         {
@@ -692,7 +682,7 @@ impl TypeChecker {
         }
         let size = align_offset(size, alignment);
         let tag = decl.name.symbol.clone();
-        let old = self.semantics.type_table.type_defs.insert(
+        let old = self.semantics.type_defs.insert(
             decl.name.symbol.clone(),
             TypeEntry::Complete(AggregateType {
                 kind,
@@ -733,7 +723,7 @@ impl TypeChecker {
             }
             TypeSpec::Struct(name) => {
                 let name = &name.symbol;
-                match self.semantics.type_table.type_defs.get(name) {
+                match self.semantics.type_defs.get(name) {
                     Some(TypeEntry::Complete(type_def)) => {
                         if let AggregateKind::Union = type_def.kind {
                             return Err(CompilerError {
@@ -755,7 +745,7 @@ impl TypeChecker {
             }
             TypeSpec::Union(name) => {
                 let name = &name.symbol;
-                match self.semantics.type_table.type_defs.get(name) {
+                match self.semantics.type_defs.get(name) {
                     Some(TypeEntry::Complete(type_def)) => {
                         if let AggregateKind::Struct = type_def.kind {
                             return Err(CompilerError {
@@ -1567,8 +1557,7 @@ impl TypeChecker {
                 span: aggregate.span,
             });
         };
-        let Some(TypeEntry::Complete(type_def)) = self.semantics.type_table.type_defs.get(name)
-        else {
+        let Some(TypeEntry::Complete(type_def)) = self.semantics.type_defs.get(name) else {
             return Err(CompilerError {
                 kind: ErrorKind::Type,
                 msg: "Type is not a struct or union".to_string(),
