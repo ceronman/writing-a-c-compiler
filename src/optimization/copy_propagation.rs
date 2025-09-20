@@ -62,6 +62,16 @@ impl Copies {
         });
     }
 
+    fn has_copy(&self, src: &Val, dst: &Val) -> bool {
+        self.0.iter().any(|copy| {
+            let Instruction::Copy { src: copy_src, dst: copy_dst } = copy else {
+                panic!("Expected copy instruction")
+            };
+            (copy_src == src && copy_dst == dst)
+                || (copy_src == dst && copy_dst == src)
+        })
+    }
+
     fn contains(&self, instruction: &Instruction) -> bool {
         self.0.contains(instruction)
     }
@@ -110,27 +120,8 @@ fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &ReachingCopies) {
             let mut new_instruction = instruction.clone();
             match &mut new_instruction {
                 Instruction::Copy { src, dst } => {
-                    // TODO: Ugly code
-                    let mut delete = false;
-                    /*TODO: .0 and ugly delete*/
-                    for copy in &reaching_copies.0 {
-                        if copy == instruction {
-                            delete = true;
-                            break;
-                        }
-                        if let Instruction::Copy {
-                            src: copy_src,
-                            dst: copy_dst,
-                        } = copy
-                            && copy_src == dst
-                            && copy_dst == src
-                        {
-                            delete = true;
-                            break;
-                        }
-                    }
-                    if delete {
-                        continue;
+                    if reaching_copies.has_copy(src, dst) {
+                        continue; //delete instruction
                     }
                     *src = replace_operand(src.clone(), reaching_copies);
                 }
