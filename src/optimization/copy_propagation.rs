@@ -64,11 +64,14 @@ impl Copies {
 
     fn has_copy(&self, src: &Val, dst: &Val) -> bool {
         self.0.iter().any(|copy| {
-            let Instruction::Copy { src: copy_src, dst: copy_dst } = copy else {
+            let Instruction::Copy {
+                src: copy_src,
+                dst: copy_dst,
+            } = copy
+            else {
                 panic!("Expected copy instruction")
             };
-            (copy_src == src && copy_dst == dst)
-                || (copy_src == dst && copy_dst == src)
+            (copy_src == src && copy_dst == dst) || (copy_src == dst && copy_dst == src)
         })
     }
 
