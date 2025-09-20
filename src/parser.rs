@@ -421,11 +421,11 @@ impl<'src> Parser<'src> {
         match types {
             [TokenKind::Struct] => {
                 let name = self.identifier()?;
-                return Ok(self.node(span, TypeSpec::Struct(name)));
+                return Ok(self.node(span + name.span, TypeSpec::Struct(name)));
             }
             [TokenKind::Union] => {
                 let name = self.identifier()?;
-                return Ok(self.node(span, TypeSpec::Union(name)));
+                return Ok(self.node(span + name.span, TypeSpec::Union(name)));
             }
             [TokenKind::Double] => {
                 return Ok(self.node(span, TypeSpec::Double));

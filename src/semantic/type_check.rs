@@ -582,11 +582,15 @@ impl TypeChecker {
                 });
             }
 
-            for (param_name, param_ty) in decl.params.iter().zip(function_ty.params.iter()) {
+            for i in 0..decl.params.len() {
+                let param_name = &decl.params[i];
+                let param_ty = &function_ty.params[i];
+                let param_ty_spec = &decl.type_spec.params[i];
+
                 // TODO: make error exactly on the type span
                 Self::error_if(
                     param_ty.is_incomplete_aggregate(&self.semantics),
-                    param_name.span,
+                    param_ty_spec.span,
                     "Aggregate type is not complete",
                 )?;
                 self.semantics.symbols.insert(

@@ -1647,7 +1647,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_param() {
         r#"
         struct s;
         int foo(struct s x) { return 0; }
-                       //^ Aggregate type is not complete
+              //^^^^^^^^ Aggregate type is not complete
     "#,
     );
 }
