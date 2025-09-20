@@ -587,7 +587,6 @@ impl TypeChecker {
                 let param_ty = &function_ty.params[i];
                 let param_ty_spec = &decl.type_spec.params[i];
 
-                // TODO: make error exactly on the type span
                 Self::error_if(
                     param_ty.is_incomplete_aggregate(&self.semantics),
                     param_ty_spec.span,

@@ -346,7 +346,6 @@ impl Constant {
         !matches!(self, Constant::Double(_))
     }
 
-    // TODO: make as_i64
     pub fn as_u64(&self) -> u64 {
         match self {
             Constant::Char(v) => *v as u64,
