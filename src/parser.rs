@@ -968,28 +968,21 @@ impl<'src> Parser<'src> {
     }
 
     fn direct_abstract_declarator(&mut self) -> Result<Node<AbstractDeclarator>> {
-        // TODO: deduplicate
-        if self.current.kind == TokenKind::OpenParen {
-            let begin = self.expect(TokenKind::OpenParen)?.span;
-            let mut decl = self.abstract_declarator()?;
-            let mut end = self.expect(TokenKind::CloseParen)?.span;
-            while self.matches(TokenKind::OpenBracket) {
-                let size = self.parse_array_index()?;
-                end = self.expect(TokenKind::CloseBracket)?.span;
-                decl = self.node(begin + end, AbstractDeclarator::Array(decl, size));
-            }
-            Ok(self.node(begin + end, *decl.data))
+        let mut decl;
+        let begin = self.current.span;
+        let mut end = begin;
+        if self.matches(TokenKind::OpenParen) {
+            decl = self.abstract_declarator()?;
+            end = self.expect(TokenKind::CloseParen)?.span;
         } else {
-            let begin = self.current.span;
-            let mut end = begin;
-            let mut decl = self.node(begin, AbstractDeclarator::Base);
-            while self.matches(TokenKind::OpenBracket) {
-                let size = self.parse_array_index()?;
-                end = self.expect(TokenKind::CloseBracket)?.span;
-                decl = self.node(begin + end, AbstractDeclarator::Array(decl, size));
-            }
-            Ok(self.node(begin + end, *decl.data))
+            decl = self.node(begin, AbstractDeclarator::Base);
         }
+        while self.matches(TokenKind::OpenBracket) {
+            let size = self.parse_array_index()?;
+            end = self.expect(TokenKind::CloseBracket)?.span;
+            decl = self.node(begin + end, AbstractDeclarator::Array(decl, size));
+        }
+        Ok(self.node(begin + end, *decl.data))
     }
 
     fn process_abstract_declaration(
