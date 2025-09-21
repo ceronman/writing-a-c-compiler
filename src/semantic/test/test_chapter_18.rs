@@ -19,7 +19,7 @@ fn test_invalid_struct_tags_cast_undeclared() {
         r#"
         int main(void) {
             (struct s)0;
-           //^^^^^^ Undeclared structure type 's'
+           //^^^^^^^^ Undeclared structure type 's'
             return 0;
         }
     "#,
@@ -46,7 +46,7 @@ fn test_invalid_struct_tags_extra_credit_sizeof_undeclared_union() {
         r#"
         int main(void) {
             return sizeof(union c);
-                        //^^^^^ Undeclared structure type 'c'
+                        //^^^^^^^ Undeclared structure type 'c'
         }
         union c {
             int x;
@@ -103,7 +103,7 @@ fn test_invalid_struct_tags_for_loop_scope_2() {
         int main(void) {
             void *ptr;
             for (;; ((struct s *)ptr)->i) {
-                    //^^^^^^ Undeclared structure type 's'
+                    //^^^^^^^^ Undeclared structure type 's'
                 struct s {
                     int i;
                 };
@@ -121,7 +121,7 @@ fn test_invalid_struct_tags_member_type_undeclared() {
         r#"
         struct s {
             struct a b;
-          //^^^^^^ Undeclared structure type 'a'
+          //^^^^^^^^ Undeclared structure type 'a'
         };
     "#,
     );
@@ -132,7 +132,7 @@ fn test_invalid_struct_tags_param_undeclared() {
     assert_error(
         r#"
         int foo(struct s x) {
-              //^^^^^^ Undeclared structure type 's'
+              //^^^^^^^^ Undeclared structure type 's'
             return 0;
         }
     "#,
@@ -158,7 +158,7 @@ fn test_invalid_struct_tags_sizeof_undeclared() {
         r#"
         int main(void) {
             return sizeof(struct c);
-                        //^^^^^^ Undeclared structure type 'c'
+                        //^^^^^^^^ Undeclared structure type 'c'
         }
         struct c {
             int x;
@@ -350,7 +350,7 @@ fn test_invalid_types_extra_credit_incomplete_unions_sizeof_incomplete_union_typ
         int main(void) {
             union u;
             return sizeof(union u);
-                        //^^^^^ Cannot get size of an incomplete type
+                        //^^^^^^^ Cannot get size of an incomplete type
         }
     "#,
     );
@@ -599,7 +599,7 @@ fn test_invalid_types_extra_credit_scalar_required_cast_between_unions() {
         int main(void){
             union u1 var = {10};
             (union u1) var;
-           //^^^^^ Cannot cast a value to a non-scalar type
+           //^^^^^^^^ Cannot cast a value to a non-scalar type
             return 0;
         }
     "#,
@@ -1773,7 +1773,7 @@ fn test_invalid_types_invalid_incomplete_structs_incomplete_tentative_def() {
         r#"
         struct s;
         static struct s x;
-      //^^^^^^^^^^^^^ Incomplete aggregate type
+      //^^^^^^^^^^^^^^^ Incomplete aggregate type
         int main(void) { return 0; }
     "#,
     );
@@ -1785,7 +1785,7 @@ fn test_invalid_types_invalid_incomplete_structs_initialize_incomplete() {
         r#"
         struct s;
         extern struct s x = {1};
-      //^^^^^^^^^^^^^ Incomplete aggregate type
+      //^^^^^^^^^^^^^^^ Incomplete aggregate type
         int main(void) { return 0; }
         struct s {
           int a;
@@ -1801,7 +1801,7 @@ fn test_invalid_types_invalid_incomplete_structs_sizeof_incomplete() {
         struct s;
         int main(void) {
           return sizeof(struct s);
-                      //^^^^^^ Cannot get size of an incomplete type
+                      //^^^^^^^^ Cannot get size of an incomplete type
         }
     "#,
     );
@@ -2156,7 +2156,7 @@ fn test_invalid_types_scalar_required_cast_to_struct() {
         };
         struct s x;
         int main(void) { (struct s) x; }
-                        //^^^^^^ Cannot cast a value to a non-scalar type
+                        //^^^^^^^^ Cannot cast a value to a non-scalar type
     "#,
     );
 }
