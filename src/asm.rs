@@ -70,13 +70,7 @@ impl Type {
                 let size = inner.size(semantics) * length;
                 let inner_asm_ty = inner.to_asm(semantics);
                 let alignment = if size < 16 {
-                    match inner_asm_ty {
-                        AsmType::Byte => 1,
-                        AsmType::Longword => 4,
-                        AsmType::Quadword => 8,
-                        AsmType::Double => 8,
-                        AsmType::ByteArray { alignment, .. } => alignment,
-                    }
+                    inner_asm_ty.alignment()
                 } else {
                     16
                 };
@@ -1090,13 +1084,7 @@ impl Compiler {
     fn generate_constant(&mut self, c: &tacky::StaticConstant) -> StaticConstant {
         StaticConstant {
             name: c.name.clone(),
-            alignment: match c.ty.to_asm(&self.semantics) {
-                // TODO: extract this duplicated logic
-                AsmType::Byte => 1,
-                AsmType::Longword => 4,
-                AsmType::Quadword | AsmType::Double => 8,
-                AsmType::ByteArray { alignment, .. } => alignment,
-            },
+            alignment: c.ty.to_asm(&self.semantics).alignment(),
             init: c.init.clone(),
         }
     }
@@ -1108,12 +1096,7 @@ impl Compiler {
             name: var.name.clone(),
             global: var.global,
             init: var.init.clone(),
-            alignment: match self1.symbol_ty(symbol).to_asm(&self.semantics) {
-                AsmType::Byte => 1,
-                AsmType::Longword => 4,
-                AsmType::Quadword | AsmType::Double => 8,
-                AsmType::ByteArray { alignment, .. } => alignment,
-            },
+            alignment: self1.symbol_ty(symbol).to_asm(&self.semantics).alignment(),
         }
     }
 
@@ -1976,9 +1959,17 @@ impl AsmType {
         match self {
             AsmType::Byte => 1,
             AsmType::Longword => 4,
-            AsmType::Quadword => 8,
-            AsmType::Double => 8,
+            AsmType::Quadword | AsmType::Double => 8,
             AsmType::ByteArray { size, .. } => *size,
+        }
+    }
+
+    fn alignment(&self) -> u8 {
+        match self {
+            AsmType::Byte => 1,
+            AsmType::Longword => 4,
+            AsmType::Quadword | AsmType::Double => 8,
+            AsmType::ByteArray { alignment, .. } => *alignment,
         }
     }
 
