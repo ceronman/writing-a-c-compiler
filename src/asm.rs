@@ -67,7 +67,7 @@ impl Type {
             Type::Function(_) => unreachable!(),
             Type::Pointer(_) => AsmType::Quadword,
             Type::Array(inner, length) => {
-                let size = (inner.size(semantics) * length) as u64;
+                let size = inner.size(semantics) * length;
                 let inner_asm_ty = inner.to_asm(semantics);
                 let alignment = if size < 16 {
                     match inner_asm_ty {
@@ -85,8 +85,7 @@ impl Type {
             Type::Struct(name) | Type::Union(name) => {
                 let (size, alignment) =
                     if let Some(TypeEntry::Complete(aggregate)) = semantics.type_defs.get(name) {
-                        // TODO: unify usize and u64 everywhere.
-                        (aggregate.size as u64, aggregate.alignment)
+                        (aggregate.size, aggregate.alignment)
                     } else {
                         // In case of incomplete types, these are dummy values.
                         (0, 0)
@@ -116,7 +115,7 @@ struct FnReturn {
 
 struct Compiler {
     doubles: HashMap<u64, Symbol>,
-    label_counter: u64,
+    label_counter: usize,
     semantics: SemanticData,
 }
 
@@ -980,7 +979,7 @@ impl Compiler {
         }
     }
 
-    fn copy_bytes(instructions: &mut Vec<Instruction>, src: Operand, dst: Operand, size: u64) {
+    fn copy_bytes(instructions: &mut Vec<Instruction>, src: Operand, dst: Operand, size: usize) {
         let mut part_offset = 0;
         while part_offset < size {
             let remaining_bytes = size - part_offset;
@@ -1362,7 +1361,7 @@ impl Compiler {
             AsmType::Byte
         } else {
             AsmType::ByteArray {
-                size: bytes_from_end as u64,
+                size: bytes_from_end,
                 alignment: 0,
             }
         }
@@ -1532,7 +1531,7 @@ impl Compiler {
         &mut self,
         function: &mut Function,
         symbols: &BackendSymbolTable,
-    ) -> u64 {
+    ) -> usize {
         let mut stack_size: usize = if self.does_return_in_memory(&function.name) {
             8
         } else {
@@ -1575,7 +1574,7 @@ impl Compiler {
                             stack_size = align_offset(stack_size + 8, 8);
                         }
                         AsmType::ByteArray { size, alignment } => {
-                            stack_size = align_offset(stack_size + size as usize, alignment);
+                            stack_size = align_offset(stack_size + size, alignment);
                         }
                     }
                     stack_vars.insert(name.clone(), stack_size);
@@ -1622,10 +1621,10 @@ impl Compiler {
             }
         }
 
-        stack_size as u64
+        stack_size
     }
 
-    fn fixup_instructions(&mut self, function: &mut Function, stack_size: u64) {
+    fn fixup_instructions(&mut self, function: &mut Function, stack_size: usize) {
         let instructions = std::mem::take(&mut function.instructions);
         let mut fixed = Vec::with_capacity(instructions.len() + 1);
 
@@ -1973,7 +1972,7 @@ impl tacky::BinaryOp {
 }
 
 impl AsmType {
-    fn size(&self) -> u64 {
+    fn size(&self) -> usize {
         match self {
             AsmType::Byte => 1,
             AsmType::Longword => 4,

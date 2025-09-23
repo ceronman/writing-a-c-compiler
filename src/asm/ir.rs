@@ -131,7 +131,7 @@ pub enum AsmType {
     Longword,
     Quadword,
     Double,
-    ByteArray { size: u64, alignment: u8 },
+    ByteArray { size: usize, alignment: u8 },
 }
 
 #[derive(Debug)]
