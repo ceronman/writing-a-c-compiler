@@ -312,6 +312,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::Quad)?;
             }
+            Instruction::Pop(_) => todo!(),
         }
         writeln!(output)?;
     }
@@ -481,6 +482,10 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
         (Operand::Reg(Reg::Ax), RegSize::Long) => write!(output, "%eax"),
         (Operand::Reg(Reg::Ax), RegSize::Quad) => write!(output, "%rax"),
 
+        (Operand::Reg(Reg::Bx), RegSize::Byte) => write!(output, "%bl"),
+        (Operand::Reg(Reg::Bx), RegSize::Long) => write!(output, "%ebx"),
+        (Operand::Reg(Reg::Bx), RegSize::Quad) => write!(output, "%rbx"),
+
         (Operand::Reg(Reg::Cx), RegSize::Byte) => write!(output, "%cl"),
         (Operand::Reg(Reg::Cx), RegSize::Long) => write!(output, "%ecx"),
         (Operand::Reg(Reg::Cx), RegSize::Quad) => write!(output, "%rcx"),
@@ -513,6 +518,22 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
         (Operand::Reg(Reg::R11), RegSize::Long) => write!(output, "%r11d"),
         (Operand::Reg(Reg::R11), RegSize::Quad) => write!(output, "%r11"),
 
+        (Operand::Reg(Reg::R12), RegSize::Byte) => write!(output, "%r12b"),
+        (Operand::Reg(Reg::R12), RegSize::Long) => write!(output, "%r12d"),
+        (Operand::Reg(Reg::R12), RegSize::Quad) => write!(output, "%r12"),
+
+        (Operand::Reg(Reg::R13), RegSize::Byte) => write!(output, "%r13b"),
+        (Operand::Reg(Reg::R13), RegSize::Long) => write!(output, "%r13d"),
+        (Operand::Reg(Reg::R13), RegSize::Quad) => write!(output, "%r13"),
+
+        (Operand::Reg(Reg::R14), RegSize::Byte) => write!(output, "%r14b"),
+        (Operand::Reg(Reg::R14), RegSize::Long) => write!(output, "%r14d"),
+        (Operand::Reg(Reg::R14), RegSize::Quad) => write!(output, "%r14"),
+
+        (Operand::Reg(Reg::R15), RegSize::Byte) => write!(output, "%r15b"),
+        (Operand::Reg(Reg::R15), RegSize::Long) => write!(output, "%r15d"),
+        (Operand::Reg(Reg::R15), RegSize::Quad) => write!(output, "%r15"),
+
         (Operand::Reg(Reg::SP), _) => write!(output, "%rsp"),
         (Operand::Reg(Reg::BP), _) => write!(output, "%rbp"),
 
@@ -524,6 +545,12 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
         (Operand::Reg(Reg::XMM5), _) => write!(output, "%xmm5"),
         (Operand::Reg(Reg::XMM6), _) => write!(output, "%xmm6"),
         (Operand::Reg(Reg::XMM7), _) => write!(output, "%xmm7"),
+        (Operand::Reg(Reg::XMM8), _) => write!(output, "%xmm8"),
+        (Operand::Reg(Reg::XMM9), _) => write!(output, "%xmm9"),
+        (Operand::Reg(Reg::XMM10), _) => write!(output, "%xmm10"),
+        (Operand::Reg(Reg::XMM11), _) => write!(output, "%xmm11"),
+        (Operand::Reg(Reg::XMM12), _) => write!(output, "%xmm12"),
+        (Operand::Reg(Reg::XMM13), _) => write!(output, "%xmm13"),
         (Operand::Reg(Reg::XMM14), _) => write!(output, "%xmm14"),
         (Operand::Reg(Reg::XMM15), _) => write!(output, "%xmm15"),
 

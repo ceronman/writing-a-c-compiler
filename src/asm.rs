@@ -1599,6 +1599,7 @@ impl Compiler {
                 | Instruction::Jmp(_)
                 | Instruction::JmpCC(_, _)
                 | Instruction::Label(_)
+                | Instruction::Pop(_)
                 | Instruction::Call(_)
                 | Instruction::Ret => {}
             }
