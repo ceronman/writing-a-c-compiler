@@ -359,29 +359,27 @@ impl Compiler {
                                 self.generate_val(dst),
                             ));
                         }
-                        tacky::BinaryOp::ShiftLeft => {
+                        tacky::BinaryOp::ShiftLeft | tacky::BinaryOp::ShiftRight => {
                             instructions.push(Instruction::Mov(
                                 ty,
                                 self.generate_val(src1),
                                 self.generate_val(dst),
                             ));
-                            if self.semantics.is_signed(src1) {
-                                instructions.push(Instruction::Sal(ty, self.generate_val(src2), self.generate_val(dst)));
+                            let bit_count = self.generate_val(src2);
+                            let bit_count = if let Operand::Imm(_) = bit_count {
+                                bit_count
                             } else {
-                                instructions.push(Instruction::Shl(ty, self.generate_val(src2), self.generate_val(dst)));
-                            }
-                        }
-                        tacky::BinaryOp::ShiftRight => {
-                            instructions.push(Instruction::Mov(
-                                ty,
-                                self.generate_val(src1),
-                                self.generate_val(dst),
-                            ));
-                            if self.semantics.is_signed(src1) {
-                                instructions.push(Instruction::Sar(ty, self.generate_val(src2), self.generate_val(dst)));
-                            } else {
-                                instructions.push(Instruction::Shr(ty, self.generate_val(src2), self.generate_val(dst)));
-                            }
+                                instructions.push(Instruction::Mov(AsmType::Byte, bit_count, Reg::Cx.into()));
+                                Reg::Cx.into()
+                            };
+                            let is_signed = self.semantics.is_signed(src1);
+                            let shift_op = match op {
+                                tacky::BinaryOp::ShiftLeft => if is_signed { BinaryOp::Sal } else { BinaryOp::Shl },
+                                tacky::BinaryOp::ShiftRight => if is_signed { BinaryOp::Sar } else { BinaryOp::Shr }
+                                _ => unreachable!(),
+                            };
+                            instructions.push(Instruction::Binary(ty, shift_op, bit_count, self.generate_val(dst)));
+
                         }
                         tacky::BinaryOp::Equal
                         | tacky::BinaryOp::NotEqual
@@ -737,8 +735,9 @@ impl Compiler {
                                 Operand::Imm(1),
                                 Reg::Cx.into(),
                             ));
-                            instructions.push(Instruction::Shr(
+                            instructions.push(Instruction::Binary(
                                 AsmType::Quadword,
+                                BinaryOp::Shr,
                                 Operand::Imm(1),
                                 Reg::Dx.into(),
                             ));
@@ -1005,8 +1004,9 @@ impl Compiler {
                 dst.into(),
             ));
             if offset > 0 {
-                instructions.push(Instruction::Shl(
+                instructions.push(Instruction::Binary(
                     AsmType::Quadword,
+                    BinaryOp::Shl,
                     Operand::Imm(8),
                     dst.into(),
                 ))
@@ -1029,8 +1029,9 @@ impl Compiler {
                 dst.add_offset(offset),
             ));
             if offset < byte_count - 1 {
-                instructions.push(Instruction::Shr(
+                instructions.push(Instruction::Binary(
                     AsmType::Quadword,
+                    BinaryOp::Shr,
                     Operand::Imm(8),
                     src.into(),
                 ))
@@ -1577,10 +1578,6 @@ impl Compiler {
                 Instruction::Mov(_, src, dst)
                 | Instruction::Movsx(_, src, _, dst)
                 | Instruction::MovZeroExtend(_, src, _, dst)
-                | Instruction::Sal(_, src, dst)
-                | Instruction::Shl(_, src, dst)
-                | Instruction::Sar(_, src, dst)
-                | Instruction::Shr(_, src, dst)
                 | Instruction::Binary(_, _, src, dst)
                 | Instruction::Cvttsd2si(_, src, dst)
                 | Instruction::Cvtsi2sd(_, src, dst)
@@ -1719,38 +1716,6 @@ impl Compiler {
                     } else {
                         fixed.push(Instruction::Binary(ty, op, left, right));
                     }
-                }
-                Instruction::Shl(ty, bits, dst) if bits.is_mem() => {
-                    fixed.push(Instruction::Mov(
-                        AsmType::Byte,
-                        bits.clone(),
-                        Reg::Cx.into(),
-                    ));
-                    fixed.push(Instruction::Shl(ty, Reg::Cx.into(), dst));
-                }
-                Instruction::Sal(ty, bits, dst) if bits.is_mem() => {
-                    fixed.push(Instruction::Mov(
-                        AsmType::Byte,
-                        bits.clone(),
-                        Reg::Cx.into(),
-                    ));
-                    fixed.push(Instruction::Sal(ty, Reg::Cx.into(), dst));
-                }
-                Instruction::Shr(ty, bits, dst) if bits.is_mem() => {
-                    fixed.push(Instruction::Mov(
-                        AsmType::Byte,
-                        bits.clone(),
-                        Reg::Cx.into(),
-                    ));
-                    fixed.push(Instruction::Shr(ty, Reg::Cx.into(), dst));
-                }
-                Instruction::Sar(ty, bits, dst) if bits.is_mem() => {
-                    fixed.push(Instruction::Mov(
-                        AsmType::Byte,
-                        bits.clone(),
-                        Reg::Cx.into(),
-                    ));
-                    fixed.push(Instruction::Sar(ty, Reg::Cx.into(), dst));
                 }
                 Instruction::Cmp(AsmType::Double, left, right) => {
                     let right = if let Operand::Reg(_) = right {

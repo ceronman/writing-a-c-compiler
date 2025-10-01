@@ -48,10 +48,6 @@ pub enum Instruction {
     Cmp(AsmType, Operand, Operand),
     Idiv(AsmType, Operand),
     Div(AsmType, Operand),
-    Sal(AsmType, Operand, Operand), // TODO: convert these to binary operators
-    Shl(AsmType, Operand, Operand),
-    Sar(AsmType, Operand, Operand),
-    Shr(AsmType, Operand, Operand),
     Cdq(AsmType),
     Jmp(Symbol),
     JmpCC(CondCode, Symbol),
@@ -78,6 +74,10 @@ pub enum BinaryOp {
     Or,
     Xor,
     DivDouble,
+    Sal,
+    Shl,
+    Sar,
+    Shr
 }
 
 #[derive(Debug, Clone)]

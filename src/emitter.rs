@@ -63,7 +63,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 emit_operand(output, src, RegSize::from_ty(ty))?;
             }
             Instruction::Binary(ty, op, left, right) => {
-                let op = match (op, ty) {
+                let typed_instruction = match (op, ty) {
                     (BinaryOp::Add, AsmType::Byte) => "addb",
                     (BinaryOp::Add, AsmType::Longword) => "addl",
                     (BinaryOp::Add, AsmType::Quadword) => "addq",
@@ -94,68 +94,40 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     (BinaryOp::Xor, AsmType::Quadword) => "xorq",
                     (BinaryOp::Xor, AsmType::Double) => "xorpd",
 
+                    (BinaryOp::Sal, AsmType::Byte) => "salb",
+                    (BinaryOp::Sal, AsmType::Longword) => "sall",
+                    (BinaryOp::Sal, AsmType::Quadword) => "salq",
+                    (BinaryOp::Sal, AsmType::Double) => unreachable!(),
+
+                    (BinaryOp::Shl, AsmType::Byte) => "shlb",
+                    (BinaryOp::Shl, AsmType::Longword) => "shll",
+                    (BinaryOp::Shl, AsmType::Quadword) => "shlq",
+                    (BinaryOp::Shl, AsmType::Double) => unreachable!(),
+
+                    (BinaryOp::Sar, AsmType::Byte) => "sarb",
+                    (BinaryOp::Sar, AsmType::Longword) => "sarl",
+                    (BinaryOp::Sar, AsmType::Quadword) => "sarq",
+                    (BinaryOp::Sar, AsmType::Double) => unreachable!(),
+
+                    (BinaryOp::Shr, AsmType::Byte) => "shrb",
+                    (BinaryOp::Shr, AsmType::Longword) => "shrl",
+                    (BinaryOp::Shr, AsmType::Quadword) => "shrq",
+                    (BinaryOp::Shr, AsmType::Double) => unreachable!(),
+
                     (BinaryOp::DivDouble, AsmType::Double) => "divsd",
                     (BinaryOp::DivDouble, _) => unreachable!(),
                     (_, AsmType::ByteArray { .. }) => unreachable!(),
                 };
-                emit_ins(output, op)?;
-                emit_operand(output, left, RegSize::from_ty(ty))?;
+                emit_ins(output, typed_instruction)?;
+                let left_size = match op {
+                    BinaryOp::Sar | BinaryOp::Shr | BinaryOp::Sal | BinaryOp::Shl => {
+                        RegSize::Byte
+                    }
+                    _ => RegSize::from_ty(ty),
+                };
+                emit_operand(output, left, left_size)?;
                 write!(output, ", ")?;
                 emit_operand(output, right, RegSize::from_ty(ty))?;
-            }
-
-            Instruction::Sal(ty, bits, dst) => {
-                let op = match ty {
-                    AsmType::Byte => "salb",
-                    AsmType::Longword => "sall",
-                    AsmType::Quadword => "salq",
-                    AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
-                };
-                emit_ins(output, op)?;
-                emit_operand(output, bits, RegSize::Byte)?;
-                write!(output, ", ")?;
-                emit_operand(output, dst, RegSize::from_ty(ty))?;
-                writeln!(output)?;
-            }
-
-            Instruction::Shl(ty, bits, dst) => {
-                let op = match ty {
-                    AsmType::Byte => "shlb",
-                    AsmType::Longword => "shll",
-                    AsmType::Quadword => "shlq",
-                    AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
-                };
-                emit_ins(output, op)?;
-                emit_operand(output, bits, RegSize::Byte)?;
-                write!(output, ", ")?;
-                emit_operand(output, dst, RegSize::from_ty(ty))?;
-                writeln!(output)?;
-            }
-
-            Instruction::Sar(ty, bits, dst) => {
-                let op = match ty {
-                    AsmType::Byte => "sarb",
-                    AsmType::Longword => "sarl",
-                    AsmType::Quadword => "sarq",
-                    AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
-                };
-                emit_ins(output, op)?;
-                emit_operand(output, bits, RegSize::Byte)?;
-                write!(output, ", ")?;
-                emit_operand(output, dst, RegSize::from_ty(ty))?;
-            }
-
-            Instruction::Shr(ty, bits, dst) => {
-                let op = match ty {
-                    AsmType::Byte => "shrb",
-                    AsmType::Longword => "shrl",
-                    AsmType::Quadword => "shrq",
-                    AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
-                };
-                emit_ins(output, op)?;
-                emit_operand(output, bits, RegSize::Byte)?;
-                write!(output, ", ")?;
-                emit_operand(output, dst, RegSize::from_ty(ty))?;
             }
 
             Instruction::Idiv(ty, src) => {
