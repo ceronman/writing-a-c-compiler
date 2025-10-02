@@ -101,7 +101,7 @@ impl From<Reg> for Operand {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Reg {
     Ax,
     Bx,
