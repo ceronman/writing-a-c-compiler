@@ -35,7 +35,7 @@ pub struct StaticConstant {
     pub init: StaticInit,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Instruction {
     Mov(AsmType, Operand, Operand),
     Movsx(AsmType, Operand, AsmType, Operand),
@@ -59,13 +59,13 @@ pub enum Instruction {
     Ret,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum UnaryOp {
     Neg,
     Not,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum BinaryOp {
     Add,
     Sub,
@@ -146,7 +146,7 @@ pub enum AsmType {
     ByteArray { size: usize, alignment: u8 },
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum CondCode {
     A,
     AE,

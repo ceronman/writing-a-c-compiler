@@ -1,6 +1,7 @@
 pub mod ir;
 pub mod pretty;
-mod register_allocation;
+pub mod register_allocation;
+pub mod cfg;
 
 use crate::alignment::align_offset;
 use crate::asm::ir::{

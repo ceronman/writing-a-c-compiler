@@ -1,4 +1,6 @@
+use crate::asm::cfg::Cfg;
 use crate::asm::ir::{Instruction, Operand, Reg};
+use crate::optimization::cfg;
 use crate::symbol::Symbol;
 
 enum NodeId {
@@ -27,6 +29,8 @@ fn build_inference_graph(instructions: &[Instruction]) -> InferenceGraph {
 
     add_hard_registers(&mut nodes);
     add_pseudo_registers(&mut nodes, instructions);
+
+    let cfg = Cfg::new(instructions);
 
     InferenceGraph {
         nodes,

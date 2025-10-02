@@ -1,9 +1,10 @@
+use crate::optimization::cfg::Annotation;
 use crate::optimization::VariableData;
-use crate::optimization::cfg::{Annotation, TackyCfg, TackyNode};
+use crate::tacky::cfg::{Cfg, CfgNode};
 use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};
 
-pub fn copy_propagation(cfg: &mut TackyCfg, var_data: &VariableData, trace: bool) {
+pub fn copy_propagation(cfg: &mut Cfg, var_data: &VariableData, trace: bool) {
     if trace {
         println!("=======================");
         println!("Copy propagation");
@@ -32,7 +33,7 @@ impl Copies {
         Self(HashSet::new())
     }
 
-    fn from_cfg(cfg: &TackyCfg) -> Self {
+    fn from_cfg(cfg: &Cfg) -> Self {
         let mut result = HashSet::new();
         for node_id in cfg.all_ids() {
             let node = cfg.get_node(node_id);
@@ -82,7 +83,7 @@ impl Copies {
 
 type ReachingCopies = Annotation<Copies>;
 
-fn find_reaching_copies(cfg: &TackyCfg, var_data: &VariableData) -> ReachingCopies {
+fn find_reaching_copies(cfg: &Cfg, var_data: &VariableData) -> ReachingCopies {
     let all_copies = Copies::from_cfg(cfg);
     let mut annotations = ReachingCopies::empty();
 
@@ -115,7 +116,7 @@ fn find_reaching_copies(cfg: &TackyCfg, var_data: &VariableData) -> ReachingCopi
     annotations
 }
 
-fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &ReachingCopies) {
+fn rewrite_instructions(cfg: &mut Cfg, annotations: &ReachingCopies) {
     for node in cfg.nodes_mut() {
         let mut new_instructions = Vec::new();
         for (i, instruction) in node.instructions.iter().enumerate() {
@@ -192,8 +193,8 @@ fn replace_operand(op: Val, copies: &Copies) -> Val {
 
 fn meet_operator(
     annotations: &mut ReachingCopies,
-    cfg: &TackyCfg,
-    node: &TackyNode,
+    cfg: &Cfg,
+    node: &CfgNode,
     all_copies: &Copies,
 ) -> Copies {
     let mut incoming_copies = all_copies.clone();
@@ -209,7 +210,7 @@ fn meet_operator(
 
 fn transfer_function(
     annotations: &mut ReachingCopies,
-    node: &TackyNode,
+    node: &CfgNode,
     initial_reaching_copies: &Copies,
     var_data: &VariableData,
 ) {

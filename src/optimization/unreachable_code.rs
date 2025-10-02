@@ -1,7 +1,8 @@
-use crate::optimization::cfg::{GenericInstruction, InstructionKind, NodeId, TackyCfg};
+use crate::optimization::cfg::{GenericInstruction, InstructionKind, NodeId};
+use crate::tacky::cfg::Cfg;
 use std::collections::{HashSet, VecDeque};
 
-pub fn remove_unreachable_code(cfg: &mut TackyCfg, trace: bool) {
+pub fn remove_unreachable_code(cfg: &mut Cfg, trace: bool) {
     if trace {
         println!("=======================");
         println!("Unreachable code");
@@ -26,7 +27,7 @@ pub fn remove_unreachable_code(cfg: &mut TackyCfg, trace: bool) {
     }
 }
 
-impl TackyCfg {
+impl Cfg {
     fn remove_unreachable_blocks(&mut self) {
         let mut dead_nodes: HashSet<NodeId> = HashSet::from_iter(self.all_ids());
         let mut queue = VecDeque::with_capacity(self.size());

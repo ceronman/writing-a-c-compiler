@@ -1,10 +1,11 @@
+use crate::optimization::cfg::Annotation;
 use crate::optimization::VariableData;
-use crate::optimization::cfg::{Annotation, TackyCfg, TackyNode};
 use crate::symbol::Symbol;
+use crate::tacky::cfg::{Cfg, CfgNode};
 use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};
 
-pub fn dead_store_elimination(cfg: &mut TackyCfg, var_data: &VariableData, trace: bool) {
+pub fn dead_store_elimination(cfg: &mut Cfg, var_data: &VariableData, trace: bool) {
     if trace {
         println!("=======================");
         println!("Dead store elimination");
@@ -73,7 +74,7 @@ type LiveVars = Annotation<VarSet>;
 
 fn transfer_function(
     annotations: &mut LiveVars,
-    node: &TackyNode,
+    node: &CfgNode,
     all_static_vars: &VarSet,
     var_data: &VariableData,
     all_live_vars: &VarSet,
@@ -165,8 +166,8 @@ fn transfer_function(
 
 fn meet_operator(
     annotations: &mut LiveVars,
-    cfg: &TackyCfg,
-    node: &TackyNode,
+    cfg: &Cfg,
+    node: &CfgNode,
     all_static_vars: &VarSet,
 ) -> VarSet {
     let mut live_vars = VarSet::empty();
@@ -181,7 +182,7 @@ fn meet_operator(
     live_vars
 }
 
-fn find_live_vars(cfg: &TackyCfg, all_static_vars: &VarSet, var_data: &VariableData) -> LiveVars {
+fn find_live_vars(cfg: &Cfg, all_static_vars: &VarSet, var_data: &VariableData) -> LiveVars {
     let live_vars = VarSet::empty();
     let mut annotations = LiveVars::empty();
 
@@ -220,7 +221,7 @@ fn find_live_vars(cfg: &TackyCfg, all_static_vars: &VarSet, var_data: &VariableD
     annotations
 }
 
-fn rewrite_instructions(cfg: &mut TackyCfg, annotations: &LiveVars) {
+fn rewrite_instructions(cfg: &mut Cfg, annotations: &LiveVars) {
     for node in cfg.nodes_mut() {
         let mut new_instructions = Vec::new();
         for (i, instruction) in node.instructions.iter().enumerate() {

@@ -7,6 +7,7 @@ use std::fmt::{Debug, Formatter};
 
 pub trait GenericInstruction: Clone {
     fn kind(&self) -> InstructionKind;
+    fn pp(&self, f: &mut Formatter<'_>) -> std::fmt::Result;
 }
 
 #[derive(Clone)]
@@ -27,14 +28,14 @@ impl NodeId {
     }
 }
 
-pub struct Node<T: GenericInstruction> {
+pub struct GenericNode<T: GenericInstruction> {
     pub id: NodeId,
     pub instructions: Vec<T>,
     pub successors: Vec<NodeId>,
     pub predecessors: Vec<NodeId>,
 }
 
-impl<T: GenericInstruction> Node<T> {
+impl<T: GenericInstruction> GenericNode<T> {
     fn new(id: NodeId, instructions: Vec<T>) -> Self {
         Self {
             id,
@@ -45,17 +46,17 @@ impl<T: GenericInstruction> Node<T> {
     }
 }
 
-pub struct Cfg<T: GenericInstruction> {
-    nodes: Vec<Node<T>>,
+pub struct GenericCfg<T: GenericInstruction> {
+    nodes: Vec<GenericNode<T>>,
     removed: Vec<NodeId>,
     entry_id: NodeId,
     exit_id: NodeId,
     by_label: HashMap<Symbol, NodeId>,
 }
 
-impl<T: GenericInstruction> Cfg<T> {
-    pub fn new(instructions: &[T]) -> Cfg<T> {
-        let mut cfg = Cfg {
+impl<T: GenericInstruction> GenericCfg<T> {
+    pub fn new(instructions: &[T]) -> GenericCfg<T> {
+        let mut cfg = GenericCfg {
             nodes: Vec::new(),
             removed: vec![],
             entry_id: NodeId(0),
@@ -101,7 +102,7 @@ impl<T: GenericInstruction> Cfg<T> {
 
     fn add_node(&mut self, instructions: Vec<T>) -> NodeId {
         let id = NodeId(self.nodes.len());
-        self.nodes.push(Node::new(id, instructions));
+        self.nodes.push(GenericNode::new(id, instructions));
         id
     }
 
@@ -150,7 +151,7 @@ impl<T: GenericInstruction> Cfg<T> {
             .filter(|id| !self.removed.contains(id))
     }
 
-    pub fn nodes_mut(&mut self) -> impl Iterator<Item = &mut Node<T>> {
+    pub fn nodes_mut(&mut self) -> impl Iterator<Item = &mut GenericNode<T>> {
         self.nodes
             .iter_mut()
             .filter(|node| !self.removed.contains(&node.id))
@@ -164,12 +165,12 @@ impl<T: GenericInstruction> Cfg<T> {
         self.exit_id
     }
 
-    pub fn get_node(&self, id: NodeId) -> &Node<T> {
+    pub fn get_node(&self, id: NodeId) -> &GenericNode<T> {
         assert!(!self.removed.contains(&id));
         &self.nodes[id.0]
     }
 
-    pub fn get_node_mut(&mut self, id: NodeId) -> &mut Node<T> {
+    pub fn get_node_mut(&mut self, id: NodeId) -> &mut GenericNode<T> {
         assert!(!self.removed.contains(&id));
         &mut self.nodes[id.0]
     }
@@ -206,28 +207,6 @@ impl<T: GenericInstruction> Cfg<T> {
     }
 }
 
-impl GenericInstruction for tacky::Instruction {
-    fn kind(&self) -> InstructionKind {
-        match self {
-            tacky::Instruction::Return(_) => InstructionKind::Return,
-            tacky::Instruction::Jump { target } => InstructionKind::Jump {
-                label: target.clone(),
-            },
-            tacky::Instruction::JumpIfZero { target, .. }
-            | tacky::Instruction::JumpIfNotZero { target, .. } => {
-                InstructionKind::ConditionalJump {
-                    label: target.clone(),
-                }
-            }
-            tacky::Instruction::Label(label) => InstructionKind::Label(label.clone()),
-            _ => InstructionKind::Other,
-        }
-    }
-}
-
-pub type TackyCfg = Cfg<tacky::Instruction>;
-pub type TackyNode = Node<tacky::Instruction>;
-
 #[derive(Debug)]
 pub struct Annotation<T> {
     block: HashMap<NodeId, T>,
@@ -262,7 +241,7 @@ impl<T> Annotation<T> {
     }
 }
 
-impl Debug for TackyCfg {
+impl<T: GenericInstruction> Debug for GenericCfg<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         for node in self.nodes.iter() {
             match node.id {
@@ -273,7 +252,7 @@ impl Debug for TackyCfg {
             };
 
             for ins in node.instructions.iter() {
-                pp_instruction(f, ins)?;
+                ins.pp(f)?;
             }
             let successors = node
                 .successors
@@ -284,14 +263,14 @@ impl Debug for TackyCfg {
             if !successors.is_empty() {
                 writeln!(f, "    Successors: {successors}")?;
             }
-            let predecesors = node
+            let predecessors = node
                 .predecessors
                 .iter()
                 .map(|&id| id.0.to_string())
                 .collect::<Vec<_>>()
                 .join(", ");
-            if !predecesors.is_empty() {
-                writeln!(f, "    Predecessors: {predecesors}")?;
+            if !predecessors.is_empty() {
+                writeln!(f, "    Predecessors: {predecessors}")?;
             }
         }
         Ok(())
