@@ -1,16 +1,18 @@
-use crate::asm::cfg::Cfg;
+use std::collections::HashSet;
+use crate::asm::cfg::{Cfg, CfgNode};
 use crate::asm::ir::{Instruction, Operand, Reg};
-use crate::optimization::cfg;
+use crate::optimization::cfg::Annotation;
 use crate::symbol::Symbol;
 
-enum NodeId {
-    Reg(Reg),
-    PseudoReg(Symbol),
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+enum Register {
+    Hard(Reg),
+    Pseudo(Symbol),
 }
 
 struct Node {
-    id: NodeId,
-    neighbors: Vec<NodeId>,
+    id: Register,
+    neighbors: Vec<Register>,
     spill_cost: f64,
     color: Option<i32>,
     pruned: bool,
@@ -41,9 +43,9 @@ const AVAILABLE_REGS: [Reg; 12] = [Reg::Ax, Reg::Bx, Reg::Cx, Reg::Dx, Reg::Di, 
 
 fn add_hard_registers(nodes: &mut Vec<Node>) {
     for reg in AVAILABLE_REGS {
-        let neighbors = AVAILABLE_REGS.iter().filter(|&r| r != &reg).map(|r| NodeId::Reg(*r)).collect();
+        let neighbors = AVAILABLE_REGS.iter().filter(|&r| r != &reg).map(|r| Register::Hard(*r)).collect();
         nodes.push(Node {
-            id: NodeId::Reg(reg),
+            id: Register::Hard(reg),
             neighbors,
             spill_cost: 0.0,
             color: None,
@@ -88,7 +90,7 @@ fn add_pseudo_reg(nodes: &mut Vec<Node>, op: &Operand) {
     match op {
         Operand::Pseudo(name) => {
             nodes.push(Node {
-                id: NodeId::PseudoReg(name.clone()),
+                id: Register::Pseudo(name.clone()),
                 neighbors: vec![],
                 spill_cost: 0.0,
                 color: None,
@@ -97,4 +99,68 @@ fn add_pseudo_reg(nodes: &mut Vec<Node>, op: &Operand) {
         },
         _ => {}
     };
+}
+
+type RegSet = HashSet<Register>;
+
+fn liveness_meet_operator(
+    annotations: &mut Annotation<RegSet>,
+    cfg: &Cfg,
+    node: &CfgNode,
+) -> RegSet {
+    let mut live_registers = RegSet::new();
+    for succ_id in &node.successors {
+        if succ_id == &cfg.exit_id() {
+            live_registers.insert(Register::Hard(Reg::Ax));
+        } else {
+            let succ_live_registers = annotations.get_block_annotation(succ_id);
+            live_registers.extend(succ_live_registers.iter().cloned());
+        }
+    }
+    live_registers
+}
+
+fn find_used_and_updated(instruction: &Instruction) -> (Vec<Operand>, Vec<Operand>) {
+    match instruction {
+        Instruction::Mov(_, src, dst) => {
+            (vec![src.clone()], vec![dst.clone()])
+        }
+        Instruction::Movsx(_, _, _, _) => todo!(),
+        Instruction::MovZeroExtend(_, _, _, _) => todo!(),
+        Instruction::Lea(_, _) => todo!(),
+        Instruction::Cvttsd2si(_, _, _) => todo!(),
+        Instruction::Cvtsi2sd(_, _, _) => todo!(),
+        Instruction::Unary(_, _, dst) => {
+            (vec![dst.clone()], vec![dst.clone()])
+        }
+        Instruction::Binary(_, _, src, dst) => {
+            (vec![src.clone(), dst.clone()], vec![dst.clone()])
+        }
+        Instruction::Cmp(_, v1, v2) => {
+            (vec![v1.clone(), v2.clone()], vec![])
+        }
+        Instruction::Idiv(_, divisor) => {
+            (vec![divisor.clone(), Reg::Ax.into(), Reg::Dx.into()], vec![Reg::Ax.into(), Reg::Dx.into()])
+        }
+        Instruction::Div(_, _) => todo!(),
+        Instruction::Cdq(_) => {
+            (vec![Reg::Ax.into()], vec![Reg::Dx.into()])
+        }
+        Instruction::SetCC(_, dst) => {
+            (vec![], vec![dst.clone()])
+        }
+        Instruction::Push(v) => {
+            (vec![v.clone()], vec![])
+        }
+        Instruction::Pop(_) => todo!(),
+        Instruction::Call(_) => {
+            todo!()
+        }
+        Instruction::Jmp(_)
+        | Instruction::Label(_)
+        | Instruction::Ret
+        | Instruction::JmpCC(_, _) => {
+            (vec![], vec![])
+        }
+    }
 }

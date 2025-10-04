@@ -1,6 +1,4 @@
 use crate::symbol::Symbol;
-use crate::tacky;
-use crate::tacky::pretty::pp_instruction;
 use std::cmp::PartialEq;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};

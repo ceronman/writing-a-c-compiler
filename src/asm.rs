@@ -35,7 +35,9 @@ enum BackendSymbolData {
         is_static: bool,
         is_const: bool,
     },
-    Fn,
+    Fn {
+        param_registers: Vec<Reg>,
+    },
 }
 
 enum ParamClass {
@@ -111,6 +113,7 @@ struct FnReturn {
 
 struct Compiler {
     doubles: HashMap<u64, Symbol>,
+    call_registers: HashMap<Symbol, Vec<Reg>>,
     label_counter: usize,
     semantics: SemanticData,
 }
@@ -1047,7 +1050,10 @@ impl Compiler {
         for (symbol, data) in semantic.symbols.iter() {
             match data.attrs {
                 Attributes::Function { .. } => {
-                    backend_symbols.insert(symbol.clone(), BackendSymbolData::Fn);
+                    let param_registers = self.call_registers.get(symbol).cloned().unwrap_or_default();
+                    backend_symbols.insert(symbol.clone(), BackendSymbolData::Fn {
+                        param_registers,
+                    });
                 }
                 Attributes::Static { .. } => {
                     backend_symbols.insert(
@@ -1126,11 +1132,16 @@ impl Compiler {
             }
         }
 
+        let fn_args = self.classify_parameters(args, return_spec.in_memory);
+
+        let used_registers = self.find_used_registers(&fn_args, &return_spec);
+        self.call_registers.insert(name.clone(), used_registers);
+
         let FnArgs {
             int_reg_args,
             sse_reg_args,
             stack_args,
-        } = self.classify_parameters(args, return_spec.in_memory);
+        } = fn_args;
 
         let padding = if stack_args.len().is_multiple_of(2) {
             0
@@ -1208,6 +1219,12 @@ impl Compiler {
                 instructions.push(Instruction::Mov(ty, reg.into(), operand));
             }
         }
+    }
+
+    fn find_used_registers(&self, args: &FnArgs, ret: &FnReturn) -> Vec<Reg> {
+        let mut result = Vec::new();
+        result.extend(INT_ARG_REGISTERS.iter().take(args.int_reg_args.len()));
+        result
     }
 
     fn generate_return(&mut self, instructions: &mut Vec<Instruction>, val: &Option<tacky::Val>) {
@@ -1992,8 +2009,10 @@ impl Operand {
 pub fn generate(program: &tacky::Program) -> Program {
     let mut compiler = Compiler {
         doubles: HashMap::new(),
+        call_registers: Default::default(),
         label_counter: 0,
         semantics: program.semantics.clone(),
+
     };
     compiler.generate(program)
 }
