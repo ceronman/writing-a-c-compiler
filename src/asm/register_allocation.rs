@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use crate::asm::{BackendSymbolData, BackendSymbolTable};
 use crate::asm::cfg::{Cfg, CfgNode};
 use crate::asm::ir::{Instruction, Operand, Reg};
 use crate::optimization::cfg::Annotation;
@@ -120,7 +121,7 @@ fn liveness_meet_operator(
     live_registers
 }
 
-fn find_used_and_updated(instruction: &Instruction) -> (Vec<Operand>, Vec<Operand>) {
+fn find_used_and_updated(instruction: &Instruction, symbols: &BackendSymbolTable) -> (Vec<Operand>, Vec<Operand>) {
     match instruction {
         Instruction::Mov(_, src, dst) => {
             (vec![src.clone()], vec![dst.clone()])
@@ -153,8 +154,13 @@ fn find_used_and_updated(instruction: &Instruction) -> (Vec<Operand>, Vec<Operan
             (vec![v.clone()], vec![])
         }
         Instruction::Pop(_) => todo!(),
-        Instruction::Call(_) => {
-            todo!()
+        Instruction::Call(name) => {
+            let Some(BackendSymbolData::Fn { param_registers }) = symbols.get(name) else {
+                panic!("Function {} does not have symbol data", name);
+            };
+            let used: Vec<Operand> = param_registers.iter().map(|&reg| reg.into()).collect();
+            (used, vec![Reg::Di.into(), Reg::Si.into(), Reg::Dx.into(), Reg::Cx.into(), Reg::R8.into(), Reg::R9.into(), Reg::Ax.into()])
+
         }
         Instruction::Jmp(_)
         | Instruction::Label(_)
