@@ -3,7 +3,7 @@ use crate::asm::ir::{Instruction, Operand, Reg};
 use crate::asm::{BackendSymbolData, BackendSymbolTable};
 use crate::optimization::cfg::Annotation;
 use crate::symbol::Symbol;
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum Register {
@@ -11,7 +11,7 @@ enum Register {
     Pseudo(Symbol),
 }
 
-struct Node {
+struct InterferenceNode {
     id: Register,
     neighbors: Vec<Register>,
     spill_cost: f64,
@@ -20,7 +20,7 @@ struct Node {
 }
 
 struct InterferenceGraph {
-    nodes: Vec<Node>,
+    nodes: Vec<InterferenceNode>,
 }
 
 impl InterferenceGraph {
@@ -53,9 +53,9 @@ fn allocate_registers(instructions: &[Instruction], symbols: &BackendSymbolTable
 
 fn build_interference_graph(instructions: &[Instruction]) -> InterferenceGraph {
     let mut nodes = Vec::new();
-
+    let mut spill_costs = HashMap::new();
     add_hard_registers(&mut nodes);
-    add_pseudo_registers(&mut nodes, instructions);
+    add_pseudo_registers(&mut nodes, &mut spill_costs, instructions);
 
     let cfg = Cfg::new(instructions);
 
@@ -77,14 +77,14 @@ const AVAILABLE_REGS: [Reg; 12] = [
     Reg::R15,
 ];
 
-fn add_hard_registers(nodes: &mut Vec<Node>) {
+fn add_hard_registers(nodes: &mut Vec<InterferenceNode>) {
     for reg in AVAILABLE_REGS {
         let neighbors = AVAILABLE_REGS
             .iter()
             .filter(|&r| r != &reg)
             .map(|r| Register::Hard(*r))
             .collect();
-        nodes.push(Node {
+        nodes.push(InterferenceNode {
             id: Register::Hard(reg),
             neighbors,
             spill_cost: 0.0,
@@ -94,7 +94,11 @@ fn add_hard_registers(nodes: &mut Vec<Node>) {
     }
 }
 
-fn add_pseudo_registers(nodes: &mut Vec<Node>, instructions: &[Instruction]) {
+fn add_pseudo_registers(
+    nodes: &mut Vec<InterferenceNode>,
+    spill_costs: &mut HashMap<Symbol, f64>,
+    instructions: &[Instruction],
+) {
     for instruction in instructions {
         match instruction {
             Instruction::Mov(_, op1, op2)
@@ -105,14 +109,14 @@ fn add_pseudo_registers(nodes: &mut Vec<Node>, instructions: &[Instruction]) {
             | Instruction::Cvtsi2sd(_, op1, op2)
             | Instruction::Binary(_, _, op1, op2)
             | Instruction::Cmp(_, op1, op2) => {
-                add_pseudo_reg(nodes, op1);
-                add_pseudo_reg(nodes, op2);
+                add_pseudo_reg(nodes, spill_costs, op1);
+                add_pseudo_reg(nodes, spill_costs, op2);
             }
             Instruction::Unary(_, _, op)
             | Instruction::Idiv(_, op)
             | Instruction::Div(_, op)
             | Instruction::SetCC(_, op) => {
-                add_pseudo_reg(nodes, op);
+                add_pseudo_reg(nodes, spill_costs, op);
             }
             Instruction::Cdq(_)
             | Instruction::Jmp(_)
@@ -126,17 +130,41 @@ fn add_pseudo_registers(nodes: &mut Vec<Node>, instructions: &[Instruction]) {
     }
 }
 
-fn add_pseudo_reg(nodes: &mut Vec<Node>, op: &Operand) {
+fn add_pseudo_reg(
+    nodes: &mut Vec<InterferenceNode>,
+    spill_costs: &mut HashMap<Symbol, f64>,
+    op: &Operand,
+) {
     match op {
-        Operand::Pseudo(name) => nodes.push(Node {
-            id: Register::Pseudo(name.clone()),
-            neighbors: vec![],
-            spill_cost: 0.0,
-            color: None,
-            pruned: false,
-        }),
+        Operand::Pseudo(name) => {
+            let sp = spill_costs.entry(name.clone()).or_insert(0.0);
+            *sp += 1.0;
+            nodes.push(InterferenceNode {
+                id: Register::Pseudo(name.clone()),
+                neighbors: vec![],
+                spill_cost: 0.0,
+                color: None,
+                pruned: false,
+            })
+        }
         _ => {}
     };
+}
+
+fn add_spill_costs(nodes: &mut Vec<InterferenceNode>, spill_costs: &HashMap<Symbol, f64>) {
+    for node in nodes {
+        match &node.id {
+            Register::Pseudo(name) => {
+                let spill_cost = spill_costs
+                    .get(name)
+                    .expect("Missing spill cost for pseudo register");
+                node.spill_cost = *spill_cost;
+            }
+            Register::Hard(_) => {
+                node.spill_cost = f64::INFINITY;
+            }
+        }
+    }
 }
 
 type RegSet = HashSet<Register>;

@@ -10,9 +10,9 @@ use crate::optimization::dead_store_elimination::dead_store_elimination;
 use crate::optimization::unreachable_code::remove_unreachable_code;
 use crate::semantic::{Attributes, SemanticData, Type};
 use crate::tacky;
+use crate::tacky::cfg::Cfg;
 use crate::tacky::{Instruction, Val};
 use std::collections::HashSet;
-use crate::tacky::cfg::Cfg;
 
 #[derive(Default)]
 pub struct OptimizationFlags {

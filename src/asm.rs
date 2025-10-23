@@ -1,7 +1,7 @@
+pub mod cfg;
 pub mod ir;
 pub mod pretty;
 pub mod register_allocation;
-pub mod cfg;
 
 use crate::alignment::align_offset;
 use crate::asm::ir::{
@@ -1050,10 +1050,10 @@ impl Compiler {
         for (symbol, data) in semantic.symbols.iter() {
             match data.attrs {
                 Attributes::Function { .. } => {
-                    let param_registers = self.call_registers.get(symbol).cloned().unwrap_or_default();
-                    backend_symbols.insert(symbol.clone(), BackendSymbolData::Fn {
-                        param_registers,
-                    });
+                    let param_registers =
+                        self.call_registers.get(symbol).cloned().unwrap_or_default();
+                    backend_symbols
+                        .insert(symbol.clone(), BackendSymbolData::Fn { param_registers });
                 }
                 Attributes::Static { .. } => {
                     backend_symbols.insert(
@@ -2012,7 +2012,6 @@ pub fn generate(program: &tacky::Program) -> Program {
         call_registers: Default::default(),
         label_counter: 0,
         semantics: program.semantics.clone(),
-
     };
     compiler.generate(program)
 }

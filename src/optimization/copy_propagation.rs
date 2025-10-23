@@ -1,5 +1,5 @@
-use crate::optimization::cfg::Annotation;
 use crate::optimization::VariableData;
+use crate::optimization::cfg::Annotation;
 use crate::tacky::cfg::{Cfg, CfgNode};
 use crate::tacky::{Instruction, Val};
 use std::collections::{HashSet, VecDeque};

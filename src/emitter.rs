@@ -120,9 +120,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 };
                 emit_ins(output, typed_instruction)?;
                 let left_size = match op {
-                    BinaryOp::Sar | BinaryOp::Shr | BinaryOp::Sal | BinaryOp::Shl => {
-                        RegSize::Byte
-                    }
+                    BinaryOp::Sar | BinaryOp::Shr | BinaryOp::Sal | BinaryOp::Shl => RegSize::Byte,
                     _ => RegSize::from_ty(ty),
                 };
                 emit_operand(output, left, left_size)?;

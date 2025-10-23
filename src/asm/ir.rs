@@ -77,7 +77,7 @@ pub enum BinaryOp {
     Sal,
     Shl,
     Sar,
-    Shr
+    Shr,
 }
 
 #[derive(Debug, Clone)]

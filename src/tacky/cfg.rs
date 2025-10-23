@@ -1,7 +1,7 @@
-use std::fmt::Formatter;
-use crate::optimization::cfg::{GenericCfg, GenericInstruction, InstructionKind, GenericNode};
+use crate::optimization::cfg::{GenericCfg, GenericInstruction, GenericNode, InstructionKind};
 use crate::tacky::Instruction;
 use crate::tacky::pretty::pp_instruction;
+use std::fmt::Formatter;
 
 impl GenericInstruction for Instruction {
     fn kind(&self) -> InstructionKind {
@@ -10,8 +10,7 @@ impl GenericInstruction for Instruction {
             Instruction::Jump { target } => InstructionKind::Jump {
                 label: target.clone(),
             },
-            Instruction::JumpIfZero { target, .. }
-            | Instruction::JumpIfNotZero { target, .. } => {
+            Instruction::JumpIfZero { target, .. } | Instruction::JumpIfNotZero { target, .. } => {
                 InstructionKind::ConditionalJump {
                     label: target.clone(),
                 }
