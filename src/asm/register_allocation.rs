@@ -28,19 +28,32 @@ impl InterferenceGraph {
         self.nodes.iter().any(|n| n.id == *reg)
     }
 
+    fn get_node(&self, id: &Register) -> &InterferenceNode {
+        self.nodes.iter().find(|n| n.id == *id).unwrap()
+    }
+
+    fn get_node_mut(&mut self, id: &Register) -> &mut InterferenceNode {
+        self.nodes.iter_mut().find(|n| n.id == *id).unwrap()
+    }
+
     fn add_edge(&mut self, from: &Register, to: &Register) {
-        self.nodes
-            .iter_mut()
-            .find(|n| n.id == *from)
-            .unwrap()
+        self.get_node_mut(from)
             .neighbors
             .push(to.clone());
-        self.nodes
-            .iter_mut()
-            .find(|n| n.id == *to)
-            .unwrap()
+        self.get_node_mut(to)
             .neighbors
             .push(from.clone());
+    }
+
+    fn unpruned_nodes(&self) -> Vec<&InterferenceNode> {
+        self.nodes.iter().filter(|n| !n.pruned).collect()
+    }
+
+    fn num_unpruned_neighbors(&self, node: &InterferenceNode) -> usize {
+       node.neighbors.
+           iter()
+           .filter(|neighbor| !self.get_node(neighbor).pruned)
+           .count()
     }
 }
 
@@ -135,19 +148,16 @@ fn add_pseudo_reg(
     spill_costs: &mut HashMap<Symbol, f64>,
     op: &Operand,
 ) {
-    match op {
-        Operand::Pseudo(name) => {
-            let sp = spill_costs.entry(name.clone()).or_insert(0.0);
-            *sp += 1.0;
-            nodes.push(InterferenceNode {
-                id: Register::Pseudo(name.clone()),
-                neighbors: vec![],
-                spill_cost: 0.0,
-                color: None,
-                pruned: false,
-            })
-        }
-        _ => {}
+    if let Operand::Pseudo(name) = op {
+        let sp = spill_costs.entry(name.clone()).or_insert(0.0);
+        *sp += 1.0;
+        nodes.push(InterferenceNode {
+            id: Register::Pseudo(name.clone()),
+            neighbors: vec![],
+            spill_cost: 0.0,
+            color: None,
+            pruned: false,
+        })
     };
 }
 
@@ -335,5 +345,58 @@ impl Operand {
         } else {
             None
         }
+    }
+}
+
+const CALLEE_SAVED_REGS: [Register; 4] = [
+    Register::Hard(Reg::R12),
+    Register::Hard(Reg::R13),
+    Register::Hard(Reg::R14),
+    Register::Hard(Reg::R15)
+];
+
+fn color_graph(interference_graph: &mut InterferenceGraph, registers: &[Reg]) {
+    let mut chosen_node = None;
+    let remaining = interference_graph.unpruned_nodes();
+    for node in &remaining {
+        let degree = interference_graph.num_unpruned_neighbors(node);
+        if degree < registers.len() {
+            chosen_node = Some(node.id.clone());
+        }
+    }
+
+    if chosen_node.is_none() {
+        let mut best_spill_metric = f64::INFINITY;
+        for node in remaining {
+            if node.spill_cost < best_spill_metric {
+                let degree = interference_graph.num_unpruned_neighbors(&node);
+                let spill_metric = node.spill_cost / (degree as f64);
+                if spill_metric < best_spill_metric {
+                    chosen_node = Some(node.id.clone());
+                    best_spill_metric = spill_metric;
+                }
+            }
+        }
+    }
+
+    let chosen_node = chosen_node.expect("One node must have been chosen");
+    interference_graph.get_node_mut(&chosen_node).pruned = true;
+    color_graph(interference_graph, registers);
+
+    let mut colors: HashSet<i32> = (0..registers.len() as i32).collect();
+    for neighbor_id in &interference_graph.get_node(&chosen_node).neighbors {
+        let neighbor = interference_graph.get_node(neighbor_id);
+        if let Some(color) = neighbor.color {
+            colors.remove(&color);
+        }
+    }
+
+    if !colors.is_empty() {
+        let color = if CALLEE_SAVED_REGS.contains(&chosen_node) {
+            colors.iter().copied().max().unwrap()
+        } else{
+            colors.iter().copied().min().unwrap()
+        };
+        interference_graph.get_node_mut(&chosen_node).color = Some(color);
     }
 }
