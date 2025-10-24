@@ -400,3 +400,35 @@ fn color_graph(interference_graph: &mut InterferenceGraph, registers: &[Reg]) {
         interference_graph.get_node_mut(&chosen_node).color = Some(color);
     }
 }
+
+struct RegisterMap {
+    register_map: HashMap<Symbol, Reg>,
+    callee_saved_regs: HashSet<Reg>,
+}
+
+fn create_register_map(interference_graph: &InterferenceGraph) -> RegisterMap {
+    let mut color_map = HashMap::new();
+    for node in interference_graph.nodes.iter() {
+        if let Register::Hard(reg) = node.id {
+            color_map.insert(node.color.unwrap(), reg);
+        }
+    }
+
+    let mut register_map = HashMap::new();
+    let mut callee_saved_regs = HashSet::new();
+    for node in interference_graph.nodes.iter() {
+        if let Register::Pseudo(name) = &node.id
+        && let Some(color) = node.color{
+            let hard_reg = *color_map.get(&color).unwrap();
+            register_map.insert(name.clone(), hard_reg);
+            if CALLEE_SAVED_REGS.contains(&Register::Hard(hard_reg)) {
+                callee_saved_regs.insert(hard_reg);
+            }
+        }
+    }
+
+    RegisterMap {
+        register_map,
+        callee_saved_regs,
+    }
+}
