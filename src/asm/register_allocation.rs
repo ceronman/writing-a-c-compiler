@@ -5,6 +5,13 @@ use crate::optimization::cfg::Annotation;
 use crate::symbol::Symbol;
 use std::collections::{HashMap, HashSet, VecDeque};
 
+fn allocate_registers(instructions: &mut Vec<Instruction>, symbols: &BackendSymbolTable) {
+    let mut interference_graph = build_interference_graph(instructions, symbols);
+    color_graph(&mut interference_graph, &AVAILABLE_REGS);
+    let register_map = create_register_map(&interference_graph);
+    replace_pseudo_regs(instructions, &register_map);
+}
+
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum Register {
     Hard(Reg),
@@ -57,22 +64,17 @@ impl InterferenceGraph {
     }
 }
 
-fn allocate_registers(instructions: &[Instruction], symbols: &BackendSymbolTable) {
-    let mut interference_graph = build_interference_graph(instructions);
-    let cfg = Cfg::new(instructions);
-    let liveness = analyze_liveness(&cfg, symbols);
-    add_edges(&mut interference_graph, &cfg, &liveness, symbols);
-}
-
-fn build_interference_graph(instructions: &[Instruction]) -> InterferenceGraph {
+fn build_interference_graph(instructions: &[Instruction], symbols: &BackendSymbolTable) -> InterferenceGraph {
     let mut nodes = Vec::new();
     let mut spill_costs = HashMap::new();
     add_hard_registers(&mut nodes);
     add_pseudo_registers(&mut nodes, &mut spill_costs, instructions);
-
+    let mut interference_graph = InterferenceGraph { nodes };
+    add_spill_costs(&mut interference_graph.nodes, &spill_costs);
     let cfg = Cfg::new(instructions);
-
-    InterferenceGraph { nodes }
+    let liveness = analyze_liveness(&cfg, symbols);
+    add_edges(&mut interference_graph, &cfg, &liveness, symbols);
+    interference_graph
 }
 
 const AVAILABLE_REGS: [Reg; 12] = [
@@ -315,7 +317,7 @@ fn add_edges(
         let node = cfg.get_node(node_id);
 
         for (i, instruction) in node.instructions.iter().enumerate() {
-            let (used, updated) = find_used_and_updated(instruction, symbols);
+            let (_used, updated) = find_used_and_updated(instruction, symbols);
             let live_registers = liveness.get_instruction_annotation(node_id, i);
             for l in live_registers {
                 if let Instruction::Mov(_, src, _) = instruction
@@ -431,4 +433,52 @@ fn create_register_map(interference_graph: &InterferenceGraph) -> RegisterMap {
         register_map,
         callee_saved_regs,
     }
+}
+
+fn replace_pseudo_regs(instructions: &mut Vec<Instruction>, reg_map: &RegisterMap) {
+    fn replace_reg(op: &mut Operand, reg_map: &RegisterMap) {
+        if let Operand::Pseudo(name) = op
+            && let Some(reg) = reg_map.register_map.get(name) {
+
+            *op = Operand::Reg(*reg);
+        }
+    }
+    for instruction in instructions.iter_mut() {
+        match instruction {
+            Instruction::Mov(_, op1, op2)
+            | Instruction::Movsx(_, op1, _, op2)
+            | Instruction::MovZeroExtend(_, op1, _, op2)
+            | Instruction::Lea(op1, op2)
+            | Instruction::Cvttsd2si(_, op1, op2)
+            | Instruction::Cvtsi2sd(_, op1, op2)
+            | Instruction::Binary(_, _, op1, op2)
+            | Instruction::Cmp(_, op1, op2) => {
+                replace_reg(op1, reg_map);
+                replace_reg(op2, reg_map);
+            }
+            Instruction::Unary(_, _, op)
+            | Instruction::Idiv(_, op)
+            | Instruction::Div(_, op)
+            | Instruction::SetCC(_, op) => {
+                replace_reg(op, reg_map);
+            }
+            Instruction::Cdq(_)
+            | Instruction::Jmp(_)
+            | Instruction::JmpCC(_, _)
+            | Instruction::Label(_)
+            | Instruction::Push(_)
+            | Instruction::Pop(_)
+            | Instruction::Call(_)
+            | Instruction::Ret => {}
+        }
+    }
+
+    instructions.retain(|instruction| {
+        match instruction {
+            Instruction::Mov(_, Operand::Reg(src), Operand::Reg(dst)) => {
+                src != dst
+            }
+            _ => true,
+        }
+    });
 }
