@@ -1,15 +1,20 @@
 use crate::asm::cfg::{Cfg, CfgNode};
-use crate::asm::ir::{Instruction, Operand, Reg};
+use crate::asm::ir::{Function, Instruction, Operand, Reg};
 use crate::asm::{BackendSymbolData, BackendSymbolTable};
 use crate::optimization::cfg::Annotation;
 use crate::symbol::Symbol;
 use std::collections::{HashMap, HashSet, VecDeque};
 
-fn allocate_registers(instructions: &mut Vec<Instruction>, symbols: &BackendSymbolTable) {
-    let mut interference_graph = build_interference_graph(instructions, symbols);
+fn allocate_registers(function: &mut Function, symbols: &mut BackendSymbolTable) {
+    let mut interference_graph = build_interference_graph(&function.instructions, symbols);
     color_graph(&mut interference_graph, &AVAILABLE_REGS);
     let register_map = create_register_map(&interference_graph);
-    replace_pseudo_regs(instructions, &register_map);
+    replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
+    let Some(BackendSymbolData::Fn { param_registers, callee_saved_registers }) = symbols.get_mut(&function.name) else {
+        panic!("Function {} does not have symbol data", function.name);
+    };
+    callee_saved_registers.clear(); // just in case
+    callee_saved_registers.extend(register_map.callee_saved_regs);
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
@@ -222,7 +227,7 @@ fn find_used_and_updated(
         Instruction::Push(v) => (vec![v.clone()], vec![]),
         Instruction::Pop(_) => todo!(),
         Instruction::Call(name) => {
-            let Some(BackendSymbolData::Fn { param_registers }) = symbols.get(name) else {
+            let Some(BackendSymbolData::Fn { param_registers, .. }) = symbols.get(name) else {
                 panic!("Function {} does not have symbol data", name);
             };
             let used: Vec<Operand> = param_registers.iter().map(|&reg| reg.into()).collect();
@@ -435,10 +440,10 @@ fn create_register_map(interference_graph: &InterferenceGraph) -> RegisterMap {
     }
 }
 
-fn replace_pseudo_regs(instructions: &mut Vec<Instruction>, reg_map: &RegisterMap) {
-    fn replace_reg(op: &mut Operand, reg_map: &RegisterMap) {
+fn replace_pseudo_regs(instructions: &mut Vec<Instruction>, reg_map: &HashMap<Symbol, Reg>) {
+    fn replace_reg(op: &mut Operand, reg_map: &HashMap<Symbol, Reg>) {
         if let Operand::Pseudo(name) = op
-            && let Some(reg) = reg_map.register_map.get(name) {
+            && let Some(reg) = reg_map.get(name) {
 
             *op = Operand::Reg(*reg);
         }

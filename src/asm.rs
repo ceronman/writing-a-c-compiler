@@ -37,6 +37,7 @@ enum BackendSymbolData {
     },
     Fn {
         param_registers: Vec<Reg>,
+        callee_saved_registers: Vec<Reg>,
     },
 }
 
@@ -1052,8 +1053,12 @@ impl Compiler {
                 Attributes::Function { .. } => {
                     let param_registers =
                         self.call_registers.get(symbol).cloned().unwrap_or_default();
+                    let backend_symbol_data = BackendSymbolData::Fn {
+                        param_registers,
+                        callee_saved_registers: vec![]
+                    };
                     backend_symbols
-                        .insert(symbol.clone(), BackendSymbolData::Fn { param_registers });
+                        .insert(symbol.clone(), backend_symbol_data);
                 }
                 Attributes::Static { .. } => {
                     backend_symbols.insert(
