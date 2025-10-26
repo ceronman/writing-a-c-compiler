@@ -13,6 +13,7 @@ use crate::semantic::{AggregateType, Attributes, SemanticData, StaticInit, Type,
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
+use crate::asm::register_allocation::allocate_registers;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
 const SSE_ARG_REGISTERS: [Reg; 8] = [
@@ -159,8 +160,9 @@ impl Compiler {
 
         for tl in &mut top_level {
             if let TopLevel::Function(function) = tl {
+                allocate_registers(function, &mut backend_symbols);
                 let stack_size = self.replace_pseudo_operands(function, &backend_symbols);
-                self.fixup_instructions(function, stack_size);
+                self.fixup_instructions(function, stack_size, &backend_symbols);
             }
         }
 
@@ -1629,19 +1631,35 @@ impl Compiler {
         stack_size
     }
 
-    fn fixup_instructions(&mut self, function: &mut Function, stack_size: usize) {
+    fn get_callee_saved_registers<'a, 'b>(&self, function: &'a Function, symbols: &'b BackendSymbolTable) -> &'b Vec<Reg> {
+        let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get(&function.name) else {
+            panic!("Unknown backend symbol for function {}", function.name);
+        };
+        callee_saved_registers
+    }
+
+    fn calculate_stack_adjustment(&self, function: &Function, symbols: &BackendSymbolTable, bytes_for_locals: usize) -> usize {
+        let callee_saved_bytes = self.get_callee_saved_registers(function, symbols).len() * 8;
+        let total_stack_bytes = bytes_for_locals + callee_saved_bytes;
+        let adjusted_stack_size = align_offset(total_stack_bytes, 16);
+        adjusted_stack_size - callee_saved_bytes
+    }
+
+    fn fixup_instructions(&mut self, function: &mut Function, stack_size: usize, symbols: &BackendSymbolTable,) {
         let instructions = std::mem::take(&mut function.instructions);
         let mut fixed = Vec::with_capacity(instructions.len() + 1);
-
-        // Trick to align to the next multiple of 16 or same value if it's already there:
-        // https://math.stackexchange.com/a/291494
-        let stack_size = ((stack_size as i64 - 1) | 15) + 1;
+        let adjusted_stack_size = self.calculate_stack_adjustment(function, symbols, stack_size);
         fixed.push(Instruction::Binary(
             AsmType::Quadword,
             BinaryOp::Sub,
-            Operand::Imm(stack_size),
+            Operand::Imm(adjusted_stack_size as i64),
             Reg::SP.into(),
         ));
+
+        let callee_saved_registers = self.get_callee_saved_registers(function, symbols);
+        for &reg in callee_saved_registers {
+            fixed.push(Instruction::Push(reg.into()));
+        }
 
         fn src_register(ty: AsmType) -> Reg {
             if let AsmType::Double = ty {
@@ -1860,6 +1878,12 @@ impl Compiler {
                     } else {
                         fixed.push(Instruction::Cvtsi2sd(ty, src, dst));
                     }
+                }
+                Instruction::Ret => {
+                    for &reg in callee_saved_registers.iter().rev() {
+                        fixed.push(Instruction::Pop(reg));
+                    }
+                    fixed.push(Instruction::Ret);
                 }
                 other => fixed.push(other),
             }

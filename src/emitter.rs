@@ -228,6 +228,10 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 emit_ins(output, "pushq")?;
                 emit_operand(output, operand, RegSize::Quad)?;
             }
+            Instruction::Pop(reg) => {
+                emit_ins(output, "popq")?;
+                emit_operand(output, &Operand::Reg(*reg), RegSize::Quad)?;
+            }
             Instruction::Call(name) => {
                 emit_ins(output, "call")?;
                 write!(output, "_{name}")?;
@@ -282,7 +286,6 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                 write!(output, ", ")?;
                 emit_operand(output, dst, RegSize::Quad)?;
             }
-            Instruction::Pop(_) => todo!(),
         }
         writeln!(output)?;
     }
