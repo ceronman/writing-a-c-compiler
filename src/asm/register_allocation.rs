@@ -25,7 +25,7 @@ enum Register {
 
 struct InterferenceNode {
     id: Register,
-    neighbors: Vec<Register>,
+    neighbors: HashSet<Register>,
     spill_cost: f64,
     color: Option<i32>,
     pruned: bool,
@@ -51,10 +51,10 @@ impl InterferenceGraph {
     fn add_edge(&mut self, from: &Register, to: &Register) {
         self.get_node_mut(from)
             .neighbors
-            .push(to.clone());
+            .insert(to.clone());
         self.get_node_mut(to)
             .neighbors
-            .push(from.clone());
+            .insert(from.clone());
     }
 
     fn unpruned_nodes(&self) -> Vec<&InterferenceNode> {
@@ -166,7 +166,7 @@ fn add_pseudo_reg(
         let id = Register::Pseudo(name.clone());
         nodes.insert(id.clone(), InterferenceNode {
             id,
-            neighbors: vec![],
+            neighbors: HashSet::new(),
             spill_cost: 0.0,
             color: None,
             pruned: false,
@@ -367,7 +367,8 @@ impl Operand {
     }
 }
 
-const CALLEE_SAVED_REGS: [Register; 4] = [
+const CALLEE_SAVED_REGS: [Register; 5] = [
+    Register::Hard(Reg::Bx),
     Register::Hard(Reg::R12),
     Register::Hard(Reg::R13),
     Register::Hard(Reg::R14),
@@ -375,12 +376,12 @@ const CALLEE_SAVED_REGS: [Register; 4] = [
 ];
 
 fn color_graph(interference_graph: &mut InterferenceGraph, registers: &[Reg]) {
-    let mut chosen_node = None;
     let remaining = interference_graph.unpruned_nodes();
-
     if remaining.is_empty() {
         return
     }
+
+    let mut chosen_node = None;
 
     for node in &remaining {
         let degree = interference_graph.num_unpruned_neighbors(node);
