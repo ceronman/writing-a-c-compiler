@@ -73,7 +73,7 @@ fn build_interference_graph(instructions: &[Instruction], symbols: &BackendSymbo
     let mut nodes = HashMap::new();
     let mut spill_costs = HashMap::new();
     add_hard_registers(&mut nodes);
-    add_pseudo_registers(&mut nodes, &mut spill_costs, instructions);
+    add_pseudo_registers(&mut nodes, &mut spill_costs, instructions, symbols);
     let mut interference_graph = InterferenceGraph { nodes };
     add_spill_costs(&mut interference_graph.nodes, &spill_costs);
     let cfg = Cfg::new(instructions);
@@ -118,6 +118,7 @@ fn add_pseudo_registers(
     nodes: &mut HashMap<Register, InterferenceNode>,
     spill_costs: &mut HashMap<Symbol, f64>,
     instructions: &[Instruction],
+    symbols: &BackendSymbolTable
 ) {
     for instruction in instructions {
         match instruction {
@@ -129,14 +130,14 @@ fn add_pseudo_registers(
             | Instruction::Cvtsi2sd(_, op1, op2)
             | Instruction::Binary(_, _, op1, op2)
             | Instruction::Cmp(_, op1, op2) => {
-                add_pseudo_reg(nodes, spill_costs, op1);
-                add_pseudo_reg(nodes, spill_costs, op2);
+                add_pseudo_reg(nodes, spill_costs, op1, symbols);
+                add_pseudo_reg(nodes, spill_costs, op2, symbols);
             }
             Instruction::Unary(_, _, op)
             | Instruction::Idiv(_, op)
             | Instruction::Div(_, op)
             | Instruction::SetCC(_, op) => {
-                add_pseudo_reg(nodes, spill_costs, op);
+                add_pseudo_reg(nodes, spill_costs, op, symbols);
             }
             Instruction::Cdq(_)
             | Instruction::Jmp(_)
@@ -154,8 +155,12 @@ fn add_pseudo_reg(
     nodes: &mut HashMap<Register, InterferenceNode>,
     spill_costs: &mut HashMap<Symbol, f64>,
     op: &Operand,
+    symbols: &BackendSymbolTable
 ) {
-    if let Operand::Pseudo(name) = op {
+    if let Operand::Pseudo(name) = op
+        && let Some(BackendSymbolData::Obj { is_static, ..}) = symbols.get(name)
+        && !is_static {
+
         let sp = spill_costs.entry(name.clone()).or_insert(0.0);
         *sp += 1.0;
         let id = Register::Pseudo(name.clone());

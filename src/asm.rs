@@ -13,6 +13,7 @@ use crate::semantic::{AggregateType, Attributes, SemanticData, StaticInit, Type,
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::HashMap;
+use crate::asm::pretty::pp_function;
 use crate::asm::register_allocation::allocate_registers;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
@@ -160,13 +161,21 @@ impl Compiler {
 
         for tl in &mut top_level {
             if let TopLevel::Function(function) = tl {
+                Self::print_debug("Before allocation", function);
                 allocate_registers(function, &mut backend_symbols);
+                Self::print_debug("After allocation", function);
                 let stack_size = self.replace_pseudo_operands(function, &backend_symbols);
                 self.fixup_instructions(function, stack_size, &backend_symbols);
             }
         }
 
         Program { top_level }
+    }
+
+    fn print_debug(msg: &str, function: &Function) {
+        let mut s = String::new();
+        pp_function(&mut s, function).unwrap();
+        println!("{msg}: \n {s}");
     }
 
     fn generate_function(&mut self, function: &tacky::Function) -> Function {

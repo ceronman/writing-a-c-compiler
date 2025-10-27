@@ -17,7 +17,7 @@ pub fn pp(program: &Program) -> Result<String> {
     Ok(buffer)
 }
 
-fn pp_function(stream: &mut impl Write, f: &Function) -> Result<()> {
+pub(super) fn pp_function(stream: &mut impl Write, f: &Function) -> Result<()> {
     let global = if f.global { "global " } else { "" };
     writeln!(stream, "{global}function {}", f.name)?;
     for ins in &f.instructions {
