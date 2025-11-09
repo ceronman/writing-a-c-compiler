@@ -3,7 +3,7 @@ use crate::asm::ir::{Function, Instruction, Operand, Reg};
 use crate::asm::{BackendSymbolData, BackendSymbolTable};
 use crate::optimization::cfg::Annotation;
 use crate::symbol::Symbol;
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 
 pub(super) fn allocate_registers(function: &mut Function, symbols: &mut BackendSymbolTable) {
     let mut interference_graph = build_interference_graph(&function.instructions, symbols);
@@ -17,22 +17,24 @@ pub(super) fn allocate_registers(function: &mut Function, symbols: &mut BackendS
     callee_saved_registers.extend(register_map.callee_saved_regs);
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
 enum Register {
     Hard(Reg),
     Pseudo(Symbol),
 }
 
+#[derive(Debug)]
 struct InterferenceNode {
     id: Register,
-    neighbors: HashSet<Register>,
+    neighbors: BTreeSet<Register>,
     spill_cost: f64,
     color: Option<i32>,
     pruned: bool,
 }
 
+#[derive(Debug)]
 struct InterferenceGraph {
-    nodes: HashMap<Register, InterferenceNode>,
+    nodes: BTreeMap<Register, InterferenceNode>,
 }
 
 impl InterferenceGraph {
@@ -70,7 +72,7 @@ impl InterferenceGraph {
 }
 
 fn build_interference_graph(instructions: &[Instruction], symbols: &BackendSymbolTable) -> InterferenceGraph {
-    let mut nodes = HashMap::new();
+    let mut nodes = BTreeMap::new();
     let mut spill_costs = HashMap::new();
     add_hard_registers(&mut nodes);
     add_pseudo_registers(&mut nodes, &mut spill_costs, instructions, symbols);
@@ -97,7 +99,7 @@ const AVAILABLE_REGS: [Reg; 12] = [
     Reg::R15,
 ];
 
-fn add_hard_registers(nodes: &mut HashMap<Register, InterferenceNode>) {
+fn add_hard_registers(nodes: &mut BTreeMap<Register, InterferenceNode>) {
     for reg in AVAILABLE_REGS {
         let neighbors = AVAILABLE_REGS
             .iter()
@@ -115,7 +117,7 @@ fn add_hard_registers(nodes: &mut HashMap<Register, InterferenceNode>) {
 }
 
 fn add_pseudo_registers(
-    nodes: &mut HashMap<Register, InterferenceNode>,
+    nodes: &mut BTreeMap<Register, InterferenceNode>,
     spill_costs: &mut HashMap<Symbol, f64>,
     instructions: &[Instruction],
     symbols: &BackendSymbolTable
@@ -152,7 +154,7 @@ fn add_pseudo_registers(
 }
 
 fn add_pseudo_reg(
-    nodes: &mut HashMap<Register, InterferenceNode>,
+    nodes: &mut BTreeMap<Register, InterferenceNode>,
     spill_costs: &mut HashMap<Symbol, f64>,
     op: &Operand,
     symbols: &BackendSymbolTable
@@ -166,7 +168,7 @@ fn add_pseudo_reg(
         let id = Register::Pseudo(name.clone());
         nodes.insert(id.clone(), InterferenceNode {
             id,
-            neighbors: HashSet::new(),
+            neighbors: BTreeSet::new(),
             spill_cost: 0.0,
             color: None,
             pruned: false,
@@ -174,7 +176,7 @@ fn add_pseudo_reg(
     };
 }
 
-fn add_spill_costs(nodes: &mut HashMap<Register, InterferenceNode>, spill_costs: &HashMap<Symbol, f64>) {
+fn add_spill_costs(nodes: &mut BTreeMap<Register, InterferenceNode>, spill_costs: &HashMap<Symbol, f64>) {
     for node in nodes.values_mut() {
         match &node.id {
             Register::Pseudo(name) => {
@@ -332,8 +334,8 @@ fn add_edges(
             let live_registers = liveness.get_instruction_annotation(node_id, i);
             for l in live_registers {
                 if let Instruction::Mov(_, src, _) = instruction
-                    && let Operand::Reg(src) = src
-                    && *l == Register::Hard(*src)
+                    && let Some(src) = src.as_register()
+                    && *l == src
                 {
                     continue;
                 }
@@ -394,13 +396,11 @@ fn color_graph(interference_graph: &mut InterferenceGraph, registers: &[Reg]) {
     if chosen_node.is_none() {
         let mut best_spill_metric = f64::INFINITY;
         for node in remaining {
-            if node.spill_cost < best_spill_metric {
-                let degree = interference_graph.num_unpruned_neighbors(&node);
-                let spill_metric = node.spill_cost / (degree as f64);
-                if spill_metric < best_spill_metric {
-                    chosen_node = Some(node.id.clone());
-                    best_spill_metric = spill_metric;
-                }
+            let degree = interference_graph.num_unpruned_neighbors(&node);
+            let spill_metric = node.spill_cost / (degree as f64);
+            if spill_metric < best_spill_metric {
+                chosen_node = Some(node.id.clone());
+                best_spill_metric = spill_metric;
             }
         }
     }
@@ -423,7 +423,9 @@ fn color_graph(interference_graph: &mut InterferenceGraph, registers: &[Reg]) {
         } else{
             colors.iter().copied().min().unwrap()
         };
-        interference_graph.get_node_mut(&chosen_node).color = Some(color);
+        let chosen_node = interference_graph.get_node_mut(&chosen_node);
+        chosen_node.color = Some(color);
+        chosen_node.pruned = false;
     }
 }
 
@@ -444,7 +446,7 @@ fn create_register_map(interference_graph: &InterferenceGraph) -> RegisterMap {
     let mut callee_saved_regs = HashSet::new();
     for node in interference_graph.nodes.values() {
         if let Register::Pseudo(name) = &node.id
-        && let Some(color) = node.color{
+        && let Some(color) = node.color {
             let hard_reg = *color_map.get(&color).unwrap();
             register_map.insert(name.clone(), hard_reg);
             if CALLEE_SAVED_REGS.contains(&Register::Hard(hard_reg)) {
