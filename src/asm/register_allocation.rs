@@ -10,7 +10,7 @@ pub(super) fn allocate_registers(function: &mut Function, symbols: &mut BackendS
     color_graph(&mut interference_graph, &AVAILABLE_REGS);
     let register_map = create_register_map(&interference_graph);
     replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
-    let Some(BackendSymbolData::Fn { param_registers, callee_saved_registers }) = symbols.get_mut(&function.name) else {
+    let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get_mut(&function.name) else {
         panic!("Function {} does not have symbol data", function.name);
     };
     callee_saved_registers.clear(); // just in case

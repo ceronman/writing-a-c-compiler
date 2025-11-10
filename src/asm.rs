@@ -12,7 +12,7 @@ use crate::ast::Constant;
 use crate::semantic::{AggregateType, Attributes, SemanticData, StaticInit, Type, TypeEntry};
 use crate::symbol::Symbol;
 use crate::tacky;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use crate::asm::pretty::pp_function;
 use crate::asm::register_allocation::allocate_registers;
 
@@ -40,6 +40,7 @@ enum BackendSymbolData {
     Fn {
         param_registers: Vec<Reg>,
         callee_saved_registers: Vec<Reg>,
+        aliased_vars: HashSet<Symbol>,
     },
 }
 
@@ -117,6 +118,7 @@ struct FnReturn {
 struct Compiler {
     doubles: HashMap<u64, Symbol>,
     call_registers: HashMap<Symbol, Vec<Reg>>,
+    aliased_vars: HashMap<Symbol, HashSet<Symbol>>,
     label_counter: usize,
     semantics: SemanticData,
 }
@@ -791,6 +793,12 @@ impl Compiler {
                         self.generate_val(src),
                         self.generate_val(dst),
                     ));
+                    if let tacky::Val::Var(var_name) = src {
+                        self.aliased_vars
+                            .entry(function.name.clone())
+                            .or_default()
+                            .insert(var_name.clone());
+                    }
                 }
                 tacky::Instruction::Load { ptr, dst } => {
                     instructions.push(Instruction::Mov(
@@ -1064,9 +1072,11 @@ impl Compiler {
                 Attributes::Function { .. } => {
                     let param_registers =
                         self.call_registers.get(symbol).cloned().unwrap_or_default();
+                    let aliased_vars = self.aliased_vars.get(symbol).cloned().unwrap_or_default();
                     let backend_symbol_data = BackendSymbolData::Fn {
                         param_registers,
-                        callee_saved_registers: vec![]
+                        callee_saved_registers: vec![],
+                        aliased_vars
                     };
                     backend_symbols
                         .insert(symbol.clone(), backend_symbol_data);
@@ -2048,6 +2058,7 @@ pub fn generate(program: &tacky::Program) -> Program {
     let mut compiler = Compiler {
         doubles: HashMap::new(),
         call_registers: Default::default(),
+        aliased_vars: Default::default(),
         label_counter: 0,
         semantics: program.semantics.clone(),
     };
