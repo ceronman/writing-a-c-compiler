@@ -1,13 +1,49 @@
 use crate::asm::cfg::{Cfg, CfgNode};
-use crate::asm::ir::{Function, Instruction, Operand, Reg};
+use crate::asm::ir::{AsmType, Function, Instruction, Operand, Reg};
 use crate::asm::{BackendSymbolData, BackendSymbolTable};
 use crate::optimization::cfg::Annotation;
 use crate::symbol::Symbol;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 
 pub(super) fn allocate_registers(function: &mut Function, symbols: &mut BackendSymbolTable) {
-    let mut interference_graph = build_interference_graph(&function.instructions, symbols);
-    color_graph(&mut interference_graph, &AVAILABLE_REGS);
+    allocate_general_purpose_regs(function, symbols);
+}
+
+const GENERAL_PURPOSE_REGS: [Reg; 12] = [
+    Reg::Ax,
+    Reg::Bx,
+    Reg::Cx,
+    Reg::Dx,
+    Reg::Di,
+    Reg::Si,
+    Reg::R8,
+    Reg::R9,
+    Reg::R12,
+    Reg::R13,
+    Reg::R14,
+    Reg::R15,
+];
+
+const SSE_REGS: [Reg; 14] = [
+    Reg::XMM0,
+    Reg::XMM1,
+    Reg::XMM2,
+    Reg::XMM3,
+    Reg::XMM4,
+    Reg::XMM5,
+    Reg::XMM6,
+    Reg::XMM7,
+    Reg::XMM8,
+    Reg::XMM9,
+    Reg::XMM10,
+    Reg::XMM11,
+    Reg::XMM12,
+    Reg::XMM13,
+];
+
+fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendSymbolTable) {
+    let mut interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword]);
+    color_graph(&mut interference_graph, &GENERAL_PURPOSE_REGS);
     let register_map = create_register_map(&interference_graph);
     replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
     let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get_mut(&function.name) else {
@@ -71,43 +107,28 @@ impl InterferenceGraph {
     }
 }
 
-fn build_interference_graph(instructions: &[Instruction], symbols: &BackendSymbolTable) -> InterferenceGraph {
+fn build_interference_graph(function: &Function, symbols: &BackendSymbolTable, available_regs: &[Reg], allowed_types: &[AsmType]) -> InterferenceGraph {
     let mut nodes = BTreeMap::new();
     let mut spill_costs = HashMap::new();
-    add_hard_registers(&mut nodes);
-    add_pseudo_registers(&mut nodes, &mut spill_costs, instructions, symbols);
+    add_hard_registers(&mut nodes, available_regs);
+    add_pseudo_registers(&mut nodes, function, &mut spill_costs, symbols, allowed_types);
     let mut interference_graph = InterferenceGraph { nodes };
     add_spill_costs(&mut interference_graph.nodes, &spill_costs);
-    let cfg = Cfg::new(instructions);
+    let cfg = Cfg::new(&function.instructions);
     let liveness = analyze_liveness(&cfg, symbols);
     add_edges(&mut interference_graph, &cfg, &liveness, symbols);
     interference_graph
 }
 
-const AVAILABLE_REGS: [Reg; 12] = [
-    Reg::Ax,
-    Reg::Bx,
-    Reg::Cx,
-    Reg::Dx,
-    Reg::Di,
-    Reg::Si,
-    Reg::R8,
-    Reg::R9,
-    Reg::R12,
-    Reg::R13,
-    Reg::R14,
-    Reg::R15,
-];
-
-fn add_hard_registers(nodes: &mut BTreeMap<Register, InterferenceNode>) {
-    for reg in AVAILABLE_REGS {
-        let neighbors = AVAILABLE_REGS
+fn add_hard_registers(nodes: &mut BTreeMap<Register, InterferenceNode>, available_regs: &[Reg]) {
+    for reg in available_regs {
+        let neighbors = available_regs
             .iter()
-            .filter(|&r| r != &reg)
+            .filter(|&r| r != reg)
             .map(|r| Register::Hard(*r))
             .collect();
-        nodes.insert(Register::Hard(reg), InterferenceNode {
-            id: Register::Hard(reg),
+        nodes.insert(Register::Hard(*reg), InterferenceNode {
+            id: Register::Hard(*reg),
             neighbors,
             spill_cost: 0.0,
             color: None,
@@ -118,28 +139,40 @@ fn add_hard_registers(nodes: &mut BTreeMap<Register, InterferenceNode>) {
 
 fn add_pseudo_registers(
     nodes: &mut BTreeMap<Register, InterferenceNode>,
+    function: &Function,
     spill_costs: &mut HashMap<Symbol, f64>,
-    instructions: &[Instruction],
-    symbols: &BackendSymbolTable
+    symbols: &BackendSymbolTable,
+    allowed_types: &[AsmType]
 ) {
-    for instruction in instructions {
+    let Some(BackendSymbolData::Fn { aliased_vars, .. }) = symbols.get(&function.name) else {
+        panic!("Function {} does not have symbol data", function.name);
+    };
+    for instruction in &function.instructions {
         match instruction {
-            Instruction::Mov(_, op1, op2)
-            | Instruction::Movsx(_, op1, _, op2)
-            | Instruction::MovZeroExtend(_, op1, _, op2)
-            | Instruction::Lea(op1, op2)
-            | Instruction::Cvttsd2si(_, op1, op2)
-            | Instruction::Cvtsi2sd(_, op1, op2)
-            | Instruction::Binary(_, _, op1, op2)
-            | Instruction::Cmp(_, op1, op2) => {
-                add_pseudo_reg(nodes, spill_costs, op1, symbols);
-                add_pseudo_reg(nodes, spill_costs, op2, symbols);
+            Instruction::Mov(ty, op1, op2)
+            | Instruction::Cvttsd2si(ty, op1, op2)
+            | Instruction::Cvtsi2sd(ty, op1, op2)
+            | Instruction::Binary(ty, _, op1, op2)
+            | Instruction::Cmp(ty, op1, op2) => {
+                add_pseudo_reg(nodes, spill_costs, op1, symbols, ty, allowed_types, aliased_vars);
+                add_pseudo_reg(nodes, spill_costs, op2, symbols, ty, allowed_types, aliased_vars);
             }
-            Instruction::Unary(_, _, op)
-            | Instruction::Idiv(_, op)
-            | Instruction::Div(_, op)
-            | Instruction::SetCC(_, op) => {
-                add_pseudo_reg(nodes, spill_costs, op, symbols);
+            Instruction::Movsx(ty1, op1, ty2, op2)
+            | Instruction::MovZeroExtend(ty1, op1, ty2, op2) => {
+                add_pseudo_reg(nodes, spill_costs, op1, symbols, ty1, allowed_types, aliased_vars);
+                add_pseudo_reg(nodes, spill_costs, op2, symbols, ty2, allowed_types, aliased_vars);
+            }
+            Instruction::Lea(op1, op2) => {
+                add_pseudo_reg(nodes, spill_costs, op1, symbols, &AsmType::Quadword, allowed_types, aliased_vars);
+                add_pseudo_reg(nodes, spill_costs, op2, symbols, &AsmType::Quadword, allowed_types, aliased_vars);
+            }
+            Instruction::Unary(ty, _, op)
+            | Instruction::Idiv(ty, op)
+            | Instruction::Div(ty, op) => {
+                add_pseudo_reg(nodes, spill_costs, op, symbols, ty, allowed_types, aliased_vars);
+            }
+            Instruction::SetCC(_, op) => {
+                add_pseudo_reg(nodes, spill_costs, op, symbols, &AsmType::Byte, allowed_types, aliased_vars);
             }
             Instruction::Cdq(_)
             | Instruction::Jmp(_)
@@ -157,11 +190,16 @@ fn add_pseudo_reg(
     nodes: &mut BTreeMap<Register, InterferenceNode>,
     spill_costs: &mut HashMap<Symbol, f64>,
     op: &Operand,
-    symbols: &BackendSymbolTable
+    symbols: &BackendSymbolTable,
+    ty: &AsmType,
+    allowed_types: &[AsmType],
+    aliased_vars: &HashSet<Symbol>
 ) {
     if let Operand::Pseudo(name) = op
         && let Some(BackendSymbolData::Obj { is_static, ..}) = symbols.get(name)
-        && !is_static {
+        && !is_static
+        && allowed_types.contains(ty)
+        && !aliased_vars.contains(name) {
 
         let sp = spill_costs.entry(name.clone()).or_insert(0.0);
         *sp += 1.0;

@@ -137,7 +137,7 @@ pub enum Reg {
     XMM15,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AsmType {
     Byte,
     Longword,
