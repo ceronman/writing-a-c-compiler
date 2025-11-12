@@ -38,7 +38,8 @@ enum BackendSymbolData {
         is_const: bool,
     },
     Fn {
-        param_registers: Vec<Reg>,
+        arg_registers: Vec<Reg>,
+        ret_registers: Vec<Reg>,
         callee_saved_registers: Vec<Reg>,
         aliased_vars: HashSet<Symbol>,
     },
@@ -115,9 +116,15 @@ struct FnReturn {
     in_memory: bool,
 }
 
+#[derive(Clone, Default)]
+struct CallRegisters {
+    args: Vec<Reg>,
+    ret: Vec<Reg>
+}
+
 struct Compiler {
     doubles: HashMap<u64, Symbol>,
-    call_registers: HashMap<Symbol, Vec<Reg>>,
+    call_registers: HashMap<Symbol, CallRegisters>,
     aliased_vars: HashMap<Symbol, HashSet<Symbol>>,
     label_counter: usize,
     semantics: SemanticData,
@@ -1070,11 +1077,11 @@ impl Compiler {
         for (symbol, data) in semantic.symbols.iter() {
             match data.attrs {
                 Attributes::Function { .. } => {
-                    let param_registers =
-                        self.call_registers.get(symbol).cloned().unwrap_or_default();
+                    let call_registers  = self.call_registers.get(symbol).cloned().unwrap_or_default();
                     let aliased_vars = self.aliased_vars.get(symbol).cloned().unwrap_or_default();
                     let backend_symbol_data = BackendSymbolData::Fn {
-                        param_registers,
+                        arg_registers: call_registers.args,
+                        ret_registers: call_registers.ret,
                         callee_saved_registers: vec![],
                         aliased_vars
                     };
@@ -1247,10 +1254,19 @@ impl Compiler {
         }
     }
 
-    fn find_used_registers(&self, args: &FnArgs, ret: &FnReturn) -> Vec<Reg> {
-        let mut result = Vec::new();
-        result.extend(INT_ARG_REGISTERS.iter().take(args.int_reg_args.len()));
-        result
+    fn find_used_registers(&self, fn_args: &FnArgs, fn_ret: &FnReturn) -> CallRegisters {
+        let mut args = Vec::new();
+        args.extend(INT_ARG_REGISTERS.iter().take(fn_args.int_reg_args.len()));
+        args.extend(SSE_ARG_REGISTERS.iter().take(fn_args.sse_reg_args.len()));
+
+        let mut ret = Vec::new();
+        ret.extend(INT_RETURN_REGISTERS.iter().take(fn_ret.int_values.len()));
+        ret.extend(SSE_RETURN_REGISTERS.iter().take(fn_ret.sse_values.len()));
+
+        CallRegisters {
+            args,
+            ret,
+        }
     }
 
     fn generate_return(&mut self, instructions: &mut Vec<Instruction>, val: &Option<tacky::Val>) {

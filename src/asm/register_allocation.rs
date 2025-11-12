@@ -115,7 +115,7 @@ fn build_interference_graph(function: &Function, symbols: &BackendSymbolTable, a
     let mut interference_graph = InterferenceGraph { nodes };
     add_spill_costs(&mut interference_graph.nodes, &spill_costs);
     let cfg = Cfg::new(&function.instructions);
-    let liveness = analyze_liveness(&cfg, symbols);
+    let liveness = analyze_liveness(function, &cfg, symbols);
     add_edges(&mut interference_graph, &cfg, &liveness, symbols);
     interference_graph
 }
@@ -236,11 +236,12 @@ fn liveness_meet_operator(
     annotations: &mut Annotation<RegSet>,
     cfg: &Cfg,
     node: &CfgNode,
+    ret_registers: &[Reg]
 ) -> RegSet {
     let mut live_registers = RegSet::new();
     for succ_id in &node.successors {
         if succ_id == &cfg.exit_id() {
-            live_registers.insert(Register::Hard(Reg::Ax));
+            live_registers.extend(ret_registers.iter().map(|r| Register::Hard(*r)));
         } else {
             let succ_live_registers = annotations.get_block_annotation(succ_id);
             live_registers.extend(succ_live_registers.iter().cloned());
@@ -254,26 +255,34 @@ fn find_used_and_updated(
     symbols: &BackendSymbolTable,
 ) -> (Vec<Operand>, Vec<Operand>) {
     match instruction {
-        Instruction::Mov(_, src, dst) => (vec![src.clone()], vec![dst.clone()]),
-        Instruction::Movsx(_, _, _, _) => todo!(),
-        Instruction::MovZeroExtend(_, _, _, _) => todo!(),
-        Instruction::Lea(_, _) => todo!(),
-        Instruction::Cvttsd2si(_, _, _) => todo!(),
-        Instruction::Cvtsi2sd(_, _, _) => todo!(),
-        Instruction::Unary(_, _, dst) => (vec![dst.clone()], vec![dst.clone()]),
-        Instruction::Binary(_, _, src, dst) => (vec![src.clone(), dst.clone()], vec![dst.clone()]),
-        Instruction::Cmp(_, v1, v2) => (vec![v1.clone(), v2.clone()], vec![]),
-        Instruction::Idiv(_, divisor) => (
+        Instruction::Mov(_, src, dst)
+        | Instruction::Movsx(_, src, _, dst)
+        | Instruction::MovZeroExtend(_, src, _, dst)
+        | Instruction::Cvttsd2si(_, src, dst)
+        | Instruction::Cvtsi2sd(_, src, dst)
+        | Instruction::Lea(src, dst) => {
+            (vec![src.clone()], vec![dst.clone()])
+        },
+        Instruction::Unary(_, _, dst) => {
+            (vec![dst.clone()], vec![dst.clone()])
+        },
+        Instruction::Binary(_, _, src, dst) => {
+            (vec![src.clone(), dst.clone()], vec![dst.clone()])
+        },
+        Instruction::Cmp(_, v1, v2) => {
+            (vec![v1.clone(), v2.clone()], vec![])
+        },
+        Instruction::Div(_, divisor)
+        | Instruction::Idiv(_, divisor) => (
             vec![divisor.clone(), Reg::Ax.into(), Reg::Dx.into()],
             vec![Reg::Ax.into(), Reg::Dx.into()],
         ),
-        Instruction::Div(_, _) => todo!(),
         Instruction::Cdq(_) => (vec![Reg::Ax.into()], vec![Reg::Dx.into()]),
         Instruction::SetCC(_, dst) => (vec![], vec![dst.clone()]),
         Instruction::Push(v) => (vec![v.clone()], vec![]),
-        Instruction::Pop(_) => todo!(),
+        Instruction::Pop(reg) => (vec![], vec![Operand::Reg(*reg)]),
         Instruction::Call(name) => {
-            let Some(BackendSymbolData::Fn { param_registers, .. }) = symbols.get(name) else {
+            let Some(BackendSymbolData::Fn { arg_registers: param_registers, .. }) = symbols.get(name) else {
                 panic!("Function {} does not have symbol data", name);
             };
             let used: Vec<Operand> = param_registers.iter().map(|&reg| reg.into()).collect();
@@ -322,7 +331,11 @@ fn liveness_transfer_function(
     annotations.annotate_block(node.id, current_live_registers);
 }
 
-fn analyze_liveness(cfg: &Cfg, symbols: &BackendSymbolTable) -> Annotation<RegSet> {
+fn analyze_liveness(function: &Function, cfg: &Cfg, symbols: &BackendSymbolTable) -> Annotation<RegSet> {
+    let Some(BackendSymbolData::Fn { ret_registers, .. }) = symbols.get(&function.name) else {
+        panic!("Function {} does not have symbol data", function.name);
+    };
+
     let live_registers = RegSet::new();
     let mut annotations = Annotation::empty();
 
@@ -338,7 +351,7 @@ fn analyze_liveness(cfg: &Cfg, symbols: &BackendSymbolTable) -> Annotation<RegSe
     while let Some(node_id) = worklist.pop_back() {
         let old_registers = &annotations.get_block_annotation(&node_id).clone();
         let node = cfg.get_node(node_id);
-        let incoming_registers = liveness_meet_operator(&mut annotations, cfg, node);
+        let incoming_registers = liveness_meet_operator(&mut annotations, cfg, node, ret_registers);
         liveness_transfer_function(&mut annotations, node, symbols, incoming_registers);
         if old_registers != annotations.get_block_annotation(&node_id) {
             for pred_id in &node.predecessors {
