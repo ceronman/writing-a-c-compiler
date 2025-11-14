@@ -250,10 +250,15 @@ fn liveness_meet_operator(
     live_registers
 }
 
+struct UsedAndUpdated {
+    used: Vec<Operand>,
+    updated: Vec<Operand>,
+}
+
 fn find_used_and_updated(
     instruction: &Instruction,
     symbols: &BackendSymbolTable,
-) -> (Vec<Operand>, Vec<Operand>) {
+) -> UsedAndUpdated {
     match instruction {
         Instruction::Mov(_, src, dst)
         | Instruction::Movsx(_, src, _, dst)
@@ -261,34 +266,34 @@ fn find_used_and_updated(
         | Instruction::Cvttsd2si(_, src, dst)
         | Instruction::Cvtsi2sd(_, src, dst)
         | Instruction::Lea(src, dst) => {
-            (vec![src.clone()], vec![dst.clone()])
+            UsedAndUpdated { used: vec![src.clone()], updated: vec![dst.clone()] }
         },
         Instruction::Unary(_, _, dst) => {
-            (vec![dst.clone()], vec![dst.clone()])
+            UsedAndUpdated { used: vec![dst.clone()], updated: vec![dst.clone()] }
         },
         Instruction::Binary(_, _, src, dst) => {
-            (vec![src.clone(), dst.clone()], vec![dst.clone()])
+            UsedAndUpdated { used: vec![src.clone(), dst.clone()], updated: vec![dst.clone()] }
         },
         Instruction::Cmp(_, v1, v2) => {
-            (vec![v1.clone(), v2.clone()], vec![])
+            UsedAndUpdated { used: vec![v1.clone(), v2.clone()], updated: vec![] }
         },
         Instruction::Div(_, divisor)
-        | Instruction::Idiv(_, divisor) => (
-            vec![divisor.clone(), Reg::Ax.into(), Reg::Dx.into()],
-            vec![Reg::Ax.into(), Reg::Dx.into()],
-        ),
-        Instruction::Cdq(_) => (vec![Reg::Ax.into()], vec![Reg::Dx.into()]),
-        Instruction::SetCC(_, dst) => (vec![], vec![dst.clone()]),
-        Instruction::Push(v) => (vec![v.clone()], vec![]),
-        Instruction::Pop(reg) => (vec![], vec![Operand::Reg(*reg)]),
+        | Instruction::Idiv(_, divisor) => UsedAndUpdated {
+            used: vec![divisor.clone(), Reg::Ax.into(), Reg::Dx.into()],
+            updated: vec![Reg::Ax.into(), Reg::Dx.into()],
+        },
+        Instruction::Cdq(_) => UsedAndUpdated { used: vec![Reg::Ax.into()], updated: vec![Reg::Dx.into()] },
+        Instruction::SetCC(_, dst) => UsedAndUpdated { used: vec![], updated: vec![dst.clone()] },
+        Instruction::Push(v) => UsedAndUpdated { used: vec![v.clone()], updated: vec![] },
+        Instruction::Pop(reg) => UsedAndUpdated { used: vec![], updated: vec![Operand::Reg(*reg)] },
         Instruction::Call(name) => {
             let Some(BackendSymbolData::Fn { arg_registers: param_registers, .. }) = symbols.get(name) else {
                 panic!("Function {} does not have symbol data", name);
             };
             let used: Vec<Operand> = param_registers.iter().map(|&reg| reg.into()).collect();
-            (
+            UsedAndUpdated {
                 used,
-                vec![
+                updated: vec![
                     Reg::Di.into(),
                     Reg::Si.into(),
                     Reg::Dx.into(),
@@ -297,12 +302,12 @@ fn find_used_and_updated(
                     Reg::R9.into(),
                     Reg::Ax.into(),
                 ],
-            )
+            }
         }
         Instruction::Jmp(_)
         | Instruction::Label(_)
         | Instruction::Ret
-        | Instruction::JmpCC(_, _) => (vec![], vec![]),
+        | Instruction::JmpCC(_, _) => UsedAndUpdated { used: vec![], updated: vec![] },
     }
 }
 
@@ -315,14 +320,14 @@ fn liveness_transfer_function(
     let mut current_live_registers = end_live_registers.clone();
     for (i, instruction) in node.instructions.iter().enumerate().rev() {
         annotations.annotate_instruction(node.id, i, current_live_registers.clone());
-        let (used, updated) = find_used_and_updated(instruction, symbols);
-        for operand in updated {
+        let uu = find_used_and_updated(instruction, symbols);
+        for operand in uu.updated {
             if let Some(reg) = operand.as_register() {
                 current_live_registers.remove(&reg);
             }
         }
 
-        for operand in used {
+        for operand in uu.used {
             if let Some(reg) = operand.as_register() {
                 current_live_registers.insert(reg);
             }
@@ -381,7 +386,7 @@ fn add_edges(
         let node = cfg.get_node(node_id);
 
         for (i, instruction) in node.instructions.iter().enumerate() {
-            let (_used, updated) = find_used_and_updated(instruction, symbols);
+            let uu = find_used_and_updated(instruction, symbols);
             let live_registers = liveness.get_instruction_annotation(node_id, i);
             for l in live_registers {
                 if let Instruction::Mov(_, src, _) = instruction
@@ -390,13 +395,13 @@ fn add_edges(
                 {
                     continue;
                 }
-                for u in &updated {
-                    if let Some(u) = &u.as_register()
-                        && l != u
+                for u in &uu.updated {
+                    if let Some(ur) = &u.as_register()
+                        && l != ur
                         && interference_graph.contains(l)
-                        && interference_graph.contains(u)
+                        && interference_graph.contains(ur)
                     {
-                        interference_graph.add_edge(l, u);
+                        interference_graph.add_edge(l, ur);
                     }
                 }
             }
