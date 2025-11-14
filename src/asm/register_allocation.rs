@@ -7,6 +7,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 
 pub(super) fn allocate_registers(function: &mut Function, symbols: &mut BackendSymbolTable) {
     allocate_general_purpose_regs(function, symbols);
+    // allocate_sse_regs(function, symbols);
 }
 
 const GENERAL_PURPOSE_REGS: [Reg; 12] = [
@@ -42,8 +43,30 @@ const SSE_REGS: [Reg; 14] = [
 ];
 
 fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendSymbolTable) {
-    let mut interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword]);
+    let callee_saved_registers = [
+        Reg::Di,
+        Reg::Si,
+        Reg::Dx,
+        Reg::Cx,
+        Reg::R8,
+        Reg::R9,
+        Reg::Ax,
+    ];
+    let mut interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &callee_saved_registers);
     color_graph(&mut interference_graph, &GENERAL_PURPOSE_REGS);
+    let register_map = create_register_map(&interference_graph);
+    replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
+    let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get_mut(&function.name) else {
+        panic!("Function {} does not have symbol data", function.name);
+    };
+    callee_saved_registers.clear(); // just in case
+    callee_saved_registers.extend(register_map.callee_saved_regs);
+}
+
+fn allocate_sse_regs(function: &mut Function, symbols: &mut BackendSymbolTable) {
+    let callee_saved_registers = &SSE_REGS;
+    let mut interference_graph = build_interference_graph(function, symbols, &SSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &SSE_REGS);
+    color_graph(&mut interference_graph, &SSE_REGS);
     let register_map = create_register_map(&interference_graph);
     replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
     let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get_mut(&function.name) else {
@@ -107,7 +130,7 @@ impl InterferenceGraph {
     }
 }
 
-fn build_interference_graph(function: &Function, symbols: &BackendSymbolTable, available_regs: &[Reg], allowed_types: &[AsmType]) -> InterferenceGraph {
+fn build_interference_graph(function: &Function, symbols: &BackendSymbolTable, available_regs: &[Reg], allowed_types: &[AsmType], caller_saved_registers: &[Reg]) -> InterferenceGraph {
     let mut nodes = BTreeMap::new();
     let mut spill_costs = HashMap::new();
     add_hard_registers(&mut nodes, available_regs);
@@ -115,8 +138,8 @@ fn build_interference_graph(function: &Function, symbols: &BackendSymbolTable, a
     let mut interference_graph = InterferenceGraph { nodes };
     add_spill_costs(&mut interference_graph.nodes, &spill_costs);
     let cfg = Cfg::new(&function.instructions);
-    let liveness = analyze_liveness(function, &cfg, symbols);
-    add_edges(&mut interference_graph, &cfg, &liveness, symbols);
+    let liveness = analyze_liveness(function, &cfg, symbols, caller_saved_registers);
+    add_edges(&mut interference_graph, &cfg, &liveness, symbols, caller_saved_registers);
     interference_graph
 }
 
@@ -258,8 +281,9 @@ struct UsedAndUpdated {
 fn find_used_and_updated(
     instruction: &Instruction,
     symbols: &BackendSymbolTable,
+    caller_saved_registers: &[Reg]
 ) -> UsedAndUpdated {
-    match instruction {
+    let mut used_and_updated = match instruction {
         Instruction::Mov(_, src, dst)
         | Instruction::Movsx(_, src, _, dst)
         | Instruction::MovZeroExtend(_, src, _, dst)
@@ -293,22 +317,32 @@ fn find_used_and_updated(
             let used: Vec<Operand> = param_registers.iter().map(|&reg| reg.into()).collect();
             UsedAndUpdated {
                 used,
-                updated: vec![
-                    Reg::Di.into(),
-                    Reg::Si.into(),
-                    Reg::Dx.into(),
-                    Reg::Cx.into(),
-                    Reg::R8.into(),
-                    Reg::R9.into(),
-                    Reg::Ax.into(),
-                ],
+                updated: caller_saved_registers.iter().map(|&reg| reg.into()).collect(),
             }
         }
         Instruction::Jmp(_)
         | Instruction::Label(_)
         | Instruction::Ret
         | Instruction::JmpCC(_, _) => UsedAndUpdated { used: vec![], updated: vec![] },
+    };
+
+    let mut used_mem_regs = Vec::new();
+    for operand in used_and_updated.used.iter().chain(used_and_updated.updated.iter()) {
+        match operand {
+            Operand::Memory(reg, _) => {
+                used_mem_regs.push(Operand::Reg(*reg));
+            }
+            Operand::Indexed(reg1, reg2, _) => {
+                used_mem_regs.push(Operand::Reg(*reg1));
+                used_mem_regs.push(Operand::Reg(*reg2));
+            }
+            _ => continue
+        }
     }
+
+    used_and_updated.used.extend(used_mem_regs);
+
+    used_and_updated
 }
 
 fn liveness_transfer_function(
@@ -316,11 +350,12 @@ fn liveness_transfer_function(
     node: &CfgNode,
     symbols: &BackendSymbolTable,
     end_live_registers: RegSet,
+    caller_saved_registers: &[Reg]
 ) {
     let mut current_live_registers = end_live_registers.clone();
     for (i, instruction) in node.instructions.iter().enumerate().rev() {
         annotations.annotate_instruction(node.id, i, current_live_registers.clone());
-        let uu = find_used_and_updated(instruction, symbols);
+        let uu = find_used_and_updated(instruction, symbols, caller_saved_registers);
         for operand in uu.updated {
             if let Some(reg) = operand.as_register() {
                 current_live_registers.remove(&reg);
@@ -336,7 +371,7 @@ fn liveness_transfer_function(
     annotations.annotate_block(node.id, current_live_registers);
 }
 
-fn analyze_liveness(function: &Function, cfg: &Cfg, symbols: &BackendSymbolTable) -> Annotation<RegSet> {
+fn analyze_liveness(function: &Function, cfg: &Cfg, symbols: &BackendSymbolTable, caller_saved_registers: &[Reg]) -> Annotation<RegSet> {
     let Some(BackendSymbolData::Fn { ret_registers, .. }) = symbols.get(&function.name) else {
         panic!("Function {} does not have symbol data", function.name);
     };
@@ -357,7 +392,7 @@ fn analyze_liveness(function: &Function, cfg: &Cfg, symbols: &BackendSymbolTable
         let old_registers = &annotations.get_block_annotation(&node_id).clone();
         let node = cfg.get_node(node_id);
         let incoming_registers = liveness_meet_operator(&mut annotations, cfg, node, ret_registers);
-        liveness_transfer_function(&mut annotations, node, symbols, incoming_registers);
+        liveness_transfer_function(&mut annotations, node, symbols, incoming_registers, caller_saved_registers);
         if old_registers != annotations.get_block_annotation(&node_id) {
             for pred_id in &node.predecessors {
                 if pred_id == &cfg.entry_id() {
@@ -377,6 +412,7 @@ fn add_edges(
     cfg: &Cfg,
     liveness: &Annotation<RegSet>,
     symbols: &BackendSymbolTable,
+    caller_saved_registers: &[Reg]
 ) {
     for node_id in cfg.all_ids() {
         if node_id == cfg.exit_id() || node_id == cfg.entry_id() {
@@ -386,7 +422,7 @@ fn add_edges(
         let node = cfg.get_node(node_id);
 
         for (i, instruction) in node.instructions.iter().enumerate() {
-            let uu = find_used_and_updated(instruction, symbols);
+            let UsedAndUpdated { updated, .. } = find_used_and_updated(instruction, symbols, caller_saved_registers);
             let live_registers = liveness.get_instruction_annotation(node_id, i);
             for l in live_registers {
                 if let Instruction::Mov(_, src, _) = instruction
@@ -395,7 +431,7 @@ fn add_edges(
                 {
                     continue;
                 }
-                for u in &uu.updated {
+                for u in &updated {
                     if let Some(ur) = &u.as_register()
                         && l != ur
                         && interference_graph.contains(l)
