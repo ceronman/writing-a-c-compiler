@@ -7,7 +7,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 
 pub(super) fn allocate_registers(function: &mut Function, symbols: &mut BackendSymbolTable) {
     allocate_general_purpose_regs(function, symbols);
-    // allocate_sse_regs(function, symbols);
+    allocate_sse_regs(function, symbols);
 }
 
 const GENERAL_PURPOSE_REGS: [Reg; 12] = [
@@ -59,21 +59,15 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
     let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get_mut(&function.name) else {
         panic!("Function {} does not have symbol data", function.name);
     };
-    callee_saved_registers.clear(); // just in case
+    assert!(callee_saved_registers.is_empty());
     callee_saved_registers.extend(register_map.callee_saved_regs);
 }
 
 fn allocate_sse_regs(function: &mut Function, symbols: &mut BackendSymbolTable) {
-    let callee_saved_registers = &SSE_REGS;
-    let mut interference_graph = build_interference_graph(function, symbols, &SSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &SSE_REGS);
+    let mut interference_graph = build_interference_graph(function, symbols, &SSE_REGS, &[AsmType::Double], &SSE_REGS);
     color_graph(&mut interference_graph, &SSE_REGS);
     let register_map = create_register_map(&interference_graph);
     replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
-    let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get_mut(&function.name) else {
-        panic!("Function {} does not have symbol data", function.name);
-    };
-    callee_saved_registers.clear(); // just in case
-    callee_saved_registers.extend(register_map.callee_saved_regs);
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
