@@ -28,6 +28,13 @@ const SSE_ARG_REGISTERS: [Reg; 8] = [
     Reg::XMM7,
 ];
 
+// TODO: move constants to Reg
+impl Reg {
+    fn is_xmm(&self) -> bool {
+        matches!(self,Reg::XMM0| Reg::XMM1| Reg::XMM2| Reg::XMM3| Reg::XMM4| Reg::XMM5| Reg::XMM6| Reg::XMM7| Reg::XMM8| Reg::XMM9| Reg::XMM10| Reg::XMM11| Reg::XMM12| Reg::XMM13| Reg::XMM14| Reg::XMM15)
+    }
+}
+
 const INT_RETURN_REGISTERS: [Reg; 2] = [Reg::Ax, Reg::Dx];
 const SSE_RETURN_REGISTERS: [Reg; 2] = [Reg::XMM0, Reg::XMM1];
 
@@ -1848,6 +1855,23 @@ impl Compiler {
                         Operand::Imm(value)
                     };
                     fixed.push(Instruction::Push(value));
+                }
+
+                Instruction::Push(Operand::Reg(reg)) if reg.is_xmm() => {
+                    fixed.push(Instruction::Binary(
+                            AsmType::Quadword,
+                            BinaryOp::Sub,
+                            Operand::Imm(8),
+                            Reg::SP.into(),
+                        )
+                    );
+                    fixed.push(
+                        Instruction::Mov(
+                            AsmType::Double,
+                            reg.into(),
+                            Operand::Memory(Reg::SP, 0)
+                        )
+                    );
                 }
 
                 Instruction::MovZeroExtend(src_ty, src, dst_ty, dst)

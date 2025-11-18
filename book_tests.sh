@@ -8,7 +8,6 @@ set -euxo pipefail
     --chapter 20 \
     --no-coalescing \
     --failfast \
-    --latest-only \
     --verbose
 #    --bitwise \
 #    --compound \

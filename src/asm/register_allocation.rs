@@ -43,7 +43,7 @@ const SSE_REGS: [Reg; 14] = [
 ];
 
 fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendSymbolTable) {
-    let callee_saved_registers = [
+    let calleer_saved_registers = [
         Reg::Di,
         Reg::Si,
         Reg::Dx,
@@ -52,9 +52,10 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
         Reg::R9,
         Reg::Ax,
     ];
-    let mut interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &callee_saved_registers);
+    let mut interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &calleer_saved_registers);
     color_graph(&mut interference_graph, &GENERAL_PURPOSE_REGS);
     let register_map = create_register_map(&interference_graph);
+    println!("{:#?}", register_map.register_map);
     replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
     let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get_mut(&function.name) else {
         panic!("Function {} does not have symbol data", function.name);
@@ -67,6 +68,7 @@ fn allocate_sse_regs(function: &mut Function, symbols: &mut BackendSymbolTable) 
     let mut interference_graph = build_interference_graph(function, symbols, &SSE_REGS, &[AsmType::Double], &SSE_REGS);
     color_graph(&mut interference_graph, &SSE_REGS);
     let register_map = create_register_map(&interference_graph);
+    println!("{:#?}", register_map.register_map);
     replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
 }
 
@@ -166,36 +168,30 @@ fn add_pseudo_registers(
     };
     for instruction in &function.instructions {
         match instruction {
-            Instruction::Mov(ty, op1, op2)
-            | Instruction::Cvttsd2si(ty, op1, op2)
-            | Instruction::Cvtsi2sd(ty, op1, op2)
-            | Instruction::Binary(ty, _, op1, op2)
-            | Instruction::Cmp(ty, op1, op2) => {
-                add_pseudo_reg(nodes, spill_costs, op1, symbols, ty, allowed_types, aliased_vars);
-                add_pseudo_reg(nodes, spill_costs, op2, symbols, ty, allowed_types, aliased_vars);
+            Instruction::Mov(_, op1, op2)
+            | Instruction::Movsx(_, op1, _, op2)
+            | Instruction::MovZeroExtend(_, op1, _, op2)
+            | Instruction::Binary(_, _, op1, op2)
+            | Instruction::Cmp(_, op1, op2)
+            | Instruction::Lea(op1, op2)
+            | Instruction::Cvttsd2si(_, op1, op2)
+            | Instruction::Cvtsi2sd(_, op1, op2) => {
+                add_pseudo_reg(nodes, spill_costs, op1, symbols, allowed_types, aliased_vars);
+                add_pseudo_reg(nodes, spill_costs, op2, symbols, allowed_types, aliased_vars);
             }
-            Instruction::Movsx(ty1, op1, ty2, op2)
-            | Instruction::MovZeroExtend(ty1, op1, ty2, op2) => {
-                add_pseudo_reg(nodes, spill_costs, op1, symbols, ty1, allowed_types, aliased_vars);
-                add_pseudo_reg(nodes, spill_costs, op2, symbols, ty2, allowed_types, aliased_vars);
+
+            Instruction::Unary(_, _, op)
+            | Instruction::Idiv(_, op)
+            | Instruction::SetCC(_, op)
+            | Instruction::Push(op)
+            | Instruction::Div(_, op) => {
+                add_pseudo_reg(nodes, spill_costs, op, symbols, allowed_types, aliased_vars);
             }
-            Instruction::Lea(op1, op2) => {
-                add_pseudo_reg(nodes, spill_costs, op1, symbols, &AsmType::Quadword, allowed_types, aliased_vars);
-                add_pseudo_reg(nodes, spill_costs, op2, symbols, &AsmType::Quadword, allowed_types, aliased_vars);
-            }
-            Instruction::Unary(ty, _, op)
-            | Instruction::Idiv(ty, op)
-            | Instruction::Div(ty, op) => {
-                add_pseudo_reg(nodes, spill_costs, op, symbols, ty, allowed_types, aliased_vars);
-            }
-            Instruction::SetCC(_, op) => {
-                add_pseudo_reg(nodes, spill_costs, op, symbols, &AsmType::Byte, allowed_types, aliased_vars);
-            }
+
             Instruction::Cdq(_)
             | Instruction::Jmp(_)
             | Instruction::JmpCC(_, _)
             | Instruction::Label(_)
-            | Instruction::Push(_)
             | Instruction::Pop(_)
             | Instruction::Call(_)
             | Instruction::Ret => {}
@@ -208,12 +204,11 @@ fn add_pseudo_reg(
     spill_costs: &mut HashMap<Symbol, f64>,
     op: &Operand,
     symbols: &BackendSymbolTable,
-    ty: &AsmType,
     allowed_types: &[AsmType],
     aliased_vars: &HashSet<Symbol>
 ) {
     if let Operand::Pseudo(name) = op
-        && let Some(BackendSymbolData::Obj { is_static, ..}) = symbols.get(name)
+        && let Some(BackendSymbolData::Obj { is_static, ty, ..}) = symbols.get(name)
         && !is_static
         && allowed_types.contains(ty)
         && !aliased_vars.contains(name) {
@@ -571,15 +566,15 @@ fn replace_pseudo_regs(instructions: &mut Vec<Instruction>, reg_map: &HashMap<Sy
             Instruction::Unary(_, _, op)
             | Instruction::Idiv(_, op)
             | Instruction::Div(_, op)
+            | Instruction::Push(op)
             | Instruction::SetCC(_, op) => {
                 replace_reg(op, reg_map);
             }
             Instruction::Cdq(_)
+            | Instruction::Pop(_)
             | Instruction::Jmp(_)
             | Instruction::JmpCC(_, _)
             | Instruction::Label(_)
-            | Instruction::Push(_)
-            | Instruction::Pop(_)
             | Instruction::Call(_)
             | Instruction::Ret => {}
         }
