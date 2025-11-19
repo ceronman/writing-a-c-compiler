@@ -53,6 +53,7 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
         Reg::Ax,
     ];
     let mut interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &calleer_saved_registers);
+    add_spill_costs(function, &mut interference_graph.nodes);
     color_graph(&mut interference_graph, &GENERAL_PURPOSE_REGS);
     let register_map = create_register_map(&interference_graph);
     println!("{:#?}", register_map.register_map);
@@ -66,6 +67,7 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
 
 fn allocate_sse_regs(function: &mut Function, symbols: &mut BackendSymbolTable) {
     let mut interference_graph = build_interference_graph(function, symbols, &SSE_REGS, &[AsmType::Double], &SSE_REGS);
+    add_spill_costs(function, &mut interference_graph.nodes);
     color_graph(&mut interference_graph, &SSE_REGS);
     let register_map = create_register_map(&interference_graph);
     println!("{:#?}", register_map.register_map);
@@ -128,11 +130,9 @@ impl InterferenceGraph {
 
 fn build_interference_graph(function: &Function, symbols: &BackendSymbolTable, available_regs: &[Reg], allowed_types: &[AsmType], caller_saved_registers: &[Reg]) -> InterferenceGraph {
     let mut nodes = BTreeMap::new();
-    let mut spill_costs = HashMap::new();
     add_hard_registers(&mut nodes, available_regs);
-    add_pseudo_registers(&mut nodes, function, &mut spill_costs, symbols, allowed_types);
+    add_pseudo_registers(&mut nodes, function, symbols, allowed_types);
     let mut interference_graph = InterferenceGraph { nodes };
-    add_spill_costs(&mut interference_graph.nodes, &spill_costs);
     let cfg = Cfg::new(&function.instructions);
     let liveness = analyze_liveness(function, &cfg, symbols, caller_saved_registers);
     add_edges(&mut interference_graph, &cfg, &liveness, symbols, caller_saved_registers);
@@ -159,14 +159,33 @@ fn add_hard_registers(nodes: &mut BTreeMap<Register, InterferenceNode>, availabl
 fn add_pseudo_registers(
     nodes: &mut BTreeMap<Register, InterferenceNode>,
     function: &Function,
-    spill_costs: &mut HashMap<Symbol, f64>,
     symbols: &BackendSymbolTable,
     allowed_types: &[AsmType]
 ) {
     let Some(BackendSymbolData::Fn { aliased_vars, .. }) = symbols.get(&function.name) else {
         panic!("Function {} does not have symbol data", function.name);
     };
-    for instruction in &function.instructions {
+    walk_operands(&function.instructions, |op| {
+        if let Operand::Pseudo(name) = op
+            && let Some(BackendSymbolData::Obj { is_static, ty, ..}) = symbols.get(name)
+            && !is_static
+            && allowed_types.contains(ty)
+            && !aliased_vars.contains(name) {
+
+            let id = Register::Pseudo(name.clone());
+            nodes.insert(id.clone(), InterferenceNode {
+                id,
+                neighbors: BTreeSet::new(),
+                spill_cost: 0.0,
+                color: None,
+                pruned: false,
+            });
+        };
+    });
+}
+
+fn walk_operands(instructions: &[Instruction], mut lambda: impl FnMut(&Operand)) {
+    for instruction in instructions {
         match instruction {
             Instruction::Mov(_, op1, op2)
             | Instruction::Movsx(_, op1, _, op2)
@@ -176,8 +195,8 @@ fn add_pseudo_registers(
             | Instruction::Lea(op1, op2)
             | Instruction::Cvttsd2si(_, op1, op2)
             | Instruction::Cvtsi2sd(_, op1, op2) => {
-                add_pseudo_reg(nodes, spill_costs, op1, symbols, allowed_types, aliased_vars);
-                add_pseudo_reg(nodes, spill_costs, op2, symbols, allowed_types, aliased_vars);
+                lambda(op1);
+                lambda(op2);
             }
 
             Instruction::Unary(_, _, op)
@@ -185,7 +204,7 @@ fn add_pseudo_registers(
             | Instruction::SetCC(_, op)
             | Instruction::Push(op)
             | Instruction::Div(_, op) => {
-                add_pseudo_reg(nodes, spill_costs, op, symbols, allowed_types, aliased_vars);
+                lambda(op);
             }
 
             Instruction::Cdq(_)
@@ -199,34 +218,14 @@ fn add_pseudo_registers(
     }
 }
 
-fn add_pseudo_reg(
-    nodes: &mut BTreeMap<Register, InterferenceNode>,
-    spill_costs: &mut HashMap<Symbol, f64>,
-    op: &Operand,
-    symbols: &BackendSymbolTable,
-    allowed_types: &[AsmType],
-    aliased_vars: &HashSet<Symbol>
-) {
-    if let Operand::Pseudo(name) = op
-        && let Some(BackendSymbolData::Obj { is_static, ty, ..}) = symbols.get(name)
-        && !is_static
-        && allowed_types.contains(ty)
-        && !aliased_vars.contains(name) {
-
-        let sp = spill_costs.entry(name.clone()).or_insert(0.0);
-        *sp += 1.0;
-        let id = Register::Pseudo(name.clone());
-        nodes.insert(id.clone(), InterferenceNode {
-            id,
-            neighbors: BTreeSet::new(),
-            spill_cost: 0.0,
-            color: None,
-            pruned: false,
-        });
-    };
-}
-
-fn add_spill_costs(nodes: &mut BTreeMap<Register, InterferenceNode>, spill_costs: &HashMap<Symbol, f64>) {
+fn add_spill_costs(function: &Function, nodes: &mut BTreeMap<Register, InterferenceNode>) {
+    let mut spill_costs = HashMap::new();
+    walk_operands(&function.instructions, |op| {
+        if let Operand::Pseudo(name) = op {
+            let sp = spill_costs.entry(name.clone()).or_insert(0.0);
+            *sp += 1.0;
+        }
+    });
     for node in nodes.values_mut() {
         match &node.id {
             Register::Pseudo(name) => {
