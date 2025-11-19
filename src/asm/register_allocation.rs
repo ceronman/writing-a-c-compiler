@@ -52,7 +52,15 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
         Reg::R9,
         Reg::Ax,
     ];
-    let mut interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &calleer_saved_registers);
+    let mut interference_graph;
+    loop {
+        interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &calleer_saved_registers);
+        let coalesced_regs = coalesce(&mut interference_graph, &function.instructions, GENERAL_PURPOSE_REGS.len());
+        if coalesced_regs.is_empty() {
+            break;
+        }
+        rewrite_coalesced(&mut function.instructions, &coalesced_regs);
+    }
     add_spill_costs(function, &mut interference_graph.nodes);
     color_graph(&mut interference_graph, &GENERAL_PURPOSE_REGS);
     let register_map = create_register_map(&interference_graph);
@@ -80,6 +88,19 @@ enum Register {
     Pseudo(Symbol),
 }
 
+impl Register {
+    fn is_hard(&self) -> bool {
+        matches!(self, Register::Hard(_))
+    }
+
+    fn as_operand(&self) -> Operand {
+        match self {
+            Register::Hard(r) => Operand::Reg(*r),
+            Register::Pseudo(name) => Operand::Pseudo(name.clone()),
+        }
+    }
+}
+
 #[derive(Debug)]
 struct InterferenceNode {
     id: Register,
@@ -87,6 +108,31 @@ struct InterferenceNode {
     spill_cost: f64,
     color: Option<i32>,
     pruned: bool,
+}
+
+struct DisjointSet(HashMap<Register, Register>);
+
+impl DisjointSet {
+    fn new() -> Self {
+        DisjointSet(HashMap::new())
+    }
+
+    fn union(&mut self, a: &Register, b: &Register) {
+        self.0.insert(a.clone(), b.clone());
+    }
+
+    fn find(&self, op: &Operand) -> Operand {
+        let Some(r) = op.as_register() else { return op.clone() };
+        let mut result = &r;
+        while let Some(representative) = self.0.get(result) {
+            result = representative;
+        }
+        result.as_operand()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
 }
 
 #[derive(Debug)]
@@ -115,6 +161,14 @@ impl InterferenceGraph {
             .neighbors
             .insert(from.clone());
     }
+    fn remove_edge(&mut self, from: &Register, to: &Register) {
+        self.get_node_mut(from)
+            .neighbors
+            .remove(to);
+        self.get_node_mut(to)
+            .neighbors
+            .remove(&from);
+    }
 
     fn unpruned_nodes(&self) -> Vec<&InterferenceNode> {
         self.nodes.values().filter(|n| !n.pruned).collect()
@@ -125,6 +179,66 @@ impl InterferenceGraph {
            iter()
            .filter(|neighbor| !self.get_node(neighbor).pruned)
            .count()
+    }
+
+    fn are_neighbors(&self, reg1: &Register, reg2: &Register) -> bool {
+        self.get_node(reg1).neighbors.contains(reg2) || self.get_node(reg2).neighbors.contains(reg1)
+    }
+
+    fn conservative_coalesceable(&self, src: &Register, dst: &Register, num_hard_regs: usize) -> bool {
+        if self.briggs_test(src, dst, num_hard_regs) {
+            return true;
+        }
+        if src.is_hard() {
+            return self.george_test(src, dst, num_hard_regs);
+        }
+        if dst.is_hard() {
+            return self.george_test(dst, src, num_hard_regs);
+        }
+        false
+    }
+
+    fn briggs_test(&self, src: &Register, dst: &Register, num_hard_regs: usize) -> bool {
+        let mut significant_neighbors = 0;
+
+        let src_node = self.get_node(src);
+        let dst_node = self.get_node(dst);
+        let combined_neighbors = src_node.neighbors.union(&dst_node.neighbors);
+        for neighbor in combined_neighbors {
+            let neighbor_node = self.get_node(neighbor);
+            let mut degree = neighbor_node.neighbors.len();
+            if self.are_neighbors(neighbor, src) && self.are_neighbors(neighbor, dst) {
+                degree -= 1;
+            }
+            if degree >= num_hard_regs {
+                significant_neighbors += 1;
+            }
+        }
+
+        significant_neighbors < num_hard_regs
+    }
+
+    fn george_test(&self, hard_reg: &Register, pseudo_reg: &Register, num_hard_regs: usize) -> bool {
+        let pseudo_reg_node = self.get_node(pseudo_reg);
+        for neighbor in pseudo_reg_node.neighbors.iter() {
+            if self.are_neighbors(neighbor, hard_reg) {
+                continue
+            }
+            if self.get_node(neighbor).neighbors.len() < num_hard_regs {
+                continue
+            }
+            return false
+        }
+        true
+    }
+
+    fn update(&mut self, to_merge: &Register, to_keep: &Register) {
+        let neighbors = self.get_node(to_merge).neighbors.clone();
+        for neighbor in neighbors.iter() {
+            self.add_edge(neighbor, to_keep);
+            self.remove_edge(to_merge, neighbor);
+        }
+        self.nodes.remove(to_merge);
     }
 }
 
@@ -212,6 +326,74 @@ fn walk_operands(instructions: &[Instruction], mut lambda: impl FnMut(&Operand))
             | Instruction::JmpCC(_, _)
             | Instruction::Label(_)
             | Instruction::Pop(_)
+            | Instruction::Call(_)
+            | Instruction::Ret => {}
+        }
+    }
+}
+
+fn coalesce(graph: &mut InterferenceGraph, instructions: &[Instruction], num_hard_regs: usize) -> DisjointSet {
+    let mut coalesced_regs = DisjointSet::new();
+
+    for instruction in instructions {
+        if let Instruction::Mov(_, src, dst) = instruction {
+            let src = coalesced_regs.find(&src);
+            let Some(src) = src.as_register() else { continue };
+
+            let dst = coalesced_regs.find(&dst);
+            let Some(dst) = dst.as_register() else { continue };
+
+            if graph.contains(&src)
+                && graph.contains(&dst)
+                && src != dst
+                && !graph.are_neighbors(&src, &dst)
+                && graph.conservative_coalesceable(&src, &dst, num_hard_regs) {
+
+                let (to_keep, to_merge) = if src.is_hard() {
+                    (src, dst)
+                } else {
+                    (dst, src)
+                };
+
+                coalesced_regs.union(&to_keep, &to_merge);
+                graph.update(&to_merge, &to_keep);
+            }
+        }
+    }
+
+    coalesced_regs
+}
+
+// TODO: duplicate code
+fn rewrite_coalesced(instructions: &mut Vec<Instruction>, coalesced_regs: &DisjointSet) {
+    fn replace_reg(op: &mut Operand, coalesced_regs: &DisjointSet) {
+        *op = coalesced_regs.find(op)
+    }
+    for instruction in instructions.iter_mut() {
+        match instruction {
+            Instruction::Mov(_, op1, op2)
+            | Instruction::Movsx(_, op1, _, op2)
+            | Instruction::MovZeroExtend(_, op1, _, op2)
+            | Instruction::Lea(op1, op2)
+            | Instruction::Cvttsd2si(_, op1, op2)
+            | Instruction::Cvtsi2sd(_, op1, op2)
+            | Instruction::Binary(_, _, op1, op2)
+            | Instruction::Cmp(_, op1, op2) => {
+                replace_reg(op1, coalesced_regs);
+                replace_reg(op2, coalesced_regs);
+            }
+            Instruction::Unary(_, _, op)
+            | Instruction::Idiv(_, op)
+            | Instruction::Div(_, op)
+            | Instruction::Push(op)
+            | Instruction::SetCC(_, op) => {
+                replace_reg(op, coalesced_regs);
+            }
+            Instruction::Cdq(_)
+            | Instruction::Pop(_)
+            | Instruction::Jmp(_)
+            | Instruction::JmpCC(_, _)
+            | Instruction::Label(_)
             | Instruction::Call(_)
             | Instruction::Ret => {}
         }
