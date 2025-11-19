@@ -8,12 +8,12 @@ set -euxo pipefail
     --chapter 20 \
     --no-coalescing \
     --failfast \
+    --bitwise \
+    --compound \
+    --increment \
+    --goto \
+    --switch \
+    --nan \
+    --union \
     --verbose
-#    --bitwise \
-#    --compound \
-#    --increment \
-#    --goto \
-#    --switch \
-#    --nan \
-#    --union \
 
