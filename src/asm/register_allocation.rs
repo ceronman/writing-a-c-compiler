@@ -235,7 +235,7 @@ impl InterferenceGraph {
     fn update(&mut self, to_merge: &Register, to_keep: &Register) {
         let neighbors = self.get_node(to_merge).neighbors.clone();
         for neighbor in neighbors.iter() {
-            self.add_edge(neighbor, to_keep);
+            self.add_edge(to_keep, neighbor);
             self.remove_edge(to_merge, neighbor);
         }
         self.nodes.remove(to_merge);
@@ -355,7 +355,7 @@ fn coalesce(graph: &mut InterferenceGraph, instructions: &[Instruction], num_har
                     (dst, src)
                 };
 
-                coalesced_regs.union(&to_keep, &to_merge);
+                coalesced_regs.union(&to_merge, &to_keep);
                 graph.update(&to_merge, &to_keep);
             }
         }
@@ -398,6 +398,18 @@ fn rewrite_coalesced(instructions: &mut Vec<Instruction>, coalesced_regs: &Disjo
             | Instruction::Ret => {}
         }
     }
+
+    instructions.retain(|instruction| {
+        match instruction {
+            Instruction::Mov(_, Operand::Reg(src), Operand::Reg(dst)) => {
+                src != dst
+            }
+            Instruction::Mov(_, Operand::Pseudo(src), Operand::Pseudo(dst)) => {
+                src != dst
+            }
+            _ => true,
+        }
+    });
 }
 
 fn add_spill_costs(function: &Function, nodes: &mut BTreeMap<Register, InterferenceNode>) {
