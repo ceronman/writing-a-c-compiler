@@ -43,7 +43,7 @@ const SSE_REGS: [Reg; 14] = [
 ];
 
 fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendSymbolTable) {
-    let calleer_saved_registers = [
+    let caller_saved_registers = [
         Reg::Di,
         Reg::Si,
         Reg::Dx,
@@ -54,7 +54,7 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
     ];
     let mut interference_graph;
     loop {
-        interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &calleer_saved_registers);
+        interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &caller_saved_registers);
         let coalesced_regs = coalesce(&mut interference_graph, &function.instructions, GENERAL_PURPOSE_REGS.len());
         if coalesced_regs.is_empty() {
             break;
