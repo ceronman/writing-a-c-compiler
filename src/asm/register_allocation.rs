@@ -64,7 +64,6 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
     add_spill_costs(function, &mut interference_graph.nodes);
     color_graph(&mut interference_graph, &GENERAL_PURPOSE_REGS);
     let register_map = create_register_map(&interference_graph);
-    println!("{:#?}", register_map.register_map);
     replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
     let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get_mut(&function.name) else {
         panic!("Function {} does not have symbol data", function.name);
@@ -74,11 +73,18 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
 }
 
 fn allocate_sse_regs(function: &mut Function, symbols: &mut BackendSymbolTable) {
-    let mut interference_graph = build_interference_graph(function, symbols, &SSE_REGS, &[AsmType::Double], &SSE_REGS);
+    let mut interference_graph;
+    loop {
+        interference_graph = build_interference_graph(function, symbols, &SSE_REGS, &[AsmType::Double], &SSE_REGS);
+        let coalesced_regs = coalesce(&mut interference_graph, &function.instructions, SSE_REGS.len());
+        if coalesced_regs.is_empty() {
+            break;
+        }
+        rewrite_coalesced(&mut function.instructions, &coalesced_regs);
+    }
     add_spill_costs(function, &mut interference_graph.nodes);
     color_graph(&mut interference_graph, &SSE_REGS);
     let register_map = create_register_map(&interference_graph);
-    println!("{:#?}", register_map.register_map);
     replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
 }
 
