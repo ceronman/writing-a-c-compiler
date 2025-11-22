@@ -5,26 +5,35 @@ use crate::asm::ir::{
 use crate::semantic::StaticInit;
 use std::io::{Result, Write};
 
-pub fn emit_program(output: &mut impl Write, program: &Program) -> Result<()> {
+#[derive(Copy, Clone)]
+pub enum TargetOs {
+    MacOs,
+    Linux,
+}
+
+pub fn emit_program(output: &mut impl Write, program: &Program, target_os: TargetOs) -> Result<()> {
     for (i, top_level) in program.top_level.iter().enumerate() {
         match top_level {
-            TopLevel::Function(function) => emit_function(output, function)?,
-            TopLevel::Variable(variable) => emit_variable(output, variable)?,
-            TopLevel::Constant(constant) => emit_constant(output, constant)?,
+            TopLevel::Function(function) => emit_function(output, function, target_os)?,
+            TopLevel::Variable(variable) => emit_variable(output, variable, target_os)?,
+            TopLevel::Constant(constant) => emit_constant(output, constant, target_os)?,
         }
         if i < program.top_level.len() - 1 {
             writeln!(output)?;
         }
     }
+    if let TargetOs::Linux = target_os {
+        writeln!(output, ".section .note.GNU-stack,\"\",@progbits")?;
+    }
     Ok(())
 }
 
-fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
+fn emit_function(output: &mut impl Write, function: &Function, target_os: TargetOs) -> Result<()> {
     if function.global {
-        writeln!(output, "\t.globl _{name}", name = function.name)?;
+        writeln!(output, "\t.globl {}", emit_symbol(&function.name, target_os))?;
     }
     writeln!(output, "\t.text")?;
-    writeln!(output, "_{name}:", name = function.name)?;
+    writeln!(output, "{}:", emit_symbol(&function.name, target_os))?;
 
     // Prologue
     emit_ins(output, "pushq")?;
@@ -42,9 +51,9 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double => "movsd",
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, src, RegSize::from_ty(ty))?;
+                emit_operand(output, src, RegSize::from_ty(ty), target_os)?;
                 write!(output, ", ")?;
-                emit_operand(output, dst, RegSize::from_ty(ty))?;
+                emit_operand(output, dst, RegSize::from_ty(ty), target_os)?;
             }
             Instruction::Unary(ty, op, src) => {
                 let op = match (op, ty) {
@@ -60,7 +69,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     (_, AsmType::ByteArray { .. }) => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, src, RegSize::from_ty(ty))?;
+                emit_operand(output, src, RegSize::from_ty(ty), target_os)?;
             }
             Instruction::Binary(ty, op, left, right) => {
                 let typed_instruction = match (op, ty) {
@@ -123,9 +132,9 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     BinaryOp::Sar | BinaryOp::Shr | BinaryOp::Sal | BinaryOp::Shl => RegSize::Byte,
                     _ => RegSize::from_ty(ty),
                 };
-                emit_operand(output, left, left_size)?;
+                emit_operand(output, left, left_size, target_os)?;
                 write!(output, ", ")?;
-                emit_operand(output, right, RegSize::from_ty(ty))?;
+                emit_operand(output, right, RegSize::from_ty(ty), target_os)?;
             }
 
             Instruction::Idiv(ty, src) => {
@@ -136,7 +145,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, src, RegSize::from_ty(ty))?;
+                emit_operand(output, src, RegSize::from_ty(ty), target_os)?;
             }
 
             Instruction::Div(ty, src) => {
@@ -147,7 +156,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double | AsmType::ByteArray { .. } => unreachable!(),
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, src, RegSize::from_ty(ty))?;
+                emit_operand(output, src, RegSize::from_ty(ty), target_os)?;
             }
 
             Instruction::Cdq(ty) => {
@@ -178,13 +187,13 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     AsmType::Double => "comisd",
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, left, RegSize::from_ty(ty))?;
+                emit_operand(output, left, RegSize::from_ty(ty), target_os)?;
                 write!(output, ", ")?;
-                emit_operand(output, right, RegSize::from_ty(ty))?;
+                emit_operand(output, right, RegSize::from_ty(ty), target_os)?;
             }
             Instruction::Jmp(label) => {
                 emit_ins(output, "jmp")?;
-                emit_label(output, label)?;
+                emit_label(output, label, target_os)?;
             }
             Instruction::JmpCC(cond, target) => {
                 match cond {
@@ -201,7 +210,7 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     CondCode::P => emit_ins(output, "jp")?,
                     CondCode::NP => emit_ins(output, "jnp")?,
                 }
-                emit_label(output, target)?;
+                emit_label(output, target, target_os)?;
             }
             Instruction::SetCC(cond, dst) => {
                 match cond {
@@ -218,45 +227,45 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     CondCode::P => emit_ins(output, "setp")?,
                     CondCode::NP => emit_ins(output, "setnp")?,
                 }
-                emit_operand(output, dst, RegSize::Byte)?;
+                emit_operand(output, dst, RegSize::Byte, target_os)?;
             }
             Instruction::Label(label) => {
-                emit_label(output, label)?;
+                emit_label(output, label, target_os)?;
                 write!(output, ":")?;
             }
             Instruction::Push(operand) => {
                 emit_ins(output, "pushq")?;
-                emit_operand(output, operand, RegSize::Quad)?;
+                emit_operand(output, operand, RegSize::Quad, target_os)?;
             }
             Instruction::Pop(reg) => {
                 emit_ins(output, "popq")?;
-                emit_operand(output, &Operand::Reg(*reg), RegSize::Quad)?;
+                emit_operand(output, &Operand::Reg(*reg), RegSize::Quad, target_os)?;
             }
             Instruction::Call(name) => {
                 emit_ins(output, "call")?;
-                write!(output, "_{name}")?;
+                write!(output, "{}", emit_symbol(name, target_os))?;
             }
             Instruction::Movsx(src_ty, src, dst_ty, dst) => {
                 let s1 = RegSize::from_ty(src_ty);
                 let s2 = RegSize::from_ty(dst_ty);
                 emit_2sized(output, "movs", s1, s2)?;
-                emit_operand(output, src, s1)?;
+                emit_operand(output, src, s1, target_os)?;
                 write!(output, ", ")?;
-                emit_operand(output, dst, s2)?;
+                emit_operand(output, dst, s2, target_os)?;
             }
             Instruction::MovZeroExtend(src_ty, src, dst_ty, dst) => {
                 let s1 = RegSize::from_ty(src_ty);
                 let s2 = RegSize::from_ty(dst_ty);
                 emit_2sized(output, "movz", s1, s2)?;
-                emit_operand(output, src, s1)?;
+                emit_operand(output, src, s1, target_os)?;
                 write!(output, ", ")?;
-                emit_operand(output, dst, s2)?;
+                emit_operand(output, dst, s2, target_os)?;
             }
             Instruction::Lea(src, dst) => {
                 emit_ins(output, "leaq")?;
-                emit_operand(output, src, RegSize::Quad)?;
+                emit_operand(output, src, RegSize::Quad, target_os)?;
                 write!(output, ", ")?;
-                emit_operand(output, dst, RegSize::Quad)?;
+                emit_operand(output, dst, RegSize::Quad, target_os)?;
             }
             Instruction::Cvttsd2si(ty, src, dst) => {
                 let op = match ty {
@@ -268,9 +277,9 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     }
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, src, RegSize::Quad)?;
+                emit_operand(output, src, RegSize::Quad, target_os)?;
                 write!(output, ", ")?;
-                emit_operand(output, dst, RegSize::from_ty(ty))?;
+                emit_operand(output, dst, RegSize::from_ty(ty), target_os)?;
             }
             Instruction::Cvtsi2sd(ty, src, dst) => {
                 let op = match ty {
@@ -282,9 +291,9 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
                     }
                 };
                 emit_ins(output, op)?;
-                emit_operand(output, src, RegSize::from_ty(ty))?;
+                emit_operand(output, src, RegSize::from_ty(ty), target_os)?;
                 write!(output, ", ")?;
-                emit_operand(output, dst, RegSize::Quad)?;
+                emit_operand(output, dst, RegSize::Quad, target_os)?;
             }
         }
         writeln!(output)?;
@@ -292,9 +301,9 @@ fn emit_function(output: &mut impl Write, function: &Function) -> Result<()> {
     Ok(())
 }
 
-fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<()> {
+fn emit_variable(output: &mut impl Write, variable: &StaticVariable, target_os: TargetOs) -> Result<()> {
     if variable.global {
-        writeln!(output, "\t.globl _{name}", name = variable.name)?;
+        writeln!(output, "\t.globl {}", emit_symbol(&variable.name, target_os))?;
     }
 
     if matches!(
@@ -308,22 +317,22 @@ fn emit_variable(output: &mut impl Write, variable: &StaticVariable) -> Result<(
         writeln!(output, "\t.bss")?;
         emit_ins(output, ".balign")?;
         writeln!(output, "{}", variable.alignment)?;
-        writeln!(output, "_{name}:", name = variable.name)?;
+        writeln!(output, "{}:", emit_symbol(&variable.name, target_os))?;
         emit_ins(output, ".zero")?;
         writeln!(output, "{}", variable.alignment)?;
     } else {
         writeln!(output, "\t.data")?;
         emit_ins(output, ".balign")?;
         writeln!(output, "{}", variable.alignment)?;
-        writeln!(output, "_{name}:", name = variable.name)?;
+        writeln!(output, "{}:", emit_symbol(&variable.name, target_os))?;
         for init in &variable.init {
-            emit_static_init(output, init)?;
+            emit_static_init(output, init, target_os)?;
         }
     }
     Ok(())
 }
 
-fn emit_static_init(output: &mut impl Write, init: &StaticInit) -> Result<()> {
+fn emit_static_init(output: &mut impl Write, init: &StaticInit, target_os: TargetOs) -> Result<()> {
     match init {
         StaticInit::String {
             symbol,
@@ -347,7 +356,7 @@ fn emit_static_init(output: &mut impl Write, init: &StaticInit) -> Result<()> {
         }
         StaticInit::Pointer(label) => {
             emit_ins(output, ".quad")?;
-            emit_label(output, label)?;
+            emit_label(output, label, target_os)?;
             writeln!(output)?;
         }
         StaticInit::Char(v) => {
@@ -386,25 +395,47 @@ fn emit_static_init(output: &mut impl Write, init: &StaticInit) -> Result<()> {
     Ok(())
 }
 
-fn emit_constant(output: &mut impl Write, constant: &StaticConstant) -> Result<()> {
+fn emit_constant(output: &mut impl Write, constant: &StaticConstant, target_os: TargetOs) -> Result<()> {
     if let StaticInit::String { .. } = &constant.init {
-        writeln!(output, "\t.cstring")?;
-        writeln!(output, "L{name}:", name = constant.name)?;
-        emit_static_init(output, &constant.init)?;
+        match target_os {
+            TargetOs::MacOs => writeln!(output, "\t.cstring")?,
+            TargetOs::Linux => writeln!(output, "\t.section .rodata")?,
+        }
+        emit_label(output, &constant.name, target_os)?;
+        writeln!(output, ":")?;
+        emit_static_init(output, &constant.init, target_os)?;
         return Ok(());
     }
     match constant.alignment {
         8 => {
-            writeln!(output, "\t.literal8")?;
-            writeln!(output, "\t.balign 8")?;
-            writeln!(output, "L{name}:", name = constant.name)?;
-            emit_static_init(output, &constant.init)?;
+            match target_os {
+                TargetOs::MacOs => {
+                    writeln!(output, "\t.literal8")?;
+                    writeln!(output, "\t.balign 8")?;
+                }
+                TargetOs::Linux => {
+                    writeln!(output, "\t.section .rodata")?;
+                    writeln!(output, "\t.balign 8")?;
+                }
+            }
+            emit_label(output, &constant.name, target_os)?;
+            writeln!(output, ":")?;
+            emit_static_init(output, &constant.init, target_os)?;
         }
         16 => {
-            writeln!(output, "\t.literal16")?;
-            writeln!(output, "\t.balign 16")?;
-            writeln!(output, "L{name}:", name = constant.name)?;
-            emit_static_init(output, &constant.init)?;
+            match target_os {
+                TargetOs::MacOs => {
+                    writeln!(output, "\t.literal16")?;
+                    writeln!(output, "\t.balign 16")?;
+                }
+                TargetOs::Linux => {
+                    writeln!(output, "\t.section .rodata")?;
+                    writeln!(output, "\t.balign 16")?;
+                }
+            }
+            emit_label(output, &constant.name, target_os)?;
+            writeln!(output, ":")?;
+            emit_static_init(output, &constant.init, target_os)?;
             emit_ins(output, ".quad")?;
             writeln!(output, "0")?;
         }
@@ -449,7 +480,7 @@ impl RegSize {
     }
 }
 
-fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Result<()> {
+fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize, target_os: TargetOs) -> Result<()> {
     match (operand, size) {
         (Operand::Reg(Reg::Ax), RegSize::Byte) => write!(output, "%al"),
         (Operand::Reg(Reg::Ax), RegSize::Long) => write!(output, "%eax"),
@@ -531,14 +562,14 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
         (Operand::Memory(reg, offset), _) => {
             write!(output, "{offset}")?;
             write!(output, "(")?;
-            emit_operand(output, &Operand::Reg(*reg), RegSize::Quad)?;
+            emit_operand(output, &Operand::Reg(*reg), RegSize::Quad, target_os)?;
             write!(output, ")")
         }
         (Operand::Indexed(reg1, reg2, scale), _) => {
             write!(output, "(")?;
-            emit_operand(output, &Operand::Reg(*reg1), RegSize::Quad)?;
+            emit_operand(output, &Operand::Reg(*reg1), RegSize::Quad, target_os)?;
             write!(output, ", ")?;
-            emit_operand(output, &Operand::Reg(*reg2), RegSize::Quad)?;
+            emit_operand(output, &Operand::Reg(*reg2), RegSize::Quad, target_os)?;
             write!(output, ", ")?;
             write!(output, "{scale}")?;
             write!(output, ")")
@@ -550,7 +581,10 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
                 offset,
             },
             _,
-        ) => write!(output, "L{name}+{offset}(%rip)"),
+        ) => {
+            emit_label(output, name, target_os)?;
+            write!(output, "+{offset}(%rip)")
+        },
         (
             Operand::Data {
                 is_static: false,
@@ -558,13 +592,24 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize) -> Re
                 offset,
             },
             _,
-        ) => write!(output, "_{name}+{offset}(%rip)"),
+        ) => write!(output, "{}+{offset}(%rip)", emit_symbol(name, target_os)),
         (Operand::Pseudo(..) | Operand::PseudoMem(..), _) => {
             unreachable!("Pseudo-registers should not appear here")
         }
     }
 }
 
-fn emit_label(output: &mut impl Write, label: &str) -> Result<()> {
-    write!(output, "L{label}")
+fn emit_label(output: &mut impl Write, label: &str, target_os: TargetOs) -> Result<()> {
+    match target_os {
+        TargetOs::MacOs => write!(output, "L{label}"),
+        TargetOs::Linux => write!(output, ".L{label}")
+    }
+
+}
+
+fn emit_symbol(name: &str, target_os: TargetOs) -> String {
+    match target_os {
+        TargetOs::MacOs => format!("_{name}"),
+        TargetOs::Linux => name.to_string(),
+    }
 }

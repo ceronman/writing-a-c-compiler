@@ -16,6 +16,7 @@ mod optimization;
 mod testgen;
 
 use crate::asm::ir::Program;
+use crate::emitter::TargetOs;
 use crate::optimization::OptimizationFlags;
 use crate::tempfile::TempPath;
 use std::fs;
@@ -111,7 +112,7 @@ fn main() -> Result<()> {
         Flag::Emit => write_assembly_to_stdout(&asm),
         Flag::GenerateAssemblyOnly => write_assembly_only(&options.filename, &asm),
         Flag::Assemble => assemble(&options.filename, &asm),
-        Flag::AssembleAndLink => assemble_and_link(&options.filename, &asm),
+        Flag::AssembleAndLink => assemble_and_link(&options.filename, &asm, &options),
         _ => unreachable!(),
     }
 }
@@ -120,6 +121,7 @@ struct Options {
     filename: PathBuf,
     flag: Flag,
     optimization: OptimizationFlags,
+    linkerArg: Option<String>
 }
 
 enum Flag {
@@ -138,6 +140,12 @@ enum Flag {
 fn parse_args() -> Options {
     let mut args: Vec<_> = std::env::args().skip(1).collect();
     let mut optimization = OptimizationFlags::default();
+    let linkerArg = if let Some(linkerArg) = args.iter().position(|arg| arg.starts_with("-l")) {
+        Some(args.remove(linkerArg).clone())
+    } else {
+        None
+    };
+
     if let Some(i) = args.iter().position(|arg| arg == "--fold-constants") {
         optimization.fold_constants = true;
         args.remove(i);
@@ -185,7 +193,7 @@ fn parse_args() -> Options {
         [path] => (path, Flag::AssembleAndLink),
         _ => {
             eprintln!("Error: incorrect number of arguments");
-            eprintln!("{}", args.join(" "));
+            eprintln!("command: `{}`", args.join(" "));
             eprintln!(
                 "Usage: compiler [ --lex | --parse | --validate | --codegen | --emit | -s | -c ] <FILENAME>"
             );
@@ -196,6 +204,7 @@ fn parse_args() -> Options {
         filename: PathBuf::from(path),
         flag,
         optimization,
+        linkerArg
     }
 }
 
@@ -218,7 +227,7 @@ fn run_preprocessor(filename: &Path) -> Result<TempPath> {
 
 fn write_assembly_to_stdout(program: &Program) -> Result<()> {
     let output = &mut std::io::stdout();
-    emitter::emit_program(output, program)?;
+    emitter::emit_program(output, program, current_target())?;
     Ok(())
 }
 
@@ -230,7 +239,7 @@ fn write_assembly_only(path: &Path, program: &Program) -> Result<()> {
         .truncate(true)
         .open(path.with_extension("s"))?;
     let output = &mut BufWriter::new(file);
-    emitter::emit_program(output, program)?;
+    emitter::emit_program(output, program, current_target())?;
     Ok(())
 }
 
@@ -244,7 +253,7 @@ fn assemble(path: &Path, program: &Program) -> Result<()> {
             .truncate(true)
             .open(assembler_code_path.as_path())?;
         let output = &mut BufWriter::new(file);
-        emitter::emit_program(output, program)?;
+        emitter::emit_program(output, program, current_target())?;
     }
     let output = Command::new("gcc")
         .arg("-c")
@@ -260,7 +269,7 @@ fn assemble(path: &Path, program: &Program) -> Result<()> {
     Ok(())
 }
 
-fn assemble_and_link(path: &Path, program: &Program) -> Result<()> {
+fn assemble_and_link(path: &Path, program: &Program, options: &Options) -> Result<()> {
     let assembler_code_path = TempPath::new(path.with_extension("s"));
     {
         let file = OpenOptions::new()
@@ -270,18 +279,33 @@ fn assemble_and_link(path: &Path, program: &Program) -> Result<()> {
             .truncate(true)
             .open(assembler_code_path.as_path())?;
         let output = &mut BufWriter::new(file);
-        emitter::emit_program(output, program)?;
+        emitter::emit_program(output, program, current_target())?;
     }
 
-    let output = Command::new("gcc")
+    let mut gcc = Command::new("gcc");
+    gcc
         .arg(assembler_code_path.as_path())
         .arg("-o")
-        .arg(path.with_extension(""))
-        .output()?;
+        .arg(path.with_extension(""));
+
+    if let Some(linked) = &options.linkerArg {
+        gcc.arg(linked);
+    }
+
+    let output= gcc.output()?;
 
     if !output.status.success() {
         return Err(String::from_utf8(output.stderr)?.into());
     }
 
     Ok(())
+}
+
+
+fn current_target() -> TargetOs {
+    if cfg!(target_os = "macos") {
+        TargetOs::MacOs
+    } else {
+        TargetOs::Linux
+    }
 }
