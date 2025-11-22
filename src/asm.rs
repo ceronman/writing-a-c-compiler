@@ -1790,8 +1790,7 @@ impl Compiler {
                     } else {
                         left
                     };
-                    if matches!(op, BinaryOp::Mul)
-                        || matches!(ty, AsmType::Double) && right.is_mem()
+                    if (matches!(op, BinaryOp::Mul) || matches!(ty, AsmType::Double)) && right.is_mem()
                     {
                         let dst_reg = dst_register(ty);
                         fixed.push(Instruction::Mov(ty, right.clone(), dst_reg.into()));

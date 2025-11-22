@@ -99,6 +99,14 @@ impl Register {
             Register::Pseudo(name) => Operand::Pseudo(name.clone()),
         }
     }
+
+    #[allow(dead_code)]
+    fn debug_print(&self) -> String {
+        match self {
+            Register::Hard(reg) => format!("{:?}", reg).to_uppercase(),
+            Register::Pseudo(name) => name.replace(".", "_")
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -132,6 +140,13 @@ impl DisjointSet {
 
     fn is_empty(&self) -> bool {
         self.0.is_empty()
+    }
+
+    #[allow(dead_code)]
+    fn debug_print(&self) {
+        for (r, representative) in &self.0 {
+            println!("{} -> {}", r.debug_print(), representative.debug_print());
+        }
     }
 }
 
@@ -239,6 +254,33 @@ impl InterferenceGraph {
             self.remove_edge(to_merge, neighbor);
         }
         self.nodes.remove(to_merge);
+    }
+
+    #[allow(dead_code)]
+    fn debug_print(&self) {
+        println!("graph {{");
+        for node in self.nodes.values() {
+            if node.pruned {
+                continue
+            }
+
+            for neighbor in &node.neighbors {
+                let nb_node = self.get_node(neighbor);
+                if nb_node.pruned {
+                    continue
+                }
+
+                if neighbor > &node.id {
+                    continue
+                }
+
+
+                let left = node.id.debug_print();
+                let right = neighbor.debug_print();
+                println!("\t{left} -- {right}")
+            }
+        }
+        println!("}}");
     }
 }
 
