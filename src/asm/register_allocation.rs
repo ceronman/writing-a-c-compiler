@@ -54,8 +54,18 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
     ];
     let mut interference_graph;
     loop {
-        interference_graph = build_interference_graph(function, symbols, &GENERAL_PURPOSE_REGS, &[AsmType::Byte, AsmType::Longword, AsmType::Quadword], &caller_saved_registers);
-        let coalesced_regs = coalesce(&mut interference_graph, &function.instructions, GENERAL_PURPOSE_REGS.len());
+        interference_graph = build_interference_graph(
+            function,
+            symbols,
+            &GENERAL_PURPOSE_REGS,
+            &[AsmType::Byte, AsmType::Longword, AsmType::Quadword],
+            &caller_saved_registers,
+        );
+        let coalesced_regs = coalesce(
+            &mut interference_graph,
+            &function.instructions,
+            GENERAL_PURPOSE_REGS.len(),
+        );
         if coalesced_regs.is_empty() {
             break;
         }
@@ -65,7 +75,11 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
     color_graph(&mut interference_graph, &GENERAL_PURPOSE_REGS);
     let register_map = create_register_map(&interference_graph);
     replace_pseudo_regs(&mut function.instructions, &register_map.register_map);
-    let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get_mut(&function.name) else {
+    let Some(BackendSymbolData::Fn {
+        callee_saved_registers,
+        ..
+    }) = symbols.get_mut(&function.name)
+    else {
         panic!("Function {} does not have symbol data", function.name);
     };
     assert!(callee_saved_registers.is_empty());
@@ -75,8 +89,13 @@ fn allocate_general_purpose_regs(function: &mut Function, symbols: &mut BackendS
 fn allocate_sse_regs(function: &mut Function, symbols: &mut BackendSymbolTable) {
     let mut interference_graph;
     loop {
-        interference_graph = build_interference_graph(function, symbols, &SSE_REGS, &[AsmType::Double], &SSE_REGS);
-        let coalesced_regs = coalesce(&mut interference_graph, &function.instructions, SSE_REGS.len());
+        interference_graph =
+            build_interference_graph(function, symbols, &SSE_REGS, &[AsmType::Double], &SSE_REGS);
+        let coalesced_regs = coalesce(
+            &mut interference_graph,
+            &function.instructions,
+            SSE_REGS.len(),
+        );
         if coalesced_regs.is_empty() {
             break;
         }
@@ -110,7 +129,7 @@ impl Register {
     fn debug_print(&self) -> String {
         match self {
             Register::Hard(reg) => format!("{:?}", reg).to_uppercase(),
-            Register::Pseudo(name) => name.replace(".", "_")
+            Register::Pseudo(name) => name.replace(".", "_"),
         }
     }
 }
@@ -136,7 +155,9 @@ impl DisjointSet {
     }
 
     fn find(&self, op: &Operand) -> Operand {
-        let Some(r) = op.as_register() else { return op.clone() };
+        let Some(r) = op.as_register() else {
+            return op.clone();
+        };
         let mut result = &r;
         while let Some(representative) = self.0.get(result) {
             result = representative;
@@ -175,20 +196,12 @@ impl InterferenceGraph {
     }
 
     fn add_edge(&mut self, from: &Register, to: &Register) {
-        self.get_node_mut(from)
-            .neighbors
-            .insert(to.clone());
-        self.get_node_mut(to)
-            .neighbors
-            .insert(from.clone());
+        self.get_node_mut(from).neighbors.insert(to.clone());
+        self.get_node_mut(to).neighbors.insert(from.clone());
     }
     fn remove_edge(&mut self, from: &Register, to: &Register) {
-        self.get_node_mut(from)
-            .neighbors
-            .remove(to);
-        self.get_node_mut(to)
-            .neighbors
-            .remove(&from);
+        self.get_node_mut(from).neighbors.remove(to);
+        self.get_node_mut(to).neighbors.remove(from);
     }
 
     fn unpruned_nodes(&self) -> Vec<&InterferenceNode> {
@@ -196,17 +209,22 @@ impl InterferenceGraph {
     }
 
     fn num_unpruned_neighbors(&self, node: &InterferenceNode) -> usize {
-       node.neighbors.
-           iter()
-           .filter(|neighbor| !self.get_node(neighbor).pruned)
-           .count()
+        node.neighbors
+            .iter()
+            .filter(|neighbor| !self.get_node(neighbor).pruned)
+            .count()
     }
 
     fn are_neighbors(&self, reg1: &Register, reg2: &Register) -> bool {
         self.get_node(reg1).neighbors.contains(reg2) || self.get_node(reg2).neighbors.contains(reg1)
     }
 
-    fn conservative_coalesceable(&self, src: &Register, dst: &Register, num_hard_regs: usize) -> bool {
+    fn conservative_coalesceable(
+        &self,
+        src: &Register,
+        dst: &Register,
+        num_hard_regs: usize,
+    ) -> bool {
         if self.briggs_test(src, dst, num_hard_regs) {
             return true;
         }
@@ -239,16 +257,21 @@ impl InterferenceGraph {
         significant_neighbors < num_hard_regs
     }
 
-    fn george_test(&self, hard_reg: &Register, pseudo_reg: &Register, num_hard_regs: usize) -> bool {
+    fn george_test(
+        &self,
+        hard_reg: &Register,
+        pseudo_reg: &Register,
+        num_hard_regs: usize,
+    ) -> bool {
         let pseudo_reg_node = self.get_node(pseudo_reg);
         for neighbor in pseudo_reg_node.neighbors.iter() {
             if self.are_neighbors(neighbor, hard_reg) {
-                continue
+                continue;
             }
             if self.get_node(neighbor).neighbors.len() < num_hard_regs {
-                continue
+                continue;
             }
-            return false
+            return false;
         }
         true
     }
@@ -267,19 +290,18 @@ impl InterferenceGraph {
         println!("graph {{");
         for node in self.nodes.values() {
             if node.pruned {
-                continue
+                continue;
             }
 
             for neighbor in &node.neighbors {
                 let nb_node = self.get_node(neighbor);
                 if nb_node.pruned {
-                    continue
+                    continue;
                 }
 
                 if neighbor > &node.id {
-                    continue
+                    continue;
                 }
-
 
                 let left = node.id.debug_print();
                 let right = neighbor.debug_print();
@@ -290,14 +312,26 @@ impl InterferenceGraph {
     }
 }
 
-fn build_interference_graph(function: &Function, symbols: &BackendSymbolTable, available_regs: &[Reg], allowed_types: &[AsmType], caller_saved_registers: &[Reg]) -> InterferenceGraph {
+fn build_interference_graph(
+    function: &Function,
+    symbols: &BackendSymbolTable,
+    available_regs: &[Reg],
+    allowed_types: &[AsmType],
+    caller_saved_registers: &[Reg],
+) -> InterferenceGraph {
     let mut nodes = BTreeMap::new();
     add_hard_registers(&mut nodes, available_regs);
     add_pseudo_registers(&mut nodes, function, symbols, allowed_types);
     let mut interference_graph = InterferenceGraph { nodes };
     let cfg = Cfg::new(&function.instructions);
     let liveness = analyze_liveness(function, &cfg, symbols, caller_saved_registers);
-    add_edges(&mut interference_graph, &cfg, &liveness, symbols, caller_saved_registers);
+    add_edges(
+        &mut interference_graph,
+        &cfg,
+        &liveness,
+        symbols,
+        caller_saved_registers,
+    );
     interference_graph
 }
 
@@ -308,13 +342,16 @@ fn add_hard_registers(nodes: &mut BTreeMap<Register, InterferenceNode>, availabl
             .filter(|&r| r != reg)
             .map(|r| Register::Hard(*r))
             .collect();
-        nodes.insert(Register::Hard(*reg), InterferenceNode {
-            id: Register::Hard(*reg),
-            neighbors,
-            spill_cost: 0.0,
-            color: None,
-            pruned: false,
-        });
+        nodes.insert(
+            Register::Hard(*reg),
+            InterferenceNode {
+                id: Register::Hard(*reg),
+                neighbors,
+                spill_cost: 0.0,
+                color: None,
+                pruned: false,
+            },
+        );
     }
 }
 
@@ -322,26 +359,29 @@ fn add_pseudo_registers(
     nodes: &mut BTreeMap<Register, InterferenceNode>,
     function: &Function,
     symbols: &BackendSymbolTable,
-    allowed_types: &[AsmType]
+    allowed_types: &[AsmType],
 ) {
     let Some(BackendSymbolData::Fn { aliased_vars, .. }) = symbols.get(&function.name) else {
         panic!("Function {} does not have symbol data", function.name);
     };
     walk_operands(&function.instructions, |op| {
         if let Operand::Pseudo(name) = op
-            && let Some(BackendSymbolData::Obj { is_static, ty, ..}) = symbols.get(name)
+            && let Some(BackendSymbolData::Obj { is_static, ty, .. }) = symbols.get(name)
             && !is_static
             && allowed_types.contains(ty)
-            && !aliased_vars.contains(name) {
-
+            && !aliased_vars.contains(name)
+        {
             let id = Register::Pseudo(name.clone());
-            nodes.insert(id.clone(), InterferenceNode {
-                id,
-                neighbors: BTreeSet::new(),
-                spill_cost: 0.0,
-                color: None,
-                pruned: false,
-            });
+            nodes.insert(
+                id.clone(),
+                InterferenceNode {
+                    id,
+                    neighbors: BTreeSet::new(),
+                    spill_cost: 0.0,
+                    color: None,
+                    pruned: false,
+                },
+            );
         };
     });
 }
@@ -380,23 +420,31 @@ fn walk_operands(instructions: &[Instruction], mut lambda: impl FnMut(&Operand))
     }
 }
 
-fn coalesce(graph: &mut InterferenceGraph, instructions: &[Instruction], num_hard_regs: usize) -> DisjointSet {
+fn coalesce(
+    graph: &mut InterferenceGraph,
+    instructions: &[Instruction],
+    num_hard_regs: usize,
+) -> DisjointSet {
     let mut coalesced_regs = DisjointSet::new();
 
     for instruction in instructions {
         if let Instruction::Mov(_, src, dst) = instruction {
-            let src = coalesced_regs.find(&src);
-            let Some(src) = src.as_register() else { continue };
+            let src = coalesced_regs.find(src);
+            let Some(src) = src.as_register() else {
+                continue;
+            };
 
-            let dst = coalesced_regs.find(&dst);
-            let Some(dst) = dst.as_register() else { continue };
+            let dst = coalesced_regs.find(dst);
+            let Some(dst) = dst.as_register() else {
+                continue;
+            };
 
             if graph.contains(&src)
                 && graph.contains(&dst)
                 && src != dst
                 && !graph.are_neighbors(&src, &dst)
-                && graph.conservative_coalesceable(&src, &dst, num_hard_regs) {
-
+                && graph.conservative_coalesceable(&src, &dst, num_hard_regs)
+            {
                 let (to_keep, to_merge) = if src.is_hard() {
                     (src, dst)
                 } else {
@@ -447,16 +495,10 @@ fn rewrite_coalesced(instructions: &mut Vec<Instruction>, coalesced_regs: &Disjo
         }
     }
 
-    instructions.retain(|instruction| {
-        match instruction {
-            Instruction::Mov(_, Operand::Reg(src), Operand::Reg(dst)) => {
-                src != dst
-            }
-            Instruction::Mov(_, Operand::Pseudo(src), Operand::Pseudo(dst)) => {
-                src != dst
-            }
-            _ => true,
-        }
+    instructions.retain(|instruction| match instruction {
+        Instruction::Mov(_, Operand::Reg(src), Operand::Reg(dst)) => src != dst,
+        Instruction::Mov(_, Operand::Pseudo(src), Operand::Pseudo(dst)) => src != dst,
+        _ => true,
     });
 }
 
@@ -489,7 +531,7 @@ fn liveness_meet_operator(
     annotations: &mut Annotation<RegSet>,
     cfg: &Cfg,
     node: &CfgNode,
-    ret_registers: &[Reg]
+    ret_registers: &[Reg],
 ) -> RegSet {
     let mut live_registers = RegSet::new();
     for succ_id in &node.successors {
@@ -511,7 +553,7 @@ struct UsedAndUpdated {
 fn find_used_and_updated(
     instruction: &Instruction,
     symbols: &BackendSymbolTable,
-    caller_saved_registers: &[Reg]
+    caller_saved_registers: &[Reg],
 ) -> UsedAndUpdated {
     let mut used_and_updated = match instruction {
         Instruction::Mov(_, src, dst)
@@ -519,45 +561,74 @@ fn find_used_and_updated(
         | Instruction::MovZeroExtend(_, src, _, dst)
         | Instruction::Cvttsd2si(_, src, dst)
         | Instruction::Cvtsi2sd(_, src, dst)
-        | Instruction::Lea(src, dst) => {
-            UsedAndUpdated { used: vec![src.clone()], updated: vec![dst.clone()] }
+        | Instruction::Lea(src, dst) => UsedAndUpdated {
+            used: vec![src.clone()],
+            updated: vec![dst.clone()],
         },
-        Instruction::Unary(_, _, dst) => {
-            UsedAndUpdated { used: vec![dst.clone()], updated: vec![dst.clone()] }
+        Instruction::Unary(_, _, dst) => UsedAndUpdated {
+            used: vec![dst.clone()],
+            updated: vec![dst.clone()],
         },
-        Instruction::Binary(_, _, src, dst) => {
-            UsedAndUpdated { used: vec![src.clone(), dst.clone()], updated: vec![dst.clone()] }
+        Instruction::Binary(_, _, src, dst) => UsedAndUpdated {
+            used: vec![src.clone(), dst.clone()],
+            updated: vec![dst.clone()],
         },
-        Instruction::Cmp(_, v1, v2) => {
-            UsedAndUpdated { used: vec![v1.clone(), v2.clone()], updated: vec![] }
+        Instruction::Cmp(_, v1, v2) => UsedAndUpdated {
+            used: vec![v1.clone(), v2.clone()],
+            updated: vec![],
         },
-        Instruction::Div(_, divisor)
-        | Instruction::Idiv(_, divisor) => UsedAndUpdated {
+        Instruction::Div(_, divisor) | Instruction::Idiv(_, divisor) => UsedAndUpdated {
             used: vec![divisor.clone(), Reg::Ax.into(), Reg::Dx.into()],
             updated: vec![Reg::Ax.into(), Reg::Dx.into()],
         },
-        Instruction::Cdq(_) => UsedAndUpdated { used: vec![Reg::Ax.into()], updated: vec![Reg::Dx.into()] },
-        Instruction::SetCC(_, dst) => UsedAndUpdated { used: vec![], updated: vec![dst.clone()] },
-        Instruction::Push(v) => UsedAndUpdated { used: vec![v.clone()], updated: vec![] },
-        Instruction::Pop(reg) => UsedAndUpdated { used: vec![], updated: vec![Operand::Reg(*reg)] },
+        Instruction::Cdq(_) => UsedAndUpdated {
+            used: vec![Reg::Ax.into()],
+            updated: vec![Reg::Dx.into()],
+        },
+        Instruction::SetCC(_, dst) => UsedAndUpdated {
+            used: vec![],
+            updated: vec![dst.clone()],
+        },
+        Instruction::Push(v) => UsedAndUpdated {
+            used: vec![v.clone()],
+            updated: vec![],
+        },
+        Instruction::Pop(reg) => UsedAndUpdated {
+            used: vec![],
+            updated: vec![Operand::Reg(*reg)],
+        },
         Instruction::Call(name) => {
-            let Some(BackendSymbolData::Fn { arg_registers: param_registers, .. }) = symbols.get(name) else {
+            let Some(BackendSymbolData::Fn {
+                arg_registers: param_registers,
+                ..
+            }) = symbols.get(name)
+            else {
                 panic!("Function {} does not have symbol data", name);
             };
             let used: Vec<Operand> = param_registers.iter().map(|&reg| reg.into()).collect();
             UsedAndUpdated {
                 used,
-                updated: caller_saved_registers.iter().map(|&reg| reg.into()).collect(),
+                updated: caller_saved_registers
+                    .iter()
+                    .map(|&reg| reg.into())
+                    .collect(),
             }
         }
         Instruction::Jmp(_)
         | Instruction::Label(_)
         | Instruction::Ret
-        | Instruction::JmpCC(_, _) => UsedAndUpdated { used: vec![], updated: vec![] },
+        | Instruction::JmpCC(_, _) => UsedAndUpdated {
+            used: vec![],
+            updated: vec![],
+        },
     };
 
     let mut used_mem_regs = Vec::new();
-    for operand in used_and_updated.used.iter().chain(used_and_updated.updated.iter()) {
+    for operand in used_and_updated
+        .used
+        .iter()
+        .chain(used_and_updated.updated.iter())
+    {
         match operand {
             Operand::Memory(reg, _) => {
                 used_mem_regs.push(Operand::Reg(*reg));
@@ -566,7 +637,7 @@ fn find_used_and_updated(
                 used_mem_regs.push(Operand::Reg(*reg1));
                 used_mem_regs.push(Operand::Reg(*reg2));
             }
-            _ => continue
+            _ => continue,
         }
     }
 
@@ -580,7 +651,7 @@ fn liveness_transfer_function(
     node: &CfgNode,
     symbols: &BackendSymbolTable,
     end_live_registers: RegSet,
-    caller_saved_registers: &[Reg]
+    caller_saved_registers: &[Reg],
 ) {
     let mut current_live_registers = end_live_registers.clone();
     for (i, instruction) in node.instructions.iter().enumerate().rev() {
@@ -601,7 +672,12 @@ fn liveness_transfer_function(
     annotations.annotate_block(node.id, current_live_registers);
 }
 
-fn analyze_liveness(function: &Function, cfg: &Cfg, symbols: &BackendSymbolTable, caller_saved_registers: &[Reg]) -> Annotation<RegSet> {
+fn analyze_liveness(
+    function: &Function,
+    cfg: &Cfg,
+    symbols: &BackendSymbolTable,
+    caller_saved_registers: &[Reg],
+) -> Annotation<RegSet> {
     let Some(BackendSymbolData::Fn { ret_registers, .. }) = symbols.get(&function.name) else {
         panic!("Function {} does not have symbol data", function.name);
     };
@@ -622,7 +698,13 @@ fn analyze_liveness(function: &Function, cfg: &Cfg, symbols: &BackendSymbolTable
         let old_registers = &annotations.get_block_annotation(&node_id).clone();
         let node = cfg.get_node(node_id);
         let incoming_registers = liveness_meet_operator(&mut annotations, cfg, node, ret_registers);
-        liveness_transfer_function(&mut annotations, node, symbols, incoming_registers, caller_saved_registers);
+        liveness_transfer_function(
+            &mut annotations,
+            node,
+            symbols,
+            incoming_registers,
+            caller_saved_registers,
+        );
         if old_registers != annotations.get_block_annotation(&node_id) {
             for pred_id in &node.predecessors {
                 if pred_id == &cfg.entry_id() {
@@ -642,7 +724,7 @@ fn add_edges(
     cfg: &Cfg,
     liveness: &Annotation<RegSet>,
     symbols: &BackendSymbolTable,
-    caller_saved_registers: &[Reg]
+    caller_saved_registers: &[Reg],
 ) {
     for node_id in cfg.all_ids() {
         if node_id == cfg.exit_id() || node_id == cfg.entry_id() {
@@ -652,7 +734,8 @@ fn add_edges(
         let node = cfg.get_node(node_id);
 
         for (i, instruction) in node.instructions.iter().enumerate() {
-            let UsedAndUpdated { updated, .. } = find_used_and_updated(instruction, symbols, caller_saved_registers);
+            let UsedAndUpdated { updated, .. } =
+                find_used_and_updated(instruction, symbols, caller_saved_registers);
             let live_registers = liveness.get_instruction_annotation(node_id, i);
             for l in live_registers {
                 if let Instruction::Mov(_, src, _) = instruction
@@ -678,15 +761,9 @@ fn add_edges(
 impl Operand {
     fn as_register(&self) -> Option<Register> {
         match self {
-            Operand::Reg(reg) => {
-                Some(Register::Hard(*reg))
-            }
-            Operand::Pseudo(name) => {
-                Some(Register::Pseudo(name.clone()))
-            }
-            _ => {
-                None
-            }
+            Operand::Reg(reg) => Some(Register::Hard(*reg)),
+            Operand::Pseudo(name) => Some(Register::Pseudo(name.clone())),
+            _ => None,
         }
     }
 }
@@ -696,13 +773,13 @@ const CALLEE_SAVED_REGS: [Register; 5] = [
     Register::Hard(Reg::R12),
     Register::Hard(Reg::R13),
     Register::Hard(Reg::R14),
-    Register::Hard(Reg::R15)
+    Register::Hard(Reg::R15),
 ];
 
 fn color_graph(interference_graph: &mut InterferenceGraph, registers: &[Reg]) {
     let remaining = interference_graph.unpruned_nodes();
     if remaining.is_empty() {
-        return
+        return;
     }
 
     let mut chosen_node = None;
@@ -718,7 +795,7 @@ fn color_graph(interference_graph: &mut InterferenceGraph, registers: &[Reg]) {
     if chosen_node.is_none() {
         let mut best_spill_metric = f64::INFINITY;
         for node in remaining {
-            let degree = interference_graph.num_unpruned_neighbors(&node);
+            let degree = interference_graph.num_unpruned_neighbors(node);
             let spill_metric = node.spill_cost / (degree as f64);
             if spill_metric < best_spill_metric {
                 chosen_node = Some(node.id.clone());
@@ -742,7 +819,7 @@ fn color_graph(interference_graph: &mut InterferenceGraph, registers: &[Reg]) {
     if !colors.is_empty() {
         let color = if CALLEE_SAVED_REGS.contains(&chosen_node) {
             colors.iter().copied().max().unwrap()
-        } else{
+        } else {
             colors.iter().copied().min().unwrap()
         };
         let chosen_node = interference_graph.get_node_mut(&chosen_node);
@@ -768,7 +845,8 @@ fn create_register_map(interference_graph: &InterferenceGraph) -> RegisterMap {
     let mut callee_saved_regs = HashSet::new();
     for node in interference_graph.nodes.values() {
         if let Register::Pseudo(name) = &node.id
-        && let Some(color) = node.color {
+            && let Some(color) = node.color
+        {
             let hard_reg = *color_map.get(&color).unwrap();
             register_map.insert(name.clone(), hard_reg);
             if CALLEE_SAVED_REGS.contains(&Register::Hard(hard_reg)) {
@@ -786,8 +864,8 @@ fn create_register_map(interference_graph: &InterferenceGraph) -> RegisterMap {
 fn replace_pseudo_regs(instructions: &mut Vec<Instruction>, reg_map: &HashMap<Symbol, Reg>) {
     fn replace_reg(op: &mut Operand, reg_map: &HashMap<Symbol, Reg>) {
         if let Operand::Pseudo(name) = op
-            && let Some(reg) = reg_map.get(name) {
-
+            && let Some(reg) = reg_map.get(name)
+        {
             *op = Operand::Reg(*reg);
         }
     }
@@ -821,12 +899,8 @@ fn replace_pseudo_regs(instructions: &mut Vec<Instruction>, reg_map: &HashMap<Sy
         }
     }
 
-    instructions.retain(|instruction| {
-        match instruction {
-            Instruction::Mov(_, Operand::Reg(src), Operand::Reg(dst)) => {
-                src != dst
-            }
-            _ => true,
-        }
+    instructions.retain(|instruction| match instruction {
+        Instruction::Mov(_, Operand::Reg(src), Operand::Reg(dst)) => src != dst,
+        _ => true,
     });
 }

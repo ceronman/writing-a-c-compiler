@@ -121,7 +121,7 @@ struct Options {
     filename: PathBuf,
     flag: Flag,
     optimization: OptimizationFlags,
-    linkerArg: Option<String>
+    linker_arg: Option<String>,
 }
 
 enum Flag {
@@ -140,11 +140,10 @@ enum Flag {
 fn parse_args() -> Options {
     let mut args: Vec<_> = std::env::args().skip(1).collect();
     let mut optimization = OptimizationFlags::default();
-    let linkerArg = if let Some(linkerArg) = args.iter().position(|arg| arg.starts_with("-l")) {
-        Some(args.remove(linkerArg).clone())
-    } else {
-        None
-    };
+    let linker_arg = args
+        .iter()
+        .position(|arg| arg.starts_with("-l"))
+        .map(|arg| args.remove(arg).clone());
 
     if let Some(i) = args.iter().position(|arg| arg == "--fold-constants") {
         optimization.fold_constants = true;
@@ -204,7 +203,7 @@ fn parse_args() -> Options {
         filename: PathBuf::from(path),
         flag,
         optimization,
-        linkerArg
+        linker_arg,
     }
 }
 
@@ -283,16 +282,15 @@ fn assemble_and_link(path: &Path, program: &Program, options: &Options) -> Resul
     }
 
     let mut gcc = Command::new("gcc");
-    gcc
-        .arg(assembler_code_path.as_path())
+    gcc.arg(assembler_code_path.as_path())
         .arg("-o")
         .arg(path.with_extension(""));
 
-    if let Some(linked) = &options.linkerArg {
+    if let Some(linked) = &options.linker_arg {
         gcc.arg(linked);
     }
 
-    let output= gcc.output()?;
+    let output = gcc.output()?;
 
     if !output.status.success() {
         return Err(String::from_utf8(output.stderr)?.into());
@@ -300,7 +298,6 @@ fn assemble_and_link(path: &Path, program: &Program, options: &Options) -> Resul
 
     Ok(())
 }
-
 
 fn current_target() -> TargetOs {
     if cfg!(target_os = "macos") {

@@ -30,7 +30,11 @@ pub fn emit_program(output: &mut impl Write, program: &Program, target_os: Targe
 
 fn emit_function(output: &mut impl Write, function: &Function, target_os: TargetOs) -> Result<()> {
     if function.global {
-        writeln!(output, "\t.globl {}", emit_symbol(&function.name, target_os))?;
+        writeln!(
+            output,
+            "\t.globl {}",
+            emit_symbol(&function.name, target_os)
+        )?;
     }
     writeln!(output, "\t.text")?;
     writeln!(output, "{}:", emit_symbol(&function.name, target_os))?;
@@ -301,9 +305,17 @@ fn emit_function(output: &mut impl Write, function: &Function, target_os: Target
     Ok(())
 }
 
-fn emit_variable(output: &mut impl Write, variable: &StaticVariable, target_os: TargetOs) -> Result<()> {
+fn emit_variable(
+    output: &mut impl Write,
+    variable: &StaticVariable,
+    target_os: TargetOs,
+) -> Result<()> {
     if variable.global {
-        writeln!(output, "\t.globl {}", emit_symbol(&variable.name, target_os))?;
+        writeln!(
+            output,
+            "\t.globl {}",
+            emit_symbol(&variable.name, target_os)
+        )?;
     }
 
     if matches!(
@@ -395,7 +407,11 @@ fn emit_static_init(output: &mut impl Write, init: &StaticInit, target_os: Targe
     Ok(())
 }
 
-fn emit_constant(output: &mut impl Write, constant: &StaticConstant, target_os: TargetOs) -> Result<()> {
+fn emit_constant(
+    output: &mut impl Write,
+    constant: &StaticConstant,
+    target_os: TargetOs,
+) -> Result<()> {
     if let StaticInit::String { .. } = &constant.init {
         match target_os {
             TargetOs::MacOs => writeln!(output, "\t.cstring")?,
@@ -480,7 +496,12 @@ impl RegSize {
     }
 }
 
-fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize, target_os: TargetOs) -> Result<()> {
+fn emit_operand(
+    output: &mut impl Write,
+    operand: &Operand,
+    size: RegSize,
+    target_os: TargetOs,
+) -> Result<()> {
     match (operand, size) {
         (Operand::Reg(Reg::Ax), RegSize::Byte) => write!(output, "%al"),
         (Operand::Reg(Reg::Ax), RegSize::Long) => write!(output, "%eax"),
@@ -584,7 +605,7 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize, targe
         ) => {
             emit_label(output, name, target_os)?;
             write!(output, "+{offset}(%rip)")
-        },
+        }
         (
             Operand::Data {
                 is_static: false,
@@ -602,9 +623,8 @@ fn emit_operand(output: &mut impl Write, operand: &Operand, size: RegSize, targe
 fn emit_label(output: &mut impl Write, label: &str, target_os: TargetOs) -> Result<()> {
     match target_os {
         TargetOs::MacOs => write!(output, "L{label}"),
-        TargetOs::Linux => write!(output, ".L{label}")
+        TargetOs::Linux => write!(output, ".L{label}"),
     }
-
 }
 
 fn emit_symbol(name: &str, target_os: TargetOs) -> String {

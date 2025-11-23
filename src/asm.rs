@@ -8,13 +8,13 @@ use crate::asm::ir::{
     AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
     StaticVariable, TopLevel, UnaryOp,
 };
+use crate::asm::pretty::pp_function;
+use crate::asm::register_allocation::allocate_registers;
 use crate::ast::Constant;
 use crate::semantic::{AggregateType, Attributes, SemanticData, StaticInit, Type, TypeEntry};
 use crate::symbol::Symbol;
 use crate::tacky;
 use std::collections::{HashMap, HashSet};
-use crate::asm::pretty::pp_function;
-use crate::asm::register_allocation::allocate_registers;
 
 const INT_ARG_REGISTERS: [Reg; 6] = [Reg::Di, Reg::Si, Reg::Dx, Reg::Cx, Reg::R8, Reg::R9];
 const SSE_ARG_REGISTERS: [Reg; 8] = [
@@ -31,7 +31,25 @@ const SSE_ARG_REGISTERS: [Reg; 8] = [
 // TODO: move constants to Reg
 impl Reg {
     fn is_xmm(&self) -> bool {
-        matches!(self,Reg::XMM0| Reg::XMM1| Reg::XMM2| Reg::XMM3| Reg::XMM4| Reg::XMM5| Reg::XMM6| Reg::XMM7| Reg::XMM8| Reg::XMM9| Reg::XMM10| Reg::XMM11| Reg::XMM12| Reg::XMM13| Reg::XMM14| Reg::XMM15)
+        matches!(
+            self,
+            Reg::XMM0
+                | Reg::XMM1
+                | Reg::XMM2
+                | Reg::XMM3
+                | Reg::XMM4
+                | Reg::XMM5
+                | Reg::XMM6
+                | Reg::XMM7
+                | Reg::XMM8
+                | Reg::XMM9
+                | Reg::XMM10
+                | Reg::XMM11
+                | Reg::XMM12
+                | Reg::XMM13
+                | Reg::XMM14
+                | Reg::XMM15
+        )
     }
 }
 
@@ -126,7 +144,7 @@ struct FnReturn {
 #[derive(Clone, Default)]
 struct CallRegisters {
     args: Vec<Reg>,
-    ret: Vec<Reg>
+    ret: Vec<Reg>,
 }
 
 struct Compiler {
@@ -1084,16 +1102,16 @@ impl Compiler {
         for (symbol, data) in semantic.symbols.iter() {
             match data.attrs {
                 Attributes::Function { .. } => {
-                    let call_registers  = self.call_registers.get(symbol).cloned().unwrap_or_default();
+                    let call_registers =
+                        self.call_registers.get(symbol).cloned().unwrap_or_default();
                     let aliased_vars = self.aliased_vars.get(symbol).cloned().unwrap_or_default();
                     let backend_symbol_data = BackendSymbolData::Fn {
                         arg_registers: call_registers.args,
                         ret_registers: call_registers.ret,
                         callee_saved_registers: vec![],
-                        aliased_vars
+                        aliased_vars,
                     };
-                    backend_symbols
-                        .insert(symbol.clone(), backend_symbol_data);
+                    backend_symbols.insert(symbol.clone(), backend_symbol_data);
                 }
                 Attributes::Static { .. } => {
                     backend_symbols.insert(
@@ -1270,10 +1288,7 @@ impl Compiler {
         ret.extend(INT_RETURN_REGISTERS.iter().take(fn_ret.int_values.len()));
         ret.extend(SSE_RETURN_REGISTERS.iter().take(fn_ret.sse_values.len()));
 
-        CallRegisters {
-            args,
-            ret,
-        }
+        CallRegisters { args, ret }
     }
 
     fn generate_return(&mut self, instructions: &mut Vec<Instruction>, val: &Option<tacky::Val>) {
@@ -1673,21 +1688,39 @@ impl Compiler {
         stack_size
     }
 
-    fn get_callee_saved_registers<'a, 'b>(&self, function: &'a Function, symbols: &'b BackendSymbolTable) -> &'b Vec<Reg> {
-        let Some(BackendSymbolData::Fn { callee_saved_registers, .. }) = symbols.get(&function.name) else {
+    fn get_callee_saved_registers<'a>(
+        &self,
+        function: &Function,
+        symbols: &'a BackendSymbolTable,
+    ) -> &'a Vec<Reg> {
+        let Some(BackendSymbolData::Fn {
+            callee_saved_registers,
+            ..
+        }) = symbols.get(&function.name)
+        else {
             panic!("Unknown backend symbol for function {}", function.name);
         };
         callee_saved_registers
     }
 
-    fn calculate_stack_adjustment(&self, function: &Function, symbols: &BackendSymbolTable, bytes_for_locals: usize) -> usize {
+    fn calculate_stack_adjustment(
+        &self,
+        function: &Function,
+        symbols: &BackendSymbolTable,
+        bytes_for_locals: usize,
+    ) -> usize {
         let callee_saved_bytes = self.get_callee_saved_registers(function, symbols).len() * 8;
         let total_stack_bytes = bytes_for_locals + callee_saved_bytes;
         let adjusted_stack_size = align_offset(total_stack_bytes, 16);
         adjusted_stack_size - callee_saved_bytes
     }
 
-    fn fixup_instructions(&mut self, function: &mut Function, stack_size: usize, symbols: &BackendSymbolTable,) {
+    fn fixup_instructions(
+        &mut self,
+        function: &mut Function,
+        stack_size: usize,
+        symbols: &BackendSymbolTable,
+    ) {
         let instructions = std::mem::take(&mut function.instructions);
         let mut fixed = Vec::with_capacity(instructions.len() + 1);
         let adjusted_stack_size = self.calculate_stack_adjustment(function, symbols, stack_size);
@@ -1790,7 +1823,8 @@ impl Compiler {
                     } else {
                         left
                     };
-                    if (matches!(op, BinaryOp::Mul) || matches!(ty, AsmType::Double)) && right.is_mem()
+                    if (matches!(op, BinaryOp::Mul) || matches!(ty, AsmType::Double))
+                        && right.is_mem()
                     {
                         let dst_reg = dst_register(ty);
                         fixed.push(Instruction::Mov(ty, right.clone(), dst_reg.into()));
@@ -1858,19 +1892,16 @@ impl Compiler {
 
                 Instruction::Push(Operand::Reg(reg)) if reg.is_xmm() => {
                     fixed.push(Instruction::Binary(
-                            AsmType::Quadword,
-                            BinaryOp::Sub,
-                            Operand::Imm(8),
-                            Reg::SP.into(),
-                        )
-                    );
-                    fixed.push(
-                        Instruction::Mov(
-                            AsmType::Double,
-                            reg.into(),
-                            Operand::Memory(Reg::SP, 0)
-                        )
-                    );
+                        AsmType::Quadword,
+                        BinaryOp::Sub,
+                        Operand::Imm(8),
+                        Reg::SP.into(),
+                    ));
+                    fixed.push(Instruction::Mov(
+                        AsmType::Double,
+                        reg.into(),
+                        Operand::Memory(Reg::SP, 0),
+                    ));
                 }
 
                 Instruction::MovZeroExtend(src_ty, src, dst_ty, dst)
