@@ -460,11 +460,7 @@ fn coalesce(
     coalesced_regs
 }
 
-// TODO: duplicate code
-fn rewrite_coalesced(instructions: &mut Vec<Instruction>, coalesced_regs: &DisjointSet) {
-    fn replace_reg(op: &mut Operand, coalesced_regs: &DisjointSet) {
-        *op = coalesced_regs.find(op)
-    }
+fn rewrite_instructions(instructions: &mut [Instruction], rewrite_fn: impl Fn(&mut Operand)) {
     for instruction in instructions.iter_mut() {
         match instruction {
             Instruction::Mov(_, op1, op2)
@@ -475,15 +471,15 @@ fn rewrite_coalesced(instructions: &mut Vec<Instruction>, coalesced_regs: &Disjo
             | Instruction::Cvtsi2sd(_, op1, op2)
             | Instruction::Binary(_, _, op1, op2)
             | Instruction::Cmp(_, op1, op2) => {
-                replace_reg(op1, coalesced_regs);
-                replace_reg(op2, coalesced_regs);
+                rewrite_fn(op1);
+                rewrite_fn(op2);
             }
             Instruction::Unary(_, _, op)
             | Instruction::Idiv(_, op)
             | Instruction::Div(_, op)
             | Instruction::Push(op)
             | Instruction::SetCC(_, op) => {
-                replace_reg(op, coalesced_regs);
+                rewrite_fn(op);
             }
             Instruction::Cdq(_)
             | Instruction::Pop(_)
@@ -494,6 +490,13 @@ fn rewrite_coalesced(instructions: &mut Vec<Instruction>, coalesced_regs: &Disjo
             | Instruction::Ret => {}
         }
     }
+}
+
+fn rewrite_coalesced(instructions: &mut Vec<Instruction>, coalesced_regs: &DisjointSet) {
+    fn replace_reg(op: &mut Operand, coalesced_regs: &DisjointSet) {
+        *op = coalesced_regs.find(op)
+    }
+    rewrite_instructions(instructions, |op| replace_reg(op, coalesced_regs));
 
     instructions.retain(|instruction| match instruction {
         Instruction::Mov(_, Operand::Reg(src), Operand::Reg(dst)) => src != dst,
@@ -869,35 +872,8 @@ fn replace_pseudo_regs(instructions: &mut Vec<Instruction>, reg_map: &HashMap<Sy
             *op = Operand::Reg(*reg);
         }
     }
-    for instruction in instructions.iter_mut() {
-        match instruction {
-            Instruction::Mov(_, op1, op2)
-            | Instruction::Movsx(_, op1, _, op2)
-            | Instruction::MovZeroExtend(_, op1, _, op2)
-            | Instruction::Lea(op1, op2)
-            | Instruction::Cvttsd2si(_, op1, op2)
-            | Instruction::Cvtsi2sd(_, op1, op2)
-            | Instruction::Binary(_, _, op1, op2)
-            | Instruction::Cmp(_, op1, op2) => {
-                replace_reg(op1, reg_map);
-                replace_reg(op2, reg_map);
-            }
-            Instruction::Unary(_, _, op)
-            | Instruction::Idiv(_, op)
-            | Instruction::Div(_, op)
-            | Instruction::Push(op)
-            | Instruction::SetCC(_, op) => {
-                replace_reg(op, reg_map);
-            }
-            Instruction::Cdq(_)
-            | Instruction::Pop(_)
-            | Instruction::Jmp(_)
-            | Instruction::JmpCC(_, _)
-            | Instruction::Label(_)
-            | Instruction::Call(_)
-            | Instruction::Ret => {}
-        }
-    }
+
+    rewrite_instructions(instructions, |op| replace_reg(op, reg_map));
 
     instructions.retain(|instruction| match instruction {
         Instruction::Mov(_, Operand::Reg(src), Operand::Reg(dst)) => src != dst,

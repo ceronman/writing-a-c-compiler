@@ -164,7 +164,6 @@ fn emit_function(output: &mut impl Write, function: &Function, target_os: Target
             }
 
             Instruction::Cdq(ty) => {
-                // TODO: Refactor this into using suffixes for types for all instructions
                 let op = match ty {
                     AsmType::Byte => "cdqb",
                     AsmType::Longword => "cdq",

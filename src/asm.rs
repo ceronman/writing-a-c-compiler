@@ -28,7 +28,6 @@ const SSE_ARG_REGISTERS: [Reg; 8] = [
     Reg::XMM7,
 ];
 
-// TODO: move constants to Reg
 impl Reg {
     fn is_xmm(&self) -> bool {
         matches!(
@@ -466,7 +465,6 @@ impl Compiler {
                             // Handling NaN:
                             match op {
                                 tacky::BinaryOp::NotEqual if is_double => {
-                                    // TODO: These moves are not necessary if using byte types.
                                     instructions.push(Instruction::Mov(AsmType::Longword, Operand::Imm(0), Reg::Ax.into()));
                                     instructions.push(Instruction::Mov(AsmType::Longword, Operand::Imm(0), Reg::Cx.into()));
                                     instructions.push(Instruction::SetCC(cond, Reg::Ax.into()));
@@ -1755,21 +1753,20 @@ impl Compiler {
         for instruction in instructions.into_iter() {
             match instruction {
                 Instruction::Mov(ty, src, dst) => {
-                    let src = if let Operand::Imm(v) = src {
-                        if i32::try_from(v).is_err() && !dst.is_reg() {
-                            let value = match ty {
-                                AsmType::Byte | AsmType::Longword => (v as i32) as i64,
-                                AsmType::Quadword => v,
-                                AsmType::Double => panic!("Immediate values, can't be double"),
-                                AsmType::ByteArray { .. } => {
-                                    panic!("Immediate values can't be byte array")
-                                }
-                            };
-                            fixed.push(Instruction::Mov(ty, Operand::Imm(value), Reg::R10.into()));
-                            Reg::R10.into()
-                        } else {
-                            src
-                        }
+                    let src = if let Operand::Imm(v) = src
+                        && i32::try_from(v).is_err()
+                        && !dst.is_reg()
+                    {
+                        let value = match ty {
+                            AsmType::Byte | AsmType::Longword => (v as i32) as i64,
+                            AsmType::Quadword => v,
+                            AsmType::Double => panic!("Immediate values, can't be double"),
+                            AsmType::ByteArray { .. } => {
+                                panic!("Immediate values can't be byte array")
+                            }
+                        };
+                        fixed.push(Instruction::Mov(ty, Operand::Imm(value), Reg::R10.into()));
+                        Reg::R10.into()
                     } else if src.is_mem() && dst.is_mem() {
                         let reg = src_register(ty);
                         fixed.push(Instruction::Mov(ty, src, reg.into()));
@@ -1809,13 +1806,11 @@ impl Compiler {
                             | BinaryOp::Xor
                     ) =>
                 {
-                    let left = if let Operand::Imm(v) = left {
-                        if i32::try_from(v).is_err() {
-                            fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
-                            Reg::R10.into()
-                        } else {
-                            left
-                        }
+                    let left = if let Operand::Imm(v) = left
+                        && i32::try_from(v).is_err()
+                    {
+                        fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
+                        Reg::R10.into()
                     } else if left.is_mem() && right.is_mem() {
                         let src_reg = src_register(ty);
                         fixed.push(Instruction::Mov(ty, left, src_reg.into()));
@@ -1845,13 +1840,11 @@ impl Compiler {
                     fixed.push(Instruction::Cmp(AsmType::Double, left, right));
                 }
                 Instruction::Cmp(ty, left, right) => {
-                    let left = if let Operand::Imm(v) = left {
-                        if i32::try_from(v).is_err() {
-                            fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
-                            Reg::R10.into()
-                        } else {
-                            left
-                        }
+                    let left = if let Operand::Imm(v) = left
+                        && i32::try_from(v).is_err()
+                    {
+                        fixed.push(Instruction::Mov(ty, left, Reg::R10.into()));
+                        Reg::R10.into()
                     } else if left.is_mem() && right.is_mem() {
                         let src_reg = src_register(ty);
                         fixed.push(Instruction::Mov(ty, left, src_reg.into()));
@@ -1876,20 +1869,6 @@ impl Compiler {
                     fixed.push(Instruction::Mov(ty, Operand::Imm(value), Reg::R10.into()));
                     fixed.push(Instruction::Div(ty, Reg::R10.into()));
                 }
-                Instruction::Push(Operand::Imm(value)) => {
-                    let value = if i32::try_from(value).is_err() {
-                        fixed.push(Instruction::Mov(
-                            AsmType::Quadword,
-                            Operand::Imm(value),
-                            Reg::R10.into(),
-                        ));
-                        Reg::R10.into()
-                    } else {
-                        Operand::Imm(value)
-                    };
-                    fixed.push(Instruction::Push(value));
-                }
-
                 Instruction::Push(Operand::Reg(reg)) if reg.is_xmm() => {
                     fixed.push(Instruction::Binary(
                         AsmType::Quadword,
@@ -1903,11 +1882,25 @@ impl Compiler {
                         Operand::Memory(Reg::SP, 0),
                     ));
                 }
+                Instruction::Push(op) => {
+                    let op = if let Operand::Imm(value) = op
+                        && i32::try_from(value).is_err()
+                    {
+                        fixed.push(Instruction::Mov(
+                            AsmType::Quadword,
+                            Operand::Imm(value),
+                            Reg::R10.into(),
+                        ));
+                        Reg::R10.into()
+                    } else {
+                        op
+                    };
+                    fixed.push(Instruction::Push(op));
+                }
 
                 Instruction::MovZeroExtend(src_ty, src, dst_ty, dst)
                     if matches!(src_ty, AsmType::Byte) =>
                 {
-                    // TODO: generalize this pattern that is repeated all over the fixup phase.
                     let src = if let Operand::Imm(v) = src
                         && i32::try_from(v).is_err()
                     {
