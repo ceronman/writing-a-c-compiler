@@ -12,8 +12,6 @@ mod tempfile;
 
 mod alignment;
 mod optimization;
-#[cfg(feature = "test_gen")]
-mod testgen;
 
 use crate::asm::ir::Program;
 use crate::emitter::TargetOs;
@@ -31,31 +29,6 @@ fn main() -> Result<()> {
     let options = parse_args();
     let preprocessed = run_preprocessor(&options.filename)?;
     let source = fs::read_to_string(preprocessed.as_path())?;
-
-    #[cfg(feature = "test_gen")]
-    {
-        if let Flag::Lex = options.flag {
-            testgen::generate_lexer_tests(&options.filename, &source)?;
-        }
-
-        if let Flag::Parse = options.flag {
-            lexer::tokenize(&source); // Skip lexing errors
-            testgen::generate_parser_tests(&options.filename, &source)?;
-        }
-
-        if let Flag::Validate = options.flag {
-            lexer::tokenize(&source); // skip lexing errors
-            parser::parse(&source)?; // skip parsing errors
-            testgen::generate_resolver_tests(&options.filename, &source)?;
-        }
-
-        if let Flag::Tacky = options.flag {
-            lexer::tokenize(&source); // skip lexing errors
-            let ast = parser::parse(&source)?; // skip parsing errors
-            semantic::validate(ast)?; // skip resolution errors
-            testgen::generate_tacky_tests(&options.filename, &source)?;
-        }
-    }
 
     if let Flag::Lex = options.flag {
         let tokens = lexer::tokenize(&source);
