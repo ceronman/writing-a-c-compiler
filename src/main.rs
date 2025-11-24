@@ -40,9 +40,12 @@ fn main() -> Result<()> {
         Ok(ast) => ast,
         Err(error) => {
             let annotated = pretty::annotate(&source, &error);
-            panic!("{annotated}")
+            eprintln!("Parsing error:\n");
+            eprintln!("{annotated}");
+            std::process::exit(1);
         }
     };
+
     if let Flag::Parse = options.flag {
         print!("{}", ast::pretty::dump(&ast)?);
         return Ok(());
@@ -52,7 +55,9 @@ fn main() -> Result<()> {
         Ok(ast) => ast,
         Err(error) => {
             let annotated = pretty::annotate(&source, &error);
-            panic!("{annotated}")
+            eprintln!("Semantic error:\n");
+            eprintln!("{annotated}");
+            std::process::exit(1);
         }
     };
 
@@ -111,43 +116,72 @@ enum Flag {
 }
 
 fn parse_args() -> Options {
+    let program_name = std::env::args().next().unwrap_or_else(|| "compiler".to_string());
+
+    fn print_help(program: &str) {
+        eprintln!("Usage: {program} [FLAGS] <FILENAME>\n");
+        eprintln!("Pipeline inspection flags (pick one):");
+        eprintln!("  --lex                Print lexer tokens");
+        eprintln!("  --parse              Print parsed AST");
+        eprintln!("  --validate           Print validated AST and semantic info");
+        eprintln!("  --tacky              Print TACKY IR");
+        eprintln!("  --optimized-tacky    Print optimized TACKY IR");
+        eprintln!("  --codegen            Print generated assembly (pretty)");
+        eprintln!("  --emit               Emit assembly to stdout");
+        eprintln!("  -s | -S              Generate assembly .s file only");
+        eprintln!("  -c                   Generate object file .o only");
+        eprintln!("  (default)            Assemble and link to executable\n");
+        eprintln!("Optimization flags (can be combined):");
+        eprintln!("  --optimize           Turn on all optimizations");
+        eprintln!("  --fold-constants");
+        eprintln!("  --propagate-copies");
+        eprintln!("  --eliminate-unreachable-code");
+        eprintln!("  --eliminate-dead-stores");
+        eprintln!("  --trace              Enable debug optimizer passes\n");
+        eprintln!("Linking:");
+        eprintln!("  -l<NAME>             Pass a single -l flag to linker");
+        eprintln!("General:");
+        eprintln!("  -h, --help           Show this help and exit");
+    }
+
+    fn consume_flag(args: &mut Vec<String>, name: &str) -> bool {
+        if let Some(i) = args.iter().position(|arg| arg == name) {
+            args.remove(i);
+            true
+        } else {
+            false
+        }
+    }
+
     let mut args: Vec<_> = std::env::args().skip(1).collect();
+    if args.iter().any(|a| a == "--help" || a == "-h") {
+        print_help(&program_name);
+        std::process::exit(0);
+    }
+
     let mut optimization = OptimizationFlags::default();
     let linker_arg = args
         .iter()
         .position(|arg| arg.starts_with("-l"))
         .map(|arg| args.remove(arg).clone());
 
-    if let Some(i) = args.iter().position(|arg| arg == "--fold-constants") {
+    if consume_flag(&mut args, "--fold-constants") {
         optimization.fold_constants = true;
-        args.remove(i);
     }
-    if let Some(i) = args.iter().position(|arg| arg == "--propagate-copies") {
+    if consume_flag(&mut args, "--propagate-copies") {
         optimization.propagate_copies = true;
-        args.remove(i);
     }
-
-    if let Some(i) = args
-        .iter()
-        .position(|arg| arg == "--eliminate-unreachable-code")
-    {
+    if consume_flag(&mut args, "--eliminate-unreachable-code") {
         optimization.eliminate_unreachable_code = true;
-        args.remove(i);
     }
-
-    if let Some(i) = args.iter().position(|arg| arg == "--eliminate-dead-stores") {
+    if consume_flag(&mut args, "--eliminate-dead-stores") {
         optimization.eliminate_dead_stores = true;
-        args.remove(i);
     }
-
-    if let Some(i) = args.iter().position(|arg| arg == "--optimize") {
+    if consume_flag(&mut args, "--optimize") {
         optimization.optimize = true;
-        args.remove(i);
     }
-
-    if let Some(i) = args.iter().position(|arg| arg == "--trace") {
+    if consume_flag(&mut args, "--trace") {
         optimization.trace = true;
-        args.remove(i);
     }
 
     let args: Vec<_> = args.iter().map(|s| s.as_str()).collect();
@@ -164,11 +198,8 @@ fn parse_args() -> Options {
         ["-c", path] => (path, Flag::Assemble),
         [path] => (path, Flag::AssembleAndLink),
         _ => {
-            eprintln!("Error: incorrect number of arguments");
-            eprintln!("command: `{}`", args.join(" "));
-            eprintln!(
-                "Usage: compiler [ --lex | --parse | --validate | --codegen | --emit | -s | -c ] <FILENAME>"
-            );
+            eprintln!("Error: incorrect arguments");
+            print_help(&program_name);
             std::process::exit(1);
         }
     };
