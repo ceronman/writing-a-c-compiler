@@ -47,7 +47,7 @@ impl LabelChecker {
                         span: name.span,
                     });
                 }
-                let new_label = self.make_label(&name.symbol);
+                let new_label = self.make_label(name.symbol.as_ref());
                 self.labels.insert(name.symbol.clone(), new_label.clone());
                 name.symbol = new_label;
                 self.check_statement(stmt)?;
@@ -215,7 +215,7 @@ impl LabelChecker {
     fn make_label(&mut self, name: &str) -> Symbol {
         let unique_name = format!("{name}_{i}", i = self.counter);
         self.counter += 1;
-        unique_name
+        unique_name.into()
     }
 }
 

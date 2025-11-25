@@ -332,7 +332,7 @@ impl PrettyAst {
         }
     }
     fn from_identifier(identifier: &Identifier) -> PrettyAst {
-        Self::new(&identifier.symbol, vec![])
+        Self::new(identifier.symbol.as_ref(), vec![])
     }
 
     fn from_constant(node_id: NodeId, constant: &Constant) -> PrettyAst {

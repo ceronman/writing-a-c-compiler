@@ -129,7 +129,7 @@ impl Register {
     fn debug_print(&self) -> String {
         match self {
             Register::Hard(reg) => format!("{:?}", reg).to_uppercase(),
-            Register::Pseudo(name) => name.replace(".", "_"),
+            Register::Pseudo(name) => name.as_ref().replace(".", "_"),
         }
     }
 }

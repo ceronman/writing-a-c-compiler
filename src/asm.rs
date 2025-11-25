@@ -8,7 +8,6 @@ use crate::asm::ir::{
     AsmType, BinaryOp, CondCode, Function, Instruction, Operand, Program, Reg, StaticConstant,
     StaticVariable, TopLevel, UnaryOp,
 };
-use crate::asm::pretty::pp_function;
 use crate::asm::register_allocation::allocate_registers;
 use crate::ast::Constant;
 use crate::semantic::{AggregateType, Attributes, SemanticData, StaticInit, Type, TypeEntry};
@@ -1987,7 +1986,7 @@ impl Compiler {
         let name = match existing_constant {
             Some(name) => name.clone(),
             None => {
-                let name = format!("_double_{}", self.doubles.len());
+                let name = Symbol::from(format!("_double_{}", self.doubles.len()));
                 self.doubles.insert(key, name.clone());
                 name
             }
@@ -2000,7 +1999,7 @@ impl Compiler {
     }
 
     fn make_label(&mut self, prefix: &str) -> Symbol {
-        let label = format!("{prefix}_{}", self.label_counter);
+        let label = Symbol::from(format!("{prefix}_{}", self.label_counter));
         self.label_counter += 1;
         label
     }

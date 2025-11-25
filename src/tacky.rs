@@ -235,7 +235,7 @@ impl TackyGenerator {
                     let Type::Array(inner, len) = ty else {
                         panic!("String initializer used with non-array type");
                     };
-                    for (i, c) in s.chars().enumerate() {
+                    for (i, c) in s.as_ref().chars().enumerate() {
                         self.instructions.push(Instruction::CopyToOffset {
                             src: Val::Constant(Constant::from_char(c, inner)),
                             dst: name.clone(),
@@ -414,12 +414,12 @@ impl TackyGenerator {
             ast::Statement::Null => {}
 
             ast::Statement::DoWhile { cond, body, label } => {
-                let start_label = format!("start_{label}");
+                let start_label = Symbol::from(format!("start_{label}"));
                 self.instructions
                     .push(Instruction::Label(start_label.clone()));
                 self.emit_statement(body);
                 self.instructions
-                    .push(Instruction::Label(format!("continue_{label}")));
+                    .push(Instruction::Label(format!("continue_{label}").into()));
                 let cond_val = self.make_cond(cond);
 
                 self.instructions.push(Instruction::JumpIfNotZero {
@@ -427,11 +427,11 @@ impl TackyGenerator {
                     target: start_label,
                 });
                 self.instructions
-                    .push(Instruction::Label(format!("break_{label}")));
+                    .push(Instruction::Label(format!("break_{label}").into()));
             }
             ast::Statement::While { cond, body, label } => {
-                let continue_label = format!("continue_{label}");
-                let break_label = format!("break_{label}");
+                let continue_label = Symbol::from(format!("continue_{label}"));
+                let break_label = Symbol::from(format!("break_{label}"));
                 self.instructions
                     .push(Instruction::Label(continue_label.clone()));
                 let cond_val = self.make_cond(cond);
@@ -459,7 +459,7 @@ impl TackyGenerator {
                     }
                     ast::ForInit::None => {}
                 }
-                let start_label = format!("start_{label}");
+                let start_label = Symbol::from(format!("start_{label}"));
                 self.instructions
                     .push(Instruction::Label(start_label.clone()));
                 let cond_val = if let Some(cond) = cond {
@@ -467,14 +467,14 @@ impl TackyGenerator {
                 } else {
                     Val::Constant(Constant::Int(1))
                 };
-                let break_label = format!("break_{label}");
+                let break_label = Symbol::from(format!("break_{label}"));
                 self.instructions.push(Instruction::JumpIfZero {
                     cond: cond_val,
                     target: break_label.clone(),
                 });
                 self.emit_statement(body);
                 self.instructions
-                    .push(Instruction::Label(format!("continue_{label}")));
+                    .push(Instruction::Label(format!("continue_{label}").into()));
                 if let Some(post) = post {
                     self.emit_expr(post);
                 }
@@ -506,7 +506,7 @@ impl TackyGenerator {
                         target: label.clone(),
                     })
                 }
-                let break_label = format!("break_{label}");
+                let break_label = Symbol::from(format!("break_{label}"));
                 self.instructions.push(Instruction::Jump {
                     target: break_label.clone(),
                 });
@@ -514,11 +514,11 @@ impl TackyGenerator {
                 self.instructions.push(Instruction::Label(break_label))
             }
             ast::Statement::Break(label) => {
-                let target = format!("break_{label}");
+                let target = Symbol::from(format!("break_{label}"));
                 self.instructions.push(Instruction::Jump { target });
             }
             ast::Statement::Continue(label) => {
-                let target = format!("continue_{label}");
+                let target = Symbol::from(format!("continue_{label}"));
                 self.instructions.push(Instruction::Jump { target });
             }
             ast::Statement::Case { label, body, .. } | ast::Statement::Default { label, body } => {
@@ -1244,7 +1244,7 @@ impl TackyGenerator {
 
     fn make_temp(&mut self, ty: &Type) -> Val {
         assert!(!matches!(ty, Type::Void));
-        let name = format!("tmp.{i}", i = self.tmp_counter);
+        let name = Symbol::from(format!("tmp.{i}", i = self.tmp_counter));
         let tmp = Val::Var(name.clone());
         self.semantics.symbols.insert(
             name,
@@ -1264,7 +1264,7 @@ impl TackyGenerator {
     fn make_label(&mut self, prefix: &str) -> Symbol {
         let result = format!("{prefix}_{i}", i = self.label_counter);
         self.label_counter += 1;
-        result
+        result.into()
     }
 }
 

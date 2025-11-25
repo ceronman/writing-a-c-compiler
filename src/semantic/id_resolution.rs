@@ -386,10 +386,10 @@ impl Resolver {
         Ok(())
     }
 
-    fn make_name(&mut self, name: &str) -> Symbol {
+    fn make_name(&mut self, name: &Symbol) -> Symbol {
         let unique_name = format!("{name}.{i}", i = self.counter);
         self.counter += 1;
-        unique_name
+        Symbol::from(unique_name)
     }
 
     fn begin_scope(&mut self) {

@@ -53,7 +53,7 @@ fn pp_static_init(stream: &mut impl Write, init: &StaticInit) -> Result<()> {
             null_terminated,
         } => {
             let s = if *null_terminated {
-                format!("{symbol}\\0")
+                format!("{symbol}\\0").into()
             } else {
                 symbol.clone()
             };

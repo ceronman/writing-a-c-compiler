@@ -362,7 +362,7 @@ impl SemanticData {
         match existing_constant {
             Some(name) => name.clone(),
             None => {
-                let name = format!("string.{}", self.strings.len());
+                let name = Symbol::from(format!("string.{}", self.strings.len()));
                 self.strings.insert(s.clone(), name.clone());
                 self.symbols.insert(
                     name.clone(),

@@ -1228,7 +1228,7 @@ impl<'src> Parser<'src> {
             end = self.current.span;
             self.advance();
         }
-        Ok(self.node(begin + end, Expression::String(value)))
+        Ok(self.node(begin + end, Expression::String(value.into())))
     }
 
     fn next_character(&self, chars: &mut impl Iterator<Item = char>) -> Result<Option<char>> {

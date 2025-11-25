@@ -3,6 +3,7 @@ use crate::asm::ir::{
     StaticVariable, TopLevel, UnaryOp,
 };
 use crate::semantic::StaticInit;
+use crate::symbol::Symbol;
 use std::io::{Result, Write};
 
 #[derive(Copy, Clone)]
@@ -355,7 +356,7 @@ fn emit_static_init(output: &mut impl Write, init: &StaticInit, target_os: Targe
                 emit_ins(output, ".ascii")?;
             }
             write!(output, "\"")?;
-            for c in symbol.as_bytes() {
+            for c in symbol.as_ref().as_bytes() {
                 // Hack to avoid std::ascii::escape_default escaping the quote
                 if *c as char != '\'' {
                     write!(output, "{}", std::ascii::escape_default(*c))?;
@@ -619,14 +620,14 @@ fn emit_operand(
     }
 }
 
-fn emit_label(output: &mut impl Write, label: &str, target_os: TargetOs) -> Result<()> {
+fn emit_label(output: &mut impl Write, label: &Symbol, target_os: TargetOs) -> Result<()> {
     match target_os {
         TargetOs::MacOs => write!(output, "L{label}"),
         TargetOs::Linux => write!(output, ".L{label}"),
     }
 }
 
-fn emit_symbol(name: &str, target_os: TargetOs) -> String {
+fn emit_symbol(name: &Symbol, target_os: TargetOs) -> String {
     match target_os {
         TargetOs::MacOs => format!("_{name}"),
         TargetOs::Linux => name.to_string(),

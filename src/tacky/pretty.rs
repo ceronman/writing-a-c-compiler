@@ -71,7 +71,7 @@ fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> Result<()> {
             null_terminated,
         } => {
             let s = if *null_terminated {
-                format!("{symbol}\\0")
+                format!("{symbol}\\0").into()
             } else {
                 symbol.clone()
             };
@@ -84,7 +84,13 @@ fn pp_initializer(out: &mut impl Write, init: &StaticInit) -> Result<()> {
 
 pub(super) fn pp_function(stream: &mut impl Write, function: &tacky::Function) -> Result<()> {
     let global = if function.global { "global " } else { "" };
-    let params = function.params.to_vec().join(", ");
+    let params = function
+        .params
+        .to_vec()
+        .iter()
+        .map(|s| s.as_ref())
+        .collect::<Vec<_>>()
+        .join(", ");
     writeln!(
         stream,
         "{}function {}({}) {{ ",
