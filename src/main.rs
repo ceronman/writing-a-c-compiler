@@ -116,7 +116,9 @@ enum Flag {
 }
 
 fn parse_args() -> Options {
-    let program_name = std::env::args().next().unwrap_or_else(|| "compiler".to_string());
+    let program_name = std::env::args()
+        .next()
+        .unwrap_or_else(|| "compiler".to_string());
 
     fn print_help(program: &str) {
         eprintln!("Usage: {program} [FLAGS] <FILENAME>\n");
